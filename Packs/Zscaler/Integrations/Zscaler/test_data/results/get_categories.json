@@ -20,7 +20,7 @@
   ],
   "ContentsFormat": "json",
   "ReadableContentsFormat": "markdown",
-  "HumanReadable": "### Zscaler Categories\n|ID|Description|URL|CustomCategory|Name|\n|---|---|---|---|---|\n| CUSTOM_1 |  | 1.2.3.4,<br>8.8.8.8,<br>https://admin.zscalertwo.net,<br>1.22.33.4 | true | Phishing-Suspected |\n",
+  "HumanReadable": "### Zscaler Categories\n|ID|Description|URL|RetainingParentCategoryURL|CustomCategory|Name|\n|---|---|---|---|---|---|\n| CUSTOM_1 |  | 1.2.3.4,<br>8.8.8.8,<br>https://admin.zscalertwo.net,<br>1.22.33.4 |  | true | Phishing-Suspected |\n",
   "EntryContext": {
     "Zscaler.Category(val.ID && val.ID === obj.ID)": [
       {

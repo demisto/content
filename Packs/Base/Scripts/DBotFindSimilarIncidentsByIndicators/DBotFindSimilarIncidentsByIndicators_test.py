@@ -40,11 +40,13 @@ def mock_execute_command(command: str, args: dict):
             from_date: str = args.get("fromdate") or ""
             match = re.search(r"incident\.id:\(([^\)]*)\)", query)
             incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
-            res = {"data": [
-                {k: v for k, v in i.items() if k in args["populateFields"] or k == "id"} for i in INCIDENTS_LIST
-                if i["id"] in incident_ids
-                and (not from_date or parse(i["created"]) >= parse(from_date).replace(tzinfo=None))
-            ]}
+            res = {
+                "data": [
+                    {k: v for k, v in i.items() if k in args["populateFields"] or k == "id"}
+                    for i in INCIDENTS_LIST
+                    if i["id"] in incident_ids and (not from_date or parse(i["created"]) >= parse(from_date).replace(tzinfo=None))
+                ]
+            }
         case _:
             raise Exception(f"Unmocked command: {command}")
     return [{"Contents": res, "Type": "json"}]
@@ -65,11 +67,14 @@ def setup(mocker):
     mocker.patch.object(demisto, "searchIndicators", side_effect=mock_search_indicators)
 
 
-@pytest.mark.parametrize("indicator_types, expected_indicators", [
-    (["file"], [IND_A, IND_E]),
-    (["file", "domain"], [IND_A, IND_B, IND_E]),
-    ([], [IND_A, IND_B, IND_E]),
-])
+@pytest.mark.parametrize(
+    "indicator_types, expected_indicators",
+    [
+        (["file"], [IND_A, IND_E]),
+        (["file", "domain"], [IND_A, IND_B, IND_E]),
+        ([], [IND_A, IND_B, IND_E]),
+    ],
+)
 def test_get_indicators_of_actual_incident(indicator_types: list, expected_indicators: list) -> None:
     """
     Given:
@@ -109,11 +114,14 @@ def test_get_indicators_of_actual_incident__below_minimal_num_of_indicators() ->
     assert not res
 
 
-@pytest.mark.parametrize("indicators, query, from_date, expected_incidents", [
-    ([], "", None, []),
-    ([IND_A, IND_B, IND_C], "query", None, [INC_1, INC_2, INC_3, INC_5, INC_6]),
-    ([IND_A, IND_B, IND_C], "", None, [INC_1, INC_2, INC_3, INC_5, INC_6]),
-])
+@pytest.mark.parametrize(
+    "indicators, query, from_date, expected_incidents",
+    [
+        ([], "", None, []),
+        ([IND_A, IND_B, IND_C], "query", None, [INC_1, INC_2, INC_3, INC_5, INC_6]),
+        ([IND_A, IND_B, IND_C], "", None, [INC_1, INC_2, INC_3, INC_5, INC_6]),
+    ],
+)
 def test_get_related_incidents(indicators: list, query: str, from_date: str, expected_incidents: list) -> None:
     """
     Given:
@@ -155,11 +163,14 @@ def test_get_related_incidents_playground() -> None:
     assert get_related_incidents(indicators, "query", None) == []
 
 
-@pytest.mark.parametrize("incidents, indicators, expected_indicators", [
-    ([INC_1, INC_6], [IND_A, IND_B, IND_C, IND_D, IND_E], [IND_A, IND_C, IND_D]),
-    ([INC_1, INC_6], [], []),
-    ([], [IND_A, IND_B, IND_C, IND_D, IND_E], []),
-])
+@pytest.mark.parametrize(
+    "incidents, indicators, expected_indicators",
+    [
+        ([INC_1, INC_6], [IND_A, IND_B, IND_C, IND_D, IND_E], [IND_A, IND_C, IND_D]),
+        ([INC_1, INC_6], [], []),
+        ([], [IND_A, IND_B, IND_C, IND_D, IND_E], []),
+    ],
+)
 def test_get_mutual_indicators(incidents: list[dict], indicators: list[dict], expected_indicators: list[dict]) -> None:
     """
     Given:
@@ -175,9 +186,7 @@ def test_get_mutual_indicators(incidents: list[dict], indicators: list[dict], ex
     incident_ids = [inc["id"] for inc in incidents]
     indicators_of_actual_incidents = {ind["id"]: ind for ind in indicators}
     related_incidents = get_indicators_of_related_incidents(incident_ids, max_incidents_per_indicator=10)
-    assert ids_of(
-        get_mutual_indicators(related_incidents, indicators_of_actual_incidents)
-    ) == ids_of(expected_indicators)
+    assert ids_of(get_mutual_indicators(related_incidents, indicators_of_actual_incidents)) == ids_of(expected_indicators)
 
 
 def test_find_similar_incidents_by_indicators_end_to_end() -> None:
@@ -320,8 +329,7 @@ def test_find_similar_incidents_by_indicators_end_to_end__no_results() -> None:
 
 
 def test_score():
-    """ Runs some sanity tests for the FrequencyIndicators transformer
-    """
+    """Runs some sanity tests for the FrequencyIndicators transformer"""
     incident = pd.DataFrame({"indicators": ["1 2 3 4 5 6"]})
     # Check if incident is rare then the score is higher
     incidents_1 = pd.DataFrame({"indicators": ["1 2", "1 3", "1 3"]})
@@ -329,21 +337,96 @@ def test_score():
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
-    assert (all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)))
-    assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
+    assert all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1))
+    assert all(scores[i] >= 0 for i in range(len(scores) - 1))
     # Check if same rarity then same scores
     incidents_1 = pd.DataFrame({"indicators": ["1 2", "3 4"]})
     tfidf = FrequencyIndicators("indicators", incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
-    assert (all(scores[i] == scores[i + 1] for i in range(len(scores) - 1)))
-    assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
+    assert all(scores[i] == scores[i + 1] for i in range(len(scores) - 1))
+    assert all(scores[i] >= 0 for i in range(len(scores) - 1))
     # Check if more indicators in commun them better score
     incidents_1 = pd.DataFrame({"indicators": ["1 2 3", "4 5", "6"]})
     tfidf = FrequencyIndicators("indicators", incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
-    assert (all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)))
-    assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
+    assert all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1))
+    assert all(scores[i] >= 0 for i in range(len(scores) - 1))
+
+
+def test_enrich_incidents_with_data(mocker):
+    """
+    Given:
+        A DataFrame of incidents and a list of fields to display.
+    When:
+        The enrich_incidents function is called.
+    Then:
+        The function should return an enriched DataFrame with the specified fields.
+    """
+    incidents = pd.DataFrame({"id": ["1", "2"], "name": ["Incident 1", "Incident 2"]})
+    fields_to_display = ["created", "status", "type"]
+
+    mock_get_incidents = mocker.patch("DBotFindSimilarIncidentsByIndicators.get_incidents_by_query")
+    mock_get_incidents.return_value = [
+        {"id": "1", "created": "2023-05-01T10:00:00Z", "status": 1, "type": "Malware"},
+        {"id": "2", "created": "2023-05-02T11:00:00Z", "status": 2, "type": "Phishing"},
+    ]
+
+    result = enrich_incidents(incidents, fields_to_display)
+
+    assert "created" in result.columns
+    assert "status" in result.columns
+    assert "type" in result.columns
+    assert result["created"].tolist() == ["2023-05-01", "2023-05-02"]
+    assert result["status"].tolist() == ["Active", "Closed"]
+    assert result["type"].tolist() == ["Malware", "Phishing"]
+
+
+def test_enrich_incidents_empty_dataframe(mocker):
+    """
+    Given:
+        An empty DataFrame of incidents and a list of fields to display.
+    When:
+        The enrich_incidents function is called.
+    Then:
+        The function should return the empty DataFrame without modifications.
+    """
+    incidents = pd.DataFrame()
+    fields_to_display = ["created", "status", "type"]
+
+    result = enrich_incidents(incidents, fields_to_display)
+
+    assert result.empty
+
+
+def test_enrich_incidents_missing_field(mocker):
+    """
+    Given:
+        A DataFrame of incidents and a list of fields to display, including a field not returned by get_incidents_by_query.
+    When:
+        The enrich_incidents function is called.
+    Then:
+        The function should return the DataFrame with empty values for the missing field.
+    """
+    incidents = pd.DataFrame({"id": ["1", "2"], "name": ["Incident 1", "Incident 2"]})
+    fields_to_display = ["created", "status", "type", "missing_field"]
+
+    mock_get_incidents = mocker.patch("DBotFindSimilarIncidentsByIndicators.get_incidents_by_query")
+    mock_get_incidents.return_value = [
+        {"id": "1", "created": "2023-05-01T10:00:00Z", "status": 1, "type": "Malware"},
+        {"id": "2", "created": "2023-05-02T11:00:00Z", "status": 2, "type": "Phishing"},
+    ]
+
+    result = enrich_incidents(incidents, fields_to_display)
+
+    assert "created" in result.columns
+    assert "status" in result.columns
+    assert "type" in result.columns
+    assert "missing_field" in result.columns
+    assert result["created"].tolist() == ["2023-05-01", "2023-05-02"]
+    assert result["status"].tolist() == ["Active", "Closed"]
+    assert result["type"].tolist() == ["Malware", "Phishing"]
+    assert result["missing_field"].tolist() == ["", ""]

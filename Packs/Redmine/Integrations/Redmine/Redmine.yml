@@ -11,10 +11,6 @@ configuration:
   name: url
   type: 0
   required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
 - section: Connect
   display: ""
   displaypassword: API Key
@@ -28,47 +24,34 @@ configuration:
   additionalinfo: This project ID will be overridden by command project ID if one is provided within a command.
   type: 0
   required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
 script:
   commands:
   - name: redmine-issue-create
     description: |-
-      - Create a new issue
-      - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
-      - - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**,' and then proceed to create a new custom field. Once created, you  can add values as needed.
+      - Create a new issue.
+      - The status of the newly created issue will be set to the default status of the Redmine instance.
+      - When attaching a file to an issue, include the entry ID in the request as file_entry_id=entry ID.
+      - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**,' and then proceed to create a new custom field. Once created, you  can add values as needed.
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab.
     arguments:
     - name: project_id
-      description: The project ID for this issue. If not specified, the value from the integration configuration will be used.
+      description: The project ID for this issue. If not specified, the value from the instance configuration will be used.
       required: false
     - name: tracker_id
-      auto: PREDEFINED
-      description: The tracker ID for this issue.
-      predefined:
-      - Bug
-      - Feature
-      - Support
+      description: |-
+        - A tracker ID (e.g., 1,2,3).
+        - Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.
+        - If an invalid ID was entered, the default tracker from your Redmine instance will be used.
       required: true
-    - name: status_id
-      auto: PREDEFINED
-      required: true
-      description: The status ID for this issue.
-      predefined:
-      - New
-      - In progress
-      - Resolved
-      - Feedback
-      - Closed
-      - Rejected
     - name: priority_id
-      auto: PREDEFINED
       required: true
-      description: The priority ID for this issue.
-      predefined:
-      - Low
-      - Normal
-      - High
-      - Urgent
-      - Immediate
+      description: |-
+        - A priority ID (e.g., 1,2,3).
+        - Get the priority_name to priority_id mapping by using the command redmine-priority-id-list.
     - name: subject
       required: true
       description: The subject for this issue.
@@ -83,7 +66,18 @@ script:
     - name: parent_issue_id
       description: The ID of the parent issue.
     - name: custom_fields
-      description: The custom field to update. The format is costumFieldID:Value,costumFieldID:Value, etc.
+      description: |-
+        The custom field to update.
+        - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
+        - Please use an array if the field is of multiselect type.
+        - Instruction for each custom field type:
+          - Boolean: use "0" for False and "1" for True.
+          - Date: the format is "yyyy-mm-dd".
+          - Float: A number with two digits after the decimal point.
+          - Integer: A number.
+          - Key/Value list: Use the Key (ID) of the value.
+          - User: Use the user ID.
+          - Version- use the version ID.
       isArray: true
     - name: watcher_user_ids
       description: An array with watcher user IDs for this issue -> 1,2,3.
@@ -149,21 +143,21 @@ script:
       description: An array of issue IDs to display -> 1,2,3.
       isArray: true
     - name: project_id
-      description: A project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed.
+      description: A project ID to display issues of this project. If not specified here or in the instance configuration, all projects will be displayed.
     - name: subproject_id
-      description: A subproject ID to display issues of this subproject (you can't use both subproject_id and exclude).
+      description: A subproject ID to display issues of this subproject (Can't use both subproject_id and exclude).
     - name: exclude
-      description: A subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
+      description: A subproject ID to exclude from the list (Can't use both subproject_id and exclude), please specify a project_id argument to exclude the subproject_id.
     - name: tracker_id
+      description: |-
+        - A tracker ID (e.g., 1,2,3).
+        - Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.
+    - name: status
       auto: PREDEFINED
-      description: A tracker ID to display issues of this tracker ID.
-      predefined:
-      - Bug
-      - Feature
-      - Support
-    - name: status_id
-      auto: PREDEFINED
-      description: The status ID to display issues of this status ID.
+      description: |-
+        - A status ID (e.g., 1,2,3) or use predefined values.
+        - Get the status_name to status_id mapping by using the command redmine-status-id-list.
+        - Possible values: Open/Closed/All from the predefined values or use any of your custom status IDs (e.g., 1).
       defaultValue: Open
       predefined:
       - Open
@@ -177,8 +171,8 @@ script:
       description: |-
         - The custom field to filter by. The format is costumFieldID:Value.
         - To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  
-        - You can only filter one custom field at a time. 
-        - Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly.
+        - Can only filter one custom field at a time. 
+        - Make sure the custom field id which was entered is valid, or the request won't fail but will not be filtered correctly.
     outputs:
     - contextPath: Redmine.Issue
       description: A list of issues.
@@ -193,31 +187,19 @@ script:
     - name: project_id
       description: The ID of the project to associate with the issue. If not specified, the value from the integration configuration will be used if specified.
     - name: tracker_id
-      auto: PREDEFINED
-      description: The ID of the tracker type.
-      predefined:
-      - Bug
-      - Feature
-      - Support
+      description: |-
+        - A tracker ID (e.g., 1,2,3).
+        - Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.
+        - If an invalid ID was entered, tracker_id won't be changed and won't raise an error.
     - name: status_id
-      auto: PREDEFINED
-      description: The ID of the status to set for the issue.
-      predefined:
-      - New
-      - In progress
-      - Resolved
-      - Feedback
-      - Closed
-      - Rejected
+      description: |-
+        - A status ID (e.g., 1,2,3).
+        - Get the status_name to status_id mapping by using the command redmine-status-id-list.
+        - If an invalid ID was entered, status_id won't be changed and won't raise an error.
     - name: priority_id
-      auto: PREDEFINED
-      description: The ID of the priority level for the issue.
-      predefined:
-      - Low
-      - Normal
-      - High
-      - Urgent
-      - Immediate
+      description: |-
+        - A priority ID (e.g., 1,2,3).
+        - Get the priority_name to priority_id mapping by using the command redmine-priority-id-list.
     - name: subject
       description: The subject of the issue.
     - name: description
@@ -231,7 +213,18 @@ script:
     - name: parent_issue_id
       description: The ID of the parent issue, if applicable.
     - name: custom_fields
-      description: The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. 
+      description: |-
+        The custom field to update.
+        - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
+        - Please use an array if the field is of multiselect type.
+        - Instruction for each custom field type:
+          - Boolean: use "0" for False and "1" for True.
+          - Date: the format is "yyyy-mm-dd".
+          - Float: A number with two digits after the decimal point.
+          - Integer: A number.
+          - Key/Value list: Use the Key (ID) of the value.
+          - User: Use the user ID.
+          - Version- use the version ID.
       isArray: true
     - name: watcher_user_ids
       description: A comma-separated list of watcher IDs. -> 1,2,3.
@@ -264,7 +257,7 @@ script:
     description: Show an issue by ID.
     arguments:
     - name: issue_id
-      description: The ID of the issue you want to display.
+      description: The ID of the issue.
       required: true
     - name: include
       description: |
@@ -298,7 +291,7 @@ script:
     description: Delete an issue by its ID.
     arguments:
     - name: issue_id
-      description: The ID of the issue you want to delete.
+      description: The ID of the issue which is about to be deleted.
       required: true
   - name: redmine-issue-watcher-add
     description: Add a watcher to the specified issue. Ensure that the watcher_id is accurate, as the Redmine API does not raise an exception for an incorrect watcher_id.
@@ -378,7 +371,28 @@ script:
       description: A list of users last name.
     - contextPath: Redmine.Users.mail
       description: A list of users mails.
-  dockerimage: demisto/python3:3.10.13.89873
+  - name: redmine-status-id-list
+    description: Returns a list of statuses (status name to status id).
+    outputs:
+    - contextPath: Redmine.statuses.ID
+      description: ID of the status field.
+    - contextPath: Redmine.Users.Name
+      description: Name of the status field.
+  - name: redmine-priority-id-list
+    description: Returns a list of priorities (priority name to priority id).
+    outputs:
+    - contextPath: Redmine.priorities.ID
+      description: ID of the priority field.
+    - contextPath: Redmine.priorities.Name
+      description: Name of the priority field.
+  - name: redmine-tracker-id-list
+    description: Returns a list of trackers (tracker name to tracker id).
+    outputs:
+    - contextPath: Redmine.trackers.ID
+      description: ID of the tracker field.
+    - contextPath: Redmine.trackers.Name
+      description: Name of the tracker field.
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: false
   runonce: false
   script: '-'
@@ -386,4 +400,4 @@ script:
   type: python
 fromversion: 6.10.0
 tests:
-- Redmine-Test
+- Redmine_Test

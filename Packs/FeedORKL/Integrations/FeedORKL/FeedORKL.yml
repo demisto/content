@@ -49,7 +49,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - display: ''
   name: feedExpirationInterval
@@ -90,6 +89,13 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental Feed
+  hidden: true
+  name: feedIncremental
+  type: 8
+  required: false
 description: Use the ORKL Threat Intel Feed integration to get receive threat intelligence indicators from the feed.
 display: ORKL Threat Intel Feed
 name: FeedORKL
@@ -118,7 +124,7 @@ script:
       - desc
     description: Retrieves latest Threat Reports from ORKL.
     name: orkl-get-reports
-  dockerimage: demisto/python3:3.10.13.82467
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   isFetchSamples: true
   runonce: false

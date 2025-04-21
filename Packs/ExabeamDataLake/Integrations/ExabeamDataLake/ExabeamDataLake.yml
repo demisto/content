@@ -1,0 +1,76 @@
+category: Analytics & SIEM
+commonfields:
+  id: Exabeam Data Lake
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: User Name
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+  displaypassword: Password
+- defaultvalue: local
+  display: Cluster Name
+  name: cluster_name
+  type: 0
+  required: true
+  additionalinfo: The default value is usually 'local', suitable for standard setups. For custom cluster deployments, consult the Exabeam Support Team.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+description: Exabeam Data Lake provides a searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
+display: Exabeam Data Lake
+name: Exabeam Data Lake
+script:
+  commands:
+  - arguments:
+    - defaultValue: "*"
+      description: The search query string to filter the events by. Examples can be found in the syntax documentation section of the integration description.
+      name: query
+    - defaultValue: "7 days ago"
+      description: The starting date for the search range. The search range should be at least one day long and can extend up to a maximum of 10 days.
+      name: start_time
+    - defaultValue: "today"
+      description: The ending date for the search range. This defines the end of the search range, which should be within one to ten days after the start_time.
+      name: end_time
+    - description: The maximal number of results to return. Maximum value is 3000.
+      name: limit
+    - description: The page number for pagination.
+      name: page
+    - description: The maximal number of results to return per page. Maximum value is 3000.
+      name: page_size
+    description: Get events from Exabeam Data Lake.
+    name: exabeam-data-lake-search
+    outputs:
+    - contextPath: ExabeamDataLake.Event._id
+      description: The event ID.
+      type: str
+    - contextPath: ExabeamDataLake.Event._source.Vendor
+      description: Vendor of the event.
+      type: str
+    - contextPath: ExabeamDataLake.Event._source.Product
+      description: Product of the event.
+      type: str
+    - contextPath: ExabeamDataLake.Event._source.@timestamp
+      description: The time of the event.
+      type: str
+    - contextPath: ExabeamDataLake.Event._source.message
+      description: The message of the event.
+      type: str
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+fromversion: 6.10.0
+tests:
+- ExabeamDataLake-test

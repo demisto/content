@@ -43,27 +43,28 @@ configuration:
   additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   options:
   - Authorization Code
+  - Client Credentials
   - Device Code
   - Azure Managed Identities
   section: Connect
 - name: tenant_id
-  display: Tenant ID (for user-auth mode)
+  display: Tenant ID
   defaultvalue:
   type: 0
   additionalinfo: ""
   section: Connect
   required: false
 - name: credentials
-  display: Client Secret (for user-auth mode)
+  display: Client Secret
   defaultvalue:
   type: 9
   additionalinfo: ""
-  displaypassword: Client Secret (for user-auth mode)
+  displaypassword: Client Secret
   hiddenusername: true
   section: Connect
   required: false
 - name: redirect_uri
-  display: Application redirect URI (for user-auth mode)
+  display: Application redirect URI
   defaultvalue:
   type: 0
   additionalinfo: ""
@@ -116,7 +117,7 @@ script:
       name: subscription_id
       required: false
       secret: false
-    description: Run this command to get the all or specific account storage details
+    description: Run this command to get the all or specific account storage details.
     name: azure-storage-account-list
     outputs:
     - contextPath: AzureStorage.StorageAccount.id
@@ -126,10 +127,10 @@ script:
       description: Gets the Kind.
       type: String
     - contextPath: AzureStorage.StorageAccount.location
-      description: The geo-location where the resource lives
+      description: The geo-location where the resource lives.
       type: String
     - contextPath: AzureStorage.StorageAccount.name
-      description: The name of the resource
+      description: The name of the resource.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.isHnsEnabled
       description: Account HierarchicalNamespace enabled if sets to true.
@@ -237,7 +238,7 @@ script:
       description: Gets the location of the geo-replicated secondary for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.statusOfPrimary
-      description: Gets the status indicating whether the primary location of the storage account is available or unavailable
+      description: Gets the status indicating whether the primary location of the storage account is available or unavailable.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.statusOfSecondary
       description: Gets the status indicating whether the secondary location of the storage account is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
@@ -414,9 +415,9 @@ script:
       - None
     - description: Specifies the default action of allow or deny when no other rules match.
       name: network_ruleset_default_action
-    - description: Sets the IP ACL rules
+    - description: Sets the IP ACL rules.
       name: network_ruleset_ipRules
-    - description: Sets the virtual network rules
+    - description: Sets the virtual network rules.
       name: virtual_network_rules
     description: |-
       Run this command to create or update a specific
@@ -541,7 +542,7 @@ script:
       description: Gets the location of the geo-replicated secondary for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.statusOfPrimary
-      description: Gets the status indicating whether the primary location of the storage account is available or unavailable
+      description: Gets the status indicating whether the primary location of the storage account is available or unavailable.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.statusOfSecondary
       description: Gets the status indicating whether the secondary location of the storage account is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
@@ -586,7 +587,7 @@ script:
       description: Fully qualified resource ID for the resource.
       type: String
     - contextPath: AzureStorage.BlobServiceProperties.name
-      description: The name of the resource
+      description: The name of the resource.
       type: String
     - contextPath: AzureStorage.BlobServiceProperties.type
       description: The type of the resource.
@@ -674,7 +675,7 @@ script:
       name: restore_policy_days
     description: |-
       Run this command to set properties for
-      the blob service in a specific account storage
+      the blob service in a specific account storage.
     name: azure-storage-blob-service-properties-set
     outputs:
     - contextPath: AzureStorage.BlobServiceProperties.id
@@ -761,7 +762,7 @@ script:
       - Blob
       - Container
       - None
-    description: Run this command to create a blob container
+    description: Run this command to create a blob container.
     name: azure-storage-blob-containers-create
     outputs:
     - contextPath: AzureStorage.BlobContainer.id
@@ -1012,7 +1013,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-storage-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: '-'
   subtype: python3

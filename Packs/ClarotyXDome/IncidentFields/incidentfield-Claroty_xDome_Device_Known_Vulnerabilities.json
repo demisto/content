@@ -1,0 +1,39 @@
+{
+    "id": "incident_clarotyxdomedeviceknownvulnerabilities",
+    "version": -1,
+    "modified": "2024-04-18T10:35:36.569467323Z",
+    "name": "Claroty xDome Device Known Vulnerabilities",
+    "ownerOnly": false,
+    "description": "The calculated level of the device’s ‘known vulnerabilities’ likelihood factor, such as \"Critical\", or \"High\"",
+    "cliName": "clarotyxdomedeviceknownvulnerabilities",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Very Low",
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Claroty xDome Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

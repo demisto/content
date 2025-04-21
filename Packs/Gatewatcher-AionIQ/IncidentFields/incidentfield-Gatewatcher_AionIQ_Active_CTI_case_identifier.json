@@ -1,0 +1,32 @@
+{
+    "id": "incident_gatewatcherioccaseid",
+    "version": -1,
+    "modified": "2024-12-04T15:41:27.347935338+01:00",
+    "name": "Gatewatcher AionIQ Active CTI case identifier",
+    "ownerOnly": false,
+    "cliName": "gatewatcherioccaseid",
+    "type": "shortText",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Gatewatcher Incident",
+        "Gatewatcher Alert Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

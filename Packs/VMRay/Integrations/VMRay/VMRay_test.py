@@ -1,11 +1,9 @@
 import time
-import sys
+from unittest.mock import MagicMock
 
 import demistomock as demisto
-import requests_mock
-
 import pytest
-
+import requests_mock
 from CommonServerPython import EntryType
 
 MOCK_URL = "https://cloud.vmray.com/"
@@ -34,19 +32,28 @@ def test_upload_sample_command(mocker):
     Then:
         Make sure the error includes a hint how to change the Analysis Caching mode.
     """
-    expected_output = str("Error in API call to VMRay [200] - [{'error_msg': 'Submission not stored because no jobs "
-                          "were created. There is a possibility this file has been analyzed before. Please change the "
-                          "Analysis Caching mode for this API key to something other than \"Legacy\" in the VMRay "
-                          "Web Interface.', 'submission_filename': 'README.md'}]")
-    mocker.patch.object(demisto, 'command', return_value='vmray-upload-sample')
-    mocker.patch.object(demisto, 'getFilePath', return_value={'id': 'id', 'path': 'README.md', 'name': 'README.md'})
-    mocker_output = mocker.patch('VMRay.return_error')
+    expected_output = str(
+        "Error in API call to VMRay [200] - [{'error_msg': 'Submission not stored because no jobs "
+        "were created. There is a possibility this file has been analyzed before. Please change the "
+        'Analysis Caching mode for this API key to something other than "Legacy" in the VMRay '
+        "Web Interface.', 'submission_filename': 'README.md'}]"
+    )
+    mocker.patch.object(demisto, "command", return_value="vmray-upload-sample")
+    mocker.patch.object(demisto, "getFilePath", return_value={"id": "id", "path": "README.md", "name": "README.md"})
+    mocker_output = mocker.patch("VMRay.return_error")
     with requests_mock.Mocker() as m:
-        m.request('POST',
-                  'https://cloud.vmray.com/rest/sample/submit',
-                  json={'data': {'errors': [{'error_msg': 'Submission not stored because no jobs were created',
-                                             'submission_filename': 'README.md'}]}},
-                  status_code=200)
+        m.request(
+            "POST",
+            "https://cloud.vmray.com/rest/sample/submit",
+            json={
+                "data": {
+                    "errors": [
+                        {"error_msg": "Submission not stored because no jobs were created", "submission_filename": "README.md"}
+                    ]
+                }
+            },
+            status_code=200,
+        )
         from VMRay import main
 
         main()
@@ -58,10 +65,10 @@ def test_upload_sample_command(mocker):
     "file_name, expected",
     [
         ("abc.exe", b"abc.exe"),
-        ("<>:\"/\\|?*a.exe", b"a.exe"),
+        ('<>:"/\\|?*a.exe', b"a.exe"),
         ("\\test\\encode\\file\\name", b"testencodefilename"),
         ("ñá@.exe", b"\xc3\xb1\xc3\xa1@.exe"),
-    ]
+    ],
 )
 def test_encoding_file_name(file_name, expected):
     """
@@ -79,8 +86,8 @@ def test_encoding_file_name(file_name, expected):
 
 
 def test_is_json():
-    from VMRay import is_json
     from requests.models import Response
+    from VMRay import is_json
 
     response = Response()
     response._content = b'{ "key" : "a" }'
@@ -89,20 +96,14 @@ def test_is_json():
     assert not is_json(response)
 
 
-@pytest.mark.parametrize(
-    "input",
-    [1, "1"]
-)
+@pytest.mark.parametrize("input", [1, "1"])
 def test_valid_id(input):
     from VMRay import check_id
 
     assert check_id(input)
 
 
-@pytest.mark.parametrize(
-    "input",
-    [1.1, "foo"]
-)
+@pytest.mark.parametrize("input", [1.1, "foo"])
 def test_invalid_id(input):
     from VMRay import check_id
 
@@ -112,114 +113,66 @@ def test_invalid_id(input):
 
 def test_build_errors_string():
     from VMRay import build_errors_string
-    assert build_errors_string('Error') == 'Error'
-    assert build_errors_string([{'error_msg': 'Error'}, {'error_msg': 'Another error'}]) == 'Error.\nAnother error.\n'
-    assert build_errors_string({'error_msg': 'Error'}) == 'Error'
+
+    assert build_errors_string("Error") == "Error"
+    assert build_errors_string([{"error_msg": "Error"}, {"error_msg": "Another error"}]) == "Error.\nAnother error.\n"
+    assert build_errors_string({"error_msg": "Error"}) == "Error"
 
 
 def test_dbot_score_by_hash():
     from VMRay import dbot_score_by_hash
 
-    assert dbot_score_by_hash({'MD5': '0322ea0cb2fcfa4281cf7804c8f553d1'}) == [
-        {'Indicator': '0322ea0cb2fcfa4281cf7804c8f553d1',
-         'Reliability': 'C - Fairly reliable',
-         'Score': None,
-         'Type': 'hash',
-         'Vendor': 'VMRay'}]
+    assert dbot_score_by_hash({"MD5": "0322ea0cb2fcfa4281cf7804c8f553d1"}) == [
+        {
+            "Indicator": "0322ea0cb2fcfa4281cf7804c8f553d1",
+            "Reliability": "C - Fairly reliable",
+            "Score": None,
+            "Type": "hash",
+            "Vendor": "VMRay",
+        }
+    ]
 
 
 def test_build_job_data():
     from VMRay import build_job_data
 
-    entry = {'job_id': 'test', 'job_sample_id': 'test',
-             'job_submission_id': 'test', 'job_sample_md5': 'test',
-             'job_sample_sha1': 'test', 'job_sample_sha256': 'test',
-             'job_sample_ssdeep': 'test', 'job_vm_name': 'test',
-             'job_vm_id': 'test', 'job_status': 'test'}
-    assert build_job_data(entry) == {'JobID': 'test',
-                                     'MD5': 'test',
-                                     'SHA1': 'test',
-                                     'SHA256': 'test',
-                                     'SSDeep': 'test',
-                                     'SampleID': 'test',
-                                     'Status': 'test',
-                                     'SubmissionID': 'test',
-                                     'VMID': 'test',
-                                     'VMName': 'test'}
+    entry = {
+        "job_id": "test",
+        "job_sample_id": "test",
+        "job_submission_id": "test",
+        "job_sample_md5": "test",
+        "job_sample_sha1": "test",
+        "job_sample_sha256": "test",
+        "job_sample_ssdeep": "test",
+        "job_vm_name": "test",
+        "job_vm_id": "test",
+        "job_status": "test",
+    }
+    assert build_job_data(entry) == {
+        "JobID": "test",
+        "MD5": "test",
+        "SHA1": "test",
+        "SHA256": "test",
+        "SSDeep": "test",
+        "SampleID": "test",
+        "Status": "test",
+        "SubmissionID": "test",
+        "VMID": "test",
+        "VMName": "test",
+    }
 
 
 def test_build_finished_job():
     from VMRay import build_finished_job
 
-    assert build_finished_job('test', 'test') == {'JobID': 'test', 'SampleID': 'test', 'Status': 'Finished/NotExists'}
-
-
-def test_rate_limit(requests_mock):
-    requests_mock.get(
-        "https://cloud.vmray.com/rest/submission/123",
-        [
-            {
-                "status_code": 429,
-                "json": {
-                    "error_msg": "Request was throttled. Expected available in 2 seconds.",
-                    "result": "error"
-                },
-                "headers": {
-                    "Retry-After": "2"
-                }
-            },
-            {
-                "status_code": 200,
-                "json": {
-                    "foo": "bar"
-                }
-            }
-        ]
-    )
-
-    from VMRay import http_request
-    response = http_request("GET", "submission/123")
-
-    assert requests_mock.call_count == 2
-    assert response == {"foo": "bar"}
-
-
-def test_rate_limit_max_retries(requests_mock, mocker):
-    mocker.patch.object(sys, "exit", return_value=None)
-    requests_mock.get(
-        "https://cloud.vmray.com/rest/analysis/123",
-        [
-            {
-                "status_code": 429,
-                "json": {
-                    "error_msg": "Request was throttled. Expected available in 60 seconds.",
-                    "result": "error"
-                },
-                "headers": {
-                    "Retry-After": "60"
-                }
-            }
-        ]
-    )
-
-    from VMRay import http_request
-    response = http_request("GET", "analysis/123")
-
-    assert requests_mock.call_count == 11
-    assert response["error_msg"] == "Request was throttled. Expected available in 60 seconds."
+    assert build_finished_job("test", "test") == {"JobID": "test", "SampleID": "test", "Status": "Finished/NotExists"}
 
 
 def test_billing_type(requests_mock):
-    requests_mock.get(
-        MOCK_URL + "rest/analysis/123",
-        json={
-            "data": {
-                "analysis_billing_type": "detector"
-            }
-        }
-    )
+    requests_mock.get(MOCK_URL + "rest/analysis/123", json={"data": {"analysis_billing_type": "detector"}})
 
     from VMRay import get_billing_type
+
     billing_type = get_billing_type(123)
     assert billing_type == "detector"
 
@@ -244,28 +197,95 @@ def test_get_screenshots_command(requests_mock, mocker):
         b"\x00screenshots/index.logPK\x05\x06\x00\x00\x00\x00\x02\x00\x02\x00\xa9\x00\x00\x00~\x01\x00\x00\x00\x00"
     )
     file_result_return_value = {
-        'Contents': b'',
-        'File': 'analysis_123_screenshot_0.png',
-        'FileID': '00000000-0000-0000-0000-000000000000',
-        'Type': EntryType.IMAGE,
+        "Contents": b"",
+        "File": "analysis_123_screenshot_0.png",
+        "FileID": "00000000-0000-0000-0000-000000000000",
+        "Type": EntryType.IMAGE,
     }
 
-    mocker.patch.object(demisto, 'args', return_value={'analysis_id': '123'})
-    mocker.patch.object(demisto, 'command', return_value='vmray-get-screenshots')
-    mocker.patch('VMRay.get_screenshots', return_value=raw_screenshots_zip)
-    return_results_mock = mocker.patch('VMRay.return_results')
-    file_result_mock = mocker.patch('VMRay.fileResult', return_value=file_result_return_value)
+    mocker.patch.object(demisto, "args", return_value={"analysis_id": "123"})
+    mocker.patch.object(demisto, "command", return_value="vmray-get-screenshots")
+    mocker.patch("VMRay.get_screenshots", return_value=raw_screenshots_zip)
+    return_results_mock = mocker.patch("VMRay.return_results")
+    file_result_mock = mocker.patch("VMRay.fileResult", return_value=file_result_return_value)
 
     main()
 
     file_result_mock.assert_called_once_with(
-        filename='analysis_123_screenshot_0.png',
+        filename="analysis_123_screenshot_0.png",
         data=(
-            b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00'
-            b'\x00\x00\x01sRGB\x00\xae\xce\x1c\xe9\x00\x00\x00\x04gAMA\x00\x00\xb1\x8f\x0b\xfca\x05\x00\x00\x00\tpHYs'
-            b'\x00\x00\x0e\xc3\x00\x00\x0e\xc3\x01\xc7o\xa8d\x00\x00\x00\x0cIDAT\x18Wc8PY\r\x00\x03\xb1\x01\xb5\x95'
-            b'\xd8i\xe4\x00\x00\x00\x00IEND\xaeB`\x82'
+            b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00"
+            b"\x00\x00\x01sRGB\x00\xae\xce\x1c\xe9\x00\x00\x00\x04gAMA\x00\x00\xb1\x8f\x0b\xfca\x05\x00\x00\x00\tpHYs"
+            b"\x00\x00\x0e\xc3\x00\x00\x0e\xc3\x01\xc7o\xa8d\x00\x00\x00\x0cIDAT\x18Wc8PY\r\x00\x03\xb1\x01\xb5\x95"
+            b"\xd8i\xe4\x00\x00\x00\x00IEND\xaeB`\x82"
         ),
         file_type=EntryType.IMAGE,
     )
     return_results_mock.assert_called_once_with([file_result_return_value])
+
+
+@pytest.fixture
+def mock_http_request(mocker):
+    """Fixture to mock VMRay.generic_http_request with a specific response."""
+    is_json = MagicMock()
+    is_json.return_value = True
+    mocker.patch("VMRay.is_json", return_value=is_json)
+
+    def mock_request(
+        method=None,
+        url_suffix=None,
+        params=None,
+        files=None,
+        get_raw=False,
+        ignore_errors=False,
+        status_code=200,
+        response_data=None,
+        text=None,
+    ):
+        mock_response = MagicMock()
+        mock_response.status_code = status_code
+        if response_data:
+            mock_response.json.return_value = response_data
+        if text:
+            mock_response.text = text
+        mocker.patch("VMRay.generic_http_request", return_value=mock_response)
+        return mock_request
+
+    return mock_request
+
+
+def test_http_request_success_200(mock_http_request):
+    """
+    Given: A successfully http request.
+    When: Making a http request.
+    Then: Assert correct data is returned.
+    """
+    from VMRay import http_request
+
+    # Configure mock_http_request with desired status code and data
+    mock_http_request(status_code=200, response_data={"data": "success"})
+
+    # Call the function
+    response = http_request("GET", "/api/endpoint")
+
+    assert response == {"data": "success"}
+
+
+def test_http_request_rate_limit_exceeded(mocker, mock_http_request):
+    """
+    Given: A failing http request.
+    When: Making a http request.
+    Then: Assert correct error message is returned.
+    """
+    from VMRay import http_request
+
+    error_mock = mocker.patch("VMRay.return_error")
+
+    # Configure mock_http_request for rate limit exceeded (429)
+    mock_http_request(status_code=429, response_data={"message": "Rate limit exceeded"}, text="Rate limit exceeded")
+
+    # Call the function
+    http_request("GET", "/api/endpoint")
+
+    # Assert expected behavior in the error message
+    assert "Rate limit exceeded" in error_mock.call_args[0][0]

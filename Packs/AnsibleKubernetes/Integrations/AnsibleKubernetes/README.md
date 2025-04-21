@@ -17,7 +17,21 @@ metadata:
 EOF
 ```
 
-2. Grant the service account an appropriate role. Refer to [Kubernetes RBAC docs](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) if granting more fine grain or scoped access.
+2. Create secret for the above service account.
+```
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/service-account-token
+metadata:
+  name: xsoar-secret
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: xsoar
+EOF
+```
+
+3. Grant the service account an appropriate role. Refer to [Kubernetes RBAC docs](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) if granting more fine grain or scoped access.
 ```
 kubectl apply -f - <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
@@ -34,14 +48,14 @@ subjects:
   namespace: kube-system
 EOF
 ```
-3. Retrieve the token object name created into a env var called TOKEN
+
+4. Generate the service account token.
 ```
-TOKENNAME=`kubectl -n kube-system get serviceaccount/xsoar -o jsonpath='{.secrets[0].name}'`
+kubectl create token xsoar -n kube-system
 ```
-4. Output the API token value
-```
-kubectl -n kube-system get secret $TOKENNAME -o jsonpath='{.data.token}' | base64 -d
-```
+
+5. Copy the output token and paste it into the API field.
+
 ## Configure Ansible Kubernetes on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -828,7 +842,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 ### Troubleshooting
 The Ansible-Runner container is not suitable for running as a non-root user.
-Therefore, the Ansible integrations will fail if you follow the instructions in the Cortex XSOAR [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide). 
+Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 
 The `docker.run.internal.asuser` server configuration causes the software that is run inside of the Docker containers utilized by Cortex XSOAR to run as a non-root user account inside the container.
 
@@ -838,4 +852,4 @@ This is a limitation of the Ansible-Runner software itself https://github.com/an
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 
-See step 2 of this [guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users) for complete instructions.
+See step 2 of this [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide) for complete instructions.

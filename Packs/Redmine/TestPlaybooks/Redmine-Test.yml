@@ -47,7 +47,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -76,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d7206441-27f8-44a0-8d01-73ee0e6288ce
+    taskid: d92eeb3d-d606-4730-8a08-8649956df5e8
     type: regular
     task:
-      id: d7206441-27f8-44a0-8d01-73ee0e6288ce
+      id: d92eeb3d-d606-4730-8a08-8649956df5e8
       version: -1
       name: redmine-issue-create
       description: Create an issue
@@ -92,7 +94,7 @@ tasks:
       - "13"
     scriptarguments:
       priority_id:
-        simple: Normal
+        simple: "1"
       project_id:
         simple: "1"
       status_id:
@@ -100,7 +102,7 @@ tasks:
       subject:
         simple: New Issue for Test playbook
       tracker_id:
-        simple: Bug
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -401,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f1bfc818-aff7-45f7-8ac4-adc12e0ec13d
+    taskid: 2d88e401-5a21-4ad3-84ba-c2d9f069f4c7
     type: condition
     task:
-      id: f1bfc818-aff7-45f7-8ac4-adc12e0ec13d
+      id: 2d88e401-5a21-4ad3-84ba-c2d9f069f4c7
       version: -1
       name: Verify Outputs
       type: condition
@@ -422,6 +424,8 @@ tasks:
             value:
               simple: Redmine.Issue.id
             iscontext: true
+          right:
+            value: {}
       - - operator: isEqualString
           left:
             value:
@@ -437,7 +441,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
       - - operator: isEqualString
           left:
             value:
@@ -721,7 +725,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -797,7 +803,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false

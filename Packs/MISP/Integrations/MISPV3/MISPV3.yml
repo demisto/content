@@ -23,16 +23,12 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: This is to enable checking the boolean flag to_ids. The flag
-    allows you to indicate if an attribute should be actionable or not.
+  additionalinfo: This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not.
 - display: ORG names to use for reputation checks
   name: allowed_orgs
   type: 12
   required: false
-  additionalinfo: Comma-separated list of allowed TI providers (orgc in MISP events). 
-    When pulling data from MISP you may have data coming from a reliable source.
-    However, some of the orgs are including things like 8.8.8.8 in their feeds.
-    This parameter is used to filter such orgs out by specifying the exact list of orgs to trust.
+  additionalinfo: Comma-separated list of allowed TI providers (orgc in MISP events). When pulling data from MISP you may have data coming from a reliable source. However, some of the orgs are including things like 8.8.8.8 in their feeds. This parameter is used to filter such orgs out by specifying the exact list of orgs to trust.
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -50,6 +46,16 @@ configuration:
   display: Suspicious tag IDs
   name: suspicious_tag_ids
   type: 12
+  required: false
+- additionalinfo: Comma-separated list of event's or attribute's benign tag IDs. Malicious and suspicious tags are stronger than benign tags.
+  display: Benign tag IDs
+  name: benign_tag_ids
+  type: 12
+  required: false
+- display: Should the warninglists be considered when searching for an attribute
+  name: search_warninglists
+  defaultvalue: "false"
+  type: 8
   required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -2126,96 +2132,96 @@ script:
       description: Description of the object.
       type: String
   - arguments:
-      - description: ID of the event to add the object to.
-        name: event_id
-        required: true
-      - description: Custom Template name.
-        name: template
-        required: true
-      - description: 'Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}.'
-        name: attributes
-        required: true
+    - description: ID of the event to add the object to.
+      name: event_id
+      required: true
+    - description: Custom Template name.
+      name: template
+      required: true
+    - description: 'Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}.'
+      name: attributes
+      required: true
     description: Adds custom objects to MISP.
     name: misp-add-custom-object
     outputs:
-      - contextPath: MISP.Event.ID
-        description: MISP event ID.
-        type: number
-      - contextPath: MISP.Event.Object.MetaCategory
-        description: Object meta category.
-        type: String
-      - contextPath: MISP.Event.Object.Distribution
-        description: Distribution of the object.
-        type: Number
-      - contextPath: MISP.Event.Object.Name
-        description: Name of the object.
-        type: String
-      - contextPath: MISP.Event.Object.TemplateVersion
-        description: Template version of the object.
-        type: Number
-      - contextPath: MISP.Event.Object.EventID
-        description: ID of the event in which the object was first created.
-        type: Number
-      - contextPath: MISP.Event.Object.TemplateUUID
-        description: UUID of the template.
-        type: String
-      - contextPath: MISP.Event.Object.LastChanged
-        description: Timestamp when the object was last changed.
-        type: String
-      - contextPath: MISP.Event.Object.Deleted
-        description: Whether the object was deleted.
-        type: Boolean
-      - contextPath: MISP.Event.Object.ID
-        description: ID of the object.
-        type: Number
-      - contextPath: MISP.Event.Object.UUID
-        description: UUID of the object.
-        type: String
-      - contextPath: MISP.Event.Object.Attribute.Value
-        description: Value of the attribute.
-        type: String
-      - contextPath: MISP.Event.Object.Attribute.EventID
-        description: ID of the first event from which the object originated.
-        type: Number
-      - contextPath: MISP.Event.Object.Attribute.LastChanged
-        description: Attribute last changed timestamp.
-        type: Date
-      - contextPath: MISP.Event.Object.Attribute.Deleted
-        description: Whether the object was deleted?.
-        type: Boolean
-      - contextPath: MISP.Event.Object.Attribute.ObjectID
-        description: ID of the object.
-        type: Number
-      - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
-        description: Whether correlation is disabled.
-        type: Boolean
-      - contextPath: MISP.Event.Object.Attribute.ID
-        description: ID of the attribute.
-        type: Unknown
-      - contextPath: MISP.Event.Object.Attribute.ObjectRelation
-        description: Relation of the object.
-        type: String
-      - contextPath: MISP.Event.Object.Attribute.Type
-        description: Object type.
-        type: String
-      - contextPath: MISP.Event.Object.Attribute.UUID
-        description: UUID of the attribute.
-        type: String
-      - contextPath: MISP.Event.Object.Attribute.ToIDs
-        description: Whether the to_ids flag is on.
-        type: Boolean
-      - contextPath: MISP.Event.Object.Attribute.Category
-        description: Category of the attribute.
-        type: String
-      - contextPath: MISP.Event.Object.Attribute.SharingGroupID
-        description: ID of the sharing group.
-        type: Number
-      - contextPath: MISP.Event.Object.Attribute.Comment
-        description: Comment of the attribute.
-        type: String
-      - contextPath: MISP.Event.Object.Description
-        description: Description of the object.
-        type: String
+    - contextPath: MISP.Event.ID
+      description: MISP event ID.
+      type: number
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object meta category.
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object.
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of the event in which the object was first created.
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of the template.
+      type: String
+    - contextPath: MISP.Event.Object.LastChanged
+      description: Timestamp when the object was last changed.
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Whether the object was deleted.
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of the object.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of the first event from which the object originated.
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.LastChanged
+      description: Attribute last changed timestamp.
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Whether the object was deleted?.
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: Whether correlation is disabled.
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of the attribute.
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of the object.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Object type.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Whether the to_ids flag is on.
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of the sharing group.
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object.
+      type: String
   - arguments:
     - description: ID of a MISP event.
       name: event_id
@@ -2373,8 +2379,8 @@ script:
       description: 'Whether to include the file data of the matching attributes. Possible values are: true, false. Default is false.'
       name: with_attachments
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300. Default is 1.
       defaultValue: '1'
       name: page
@@ -2711,7 +2717,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:2.4.183.84720
+  dockerimage: demisto/pymisp2:2.5.4.1858064
   runonce: false
   script: ''
   subtype: python3

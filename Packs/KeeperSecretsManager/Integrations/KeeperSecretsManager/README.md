@@ -1,23 +1,19 @@
 Manage Secrets and Protect Sensitive Data through Keeper Vault.
 This integration was integrated and tested with version 16.3.5 of Keeper Secrets Manager.
 
-## Configure Keeper Secrets Manager on Cortex XSOAR
+## Configure Keeper Secrets Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Keeper Secrets Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | KSM Configuration | The KSM config to use for connection. | True |
-    | Trust any certificate (not secure) | When 'trust any certificate' is selected, the integration ignores TLS/SSL certificate validation errors. Use to test connection issues or connect to a server without a valid certificate. | False |
-    | Fetches credentials | Fetches credentials from login records. | False |
-    | Concat username to credential object name | Use to make the credential object unique in case of duplicate names in different folders/secrets. | False |
-    | A comma-separated list of credential names to fetch. | Partial names are not supported. If left empty, all credentials will be fetched. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| KSM Configuration | The KSM config to use for connection. | True |
+| Trust any certificate (not secure) | When 'trust any certificate' is selected, the integration ignores TLS/SSL certificate validation errors. Use to test connection issues or connect to a server without a valid certificate. | False |
+| Fetches credentials | Fetches credentials from login records. | False |
+| Concat username to credential object name | Use to make the credential object unique in case of duplicate names in different folders/secrets. | False |
+| A comma-separated list of credential names to fetch. | Partial names are not supported. If left empty, all credentials will be fetched. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ksm-find-files
 ***
@@ -429,4 +425,3 @@ Use this command to list all records from your Keeper Vault that are shared to t
 >| files1 | file | 4FTOiJx-m31hDIlmief1Cg |
 >| IIS Admin | login | 6LJgiVzzD4ZJuxQYj_wN9A |
 >| nginx Admin | login | 7W6exgzq_OeVF6Xh1EJ29g |
-

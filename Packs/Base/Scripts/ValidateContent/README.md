@@ -2,6 +2,7 @@ Runs validation and linting using the Demisto SDK on content items, such as inte
 This automation script is used as part of the content validation that runs as part of the contribution flow.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This automation script is used as part of the content validation that runs as pa
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,38 +23,43 @@ This automation script is used as part of the content validation that runs as pa
 | trust_any_certificate | Trust any certificate (not secure) to download required models from GitHub. |
 
 ## Outputs
----
 
+---
 | **Path** | **Description** | **Type** |
-| --- | --- | --- |
+| --- | -- | --- |
 | ValidationResult.Name| Name of validated item. | String |
 | ValidationResult.Error | The validation error message. | String |
 | ValidationResult.Line | The code line number in which the error was found in the lint. | String |
-
+| ValidationResult.ErrorCode | The error code or the name of the linter that identified the issue. | String |
 
 ## Script Example
+
 ```!ValidateContent entry_id=G2SUaH9ZPmfw7QHWQNk2pa@6```
 
 ## Context Example
+
 ```
-{
     "ValidationResult": [
         {
             "Name": "MyScript",
-            "Error": "The docker image tag is not the latest numeric tag, please update it."
+            "Error": "{unterminated string literal (detected at line 166)  [syntax]"
+            "Line": 165,
+            "Error Code/Linter": "mypy"
         },
         {
             "Name": "MyScript",
-            "Error": "test for membership should be 'not in'",
-            "Line": "44"
+            "Error": "The following commands contain duplicated arguments:Command example-my-command, contains multiple appearances of the following arguments message.Please make sure to remove the duplications.",
+            "Error Code/Linter": "IN113"
         }
     ]
 }
 ```
 
 ## Human Readable Output
+
 ### Validation Results
-|Name|Error|Line|
-|---|---|---|
-| MyScript | The docker image tag is not the latest numeric tag, please update it. | |
-| MyScript | test for membership should be 'not in' | 44 |
+
+| Name     | Error                                                                                                                                                                                         | Line | 	Error Code/Linter |
+|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------|--------------------|
+| MyScript | The following commands contain duplicated arguments: Command example-my-command, contains multiple appearances of the following arguments message. Please make sure to remove the duplications. |      | IN113              |
+| MyScript | unterminated string literal (detected at line 166)  [syntax]                                                                                                                                  | 166  | mypy               |

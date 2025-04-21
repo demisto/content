@@ -58,4 +58,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Detect & Manage Phishing Campaigns](../doc_files/Detect_&_Manage_Phishing_Campaigns.png)
+![Detect & Manage Phishing Campaigns](../doc_files/Detect_and_Manage_Phishing_Campaigns.png)

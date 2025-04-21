@@ -1,18 +1,19 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import urllib3
-import dateparser
+import json
+import time
 import traceback
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
+from operator import itemgetter
+from typing import Any
+
+import dateparser
+import demistomock as demisto  # noqa: F401
 
 ################################################################
 # CimTrak Python API Begin
 ################################################################
 import requests
-import json
-from operator import itemgetter
-from datetime import datetime
-import time
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 
 class CimTrak:
@@ -67,9 +68,7 @@ class CimTrak:
             request_data = {"authToken": self.auth_token}
             if self.debug >= 4:
                 self.debug_print("Request Data:" + json.dumps(request_data))
-            response = self.http_post(
-                self.url_root + "Client.logoff", json.dumps(request_data), self.verify_cert
-            )
+            response = self.http_post(self.url_root + "Client.logoff", json.dumps(request_data), self.verify_cert)
             if self.debug >= 4:
                 self.debug_print("Response:" + response)
             request_response = json.loads(response)
@@ -367,9 +366,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.getTickets", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.getTickets", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -469,9 +466,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.addTicket", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.addTicket", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -795,9 +790,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.deploy", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.deploy", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -851,9 +844,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.unlock", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.unlock", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -878,9 +869,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.lock", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.lock", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -905,9 +894,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.getObject", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.getObject", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -932,9 +919,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.forceSync", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.forceSync", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -959,9 +944,7 @@ class CimTrak:
 
         if self.debug >= 4:
             self.debug_print("Request Data:" + json.dumps(request_data))
-        response = self.http_post(
-            self.url_root + "Client.viewFile", json.dumps(request_data), self.verify_cert
-        )
+        response = self.http_post(self.url_root + "Client.viewFile", json.dumps(request_data), self.verify_cert)
         if self.debug >= 4:
             self.debug_print("Response:" + response)
         request_response = json.loads(response)
@@ -1229,9 +1212,7 @@ class CimTrak:
         target_gen = 0
         agent_objectId = 0
         for subgen in results:
-            subgen_datetime = datetime.strptime(
-                subgen["creationDate"], "%Y-%m-%d %H:%M:%S"
-            )
+            subgen_datetime = datetime.strptime(subgen["creationDate"], "%Y-%m-%d %H:%M:%S")
             if subgen_datetime <= target_datetime and target_gen == 0:
                 objectGroupResponse = self.get_object_group(subgen["objectId"])
                 objectGroupResults = objectGroupResponse.get("results")
@@ -1263,12 +1244,12 @@ class CimTrak:
         if target_gen != 0:
             return self.deploy(agent_objectId, target_gen)
         else:
-            ret_data: Dict[str, Any] = {}
-            ret_results: List[Dict[str, Any]] = []
-            ret_data['status'] = 'success'
-            ret_data['errorCode'] = ''
-            ret_data['errorDescription'] = ''
-            ret_data['results'] = ret_results
+            ret_data: dict[str, Any] = {}
+            ret_results: list[dict[str, Any]] = []
+            ret_data["status"] = "success"
+            ret_data["errorCode"] = ""
+            ret_data["errorDescription"] = ""
+            ret_data["results"] = ret_results
             return ret_data
 
     def compliance_scan_children(self, object_parent_id):
@@ -1280,12 +1261,12 @@ class CimTrak:
                 if self.debug >= 4:
                     self.debug_print("Scanning compliance object:" + str(object["objectId"]))
                 self.force_sync(object["objectId"])
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
-        ret_data['status'] = 'success'
-        ret_data['errorCode'] = ''
-        ret_data['errorDescription'] = ''
-        ret_data['results'] = ret_results
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
+        ret_data["status"] = "success"
+        ret_data["errorCode"] = ""
+        ret_data["errorDescription"] = ""
+        ret_data["results"] = ret_results
         return ret_data
 
     def compliance_scan_with_summary(self, object_id, retry_count=20, retry_seconds=10):
@@ -1331,16 +1312,15 @@ class CimTrak:
                 self.debug_print("Polling log entries")
             request_response = self.get_events(filter=filter)
             results = request_response["results"]
-            for scan in results:
+            for _scan in results:
                 resultcount = resultcount + 1
             if resultcount == 0:
                 if self.debug >= 4:
                     self.debug_print("Sleeping to wait for compliance results: Try " + str(tries) + " of " + str(retry_count))
                 time.sleep(retry_seconds)
 
-        if resultcount == 0:
-            if self.debug >= 4:
-                self.debug_print("Timeout waiting for compliance scan to complete")
+        if resultcount == 0 and self.debug >= 4:
+            self.debug_print("Timeout waiting for compliance scan to complete")
         # Get results
         filter = [{"name": "scanid", "operator": ">", "value": last_scanid}]
         request_response = self.get_compliance_archive_summary(object_id, filter=filter)
@@ -1352,15 +1332,15 @@ class CimTrak:
 
         request_response = self.get_objects(object_path_and_name=agent_name, object_type=self.OBJECT_TYPE_AGENT)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         for object in results:
-            if object['name'] == agent_name:
+            if object["name"] == agent_name:
                 ret_results.append(object)
-        ret_data['status'] = 'success'
-        ret_data['errorCode'] = ''
-        ret_data['errorDescription'] = ''
-        ret_data['results'] = ret_results
+        ret_data["status"] = "success"
+        ret_data["errorCode"] = ""
+        ret_data["errorDescription"] = ""
+        ret_data["results"] = ret_results
         if self.debug >= 4:
             self.debug_print("get_agent_object_id_by_name returning:" + str(ret_data))
 
@@ -1372,18 +1352,18 @@ class CimTrak:
 
         request_response = self.get_agent_object_id_by_alternate_system_id(alternate_system_id=alternate_system_id)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         for result in results:
-            if result['agentObjectId'] > 0:
-                request_response_object = self.get_object(result['agentObjectId'])
+            if result["agentObjectId"] > 0:
+                request_response_object = self.get_object(result["agentObjectId"])
                 results_object = request_response_object["results"]
                 for result_object in results_object:
                     ret_results.append(result_object)
-        ret_data['status'] = 'success'
-        ret_data['errorCode'] = ''
-        ret_data['errorDescription'] = ''
-        ret_data['results'] = ret_results
+        ret_data["status"] = "success"
+        ret_data["errorCode"] = ""
+        ret_data["errorDescription"] = ""
+        ret_data["results"] = ret_results
         if self.debug >= 4:
             self.debug_print("get_agent_object_by_alternate_id returning:" + str(ret_data))
 
@@ -1392,7 +1372,7 @@ class CimTrak:
     def get_agent_object_by_ip(self, ip):
         if self.debug >= 4:
             self.debug_print("get_agent_object_by_ip")
-        if ip.find(':') == -1:
+        if ip.find(":") == -1:
             ip_fixed = "cast($DQ$" + ip + "$DQ$::inet - $DQ$0.0.0.0$DQ$::inet as bigint)"
         else:
             ip_fixed = "cast($DQ$" + ip + "$DQ$::inet - $DQ$::ffff:0.0.0.0$DQ$::inet as bigint)"
@@ -1412,14 +1392,14 @@ class CimTrak:
         ]
         request_response = self.get_objects(object_type=self.OBJECT_TYPE_AGENT, filter=filter)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         for object in results:
             ret_results.append(object)
-        ret_data['status'] = 'success'
-        ret_data['errorCode'] = ''
-        ret_data['errorDescription'] = ''
-        ret_data['results'] = ret_results
+        ret_data["status"] = "success"
+        ret_data["errorCode"] = ""
+        ret_data["errorDescription"] = ""
+        ret_data["results"] = ret_results
 
         if self.debug >= 4:
             self.debug_print("get_agent_object_by_ip returning:" + str(ret_data))
@@ -1442,9 +1422,7 @@ MAX_INCIDENTS_TO_FETCH = 50
 
 class Client(BaseClient, CimTrak):
     def http_post(self, URL, data, verify_cert):
-        response = self._http_request(
-            method="POST", url_suffix=URL, data=data, resp_type="text"
-        )
+        response = self._http_request(method="POST", url_suffix=URL, data=data, resp_type="text")
         return response
 
     def debug_print(self, text):
@@ -1459,7 +1437,7 @@ class Client(BaseClient, CimTrak):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def test(self) -> Dict[str, Any]:
+    def test(self) -> dict[str, Any]:
         request_response = self.get_unreconciled_items(1, MAX_INCIDENTS_TO_FETCH)
         return request_response
 
@@ -1467,9 +1445,7 @@ class Client(BaseClient, CimTrak):
 """ HELPER FUNCTIONS """
 
 
-def parse_domain_date(
-    domain_date: Union[List[str], str], date_format: str = "%Y-%m-%dT%H:%M:%S.000Z"
-) -> Optional[str]:
+def parse_domain_date(domain_date: list[str] | str, date_format: str = "%Y-%m-%dT%H:%M:%S.000Z") -> str | None:
     """Converts whois date format to an ISO8601 string
 
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
@@ -1489,11 +1465,7 @@ def parse_domain_date(
         domain_date_dt = dateparser.parse(domain_date)
         if domain_date_dt:
             return domain_date_dt.strftime(date_format)
-    elif (
-        isinstance(domain_date, list)
-        and len(domain_date) > 0
-        and isinstance(domain_date[0], str)
-    ):
+    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
         # if list with at least one element, parse the first element
         domain_date_dt = dateparser.parse(domain_date[0])
         if domain_date_dt:
@@ -1537,11 +1509,11 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 def fetch_incidents(
     client: Client,
     max_results: int,
-    last_run: Dict[str, int],
-    first_fetch_time: Optional[int],
-    alert_status: Optional[str],
+    last_run: dict[str, int],
+    first_fetch_time: int | None,
+    alert_status: str | None,
     min_severity: str,
-    alert_type: Optional[str],
+    alert_type: str | None,
 ):
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
@@ -1557,7 +1529,7 @@ def fetch_incidents(
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     # Get the CSV list of severities from min_severity
     # severity = ',Low'
     request_response = client.get_unreconciled_items(1, MAX_INCIDENTS_TO_FETCH)
@@ -1570,9 +1542,9 @@ def fetch_incidents(
                 request_response_agent_info = client.get_agent_info(item.get("parentId"))
                 event_results_agent_info = request_response_agent_info["results"]
                 for agent_info in event_results_agent_info:
-                    agent_info_state = agent_info['state']
-                    agent_ip = agent_info_state['agentIp']
-                item['ip'] = agent_ip
+                    agent_info_state = agent_info["state"]
+                    agent_ip = agent_info_state["agentIp"]
+                item["ip"] = agent_ip
                 incident = {
                     "name": incident_name,
                     "details": item["changeFromPrevious"] + ": " + item["dirAndFile"],
@@ -1603,10 +1575,7 @@ def fetch_incidents(
 # CimTrak Palo Alto Custom Functions Begin
 ################################################################
 def ResolveBool(value):
-    if value.lower() == "false" or value == "0":
-        return False
-    else:
-        return True
+    return not (value.lower() == "false" or value == "0")
 
 
 def ResolveString(value):
@@ -1623,482 +1592,429 @@ def ResolveJson(value):
         return json.loads(value)
 
 
-def get_events_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_events_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    start = int(ResolveString(args.get('Start')))
-    end = int(ResolveString(args.get('End')))
-    filter = ResolveJson(args.get('Filter'))
-    sorts = ResolveJson(args.get('Sorts'))
-    response = client.get_events(
-        start=start,
-        end=end,
-        filter=filter,
-        sorts=sorts
-    )
+    start = int(ResolveString(args.get("Start")))
+    end = int(ResolveString(args.get("End")))
+    filter = ResolveJson(args.get("Filter"))
+    sorts = ResolveJson(args.get("Sorts"))
+    response = client.get_events(start=start, end=end, filter=filter, sorts=sorts)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Event.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Event.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'id',
-        'leventid',
-        'lagentid',
-        'lobjectid',
-        'lobjectdetailid',
-        'lobjectdetailidint',
-        'lmessagelevel',
-        'szuser',
-        'szfileuser',
-        'szmessageid',
-        'szmessage',
-        'szfile',
-        'szcorrectionid',
-        'szcorrection',
-        'lcategory',
-        'lemailsent',
-        'lstoragestatus',
-        'dtmdatetime1',
-        'dtmdatetime2',
-        'szchecksum',
-        'status',
-        'lprocessid',
-        'lthreadid',
-        'szprocess',
-        'szforensicdata',
-        'dtmdeleted',
-        'ltickcount',
-        'lsubtype',
-        'ticketNumber',
-        'ldeleteobjectdetailid',
-        'bfoundinblacklist',
-        'filecontenthash',
-        'lobjectsettingid',
-        'reconciled',
-        'isauthcopy',
-        'externalticketnumber',
-        'lparentid',
-        'szobjectpath',
-        'dfilesize',
+        "id",
+        "leventid",
+        "lagentid",
+        "lobjectid",
+        "lobjectdetailid",
+        "lobjectdetailidint",
+        "lmessagelevel",
+        "szuser",
+        "szfileuser",
+        "szmessageid",
+        "szmessage",
+        "szfile",
+        "szcorrectionid",
+        "szcorrection",
+        "lcategory",
+        "lemailsent",
+        "lstoragestatus",
+        "dtmdatetime1",
+        "dtmdatetime2",
+        "szchecksum",
+        "status",
+        "lprocessid",
+        "lthreadid",
+        "szprocess",
+        "szforensicdata",
+        "dtmdeleted",
+        "ltickcount",
+        "lsubtype",
+        "ticketNumber",
+        "ldeleteobjectdetailid",
+        "bfoundinblacklist",
+        "filecontenthash",
+        "lobjectsettingid",
+        "reconciled",
+        "isauthcopy",
+        "externalticketnumber",
+        "lparentid",
+        "szobjectpath",
+        "dfilesize",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
+        command_results.append(
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Event", outputs_key_field="id", outputs=result_final)
+        )
+    return command_results
+
+
+def file_analysis_by_hash_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    hash = ResolveString(args.get("Hash"))
+    response = client.file_analysis_by_hash(hash=hash)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.FileAnalysis.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
+    result_final = {}
+    keys = [
+        "analysisEngine",
+        "analysisSuccess",
+        "analysisResults",
+    ]
+    for result in results:
+        for key in keys:
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Event',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.FileAnalysis", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def file_analysis_by_hash_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def file_analysis_by_object_detail_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    hash = ResolveString(args.get('Hash'))
-    response = client.file_analysis_by_hash(
-        hash=hash
-    )
+    object_detail_id = int(ResolveString(args.get("ObjectDetailId")))
+    response = client.file_analysis_by_object_detail_id(object_detail_id=object_detail_id)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.FileAnalysis.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.FileAnalysis.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'analysisEngine',
-        'analysisSuccess',
-        'analysisResults',
+        "analysisEngine",
+        "analysisSuccess",
+        "analysisResults",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.FileAnalysis',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.FileAnalysis", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def file_analysis_by_object_detail_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def check_file_against_trusted_file_registry_by_hash_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_detail_id = int(ResolveString(args.get('ObjectDetailId')))
-    response = client.file_analysis_by_object_detail_id(
-        object_detail_id=object_detail_id
-    )
+    hashes = ResolveString(args.get("Hashes")).split(",")
+    response = client.check_file_against_trusted_file_registry_by_hash(hashes=hashes)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.FileAnalysis.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.TrustedFileRegistry.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'analysisEngine',
-        'analysisSuccess',
-        'analysisResults',
+        "hash",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.FileAnalysis',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.TrustedFileRegistry", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def check_file_against_trusted_file_registry_by_hash_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def promote_authoritative_baseline_files_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    hashes = ResolveString(args.get('Hashes')).split(',')
-    response = client.check_file_against_trusted_file_registry_by_hash(
-        hashes=hashes
-    )
+    object_detail_ids = ResolveString(args.get("ObjectDetaildIds")).split(",")
+    response = client.promote_authoritative_baseline_files(object_detail_ids=object_detail_ids)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.TrustedFileRegistry.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.AuthoritizeBaseline.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'hash',
+        "objectDetailId",
+        "status",
+        "errorCode",
+        "errorDescription",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.TrustedFileRegistry',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.AuthoritizeBaseline", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def promote_authoritative_baseline_files_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def demote_authoritative_baseline_files_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_detail_ids = ResolveString(args.get('ObjectDetaildIds')).split(',')
-    response = client.promote_authoritative_baseline_files(
-        object_detail_ids=object_detail_ids
-    )
+    object_detail_ids = ResolveString(args.get("ObjectDetaildIds")).split(",")
+    response = client.demote_authoritative_baseline_files(object_detail_ids=object_detail_ids)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.AuthoritizeBaseline.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.AuthoritizeBaseline.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'objectDetailId',
-        'status',
-        'errorCode',
-        'errorDescription',
+        "objectDetailId",
+        "status",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.AuthoritizeBaseline',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.AuthoritizeBaseline", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def demote_authoritative_baseline_files_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def update_task_disposition_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_detail_ids = ResolveString(args.get('ObjectDetaildIds')).split(',')
-    response = client.demote_authoritative_baseline_files(
-        object_detail_ids=object_detail_ids
-    )
+    task_id = int(ResolveString(args.get("taskId")))
+    disposition = ResolveString(args.get("Disposition"))
+    response = client.update_task_disposition(task_id=task_id, disposition=disposition)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.AuthoritizeBaseline.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.TaskDisposition.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'objectDetailId',
-        'status',
+        "taskId",
+        "status",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.AuthoritizeBaseline',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.TaskDisposition", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def update_task_disposition_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_tickets_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    task_id = int(ResolveString(args.get('taskId')))
-    disposition = ResolveString(args.get('Disposition'))
-    response = client.update_task_disposition(
-        task_id=task_id,
-        disposition=disposition
-    )
+    response = client.get_tickets()
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.TaskDisposition.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Ticket.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'taskId',
-        'status',
+        "id",
+        "ticketNumber",
+        "sentiment",
+        "sentimenttypeid",
+        "title",
+        "description",
+        "priority",
+        "disposition",
+        "creationDate",
+        "createdByUser",
+        "modificationDate",
+        "modifiedByUser",
+        "requiresAcknowledgement",
+        "requiresConfirmation",
+        "requiresAssessment",
+        "startDate",
+        "endDate",
+        "autoPromote",
+        "assignedToUserId",
+        "assignedToUser",
+        "assignedToGroupId",
+        "assignedToGroup",
+        "externalTicketNumber",
+        "externalTicketType",
+        "tasks",
+        "comments",
+        "events",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
+        command_results.append(
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Ticket", outputs_key_field="id", outputs=result_final)
+        )
+    return command_results
+
+
+def get_ticket_tasks_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    response = client.get_ticket_tasks()
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.TicketTask.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
+    result_final = {}
+    keys = [
+        "id",
+        "ticketId",
+        "agentObjectId",
+        "startDate",
+        "endDate",
+        "disposition",
+        "creationDate",
+        "createdByUserId",
+        "modificationDate",
+        "modifiedByUserId",
+        "assignedToUserId",
+        "assignedToGroupId",
+        "assigneeDisposition",
+        "ticketTitle",
+        "description",
+        "priority",
+        "ticketDisposition",
+        "ticketCreationDate",
+        "ticketCreatedByUserId",
+        "ticketModificationDate",
+        "requiresAcknowledgement",
+        "requiresConfirmation",
+        "requiresAssessment",
+        "ticketNumber",
+        "agentName",
+        "createdByUsername",
+        "modifiedByUsername",
+        "assigneeName",
+    ]
+    for result in results:
+        for key in keys:
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.TaskDisposition',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.TicketTask", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def get_tickets_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_ticket_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    response = client.get_tickets(
-
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Ticket.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
-    result_final = {}
-    keys = [
-        'id',
-        'ticketNumber',
-        'sentiment',
-        'sentimenttypeid',
-        'title',
-        'description',
-        'priority',
-        'disposition',
-        'creationDate',
-        'createdByUser',
-        'modificationDate',
-        'modifiedByUser',
-        'requiresAcknowledgement',
-        'requiresConfirmation',
-        'requiresAssessment',
-        'startDate',
-        'endDate',
-        'autoPromote',
-        'assignedToUserId',
-        'assignedToUser',
-        'assignedToGroupId',
-        'assignedToGroup',
-        'externalTicketNumber',
-        'externalTicketType',
-        'tasks',
-        'comments',
-        'events',
-    ]
-    for result in results:
-        for key in keys:
-            result_final[key] = result.get(key, '')
-        command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Ticket',
-                outputs_key_field='id',
-                outputs=result_final
-            )
-        )
-    return command_results
-
-
-def get_ticket_tasks_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    response = client.get_ticket_tasks(
-
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.TicketTask.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
-    result_final = {}
-    keys = [
-        'id',
-        'ticketId',
-        'agentObjectId',
-        'startDate',
-        'endDate',
-        'disposition',
-        'creationDate',
-        'createdByUserId',
-        'modificationDate',
-        'modifiedByUserId',
-        'assignedToUserId',
-        'assignedToGroupId',
-        'assigneeDisposition',
-        'ticketTitle',
-        'description',
-        'priority',
-        'ticketDisposition',
-        'ticketCreationDate',
-        'ticketCreatedByUserId',
-        'ticketModificationDate',
-        'requiresAcknowledgement',
-        'requiresConfirmation',
-        'requiresAssessment',
-        'ticketNumber',
-        'agentName',
-        'createdByUsername',
-        'modifiedByUsername',
-        'assigneeName',
-    ]
-    for result in results:
-        for key in keys:
-            result_final[key] = result.get(key, '')
-        command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.TicketTask',
-                outputs_key_field='id',
-                outputs=result_final
-            )
-        )
-    return command_results
-
-
-def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    title = ResolveString(args.get('title'))
-    priority = int(ResolveString(args.get('priority')))
-    description = ResolveString(args.get('description'))
-    start_date = ResolveString(args.get('startDate'))
-    end_date = ResolveString(args.get('endDate'))
-    external_ticket_number = ResolveString(args.get('externalTicketNumber'))
-    external_ticket_type = ResolveString(args.get('externalTicketType'))
-    auto_promote = ResolveBool(args.get('autoPromote'))
-    disposition = ResolveString(args.get('disposition'))
-    requires_acknowledgement = ResolveBool(args.get('requiresAcknowledgement'))
-    requires_assessment = ResolveBool(args.get('requiresAssessment'))
-    requires_confirmation = ResolveBool(args.get('requiresConfirmation'))
-    assigned_to_user_id = int(ResolveString(args.get('assignedToUserId')))
-    assigned_to_user = ResolveString(args.get('assignedToUser'))
-    assigned_to_group_id = int(ResolveString(args.get('assignedToGroupId')))
-    assigned_to_group = ResolveString(args.get('assignedToGroup'))
+    title = ResolveString(args.get("title"))
+    priority = int(ResolveString(args.get("priority")))
+    description = ResolveString(args.get("description"))
+    start_date = ResolveString(args.get("startDate"))
+    end_date = ResolveString(args.get("endDate"))
+    external_ticket_number = ResolveString(args.get("externalTicketNumber"))
+    external_ticket_type = ResolveString(args.get("externalTicketType"))
+    auto_promote = ResolveBool(args.get("autoPromote"))
+    disposition = ResolveString(args.get("disposition"))
+    requires_acknowledgement = ResolveBool(args.get("requiresAcknowledgement"))
+    requires_assessment = ResolveBool(args.get("requiresAssessment"))
+    requires_confirmation = ResolveBool(args.get("requiresConfirmation"))
+    assigned_to_user_id = int(ResolveString(args.get("assignedToUserId")))
+    assigned_to_user = ResolveString(args.get("assignedToUser"))
+    assigned_to_group_id = int(ResolveString(args.get("assignedToGroupId")))
+    assigned_to_group = ResolveString(args.get("assignedToGroup"))
     response = client.add_ticket(
         title=title,
         priority=priority,
@@ -2115,86 +2031,81 @@ def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
         assigned_to_user_id=assigned_to_user_id,
         assigned_to_user=assigned_to_user,
         assigned_to_group_id=assigned_to_group_id,
-        assigned_to_group=assigned_to_group
+        assigned_to_group=assigned_to_group,
     )
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Ticket.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Ticket.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'id',
-        'ticketNumber',
-        'sentiment',
-        'sentimenttypeid',
-        'title',
-        'description',
-        'priority',
-        'disposition',
-        'creationDate',
-        'createdByUser',
-        'modificationDate',
-        'modifiedByUser',
-        'requiresAcknowledgement',
-        'requiresConfirmation',
-        'requiresAssessment',
-        'startDate',
-        'endDate',
-        'autoPromote',
-        'assignedToUserId',
-        'assignedToUser',
-        'assignedToGroupId',
-        'assignedToGroup',
-        'externalTicketNumber',
-        'externalTicketType',
-        'tasks',
-        'comments',
-        'events',
+        "id",
+        "ticketNumber",
+        "sentiment",
+        "sentimenttypeid",
+        "title",
+        "description",
+        "priority",
+        "disposition",
+        "creationDate",
+        "createdByUser",
+        "modificationDate",
+        "modifiedByUser",
+        "requiresAcknowledgement",
+        "requiresConfirmation",
+        "requiresAssessment",
+        "startDate",
+        "endDate",
+        "autoPromote",
+        "assignedToUserId",
+        "assignedToUser",
+        "assignedToGroupId",
+        "assignedToGroup",
+        "externalTicketNumber",
+        "externalTicketType",
+        "tasks",
+        "comments",
+        "events",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Ticket',
-                outputs_key_field='id',
-                outputs=result_final
-            )
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Ticket", outputs_key_field="id", outputs=result_final)
         )
     return command_results
 
 
-def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def update_ticket_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    ticket_id = int(ResolveString(args.get('ticketId')))
-    title = ResolveString(args.get('title'))
-    priority = int(ResolveString(args.get('priority')))
-    description = ResolveString(args.get('description'))
-    start_date = ResolveString(args.get('startDate'))
-    end_date = ResolveString(args.get('endDate'))
-    external_ticket_number = ResolveString(args.get('externalTicketNumber'))
-    external_ticket_type = ResolveString(args.get('externalTicketType'))
-    auto_promote = ResolveBool(args.get('autoPromote'))
-    disposition = ResolveString(args.get('disposition'))
-    requires_acknowledgement = ResolveBool(args.get('requiresAcknowledgement'))
-    requires_assessment = ResolveBool(args.get('requiresAssessment'))
-    requires_confirmation = ResolveBool(args.get('requiresConfirmation'))
-    assigned_to_user_id = int(ResolveString(args.get('assignedToUserId')))
-    assigned_to_user = ResolveString(args.get('assignedToUser'))
-    assigned_to_group_id = int(ResolveString(args.get('assignedToGroupId')))
-    assigned_to_group = ResolveString(args.get('assignedToGroup'))
+    ticket_id = int(ResolveString(args.get("ticketId")))
+    title = ResolveString(args.get("title"))
+    priority = int(ResolveString(args.get("priority")))
+    description = ResolveString(args.get("description"))
+    start_date = ResolveString(args.get("startDate"))
+    end_date = ResolveString(args.get("endDate"))
+    external_ticket_number = ResolveString(args.get("externalTicketNumber"))
+    external_ticket_type = ResolveString(args.get("externalTicketType"))
+    auto_promote = ResolveBool(args.get("autoPromote"))
+    disposition = ResolveString(args.get("disposition"))
+    requires_acknowledgement = ResolveBool(args.get("requiresAcknowledgement"))
+    requires_assessment = ResolveBool(args.get("requiresAssessment"))
+    requires_confirmation = ResolveBool(args.get("requiresConfirmation"))
+    assigned_to_user_id = int(ResolveString(args.get("assignedToUserId")))
+    assigned_to_user = ResolveString(args.get("assignedToUser"))
+    assigned_to_group_id = int(ResolveString(args.get("assignedToGroupId")))
+    assigned_to_group = ResolveString(args.get("assignedToGroup"))
     response = client.update_ticket(
         ticket_id=ticket_id,
         title=title,
@@ -2212,1352 +2123,1203 @@ def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandR
         assigned_to_user_id=assigned_to_user_id,
         assigned_to_user=assigned_to_user,
         assigned_to_group_id=assigned_to_group_id,
-        assigned_to_group=assigned_to_group
+        assigned_to_group=assigned_to_group,
     )
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Ticket.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Ticket.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'id',
-        'ticketNumber',
-        'sentiment',
-        'sentimenttypeid',
-        'title',
-        'description',
-        'priority',
-        'disposition',
-        'creationDate',
-        'createdByUser',
-        'modificationDate',
-        'modifiedByUser',
-        'requiresAcknowledgement',
-        'requiresConfirmation',
-        'requiresAssessment',
-        'startDate',
-        'endDate',
-        'autoPromote',
-        'assignedToUserId',
-        'assignedToUser',
-        'assignedToGroupId',
-        'assignedToGroup',
-        'externalTicketNumber',
-        'externalTicketType',
-        'tasks',
-        'comments',
-        'events',
+        "id",
+        "ticketNumber",
+        "sentiment",
+        "sentimenttypeid",
+        "title",
+        "description",
+        "priority",
+        "disposition",
+        "creationDate",
+        "createdByUser",
+        "modificationDate",
+        "modifiedByUser",
+        "requiresAcknowledgement",
+        "requiresConfirmation",
+        "requiresAssessment",
+        "startDate",
+        "endDate",
+        "autoPromote",
+        "assignedToUserId",
+        "assignedToUser",
+        "assignedToGroupId",
+        "assignedToGroup",
+        "externalTicketNumber",
+        "externalTicketType",
+        "tasks",
+        "comments",
+        "events",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
+        command_results.append(
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Ticket", outputs_key_field="id", outputs=result_final)
+        )
+    return command_results
+
+
+def add_ticket_comment_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    ticket_id = int(ResolveString(args.get("ticketId")))
+    comment = ResolveString(args.get("comment"))
+    response = client.add_ticket_comment(ticket_id=ticket_id, comment=comment)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Ticket.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    return command_results
+
+
+def add_hash_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    hash = ResolveString(args.get("hash"))
+    filename = ResolveString(args.get("filename"))
+    source = ResolveString(args.get("source"))
+    source_reference = ResolveString(args.get("sourceReference"))
+    response = client.add_hash_allow_list(hash=hash, filename=filename, source=source, source_reference=source_reference)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.AllowList.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
+    result_final = {}
+    keys = [
+        "status",
+        "errorCode",
+        "errorDescription",
+        "hash",
+        "tagId",
+    ]
+    for result in results:
+        for key in keys:
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Ticket',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.AllowList", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def add_ticket_comment_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_hash_deny_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    ticket_id = int(ResolveString(args.get('ticketId')))
-    comment = ResolveString(args.get('comment'))
-    response = client.add_ticket_comment(
-        ticket_id=ticket_id,
-        comment=comment
-    )
+    hash = ResolveString(args.get("hash"))
+    filename = ResolveString(args.get("filename"))
+    source = ResolveString(args.get("source"))
+    source_reference = ResolveString(args.get("sourceReference"))
+    response = client.add_hash_deny_list(hash=hash, filename=filename, source=source, source_reference=source_reference)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Ticket.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.DenyList.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    return command_results
-
-
-def add_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    hash = ResolveString(args.get('hash'))
-    filename = ResolveString(args.get('filename'))
-    source = ResolveString(args.get('source'))
-    source_reference = ResolveString(args.get('sourceReference'))
-    response = client.add_hash_allow_list(
-        hash=hash,
-        filename=filename,
-        source=source,
-        source_reference=source_reference
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.AllowList.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'status',
-        'errorCode',
-        'errorDescription',
-        'hash',
-        'tagId',
+        "status",
+        "errorCode",
+        "errorDescription",
+        "hash",
+        "tagId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.AllowList',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.DenyList", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def add_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def delete_hash_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    hash = ResolveString(args.get('hash'))
-    filename = ResolveString(args.get('filename'))
-    source = ResolveString(args.get('source'))
-    source_reference = ResolveString(args.get('sourceReference'))
-    response = client.add_hash_deny_list(
-        hash=hash,
-        filename=filename,
-        source=source,
-        source_reference=source_reference
-    )
+    hash = ResolveString(args.get("hash"))
+    reason = ResolveString(args.get("reason"))
+    response = client.delete_hash_allow_list(hash=hash, reason=reason)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.DenyList.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.AllowList.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'status',
-        'errorCode',
-        'errorDescription',
-        'hash',
-        'tagId',
+        "status",
+        "hash",
+        "tagId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.DenyList',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.AllowList", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def delete_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def delete_hash_deny_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    hash = ResolveString(args.get('hash'))
-    reason = ResolveString(args.get('reason'))
-    response = client.delete_hash_allow_list(
-        hash=hash,
-        reason=reason
-    )
+    hash = ResolveString(args.get("hash"))
+    reason = ResolveString(args.get("reason"))
+    response = client.delete_hash_deny_list(hash=hash, reason=reason)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.AllowList.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.DenyList.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'status',
-        'hash',
-        'tagId',
+        "status",
+        "hash",
+        "tagId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.AllowList',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.DenyList", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def delete_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_sub_generations_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    hash = ResolveString(args.get('hash'))
-    reason = ResolveString(args.get('reason'))
-    response = client.delete_hash_deny_list(
-        hash=hash,
-        reason=reason
-    )
+    object_id = int(ResolveString(args.get("objectId")))
+    response = client.get_sub_generations(object_id=object_id)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.DenyList.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.SubGenerations.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'status',
-        'hash',
-        'tagId',
+        "caseSensitive",
+        "agentObjectId",
+        "subGenerationId",
+        "objectId",
+        "generationId",
+        "subRevision",
+        "notes",
+        "creationDate",
+        "files",
+        "directories",
+        "totalSize",
+        "revision",
+        "userName",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.DenyList',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.SubGenerations", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def get_sub_generations_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def deploy_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_id = int(ResolveString(args.get('objectId')))
-    response = client.get_sub_generations(
-        object_id=object_id
-    )
+    agent_object_id = int(ResolveString(args.get("agentObjectId")))
+    sub_generation_id = int(ResolveString(args.get("subGenerationId")))
+    notes = ResolveString(args.get("notes"))
+    response = client.deploy(agent_object_id=agent_object_id, sub_generation_id=sub_generation_id, notes=notes)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.SubGenerations.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Deploy.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    return command_results
+
+
+def get_object_group_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    object_id = int(ResolveString(args.get("objectId")))
+    response = client.get_object_group(object_id=object_id)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.ObjectGroup.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
     result_final = {}
     keys = [
-        'caseSensitive',
-        'agentObjectId',
-        'subGenerationId',
-        'objectId',
-        'generationId',
-        'subRevision',
-        'notes',
-        'creationDate',
-        'files',
-        'directories',
-        'totalSize',
-        'revision',
-        'userName',
+        "agentIsFilesystem",
+        "cancel",
+        "connected",
+        "logsByDays",
+        "requireNotes",
+        "inService",
+        "children",
+        "events",
+        "intrusions",
+        "intrusionSize",
+        "objectId",
+        "objectStatus",
+        "objectSubType",
+        "objectType",
+        "parentId",
+        "revisions",
+        "templateId",
+        "securityAdd",
+        "securityEdit",
+        "securityLock",
+        "securityReport",
+        "securityUnlock",
+        "securityView",
+        "warnMinutes",
+        "contact",
+        "createDate",
+        "description",
+        "location",
+        "name",
+        "objectPath",
+        "url",
+        "agentObjectId",
+        "objectsCustom",
+        "watchArray",
+        "comparisonMethod",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.SubGenerations',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.ObjectGroup", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def deploy_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def unlock_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    agent_object_id = int(ResolveString(args.get('agentObjectId')))
-    sub_generation_id = int(ResolveString(args.get('subGenerationId')))
-    notes = ResolveString(args.get('notes'))
-    response = client.deploy(
-        agent_object_id=agent_object_id,
-        sub_generation_id=sub_generation_id,
-        notes=notes
-    )
+    object_id = int(ResolveString(args.get("objectId")))
+    response = client.unlock(object_id=object_id)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Deploy.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Unlock.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
     return command_results
 
 
-def get_object_group_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def lock_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_id = int(ResolveString(args.get('objectId')))
-    response = client.get_object_group(
-        object_id=object_id
-    )
+    object_id = int(ResolveString(args.get("objectId")))
+    response = client.lock(object_id=object_id)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.ObjectGroup.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Lock.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    return command_results
+
+
+def get_object_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    object_id = int(ResolveString(args.get("objectId")))
+    response = client.get_object(object_id=object_id)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Object.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
     result_final = {}
     keys = [
-        'agentIsFilesystem',
-        'cancel',
-        'connected',
-        'logsByDays',
-        'requireNotes',
-        'inService',
-        'children',
-        'events',
-        'intrusions',
-        'intrusionSize',
-        'objectId',
-        'objectStatus',
-        'objectSubType',
-        'objectType',
-        'parentId',
-        'revisions',
-        'templateId',
-        'securityAdd',
-        'securityEdit',
-        'securityLock',
-        'securityReport',
-        'securityUnlock',
-        'securityView',
-        'warnMinutes',
-        'contact',
-        'createDate',
-        'description',
-        'location',
-        'name',
-        'objectPath',
-        'url',
-        'agentObjectId',
-        'objectsCustom',
-        'watchArray',
-        'comparisonMethod',
+        "agentIsFilesystem",
+        "cancel",
+        "connected",
+        "logsByDays",
+        "requireNotes",
+        "inService",
+        "children",
+        "events",
+        "intrusions",
+        "intrusionSize",
+        "objectId",
+        "objectStatus",
+        "objectSubType",
+        "objectType",
+        "parentId",
+        "revisions",
+        "templateId",
+        "securityAdd",
+        "securityEdit",
+        "securityLock",
+        "securityReport",
+        "securityUnlock",
+        "securityView",
+        "warnMinutes",
+        "contact",
+        "createDate",
+        "description",
+        "location",
+        "name",
+        "objectPath",
+        "url",
+        "agentObjectId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
+        command_results.append(
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Object", outputs_key_field="id", outputs=result_final)
+        )
+    return command_results
+
+
+def force_sync_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    object_id = int(ResolveString(args.get("objectId")))
+    response = client.force_sync(object_id=object_id)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Sync.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    return command_results
+
+
+def view_file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    object_detail_id = int(ResolveString(args.get("objectDetailId")))
+    response = client.view_file(object_detail_id=object_detail_id)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Sync.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
+    result_final = {}
+    keys = [
+        "contents",
+    ]
+    for result in results:
+        for key in keys:
+            result_final[key] = result.get(key, "")
+        command_results.append(
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Sync", outputs_key_field="id", outputs=result_final)
+        )
+    return command_results
+
+
+def run_report_by_name_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    name = ResolveString(args.get("name"))
+    object_id = int(ResolveString(args.get("objectId")))
+    report_parameter_values = ResolveJson(args.get("ReportParameters"))
+    response = client.run_report_by_name(name=name, object_id=object_id, report_parameter_values=report_parameter_values)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Sync.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
+    result_final = {}
+    keys = [
+        "html",
+    ]
+    for result in results:
+        for key in keys:
+            result_final[key] = result.get(key, "")
+        command_results.append(
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Sync", outputs_key_field="id", outputs=result_final)
+        )
+    return command_results
+
+
+def deploy_by_date_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    date = ResolveString(args.get("date"))
+    object_id = int(ResolveString(args.get("objectId")))
+    response = client.deploy_by_date(date=date, object_id=object_id)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Deploy.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    return command_results
+
+
+def get_current_compliance_items_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    object_id = int(ResolveString(args.get("ObjectId")))
+    compliance_scan_id = int(ResolveString(args.get("ComplianceScanId")))
+    response = client.get_current_compliance_items(object_id=object_id, compliance_scan_id=compliance_scan_id)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.ComplianceItems.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
+    result_final = {}
+    keys = [
+        "objectid",
+        "type",
+        "name",
+        "description",
+        "scanstarttime",
+        "scanendtime",
+        "scanid",
+        "compliancemappingid",
+        "id",
+    ]
+    for result in results:
+        for key in keys:
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.ObjectGroup',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.ComplianceItems", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def unlock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_objects_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_id = int(ResolveString(args.get('objectId')))
-    response = client.unlock(
-        object_id=object_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Unlock.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    return command_results
-
-
-def lock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    object_id = int(ResolveString(args.get('objectId')))
-    response = client.lock(
-        object_id=object_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Lock.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    return command_results
-
-
-def get_object_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    object_id = int(ResolveString(args.get('objectId')))
-    response = client.get_object(
-        object_id=object_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Object.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
-    result_final = {}
-    keys = [
-        'agentIsFilesystem',
-        'cancel',
-        'connected',
-        'logsByDays',
-        'requireNotes',
-        'inService',
-        'children',
-        'events',
-        'intrusions',
-        'intrusionSize',
-        'objectId',
-        'objectStatus',
-        'objectSubType',
-        'objectType',
-        'parentId',
-        'revisions',
-        'templateId',
-        'securityAdd',
-        'securityEdit',
-        'securityLock',
-        'securityReport',
-        'securityUnlock',
-        'securityView',
-        'warnMinutes',
-        'contact',
-        'createDate',
-        'description',
-        'location',
-        'name',
-        'objectPath',
-        'url',
-        'agentObjectId',
-    ]
-    for result in results:
-        for key in keys:
-            result_final[key] = result.get(key, '')
-        command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Object',
-                outputs_key_field='id',
-                outputs=result_final
-            )
-        )
-    return command_results
-
-
-def force_sync_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    object_id = int(ResolveString(args.get('objectId')))
-    response = client.force_sync(
-        object_id=object_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Sync.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    return command_results
-
-
-def view_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    object_detail_id = int(ResolveString(args.get('objectDetailId')))
-    response = client.view_file(
-        object_detail_id=object_detail_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Sync.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
-    result_final = {}
-    keys = [
-        'contents',
-    ]
-    for result in results:
-        for key in keys:
-            result_final[key] = result.get(key, '')
-        command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Sync',
-                outputs_key_field='id',
-                outputs=result_final
-            )
-        )
-    return command_results
-
-
-def run_report_by_name_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    name = ResolveString(args.get('name'))
-    object_id = int(ResolveString(args.get('objectId')))
-    report_parameter_values = ResolveJson(args.get('ReportParameters'))
-    response = client.run_report_by_name(
-        name=name,
-        object_id=object_id,
-        report_parameter_values=report_parameter_values
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Sync.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
-    result_final = {}
-    keys = [
-        'html',
-    ]
-    for result in results:
-        for key in keys:
-            result_final[key] = result.get(key, '')
-        command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Sync',
-                outputs_key_field='id',
-                outputs=result_final
-            )
-        )
-    return command_results
-
-
-def deploy_by_date_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    date = ResolveString(args.get('date'))
-    object_id = int(ResolveString(args.get('objectId')))
-    response = client.deploy_by_date(
-        date=date,
-        object_id=object_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Deploy.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    return command_results
-
-
-def get_current_compliance_items_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    object_id = int(ResolveString(args.get('ObjectId')))
-    compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
-    response = client.get_current_compliance_items(
-        object_id=object_id,
-        compliance_scan_id=compliance_scan_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.ComplianceItems.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
-    result_final = {}
-    keys = [
-        'objectid',
-        'type',
-        'name',
-        'description',
-        'scanstarttime',
-        'scanendtime',
-        'scanid',
-        'compliancemappingid',
-        'id',
-    ]
-    for result in results:
-        for key in keys:
-            result_final[key] = result.get(key, '')
-        command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.ComplianceItems',
-                outputs_key_field='id',
-                outputs=result_final
-            )
-        )
-    return command_results
-
-
-def get_objects_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    object_type = int(ResolveString(args.get('ObjectType')))
-    object_subtype = int(ResolveString(args.get('ObjectSubType')))
-    parent_id = int(ResolveString(args.get('ParentId')))
-    object_id = int(ResolveString(args.get('ObjectId')))
-    object_path_and_name = ResolveString(args.get('ObjectPathAndName'))
-    recursive = ResolveBool(args.get('Recursive'))
+    object_type = int(ResolveString(args.get("ObjectType")))
+    object_subtype = int(ResolveString(args.get("ObjectSubType")))
+    parent_id = int(ResolveString(args.get("ParentId")))
+    object_id = int(ResolveString(args.get("ObjectId")))
+    object_path_and_name = ResolveString(args.get("ObjectPathAndName"))
+    recursive = ResolveBool(args.get("Recursive"))
     response = client.get_objects(
         object_type=object_type,
         object_subtype=object_subtype,
         parent_id=parent_id,
         object_id=object_id,
         object_path_and_name=object_path_and_name,
-        recursive=recursive
+        recursive=recursive,
     )
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Objects.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Objects.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'repositoryDisplayName',
-        'connected',
-        'agentObjectId',
-        'description',
-        'name',
-        'objectPath',
-        'agentIsFilesystem',
-        'cancel',
-        'logsByDays',
-        'requireNotes',
-        'inService',
-        'events',
-        'intrusions',
-        'intrusionSize',
-        'objectId',
-        'objectStatus',
-        'objectSubType',
-        'objectType',
-        'parentId',
-        'revisions',
-        'templateId',
-        'securityAdd',
-        'securityEdit',
-        'securityLock',
-        'securityReport',
-        'securityUnlock',
-        'securityView',
-        'warnMinutes',
-        'contact',
-        'createDate',
-        'location',
-        'url',
-        'parentName',
-        'children',
-        'agentVersion',
-        'agentBuild',
-        'agentOsVersion',
-        'agentIp',
-        'agentName',
-        'agentInstalled',
+        "repositoryDisplayName",
+        "connected",
+        "agentObjectId",
+        "description",
+        "name",
+        "objectPath",
+        "agentIsFilesystem",
+        "cancel",
+        "logsByDays",
+        "requireNotes",
+        "inService",
+        "events",
+        "intrusions",
+        "intrusionSize",
+        "objectId",
+        "objectStatus",
+        "objectSubType",
+        "objectType",
+        "parentId",
+        "revisions",
+        "templateId",
+        "securityAdd",
+        "securityEdit",
+        "securityLock",
+        "securityReport",
+        "securityUnlock",
+        "securityView",
+        "warnMinutes",
+        "contact",
+        "createDate",
+        "location",
+        "url",
+        "parentName",
+        "children",
+        "agentVersion",
+        "agentBuild",
+        "agentOsVersion",
+        "agentIp",
+        "agentName",
+        "agentInstalled",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
+        command_results.append(
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Objects", outputs_key_field="id", outputs=result_final)
+        )
+    return command_results
+
+
+def get_agent_info_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
+    client.debug = 5
+    object_id = int(ResolveString(args.get("ObjectId")))
+    response = client.get_agent_info(object_id=object_id)
+    command_status = {
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
+    }
+    command_results.append(
+        CommandResults(
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.AgentInfo.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
+        )
+    )
+    results = response["results"]
+    result_final = {}
+    keys = [
+        "objectData",
+        "objectsCustom",
+        "agentData",
+        "state",
+    ]
+    for result in results:
+        for key in keys:
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Objects',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.AgentInfo", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def get_agent_info_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_compliance_archive_details_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_id = int(ResolveString(args.get('ObjectId')))
-    response = client.get_agent_info(
-        object_id=object_id
-    )
-    command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
-    }
-    command_results.append(
-        CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.AgentInfo.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
-        )
-    )
-    results = response['results']
-    result_final = {}
-    keys = [
-        'objectData',
-        'objectsCustom',
-        'agentData',
-        'state',
-    ]
-    for result in results:
-        for key in keys:
-            result_final[key] = result.get(key, '')
-        command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.AgentInfo',
-                outputs_key_field='id',
-                outputs=result_final
-            )
-        )
-    return command_results
-
-
-def get_compliance_archive_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
-    client.debug = 5
-    object_id = int(ResolveString(args.get('ObjectId')))
-    compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
-    filter = ResolveJson(args.get('Filter'))
-    start = int(ResolveString(args.get('Start')))
-    end = int(ResolveString(args.get('End')))
+    object_id = int(ResolveString(args.get("ObjectId")))
+    compliance_scan_id = int(ResolveString(args.get("ComplianceScanId")))
+    filter = ResolveJson(args.get("Filter"))
+    start = int(ResolveString(args.get("Start")))
+    end = int(ResolveString(args.get("End")))
     response = client.get_compliance_archive_details(
-        object_id=object_id,
-        compliance_scan_id=compliance_scan_id,
-        filter=filter,
-        start=start,
-        end=end
+        object_id=object_id, compliance_scan_id=compliance_scan_id, filter=filter, start=start, end=end
     )
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Compliance.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Compliance.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'testdate',
-        'datatype',
-        'scanid',
-        'ipaddress',
-        'lobjectid',
-        'alternatesystemid',
-        'agentuuid',
-        'agentname',
-        'objectpath',
-        'benchmark',
-        'profile',
-        'test',
-        'pass',
-        'iswaived',
-        'adjustedscore',
-        'possiblescore',
-        'rawscore',
-        'weight',
-        'testran',
-        'remediation',
-        'severity',
-        'version',
-        'rationale',
-        'description',
-        'assessment',
-        'disposition',
-        'conjunction',
-        'negatatevalue',
-        'comment',
-        'controlversion',
-        'controlnumber',
-        'osversion',
-        'personality',
-        'objectid',
-        'userId',
-        'block',
-        'bunlock',
-        'bview',
-        'bedit',
-        'badd',
-        'breports',
-        'blogon',
-        'isadmin',
+        "testdate",
+        "datatype",
+        "scanid",
+        "ipaddress",
+        "lobjectid",
+        "alternatesystemid",
+        "agentuuid",
+        "agentname",
+        "objectpath",
+        "benchmark",
+        "profile",
+        "test",
+        "pass",
+        "iswaived",
+        "adjustedscore",
+        "possiblescore",
+        "rawscore",
+        "weight",
+        "testran",
+        "remediation",
+        "severity",
+        "version",
+        "rationale",
+        "description",
+        "assessment",
+        "disposition",
+        "conjunction",
+        "negatatevalue",
+        "comment",
+        "controlversion",
+        "controlnumber",
+        "osversion",
+        "personality",
+        "objectid",
+        "userId",
+        "block",
+        "bunlock",
+        "bview",
+        "bedit",
+        "badd",
+        "breports",
+        "blogon",
+        "isadmin",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Compliance',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.Compliance", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def get_compliance_archive_summary_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_compliance_archive_summary_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_id = int(ResolveString(args.get('ObjectId')))
-    compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
-    filter = ResolveJson(args.get('Filter'))
-    start = int(ResolveString(args.get('Start')))
-    end = int(ResolveString(args.get('End')))
+    object_id = int(ResolveString(args.get("ObjectId")))
+    compliance_scan_id = int(ResolveString(args.get("ComplianceScanId")))
+    filter = ResolveJson(args.get("Filter"))
+    start = int(ResolveString(args.get("Start")))
+    end = int(ResolveString(args.get("End")))
     response = client.get_compliance_archive_summary(
-        object_id=object_id,
-        compliance_scan_id=compliance_scan_id,
-        filter=filter,
-        start=start,
-        end=end
+        object_id=object_id, compliance_scan_id=compliance_scan_id, filter=filter, start=start, end=end
     )
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Compliance.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Compliance.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'testdate',
-        'scanid',
-        'ipaddress',
-        'datatype',
-        'alternatesystemid',
-        'agentuuid',
-        'agentname',
-        'objectpath',
-        'lobjectid',
-        'benchmark',
-        'profile',
-        'totalfailcount',
-        'totalpasscount',
-        'totaltestsskipped',
-        'totalwaivecount',
-        'pass',
-        'totaltestsran',
-        'osversion',
-        'personality',
-        'userId',
-        'objectid',
-        'block',
-        'bunlock',
-        'bview',
-        'bedit',
-        'badd',
-        'breports',
-        'blogon',
+        "testdate",
+        "scanid",
+        "ipaddress",
+        "datatype",
+        "alternatesystemid",
+        "agentuuid",
+        "agentname",
+        "objectpath",
+        "lobjectid",
+        "benchmark",
+        "profile",
+        "totalfailcount",
+        "totalpasscount",
+        "totaltestsskipped",
+        "totalwaivecount",
+        "pass",
+        "totaltestsran",
+        "osversion",
+        "personality",
+        "userId",
+        "objectid",
+        "block",
+        "bunlock",
+        "bview",
+        "bedit",
+        "badd",
+        "breports",
+        "blogon",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Compliance',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.Compliance", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def compliance_scan_children_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def compliance_scan_children_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_parent_id = int(ResolveString(args.get('objectParentId')))
-    response = client.compliance_scan_children(
-        object_parent_id=object_parent_id
-    )
+    object_parent_id = int(ResolveString(args.get("objectParentId")))
+    response = client.compliance_scan_children(object_parent_id=object_parent_id)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Compliance.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Compliance.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
     return command_results
 
 
-def compliance_scan_with_summary_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def compliance_scan_with_summary_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    object_id = int(ResolveString(args.get('objectId')))
-    retry_count = int(ResolveString(args.get('retryCount')))
-    retry_seconds = int(ResolveString(args.get('retrySeconds')))
-    response = client.compliance_scan_with_summary(
-        object_id=object_id,
-        retry_count=retry_count,
-        retry_seconds=retry_seconds
-    )
+    object_id = int(ResolveString(args.get("objectId")))
+    retry_count = int(ResolveString(args.get("retryCount")))
+    retry_seconds = int(ResolveString(args.get("retrySeconds")))
+    response = client.compliance_scan_with_summary(object_id=object_id, retry_count=retry_count, retry_seconds=retry_seconds)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Compliance.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Compliance.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'testdate',
-        'scanid',
-        'ipaddress',
-        'datatype',
-        'alternatesystemid',
-        'agentuuid',
-        'agentname',
-        'objectpath',
-        'lobjectid',
-        'benchmark',
-        'profile',
-        'totalfailcount',
-        'totalpasscount',
-        'totaltestsskipped',
-        'totalwaivecount',
-        'pass',
-        'totaltestsran',
-        'osversion',
-        'personality',
-        'userId',
-        'objectid',
-        'block',
-        'bunlock',
-        'bview',
-        'bedit',
-        'badd',
-        'breports',
-        'blogon',
+        "testdate",
+        "scanid",
+        "ipaddress",
+        "datatype",
+        "alternatesystemid",
+        "agentuuid",
+        "agentname",
+        "objectpath",
+        "lobjectid",
+        "benchmark",
+        "profile",
+        "totalfailcount",
+        "totalpasscount",
+        "totaltestsskipped",
+        "totalwaivecount",
+        "pass",
+        "totaltestsran",
+        "osversion",
+        "personality",
+        "userId",
+        "objectid",
+        "block",
+        "bunlock",
+        "bview",
+        "bedit",
+        "badd",
+        "breports",
+        "blogon",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
             CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Compliance',
-                outputs_key_field='id',
-                outputs=result_final
+                readable_output=result, outputs_prefix="CimTrak.Compliance", outputs_key_field="id", outputs=result_final
             )
         )
     return command_results
 
 
-def get_agent_object_id_by_alternate_system_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_id_by_alternate_system_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    alternate_system_id = ResolveString(args.get('alternateSystemId'))
-    response = client.get_agent_object_id_by_alternate_system_id(
-        alternate_system_id=alternate_system_id
-    )
+    alternate_system_id = ResolveString(args.get("alternateSystemId"))
+    response = client.get_agent_object_id_by_alternate_system_id(alternate_system_id=alternate_system_id)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Object.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Object.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'agentObjectId',
+        "agentObjectId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Object',
-                outputs_key_field='id',
-                outputs=result_final
-            )
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Object", outputs_key_field="id", outputs=result_final)
         )
     return command_results
 
 
-def get_agent_object_by_name_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_name_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    agent_name = ResolveString(args.get('agentName'))
-    response = client.get_agent_object_by_name(
-        agent_name=agent_name
-    )
+    agent_name = ResolveString(args.get("agentName"))
+    response = client.get_agent_object_by_name(agent_name=agent_name)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Object.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Object.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'agentIsFilesystem',
-        'cancel',
-        'connected',
-        'logsByDays',
-        'requireNotes',
-        'inService',
-        'children',
-        'events',
-        'intrusions',
-        'intrusionSize',
-        'objectId',
-        'objectStatus',
-        'objectSubType',
-        'objectType',
-        'parentId',
-        'revisions',
-        'templateId',
-        'securityAdd',
-        'securityEdit',
-        'securityLock',
-        'securityReport',
-        'securityUnlock',
-        'securityView',
-        'warnMinutes',
-        'contact',
-        'createDate',
-        'description',
-        'location',
-        'name',
-        'objectPath',
-        'url',
-        'agentObjectId',
+        "agentIsFilesystem",
+        "cancel",
+        "connected",
+        "logsByDays",
+        "requireNotes",
+        "inService",
+        "children",
+        "events",
+        "intrusions",
+        "intrusionSize",
+        "objectId",
+        "objectStatus",
+        "objectSubType",
+        "objectType",
+        "parentId",
+        "revisions",
+        "templateId",
+        "securityAdd",
+        "securityEdit",
+        "securityLock",
+        "securityReport",
+        "securityUnlock",
+        "securityView",
+        "warnMinutes",
+        "contact",
+        "createDate",
+        "description",
+        "location",
+        "name",
+        "objectPath",
+        "url",
+        "agentObjectId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Object',
-                outputs_key_field='id',
-                outputs=result_final
-            )
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Object", outputs_key_field="id", outputs=result_final)
         )
     return command_results
 
 
-def get_agent_object_by_alternate_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_alternate_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    alternate_system_id = ResolveString(args.get('alternateSystemId'))
-    response = client.get_agent_object_by_alternate_id(
-        alternate_system_id=alternate_system_id
-    )
+    alternate_system_id = ResolveString(args.get("alternateSystemId"))
+    response = client.get_agent_object_by_alternate_id(alternate_system_id=alternate_system_id)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Object.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Object.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'agentIsFilesystem',
-        'cancel',
-        'connected',
-        'logsByDays',
-        'requireNotes',
-        'inService',
-        'children',
-        'events',
-        'intrusions',
-        'intrusionSize',
-        'objectId',
-        'objectStatus',
-        'objectSubType',
-        'objectType',
-        'parentId',
-        'revisions',
-        'templateId',
-        'securityAdd',
-        'securityEdit',
-        'securityLock',
-        'securityReport',
-        'securityUnlock',
-        'securityView',
-        'warnMinutes',
-        'contact',
-        'createDate',
-        'description',
-        'location',
-        'name',
-        'objectPath',
-        'url',
-        'agentObjectId',
+        "agentIsFilesystem",
+        "cancel",
+        "connected",
+        "logsByDays",
+        "requireNotes",
+        "inService",
+        "children",
+        "events",
+        "intrusions",
+        "intrusionSize",
+        "objectId",
+        "objectStatus",
+        "objectSubType",
+        "objectType",
+        "parentId",
+        "revisions",
+        "templateId",
+        "securityAdd",
+        "securityEdit",
+        "securityLock",
+        "securityReport",
+        "securityUnlock",
+        "securityView",
+        "warnMinutes",
+        "contact",
+        "createDate",
+        "description",
+        "location",
+        "name",
+        "objectPath",
+        "url",
+        "agentObjectId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Object',
-                outputs_key_field='id',
-                outputs=result_final
-            )
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Object", outputs_key_field="id", outputs=result_final)
         )
     return command_results
 
 
-def get_agent_object_by_ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
-    ip = ResolveString(args.get('ip'))
-    response = client.get_agent_object_by_ip(
-        ip=ip
-    )
+    ip = ResolveString(args.get("ip"))
+    response = client.get_agent_object_by_ip(ip=ip)
     command_status = {
-        'status': response['status'],
-        'errorCode': response['errorCode'],
-        'errorDescription': response['errorDescription']
+        "status": response["status"],
+        "errorCode": response["errorCode"],
+        "errorDescription": response["errorDescription"],
     }
     command_results.append(
         CommandResults(
-            readable_output=response['status'] + ' : ' + response['errorDescription'],
-            outputs_prefix='CimTrak.Object.CommandStatus',
-            outputs_key_field='status',
-            outputs=command_status
+            readable_output=response["status"] + " : " + response["errorDescription"],
+            outputs_prefix="CimTrak.Object.CommandStatus",
+            outputs_key_field="status",
+            outputs=command_status,
         )
     )
-    results = response['results']
+    results = response["results"]
     result_final = {}
     keys = [
-        'agentIsFilesystem',
-        'cancel',
-        'connected',
-        'logsByDays',
-        'requireNotes',
-        'inService',
-        'children',
-        'events',
-        'intrusions',
-        'intrusionSize',
-        'objectId',
-        'objectStatus',
-        'objectSubType',
-        'objectType',
-        'parentId',
-        'revisions',
-        'templateId',
-        'securityAdd',
-        'securityEdit',
-        'securityLock',
-        'securityReport',
-        'securityUnlock',
-        'securityView',
-        'warnMinutes',
-        'contact',
-        'createDate',
-        'description',
-        'location',
-        'name',
-        'objectPath',
-        'url',
-        'agentObjectId',
+        "agentIsFilesystem",
+        "cancel",
+        "connected",
+        "logsByDays",
+        "requireNotes",
+        "inService",
+        "children",
+        "events",
+        "intrusions",
+        "intrusionSize",
+        "objectId",
+        "objectStatus",
+        "objectSubType",
+        "objectType",
+        "parentId",
+        "revisions",
+        "templateId",
+        "securityAdd",
+        "securityEdit",
+        "securityLock",
+        "securityReport",
+        "securityUnlock",
+        "securityView",
+        "warnMinutes",
+        "contact",
+        "createDate",
+        "description",
+        "location",
+        "name",
+        "objectPath",
+        "url",
+        "agentObjectId",
     ]
     for result in results:
         for key in keys:
-            result_final[key] = result.get(key, '')
+            result_final[key] = result.get(key, "")
         command_results.append(
-            CommandResults(
-                readable_output=result,
-                outputs_prefix='CimTrak.Object',
-                outputs_key_field='id',
-                outputs=result_final
-            )
+            CommandResults(readable_output=result, outputs_prefix="CimTrak.Object", outputs_key_field="id", outputs=result_final)
         )
     return command_results
 
@@ -3591,9 +3353,7 @@ def main() -> None:
         required=True,
     )
 
-    first_fetch_timestamp = (
-        int(first_fetch_time.timestamp()) if first_fetch_time else None
-    )
+    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
     assert isinstance(first_fetch_timestamp, int)
 
@@ -3639,91 +3399,89 @@ def main() -> None:
         ################################################################
         # CimTrak Palo Alto Custom Functions Dispatch Begin
         ################################################################
-        elif demisto.command() == 'get-events':
+        elif demisto.command() == "get-events":
             return_results(get_events_command(client, demisto.args()))
-        elif demisto.command() == 'file-analysis-by-hash':
+        elif demisto.command() == "file-analysis-by-hash":
             return_results(file_analysis_by_hash_command(client, demisto.args()))
-        elif demisto.command() == 'file-analysis-by-objectdetail-id':
+        elif demisto.command() == "file-analysis-by-objectdetail-id":
             return_results(file_analysis_by_object_detail_id_command(client, demisto.args()))
-        elif demisto.command() == 'check-file-against-trusted-file-registry-by-hash':
+        elif demisto.command() == "check-file-against-trusted-file-registry-by-hash":
             return_results(check_file_against_trusted_file_registry_by_hash_command(client, demisto.args()))
-        elif demisto.command() == 'promote-authoritative-baseline-files':
+        elif demisto.command() == "promote-authoritative-baseline-files":
             return_results(promote_authoritative_baseline_files_command(client, demisto.args()))
-        elif demisto.command() == 'demote-authoritative-baseline-files':
+        elif demisto.command() == "demote-authoritative-baseline-files":
             return_results(demote_authoritative_baseline_files_command(client, demisto.args()))
-        elif demisto.command() == 'update-task-disposition':
+        elif demisto.command() == "update-task-disposition":
             return_results(update_task_disposition_command(client, demisto.args()))
-        elif demisto.command() == 'get-tickets':
+        elif demisto.command() == "get-tickets":
             return_results(get_tickets_command(client, demisto.args()))
-        elif demisto.command() == 'get-ticket-tasks':
+        elif demisto.command() == "get-ticket-tasks":
             return_results(get_ticket_tasks_command(client, demisto.args()))
-        elif demisto.command() == 'add-ticket':
+        elif demisto.command() == "add-ticket":
             return_results(add_ticket_command(client, demisto.args()))
-        elif demisto.command() == 'update-ticket':
+        elif demisto.command() == "update-ticket":
             return_results(update_ticket_command(client, demisto.args()))
-        elif demisto.command() == 'add-ticket-comment':
+        elif demisto.command() == "add-ticket-comment":
             return_results(add_ticket_comment_command(client, demisto.args()))
-        elif demisto.command() == 'add-hash-allow-list':
+        elif demisto.command() == "add-hash-allow-list":
             return_results(add_hash_allow_list_command(client, demisto.args()))
-        elif demisto.command() == 'add-hash-deny-list':
+        elif demisto.command() == "add-hash-deny-list":
             return_results(add_hash_deny_list_command(client, demisto.args()))
-        elif demisto.command() == 'delete-hash-allow-list':
+        elif demisto.command() == "delete-hash-allow-list":
             return_results(delete_hash_allow_list_command(client, demisto.args()))
-        elif demisto.command() == 'delete-hash-deny-list':
+        elif demisto.command() == "delete-hash-deny-list":
             return_results(delete_hash_deny_list_command(client, demisto.args()))
-        elif demisto.command() == 'get-sub-generations':
+        elif demisto.command() == "get-sub-generations":
             return_results(get_sub_generations_command(client, demisto.args()))
-        elif demisto.command() == 'deploy':
+        elif demisto.command() == "deploy":
             return_results(deploy_command(client, demisto.args()))
-        elif demisto.command() == 'get-object-group':
+        elif demisto.command() == "get-object-group":
             return_results(get_object_group_command(client, demisto.args()))
-        elif demisto.command() == 'unlock':
+        elif demisto.command() == "unlock":
             return_results(unlock_command(client, demisto.args()))
-        elif demisto.command() == 'lock':
+        elif demisto.command() == "lock":
             return_results(lock_command(client, demisto.args()))
-        elif demisto.command() == 'get-object':
+        elif demisto.command() == "get-object":
             return_results(get_object_command(client, demisto.args()))
-        elif demisto.command() == 'force-sync':
+        elif demisto.command() == "force-sync":
             return_results(force_sync_command(client, demisto.args()))
-        elif demisto.command() == 'view-file':
+        elif demisto.command() == "view-file":
             return_results(view_file_command(client, demisto.args()))
-        elif demisto.command() == 'run-report-by-name':
+        elif demisto.command() == "run-report-by-name":
             return_results(run_report_by_name_command(client, demisto.args()))
-        elif demisto.command() == 'deploy-by-date':
+        elif demisto.command() == "deploy-by-date":
             return_results(deploy_by_date_command(client, demisto.args()))
-        elif demisto.command() == 'get-current-compliance-items':
+        elif demisto.command() == "get-current-compliance-items":
             return_results(get_current_compliance_items_command(client, demisto.args()))
-        elif demisto.command() == 'get-objects':
+        elif demisto.command() == "get-objects":
             return_results(get_objects_command(client, demisto.args()))
-        elif demisto.command() == 'get-agent-info':
+        elif demisto.command() == "get-agent-info":
             return_results(get_agent_info_command(client, demisto.args()))
-        elif demisto.command() == 'get-compliance-archive-details':
+        elif demisto.command() == "get-compliance-archive-details":
             return_results(get_compliance_archive_details_command(client, demisto.args()))
-        elif demisto.command() == 'get-compliance-archive-summary':
+        elif demisto.command() == "get-compliance-archive-summary":
             return_results(get_compliance_archive_summary_command(client, demisto.args()))
-        elif demisto.command() == 'compliance-scan-children':
+        elif demisto.command() == "compliance-scan-children":
             return_results(compliance_scan_children_command(client, demisto.args()))
-        elif demisto.command() == 'compliance-scan-with-summary':
+        elif demisto.command() == "compliance-scan-with-summary":
             return_results(compliance_scan_with_summary_command(client, demisto.args()))
-        elif demisto.command() == 'get-agent-object-id-by-alternate-system-id':
+        elif demisto.command() == "get-agent-object-id-by-alternate-system-id":
             return_results(get_agent_object_id_by_alternate_system_id_command(client, demisto.args()))
-        elif demisto.command() == 'get-agent-object-by-name':
+        elif demisto.command() == "get-agent-object-by-name":
             return_results(get_agent_object_by_name_command(client, demisto.args()))
-        elif demisto.command() == 'get-agent-object-by-alternate-id':
+        elif demisto.command() == "get-agent-object-by-alternate-id":
             return_results(get_agent_object_by_alternate_id_command(client, demisto.args()))
-        elif demisto.command() == 'get-agent-object-by-ip':
+        elif demisto.command() == "get-agent-object-by-ip":
             return_results(get_agent_object_by_ip_command(client, demisto.args()))
         ################################################################
         # CimTrak Palo Alto Custom Functions Dispatch End
         ################################################################
-######
+    ######
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

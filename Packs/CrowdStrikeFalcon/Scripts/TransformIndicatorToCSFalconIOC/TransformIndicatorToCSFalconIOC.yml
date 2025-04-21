@@ -1,7 +1,5 @@
 args:
-- description: |-
-    The indicators query. Using `GetIndicatorsByQuery` automation.
-    Example: `type:IP and lastSeen:>="2022-02-16T16:20:00 +0200" `
+- description: 'The indicators query. Using `GetIndicatorsByQuery` automation. <br/>Example: `type:IP and lastSeen:>="2022-02-16T16:20:00 +0200"`.'
   name: query
   required: true
 - auto: PREDEFINED
@@ -39,7 +37,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: Transform a XSOAR indicator into a Crowd Strike Falcon IOC. The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CS Falcon format. This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command.
+comment: Transform an indicator in Cortex into a CrowdStrike Falcon IOC. The output (found at the TransformIndicatorToCSFalconIOC.JsonOutput context path) is a JSON, which represents the indicators in CrowdStrike Falcon format. This JSON can be used as the input for the *cs-falcon-batch-upload-custom-ioc* command.
 commonfields:
   id: TransformIndicatorToCSFalconIOC
   version: -1
@@ -55,16 +53,16 @@ outputs:
   description: The date on which the indicator will become inactive.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.description
-  description: Descriptive label for the indicator
+  description: Descriptive label for the indicator.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.tags
-  description: List of tags of the indicator
+  description: List of tags of the indicator.
   type: Unknown
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.source
-  description: 'The source where this indicator originated. '
+  description: The source where this indicator originated.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.id
-  description: The ID of the indicator
+  description: The ID of the indicator.
   type: String
 - contextPath: TransformIndicatorToCSFalconIOC.Indicators.type
   description: 'Type of the indicator. Possible values are: md5, sha256, ipv4, ipv6 and domain.'
@@ -88,7 +86,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

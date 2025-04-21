@@ -4,7 +4,7 @@ commonfields:
 name: Spamcop
 display: Spamcop
 category: Data Enrichment & Threat Intelligence
-description: SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address
+description: SpamCop is an email spam reporting service, integration allow checking the reputation of an IP address.
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -43,12 +43,12 @@ script:
     arguments:
     - name: ip
       required: true
-      description: The IP which details you want to find
+      description: The IP which details you want to find.
       default: true
       isArray: true
     outputs:
     - contextPath: Spamcop.IP
-      description: IP details
+      description: IP details.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -57,7 +57,7 @@ script:
       description: The actual score.
       type: number
     - contextPath: DBotScore.Type
-      description: The actual score.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -71,8 +71,8 @@ script:
     - contextPath: IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
       type: string
-    description: Get IP details from Spamcop service
-  dockerimage: demisto/python3:3.10.13.72123
+    description: Get IP details from Spamcop service.
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   subtype: python3
 fromversion: 5.0.0

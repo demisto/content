@@ -16,7 +16,7 @@ args:
 - description: |-
     Specify a hash of headers to send with the request.
     Headers can be of string type but need to be formatted in the following ways:
-    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`
+    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`.
   name: headers
   type: keyValue
 - description: Specify the body of the request.
@@ -29,7 +29,7 @@ args:
     xml (text/xml)
     form (application/x-www-form-urlencoded)
     data (multipart/form-data)
-    If you choose to define a different type, please include the full type name, e.g: application/pdf
+    If you choose to define a different type, please include the full type name, e.g: application/pdf.
   name: request_content_type
 - description: |-
     Specify the Accept header for the request - the response content type.
@@ -38,7 +38,7 @@ args:
     xml (text/xml)
     form (application/x-www-form-urlencoded)
     data (multipart/form-data)
-    If you choose to define a different type, please include the full type name, e.g: application/pdf
+    If you choose to define a different type, please include the full type name, e.g: application/pdf.
   name: response_content_type
 - auto: PREDEFINED
   defaultValue: raw_response
@@ -81,23 +81,23 @@ args:
   - yes
   - no
 - defaultValue: http-file
-  description: filename
+  description: filename.
   name: filename
 - auto: PREDEFINED
   defaultValue: 'False'
-  description: Trust any certificate (not secure)
+  description: Trust any certificate (not secure).
   name: unsecure
   predefined:
   - 'True'
   - 'False'
 - auto: PREDEFINED
   defaultValue: 'False'
-  description: Use system proxy settings
+  description: Use system proxy settings.
   name: proxy
   predefined:
   - 'True'
   - 'False'
-comment: Sends a HTTP request with advanced capabilities
+comment: Sends a HTTP request with advanced capabilities.
 commonfields:
   id: HttpV2
   version: -1
@@ -107,10 +107,10 @@ outputs:
   description: The number that indicates the status of the request.
   type: String
 - contextPath: HttpRequest.Response.StatusText
-  description: The text corresponding to the status code
+  description: The text corresponding to the status code.
   type: String
 - contextPath: HttpRequest.Response.URL
-  description: The URL of the response
+  description: The URL of the response.
   type: String
 - contextPath: HttpRequest.Response.ParsedBody
   description: The parsed response, according to `parse_response_as` argument.
@@ -127,7 +127,7 @@ tags:
 - basescript
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.113941
 tests:
 - HttpV2-test
 fromversion: 6.5.0

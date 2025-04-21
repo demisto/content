@@ -1,6 +1,7 @@
 # Symantec Endpoint Protection
 This pack includes Cortex XSIAM content.
 <~XSIAM>
+
 ## Configuration on Server Side
 
 1. Log in to Symantec Endpoint Protection Manager.
@@ -20,10 +21,15 @@ To create or configure the Broker VM, use the information described [here](https
 
 You can configure the specific vendor and product for this instance.
 
-
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - symantec
    - product as product - ep
+
+### Timestamp Ingestion
+Timestamp ingestion from raw logs is supported only for the format: **MMM dd hh:mm:ss.nnn** (e.g., Dec 1 10:00:00).
+The default time zone for the timestamp extraction is in UTC (**+00:00**) time. 
+Any requirement for another time zone, demands altering the time zone used in the default Parsing Rule by changing it in the User Defined section according to your needs.
+
 </~XSIAM>

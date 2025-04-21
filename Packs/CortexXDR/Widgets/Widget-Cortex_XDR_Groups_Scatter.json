@@ -16,5 +16,8 @@
     "id": "5827f988-df26-42a5-8c46-18b3af444702",
     "widgetType": "scatter",
     "fromVersion": "6.2.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar_on_prem"
+    ]
 }

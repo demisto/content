@@ -7,20 +7,21 @@ ignore=BA101
 [file:Get_Original_Email_-_Gmail.yml]
 ignore=BA101
 
-[file:Phishing.yml]
+[file:playbook-Phishing_-_Phishing.yml]
 ignore=BA101,BA110
 
 [file:Process_Email_-_Generic_v2.yml]
 ignore=PB118
 
+# GR103 is temporary, see CIAC-11705
 [file:Process_Email_-_Core_v2.yml]
-ignore=PB118
+ignore=PB118,GR103
 
 [file:Phishing_-_Generic_v3.yml]
 ignore=PB106
 
 [file:Phishing_-_Generic_v3_6_5.yml]
-ignore=PB106
+ignore=PB106,GR107
 
 [file:Phishing_-_Generic_v3_6_8.yml]
 ignore=PB106
@@ -55,6 +56,9 @@ ignore=RM106
 [file:Entity_Enrichment_-_Phishing_v2.yml]
 ignore=PB118
 
+[file:layoutscontainer-Phishing_Layout_XSIAM.json]
+ignore=LO107
+
 [known_words]
 CheckEmailAuthenticity
 DeleteReportedEmail
@@ -65,3 +69,8 @@ QR
 
 [file:LinkToPhishingCampaign.yml]
 ignore=BA124
+
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-bclscore.json]
+ignore=GR103
+

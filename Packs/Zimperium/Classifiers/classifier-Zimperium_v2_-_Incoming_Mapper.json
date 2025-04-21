@@ -9,8 +9,11 @@
                 "App": {
                     "simple": "zappInstance.name"
                 },
-                "Zimperium Bundle ID": {
-                    "simple": "zappInstance.bundleId"
+                "Device Id": {
+                    "simple": "deviceId"
+                },
+                "Device Username": {
+                    "simple": "deviceOwner"
                 },
                 "Mobile Device Model": {
                     "simple": "device.model"
@@ -20,6 +23,9 @@
                 },
                 "OS Version": {
                     "simple": "device.os.version"
+                },
+                "Zimperium Bundle ID": {
+                    "simple": "zappInstance.bundleId"
                 }
             }
         }

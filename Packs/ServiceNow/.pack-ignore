@@ -1,5 +1,5 @@
 [file:ServiceNowv2.yml]
-ignore=IN126,IN135,IN124,IN139
+ignore=IN126,IN135,IN139
 
 [file:playbook-Create_ServiceNow_Ticket.yml]
 ignore=PB106
@@ -52,3 +52,7 @@ ignore=BA101
 
 [file:ServiceNowIncidentStatus.yml]
 ignore=BA124
+
+# GR103 is temporary, see CIAC-11705
+[file:incidenttype-ServiceNow_Create_Ticket_and_Mirror.json]
+ignore=GR103

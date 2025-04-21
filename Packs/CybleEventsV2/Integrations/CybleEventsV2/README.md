@@ -60,17 +60,17 @@ Fetch the indicators in the given timeline.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                            | **Required** |
-|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| ioc_type          | Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email). Default is Domain. | Optional     |
-| ioc               | Returns records for the specified indicator value.                                                                                         | Optional     |
-| from              | Returns records that starts from the given page number (the value of the form parameter) in the results list. Default is 0.                | Optional     |
-| limit             | Number of records to return (max 1000). Using a smaller limit will get faster responses. Default is 1.                                     | Optional     |
-| sort_by           | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen.    | Optional     |
-| order             | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc.                                                    | Optional     |
-| tags              | Returns records for the specified tags.                                                                                                    | Optional     |
-| start_date        | Timeline start date in the format "YYYY-MM-DD". Should be used with start_date as timeline range.                                          | Optional     |
-| end_date          | Timeline end date in the format "YYYY-MM-DD". Should be used with end_date as timeline range.                                              | Optional     |
+| **Argument Name** | **Description**                                                                                                                                            | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| ioc_type          | Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email, Wallet-Address). Default is Domain. | Optional     |
+| ioc               | Returns records for the specified indicator value.                                                                                                         | Optional     |
+| from              | Returns records that starts from the given page number (the value of the form parameter) in the results list. Default is 1.                                | Optional     |
+| limit             | Number of records to return (max 100). Using a smaller limit will get faster responses. Default is 1.                                                      | Optional     |
+| sort_by           | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen.                    | Optional     |
+| order             | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc.                                                                    | Optional     |
+| tags              | Returns records for the specified tags.                                                                                                                    | Optional     |
+| start_date        | Timeline start date in the format "YYYY-MM-DD". Should be used with start_date as timeline range.                                                          | Optional     |
+| end_date          | Timeline end date in the format "YYYY-MM-DD". Should be used with end_date as timeline range.                                                              | Optional     |
 
 #### Context Output
 

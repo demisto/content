@@ -1,6 +1,6 @@
 ## Mimecast Event Collector  
 
-In order to retrieve your Mimecast credentials for Cortex XSIEM, follow the instructions below. 
+In order to retrieve your Mimecast credentials for Cortex XSIAM, follow the instructions below. 
 
 ### Application ID and Application Key 
 Perform the following steps in your Mimecast application:  

@@ -26,6 +26,7 @@ from urllib.parse import urlparse
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -65,9 +66,7 @@ token_auth = APIKeyHeader(auto_error=False, name="Authorization")
 class GenericWebhookAccessFormatter(AccessFormatter):
     def get_user_agent(self, scope: dict) -> str:
         headers = scope.get("headers", [])
-        user_agent_header = list(
-            filter(lambda header: header[0].decode() == "user-agent", headers)
-        )
+        user_agent_header = list(filter(lambda header: header[0].decode() == "user-agent", headers))
         user_agent = ""
         if len(user_agent_header) == 1:
             user_agent = user_agent_header[0][1].decode()
@@ -89,9 +88,7 @@ async def handle_post(
 ):
     del credentials, token
     global client
-    incident_type: str | None = demisto.params().get(
-        "incidentType", "Commvault Suspicious File Activity"
-    )
+    incident_type: str | None = demisto.params().get("incidentType", "Commvault Suspicious File Activity")
     incident_body = handle_post_helper(client, incident, request)
     if client:
         client.create_incident(
@@ -109,9 +106,7 @@ def handle_post_helper(client, incident, request):
         epoch = datetime(1970, 1, 1)
         seconds_since_epoch = (current_date - epoch).total_seconds()
         event_id = incident[field_mapper(Constants.event_id, Constants.source_webhook)]
-        event_time = incident[
-            field_mapper(Constants.event_time, Constants.source_webhook)
-        ]
+        event_time = incident[field_mapper(Constants.event_time, Constants.source_webhook)]
         hostname = (
             ""
             if (request is None)  # type: ignore
@@ -125,13 +120,9 @@ def handle_post_helper(client, incident, request):
             "msg_id": None,
             "process_id": None,
             "sd": {},
-            "timestamp": datetime.fromtimestamp(seconds_since_epoch).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ),
+            "timestamp": datetime.fromtimestamp(seconds_since_epoch).strftime("%Y-%m-%d %H:%M:%S"),
             "occurred": None,
-            "originating_program": incident[
-                field_mapper(Constants.originating_program, Constants.source_webhook)
-            ],
+            "originating_program": incident[field_mapper(Constants.originating_program, Constants.source_webhook)],
             "event_id": event_id,
             "event_time": event_time,
             "host_name": hostname,
@@ -188,9 +179,7 @@ def if_zero_set_none(value: str | None | int) -> str | None | int:
     return None
 
 
-def extract_from_regex(
-    message: str, default_value: str | None, *regex_string_args: str
-) -> str | None:
+def extract_from_regex(message: str, default_value: str | None, *regex_string_args: str) -> str | None:
     """
     From the message, extract the strings matching the given patterns
     """
@@ -239,6 +228,8 @@ class Constants:
     source_webhook: str = "webhook"
     source_fetch_incidents: str = "fetch"
     description: str = "description"
+    max_vm_fetch: int = 1000
+    default_recovery_group_name: str = "APIRecoveryGroup"
 
 
 def field_mapper(field_name: str, source: str = Constants.source_syslog) -> str:
@@ -358,13 +349,9 @@ class Client(BaseClient):
 
     def set_props(self, params):
         self.keyvault_url = params.get("AzureKeyVaultUrl", {}).get("password")
-        self.keyvault_tenant_id = params.get("AzureKeyVaultTenantId", {}).get(
-            "password"
-        )
+        self.keyvault_tenant_id = params.get("AzureKeyVaultTenantId", {}).get("password")
         self.keyvault_client_id = params.get("AzureKeyVaultClientId")
-        self.keyvault_client_secret = params.get("AzureKeyVaultClientSecret", {}).get(
-            "password"
-        )
+        self.keyvault_client_secret = params.get("AzureKeyVaultClientSecret", {}).get("password")
 
     def get_host(self):
         if self.ws_url:
@@ -380,9 +367,7 @@ class Client(BaseClient):
         Returns:
             self.headers
         """
-        if (
-            not hasattr(self, "qsdk_token") or self.qsdk_token is None
-        ):  # for logging in, before self.access_token is set
+        if not hasattr(self, "qsdk_token") or self.qsdk_token is None:  # for logging in, before self.access_token is set
             return {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
@@ -409,19 +394,19 @@ class Client(BaseClient):
             response = self._http_request(
                 method=method.upper(),
                 url_suffix=endpoint,
-                headers=self.headers if (not headers) else headers,
+                headers=headers if headers else self.headers,
                 json_data=json_data,
                 params=params,
                 resp_type="response",
                 return_empty_response=ignore_empty_response,
             )
+
             response.raise_for_status()
         except requests.exceptions.HTTPError as exc:
             error_msg = HTTP_ERRORS.get(exc.response.status_code)
             if error_msg:
                 raise DemistoException(f"{error_msg}", res=exc.response) from exc
         retval = response.json()
-
         return retval
 
     def validate_session_or_generate_token(self, api_token: str) -> bool:
@@ -431,19 +416,14 @@ class Client(BaseClient):
         context_info = demisto.getIntegrationContext()
         if "tokenDetails" in context_info:
             self.access_token = context_info.get("tokenDetails", {}).get("accessToken")
-            self.access_token_last_generation = context_info.get(
-                "tokenDetails", {}
-            ).get("accessTokenGenerationTime")
+            self.access_token_last_generation = context_info.get("tokenDetails", {}).get("accessTokenGenerationTime")
         if self.access_token_last_generation is None:
             demisto.debug("Token is not present, we will create new token.")
             return self.generate_access_token(api_token)
         else:
             current_epoch = int(datetime.now().timestamp())
             token_expiry_from_last_generation = int(
-                (
-                    self.access_token_last_generation
-                    + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
-                )
+                self.access_token_last_generation + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
             )
             if current_epoch > token_expiry_from_last_generation:
                 demisto.debug("Token is expired, re-generating")
@@ -460,9 +440,7 @@ class Client(BaseClient):
         auth_token = "QSDK " + api_token
         self.qsdk_token = auth_token
         current_epoch = int(datetime.now().timestamp())
-        token_expiry_epoch = (
-            current_epoch + self.access_token_expiry_in_days * 24 * 60 * 60
-        )
+        token_expiry_epoch = current_epoch + self.access_token_expiry_in_days * 24 * 60 * 60
         token_name = f"soar-crt{current_epoch}-exp{token_expiry_epoch}"
         request_body = {
             "tokenExpires": {"time": token_expiry_epoch},
@@ -547,10 +525,8 @@ class Client(BaseClient):
                         break
                     self.perform_long_running_loop(line.strip())
                 except Exception as error:
-                    demisto.error(traceback.format_exc())  # print the traceback
-                    demisto.error(
-                        f"Error occurred during long running loop. Error was: {error}"
-                    )
+                    demisto.error(traceback.format_exc())
+                    demisto.error(f"Error occurred during long running loop. Error was: {error}")
         finally:
             file_obj.close()
 
@@ -558,9 +534,7 @@ class Client(BaseClient):
         """
         Function to start long running loop
         """
-        incident_type: str = demisto.params().get(
-            "incidentType", "Commvault Suspicious File Activity"
-        )
+        incident_type: str = demisto.params().get("incidentType", "Commvault Suspicious File Activity")
 
         extracted_message = self.parse_incoming_message(socket_data)
         if extracted_message:
@@ -583,7 +557,7 @@ class Client(BaseClient):
         """
         date_str = date_obj.strftime("%d %B, %Y, %H:%M:%S")
         incidents = []
-        if type(extracted_message) != list:
+        if type(extracted_message) is not list:
             extracted_message = [extracted_message]
         for message_ in extracted_message:
             incident = {
@@ -606,7 +580,6 @@ class Client(BaseClient):
         """
         Function to get events
         """
-        self.validate_session_or_generate_token(self.current_api_token)
         current_date = datetime.utcnow()
         epoch = datetime(1970, 1, 1)
         seconds_since_epoch = int((current_date - epoch).total_seconds())
@@ -614,11 +587,7 @@ class Client(BaseClient):
         if fromtime is None:
             fromtime = str(dateparser.parse(first_fetch_time))
             fromtime = int(time.mktime(datetime.fromisoformat(fromtime).timetuple()))
-        ustring = (
-            "/events?level=10&showInfo=false&showMinor=false&"
-            "showMajor=true&showCritical=false&"
-            "showAnomalous=true"
-        )
+        ustring = "/events?level=10&showInfo=false&showMinor=false&showMajor=true&showCritical=false&showAnomalous=true"
         event_endpoint = f"{ustring}&fromTime={fromtime}&toTime={seconds_since_epoch}"  # disable-secrets-detection
         headers = self.headers
         if max_fetch is None:
@@ -635,7 +604,6 @@ class Client(BaseClient):
         :param subclient_id: subclient Id
         :return: string
         """
-        self.validate_session_or_generate_token(self.current_api_token)
         resp = self.http_request("GET", "/Subclient/" + str(subclient_id), None)
         resp = resp.get("subClientProperties", [{}])[0].get("content")
         return resp
@@ -651,9 +619,7 @@ class Client(BaseClient):
             severity = Constants.severity_info
         return severity
 
-    def fetch_file_details(
-        self, job_id: Union[int, str] | None, subclient_id: Union[int, str]
-    ) -> tuple[list, list]:
+    def fetch_file_details(self, job_id: Union[int, str] | None, subclient_id: Union[int, str]) -> tuple[list, list]:
         """
         Function to fetch the scanned folders list during the backup job
         """
@@ -693,22 +659,17 @@ class Client(BaseClient):
         """
         try:
             syslog_message: syslogmp.Message = parse_no_length_limit(log_message)
-            self.validate_session_or_generate_token(self.current_api_token)
             message = syslog_message.message.decode("utf-8")
 
             event_time = extract_from_regex(
                 message,
                 "",
-                "#011 {}: (.*?)#011".format(
-                    field_mapper(Constants.event_time, Constants.source_syslog)
-                ),
+                f"#011 {field_mapper(Constants.event_time, Constants.source_syslog)}: (.*?)#011",
             )
             event_id = extract_from_regex(
                 message,
                 "",
-                "#011 {}: (.*?)#011".format(
-                    field_mapper(Constants.event_id, Constants.source_syslog)
-                ),
+                f"#011 {field_mapper(Constants.event_id, Constants.source_syslog)}: (.*?)#011",
             )
             incident = {
                 "facility": Constants.facility,
@@ -724,11 +685,7 @@ class Client(BaseClient):
                 "originating_program": extract_from_regex(
                     message,
                     "",
-                    r"{}: ([\w]+)+:?".format(
-                        field_mapper(
-                            Constants.originating_program, Constants.source_syslog
-                        )
-                    ),
+                    rf"{field_mapper(Constants.originating_program, Constants.source_syslog)}: ([\w]+)+:?",
                 ),
             }
 
@@ -738,9 +695,7 @@ class Client(BaseClient):
             incident.update(inc)  # type: ignore
             return incident
         except syslogmp.parser.MessageFormatError as error:
-            demisto.debug(
-                f"Could not parse the log message, got MessageFormatError. Error was: {error}"
-            )
+            demisto.debug(f"Could not parse the log message, got MessageFormatError. Error was: {error}")
         return None
 
     def get_incident_details(self, message: str) -> dict | None:
@@ -767,18 +722,9 @@ class Client(BaseClient):
         if job_details is None:
             demisto.info(f"Invalid job [{job_id}]")
             return None
-        job_start_time = int(
-            job_details.get("jobs", [{}])[0].get("jobSummary", {}).get("jobStartTime")
-        )
-        job_end_time = int(
-            job_details.get("jobs", [{}])[0].get("jobSummary", {}).get("jobEndTime")
-        )
-        subclient_id = (
-            job_details.get("jobs", [{}])[0]
-            .get("jobSummary", {})
-            .get("subclient", {})
-            .get("subclientId")
-        )
+        job_start_time = int(job_details.get("jobs", [{}])[0].get("jobSummary", {}).get("jobStartTime"))
+        job_end_time = int(job_details.get("jobs", [{}])[0].get("jobSummary", {}).get("jobEndTime"))
+        subclient_id = job_details.get("jobs", [{}])[0].get("jobSummary", {}).get("subclient", {}).get("subclientId")
         files_list, scanned_folder_list = self.fetch_file_details(job_id, subclient_id)
         details = {
             "subclient_id": subclient_id,
@@ -789,63 +735,47 @@ class Client(BaseClient):
             "originating_client": extract_from_regex(
                 message,
                 "",
-                r"{} \[(.*?)\]".format(field_mapper(Constants.originating_client)),
+                rf"{field_mapper(Constants.originating_client)} \[(.*?)\]",
             ),
             "affected_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}:\[(.*?)\]".format(
-                        field_mapper(Constants.affected_files_count)
-                    ),
+                    rf"{field_mapper(Constants.affected_files_count)}:\[(.*?)\]",
                 )
             ),
             "modified_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.modified_files_count)
-                    ),
+                    rf"{field_mapper(Constants.modified_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "deleted_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.deleted_files_count)
-                    ),
+                    rf"{field_mapper(Constants.deleted_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "renamed_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.renamed_files_count)
-                    ),
+                    rf"{field_mapper(Constants.renamed_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
             "created_files_count": if_zero_set_none(
                 extract_from_regex(
                     message,
                     None,
-                    r"{}FileCount:\[(.*?)\]".format(
-                        field_mapper(Constants.created_files_count)
-                    ),
+                    rf"{field_mapper(Constants.created_files_count)}FileCount:\[(.*?)\]",
                 )
             ),
-            "job_start_time": datetime.utcfromtimestamp(job_start_time).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ),
-            "job_end_time": datetime.utcfromtimestamp(job_end_time).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ),
+            "job_start_time": datetime.utcfromtimestamp(job_start_time).strftime("%Y-%m-%d %H:%M:%S"),
+            "job_end_time": datetime.utcfromtimestamp(job_end_time).strftime("%Y-%m-%d %H:%M:%S"),
             "job_id": job_id,
-            "external_link": extract_from_regex(
-                message, "", "href='(.*?)'", 'href="(.*?)"'
-            ),
+            "external_link": extract_from_regex(message, "", "href='(.*?)'", 'href="(.*?)"'),
             "description": description,
         }
         return details
@@ -857,11 +787,8 @@ class Client(BaseClient):
         :return: string
         """
         out = None
-        self.validate_session_or_generate_token(self.current_api_token)
         response = self.http_request("GET", "/Job/" + str(job_id), None)
-        if ("totalRecordsWithoutPaging" in response) and (
-            int(response["totalRecordsWithoutPaging"]) > 0
-        ):
+        if ("totalRecordsWithoutPaging" in response) and (int(response["totalRecordsWithoutPaging"]) > 0):
             out = response
         return out
 
@@ -871,10 +798,7 @@ class Client(BaseClient):
         :param job_id: Job Id
         :return: list
         """
-        self.job_details_body["advOptions"] = {
-            "advConfig": {"browseAdvancedConfigBrowseByJob": {"jobId": int(job_id)}}
-        }
-        self.validate_session_or_generate_token(self.current_api_token)
+        self.job_details_body["advOptions"] = {"advConfig": {"browseAdvancedConfigBrowseByJob": {"jobId": int(job_id)}}}
         resp = self.http_request("POST", "/DoBrowse", None, self.job_details_body)
         browse_responses = resp.get("browseResponses", [])
         file_list = []
@@ -910,9 +834,7 @@ class Client(BaseClient):
             response = requests.post(url, headers=headers, data=data)
             access_token = response.json().get("access_token")
         except Exception as error:
-            demisto.debug(
-                f"Failed to generate the access token to connect to Azure Keyvault due to [{error}]"
-            )
+            demisto.debug(f"Failed to generate the access token to connect to Azure Keyvault due to [{error}]")
         return access_token
 
     def get_secret_from_key_vault(self) -> str | None:
@@ -927,9 +849,7 @@ class Client(BaseClient):
         response = requests.get(url, headers=headers)
         response_json = response.json()
         if "error" in response_json:
-            if "was not found in this key vault" in response_json.get("error", {}).get(
-                "message", ""
-            ):
+            if "was not found in this key vault" in response_json.get("error", {}).get("message", ""):
                 secret = None
         else:
             secret = response_json.get("value")
@@ -957,17 +877,12 @@ class Client(BaseClient):
         """
         not_enable = False
         try:
-            self.validate_session_or_generate_token(self.current_api_token)
             response = self.http_request("GET", f"/V4/SAML/{identity_server_name}")
             if "error" in response:
-                demisto.debug(
-                    f"Error [{response.get('error',{}).get('errorString','')}]"
-                )
+                demisto.debug(f"Error [{response.get('error', {}).get('errorString', '')}]")
                 return False
             if response.get("enabled"):
-                demisto.debug(
-                    f"SAML is enabled for identity server [{identity_server_name}]. Going to disable it"
-                )
+                demisto.debug(f"SAML is enabled for identity server [{identity_server_name}]. Going to disable it")
                 body = {"enabled": not_enable, "type": "SAML"}
                 response = self.http_request(
                     "PUT",
@@ -975,9 +890,7 @@ class Client(BaseClient):
                     json_data=body,
                 )
                 if response.get("errorCode", 0) > 0:
-                    demisto.debug(
-                        f"Could not disable as [{response.get('errMessage')}]"
-                    )
+                    demisto.debug(f"Could not disable as [{response.get('errMessage')}]")
                     return False
         except Exception as error:
             demisto.debug(f"Could not disable identity provider due to [{error}]")
@@ -988,7 +901,6 @@ class Client(BaseClient):
         """
         Fetch SAML Providers and disable them
         """
-        self.validate_session_or_generate_token(self.current_api_token)
         response = self.http_request("GET", "/IdentityServers")
         if "errorMessage" in response:
             return False
@@ -1009,15 +921,10 @@ class Client(BaseClient):
         """
         user_id = None
         try:
-            self.validate_session_or_generate_token(self.current_api_token)
             response = self.http_request("GET", "/User?level=10")
             userslist = response["users"]
             current_user = next(
-                (
-                    user
-                    for user in userslist
-                    if user.get("email") == user_email or user.get("UPN") == user_email
-                ),
+                (user for user in userslist if user.get("email") == user_email or user.get("UPN") == user_email),
                 None,
             )
             if current_user:
@@ -1043,9 +950,7 @@ class Client(BaseClient):
         Get client id from the client name
         """
 
-        clientname = (
-            demisto.incident().get("CustomFields", {}).get("commvaultoriginatingclient")
-        )
+        clientname = demisto.incident().get("CustomFields", {}).get("commvaultoriginatingclient")
         if clientname is not None:
             resp = self.http_request("GET", "/GetId?clientname=" + clientname)
             return str(resp.get("clientId"))
@@ -1084,9 +989,7 @@ class Client(BaseClient):
                 },
             }
         }
-        response = self.http_request(
-            "POST", "/Client/" + str(clientId), None, requestObj
-        )
+        response = self.http_request("POST", "/Client/" + str(clientId), None, requestObj)
 
         return response
 
@@ -1097,31 +1000,15 @@ class Client(BaseClient):
         """
         if (
             (self.keyvault_url is not None and len(self.keyvault_url) != 0)
-            or (
-                self.keyvault_client_id is not None
-                and len(self.keyvault_client_id) != 0
-            )
-            or (
-                self.keyvault_client_secret is not None
-                and len(self.keyvault_client_secret) != 0
-            )
-            or (
-                self.keyvault_tenant_id is not None
-                and len(self.keyvault_tenant_id) != 0
-            )
+            or (self.keyvault_client_id is not None and len(self.keyvault_client_id) != 0)
+            or (self.keyvault_client_secret is not None and len(self.keyvault_client_secret) != 0)
+            or (self.keyvault_tenant_id is not None and len(self.keyvault_tenant_id) != 0)
         ):
             if (
                 (self.keyvault_url is None or len(self.keyvault_url) == 0)
-                or (
-                    self.keyvault_client_id is None or len(self.keyvault_client_id) == 0
-                )
-                or (
-                    self.keyvault_client_secret is None
-                    or len(self.keyvault_client_secret) == 0
-                )
-                or (
-                    self.keyvault_tenant_id is None or len(self.keyvault_tenant_id) == 0
-                )
+                or (self.keyvault_client_id is None or len(self.keyvault_client_id) == 0)
+                or (self.keyvault_client_secret is None or len(self.keyvault_client_secret) == 0)
+                or (self.keyvault_tenant_id is None or len(self.keyvault_tenant_id) == 0)
             ):
                 return False
             else:
@@ -1129,9 +1016,197 @@ class Client(BaseClient):
                     return False
         return True
 
-    def run_uvicorn_server(
-        self, port: int, certificate_path: str | None, private_key_path: str | None
-    ) -> None:
+    def list_recovery_target(self):
+        """
+        This function lists all available recovery targets and returns the ID of the first recovery target in the list.
+
+        Returns:
+            str: The ID of the first recovery target in the list, or None if no recovery targets are found.
+        """
+        recovery_target_id = None
+        response = self.http_request("GET", "/V4/recoverytargets", None)
+        if response is not None and "recoveryTargets" in response:
+            targets = response["recoveryTargets"]
+            for current_target in targets:
+                # Always selecting first recovery target with application type CLEAN_ROOM
+                if current_target.get("applicationType") == "CLEAN_ROOM":
+                    recovery_target_id = current_target["id"]
+                    break
+        return recovery_target_id
+
+    def search_recovery_group(self, recovery_group_name):
+        """
+        This function searches for a recovery group with the given name and returns its ID if found.
+
+        Args:
+            recovery_group_name (str): The name of the recovery group to search for.
+
+        Returns:
+            str: The ID of the recovery group if found, or None if not found.
+        """
+        recovery_group_id = None
+        response = self.http_request("GET", "/recoverygroups")
+        if response is not None and "recoveryGroups" in response:
+            groups = response["recoveryGroups"]
+            for group in groups:
+                current_group_name = group["name"].lower()
+                if current_group_name == recovery_group_name.lower():
+                    recovery_group_id = group["id"]
+                    demisto.info(f"Found recovery group {recovery_group_name} with id [{recovery_group_id}]")
+        return recovery_group_id
+
+    def add_recovery_group(self, target_id, recovery_group_name):
+        """
+        This function creates a new recovery group with the given name and target ID, or returns the ID of an existing
+        recovery group with the same name.
+
+        Args:
+            target_id (str): The ID of the recovery target to associate with the recovery group.
+            recovery_group_name (str): The name of the recovery group to create or search for.
+
+        Returns:
+            str: The ID of the newly created or existing recovery group.
+        """
+        recovery_group_id = None
+        recovery_group_id = self.search_recovery_group(recovery_group_name)
+        if recovery_group_id is None:
+            data = {
+                "name": recovery_group_name,
+                "target": {"id": target_id},
+                "recoveryPointDetails": {
+                    "recoveryPoint": 0,
+                    "recoveryPointCategory": "AUTOMATIC",
+                },
+            }
+            response = self.http_request("POST", "/recoverygroup", json_data=data)
+            if response is not None and "recoveryGroup" in response:
+                recovery_group_id = response["recoveryGroup"]["id"]
+        else:
+            demisto.info(f"Recovery group exists with id [{recovery_group_id}]")
+        return recovery_group_id
+
+    def add_vm_to_recovery(self, target_id, recovery_group_id, vm_info, recovery_point_timestamp):
+        """
+        This function adds a virtual machine to a recovery group with the specified recovery point timestamp.
+
+        Args:
+            target_id (str): The ID of the recovery target.
+            recovery_group_id (str): The ID of the recovery group to add the VM to.
+            vm_info (dict): A dictionary containing information about the VM, including backupSetId, vmGuid, vmName,
+                vmGroupId, and hypervisorId.
+            recovery_point_timestamp (int): The recovery point timestamp for the VM.
+
+        Returns:
+            bool: True if the VM was successfully added to the recovery group, False otherwise.
+        """
+        data = {
+            "entities": [
+                {
+                    "backupSet": {"id": vm_info["backupSetId"]},
+                    "virtualMachine": {
+                        "GUID": vm_info["vmGuid"],
+                        "name": vm_info["vmName"],
+                    },
+                    "target": {"id": target_id},
+                    "recoveryGroup": {"id": recovery_group_id},
+                    "vmGroup": {"id": vm_info["vmGroupId"]},
+                    "client": {"id": vm_info["hypervisorId"]},
+                    "recoveryPointDetails": {
+                        "entityRecoveryPoint": recovery_point_timestamp,
+                        "inheritedFrom": "RECOVERY_ENTITY",
+                        "entityRecoveryPointCategory": "POINT_IN_TIME",
+                    },
+                    "workload": 8,
+                }
+            ]
+        }
+
+        response = self.http_request("POST", f"/recoverygroup/{recovery_group_id}/entity", json_data=data)
+        if response is not None:
+            if response["errorCode"] == 0:
+                demisto.info("Added the entity VM [{}] to recovery group".format(vm_info["vmName"]))
+            else:
+                demisto.info(
+                    "Error code [{}] : Failed to add entity due to [{}]".format(response["errorCode"], response["errorMessage"])
+                )
+        else:
+            demisto.error(f"Status code [{response.status_code}]")
+            return False
+        return True
+
+    def fetch_vm_details(self, vm_name):
+        """
+        This function fetches details of a virtual machine with the given name.
+
+        Args:
+            vm_name (str): The name of the virtual machine to fetch details for.
+
+        Returns:
+            dict: A dictionary containing information about the VM, including vmName, vmGroupId, hypervisorId, vmGuid,
+                and backupSetId. If the VM is not found, an empty dictionary is returned.
+        """
+        vm_info = {}
+        headers = self.headers
+        headers["pagingInfo"] = f"0,{Constants.max_vm_fetch}"
+        response = self.http_request("GET", "/v4/virtualmachines", headers=headers)
+        if response is not None and "virtualMachines" in response:
+            vms = response["virtualMachines"]
+            for vm in vms:
+                current_vm_name = vm["name"].lower()
+                if current_vm_name == vm_name.lower():
+                    demisto.info(f"Found VM [{current_vm_name}] ")
+                    vm_info["vmName"] = vm_name
+                    vm_info["vmGroupId"] = vm["vmGroup"]["id"]
+                    vm_info["hypervisorId"] = vm["hypervisor"]["id"]
+                    vm_info["vmGuid"] = vm["UUID"]
+                    if "backupset" in vm:
+                        vm_info["backupSetId"] = vm["backupset"]["backupSetId"]
+        return vm_info
+
+    def get_point_in_time_timestamp(self, input_date):
+        """
+        This function calculates a timestamp for a point in time based on the number of days specified.
+
+        Args:
+            num_days (int): The number of days to go back from the current time.
+
+        Returns:
+            int: The timestamp for the specified point in time.
+        """
+        epoch_time = None
+        try:
+            dt = datetime.strptime(input_date, "%d:%m:%Y %H:%M:%S")
+            dt = dt.replace(tzinfo=None)
+            epoch_time = int(dt.timestamp())
+        except Exception:
+            demisto.error("Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss")
+        return epoch_time
+
+    def add_vm_to_recovery_group(self, vm_name, inpute_date):
+        point_in_time_ts = self.get_point_in_time_timestamp(inpute_date)
+        demisto.error(f"Point in time reference {point_in_time_ts}")
+        recovery_group_name = Constants.default_recovery_group_name
+        target_id = self.list_recovery_target()
+        demisto.debug(f"Target Id {target_id}")
+        if target_id is not None:
+            vm_info = self.fetch_vm_details(vm_name)
+            demisto.debug(f"Found VM with details {vm_info}")
+            if len(vm_info) > 0:
+                recovery_group_id = self.add_recovery_group(target_id, recovery_group_name)
+                if recovery_group_id is not None:
+                    if self.add_vm_to_recovery(target_id, recovery_group_id, vm_info, point_in_time_ts):
+                        return True
+                    else:
+                        raise Exception(f"Add VM [{vm_name}] to recovery group failed.")
+                else:
+                    raise Exception("Recovery group is not available.")
+            else:
+                raise Exception("VM information is not available.")
+        else:
+            raise Exception("Recovery target is not available.")
+        return False
+
+    def run_uvicorn_server(self, port: int, certificate_path: str | None, private_key_path: str | None) -> None:
         """
         Start uvicorn server
         """
@@ -1159,21 +1234,14 @@ class Client(BaseClient):
                         **ssl_args,  # type: ignore
                     )
         except Exception as error:
-            demisto.error(
-                f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
-            )
+            demisto.error(f"An error occurred in the long running loop: {str(error)} - {format_exc()}")
             demisto.updateModuleHealth(f"An error occurred: {str(error)}")
 
 
-def fetch_incidents(
-    client, last_run, first_fetch_time
-) -> tuple[dict, Union[list, None]]:
-
+def fetch_incidents(client, last_run, first_fetch_time) -> tuple[dict, Union[list, None]]:
     max_fetch = demisto.params().get("max_fetch")
 
-    events = client.get_events_list(
-        None if (last_run is None) else last_run, first_fetch_time, max_fetch
-    )
+    events = client.get_events_list(None if (last_run is None) else last_run, first_fetch_time, max_fetch)
 
     current_date = datetime.utcnow()
     epoch = datetime(1970, 1, 1)
@@ -1193,12 +1261,8 @@ def fetch_incidents(
     for event in events:
         if event.get("eventCodeString") == "14:337":
             lasttimestamp = {"lastRun": str(int(event.get("timeSource")) + 1)}
-            event_id = event[
-                field_mapper(Constants.event_id, Constants.source_fetch_incidents)
-            ]
-            event_time = event[
-                field_mapper(Constants.event_time, Constants.source_fetch_incidents)
-            ]
+            event_id = event[field_mapper(Constants.event_id, Constants.source_fetch_incidents)]
+            event_time = event[field_mapper(Constants.event_time, Constants.source_fetch_incidents)]
             incident = {
                 "facility": Constants.facility,
                 "msg": None,
@@ -1206,14 +1270,10 @@ def fetch_incidents(
                 "process_id": None,
                 "sd": {},
                 "host_name": domain,
-                "timestamp": datetime.fromtimestamp(seconds_since_epoch).strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
+                "timestamp": datetime.fromtimestamp(seconds_since_epoch).strftime("%Y-%m-%d %H:%M:%S"),
                 "occurred": None,
                 "event_id": event_id,
-                "event_time": datetime.fromtimestamp(event_time).strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
+                "event_time": datetime.fromtimestamp(event_time).strftime("%Y-%m-%d %H:%M:%S"),
                 "originating_program": event[
                     field_mapper(
                         Constants.originating_program,
@@ -1251,7 +1311,7 @@ def disable_data_aging(client):
 def copy_files_to_war_room():
     files = demisto.incident().get("CustomFields", {}).get("commvaultfileslist")
     out_resp = ""
-    for file_ in files if (not (files is None)) else []:
+    for file_ in files if (files is not None) else []:
         out_resp = out_resp + file_["folder"] + "\\" + file_["filename"] + "\n"
     demisto.results(fileResult("Suspiciousfiles.txt", str(out_resp).encode()))
     return "Copied files to the War Room with the file name Suspiciousfiles.txt"
@@ -1310,11 +1370,24 @@ def get_secret_from_key_vault(client):
     )
 
 
+def add_vm_to_cleanroom(client, vm_name, clean_recovery_point_date):
+    resp = None
+    if client.add_vm_to_recovery_group(vm_name, clean_recovery_point_date):
+        resp = "Successfully added entity to clean room."
+    else:
+        raise DemistoException("Could not add entity to clean room")
+    return CommandResults(
+        outputs_prefix="CommvaultSecurityIQ.AddEntityToCleanroom",
+        outputs_key_field="AddEntityToCleanroom",
+        outputs={"AddEntityToCleanroomResponse": resp},
+    )
+
+
 def get_params(params):
     return (
         params.get("first_fetch", "1 day").strip(),
-        params.get('creds_certificate', {}).get('identifier'),
-        params.get('creds_certificate', {}).get('password', ''),
+        params.get("creds_certificate", {}).get("identifier"),
+        params.get("creds_certificate", {}).get("password", ""),
         params.get("CVWebserviceUrl", ""),
         params.get("incidentType", "Commvault Suspicious File Activity"),
         params.get("CommvaultAPIToken", {}).get("password"),
@@ -1323,26 +1396,17 @@ def get_params(params):
     )
 
 
-def validate_inputs(
-    portno, client, is_valid_cv_token, is_fetch, is_long_running, forwarding_rule_type
-):
+def validate_inputs(portno, client, is_valid_cv_token, is_fetch, is_long_running, forwarding_rule_type):
     try:
+        is_valid_cv_token = True
         if is_fetch and is_long_running:
-            raise DemistoException(
-                "Please enable only fetch incidents/long running integration"
-            )
+            raise DemistoException("Please enable only fetch incidents/long running integration")
         if portno > 0 and client.is_port_in_use(portno):
-            raise DemistoException(
-                f"Port [{portno}] is in use, please specify another port"
-            )
+            raise DemistoException(f"Port [{portno}] is in use, please specify another port")
         if not is_valid_cv_token:
-            raise DemistoException(
-                "Invalid Commvault API token/service URL."
-            )
+            raise DemistoException("Invalid Commvault API token/service URL.")
         if not is_fetch and not is_long_running:
-            raise DemistoException(
-                "Please enable fetch incidents/use forwarding rules."
-            )
+            raise DemistoException("Please enable fetch incidents/use forwarding rules.")
         else:
             if (
                 forwarding_rule_type
@@ -1352,13 +1416,9 @@ def validate_inputs(
                 )
                 and is_fetch
             ):
-                raise DemistoException(
-                    "Fetch incidents can not be used with forwarding rule."
-                )
+                raise DemistoException("Fetch incidents can not be used with forwarding rule.")
         if not client.validate_azure_keyvault_configuration():
-            raise DemistoException(
-                "Invalid Azure Keyvault configuration. Please provide correct parameters."
-            )
+            raise DemistoException("Invalid Azure Keyvault configuration. Please provide correct parameters.")
 
     except OSError as error:
         if "Address already in use" in str(error):
@@ -1387,23 +1447,19 @@ def main() -> None:
         is_long_running,
     ) = get_params(params)
     client = Client(base_url=cv_webservice_url + "api", verify=False, proxy=False)
-    is_valid_cv_token = None
+    is_valid_cv_token = True
     # Azure Key Vault Parameters
     client.set_props(params)
-    is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
+    client.qsdk_token = f"QSDK {cv_api_token}"
     forwarding_rule_type: str | None = params.get("forwardingRule")
     port: int = 0
     try:
         if is_long_running and (not is_fetch):
             port = int(params.get("longRunningPort"))
     except (ValueError, TypeError):
-        raise DemistoException(
-            f"Invalid listen port - {port}. Make sure your port is a number"
-        )
+        raise DemistoException(f"Invalid listen port - {port}. Make sure your port is a number")
     if not is_fetch and is_long_running and (port < 0 or port > MAX_PORT):
-        raise DemistoException(
-            f"Given port: {port} is not valid and must be between 0-{MAX_PORT}"
-        )
+        raise DemistoException(f"Given port: {port} is not valid and must be between 0-{MAX_PORT}")
     if forwarding_rule_type is not None:
         forwarding_rule_type = forwarding_rule_type.lower()
     demisto.debug(f"Command being called is {demisto.command()}")
@@ -1429,10 +1485,7 @@ def main() -> None:
             if (out is None) or len(out) == 0:
                 demisto.incidents([])
             else:
-                seconds_since_epoch = (
-                    date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
-                    // 1000
-                )
+                seconds_since_epoch = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S") // 1000
                 client.create_incident(
                     out,
                     datetime.fromtimestamp(seconds_since_epoch),
@@ -1451,16 +1504,12 @@ def main() -> None:
                         private_key_path = private_key_file.name
                         private_key_file.write(bytes(private_key, "utf-8"))
                 if forwarding_rule_type == Constants.source_syslog:
-                    server: StreamServer = client.prepare_globals_and_create_server(
-                        port, certificate_path, private_key_path
-                    )
+                    server: StreamServer = client.prepare_globals_and_create_server(port, certificate_path, private_key_path)
                     server.serve_forever()
                 if forwarding_rule_type == Constants.source_webhook:
                     client.run_uvicorn_server(port, certificate_path, private_key_path)
             except Exception as error:
-                demisto.error(
-                    f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
-                )
+                demisto.error(f"An error occurred in the long running loop: {str(error)} - {format_exc()}")
                 demisto.updateModuleHealth(f"An error occurred: {str(error)}")
             finally:
                 if certificate_path:
@@ -1481,14 +1530,16 @@ def main() -> None:
             return_results(get_secret_from_key_vault(client))
         elif command == "commvault-security-get-copy-files-list-to-war-room":
             return_results(copy_files_to_war_room())
+        elif command == "commvault-security-set-cleanroom-add-vm-to-recovery-group":
+            vm_name = demisto.args().get("vm_name")
+            clean_recovery_point_time = demisto.args().get("clean_recovery_point")
+            return_results(add_vm_to_cleanroom(client, vm_name, clean_recovery_point_time))
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
 
     # Log exceptions and return errors
     except Exception as error:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(error)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(error)}")
 
 
 """ ENTRY POINT """

@@ -72,913 +72,913 @@ name: Covalence For Security Providers
 script:
   commands:
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Maximum number of alerts to be returned, if none provided will be set to 1000
+    - description: Maximum number of alerts to be returned, if none provided will be set to 1000.
       name: max_count
-    - description: Initial index where to start listing alerts
+    - description: Initial index where to start listing alerts.
       name: initial_index
-    - description: Alert type to be listed
+    - description: Alert type to be listed.
       name: alert_type
-    - description: Minimal alert time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Minimal alert time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: alert_time_min
-    - description: Maximal alert time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Maximal alert time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: alert_time_max
-    - description: Advanced filter query
+    - description: Advanced filter query.
       name: advanced_filter
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: Lists Covalence alerts
+    description: Lists Covalence alerts.
     name: cov-secpr-list-alerts
     outputs:
     - contextPath: Covalence.Alert.acknowledgedStatus
-      description: Acknowledged Status
+      description: Acknowledged Status.
       type: String
     - contextPath: Covalence.Alert.alertCount
-      description: Alert Count
+      description: Alert Count.
       type: Number
     - contextPath: Covalence.Alert.alertHash
-      description: Alert Hash
+      description: Alert Hash.
       type: String
     - contextPath: Covalence.Alert.analystDescription
-      description: Analyst Description
+      description: Analyst Description.
       type: String
     - contextPath: Covalence.Alert.analystTitle
-      description: Analyst Title
+      description: Analyst Title.
       type: String
     - contextPath: Covalence.Alert.assignee
-      description: Assignee
+      description: Assignee.
       type: String
     - contextPath: Covalence.Alert.blacklistDetails.blacklistedEntity
-      description: Blacklisted Entity
+      description: Blacklisted Entity.
       type: String
     - contextPath: Covalence.Alert.blacklistDetails.bytesIn
-      description: Bytes In
+      description: Bytes In.
       type: Number
     - contextPath: Covalence.Alert.blacklistDetails.bytesOut
-      description: Bytes Out
+      description: Bytes Out.
       type: Number
     - contextPath: Covalence.Alert.blacklistDetails.listLabels
-      description: List Labels
+      description: List Labels.
       type: String
     - contextPath: Covalence.Alert.blacklistDetails.listUuids
-      description: List Uuids
+      description: List Uuids.
       type: String
     - contextPath: Covalence.Alert.createdTime
-      description: Created Time
+      description: Created Time.
       type: Number
     - contextPath: Covalence.Alert.destCiscoUmbrellaRanking
-      description: Dest Cisco Umbrella Ranking
+      description: Dest Cisco Umbrella Ranking.
       type: Number
     - contextPath: Covalence.Alert.destCiscoUmbrellaTopLevelDomainRanking
-      description: Dest Cisco Umbrella Top Level Domain Ranking
+      description: Dest Cisco Umbrella Top Level Domain Ranking.
       type: Number
     - contextPath: Covalence.Alert.destCityName
-      description: Dest City Name
+      description: Dest City Name.
       type: String
     - contextPath: Covalence.Alert.destCountryName
-      description: Dest Country Name
+      description: Dest Country Name.
     - contextPath: Covalence.Alert.destDomainName
-      description: Dest Domain Name
+      description: Dest Domain Name.
       type: String
     - contextPath: Covalence.Alert.destGeoX
-      description: Dest Geo X
+      description: Dest Geo X.
       type: Number
     - contextPath: Covalence.Alert.destGeoY
-      description: Dest Geo Y
+      description: Dest Geo Y.
       type: Number
     - contextPath: Covalence.Alert.destIp
-      description: Dest Ip
+      description: Dest Ip.
       type: String
     - contextPath: Covalence.Alert.destIpAttributes.k
-      description: Key
+      description: Key.
       type: String
     - contextPath: Covalence.Alert.destIpAttributes.t
-      description: Type
+      description: Type.
       type: Number
     - contextPath: Covalence.Alert.destIpAttributes.v
-      description: Value
+      description: Value.
       type: String
     - contextPath: Covalence.Alert.destMajesticMillionRanking
-      description: Dest Majestic Million Ranking
+      description: Dest Majestic Million Ranking.
       type: Number
     - contextPath: Covalence.Alert.destMajesticMillionTopLevelDomainRanking
-      description: Dest Majestic Million Top Level Domain Ranking
+      description: Dest Majestic Million Top Level Domain Ranking.
       type: Number
     - contextPath: Covalence.Alert.destPort
-      description: Dest Port
+      description: Dest Port.
       type: String
     - contextPath: Covalence.Alert.endpointAgentUuid
-      description: Endpoint Agent Uuid
+      description: Endpoint Agent Uuid.
       type: String
     - contextPath: Covalence.Alert.facility
-      description: Facility
+      description: Facility.
       type: String
     - contextPath: Covalence.Alert.id
-      description: Id
+      description: Id.
       type: String
     - contextPath: Covalence.Alert.isFavorite
-      description: Is Favorite
+      description: Is Favorite.
       type: Boolean
     - contextPath: Covalence.Alert.lastAlertedTime
-      description: Last Alerted Time
+      description: Last Alerted Time.
       type: Number
     - contextPath: Covalence.Alert.notes
-      description: Notes
+      description: Notes.
       type: String
     - contextPath: Covalence.Alert.organizationId
-      description: Organization Id
+      description: Organization Id.
       type: String
     - contextPath: Covalence.Alert.pcapResourceUuid
-      description: Pcap Resource Uuid
+      description: Pcap Resource Uuid.
       type: String
     - contextPath: Covalence.Alert.priority
-      description: Priority
+      description: Priority.
     - contextPath: Covalence.Alert.protocol
-      description: Protocol
+      description: Protocol.
       type: String
     - contextPath: Covalence.Alert.sensorId
-      description: Sensor Id
+      description: Sensor Id.
       type: String
     - contextPath: Covalence.Alert.severity
-      description: Severity
+      description: Severity.
       type: String
     - contextPath: Covalence.Alert.sigEvalDetails.id
-      description: Id
+      description: Id.
       type: Number
     - contextPath: Covalence.Alert.sigEvalDetails.message
-      description: Message
+      description: Message.
       type: String
     - contextPath: Covalence.Alert.sourceCiscoUmbrellaRanking
-      description: Source Cisco Umbrella Ranking
+      description: Source Cisco Umbrella Ranking.
       type: Number
     - contextPath: Covalence.Alert.sourceCiscoUmbrellaTopLevelDomainRanking
-      description: Source Cisco Umbrella Top Level Domain Ranking
+      description: Source Cisco Umbrella Top Level Domain Ranking.
       type: Number
     - contextPath: Covalence.Alert.sourceCityName
-      description: Source City Name
+      description: Source City Name.
       type: String
     - contextPath: Covalence.Alert.sourceCountryName
-      description: Source Country Name
+      description: Source Country Name.
       type: String
     - contextPath: Covalence.Alert.sourceDomainName
-      description: Source Domain Name
+      description: Source Domain Name.
       type: String
     - contextPath: Covalence.Alert.sourceGeoX
-      description: Source Geo X
+      description: Source Geo X.
       type: Number
     - contextPath: Covalence.Alert.sourceGeoY
-      description: Source Geo Y
+      description: Source Geo Y.
       type: Number
     - contextPath: Covalence.Alert.sourceIp
-      description: Source Ip
+      description: Source Ip.
       type: String
     - contextPath: Covalence.Alert.sourceIpAttributes.k
-      description: Key
+      description: Key.
       type: String
     - contextPath: Covalence.Alert.sourceIpAttributes.t
-      description: Type
+      description: Type.
       type: Number
     - contextPath: Covalence.Alert.sourceIpAttributes.v
-      description: Value
+      description: Value.
       type: String
     - contextPath: Covalence.Alert.sourceMajesticMillionRanking
-      description: Source Majestic Million Ranking
+      description: Source Majestic Million Ranking.
       type: Number
     - contextPath: Covalence.Alert.sourceMajesticMillionTopLevelDomainRanking
-      description: Source Majestic Million Top Level Domain Ranking
+      description: Source Majestic Million Top Level Domain Ranking.
       type: Number
     - contextPath: Covalence.Alert.sourcePort
-      description: Source Port
+      description: Source Port.
       type: String
     - contextPath: Covalence.Alert.subType
-      description: Sub Type
+      description: Sub Type.
       type: String
     - contextPath: Covalence.Alert.title
-      description: Title
+      description: Title.
       type: String
     - contextPath: Covalence.Alert.type
-      description: Type
+      description: Type.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: Lists Covalence sensors
+    description: Lists Covalence sensors.
     name: cov-secpr-list-sensors
     outputs:
     - contextPath: Covalence.Sensors.id
-      description: Id
+      description: Id.
       type: String
     - contextPath: Covalence.Sensors.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Covalence.Sensors.isAuthorized
-      description: Is Authorized
+      description: Is Authorized.
       type: Boolean
     - contextPath: Covalence.Sensors.isNetflowGenerator
-      description: Is Netflow Generator
+      description: Is Netflow Generator.
       type: Boolean
     - contextPath: Covalence.Sensors.bytesIn
-      description: Bytes In
+      description: Bytes In.
       type: Number
     - contextPath: Covalence.Sensors.bytesOut
-      description: Bytes Out
+      description: Bytes Out.
       type: Number
     - contextPath: Covalence.Sensors.lastActive
-      description: Last Active
+      description: Last Active.
       type: String
     - contextPath: Covalence.Sensors.listeningInterfaces
-      description: Listening Interfaces
+      description: Listening Interfaces.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Sensor id
+    - description: Sensor id.
       name: sensor_id
       required: true
-    description: Get sensor details when provided with the sensor id
+    description: Get sensor details when provided with the sensor id.
     name: cov-secpr-get-sensor
     outputs:
     - contextPath: Covalence.Sensor.id
-      description: Id
+      description: Id.
       type: String
     - contextPath: Covalence.Sensor.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Covalence.Sensor.isAuthorized
-      description: Is Authorized
+      description: Is Authorized.
       type: Boolean
     - contextPath: Covalence.Sensor.listeningInterfaces
-      description: Listening Interfaces
+      description: Listening Interfaces.
       type: String
     - contextPath: Covalence.Sensor.isNetflowGenerator
-      description: Is Netflow Generator
+      description: Is Netflow Generator.
       type: Boolean
     - contextPath: Covalence.Sensor.bytesIn
-      description: Bytes In
+      description: Bytes In.
       type: Number
     - contextPath: Covalence.Sensor.bytesOut
-      description: Bytes Out
+      description: Bytes Out.
       type: Number
     - contextPath: Covalence.Sensor.lastActive
-      description: Last Active
+      description: Last Active.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Maximum number of connection summary by ip to be returned, if none provided will be set to 100
+    - description: Maximum number of connection summary by ip to be returned, if none provided will be set to 100.
       name: max_count
-    - description: Initial index where to start listing connection summaries
+    - description: Initial index where to start listing connection summaries.
       name: initial_index
-    - description: source ip filter, if used only connections related to the specified source ip will be returned
+    - description: source ip filter, if used only connections related to the specified source ip will be returned.
       name: source_ip
-    - description: Minimal time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Minimal time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: start_time
-    - description: Maximal time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Maximal time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: end_time
-    - description: if "clients_only=true", only connections labeled as client connections will be returned
+    - description: if "clients_only=true", only connections labeled as client connections will be returned.
       name: clients_only
-    - description: if "internal_only=true", only internal connections will be returned
+    - description: if "internal_only=true", only internal connections will be returned.
       name: internal_only
-    - description: Advanced filter query
+    - description: Advanced filter query.
       name: advanced_filter
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: List summarized connections details by IP Address
+    description: List summarized connections details by IP Address.
     name: cov-secpr-connections-summary-ip
     outputs:
     - contextPath: Covalence.Connections.averageDuration
-      description: Average Duration
+      description: Average Duration.
       type: Number
     - contextPath: Covalence.Connections.bytesIn
-      description: Bytes In
+      description: Bytes In.
       type: Number
     - contextPath: Covalence.Connections.bytesOut
-      description: Bytes Out
+      description: Bytes Out.
       type: Number
     - contextPath: Covalence.Connections.clientServerRelationship
-      description: Client Server Relationship
+      description: Client Server Relationship.
       type: String
     - contextPath: Covalence.Connections.continuingConnectionCount
-      description: Continuing Connection Count
+      description: Continuing Connection Count.
       type: Number
     - contextPath: Covalence.Connections.destinationCity
-      description: Destination City
+      description: Destination City.
       type: String
     - contextPath: Covalence.Connections.destinationCountry
-      description: Destination Country
+      description: Destination Country.
       type: String
     - contextPath: Covalence.Connections.destinationId
-      description: Destination Id
+      description: Destination Id.
       type: String
     - contextPath: Covalence.Connections.destinationIpAddress
-      description: Destination Ip Address
+      description: Destination Ip Address.
       type: String
     - contextPath: Covalence.Connections.destinationMacAddress
-      description: Destination Mac Address
+      description: Destination Mac Address.
       type: String
     - contextPath: Covalence.Connections.dstDomainName
-      description: Dst Domain Name
+      description: Dst Domain Name.
       type: String
     - contextPath: Covalence.Connections.id
-      description: Id
+      description: Id.
       type: String
     - contextPath: Covalence.Connections.packetsIn
-      description: Packets In
+      description: Packets In.
       type: Number
     - contextPath: Covalence.Connections.packetsOut
-      description: Packets Out
+      description: Packets Out.
       type: Number
     - contextPath: Covalence.Connections.serverPortCount
-      description: Server Port Count
+      description: Server Port Count.
       type: Number
     - contextPath: Covalence.Connections.serverPorts
-      description: Server Ports
+      description: Server Ports.
       type: String
     - contextPath: Covalence.Connections.sourceCity
-      description: Source City
+      description: Source City.
       type: String
     - contextPath: Covalence.Connections.sourceCountry
-      description: Source Country
+      description: Source Country.
       type: String
     - contextPath: Covalence.Connections.sourceDomainName
-      description: Source Domain Name
+      description: Source Domain Name.
       type: String
     - contextPath: Covalence.Connections.sourceId
-      description: Source Id
+      description: Source Id.
       type: String
     - contextPath: Covalence.Connections.sourceIpAddress
-      description: Source Ip Address
+      description: Source Ip Address.
       type: String
     - contextPath: Covalence.Connections.sourceMacAddress
-      description: Source Mac Address
+      description: Source Mac Address.
       type: String
     - contextPath: Covalence.Connections.terminatedConnectionCount
-      description: Terminated Connection Count
+      description: Terminated Connection Count.
       type: Number
     - contextPath: Covalence.Connections.totalDuration
-      description: Total Duration
+      description: Total Duration.
       type: Number
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Maximum number of connection summary by port to be returned, if none provided will be set to 100
+    - description: Maximum number of connection summary by port to be returned, if none provided will be set to 100.
       name: max_count
-    - description: Initial index where to start listing connection summaries
+    - description: Initial index where to start listing connection summaries.
       name: initial_index
-    - description: source ip filter, only connections related to the specified source ip will be returned
+    - description: source ip filter, only connections related to the specified source ip will be returned.
       name: source_ip
       required: true
-    - description: Minimal time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Minimal time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: start_time
-    - description: Maximal time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Maximal time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: end_time
-    - description: if "clients_only=true", only connections labeled as client connections will be returned
+    - description: if "clients_only=true", only connections labeled as client connections will be returned.
       name: clients_only
-    - description: if "internal_only=true", only internal connections will be returned
+    - description: if "internal_only=true", only internal connections will be returned.
       name: internal_only
-    - description: Advanced filter query
+    - description: Advanced filter query.
       name: advanced_filter
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: List summarized connections details by Port
+    description: List summarized connections details by Port.
     name: cov-secpr-connections-summary-port
     outputs:
     - contextPath: Covalence.Connections.averageDuration
-      description: Average Duration
+      description: Average Duration.
       type: Number
     - contextPath: Covalence.Connections.bytesIn
-      description: Bytes In
+      description: Bytes In.
       type: Number
     - contextPath: Covalence.Connections.bytesOut
-      description: Bytes Out
+      description: Bytes Out.
       type: Number
     - contextPath: Covalence.Connections.continuingConnectionCount
-      description: Continuing Connection Count
+      description: Continuing Connection Count.
       type: Number
     - contextPath: Covalence.Connections.destinationCity
-      description: Destination City
+      description: Destination City.
       type: String
     - contextPath: Covalence.Connections.destinationCountry
-      description: Destination Country
+      description: Destination Country.
       type: String
     - contextPath: Covalence.Connections.destinationId
-      description: Destination Id
+      description: Destination Id.
       type: String
     - contextPath: Covalence.Connections.destinationIpAddress
-      description: Destination Ip Address
+      description: Destination Ip Address.
       type: String
     - contextPath: Covalence.Connections.destinationMacAddress
-      description: Destination Mac Address
+      description: Destination Mac Address.
       type: String
     - contextPath: Covalence.Connections.dstDomainName
-      description: Dst Domain Name
+      description: Dst Domain Name.
       type: String
     - contextPath: Covalence.Connections.endTime
-      description: End Time
+      description: End Time.
       type: Date
     - contextPath: Covalence.Connections.id
-      description: Id
+      description: Id.
       type: String
     - contextPath: Covalence.Connections.packetsIn
-      description: Packets In
+      description: Packets In.
       type: Number
     - contextPath: Covalence.Connections.packetsOut
-      description: Packets Out
+      description: Packets Out.
       type: Number
     - contextPath: Covalence.Connections.protocol
-      description: Protocol
+      description: Protocol.
       type: String
     - contextPath: Covalence.Connections.serverPort
-      description: Server Port
+      description: Server Port.
       type: Number
     - contextPath: Covalence.Connections.sourceCity
-      description: Source City
+      description: Source City.
       type: String
     - contextPath: Covalence.Connections.sourceCountry
-      description: Source Country
+      description: Source Country.
       type: String
     - contextPath: Covalence.Connections.sourceDomainName
-      description: Source Domain Name
+      description: Source Domain Name.
       type: String
     - contextPath: Covalence.Connections.sourceId
-      description: Source Id
+      description: Source Id.
       type: String
     - contextPath: Covalence.Connections.sourceIpAddress
-      description: Source Ip Address
+      description: Source Ip Address.
       type: String
     - contextPath: Covalence.Connections.sourceMacAddress
-      description: Source Mac Address
+      description: Source Mac Address.
       type: String
     - contextPath: Covalence.Connections.startTime
-      description: Start Time
+      description: Start Time.
       type: Date
     - contextPath: Covalence.Connections.terminatedConnectionCount
-      description: Terminated Connection Count
+      description: Terminated Connection Count.
       type: Number
     - contextPath: Covalence.Connections.totalDuration
-      description: Total Duration
+      description: Total Duration.
       type: Number
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Maximum number of DNS resolutions to be returned, if none provided will be set to 100
+    - description: Maximum number of DNS resolutions to be returned, if none provided will be set to 100.
       name: max_count
-    - description: Initial index where to start listing DNS resolutions
+    - description: Initial index where to start listing DNS resolutions.
       name: initial_index
-    - description: Minimal time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Minimal time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: request_time_after
-    - description: Maximal time in %Y-%m-%dT%H:%M:%S format and UTC time zone
+    - description: Maximal time in %Y-%m-%dT%H:%M:%S format and UTC time zone.
       name: request_time_before
-    - description: Domain name filter, if used will only return DNS resolutions from the specified domain name
+    - description: Domain name filter, if used will only return DNS resolutions from the specified domain name.
       name: domain_name
-    - description: IP filter, if used will only return DNS resolutions to the specified IP
+    - description: IP filter, if used will only return DNS resolutions to the specified IP.
       name: resolved_ip
-    - description: Source IP filter, if used will only return DNS resolutions originating from the specified IP
+    - description: Source IP filter, if used will only return DNS resolutions originating from the specified IP.
       name: request_origin_ip
-    - description: Nameserver IP filter, if used will only return DNS resolutions involving the specified nameserver IP
+    - description: Nameserver IP filter, if used will only return DNS resolutions involving the specified nameserver IP.
       name: nameserver_ip
-    - description: Advanced filter query
+    - description: Advanced filter query.
       name: advanced_filter
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: List summarized connections details by Port
+    description: List summarized connections details by Port.
     name: cov-secpr-list-dns-resolutions
     outputs:
     - contextPath: Covalence.DNSResolutions.id
-      description: Id
+      description: Id.
       type: String
     - contextPath: Covalence.DNSResolutions.domainName
-      description: Domain Name
+      description: Domain Name.
       type: String
     - contextPath: Covalence.DNSResolutions.resolvedIp
-      description: Resolved Ip
+      description: Resolved Ip.
       type: String
     - contextPath: Covalence.DNSResolutions.requestOriginIp
-      description: Request Origin Ip
+      description: Request Origin Ip.
       type: String
     - contextPath: Covalence.DNSResolutions.nameserverIp
-      description: Nameserver Ip
+      description: Nameserver Ip.
       type: String
     - contextPath: Covalence.DNSResolutions.nodeLabel
-      description: Node Label
+      description: Node Label.
       type: String
     - contextPath: Covalence.DNSResolutions.requestTime
-      description: Request Time
+      description: Request Time.
       type: Number
     - contextPath: Covalence.DNSResolutions.byteCount
-      description: Byte Count
+      description: Byte Count.
       type: Number
     - contextPath: Covalence.DNSResolutions.pktCount
-      description: Pkt Count
+      description: Pkt Count.
       type: Number
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    description: List internal networks
+    description: List internal networks.
     name: cov-secpr-list-internal-networks
     outputs:
     - contextPath: Covalence.InternalNetworks.cidr
-      description: Cidr
+      description: Cidr.
       type: String
     - contextPath: Covalence.InternalNetworks.notes
-      description: Notes
+      description: Notes.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: The network to be set as internal in CIDR notation
+    - description: The network to be set as internal in CIDR notation.
       name: cidr
       required: true
-    - description: Comment notes associated with the network, notes must be inside quotes
+    - description: Comment notes associated with the network, notes must be inside quotes.
       name: notes
       required: true
-    description: Set internal networks
+    description: Set internal networks.
     name: cov-secpr-set-internal-networks
     outputs:
     - contextPath: Covalence.InternalNetworks.cidr
-      description: Cidr
+      description: Cidr.
       type: String
     - contextPath: Covalence.InternalNetworks.notes
-      description: Notes
+      description: Notes.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Advanced filter query, if used any other parameters provided to the command will be ignored
+    - description: Advanced filter query, if used any other parameters provided to the command will be ignored.
       name: advanced_filter
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: List endpoint agents
+    description: List endpoint agents.
     name: cov-secpr-list-endpoint-agents
     outputs:
     - contextPath: Covalence.EndpointAgents.agentUuid
-      description: Agent Uuid
+      description: Agent Uuid.
       type: String
     - contextPath: Covalence.EndpointAgents.agentVersion
-      description: Agent Version
+      description: Agent Version.
       type: String
     - contextPath: Covalence.EndpointAgents.firstSeenTime
-      description: First Seen Time
+      description: First Seen Time.
       type: Date
     - contextPath: Covalence.EndpointAgents.lastSeenTime
-      description: Last Seen Time
+      description: Last Seen Time.
       type: Date
     - contextPath: Covalence.EndpointAgents.lastSessionUser
-      description: Last Session User
+      description: Last Session User.
       type: String
     - contextPath: Covalence.EndpointAgents.isMobile
-      description: Is Mobile
+      description: Is Mobile.
       type: Boolean
     - contextPath: Covalence.EndpointAgents.isConnected
-      description: Is Connected
+      description: Is Connected.
       type: Boolean
     - contextPath: Covalence.EndpointAgents.coreVersion
-      description: Core Version
+      description: Core Version.
       type: String
     - contextPath: Covalence.EndpointAgents.coreArchitecture
-      description: Core Architecture
+      description: Core Architecture.
       type: String
     - contextPath: Covalence.EndpointAgents.coreOs
-      description: Core Os
+      description: Core Os.
       type: String
     - contextPath: Covalence.EndpointAgents.operatingSystem
-      description: Operating System
+      description: Operating System.
       type: String
     - contextPath: Covalence.EndpointAgents.hostName
-      description: Host Name
+      description: Host Name.
       type: String
     - contextPath: Covalence.EndpointAgents.hardwareVendor
-      description: Hardware Vendor
+      description: Hardware Vendor.
       type: String
     - contextPath: Covalence.EndpointAgents.hardwareModel
-      description: Hardware Model
+      description: Hardware Model.
       type: String
     - contextPath: Covalence.EndpointAgents.arch
-      description: Arch
+      description: Arch.
       type: String
     - contextPath: Covalence.EndpointAgents.osDistro
-      description: Os Distro
+      description: Os Distro.
       type: String
     - contextPath: Covalence.EndpointAgents.osVersion
-      description: Os Version
+      description: Os Version.
       type: String
     - contextPath: Covalence.EndpointAgents.kernelVersion
-      description: Kernel Version
+      description: Kernel Version.
       type: String
     - contextPath: Covalence.EndpointAgents.operatingSystemReleaseId
-      description: Operating System Release Id
+      description: Operating System Release Id.
       type: String
     - contextPath: Covalence.EndpointAgents.ipAddress
-      description: Ip Address
+      description: Ip Address.
       type: String
     - contextPath: Covalence.EndpointAgents.secondaryIpAddress
-      description: Secondary Ip Address
+      description: Secondary Ip Address.
       type: String
     - contextPath: Covalence.EndpointAgents.ipAddresses
-      description: Ip Addresses
+      description: Ip Addresses.
       type: String
     - contextPath: Covalence.EndpointAgents.serialNumber
-      description: Serial Number
+      description: Serial Number.
       type: String
     - contextPath: Covalence.EndpointAgents.deviceIdentifier
-      description: Device Identifier
+      description: Device Identifier.
       type: String
     - contextPath: Covalence.EndpointAgents.cpuArchitectureEnum
-      description: Cpu Architecture Enum
+      description: Cpu Architecture Enum.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: User filter
+    - description: User filter.
       name: user
       required: true
-    description: List endpoint agents where the last session user is the one provided as parameter
+    description: List endpoint agents where the last session user is the one provided as parameter.
     name: cov-secpr-find-endpoint-agents-by-user
     outputs:
     - contextPath: Covalence.EndpointAgents.agentUuid
-      description: Agent Uuid
+      description: Agent Uuid.
       type: String
     - contextPath: Covalence.EndpointAgents.agentVersion
-      description: Agent Version
+      description: Agent Version.
       type: String
     - contextPath: Covalence.EndpointAgents.firstSeenTime
-      description: First Seen Time
+      description: First Seen Time.
       type: Date
     - contextPath: Covalence.EndpointAgents.lastSeenTime
-      description: Last Seen Time
+      description: Last Seen Time.
       type: Date
     - contextPath: Covalence.EndpointAgents.lastSessionUser
-      description: Last Session User
+      description: Last Session User.
       type: String
     - contextPath: Covalence.EndpointAgents.isMobile
-      description: Is Mobile
+      description: Is Mobile.
       type: Boolean
     - contextPath: Covalence.EndpointAgents.isConnected
-      description: Is Connected
+      description: Is Connected.
       type: Boolean
     - contextPath: Covalence.EndpointAgents.coreVersion
-      description: Core Version
+      description: Core Version.
       type: String
     - contextPath: Covalence.EndpointAgents.coreArchitecture
-      description: Core Architecture
+      description: Core Architecture.
       type: String
     - contextPath: Covalence.EndpointAgents.coreOs
-      description: Core Os
+      description: Core Os.
       type: String
     - contextPath: Covalence.EndpointAgents.operatingSystem
-      description: Operating System
+      description: Operating System.
       type: String
     - contextPath: Covalence.EndpointAgents.hostName
-      description: Host Name
+      description: Host Name.
       type: String
     - contextPath: Covalence.EndpointAgents.hardwareVendor
-      description: Hardware Vendor
+      description: Hardware Vendor.
       type: String
     - contextPath: Covalence.EndpointAgents.hardwareModel
-      description: Hardware Model
+      description: Hardware Model.
       type: String
     - contextPath: Covalence.EndpointAgents.arch
-      description: Arch
+      description: Arch.
       type: String
     - contextPath: Covalence.EndpointAgents.osDistro
-      description: Os Distro
+      description: Os Distro.
       type: String
     - contextPath: Covalence.EndpointAgents.osVersion
-      description: Os Version
+      description: Os Version.
       type: String
     - contextPath: Covalence.EndpointAgents.kernelVersion
-      description: Kernel Version
+      description: Kernel Version.
       type: String
     - contextPath: Covalence.EndpointAgents.operatingSystemReleaseId
-      description: Operating System Release Id
+      description: Operating System Release Id.
       type: String
     - contextPath: Covalence.EndpointAgents.ipAddress
-      description: Ip Address
+      description: Ip Address.
       type: String
     - contextPath: Covalence.EndpointAgents.secondaryIpAddress
-      description: Secondary Ip Address
+      description: Secondary Ip Address.
       type: String
     - contextPath: Covalence.EndpointAgents.ipAddresses
-      description: Ip Addresses
+      description: Ip Addresses.
       type: String
     - contextPath: Covalence.EndpointAgents.serialNumber
-      description: Serial Number
+      description: Serial Number.
       type: String
     - contextPath: Covalence.EndpointAgents.deviceIdentifier
-      description: Device Identifier
+      description: Device Identifier.
       type: String
     - contextPath: Covalence.EndpointAgents.cpuArchitectureEnum
-      description: Cpu Architecture Enum
+      description: Cpu Architecture Enum.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Endpoint agent UUID
+    - description: Endpoint agent UUID.
       name: uuid
       required: true
-    description: Find the endpoint agent with the UUID provided as parameter
+    description: Find the endpoint agent with the UUID provided as parameter.
     name: cov-secpr-find-endpoint-agents-by-uuid
     outputs:
     - contextPath: Covalence.EndpointAgents.agentUuid
-      description: Agent Uuid
+      description: Agent Uuid.
       type: String
     - contextPath: Covalence.EndpointAgents.agentVersion
-      description: Agent Version
+      description: Agent Version.
       type: String
     - contextPath: Covalence.EndpointAgents.firstSeenTime
-      description: First Seen Time
+      description: First Seen Time.
       type: Date
     - contextPath: Covalence.EndpointAgents.lastSeenTime
-      description: Last Seen Time
+      description: Last Seen Time.
       type: Date
     - contextPath: Covalence.EndpointAgents.lastSessionUser
-      description: Last Session User
+      description: Last Session User.
       type: String
     - contextPath: Covalence.EndpointAgents.isMobile
-      description: Is Mobile
+      description: Is Mobile.
       type: Boolean
     - contextPath: Covalence.EndpointAgents.isConnected
-      description: Is Connected
+      description: Is Connected.
       type: Boolean
     - contextPath: Covalence.EndpointAgents.coreVersion
-      description: Core Version
+      description: Core Version.
       type: String
     - contextPath: Covalence.EndpointAgents.coreArchitecture
-      description: Core Architecture
+      description: Core Architecture.
       type: String
     - contextPath: Covalence.EndpointAgents.coreOs
-      description: Core Os
+      description: Core Os.
       type: String
     - contextPath: Covalence.EndpointAgents.operatingSystem
-      description: Operating System
+      description: Operating System.
       type: String
     - contextPath: Covalence.EndpointAgents.hostName
-      description: Host Name
+      description: Host Name.
       type: String
     - contextPath: Covalence.EndpointAgents.hardwareVendor
-      description: Hardware Vendor
+      description: Hardware Vendor.
       type: String
     - contextPath: Covalence.EndpointAgents.hardwareModel
-      description: Hardware Model
+      description: Hardware Model.
       type: String
     - contextPath: Covalence.EndpointAgents.arch
-      description: Arch
+      description: Arch.
       type: String
     - contextPath: Covalence.EndpointAgents.osDistro
-      description: Os Distro
+      description: Os Distro.
       type: String
     - contextPath: Covalence.EndpointAgents.osVersion
-      description: Os Version
+      description: Os Version.
       type: String
     - contextPath: Covalence.EndpointAgents.kernelVersion
-      description: Kernel Version
+      description: Kernel Version.
       type: String
     - contextPath: Covalence.EndpointAgents.operatingSystemReleaseId
-      description: Operating System Release Id
+      description: Operating System Release Id.
       type: String
     - contextPath: Covalence.EndpointAgents.ipAddress
-      description: Ip Address
+      description: Ip Address.
       type: String
     - contextPath: Covalence.EndpointAgents.secondaryIpAddress
-      description: Secondary Ip Address
+      description: Secondary Ip Address.
       type: String
     - contextPath: Covalence.EndpointAgents.ipAddresses
-      description: Ip Addresses
+      description: Ip Addresses.
       type: String
     - contextPath: Covalence.EndpointAgents.serialNumber
-      description: Serial Number
+      description: Serial Number.
       type: String
     - contextPath: Covalence.EndpointAgents.deviceIdentifier
-      description: Device Identifier
+      description: Device Identifier.
       type: String
     - contextPath: Covalence.EndpointAgents.cpuArchitectureEnum
-      description: Cpu Architecture Enum
+      description: Cpu Architecture Enum.
       type: String
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
-    - description: Process name
+    - description: Process name.
       name: name
-    - description: Advanced filter query
+    - description: Advanced filter query.
       name: advanced_filter
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: Search processes by name or advanced filter, at least one parameter is required
+    description: Search processes by name or advanced filter, at least one parameter is required.
     name: cov-secpr-search-endpoint-process
     outputs:
     - contextPath: Covalence.EndpointProcess.id
-      description: Id
+      description: Id.
       type: Number
     - contextPath: Covalence.EndpointProcess.agentUuid
-      description: Agent Uuid
+      description: Agent Uuid.
       type: String
     - contextPath: Covalence.EndpointProcess.processName
-      description: Process Name
+      description: Process Name.
       type: String
     - contextPath: Covalence.EndpointProcess.processPath
-      description: Process Path
+      description: Process Path.
       type: String
     - contextPath: Covalence.EndpointProcess.parentProcessName
-      description: Parent Process Name
+      description: Parent Process Name.
       type: String
     - contextPath: Covalence.EndpointProcess.parentProcessPath
-      description: Parent Process Path
+      description: Parent Process Path.
       type: String
     - contextPath: Covalence.EndpointProcess.commandLine
-      description: Command Line
+      description: Command Line.
       type: String
     - contextPath: Covalence.EndpointProcess.username
-      description: Username
+      description: Username.
       type: String
     - contextPath: Covalence.EndpointProcess.firstSeenTime
-      description: First Seen Time
+      description: First Seen Time.
       type: Date
     - contextPath: Covalence.EndpointProcess.lastSeenTime
-      description: Last Seen Time
+      description: Last Seen Time.
       type: Date
     - contextPath: Covalence.EndpointProcess.lastEndTime
-      description: Last End Time
+      description: Last End Time.
       type: Date
     - contextPath: Covalence.EndpointProcess.seenCount
-      description: Seen Count
+      description: Seen Count.
       type: Number
     - contextPath: Covalence.EndpointProcess.activeCount
-      description: Active Count
+      description: Active Count.
       type: Number
   - arguments:
-    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation"'
+    - description: 'Only required in broker mode, used to target a specific organization: target_org="Acme Corporation".'
       name: target_org
     - description: The name of installed software, quotes are required is space character is used. At least one parameter is required.
       name: name
       required: true
-    - description: The version of installed software
+    - description: The version of installed software.
       name: version
-    - description: Advanced filter query
+    - description: Advanced filter query.
       name: advanced_filter
-    - description: if details=true, will return the complete response from Covalence API
+    - description: if details=true, will return the complete response from Covalence API.
       name: details
-    description: Search for endpoint installed software
+    description: Search for endpoint installed software.
     name: cov-secpr-search-endpoint-installed-software
     outputs:
     - contextPath: Covalence.EndpointSoftware.arch
-      description: Arch
+      description: Arch.
       type: Number
     - contextPath: Covalence.EndpointSoftware.type
-      description: Type
+      description: Type.
       type: Number
     - contextPath: Covalence.EndpointSoftware.packageManager
-      description: Package Manager
+      description: Package Manager.
       type: Number
     - contextPath: Covalence.EndpointSoftware.installTimestamp
-      description: Install Timestamp
+      description: Install Timestamp.
       type: Date
     - contextPath: Covalence.EndpointSoftware.uninstallTimestamp
-      description: Uninstall Timestamp
+      description: Uninstall Timestamp.
       type: Date
     - contextPath: Covalence.EndpointSoftware.name
-      description: Name
+      description: Name.
       type: String
     - contextPath: Covalence.EndpointSoftware.version
-      description: Version
+      description: Version.
       type: String
     - contextPath: Covalence.EndpointSoftware.vendor
-      description: Vendor
+      description: Vendor.
       type: String
     - contextPath: Covalence.EndpointSoftware.installPath
-      description: Install Path
+      description: Install Path.
       type: String
     - contextPath: Covalence.EndpointSoftware.appDataPath
-      description: App Data Path
+      description: App Data Path.
       type: String
     - contextPath: Covalence.EndpointSoftware.sharedDataPath
-      description: Shared Data Path
+      description: Shared Data Path.
       type: String
     - contextPath: Covalence.EndpointSoftware.installedForUser
-      description: Installed For User
+      description: Installed For User.
       type: String
     - contextPath: Covalence.EndpointSoftware.installSource
-      description: Install Source
+      description: Install Source.
       type: String
     - contextPath: Covalence.EndpointSoftware.id
-      description: Id
+      description: Id.
       type: Number
     - contextPath: Covalence.EndpointSoftware.agentUuid
-      description: Agent Uuid
+      description: Agent Uuid.
       type: String
     - contextPath: Covalence.EndpointSoftware.softwareNotifyAction
-      description: Software Notify Action
+      description: Software Notify Action.
       type: String
   - arguments: []
-    description: List monitored organizations, only available in broker mode
+    description: List monitored organizations, only available in broker mode.
     name: cov-secpr-list-organizations
     outputs:
     - contextPath: Covalence.Organization.org_name
-      description: Org_name
+      description: Org_name.
       type: String
-  dockerimage: demisto/xsoar-tools:1.0.0.25075
+  dockerimage: demisto/xsoar-tools:1.0.0.1902141
   isfetch: true
   script: '-'
   subtype: python3

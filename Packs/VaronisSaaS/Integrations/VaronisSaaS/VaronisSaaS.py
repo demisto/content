@@ -1,10 +1,12 @@
-from typing import Any
-import json
 import fnmatch
+import json
 import traceback
+from typing import Any
+
 import demistomock as demisto
-from CommonServerUserPython import *
 from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 
 class AlertAttributes:
@@ -59,14 +61,35 @@ class AlertAttributes:
     Alert_IngestTime = "Alert.IngestTime"
 
     Columns = [
-        Alert_Rule_Name, Alert_Rule_Severity_Name, Alert_TimeUTC, Alert_Rule_Category_Name, Alert_User_Name, Alert_Status_Name,
-        Alert_ID, Alert_Rule_ID, Alert_Rule_Severity_ID, Alert_Location_CountryName, Alert_Location_SubdivisionName,
-        Alert_Status_ID, Alert_EventsCount, Alert_Initial_Event_TimeUTC, Alert_User_SamAccountName, Alert_User_AccountType_Name,
-        Alert_Device_HostName, Alert_Device_IsMaliciousExternalIP, Alert_Device_ExternalIPThreatTypesName, Alert_Data_IsFlagged,
-        Alert_Data_IsSensitive, Alert_Filer_Platform_Name, Alert_Asset_Path, Alert_Filer_Name, Alert_CloseReason_Name,
-        Alert_Location_BlacklistedLocation, Alert_Location_AbnormalLocation, Alert_User_SidID,
-        Alert_IngestTime
-
+        Alert_Rule_Name,
+        Alert_Rule_Severity_Name,
+        Alert_TimeUTC,
+        Alert_Rule_Category_Name,
+        Alert_User_Name,
+        Alert_Status_Name,
+        Alert_ID,
+        Alert_Rule_ID,
+        Alert_Rule_Severity_ID,
+        Alert_Location_CountryName,
+        Alert_Location_SubdivisionName,
+        Alert_Status_ID,
+        Alert_EventsCount,
+        Alert_Initial_Event_TimeUTC,
+        Alert_User_SamAccountName,
+        Alert_User_AccountType_Name,
+        Alert_Device_HostName,
+        Alert_Device_IsMaliciousExternalIP,
+        Alert_Device_ExternalIPThreatTypesName,
+        Alert_Data_IsFlagged,
+        Alert_Data_IsSensitive,
+        Alert_Filer_Platform_Name,
+        Alert_Asset_Path,
+        Alert_Filer_Name,
+        Alert_CloseReason_Name,
+        Alert_Location_BlacklistedLocation,
+        Alert_Location_AbnormalLocation,
+        Alert_User_SidID,
+        Alert_IngestTime,
     ]
 
     ExtraColumns = [
@@ -86,7 +109,7 @@ class AlertAttributes:
         Alert_Location_AbnormalLocationID,
         Alert_MitreTactic_Name,
         Alert_MitreTactic_ID,
-        Alert_Time
+        Alert_Time,
     ]
 
     def get_fields(self, extra_fields: Optional[list[str]]) -> list[str]:
@@ -103,7 +126,6 @@ class AlertAttributes:
 class AlertItem:
     def __init__(self, row: dict):
         self.row = row
-        pass
 
     def __getitem__(self, key: str) -> Any:
         if hasattr(self.row, key):
@@ -129,8 +151,29 @@ class BaseMapper:
 
 MAX_DAYS_BACK = 180
 THREAT_MODEL_ENUM_ID = 5821
-ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
-ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
+ALERT_STATUSES = {"new": 1, "under investigation": 2, "closed": 3, "action required": 4, "auto-resolved": 5}
+ALERT_SEVERITIES = {"high": 0, "medium": 1, "low": 2}
+INCIDENT_FIELDS = [
+    "ID",
+    "Category",
+    "Name",
+    "Status",
+    "severity",
+    "IPThreatTypes",
+    "CloseReason",
+    "CloseNotes",
+    "NumOfAlertedEvents",
+    "ContainsFlaggedData",
+    "ContainMaliciousExternalIP",
+    "ContainsSensitiveData",
+    "Locations",
+    "Devices",
+    "Users",
+]
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Outgoing": "Out",
+}
 
 
 class Client(BaseClient):
@@ -146,61 +189,57 @@ class Client(BaseClient):
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self._session.verify = verify
-        if not verify and self._session.adapters['https://'] and hasattr(self._session.adapters['https://'], "context"):
-            self._session.adapters['https://'].context.check_hostname = verify
+        if not verify and self._session.adapters["https://"] and hasattr(self._session.adapters["https://"], "context"):
+            self._session.adapters["https://"].context.check_hostname = verify
 
         self.headers: dict[str, Any] = {}
         self.headers["authorization"] = None
-        self.headers["content-type"] = 'application/json'
-        self.headers["varonis-integration"] = 'XSOAR Cortex'
+        self.headers["content-type"] = "application/json"
+        self.headers["varonis-integration"] = "XSOAR Cortex"
 
     def varonis_authenticate(self, apiKey: str) -> dict[str, Any]:
-        headers = {
-            'x-api-key': apiKey
-        }
-        response = self._http_request('POST', url_suffix='/api/authentication/api_keys/token',
-                                      data='grant_type=varonis_custom', headers=headers)
-        token = response['access_token']
-        token_type = response['token_type']
-        self._expires_in = response['expires_in']
+        headers = {"x-api-key": apiKey}
+        response = self._http_request(
+            "POST", url_suffix="/api/authentication/api_keys/token", data="grant_type=varonis_custom", headers=headers
+        )
+        token = response["access_token"]
+        token_type = response["token_type"]
+        self._expires_in = response["expires_in"]
 
-        demisto.debug(f'Token expires in {self._expires_in}')
+        demisto.debug(f"Token expires in {self._expires_in}")
 
-        self.headers["authorization"] = f'{token_type} {token}'
+        self.headers["authorization"] = f"{token_type} {token}"
         return response
 
     def varonis_search(self, search_query: str, max_fetch: Optional[int] = 1000):
-        create_search = self._http_request(
-            'POST',
-            '/app/dataquery/api/search/v2/search',
-            data=search_query,
-            headers=self.headers
-        )
+        create_search = self._http_request("POST", "/app/dataquery/api/search/v2/search", data=search_query, headers=self.headers)
 
         url = create_search[0]["location"]
-        url_suffix = f'/app/dataquery/api/search/{url}'
+        url_suffix = f"/app/dataquery/api/search/{url}"
         if max_fetch:
-            url_suffix += f'?from=0&to={max_fetch - 1}'
+            url_suffix += f"?from=0&to={max_fetch - 1}"
         json_data = self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            headers=self.headers,
-            status_list_to_retry=[304, 405, 206],
-            retries=10
+            method="GET", url_suffix=url_suffix, headers=self.headers, status_list_to_retry=[304, 405, 206], retries=10
         )
         return json_data
 
-    def varonis_get_alerts(self, threat_model_names: Optional[list[str]],
-                           alertIds: Optional[list[str]], start_time: Optional[datetime],
-                           end_time: Optional[datetime], ingest_time_from: Optional[datetime],
-                           ingest_time_to: Optional[datetime], device_names: Optional[list[str]],
-                           user_names: Optional[list[str]],
-                           last_days: Optional[int],
-                           alert_statuses: Optional[list[str]],
-                           alert_severities: Optional[list[str]],
-                           extra_fields: Optional[list[str]],
-                           descending_order: bool,
-                           max_fetch: Optional[int] = 1000) -> list[dict[str, Any]]:
+    def varonis_get_alerts(
+        self,
+        threat_model_names: Optional[list[str]],
+        alertIds: Optional[list[str]],
+        start_time: Optional[datetime],
+        end_time: Optional[datetime],
+        ingest_time_from: Optional[datetime],
+        ingest_time_to: Optional[datetime],
+        device_names: Optional[list[str]],
+        user_names: Optional[list[str]],
+        last_days: Optional[int],
+        alert_statuses: Optional[list[str]],
+        alert_severities: Optional[list[str]],
+        extra_fields: Optional[list[str]],
+        descending_order: bool,
+        max_fetch: Optional[int] = 1000,
+    ) -> list[dict[str, Any]]:
         """Get alerts
 
         :type threat_model_names: ``Optional[List[str]]``
@@ -249,35 +288,34 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
 
-        search_request = SearchRequest()\
-            .set_query(
-            Query().set_entity_name("Alert")
-            .set_filter(Filters().set_filter_operator(0))
-        )\
-            .set_rows(
-                Rows()
-                .set_grouping("")
-        )\
-            .set_request_params(
-                RequestParams().set_search_source(1).set_search_source_name("MainTab")
+        search_request = (
+            SearchRequest()
+            .set_query(Query().set_entity_name("Alert").set_filter(Filters().set_filter_operator(0)))
+            .set_rows(Rows().set_grouping(""))
+            .set_request_params(RequestParams().set_search_source(1).set_search_source_name("MainTab"))
         )
 
         alert_attributes = AlertAttributes()
         for column in alert_attributes.get_fields(extra_fields):
             search_request.rows.add_column(column)
 
-        filter_condition = FilterCondition()\
-            .set_path("Alert.AggregationFilter")\
-            .set_operator("Equals")\
-            .add_value({"Alert.AggregationFilter": 1})\
-
+        filter_condition = (
+            FilterCondition().set_path("Alert.AggregationFilter").set_operator("Equals").add_value({"Alert.AggregationFilter": 1})
+        )
         search_request.query.filter.add_filter(filter_condition)
 
         if ingest_time_from and ingest_time_to:
-            ingest_time_condition = FilterCondition().set_path(alert_attributes.Alert_IngestTime)\
-                .set_operator("Between")\
-                .add_value({alert_attributes.Alert_IngestTime: ingest_time_from.isoformat(
-                ), f"{alert_attributes.Alert_IngestTime}0": ingest_time_to.isoformat()})
+            ingest_time_condition = (
+                FilterCondition()
+                .set_path(alert_attributes.Alert_IngestTime)
+                .set_operator("Between")
+                .add_value(
+                    {
+                        alert_attributes.Alert_IngestTime: ingest_time_from.isoformat(),
+                        f"{alert_attributes.Alert_IngestTime}0": ingest_time_to.isoformat(),
+                    }
+                )
+            )
             search_request.query.filter.add_filter(ingest_time_condition)
         else:
             days_back = MAX_DAYS_BACK
@@ -290,61 +328,51 @@ class Client(BaseClient):
 
             time_condition = FilterCondition().set_path(alert_attributes.Alert_TimeUTC)
             if start_time and end_time:
-                time_condition = time_condition\
-                    .set_operator("Between")\
-                    .add_value({alert_attributes.Alert_TimeUTC: start_time.isoformat(
-                    ), f"{alert_attributes.Alert_TimeUTC}0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
+                time_condition = time_condition.set_operator("Between").add_value(
+                    {
+                        alert_attributes.Alert_TimeUTC: start_time.isoformat(),
+                        f"{alert_attributes.Alert_TimeUTC}0": end_time.isoformat(),
+                    }
+                )  # "displayValue": start_time.isoformat(),
             if last_days:
-                time_condition\
-                    .set_operator("LastDays")\
-                    .add_value({alert_attributes.Alert_TimeUTC: last_days, "displayValue": last_days})
+                time_condition.set_operator("LastDays").add_value(
+                    {alert_attributes.Alert_TimeUTC: last_days, "displayValue": last_days}
+                )
             search_request.query.filter.add_filter(time_condition)
 
         if threat_model_names:
-            rule_condition = FilterCondition()\
-                .set_path(alert_attributes.Alert_Rule_Name)\
-                .set_operator("In")
+            rule_condition = FilterCondition().set_path(alert_attributes.Alert_Rule_Name).set_operator("In")
             for threat_model_name in threat_model_names:
                 rule_condition.add_value({alert_attributes.Alert_Rule_Name: threat_model_name, "displayValue": "New"})
             search_request.query.filter.add_filter(rule_condition)
 
         if alertIds:
-            alert_condition = FilterCondition()\
-                .set_path(alert_attributes.Alert_ID)\
-                .set_operator("In")
+            alert_condition = FilterCondition().set_path(alert_attributes.Alert_ID).set_operator("In")
             for alertId in alertIds:
                 alert_condition.add_value({alert_attributes.Alert_ID: alertId, "displayValue": "New"})
             search_request.query.filter.add_filter(alert_condition)
 
         if device_names:
-            device_condition = FilterCondition()\
-                .set_path(alert_attributes.Alert_Device_HostName)\
-                .set_operator("In")
+            device_condition = FilterCondition().set_path(alert_attributes.Alert_Device_HostName).set_operator("In")
             for device_name in device_names:
                 device_condition.add_value({alert_attributes.Alert_Device_HostName: device_name, "displayValue": device_name})
             search_request.query.filter.add_filter(device_condition)
 
         if user_names:
-            user_condition = FilterCondition()\
-                .set_path(alert_attributes.Alert_User_Identity_Name)\
-                .set_operator("In")
+            user_condition = FilterCondition().set_path(alert_attributes.Alert_User_Identity_Name).set_operator("In")
             for user_name in user_names:
                 user_condition.add_value({alert_attributes.Alert_User_Identity_Name: user_name, "displayValue": user_name})
             search_request.query.filter.add_filter(user_condition)
 
         if alert_statuses:
-            status_condition = FilterCondition()\
-                .set_path(alert_attributes.Alert_Status_ID)\
-                .set_operator("In")
+            status_condition = FilterCondition().set_path(alert_attributes.Alert_Status_ID).set_operator("In")
             for status in alert_statuses:
                 status_id = ALERT_STATUSES[status.lower()]
                 status_condition.add_value({alert_attributes.Alert_Status_ID: status_id, "displayValue": status})
             search_request.query.filter.add_filter(status_condition)
 
         if alert_severities:
-            severity_condition = FilterCondition()\
-                .set_path(alert_attributes.Alert_Rule_Severity_ID)\
-                .set_operator("In")
+            severity_condition = FilterCondition().set_path(alert_attributes.Alert_Rule_Severity_ID).set_operator("In")
             for severity in alert_severities:
                 severity_id = ALERT_SEVERITIES[severity.lower()]
                 severity_condition.add_value({alert_attributes.Alert_Rule_Severity_ID: severity_id, "displayValue": severity})
@@ -361,10 +389,16 @@ class Client(BaseClient):
         alerts = mapper.map(json_data)
         return alerts
 
-    def varonis_get_alerted_events(self, alertIds: list[str], start_time: Optional[datetime], end_time: Optional[datetime],
-                                   last_days: Optional[int], extra_fields: Optional[list[str]],
-                                   descending_order: bool,
-                                   max_fetch: Optional[int] = 1000) -> list[dict[str, Any]]:
+    def varonis_get_alerted_events(
+        self,
+        alertIds: list[str],
+        start_time: Optional[datetime],
+        end_time: Optional[datetime],
+        last_days: Optional[int],
+        extra_fields: Optional[list[str]],
+        descending_order: bool,
+        max_fetch: Optional[int] = 1000,
+    ) -> list[dict[str, Any]]:
         """Get alerted events
 
         :type alertIds: ``List[str]``
@@ -403,23 +437,19 @@ class Client(BaseClient):
         elif end_time is None and start_time is not None:
             end_time = start_time + timedelta(days=days_back)
 
-        search_request = SearchRequest()\
-            .set_query(
-            Query()
-            .set_entity_name("Event")
-            .set_filter(Filters().set_filter_operator(0))
-        )\
-            .set_rows(Rows().set_grouping(""))\
+        search_request = (
+            SearchRequest()
+            .set_query(Query().set_entity_name("Event").set_filter(Filters().set_filter_operator(0)))
+            .set_rows(Rows().set_grouping(""))
             .set_request_params(RequestParams().set_search_source(1).set_search_source_name("MainTab"))
+        )
 
         event_attributes = EventAttributes()
         for column in event_attributes.get_fields(extra_fields):
             search_request.rows.add_column(column)
 
         if alertIds and len(alertIds) > 0:
-            time_condition = FilterCondition()\
-                .set_path(event_attributes.Event_Alert_ID)\
-                .set_operator("In")
+            time_condition = FilterCondition().set_path(event_attributes.Event_Alert_ID).set_operator("In")
             for alertId in alertIds:
                 time_condition.add_value({event_attributes.Event_Alert_ID: alertId, "displayValue": alertId})
 
@@ -427,15 +457,17 @@ class Client(BaseClient):
 
         time_condition = FilterCondition().set_path(event_attributes.Event_TimeUTC)
         if start_time and end_time:
-            time_condition = time_condition\
-                .set_operator("Between")\
-                .add_value({event_attributes.Event_TimeUTC: start_time.isoformat(),
-                            f"{event_attributes.Event_TimeUTC}0": end_time.isoformat()})
+            time_condition = time_condition.set_operator("Between").add_value(
+                {
+                    event_attributes.Event_TimeUTC: start_time.isoformat(),
+                    f"{event_attributes.Event_TimeUTC}0": end_time.isoformat(),
+                }
+            )
             # "displayValue": start_time.isoformat(), (this line seems to be commented out)
         if last_days:
-            time_condition\
-                .set_operator("LastDays")\
-                .add_value({event_attributes.Event_TimeUTC: last_days, "displayValue": last_days})
+            time_condition.set_operator("LastDays").add_value(
+                {event_attributes.Event_TimeUTC: last_days, "displayValue": last_days}
+            )
         search_request.query.filter.add_filter(time_condition)
 
         if descending_order:
@@ -458,7 +490,7 @@ class Client(BaseClient):
         :return: The list of objects required for a search filter
         :rtype: ``List[Any]``
         """
-        response = self._http_request('GET', f'/api/entitymodel/enum/{enum_id}', headers=self.headers)
+        response = self._http_request("GET", f"/api/entitymodel/enum/{enum_id}", headers=self.headers)
         return response
 
     def varonis_update_alert_status(self, query: dict[str, Any]) -> bool:
@@ -471,11 +503,7 @@ class Client(BaseClient):
         :rtype: ``bool``
 
         """
-        return self._http_request(
-            'POST',
-            '/api/alert/alert/SetStatusToAlerts',
-            json_data=query,
-            headers=self.headers)
+        return self._http_request("POST", "/api/alert/alert/SetStatusToAlerts", json_data=query, headers=self.headers)
 
     def varonis_add_note_to_alerts(self, query: dict[str, Any]) -> bool:
         """Update alert status
@@ -487,11 +515,7 @@ class Client(BaseClient):
         :rtype: ``bool``
 
         """
-        return self._http_request(
-            'POST',
-            '/api/alert/alert/AddNoteToAlerts',
-            json_data=query,
-            headers=self.headers)
+        return self._http_request("POST", "/api/alert/alert/AddNoteToAlerts", json_data=query, headers=self.headers)
 
 
 class EventAttributes:
@@ -752,21 +776,40 @@ class EventAttributes:
     Event_IsAlerted = "Event.IsAlerted"
 
     Columns = [
-        Event_Type_Name, Event_Description, Event_Filer_Platform_Name, Event_Filer_Name, Event_ByAccount_SamAccountName,
+        Event_Type_Name,
+        Event_Description,
+        Event_Filer_Platform_Name,
+        Event_Filer_Name,
+        Event_ByAccount_SamAccountName,
         Event_OnObjectName,
-        Event_Alert_ID, Event_ID, Event_TimeUTC,
-        Event_Status_Name, Event_Location_Country_Name,
-        Event_Location_Subdivision_Name, Event_Location_BlacklistedLocation,
-        Event_Operation_Name, Event_ByAccount_Type_Name,
-        Event_ByAccount_Domain_Name, Event_ByAccount_Identity_Name,
-        Event_IP, Event_Device_ExternalIP_IP,
-        Event_Destination_IP, Event_Device_Name, Event_Destination_DeviceName,
-        Event_ByAccount_IsDisabled, Event_ByAccount_IsStale, Event_ByAccount_IsLockout,
-        Event_Device_ExternalIP_ThreatTypes_Name, Event_Device_ExternalIP_IsMalicious,
+        Event_Alert_ID,
+        Event_ID,
+        Event_TimeUTC,
+        Event_Status_Name,
+        Event_Location_Country_Name,
+        Event_Location_Subdivision_Name,
+        Event_Location_BlacklistedLocation,
+        Event_Operation_Name,
+        Event_ByAccount_Type_Name,
+        Event_ByAccount_Domain_Name,
+        Event_ByAccount_Identity_Name,
+        Event_IP,
+        Event_Device_ExternalIP_IP,
+        Event_Destination_IP,
+        Event_Device_Name,
+        Event_Destination_DeviceName,
+        Event_ByAccount_IsDisabled,
+        Event_ByAccount_IsStale,
+        Event_ByAccount_IsLockout,
+        Event_Device_ExternalIP_ThreatTypes_Name,
+        Event_Device_ExternalIP_IsMalicious,
         Event_Device_ExternalIP_Reputation_Name,
-        Event_OnResource_ObjectType_Name, Event_OnAccount_SamAccountName,
-        Event_OnResource_IsSensitive, Event_OnAccount_IsDisabled,
-        Event_OnAccount_IsLockout, Event_OnResource_Path
+        Event_OnResource_ObjectType_Name,
+        Event_OnAccount_SamAccountName,
+        Event_OnResource_IsSensitive,
+        Event_OnAccount_IsDisabled,
+        Event_OnAccount_IsLockout,
+        Event_OnResource_Path,
     ]
 
     ExtraColumns = [
@@ -990,7 +1033,7 @@ class EventAttributes:
         Event_Session_AzureAuthentication_Status_ID,
         Event_Device_ManagedStatus_Name,
         Event_Device_ManagedStatus_ID,
-        Event_IsAlerted
+        Event_IsAlerted,
     ]
 
     def get_fields(self, extra_fields: Optional[list[str]]) -> list[str]:
@@ -1160,20 +1203,20 @@ class SearchEventObjectMapper(BaseMapper):
     def multi_value_to_guid_array(self, row: dict[str, str], field: str) -> Optional[list[str]]:
         value = row.get(field)
         if value:
-            return list(value.split(','))
+            return list(value.split(","))
         return None
 
     def get_bool_value(self, row: dict[str, str], name: str) -> Optional[bool]:
         value = row.get(name)
         if value:
             value = value.lower()
-            if value == 'yes':
+            if value == "yes":
                 return True
-            if value == 'no':
+            if value == "no":
                 return False
-            if value == 'true':
+            if value == "true":
                 return True
-            if value == 'false':
+            if value == "false":
                 return False
         return None
 
@@ -1188,7 +1231,7 @@ class SearchEventObjectMapper(BaseMapper):
 
     def multi_value_to_array(self, multi_value: str) -> Optional[list[str]]:
         if multi_value:
-            return [v.strip() for v in multi_value.split(',') if v.strip()]
+            return [v.strip() for v in multi_value.split(",") if v.strip()]
         return None
 
 
@@ -1254,8 +1297,8 @@ class ThreatModelObjectMapper(BaseMapper):
 
     def map_item(self, row: dict) -> ThreatModelItem:
         threat_model_item = ThreatModelItem()
-        threat_model_item.ID = row.get(ThreatModelAttributes.Id, row.get('dataField'))
-        threat_model_item.Name = row.get(ThreatModelAttributes.Name, row.get('displayField'))
+        threat_model_item.ID = row.get(ThreatModelAttributes.Id, row.get("dataField"))
+        threat_model_item.Name = row.get(ThreatModelAttributes.Name, row.get("displayField"))
         return threat_model_item
 
 
@@ -1263,21 +1306,22 @@ class ThreatModelObjectMapper(BaseMapper):
 """
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 MAX_USERS_TO_SEARCH = 5
 MAX_DAYS_BACK = 180
 THREAT_MODEL_ENUM_ID = 5821
-ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
-ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
+ALERT_STATUSES = {"new": 1, "under investigation": 2, "closed": 3, "action required": 4, "auto-resolved": 5}
+ALERT_SEVERITIES = {"high": 0, "medium": 1, "low": 2}
 CLOSE_REASONS = {
-    'other': 1,
-    'benign activity': 2,
-    'true positive': 3,
-    'environment misconfiguration': 4,
-    'alert recently customized': 5,
-    'inaccurate alert logic': 6,
-    'authorized activity': 7
+    "none": 0,
+    "other": 1,
+    "benign activity": 2,
+    "true positive": 3,
+    "environment misconfiguration": 4,
+    "alert recently customized": 5,
+    "inaccurate alert logic": 6,
+    "authorized activity": 7,
 }
 
 
@@ -1298,15 +1342,11 @@ def convert_to_demisto_severity(severity: Optional[str]) -> int:
     if severity is None:
         return IncidentSeverity.LOW
 
-    return {
-        'Low': IncidentSeverity.LOW,
-        'Medium': IncidentSeverity.MEDIUM,
-        'High': IncidentSeverity.HIGH
-    }[severity]
+    return {"Low": IncidentSeverity.LOW, "Medium": IncidentSeverity.MEDIUM, "High": IncidentSeverity.HIGH}[severity]
 
 
 def get_included_severitires(severity: Optional[str]) -> list[str]:
-    """ Return list of severities that is equal or higher then provided
+    """Return list of severities that is equal or higher then provided
 
     :type severity: ``Optional[str]``
     :param severity: Severity
@@ -1319,12 +1359,12 @@ def get_included_severitires(severity: Optional[str]) -> list[str]:
 
     severities = list(ALERT_SEVERITIES.keys()).copy()
 
-    if severity.lower() == 'medium':
-        severities.remove('low')
+    if severity.lower() == "medium":
+        severities.remove("low")
 
-    if severity.lower() == 'high':
-        severities.remove('low')
-        severities.remove('medium')
+    if severity.lower() == "high":
+        severities.remove("low")
+        severities.remove("medium")
 
     return severities
 
@@ -1379,36 +1419,8 @@ def enrich_with_url(output: dict[str, Any], baseUrl: str, id: str) -> dict[str, 
     :rtype: ``Dict[str, Any]``
     """
 
-    output['Url'] = urljoin(baseUrl, f'/#/app/analytics/entity/Alert/{id}')
+    output["Url"] = urljoin(baseUrl, f"/analytics/entity/Alert/{id}")
     return output
-
-
-def get_rule_ids(client: Client, values: list[str]) -> list[int]:
-    """Return list of user ids
-
-    :type client: ``Client``
-    :param client: Http client
-
-    :type threat_model_names: ``List[str]``
-    :param threat_model_names: A list of threat_model_names
-
-    :return: List of rule ids
-    :rtype: ``List[int]``
-    """
-    ruleIds: list[int] = []
-
-    if not values:
-        return ruleIds
-
-    rules = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
-    for value in values:
-        for rule in rules:
-            if strEqual(rule['ruleName'], value):
-                ruleIds.append(rule['ruleID'])
-                # ruleIds.append(rule['templateID'])
-                break
-
-    return ruleIds
 
 
 def varonis_update_alert(client: Client, close_reason_id: Optional[int], status_id: Optional[int], alert_ids: list, note) -> bool:
@@ -1434,27 +1446,21 @@ def varonis_update_alert(client: Client, close_reason_id: Optional[int], status_
 
     """
     if len(alert_ids) == 0:
-        raise ValueError('alert id(s) not specified')
+        raise ValueError("alert id(s) not specified")
 
-    if (not note and not status_id):
-        raise ValueError('To update update alert you must specify status or note')
+    if not note and not status_id:
+        raise ValueError("To update update alert you must specify status or note")
 
     update_status_result = False
     add_note_result = False
 
     if note:
-        add_note_query: dict[str, Any] = {
-            'AlertGuids': alert_ids,
-            'Note': note
-        }
+        add_note_query: dict[str, Any] = {"AlertGuids": alert_ids, "Note": note}
         add_note_result = client.varonis_add_note_to_alerts(add_note_query)
 
     if status_id:
-        update_status_query: dict[str, Any] = {
-            'AlertGuids': alert_ids,
-            'CloseReasonId': close_reason_id,
-            'StatusId': status_id
-        }
+        update_status_query: dict[str, Any] = {"AlertGuids": alert_ids, "CloseReasonId": close_reason_id, "StatusId": status_id}
+        demisto.debug(f"update_status_query: {json.dumps(update_status_query)}")
         update_status_result = client.varonis_update_alert_status(update_status_query)
 
     return bool(update_status_result or add_note_result)
@@ -1475,72 +1481,98 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     output["ContainsSensitiveData"] = alert_saas_format.get(AlertAttributes.Alert_Data_IsSensitive)
 
     output["Locations"] = []
-    countries = [] if alert_saas_format.get(AlertAttributes.Alert_Location_CountryName) is None else alert_saas_format.get(
-        AlertAttributes.Alert_Location_CountryName).split(',')
-    states = [] if alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName) is None else alert_saas_format.get(
-        AlertAttributes.Alert_Location_SubdivisionName).split(',')
-    blacklist_locations = [] if alert_saas_format.get(
-        AlertAttributes.Alert_Location_BlacklistedLocation) is None else alert_saas_format.get(
-            AlertAttributes.Alert_Location_BlacklistedLocation).split(',')
-    abnormal_locations = [] if alert_saas_format.get(
-        AlertAttributes.Alert_Location_AbnormalLocation) is None else alert_saas_format.get(
-            AlertAttributes.Alert_Location_AbnormalLocation).split(',')
+    countries = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Location_CountryName) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Location_CountryName).split(",")
+    )
+    states = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Location_SubdivisionName).split(",")
+    )
+    blacklist_locations = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Location_BlacklistedLocation).split(",")
+    )
+    abnormal_locations = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Location_AbnormalLocation).split(",")
+    )
     for i in range(len(countries)):
         entry = {
             "Country": "" if len(countries) <= i else countries[i],
             "State": "" if len(states) <= i else states[i],
             "BlacklistLocation": "" if len(blacklist_locations) <= i else blacklist_locations[i],
-            "AbnormalLocation": "" if len(abnormal_locations) <= i else abnormal_locations[i]
+            "AbnormalLocation": "" if len(abnormal_locations) <= i else abnormal_locations[i],
         }
         output["Locations"].append(entry)
 
     output["Sources"] = []
-    platforms = [] if alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name) is None else alert_saas_format.get(
-        AlertAttributes.Alert_Filer_Platform_Name).split(',')
-    file_server_or_Domain = [] if alert_saas_format.get(
-        AlertAttributes.Alert_Filer_Name) is None else alert_saas_format.get(AlertAttributes.Alert_Filer_Name).split(',')
+    platforms = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Filer_Platform_Name).split(",")
+    )
+    file_server_or_Domain = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Filer_Name) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Filer_Name).split(",")
+    )
     for i in range(len(platforms)):
         entry = {
             "Platform": "" if len(platforms) <= i else platforms[i],
-            "FileServerOrDomain": "" if len(file_server_or_Domain) <= i else file_server_or_Domain[i]
+            "FileServerOrDomain": "" if len(file_server_or_Domain) <= i else file_server_or_Domain[i],
         }
         output["Sources"].append(entry)
 
     output["Devices"] = []
-    device_names = [] if alert_saas_format.get(AlertAttributes.Alert_Device_HostName) is None else alert_saas_format.get(
-        AlertAttributes.Alert_Device_HostName).split(',')
-    assets = [] if alert_saas_format.get(AlertAttributes.Alert_Asset_Path) is None else alert_saas_format.get(
-        AlertAttributes.Alert_Asset_Path).split(',')
+    device_names = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Device_HostName) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Device_HostName).split(",")
+    )
+    assets = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_Asset_Path) is None
+        else alert_saas_format.get(AlertAttributes.Alert_Asset_Path).split(",")
+    )
     for i in range(len(device_names)):
-        entry = {
-            "Name": "" if len(device_names) <= i else device_names[i],
-            "Asset": "" if len(assets) <= i else assets[i]
-        }
+        entry = {"Name": "" if len(device_names) <= i else device_names[i], "Asset": "" if len(assets) <= i else assets[i]}
         output["Devices"].append(entry)
 
     output["Users"] = []
-    user_names = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_Name) is None else alert_saas_format[AlertAttributes.Alert_User_Name].split(',')
-    sam_account_names = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_SamAccountName) is None else alert_saas_format[AlertAttributes.Alert_User_SamAccountName] \
-        .split(',')
-    privileged_account_types = [] if alert_saas_format.get(
-        AlertAttributes.Alert_User_AccountType_Name) is None else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name] \
-        .split(',')
-    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
+    user_names = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_User_Name) is None
+        else alert_saas_format[AlertAttributes.Alert_User_Name].split(",")
+    )
+    sam_account_names = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_User_SamAccountName) is None
+        else alert_saas_format[AlertAttributes.Alert_User_SamAccountName].split(",")
+    )
+    privileged_account_types = (
+        []
+        if alert_saas_format.get(AlertAttributes.Alert_User_AccountType_Name) is None
+        else alert_saas_format[AlertAttributes.Alert_User_AccountType_Name].split(",")
+    )
+    departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(",")
     for i in range(len(user_names)):
         entry = {
             "Name": "" if len(user_names) <= i else user_names[i],
             "SamAccountName": "" if len(sam_account_names) <= i else sam_account_names[i],
             "PrivilegedAccountType": "" if len(privileged_account_types) <= i else privileged_account_types[i],
-            "Department": "" if len(departments) <= i else departments[i]
+            "Department": "" if len(departments) <= i else departments[i],
         }
         output["Users"].append(entry)
 
     return output
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def check_module_command(client: Client) -> CommandResults:
@@ -1557,13 +1589,13 @@ def check_module_command(client: Client) -> CommandResults:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message: str = ""
     try:
         client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
-        message = 'ok'
+        message = "ok"
     except DemistoException as e:
-        if 'Unauthorized' in str(e):
-            message = 'Authorization Error: token is incorrect or expired.'
+        if "Unauthorized" in str(e):
+            message = "Authorization Error: token is incorrect or expired."
         else:
             raise e
     return CommandResults(readable_output=message)
@@ -1586,7 +1618,7 @@ def varonis_get_threat_models_command(client: Client, args: dict[str, Any]) -> C
     :rtype: ``CommandResults``
     """
 
-    name = argToList(args.get('name'), separator='|')
+    name = argToList(args.get("name"), separator="|")
 
     threat_models = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
     mapper = ThreatModelObjectMapper()
@@ -1614,27 +1646,25 @@ def varonis_get_threat_models_command(client: Client, args: dict[str, Any]) -> C
 
         return filtered_items
 
-    filtered_items = filter_threat_model_items(mapped_items, {
-        'Name': name
-    })
+    filtered_items = filter_threat_model_items(mapped_items, {"Name": name})
 
     outputs = {}
-    outputs['ThreatModel'] = filtered_items
+    outputs["ThreatModel"] = filtered_items
 
-    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=['ID', 'Name'])
+    readable_output = tableToMarkdown("Varonis Threat Models", filtered_items, headers=["ID", "Name"])
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Varonis',
-        outputs_key_field='ID',
-        outputs=outputs
-    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Varonis", outputs_key_field="ID", outputs=outputs)
 
 
-def fetch_incidents_command(client: Client, last_run: dict[str, datetime], first_fetch_time: Optional[datetime],
-                            alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str],
-                            max_fetch: Optional[int] = 1000
-                            ) -> tuple[dict[str, Optional[datetime]], list[dict]]:
+def fetch_incidents_command(
+    client: Client,
+    last_run: dict[str, datetime],
+    first_fetch_time: Optional[datetime],
+    alert_status: Optional[str],
+    threat_model: Optional[str],
+    severity: Optional[str],
+    max_fetch: Optional[int] = 1000,
+) -> tuple[dict[str, Optional[datetime]], list[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -1670,22 +1700,23 @@ def fetch_incidents_command(client: Client, last_run: dict[str, datetime], first
 
     """
 
-    threat_model_names = argToList(threat_model, separator='|')
+    threat_model_names = argToList(threat_model, separator="|")
+    params = demisto.params()
 
     incidents: list[dict[str, Any]] = []
 
     if first_fetch_time is None:
         raise ValueError("first_fetch_time can't be None")
 
-    last_fetched_ingest_time_str = last_run.get('last_fetched_ingest_time', first_fetch_time.isoformat())
+    last_fetched_ingest_time_str = last_run.get("last_fetched_ingest_time", first_fetch_time.isoformat())
     last_fetched_ingest_time = try_convert(
         last_fetched_ingest_time_str,
         lambda x: datetime.fromisoformat(x),
-        ValueError(f'last_fetched_ingest_time should be in iso format, but it is {last_fetched_ingest_time_str}.')
+        ValueError(f"last_fetched_ingest_time should be in iso format, but it is {last_fetched_ingest_time_str}."),
     )
     ingest_time_to = datetime.now()
 
-    demisto.debug(f'Fetching incidents. Last fetched ingest time: {last_fetched_ingest_time}')
+    demisto.debug(f"Fetching incidents. Last fetched ingest time: {last_fetched_ingest_time}")
 
     statuses = []
     if alert_status:
@@ -1693,23 +1724,31 @@ def fetch_incidents_command(client: Client, last_run: dict[str, datetime], first
 
     severities = get_included_severitires(severity)
 
-    alerts = client.varonis_get_alerts(threat_model_names=threat_model_names, alertIds=None, start_time=None, end_time=None,
-                                       device_names=None, user_names=None, last_days=None,
-                                       ingest_time_from=last_fetched_ingest_time,
-                                       ingest_time_to=ingest_time_to,
-                                       alert_statuses=statuses, alert_severities=severities,
-                                       extra_fields=None,
-                                       descending_order=False,
-                                       max_fetch=max_fetch)
+    alerts = client.varonis_get_alerts(
+        threat_model_names=threat_model_names,
+        alertIds=None,
+        start_time=None,
+        end_time=None,
+        device_names=None,
+        user_names=None,
+        last_days=None,
+        ingest_time_from=last_fetched_ingest_time,
+        ingest_time_to=ingest_time_to,
+        alert_statuses=statuses,
+        alert_severities=severities,
+        extra_fields=None,
+        descending_order=False,
+        max_fetch=max_fetch,
+    )
 
-    demisto.debug(f'varonis_get_alerts returned: {len(alerts)} alerts')
+    demisto.debug(f"varonis_get_alerts returned: {len(alerts)} alerts")
 
     for alert in alerts:
         ingestTime_str = alert[AlertAttributes.Alert_IngestTime]
         ingestTime = try_convert(
             alert[AlertAttributes.Alert_IngestTime],
             lambda x: datetime.fromisoformat(x),
-            ValueError(f'IngestTime should be in iso format, but it is {ingestTime_str}.')
+            ValueError(f"IngestTime should be in iso format, but it is {ingestTime_str}."),
         )
 
         if not last_fetched_ingest_time or ingestTime > last_fetched_ingest_time:
@@ -1720,19 +1759,25 @@ def fetch_incidents_command(client: Client, last_run: dict[str, datetime], first
         enrich_with_url(alert, client._base_url, guid)
 
         alert_converted = convert_incident_alert_to_onprem_format(alert)
+        alert_converted.update(
+            {
+                "mirror_direction": MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction")),
+                "mirror_instance": demisto.integrationInstance(),
+            }
+        )
 
         incident = {
-            'name': f'Varonis alert {name}',
-            'occurred': f'{alert_time}Z',
-            'rawJSON': json.dumps(alert_converted),
-            'type': 'Varonis SaaS Incident',
-            'severity': convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
+            "name": f"Varonis alert {name}",
+            "occurred": f"{alert_time}Z",
+            "rawJSON": json.dumps(alert_converted),
+            "type": "Varonis SaaS Incident",
+            "severity": convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
         }
 
         incidents.append(incident)
-        demisto.debug(f'new incident: {json.dumps(alert, indent=4, sort_keys=True, default=str)}')
+        demisto.debug(f"New incident: {json.dumps(alert, indent=4, sort_keys=True, default=str)}")
 
-    next_run = {'last_fetched_ingest_time': last_fetched_ingest_time.isoformat()}
+    next_run = {"last_fetched_ingest_time": last_fetched_ingest_time.isoformat()}
 
     return next_run, incidents
 
@@ -1763,91 +1808,91 @@ def varonis_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandR
 
     :rtype: ``CommandResults``
     """
-    threat_model_names = args.get('threat_model_name')
-    alert_ids = args.get('alert_ids')
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
-    ingest_time_from = args.get('ingest_time_from')
-    ingest_time_to = args.get('ingest_time_to')
-    alert_statuses = args.get('alert_status')
-    alert_severities = args.get('alert_severity')
-    device_names = args.get('device_name')
-    user_names = args.get('user_name')
-    last_days = args.get('last_days')
-    extra_fields = args.get('extra_fields')
-    descending_order = argToBoolean(args.get('descending_order', 'True'))
+    threat_model_names = args.get("threat_model_name")
+    alert_ids = args.get("alert_ids")
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+    ingest_time_from = args.get("ingest_time_from")
+    ingest_time_to = args.get("ingest_time_to")
+    alert_statuses = args.get("alert_status")
+    alert_severities = args.get("alert_severity")
+    device_names = args.get("device_name")
+    user_names = args.get("user_name")
+    last_days = args.get("last_days")
+    extra_fields = args.get("extra_fields")
+    descending_order = argToBoolean(args.get("descending_order", "True"))
 
     if last_days:
-        last_days = try_convert(
-            last_days,
-            lambda x: int(x),
-            ValueError(f'last_days should be integer, but it is {last_days}.')
-        )
+        last_days = try_convert(last_days, lambda x: int(x), ValueError(f"last_days should be integer, but it is {last_days}."))
 
         if last_days <= 0:
-            raise ValueError('last_days cannot be less then 1')
+            raise ValueError("last_days cannot be less then 1")
 
-    alert_severities = try_convert(alert_severities, lambda x: argToList(x, separator='|'))
-    device_names = try_convert(device_names, lambda x: argToList(x, separator='|'))
-    threat_model_names = try_convert(threat_model_names, lambda x: argToList(x, separator='|'))
-    user_names = try_convert(user_names, lambda x: argToList(x, separator='|'))
-    extra_fields = try_convert(extra_fields, lambda x: argToList(x, separator='|'))
+    alert_severities = try_convert(alert_severities, lambda x: argToList(x, separator="|"))
+    device_names = try_convert(device_names, lambda x: argToList(x, separator="|"))
+    threat_model_names = try_convert(threat_model_names, lambda x: argToList(x, separator="|"))
+    user_names = try_convert(user_names, lambda x: argToList(x, separator="|"))
+    extra_fields = try_convert(extra_fields, lambda x: argToList(x, separator="|"))
 
     start_time = try_convert(
         start_time,
         lambda x: datetime.fromisoformat(x),
-        ValueError(f'start_time should be in iso format, but it is {start_time}.')
+        ValueError(f"start_time should be in iso format, but it is {start_time}."),
     )
     end_time = try_convert(
-        end_time,
-        lambda x: datetime.fromisoformat(x),
-        ValueError(f'end_time should be in iso format, but it is {start_time}.')
+        end_time, lambda x: datetime.fromisoformat(x), ValueError(f"end_time should be in iso format, but it is {start_time}.")
     )
 
     ingest_time_from = try_convert(
         ingest_time_from,
         lambda x: datetime.fromisoformat(x),
-        ValueError(f'ingest_time_from should be in iso format, but it is {ingest_time_from}.')
+        ValueError(f"ingest_time_from should be in iso format, but it is {ingest_time_from}."),
     )
     ingest_time_to = try_convert(
         ingest_time_to,
         lambda x: datetime.fromisoformat(x),
-        ValueError(f'ingest_time_to should be in iso format, but it is {ingest_time_to}.')
+        ValueError(f"ingest_time_to should be in iso format, but it is {ingest_time_to}."),
     )
 
-    alert_statuses = try_convert(alert_statuses, lambda x: argToList(x, separator='|'))
+    alert_statuses = try_convert(alert_statuses, lambda x: argToList(x, separator="|"))
 
     if alert_severities:
         for severity in alert_severities:
-            if severity.lower() not in ALERT_SEVERITIES.keys():
-                raise ValueError(f'There is no severity {severity}.')
+            if severity.lower() not in ALERT_SEVERITIES:
+                raise ValueError(f"There is no severity {severity}.")
 
     if alert_statuses:
         for status in alert_statuses:
-            if status.lower() not in ALERT_STATUSES.keys():
-                raise ValueError(f'There is no status {status}.')
+            if status.lower() not in ALERT_STATUSES:
+                raise ValueError(f"There is no status {status}.")
 
-    alerts = client.varonis_get_alerts(threat_model_names, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to,
-                                       device_names,
-                                       user_names,
-                                       last_days, alert_statuses, alert_severities,
-                                       extra_fields,
-                                       descending_order)
+    alerts = client.varonis_get_alerts(
+        threat_model_names,
+        alert_ids,
+        start_time,
+        end_time,
+        ingest_time_from,
+        ingest_time_to,
+        device_names,
+        user_names,
+        last_days,
+        alert_statuses,
+        alert_severities,
+        extra_fields,
+        descending_order,
+    )
     outputs = {}
-    outputs['Alert'] = alerts
+    outputs["Alert"] = alerts
 
     alert_attributes = AlertAttributes()
     if outputs:
         for alert in alerts:
             enrich_with_url(alert, client._base_url, alert[alert_attributes.Alert_ID])
 
-    readable_output = tableToMarkdown('Varonis Alerts', alerts, headers=alert_attributes.get_fields(extra_fields))
+    readable_output = tableToMarkdown("Varonis Alerts", alerts, headers=alert_attributes.get_fields(extra_fields))
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Varonis',
-        outputs_key_field='Alert.ID',
-        outputs=outputs
+        readable_output=readable_output, outputs_prefix="Varonis", outputs_key_field="Alert.ID", outputs=outputs
     )
 
 
@@ -1872,39 +1917,38 @@ def varonis_get_alerted_events_command(client: Client, args: dict[str, Any]) -> 
 
     :rtype: ``CommandResults``
     """
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
-    last_days = args.get('last_days')
-    descending_order = argToBoolean(args.get('descending_order', 'True'))
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+    last_days = args.get("last_days")
+    descending_order = argToBoolean(args.get("descending_order", "True"))
 
-    alertIds = try_convert(args.get('alert_id'), lambda x: argToList(x, separator='|'))
+    alertIds = try_convert(args.get("alert_id"), lambda x: argToList(x, separator="|"))
     start_time = try_convert(
         start_time,
         lambda x: datetime.fromisoformat(x),
-        ValueError(f'start_time should be in iso format, but it is {start_time}.')
+        ValueError(f"start_time should be in iso format, but it is {start_time}."),
     )
     end_time = try_convert(
-        end_time,
-        lambda x: datetime.fromisoformat(x),
-        ValueError(f'end_time should be in iso format, but it is {end_time}.')
+        end_time, lambda x: datetime.fromisoformat(x), ValueError(f"end_time should be in iso format, but it is {end_time}.")
     )
-    extra_fields = try_convert(args.get('extra_fields'), lambda x: argToList(x, separator='|'))
+    extra_fields = try_convert(args.get("extra_fields"), lambda x: argToList(x, separator="|"))
 
-    events = client.varonis_get_alerted_events(alertIds=alertIds, start_time=start_time, end_time=end_time,
-                                               last_days=last_days,
-                                               extra_fields=extra_fields,
-                                               descending_order=descending_order)
+    events = client.varonis_get_alerted_events(
+        alertIds=alertIds,
+        start_time=start_time,
+        end_time=end_time,
+        last_days=last_days,
+        extra_fields=extra_fields,
+        descending_order=descending_order,
+    )
     outputs = {}
-    outputs['Event'] = events
+    outputs["Event"] = events
 
     event_attributes = EventAttributes()
-    readable_output = tableToMarkdown('Varonis Alerted Events', events, headers=event_attributes.get_fields(extra_fields))
+    readable_output = tableToMarkdown("Varonis Alerted Events", events, headers=event_attributes.get_fields(extra_fields))
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Varonis',
-        outputs_key_field='Event.ID',
-        outputs=outputs
+        readable_output=readable_output, outputs_prefix="Varonis", outputs_key_field="Event.ID", outputs=outputs
     )
 
 
@@ -1924,11 +1968,11 @@ def varonis_alert_add_note_command(client: Client, args: dict[str, Any]) -> bool
     :rtype: ``bool``
 
     """
-    note = str(args.get('note'))
+    note = str(args.get("note"))
 
-    return varonis_update_alert(client, close_reason_id=None, status_id=None,
-                                alert_ids=argToList(args.get('alert_id'), separator='|'),
-                                note=note)
+    return varonis_update_alert(
+        client, close_reason_id=None, status_id=None, alert_ids=argToList(args.get("alert_id"), separator="|"), note=note
+    )
 
 
 def varonis_update_alert_status_command(client: Client, args: dict[str, Any]) -> bool:
@@ -1949,19 +1993,19 @@ def varonis_update_alert_status_command(client: Client, args: dict[str, Any]) ->
 
     """
     status_id = None
-    status = args.get('status')
-    statuses = list(filter(lambda name: name != 'closed', ALERT_STATUSES.keys()))
+    status = args.get("status")
+    statuses = list(filter(lambda name: name != "closed", ALERT_STATUSES.keys()))
     if status:
         if status.lower() not in statuses:
-            raise ValueError(f'status must be one of {statuses}.')
+            raise ValueError(f"status must be one of {statuses}.")
         else:
             status_id = ALERT_STATUSES[status.lower()]
 
-    note = args.get('note')
+    note = args.get("note")
 
-    return varonis_update_alert(client, close_reason_id=None, status_id=status_id,
-                                alert_ids=argToList(args.get('alert_id'), separator='|'),
-                                note=note)
+    return varonis_update_alert(
+        client, close_reason_id=None, status_id=status_id, alert_ids=argToList(args.get("alert_id"), separator="|"), note=note
+    )
 
 
 def varonis_close_alert_command(client: Client, args: dict[str, Any]) -> bool:
@@ -1981,17 +2025,97 @@ def varonis_close_alert_command(client: Client, args: dict[str, Any]) -> bool:
     :rtype: ``bool``
 
     """
-    close_reason = str(args.get('close_reason')).lower()
+    close_reason = str(args.get("close_reason")).lower()
     close_reason_id = CLOSE_REASONS.get(close_reason)
     if not close_reason_id:
-        raise ValueError(f'Close reason must be one of {list(CLOSE_REASONS.keys())}')
+        raise ValueError(f"Close reason must be one of {list(CLOSE_REASONS.keys())}")
 
-    note = args.get('note')
-    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'],
-                                argToList(args.get('alert_id'), separator='|'), note)
+    note = args.get("note")
+    return varonis_update_alert(
+        client, close_reason_id, ALERT_STATUSES["closed"], argToList(args.get("alert_id"), separator="|"), note
+    )
 
 
-'''' MAIN FUNCTION '''
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    """update-remote-system command: pushes local changes to the remote system
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['data']`` the data to send to the remote system
+        ``args['entries']`` the entries to send to the remote system
+        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+        ``args['remoteId']`` the remote incident id
+
+    :return:
+        ``str`` containing the remote incident id - really important if the incident is newly created remotely
+
+    :rtype: ``str``
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    alert_id = parsed_args.remote_incident_id
+
+    if not parsed_args.incident_changed or not alert_id:
+        return alert_id
+
+    if parsed_args.delta:
+        demisto.debug(f"Got the following delta keys {list(parsed_args.delta)}.")
+
+    demisto.debug(f"Sending incident with remote ID [{alert_id}] to remote system. Status {parsed_args.inc_status}.")
+    demisto.debug(f"Got the following data {parsed_args.data}.")
+
+    if ("Status" in parsed_args.delta or "CloseReason" in parsed_args.delta) and (
+        parsed_args.data.get("Status", "").lower() == "closed" or parsed_args.inc_status == IncidentStatus.DONE
+    ):
+        demisto.debug(f"Closing remote incident {alert_id}")
+        note = parsed_args.data.get("CloseNotes", "Closed from XSOAR")
+        close_reason = parsed_args.data.get("CloseReason", "").lower()
+        close_reason_id = CLOSE_REASONS.get(close_reason, CLOSE_REASONS["other"])
+        if not close_reason_id:
+            close_reason_id = CLOSE_REASONS["other"]
+        varonis_update_alert(client, close_reason_id, ALERT_STATUSES["closed"], argToList(alert_id), note)
+
+    elif (
+        "Status" in parsed_args.delta and parsed_args.data.get("Status").lower() != "closed"
+    ) or parsed_args.inc_status == IncidentStatus.ACTIVE:
+        demisto.debug(f"Update remote incident {alert_id}")
+        note = "Status changed from XSOAR"
+        status = parsed_args.data.get("Status", "action required").lower()
+        status_id = ALERT_STATUSES.get(status)
+
+        close_reason_id = CLOSE_REASONS["none"]
+        varonis_update_alert(client, close_reason_id, status_id, argToList(alert_id), note)
+
+    return alert_id
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    Returns the list of fields for an incident type.
+    Args:
+        client: XSOAR client to use
+
+    Returns: Dictionary with keys as field names
+
+    """
+    demisto.debug("Start getting SchemeTypeMapping.")
+    incident_type_scheme = SchemeTypeMapping(type_name="Varonis SaaS Incident")
+
+    # If the type is sn_si_incident then add it specific fields else use the snow args as is.
+    out_fields = INCIDENT_FIELDS
+    for field in out_fields:
+        incident_type_scheme.add_field(field)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
+"""' MAIN FUNCTION """
 
 
 def main() -> None:
@@ -2004,82 +2128,84 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
-    base_url = params['url']
-    apiKey = params.get('apiKey', {}).get('password')
+    base_url = params["url"]
+    apiKey = params.get("apiKey", {}).get("password")
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = params.get('insecure', False)
+    verify_certificate = params.get("insecure", False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
 
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy)
 
         client.varonis_authenticate(apiKey)
 
-        if command == 'varonis-get-threat-models':
+        if command == "varonis-get-threat-models":
             result = varonis_get_threat_models_command(client, args)
             return_results(result)
 
-        elif command == 'test-module':
+        elif command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = check_module_command(client)
-            return_results('ok')
+            return_results("ok")
 
-        elif command == 'varonis-get-alerts':
+        elif command == "varonis-get-alerts":
             return_results(varonis_get_alerts_command(client, args))
 
-        elif command == 'varonis-get-alerted-events':
+        elif command == "varonis-get-alerted-events":
             return_results(varonis_get_alerted_events_command(client, args))
 
-        elif command == 'varonis-alert-add-note':
+        elif command == "varonis-alert-add-note":
             return_results(varonis_alert_add_note_command(client, args))
 
-        elif command == 'varonis-update-alert-status':
+        elif command == "varonis-update-alert-status":
             return_results(varonis_update_alert_status_command(client, args))
 
-        elif command == 'varonis-close-alert':
+        elif command == "varonis-close-alert":
             return_results(varonis_close_alert_command(client, args))
 
-        elif command == 'fetch-incidents':
-            alert_status = params.get('status')
-            threat_model = params.get('threat_model')
-            severity = params.get('severity')
-            max_fetch = arg_to_number(params.get('max_fetch'))
+        elif command == "update-remote-system":
+            return_results(update_remote_system_command(client, args))
+
+        elif demisto.command() == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
+
+        elif command == "fetch-incidents":
+            alert_status = params.get("status")
+            threat_model = params.get("threat_model")
+            severity = params.get("severity")
+            max_fetch = arg_to_number(params.get("max_fetch"))
             first_fetch_time = arg_to_datetime(
-                arg=params.get('first_fetch', '1 week'),
-                arg_name='First fetch time',
-                required=True
+                arg=params.get("first_fetch", "1 week"), arg_name="First fetch time", required=True
             )
 
-            next_run, incidents = fetch_incidents_command(client=client,
-                                                          last_run=demisto.getLastRun(),
-                                                          first_fetch_time=first_fetch_time,
-                                                          alert_status=alert_status,
-                                                          threat_model=threat_model,
-                                                          severity=severity,
-                                                          max_fetch=max_fetch)
+            next_run, incidents = fetch_incidents_command(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time,
+                alert_status=alert_status,
+                threat_model=threat_model,
+                severity=severity,
+                max_fetch=max_fetch,
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

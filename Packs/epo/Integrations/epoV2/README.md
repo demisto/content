@@ -9,28 +9,24 @@ More information about McAfee ePO's permissions model is available [here](https:
 
 Example `!epo-help` outputs with permission information: 
 * `!epo-help command="repository.findPackages"`:
-![](https://raw.githubusercontent.com/demisto/content/0b1cdaff3a3cd238cbe98ae25bee0c6206af11e0/Packs/epo/doc_files/epo-help-find-pkg.png)
+![](../../doc_files/epo-help-find-pkg.png)
 * `!epo-help command="repository.deletePackage"`:
-![](https://raw.githubusercontent.com/demisto/content/0b1cdaff3a3cd238cbe98ae25bee0c6206af11e0/Packs/epo/doc_files/epo-help-delete-pkg.png)
+![](../../doc_files/epo-help-delete-pkg.png)
 
-## Configure McAfee ePO v2 on Cortex XSOAR
+## Configure McAfee ePO v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for McAfee ePO v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | ------------- | --- | --- |
-    | McAfee ePO Server URI |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) |   | False |
-    | Use system proxy settings |   | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to McAfee ePO API \(in seconds\). | False |
+| **Parameter** | **Description** | **Required** |
+| ------------- | --- | --- |
+| McAfee ePO Server URI |  | True |
+| Username |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) |   | False |
+| Use system proxy settings |   | False |
+| HTTP Timeout | The timeout of the HTTP requests sent to McAfee ePO API \(in seconds\). | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### epo-help
 ***
@@ -1503,4 +1499,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Issue with id=10 was updated
-

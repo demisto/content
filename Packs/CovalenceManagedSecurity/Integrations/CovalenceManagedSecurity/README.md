@@ -1,30 +1,26 @@
 Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
 This integration was integrated and tested with version 1.1.10 of Covalence Managed Security.
 
-## Configure Covalence Managed Security on Cortex XSOAR
+## Configure Covalence Managed Security in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Covalence Managed Security.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Credentials |  | True |
-    | Password |  | True |
-    | Use system proxy settings |  | False |
-    | First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch Limit | The maximum number of incidents to fetch | False |
-    | Broker Server URL | Broker Server URL (Optional).  Required to use Broker commands. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Credentials |  | True |
+| Password |  | True |
+| Use system proxy settings |  | False |
+| First run time range | When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Fetch Limit | The maximum number of incidents to fetch | False |
+| Broker Server URL | Broker Server URL (Optional).  Required to use Broker commands. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cov-mgsec-get-aro
@@ -563,4 +559,327 @@ Broker - List organizations.
 >| 00000000-1111-2222-3333-444444444444 | 2024-1384-SAN | 110 Sand Company |
 
 
+
+### cov-mgsec-comment-aro
+
+***
+Comment on an ARO.
+
+#### Base Command
+
+`cov-mgsec-comment-aro`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| aro_id | This ARO ID to transition. | Required | 
+| comment | Comment to leave on the ARO. | Required | 
+| is_comment_sensitive | Optionally mark the comment as sensitive. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESPortal.Aro.ID | String | ID. | 
+| FESPortal.Aro.acknowledged | Boolean | Acknowledged | 
+| FESPortal.Aro.acknowledged_by.ID | String | Acknowledged By ID | 
+| FESPortal.Aro.acknowledged_by.avatar_file_url | String | Acknowledged By | 
+| FESPortal.Aro.acknowledged_by.email | String | Acknowledged By Email | 
+| FESPortal.Aro.acknowledged_by.first_name | String | Acknowledged By First Name | 
+| FESPortal.Aro.acknowledged_by.last_name | String | Acknowledged By Last Name | 
+| FESPortal.Aro.acknowledged_time | Date | Acknowledged Time | 
+| FESPortal.Aro.aro_id | String | ARO ID | 
+| FESPortal.Aro.author.ID | String | Author ID | 
+| FESPortal.Aro.author.avatar_file_url | String | Author Avatar File URL | 
+| FESPortal.Aro.author.email | String | Author Email | 
+| FESPortal.Aro.author.first_name | String | Author First Name | 
+| FESPortal.Aro.author.last_name | String | Author Last Name | 
+| FESPortal.Aro.author_organization.ID | String | Author Organization ID | 
+| FESPortal.Aro.author_organization.email | String | Author Organization Email | 
+| FESPortal.Aro.author_organization.name | String | Author Organization Name | 
+| FESPortal.Aro.author_organization_type | String | Author Organization Type | 
+| FESPortal.Aro.available_only_to_organization_id | String | ARO Comment Available Only to Organization ID | 
+| FESPortal.Aro.available_only_to_provider_id | String | ARO Comment Available Only to Provider ID | 
+| FESPortal.Aro.created_time | Date | ARO Created Time | 
+| FESPortal.Aro.id | String | ARO Comment ID | 
+| FESPortal.Aro.last_updated_time | Date | ARO Comment Last Updated Time | 
+| FESPortal.Aro.sensitive | Boolean | ARO Comment Sensitive | 
+| FESPortal.Aro.source | String | ARO Comment Source | 
+| FESPortal.Aro.text | String | ARO Comment Text | 
+| FESPortal.Aro.type | String | ARO Comment Type | 
+| FESPortal.Aro.visible_to.ID | String | ARO Comment Visible to ID | 
+| FESPortal.Aro.visible_to.email | String | ARO Comment Visible to Email | 
+| FESPortal.Aro.visible_to.name | String | ARO Comment Visible to Name | 
+
+#### Command example
+```!cov-mgsec-comment-aro aro_id="b25e461e-75e9-415b-a631-6d0f4516f33a" comment="Risk mitigated."```
+#### Context Example
+```json
+{
+    "FESPortal": {
+        "Org": {
+            "acknowledged": true,
+            "acknowledged_by": {
+                "ID": "abcdefghijklmnopqrstuvwxyzabd1",
+                "avatar_file_url": null,
+                "email": "foo@bar.com",
+                "first_name": "John",
+                "last_name": "Smith"
+            },
+            "acknowledged_time": "2024-04-12 17:01:25",
+            "aro_id": "b25e461e-75e9-415b-a631-6d0f4516f33a",
+            "author": {
+                "ID": "abcdefghijklmnopqrstuvwxyzabd1",
+                "avatar_file_url": null,
+                "email": "foo@bar.com",
+                "first_name": "John",
+                "last_name": "Smith"
+            },
+            "author_organization": {
+                "ID": "00000000-1111-2222-3333-444444444444",
+                "email": "foo@bar.com",
+                "name": "Field Effect"
+            },
+            "author_organization_type": "Field Effect",
+            "available_only_to_organization_id": null,
+            "available_only_to_provider_id": null,
+            "created_time": "2024-04-12 17:01:25",
+            "id": "b14a53a4-23ac-488d-b992-dbc1d5ef5361",
+            "last_updated_time": "2024-04-12 17:01:25",
+            "sensitive": false,
+            "source": "Portal",
+            "text": "Risk mitigated.",
+            "type": "Comment",
+            "visible_to": [
+                {
+                    "ID": "00000000-1111-2222-3333-444444444444",
+                    "email": null,
+                    "name": "Tradecraft Test & Development (Do Not Delete)"
+                },
+                {
+                    "ID": "00000000-1111-2222-3333-444444444444",
+                    "email": "foo@bar.com",
+                    "name": "Field Effect"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### ARO
+>|Acknowledged|Acknowledged By|Acknowledged Time|Aro Id|Author|Author Organization|Author Organization Type|Created Time|Id|Last Updated Time|Sensitive|Source|Text|Type|Visible To|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| true | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | 2024-04-12 17:01:25 | b25e461e-75e9-415b-a631-6d0f4516f33a | ID: abcdefghijklmnopqrstuvwxyzabd1<br/>avatar_file_url: null<br/>email: foo@bar.com<br/>first_name: John<br/>last_name: Smith | ID: 00000000-1111-2222-3333-444444444444<br/>email: foo@bar.com<br/>name: Field Effect | Field Effect | 2024-04-12 17:01:25 | b14a53a4-23ac-488d-b992-dbc1d5ef5361 | 2024-04-12 17:01:25 | false | Portal | Risk mitigated. | Comment | {'ID': '00000000-1111-2222-3333-444444444444', 'email': None, 'name': 'Tradecraft Test & Development (Do Not Delete)'},<br/>{'ID': '00000000-1111-2222-3333-444444444444', 'email': 'foo@bar.com', 'name': 'Field Effect'} |
+### cov-mgsec-list-escalation-contacts
+
+***
+Get the escalation contact list for a given organization.
+
+#### Base Command
+
+`cov-mgsec-list-escalation-contacts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| org_id | Organization ID (eg. "00000000-1111-2222-3333-444444444444"). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESPortal.Org.priority | String | Priority. | 
+| FESPortal.Org.first_name | String | First Name. | 
+| FESPortal.Org.last_name | String | Last Name. | 
+| FESPortal.Org.job_title | String | Job Title. | 
+| FESPortal.Org.phone_number | String | Phone Number. | 
+| FESPortal.Org.secondary_phone | String | Secondary Phone Number. | 
+| FESPortal.Org.email | String | Email. | 
+| FESPortal.Org.notes | String | Notes. | 
+
+#### Command example
+```!cov-mgsec-list-escalation-contacts org_id=cb7e26b7-9d62-4cc7-acf1-4264327ac552```
+#### Context Example
+```json
+{
+    "FESPortal": {
+        "Org": [
+            {
+                "email": "test-email@fieldeffect.com",
+                "first_name": "John",
+                "job_title": null,
+                "last_name": "Doe",
+                "notes": "test notes",
+                "phone_number": null,
+                "priority": 1,
+                "secondary_phone": null
+            },
+            {
+                "email": "test-user2@fieldeffect.com",
+                "first_name": "Testing1",
+                "job_title": null,
+                "last_name": "User",
+                "notes": "test-note",
+                "phone_number": null,
+                "priority": 2,
+                "secondary_phone": null
+            },
+            {
+                "email": "test-user-4@fieldeffect.com",
+                "first_name": "Bob",
+                "job_title": "QA",
+                "last_name": "Tester",
+                "notes": "123\n456\n789",
+                "phone_number": "+16135551212",
+                "priority": 3,
+                "secondary_phone": "+15069999999"
+            },
+            {
+                "email": "test5@example.om",
+                "first_name": "Smith",
+                "job_title": "UI Dev",
+                "last_name": "fes",
+                "notes": null,
+                "phone_number": "+16135445544",
+                "priority": 4,
+                "secondary_phone": "+16135554548"
+            },
+            {
+                "email": "test-user-44@fieldeffect.com",
+                "first_name": "John",
+                "job_title": "Head of UI Development",
+                "last_name": "Doe",
+                "notes": null,
+                "phone_number": "+16135554545",
+                "priority": 5,
+                "secondary_phone": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Escalation Contacts
+>|Priority|First Name|Last Name|Job Title|Phone Number|Secondary Phone|Email|Notes|
+>|---|---|---|---|---|---|---|---|
+>| 1 | John | Doe |  |  |  | test-email@fieldeffect.com | some other test note |
+>| 2 | Testing1 | User |  |  |  | test-user2@fieldeffect.com | test-note |
+>| 3 | Bob | Tester | QA | +16135551212 | +15069999999 | test-user-4@fieldeffect.com |  |
+>| 4 | Smith | fes | UI Dev | +16135445544 | +16135554548 | test5@example.om |  |
+>| 5 | John | Doe | Head of UI Development | +16135554545 |  | test-user-44@fieldeffect.com |  |
+
+### cov-mgsec-list-key-contacts
+
+***
+Get the key contact list for a given organization.
+
+#### Base Command
+
+`cov-mgsec-list-key-contacts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| org_id | Organization ID (eg. "00000000-1111-2222-3333-444444444444"). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESPortal.Org.first_name | String | First Name. | 
+| FESPortal.Org.last_name | String | Last Name. | 
+| FESPortal.Org.phone_number | String | Phone Number. | 
+| FESPortal.Org.email | String | Email. | 
+| FESPortal.Org.type | String | Contact Type. | 
+
+#### Command example
+```!cov-mgsec-list-key-contacts org_id=cb7e26b7-9d62-4cc7-acf1-4264327ac552```
+#### Context Example
+```json
+{
+    "FESPortal": {
+        "Org": [
+            {
+                "email": "test-email@fieldeffect.com",
+                "first_name": "John",
+                "last_name": "Doe",
+                "phone_number": null,
+                "type": "Administrative"
+            },
+            {
+                "email": "test-email@fieldeffect.com",
+                "first_name": "John",
+                "last_name": "Doe",
+                "phone_number": "+19022223333",
+                "type": "Technical - Primary"
+            },
+            {
+                "email": "test5@example.om",
+                "first_name": "Smith",
+                "last_name": "fes",
+                "phone_number": "+16135445544",
+                "type": "Technical - Secondary"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Key Contacts
+>|First Name|Last Name|Phone Number|Email|Type|
+>|---|---|---|---|---|
+>| John | Doe |  | test-email@fieldeffect.com | Administrative |
+>| John | Doe | +19022223333 | test-email@fieldeffect.com | Technical - Primary |
+>| Smith | fes | +16135445544 | test5@example.om | Technical - Secondary |
+
+### cov-mgsec-list-language
+
+***
+Get the default language for a given organization.
+
+#### Base Command
+
+`cov-mgsec-list-language`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| org_id | Organization ID (eg. "00000000-1111-2222-3333-444444444444"). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESPortal.Org.default_language | String | Default Language. | 
+
+#### Command example
+```!cov-mgsec-list-language org_id=cb7e26b7-9d62-4cc7-acf1-4264327ac552```
+#### Context Example
+```json
+{
+    "FESPortal": {
+        "Org": {
+            "default_language": "en-CA"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Default Organization Language
+>|Default Language|
+>|---|
+>| en-CA |
 

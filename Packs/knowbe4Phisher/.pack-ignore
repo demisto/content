@@ -1,2 +1,8 @@
 [known_words]
 PhishER
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Phisher.json]
+ignore=GR103
+[file:classifier-phisher-mapper.json]
+ignore=GR103

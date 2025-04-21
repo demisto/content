@@ -1,26 +1,22 @@
 The Imperva Skyfence Cloud Gateway is a Cloud Access Security Broker (CASB) that provides visibility and control over sanctioned and unsanctioned cloud apps to enable their safe and productive use.
 This integration was integrated and tested with version 1.0.8 of Imperva Skyfence
 
-## Configure Imperva Skyfence on Cortex XSOAR
+## Configure Imperva Skyfence in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Imperva Skyfence.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., 123.168.01.222) | True |
-    | Client ID | False |
-    | Client ID | False |
-    | Client Secret | False |
-    | Client Secret | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., 123.168.01.222) | True |
+| Client ID | False |
+| Client ID | False |
+| Client Secret | False |
+| Client Secret | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### imp-sf-list-endpoints

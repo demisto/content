@@ -1,0 +1,49 @@
+args:
+- description: Value to search for. If you supply a value, you need to supply the "header" argument also.
+  name: value
+- description: Header to filter lines by. If you supply a header, you need to supply the "value" argument.
+  name: header
+- description: The list name in which to search.
+  name: list_name
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: If "True", parses the entire list into the context. Can be "True" or "False". Default is "False".
+  name: parse_all
+  predefined:
+  - 'True'
+  - 'False'
+- defaultValue: ','
+  description: Separator to split the list by (use \\t in case of tab separated list).
+  name: list_separator
+comment: Parses a list by header and value.
+commonfields:
+  id: GetListRow
+  version: -1
+enabled: true
+name: GetListRow
+outputs:
+- contextPath: GetListRow.Header
+  description: Header in which the search was performed.
+  type: String
+- contextPath: GetListRow.Value
+  description: Value to search for.
+  type: String
+- contextPath: GetListRow.ListName
+  description: The name of the list that was searched..
+  type: String
+- contextPath: GetListRow.ParseAll
+  description: If "True", the entire list was parsed into the context.
+  type: String
+- contextPath: GetListRow.Results
+  description: All parse results of the list.
+  type: UnKnown
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

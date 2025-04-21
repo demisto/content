@@ -3,7 +3,7 @@ commonfields:
   id: Snort IP Blocklist Feed
   version: -1
 configuration:
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
@@ -47,13 +47,13 @@ configuration:
   - WHITE
   type: 15
   required: false
-- defaultvalue: "480"
+- defaultvalue: '480'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  defaultvalue: "true"
+  defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
@@ -66,7 +66,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: ""
+- display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -75,7 +75,7 @@ configuration:
   - suddenDeath
   type: 17
   required: false
-- display: ""
+- display: ''
   name: feedExpirationInterval
   type: 1
   required: false
@@ -91,12 +91,12 @@ name: Snort IP Blocklist Feed
 script:
   commands:
   - arguments:
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The maximum number of IP indicators to return.
       name: limit
     description: Gets indicators from the feed.
     name: snort-get-ip-blocklist-indicators
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   script: ''
   subtype: python3

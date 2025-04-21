@@ -2,25 +2,21 @@ Use the Exterro package to integrate with the Exterro FTK platform enabling the 
 
 Documentation for the integration was provided by FTK Connect.
 
-## Configure Exterro on Cortex XSOAR
+## Configure Exterro in Cortex
 
-1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2.  Search for Exterro FTK.
-3.  Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Example** |
-    | --------- | ----------- | ------- |
-    | Name | A meaningful name for the integration instance. | FTKC Instance |
-    | Web Protocol | Protocol used in the FTKC server | https (or) https |
-    | Service URL | The URL to the FTKC server, including the scheme. | FQDN or IP address in X.X.X.X format with scheme specified. |
-    | Service Listening Port | The Port to the FTKC server. | 4443 |
-    | The API authentication key | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
-    | The path to the public certificate required to authenticate | When selected, certificates are not checked. | N/A |
+| **Parameter** | **Description** | **Example** |
+| --------- | ----------- | ------- |
+| Name | A meaningful name for the integration instance. | FTKC Instance |
+| Web Protocol | Protocol used in the FTKC server | https (or) https |
+| Service URL | The URL to the FTKC server, including the scheme. | FQDN or IP address in X.X.X.X format with scheme specified. |
+| Service Listening Port | The Port to the FTKC server. | 4443 |
+| The API authentication key | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
+| The path to the public certificate required to authenticate | When selected, certificates are not checked. | N/A |
     
-4.  Click **Test** to validate the URLs, API Key, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
 ### Trigger Automation Workflow in FTK Connect 

@@ -1,5 +1,5 @@
 import re
-from typing import TYPE_CHECKING, Any, NamedTuple, NoReturn
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import demistomock as demisto
 from AWSApiModule import *
@@ -31,9 +31,7 @@ RESOURCE_TYPE_MAP: dict[str, "ResourceTypeForTaggingType"] = {
 }
 SERVICE_NAME = "ssm"  # Amazon Simple Systems Manager (SSM).
 DEFAULT_TIMEOUT = 600  # Default timeout for polling commands.
-MAXIMUM_COMMAND_TIMEOUT = (
-    2592000  # Maximum timeout for running commands in ssm (30 days).
-)
+MAXIMUM_COMMAND_TIMEOUT = 2592000  # Maximum timeout for running commands in ssm (30 days).
 MINIMUM_COMMAND_TIMEOUT = 30  # Minimum timeout for running commands in ssm.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval for polling commands.
 TERMINAL_AUTOMATION_STATUSES = {  # the status for run automation command
@@ -186,9 +184,7 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
         try:
             parameters_dict = json.loads(parameters)
         except json.decoder.JSONDecodeError as e:
-            raise DemistoException(
-                "Make sure the parameters are in one of the allowed formats."
-            ) from e
+            raise DemistoException("Make sure the parameters are in one of the allowed formats.") from e
     elif isinstance(parameters, dict):  # in case the command running from playbook
         for key, value in parameters.items():
             parameters_dict[key] = argToList(value)
@@ -214,12 +210,10 @@ def format_document_version(document_version: str) -> str:
         >>> print(Formatted version)
         $LATEST
     """
-    return {"latest": "$LATEST", "default": "$DEFAULT"}.get(
-        document_version, document_version
-    )
+    return {"latest": "$LATEST", "default": "$DEFAULT"}.get(document_version, document_version)
 
 
-def validate_args(args: dict[str, Any]) -> NoReturn | None:
+def validate_args(args: dict[str, Any]) -> None:
     """Validates the arguments in the provided dictionary using regular expressions,
     from the constants REGEX_PATTERNS.
 
@@ -255,7 +249,6 @@ def validate_args(args: dict[str, Any]) -> NoReturn | None:
             raise DemistoException(
                 validator.error_template.format(**{validator.name: arg_value}),
             )
-    return None
 
 
 def config_aws_session(args: dict[str, str], aws_client: AWSClient) -> "SSMClient":
@@ -385,9 +378,7 @@ def get_command_status(command_id: str, ssm_client: "SSMClient") -> str:
     except IndexError as e:
         raise DemistoException(f"Command ID {command_id} not found in response") from e
     except KeyError as e:
-        raise DemistoException(
-            f"Status key not found for command ID {command_id}"
-        ) from e
+        raise DemistoException(f"Status key not found for command ID {command_id}") from e
 
 
 def parse_automation_execution(automation: dict[str, Any]) -> dict[str, Any]:
@@ -458,9 +449,7 @@ def remove_tags_from_resource_command(
 
 def list_tags_for_resource_command(args: dict[str, Any], ssm_client: "SSMClient"):
     resource_id = args["resource_id"]
-    response = ssm_client.list_tags_for_resource(
-        ResourceType=RESOURCE_TYPE_MAP[args["resource_type"]], ResourceId=resource_id
-    )
+    response = ssm_client.list_tags_for_resource(ResourceType=RESOURCE_TYPE_MAP[args["resource_type"]], ResourceId=resource_id)
     tag_list = response["TagList"]
     tags = {"ResourceId": resource_id, "TagList": tag_list}
 
@@ -512,17 +501,13 @@ def list_inventory_command(
                 )
         return parsed_entities
 
-    kwargs: "GetInventoryRequestRequestTypeDef" = {
+    kwargs: GetInventoryRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
-        "Filters": [
-            {"Key": "AWS:InstanceInformation.InstanceStatus", "Values": ["active"]}
-        ],
+        "Filters": [{"Key": "AWS:InstanceInformation.InstanceStatus", "Values": ["active"]}],
     }
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
     if argToBoolean(args.get("include_inactive_instance")):
-        kwargs["Filters"][0]["Values"].extend(
-            ["stopped", "terminated", "ConnectionLost"]
-        )
+        kwargs["Filters"][0]["Values"].extend(["stopped", "terminated", "ConnectionLost"])
 
     response = ssm_client.get_inventory(**kwargs)
     command_results = []
@@ -669,7 +654,7 @@ def list_associations_command(
             for association in associations
         ]
 
-    kwargs: "ListAssociationsRequestRequestTypeDef" = {
+    kwargs: ListAssociationsRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
 
@@ -880,7 +865,7 @@ def list_documents_command(
             for document in documents
         ]
 
-    kwargs: "ListDocumentsRequestRequestTypeDef" = {
+    kwargs: ListDocumentsRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
 
@@ -1031,7 +1016,7 @@ def list_automation_executions_command(
         list[CommandResults]: A list of objects containing the results of the command.
         If next_token provide in the response, the first CommandResults in the list will contain the next token.
     """
-    kwargs: "DescribeAutomationExecutionsRequestRequestTypeDef" = {
+    kwargs: DescribeAutomationExecutionsRequestRequestTypeDef = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
     kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
@@ -1052,10 +1037,7 @@ def list_automation_executions_command(
             outputs_prefix="AWS.SSM.AutomationExecution",
             readable_output=tableToMarkdown(
                 name="AWS SSM Automation Executions",
-                t=[
-                    parse_automation_execution(automation)
-                    for automation in automation_execution_list
-                ],
+                t=[parse_automation_execution(automation) for automation in automation_execution_list],
                 headers=[
                     "Automation Execution Id",
                     "Document Name",
@@ -1078,21 +1060,13 @@ def validate_target_arguments(args: dict[str, Any]) -> None:
     target_values = args.get("target_values")
 
     if target_parameter_name and not target_key:
-        raise DemistoException(
-            "You must provide a target_key when specifying a target_parameter_name."
-        )
+        raise DemistoException("You must provide a target_key when specifying a target_parameter_name.")
     if target_key and not target_parameter_name:
-        raise DemistoException(
-            "You must provide a target_parameter_name when specifying a target_key."
-        )
+        raise DemistoException("You must provide a target_parameter_name when specifying a target_key.")
     if target_values and not target_parameter_name:
-        raise DemistoException(
-            "You must provide a target_parameter_name when specifying target_values."
-        )
+        raise DemistoException("You must provide a target_parameter_name when specifying target_values.")
     if target_key and not target_values:
-        raise DemistoException(
-            "You must provide target_values when specifying a target_key."
-        )
+        raise DemistoException("You must provide target_values when specifying a target_key.")
 
 
 @polling_function(
@@ -1138,11 +1112,7 @@ def run_automation_execution_command(
         kwargs = {
             "DocumentName": args["document_name"],
             "Mode": args.get("mode", "Auto"),
-            **(
-                {"Tags": [{"Key": tag_key, "Value": tag_value}]}
-                if tag_key and tag_value
-                else {}
-            ),
+            **({"Tags": [{"Key": tag_key, "Value": tag_value}]} if tag_key and tag_value else {}),
         }
         input_to_output_keys = {
             "client_token": "ClientToken",
@@ -1188,22 +1158,16 @@ def run_automation_execution_command(
             args_for_next_run=args,
         )
     # polling logic
-    automation_execution = ssm_client.get_automation_execution(
-        AutomationExecutionId=execution_id
-    )["AutomationExecution"]
+    automation_execution = ssm_client.get_automation_execution(AutomationExecutionId=execution_id)["AutomationExecution"]
     automation_execution = convert_datetime_to_iso(automation_execution)
     status = automation_execution["AutomationExecutionStatus"]
     if status in TERMINAL_AUTOMATION_STATUSES:
         if FailureMessage := automation_execution.get("FailureMessage"):
-            readable_output = (
-                f"Execution {execution_id} failed with message: {FailureMessage}"
-            )
+            readable_output = f"Execution {execution_id} failed with message: {FailureMessage}"
         else:
             readable_output = f"The automation status is {status}, {TERMINAL_AUTOMATION_STATUSES[status]}"
         return PollResult(  # if execution not in progress, return the status and end the polling loop
-            response=CommandResults(
-                readable_output=readable_output, outputs=automation_execution
-            ),
+            response=CommandResults(readable_output=readable_output, outputs=automation_execution),
             continue_to_poll=False,
         )
     return PollResult(response=None, continue_to_poll=True, args_for_next_run=args)
@@ -1242,9 +1206,9 @@ def cancel_automation_execution_command(
     include_polling = argToBoolean(args.get("include_polling", False))
 
     if not argToBoolean(args["first_run"]):
-        status = ssm_client.get_automation_execution(
-            AutomationExecutionId=automation_execution_id
-        )["AutomationExecution"]["AutomationExecutionStatus"]
+        status = ssm_client.get_automation_execution(AutomationExecutionId=automation_execution_id)["AutomationExecution"][
+            "AutomationExecutionStatus"
+        ]
         if status in CANCEL_TERMINAL_AUTOMATION_STATUSES:
             return PollResult(
                 response=CommandResults(
@@ -1318,9 +1282,7 @@ def list_commands_command(
     kwargs = {
         "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
     }
-    kwargs = update_if_value(
-        args, kwargs, {"next_token": "NextToken", "command_id": "CommandId"}
-    )
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken", "command_id": "CommandId"})
 
     response = ssm_client.list_commands(**kwargs)
     response = convert_datetime_to_iso(response)
@@ -1515,9 +1477,7 @@ def main():
     aws_role_arn = params.get("roleArn")
     aws_role_session_name = params.get("roleSessionName")
     aws_role_session_duration = params.get("sessionDuration")
-    aws_role_policy = (
-        None  # added it for using AWSClient class without changing the code
-    )
+    aws_role_policy = None  # added it for using AWSClient class without changing the code
     timeout = params["timeout"]
     retries = params["retries"]
 

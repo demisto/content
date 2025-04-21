@@ -22,17 +22,20 @@ args:
   name: locality
   type: textArea
 - auto: PREDEFINED
-  defaultValue: "False"
+  defaultValue: 'False'
   description: 'Output CSR text to war room? (Default: False)'
   name: OutputToWarRoom
   predefined:
-  - "True"
-  - "False"
-comment: "Generates a certificate signing request for fulfillment by an organization certification authority (CA)\n\nOutput is the request.csr file placed directly into context under a \"File\" object. "
+  - 'True'
+  - 'False'
+comment: 'Generates a certificate signing request for fulfillment by an organization certification authority (CA)
+
+
+  Output is the request.csr file placed directly into context under a "File" object. '
 commonfields:
   id: GenerateCSR
   version: -1
-dockerimage: demisto/ansible-runner:1.0.0.47562
+dockerimage: demisto/ansible-runner:1.0.0.2024530
 enabled: true
 name: GenerateCSR
 runas: DBotWeakRole

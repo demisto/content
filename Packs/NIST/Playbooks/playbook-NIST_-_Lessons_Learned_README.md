@@ -43,4 +43,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![NIST_Lessons_Learned](https://raw.githubusercontent.com/demisto/content/e3151e10c150344c8bf99fcdcb3932919ebf7315/Packs/NIST/doc_files/Access_Investigation_Generic_NIST.png)
+![NIST_Lessons_Learned](../doc_files/NIST_-_Lessons_Learned.png)

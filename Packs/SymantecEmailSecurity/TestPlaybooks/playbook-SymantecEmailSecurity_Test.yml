@@ -1,0 +1,913 @@
+id: SymantecEmailSecurity_TestPlaybook
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
+name: SymantecEmailSecurity_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 36eca041-ab5e-457a-855f-9dbd935fd2fe
+    type: start
+    task:
+      id: 36eca041-ab5e-457a-855f-9dbd935fd2fe
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8b1a3e20-35ab-46f7-8e0d-53c538073ed2
+    type: regular
+    task:
+      id: 8b1a3e20-35ab-46f7-8e0d-53c538073ed2
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fa3795ea-84ef-46a7-8dde-7359f8e53e99
+    type: regular
+    task:
+      id: fa3795ea-84ef-46a7-8dde-7359f8e53e99
+      version: -1
+      name: symantec-email-security-ioc-list
+      script: Symantec Email Security Cloud|||symantec-email-security-ioc-list
+      type: regular
+      iscommand: true
+      brand: Symantec Email Security Cloud
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all_results:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b7aab46c-7581-4ddf-88c9-4b085a686b96
+    type: condition
+    task:
+      id: b7aab46c-7581-4ddf-88c9-4b085a686b96
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.iocBlackListId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.iocType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.iocValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.emailDirection
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.remediationAction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.IOC.expiryDate
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 543112f0-b8d0-4013-89cd-f01a77227aa2
+    type: regular
+    task:
+      id: 543112f0-b8d0-4013-89cd-f01a77227aa2
+      version: -1
+      name: symantec-email-security-ioc-action
+      description: Add, update, delete and renew multiple IOCs through the `entry_id`
+        or a single through the rest of the parameters.
+      script: Symantec Email Security Cloud|||symantec-email-security-ioc-action
+      type: regular
+      iscommand: true
+      brand: Symantec Email Security Cloud
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        simple: add
+      description:
+        simple: Test IOC item to be deleted in playbook. DELETE THIS
+      email_direction:
+        simple: inbound
+      ioc_type:
+        simple: subject
+      ioc_value:
+        simple: Test IOC for test playbook - DELETE THIS
+      remediation_action:
+        simple: quarantine
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 13d9569d-5d62-4aa2-8e9c-a871de0f7859
+    type: regular
+    task:
+      id: 13d9569d-5d62-4aa2-8e9c-a871de0f7859
+      version: -1
+      name: symantec-email-security-ioc-renew
+      script: Symantec Email Security Cloud|||symantec-email-security-ioc-renew
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 388f965f-9dcd-472f-8fae-9eb4239cce90
+    type: regular
+    task:
+      id: 388f965f-9dcd-472f-8fae-9eb4239cce90
+      version: -1
+      name: symantec-email-security-data-list
+      script: Symantec Email Security Cloud|||symantec-email-security-data-list
+      type: regular
+      iscommand: true
+      brand: Symantec Email Security Cloud
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5905a470-4bb3-4c2b-8d52-084ad87c4178
+    type: condition
+    task:
+      id: 5905a470-4bb3-4c2b-8d52-084ad87c4178
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.Data.emailInfo.xMsgRef
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.Data.emailInfo.longMsgRef
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.Data.emailInfo.messageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.Data.emailInfo.messageSize
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.Data.emailInfo.subject
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1bbb6836-b223-4bb3-8604-435c18a00e95
+    type: regular
+    task:
+      id: 1bbb6836-b223-4bb3-8604-435c18a00e95
+      version: -1
+      name: symantec-email-security-email-queue-list
+      script: Symantec Email Security Cloud|||symantec-email-security-email-queue-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 73d4604c-7ac1-4b2c-8d87-50c12b673216
+    type: condition
+    task:
+      id: 73d4604c-7ac1-4b2c-8d87-50c12b673216
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.TotalMessagesInbound
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.TotalMessagesOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.MeanTimeInQueueInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.MeanTimeInQueueOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.LongestTimeInInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.LongestTimeInOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.ReceiveQueueCountInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.ReceiveQueueCountOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.DeliveryQueueCountInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.DeliveryQueueCountOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInReceiveQueueOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInDeliveryQueueInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.LongestTimeInDeliveryQueueOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInReceiveQueueInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInReceiveQueueOutbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInDeliveryQueueInbound
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.EmailQueue.Domains.MeanTimeInDeliveryQueueOutbound
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ea907140-f7ca-47d6-8feb-f0fd5d044490
+    type: title
+    task:
+      id: ea907140-f7ca-47d6-8feb-f0fd5d044490
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6510ea68-b13a-4052-830b-a227a062b014
+    type: regular
+    task:
+      id: 6510ea68-b13a-4052-830b-a227a062b014
+      version: -1
+      name: symantec-email-security-quarantine-email-list
+      script: Symantec Email Security Cloud|||symantec-email-security-quarantine-email-list
+      type: regular
+      iscommand: true
+      brand: Symantec Email Security Cloud
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4ce48a78-a8d0-45a2-84ea-0d386ac5f125
+    type: condition
+    task:
+      id: 4ce48a78-a8d0-45a2-84ea-0d386ac5f125
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.QuarantineEmail.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.QuarantineEmail.metadata.user_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 19f6bece-b033-4bc3-8f8a-87cc9ac3a88c
+    type: regular
+    task:
+      id: 19f6bece-b033-4bc3-8f8a-87cc9ac3a88c
+      version: -1
+      name: symantec-email-security-quarantine-email-preview
+      script: Symantec Email Security Cloud|||symantec-email-security-quarantine-email-preview
+      type: regular
+      iscommand: true
+      brand: Symantec Email Security Cloud
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      message_id:
+        simple: ${SymantecEmailSecurity.QuarantineEmail.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b6a03ff6-18ae-4ae5-8fed-9d0e938bcbf2
+    type: condition
+    task:
+      id: b6a03ff6-18ae-4ae5-8fed-9d0e938bcbf2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.QuarantineEmailPreview.message_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.QuarantineEmailPreview.headers.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.QuarantineEmailPreview.headers.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.QuarantineEmailPreview.headers.message-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.QuarantineEmailPreview.headers.to
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2629e6cb-3c4b-46f8-8a8b-5d49b78d2fd1
+    type: condition
+    task:
+      id: 2629e6cb-3c4b-46f8-8a8b-5d49b78d2fd1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.BlockList.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.BlockList.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.BlockList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.BlockList.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.BlockList.date_created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.BlockList.date_amended
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 008b1de8-97f9-4436-83ce-f11c74588f7d
+    type: regular
+    task:
+      id: 008b1de8-97f9-4436-83ce-f11c74588f7d
+      version: -1
+      name: symantec-email-security-item-block-list
+      script: Symantec Email Security Cloud|||symantec-email-security-item-block-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d86b3506-b539-4336-8071-5b6f83b3d079
+    type: regular
+    task:
+      id: d86b3506-b539-4336-8071-5b6f83b3d079
+      version: -1
+      name: symantec-email-security-item-allow-list
+      script: Symantec Email Security Cloud|||symantec-email-security-item-allow-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c112cef5-eae2-44de-836e-8208ef242145
+    type: condition
+    task:
+      id: c112cef5-eae2-44de-836e-8208ef242145
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.AllowList.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.AllowList.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.AllowList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.AllowList.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.AllowList.date_created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SymantecEmailSecurity.AllowList.date_amended
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3565,
+        "width": 380,
+        "x": 50,
+        "y": -100
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

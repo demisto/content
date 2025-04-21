@@ -2,7 +2,7 @@
     "name": "Shodan",
     "description": "A search engine used for searching Internet-connected devices",
     "support": "xsoar",
-    "currentVersion": "1.1.19",
+    "currentVersion": "1.2.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,9 +14,19 @@
         "Free Enricher"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Shodan",
+        "Banner"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

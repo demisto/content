@@ -1,60 +1,64 @@
 # pylint: disable=no-member
-from collections import Counter
-from CommonServerUserPython import *
-from CommonServerPython import *
-from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
-import uuid
-import spacy
 import string
-from html.parser import HTMLParser
+import uuid
+from collections import Counter
 from html import unescape
+from html.parser import HTMLParser
 from re import compile as _Re
+
 import pandas as pd
+import spacy
+from CommonServerPython import *
 from langdetect import detect
 from langdetect.lang_detect_exception import LangDetectException
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-ANY_LANGUAGE = 'Any'
-OTHER_LANGUAGE = 'Other'
+from CommonServerUserPython import *
+
+ANY_LANGUAGE = "Any"
+OTHER_LANGUAGE = "Other"
 
 
 def hash_word(word, hash_seed):
     return str(hash_djb2(word, int(hash_seed)))
 
 
-CODES_TO_LANGUAGES = {'en': 'English',
-                      'de': 'German',
-                      'fr': 'French',
-                      'es': 'Spanish',
-                      'pt': 'Portuguese',
-                      'it': 'Italian',
-                      'nl': 'Dutch',
-                      }
+CODES_TO_LANGUAGES = {
+    "en": "English",
+    "de": "German",
+    "fr": "French",
+    "es": "Spanish",
+    "pt": "Portuguese",
+    "it": "Italian",
+    "nl": "Dutch",
+}
 
 html_patterns = [
     re.compile(r"(?is)<(script|style).*?>.*?(</\1>)"),
     re.compile(r"(?s)<!--(.*?)-->[\n]?"),
     re.compile(r"(?s)<.*?>"),
     re.compile(r"&nbsp;"),
-    re.compile(r" +")
+    re.compile(r" +"),
 ]
 
-LANGUAGE_KEY = 'language'
+LANGUAGE_KEY = "language"
 
 
 def create_text_result(original_text, tokenized_text, original_words_to_tokens, hash_seed=None):
     text_result = {
-        'originalText': original_text,
-        'tokenizedText': tokenized_text,
-        'originalWordsToTokens': original_words_to_tokens,
+        "originalText": original_text,
+        "tokenizedText": tokenized_text,
+        "originalWordsToTokens": original_words_to_tokens,
     }
     if hash_seed is not None:
-        hash_tokenized_text = ' '.join(hash_word(word, hash_seed) for word in tokenized_text.split())
-        words_to_hashed_tokens = {word: [hash_word(t, hash_seed) for t in tokens_list] for word, tokens_list in
-                                  original_words_to_tokens.items()}
+        hash_tokenized_text = " ".join(hash_word(word, hash_seed) for word in tokenized_text.split())
+        words_to_hashed_tokens = {
+            word: [hash_word(t, hash_seed) for t in tokens_list] for word, tokens_list in original_words_to_tokens.items()
+        }
 
-        text_result['hashedTokenizedText'] = hash_tokenized_text
-        text_result['wordsToHashedTokens'] = words_to_hashed_tokens
+        text_result["hashedTokenizedText"] = hash_tokenized_text
+        text_result["wordsToHashedTokens"] = words_to_hashed_tokens
     return text_result
 
 
@@ -66,14 +70,26 @@ def clean_html_from_text(text):
 
 
 class Tokenizer:
-    def __init__(self, clean_html=True, remove_new_lines=True, hash_seed=None, remove_non_english=True,
-                 remove_stop_words=True, remove_punct=True, remove_non_alpha=True, replace_emails=True,
-                 replace_numbers=True, lemma=True, replace_urls=True, language=ANY_LANGUAGE,
-                 tokenization_method='tokenizer'):
+    def __init__(
+        self,
+        clean_html=True,
+        remove_new_lines=True,
+        hash_seed=None,
+        remove_non_english=True,
+        remove_stop_words=True,
+        remove_punct=True,
+        remove_non_alpha=True,
+        replace_emails=True,
+        replace_numbers=True,
+        lemma=True,
+        replace_urls=True,
+        language=ANY_LANGUAGE,
+        tokenization_method="tokenizer",
+    ):
         self.number_pattern = "NUMBER_PATTERN"
         self.url_pattern = "URL_PATTERN"
         self.email_pattern = "EMAIL_PATTERN"
-        self.reserved_tokens = set([self.number_pattern, self.url_pattern, self.email_pattern])
+        self.reserved_tokens = {self.number_pattern, self.url_pattern, self.email_pattern}
         self.clean_html = clean_html
         self.remove_new_lines = remove_new_lines
         self.hash_seed = hash_seed
@@ -87,16 +103,16 @@ class Tokenizer:
         self.lemma = lemma
         self.language = language
         self.tokenization_method = tokenization_method
-        self.max_text_length = 10 ** 5
+        self.max_text_length = 10**5
 
         self.nlp = None
         self.html_parser = HTMLParser()
-        self._unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
+        self._unicode_chr_splitter = _Re("(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)").split
         self.spacy_count = 0
         self.spacy_reset_count = 500
 
     def handle_long_text(self):
-        return '', ''
+        return "", ""
 
     def map_indices_to_words(self, text):
         original_text_indices_to_words = {}
@@ -104,7 +120,7 @@ class Tokenizer:
         while word_start < len(text) and text[word_start].isspace():
             word_start += 1
         for word in text.split():
-            for char_idx, char in enumerate(word):
+            for char_idx, _char in enumerate(word):
                 original_text_indices_to_words[word_start + char_idx] = word
             # find beginning of next word
             word_start += len(word)
@@ -119,29 +135,29 @@ class Tokenizer:
         return re.sub(r"\s+", " ", text).strip()
 
     def handle_tokenizaion_method(self, text):
-        if self.tokenization_method == 'tokenizer':
+        if self.tokenization_method == "tokenizer":
             tokens_list, original_words_to_tokens = self.tokenize_text_spacy(text)
         else:
             tokens_list, original_words_to_tokens = self.tokenize_text_other(text)
-        tokenized_text = ' '.join(tokens_list).strip()
+        tokenized_text = " ".join(tokens_list).strip()
         return tokenized_text, original_words_to_tokens
 
     def tokenize_text_other(self, text):
         tokens_list = []
         tokenization_method = self.tokenization_method
-        if tokenization_method == 'byWords':
+        if tokenization_method == "byWords":
             original_words_to_tokens = {}
             for t in text.split():
-                token_without_punct = ''.join([c for c in t if c not in string.punctuation])
+                token_without_punct = "".join([c for c in t if c not in string.punctuation])
                 if len(token_without_punct) > 0:
                     tokens_list.append(token_without_punct)
                     original_words_to_tokens[token_without_punct] = t
-        elif tokenization_method == 'byLetters':
+        elif tokenization_method == "byLetters":
             for t in text:
-                tokens_list += [chr for chr in self._unicode_chr_splitter(t) if chr and chr != ' ']
+                tokens_list += [chr for chr in self._unicode_chr_splitter(t) if chr and chr != " "]
                 original_words_to_tokens = {c: t for c in tokens_list}
         else:
-            return_error('Unsupported tokenization method: when language is "Other" ({})'.format(tokenization_method))
+            return_error(f'Unsupported tokenization method: when language is "Other" ({tokenization_method})')
         return tokens_list, original_words_to_tokens
 
     def tokenize_text_spacy(self, text):
@@ -159,18 +175,18 @@ class Tokenizer:
                 continue
             elif self.remove_punct and word.is_punct:
                 continue
-            elif self.replace_emails and '@' in word.text:
+            elif self.replace_emails and "@" in word.text:
                 tokens_list.append(self.email_pattern)
             elif self.replace_urls and word.like_url:
                 tokens_list.append(self.url_pattern)
-            elif self.replace_numbers and (word.like_num or word.pos_ == 'NUM'):
+            elif self.replace_numbers and (word.like_num or word.pos_ == "NUM"):
                 tokens_list.append(self.number_pattern)
             elif self.remove_non_alpha and not word.is_alpha:
                 continue
             elif self.remove_non_english and word.text not in self.nlp.vocab:  # type: ignore
                 continue
             else:
-                if self.lemma and word.lemma_ != '-PRON-':
+                if self.lemma and word.lemma_ != "-PRON-":
                     token_to_add = word.lemma_
                 else:
                     token_to_add = word.lower_
@@ -182,7 +198,7 @@ class Tokenizer:
         return tokens_list, original_words_to_tokens
 
     def init_spacy_model(self):
-        self.nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner', 'textcat'])
+        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "ner", "textcat"])
 
     def word_tokenize(self, text):
         if not isinstance(text, list):
@@ -200,8 +216,7 @@ class Tokenizer:
                 tokenized_text, original_words_to_tokens = self.handle_tokenizaion_method(t)
             else:
                 tokenized_text, original_words_to_tokens = self.handle_long_text()
-            text_result = create_text_result(original_text, tokenized_text, original_words_to_tokens,
-                                             hash_seed=self.hash_seed)
+            text_result = create_text_result(original_text, tokenized_text, original_words_to_tokens, hash_seed=self.hash_seed)
             result.append(text_result)
         if len(result) == 1:
             result = result[0]  # type: ignore
@@ -209,15 +224,15 @@ class Tokenizer:
 
 
 # define global parsers
-DBOT_TEXT_FIELD = 'dbot_text'
-DBOT_PROCESSED_TEXT_FIELD = 'dbot_processed_text'
-CONTEXT_KEY = 'DBotPreProcessTextData'
+DBOT_TEXT_FIELD = "dbot_text"
+DBOT_PROCESSED_TEXT_FIELD = "dbot_processed_text"
+CONTEXT_KEY = "DBotPreProcessTextData"
 HTML_PATTERNS = [
     re.compile(r"(?is)<(script|style).*?>.*?(</\1>)"),
     re.compile(r"(?s)<!--(.*?)-->[\n]?"),
     re.compile(r"(?s)<.*?>"),
     re.compile(r"&nbsp;"),
-    re.compile(r" +")
+    re.compile(r" +"),
 ]
 html_parser = HTMLParser()
 tokenizer = None
@@ -225,10 +240,11 @@ tokenizer = None
 
 def read_file(input_data, input_type):
     data = []  # type: ignore
+    file_path, file_content = "", ""
     if not input_data:
         return data
     if input_type.endswith("string"):
-        if 'b64' in input_type:
+        if "b64" in input_type:
             input_data = base64.b64decode(input_data)
             file_content = input_data.decode("utf-8")
         else:
@@ -236,24 +252,25 @@ def read_file(input_data, input_type):
     else:
         res = demisto.getFilePath(input_data)
         if not res:
-            return_error("Entry {} not found".format(input_data))
-        file_path = res['path']
-        if input_type.startswith('json'):
-            with open(file_path, 'r') as f:
+            return_error(f"Entry {input_data} not found")
+        file_path = res["path"]
+        if input_type.startswith("json"):
+            with open(file_path) as f:
                 file_content = f.read()
-    if input_type.startswith('csv'):
-        return pd.read_csv(file_path).fillna('').to_dict(orient='records')
-    elif input_type.startswith('json'):
+    if input_type.startswith("csv"):
+        return pd.read_csv(file_path).fillna("").to_dict(orient="records")
+    elif input_type.startswith("json"):
         return json.loads(file_content)
-    elif input_type.startswith('pickle'):
+    elif input_type.startswith("pickle"):
         return pd.read_pickle(file_path, compression=None)
     else:
-        return_error("Unsupported file type %s" % input_type)
+        return_error(f"Unsupported file type {input_type}")
+        return None
 
 
 def concat_text_fields(data, target_field, text_fields):
     for d in data:
-        text = ''
+        text = ""
         for fields in text_fields:
             for field in fields.strip().split("|"):
                 field = field.strip()
@@ -262,10 +279,10 @@ def concat_text_fields(data, target_field, text_fields):
                     if type(value) is list and len(value) > 0:
                         value = value[0]
                 else:
-                    value = d.get(field) or d.get(field.lower(), '')
+                    value = d.get(field) or d.get(field.lower(), "")
                 if value and isinstance(value, str):
                     text += value
-                    text += ' '
+                    text += " "
                     break
         text = text.strip()
         d[target_field] = text
@@ -294,9 +311,9 @@ def pre_process_batch(data, source_text_field, target_text_field, pre_process_ty
     for raw_text in raw_text_data:
         tokenized_text = pre_process_single_text(raw_text, hash_seed, pre_process_type)
         if hash_seed is None:
-            tokenized_text_data.append(tokenized_text['tokenizedText'])
+            tokenized_text_data.append(tokenized_text["tokenizedText"])
         else:
-            tokenized_text_data.append(tokenized_text['hashedTokenizedText'])
+            tokenized_text_data.append(tokenized_text["hashedTokenizedText"])
     for d, tokenized_text in zip(data, tokenized_text_data):
         d[target_text_field] = tokenized_text
     return data
@@ -311,8 +328,9 @@ def pre_process_single_text(raw_text, hash_seed, pre_process_type):
 def pre_process_tokenizer(text, seed):
     global tokenizer
     if tokenizer is None:
-        tokenizer = Tokenizer(tokenization_method=demisto.args()['tokenizationMethod'],
-                              language=demisto.args()['language'], hash_seed=seed)
+        tokenizer = Tokenizer(
+            tokenization_method=demisto.args()["tokenizationMethod"], language=demisto.args()["language"], hash_seed=seed
+        )
     processed_text = tokenizer.word_tokenize(text)
     return processed_text
 
@@ -321,27 +339,32 @@ def pre_process_none(text, seed):
     cleaned_text = clean_html_from_text(text)
     tokenized_text = text
     original_words_to_tokens = {x: x for x in cleaned_text.split()}
-    return create_text_result(original_text=cleaned_text,
-                              tokenized_text=tokenized_text,
-                              original_words_to_tokens=original_words_to_tokens,
-                              hash_seed=seed)
+    return create_text_result(
+        original_text=cleaned_text,
+        tokenized_text=tokenized_text,
+        original_words_to_tokens=original_words_to_tokens,
+        hash_seed=seed,
+    )
 
 
 PRE_PROCESS_TYPES = {
-    'none': pre_process_none,
-    'nlp': pre_process_tokenizer,
+    "none": pre_process_none,
+    "nlp": pre_process_tokenizer,
 }
 
 
 def remove_short_text(data, text_field, target_text_field, remove_short_threshold):
     description = ""
     before_count = len(data)
-    data = [x for x in data if len(x[text_field].split(" ")) > remove_short_threshold
-            and len(x[target_text_field]) > remove_short_threshold]
+    data = [
+        x
+        for x in data
+        if len(x[text_field].split(" ")) > remove_short_threshold and len(x[target_text_field]) > remove_short_threshold
+    ]
     after_count = len(data)
     dropped_count = before_count - after_count
     if dropped_count > 0:
-        description += "Dropped %d samples shorter than %d words" % (dropped_count, remove_short_threshold) + "\n"
+        description += f"Dropped {dropped_count} samples shorter than {remove_short_threshold} words\n"
     return data, description
 
 
@@ -349,28 +372,27 @@ def remove_foreign_language(data, text_field, language):
     description = ""
     for inc in data:
         is_correct_lang, actual_language = is_text_in_input_language(inc[text_field], language)
-        inc['is_correct_lang'] = is_correct_lang
+        inc["is_correct_lang"] = is_correct_lang
         inc[LANGUAGE_KEY] = actual_language
-    filtered_data = [inc for inc in data if inc['is_correct_lang']]
+    filtered_data = [inc for inc in data if inc["is_correct_lang"]]
     dropped_count = len(data) - len(filtered_data)
     if dropped_count > 0:
         lang_counter = Counter(inc[LANGUAGE_KEY] for inc in data).most_common()
-        description += "Dropped %d sample(s) that were detected as being in foreign languages. " % dropped_count
-        description += 'Found language counts: {}'.format(', '.join(['{}:{}'.format(lang, count) for lang, count
-                                                                     in lang_counter]))
+        description += f"Dropped {dropped_count} sample(s) that were detected as being in foreign languages. "
+        description += "Found language counts: {}".format(", ".join([f"{lang}:{count}" for lang, count in lang_counter]))
         description += "\n"
     return filtered_data, description
 
 
 def is_text_in_input_language(text, input_language):
     if input_language in [ANY_LANGUAGE, OTHER_LANGUAGE]:
-        return True, 'UNK'
-    if '<html' in text:
+        return True, "UNK"
+    if "<html" in text:
         text = clean_html_from_text(text)
     try:
         actual_language = detect(text)
     except LangDetectException:
-        return True, 'UNK'
+        return True, "UNK"
     is_correct_lang = actual_language in CODES_TO_LANGUAGES and CODES_TO_LANGUAGES[actual_language] == input_language
     return is_correct_lang, actual_language
 
@@ -396,7 +418,7 @@ def remove_duplicate_by_indices(data, duplicate_indices):
     data = [x for i, x in enumerate(data) if i not in duplicate_indices]
     dropped_count = len(duplicate_indices)
     if dropped_count > 0:
-        description += "Dropped %d samples duplicate to other samples" % dropped_count + "\n"
+        description += f"Dropped {dropped_count} samples duplicate to other samples\n"
     return data, description
 
 
@@ -409,39 +431,38 @@ def whitelist_dict_fields(data, fields):
 
 
 def main():
-    text_fields = demisto.args()['textFields'].split(",")
-    input = demisto.args().get('input')
-    input_type = demisto.args()['inputType']
-    hash_seed = int(demisto.args().get('hashSeed')) if demisto.args().get('hashSeed') else None
-    remove_short_threshold = int(demisto.args().get('removeShortTextThreshold', 1))
-    de_dup_threshold = float(demisto.args()['dedupThreshold'])
-    pre_process_type = demisto.args()['preProcessType']
-    remove_html_tags = demisto.args()['cleanHTML'] == 'true'
-    whitelist_fields = demisto.args().get('whitelistFields').split(",") if demisto.args().get(
-        'whitelistFields') else None
-    language = demisto.args().get('language', ANY_LANGUAGE)
+    text_fields = demisto.args()["textFields"].split(",")
+    input = demisto.args().get("input")
+    input_type = demisto.args()["inputType"]
+    hash_seed = int(demisto.args().get("hashSeed")) if demisto.args().get("hashSeed") else None
+    remove_short_threshold = int(demisto.args().get("removeShortTextThreshold", 1))
+    de_dup_threshold = float(demisto.args()["dedupThreshold"])
+    pre_process_type = demisto.args()["preProcessType"]
+    remove_html_tags = demisto.args()["cleanHTML"] == "true"
+    whitelist_fields = demisto.args().get("whitelistFields").split(",") if demisto.args().get("whitelistFields") else None
+    language = demisto.args().get("language", ANY_LANGUAGE)
     # if input is a snigle string (from DbotPredictPhishingWords):
-    if input_type == 'string':
-        input_str = demisto.args().get('input')
+    if input_type == "string":
+        input_str = demisto.args().get("input")
         input_str = clean_text_of_single_text(input_str, remove_html_tags)
         is_correct_lang, actual_language = is_text_in_input_language(input_str, language)
         if not is_correct_lang:
-            return_error("Input text was detected as as being in a different language from {} ('{}' found)."
-                         .format(language, actual_language))
-        res = pre_process_single_text(raw_text=input_str,
-                                      hash_seed=hash_seed, pre_process_type=pre_process_type)
+            return_error(
+                f"Input text was detected as as being in a different language from {language} ('{actual_language}' found)."
+            )
+        res = pre_process_single_text(raw_text=input_str, hash_seed=hash_seed, pre_process_type=pre_process_type)
         return res
-    output_original_text_fields = demisto.args().get('outputOriginalTextFields', 'false') == 'true'
+    output_original_text_fields = demisto.args().get("outputOriginalTextFields", "false") == "true"
     description = ""
     # read data
     data = read_file(input, input_type)
     # concat text fields
     concat_text_fields(data, DBOT_TEXT_FIELD, text_fields)
-    description += "Read initial %d samples" % len(data) + "\n"
+    description += f"Read initial {len(data)} samples\n"
 
     # clean text
     if pre_process_type not in PRE_PROCESS_TYPES:
-        return_error('Pre-process type {} is not supported'.format(pre_process_type))
+        return_error(f"Pre-process type {pre_process_type} is not supported")
 
     # clean html and new lines
     data = clean_text_of_incidents_list(data, DBOT_TEXT_FIELD, remove_html_tags)
@@ -450,8 +471,7 @@ def main():
     description += desc
 
     # apply tokenizer
-    data = pre_process_batch(data, DBOT_TEXT_FIELD, DBOT_PROCESSED_TEXT_FIELD, pre_process_type,
-                             hash_seed)
+    data = pre_process_batch(data, DBOT_TEXT_FIELD, DBOT_PROCESSED_TEXT_FIELD, pre_process_type, hash_seed)
 
     # remove short emails
     data, desc = remove_short_text(data, DBOT_TEXT_FIELD, DBOT_PROCESSED_TEXT_FIELD, remove_short_threshold)
@@ -468,35 +488,36 @@ def main():
 
     if output_original_text_fields:
         for field in text_fields:
-            whitelist_fields += [x.strip() for x in field.split('|')]
+            whitelist_fields += [x.strip() for x in field.split("|")]  # type: ignore[operator]
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
         data = whitelist_dict_fields(data, whitelist_fields)
 
-    description += "Done processing: %d samples" % len(data) + "\n"
+    description += f"Done processing: {len(data)} samples\n"
     # output
     file_name = str(uuid.uuid4())
-    output_format = demisto.args()['outputFormat']
-    if output_format == 'pickle':
+    output_format = demisto.args()["outputFormat"]
+    data_encoded = None
+    if output_format == "pickle":
         data_encoded = pickle.dumps(data, protocol=2)
-    elif output_format == 'json':
+    elif output_format == "json":
         data_encoded = json.dumps(data, default=str)  # type: ignore
     else:
-        return_error("Invalid output format: %s" % output_format)
+        return_error(f"Invalid output format: {output_format}")
     entry = fileResult(file_name, data_encoded)
-    entry['Contents'] = data
-    entry['HumanReadable'] = description
-    entry['EntryContext'] = {
+    entry["Contents"] = data
+    entry["HumanReadable"] = description
+    entry["EntryContext"] = {
         CONTEXT_KEY: {
-            'Filename': file_name,
-            'FileFormat': output_format,
-            'TextField': DBOT_TEXT_FIELD,
-            'TextFieldProcessed': DBOT_PROCESSED_TEXT_FIELD,
+            "Filename": file_name,
+            "FileFormat": output_format,
+            "TextField": DBOT_TEXT_FIELD,
+            "TextFieldProcessed": DBOT_PROCESSED_TEXT_FIELD,
         }
     }
     return entry
 
 
-if __name__ in ['builtins', '__main__']:
+if __name__ in ["builtins", "__main__"]:
     entry = main()
     demisto.results(entry)

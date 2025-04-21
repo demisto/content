@@ -1,11 +1,9 @@
-#Digital Guardian ARC Watchlist Integration
+# Digital Guardian ARC Watchlist Integration
+
 This integration was integrated and tested with version 2.11.0 of Digital Guardian ARC
 
-## Configure Digital Guardian on Cortex XSOAR
+## Configure Digital Guardian in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Digital Guardian.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,9 +14,8 @@ This integration was integrated and tested with version 2.11.0 of Digital Guardi
 | client_secret | client_secret | True |
 | export_profile | export_profile | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### digitalguardian-add-watchlist-entry
 ***

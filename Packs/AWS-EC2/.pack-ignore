@@ -1,5 +1,5 @@
 [file:AWS-EC2.yml]
-ignore=BA108,BA109,IN124
+ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM106
@@ -10,3 +10,6 @@ ignore=PB114
 [known_words]
 ippermissionsfull
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-AWS-EC2Test_actions.yml]
+ignore=GR103

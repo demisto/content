@@ -11,54 +11,37 @@ EXTERNAL_SERVICES_RESPONSE = {
                 "service_id": "8b8f9d0a-4acd-3d88-9042-c7d17c2b44e9",
                 "service_name": "DNS Server at 1.1.1.1:53",
                 "service_type": "DnsServer",
-                "ip_address": [
-                    "1.1.1.1"
-                ],
+                "ip_address": ["1.1.1.1"],
                 "domain": [],
-                "externally_detected_providers": [
-                    "Other"
-                ],
+                "externally_detected_providers": ["Other"],
                 "is_active": "Inactive",
                 "first_observed": 1661308020000,
                 "last_observed": 1661357820000,
                 "port": 53,
                 "protocol": "UDP",
                 "active_classifications": [],
-                "inactive_classifications": [
-                    "DnsServer"
-                ],
+                "inactive_classifications": ["DnsServer"],
                 "discovery_type": "ColocatedOnIp",
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "externally_inferred_vulnerability_score": null,
-                "externally_inferred_cves": []
+                "externally_inferred_cves": [],
             },
             {
                 "service_id": "7a4ce6ec-9ce3-3002-ac66-862854b2d7f7",
                 "service_name": "DNS Server at 1.1.1.1:53",
                 "service_type": "DnsServer",
-                "ip_address": [
-                    "1.1.1.1"
-                ],
+                "ip_address": ["1.1.1.1"],
                 "domain": [],
-                "externally_detected_providers": [
-                    "Other"
-                ],
+                "externally_detected_providers": ["Other"],
                 "is_active": "Active",
                 "first_observed": 1661298300000,
                 "last_observed": 1662536820000,
                 "port": 53,
                 "protocol": "UDP",
-                "active_classifications": [
-                    "DnsServer",
-                    "ISCBIND9"
-                ],
+                "active_classifications": ["DnsServer", "ISCBIND9"],
                 "inactive_classifications": [],
                 "discovery_type": "ColocatedOnIp",
-                "business_units": [
-                    "VanDelay Industries"
-                ],
+                "business_units": ["VanDelay Industries"],
                 "externally_inferred_vulnerability_score": 9.8,
                 "externally_inferred_cves": [
                     "CVE-2021-25216",
@@ -92,10 +75,10 @@ EXTERNAL_SERVICES_RESPONSE = {
                     "CVE-2021-25219",
                     "CVE-2019-6465",
                     "CVE-2018-5745",
-                    "CVE-2017-3142"
-                ]
-            }
-        ]
+                    "CVE-2017-3142",
+                ],
+            },
+        ],
     }
 }
 
@@ -106,29 +89,26 @@ EXTERNAL_SERVICE_RESPONSE = {
                 "service_id": "94232f8a-f001-3292-aa65-63fa9d981427",
                 "service_name": "SSH Server at 1.1.1.1:22",
                 "service_type": "SshServer",
-                "ip_address": [
-                    "1.1.1.1"
-                ],
+                "ip_address": ["1.1.1.1"],
                 "domain": [],
-                "externally_detected_providers": [
-                    "Amazon Web Services"
-                ],
+                "externally_detected_providers": ["Amazon Web Services"],
                 "is_active": "Active",
                 "first_observed": 1662774120000,
                 "last_observed": 1662967560000,
                 "port": 22,
                 "protocol": "TCP",
-                "active_classifications": [
-                    "SSHWeakMACAlgorithmsEnabled",
-                    "SshServer",
-                    "OpenSSH"
-                ],
+                "active_classifications": ["SSHWeakMACAlgorithmsEnabled", "SshServer", "OpenSSH"],
                 "inactive_classifications": [],
                 "discovery_type": "ColocatedOnIp",
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "externally_inferred_vulnerability_score": 7.8,
+                "ipv6s": ["2600:1900:4000:9664:0:7::"],
+                "aws_cloud_tags": ["Name:AD Lab"],
+                "gcp_cloud_tags": ["Name:gcp Lab"],
+                "azure_cloud_tags": ["Name:azure Lab"],
+                "has_xdr_agent": "NO",
+                "has_bu_overrides": False,
+                "mac_address": ["00:11:22:33:44:55"],
                 "externally_inferred_cves": [
                     "CVE-2020-15778",
                     "CVE-2021-41617",
@@ -140,23 +120,13 @@ EXTERNAL_SERVICE_RESPONSE = {
                     "CVE-2018-15473",
                     "CVE-2018-15919",
                     "CVE-2018-20685",
-                    "CVE-2021-36368"
+                    "CVE-2021-36368",
                 ],
                 "details": {
                     "serviceKey": "1.1.1.1:22",
                     "serviceKeyType": "IP",
-                    "businessUnits": [
-                        {
-                            "name": "Acme"
-                        }
-                    ],
-                    "providerDetails": [
-                        {
-                            "name": "AWS",
-                            "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
-                        }
-                    ],
+                    "businessUnits": [{"name": "Acme"}],
+                    "providerDetails": [{"name": "AWS", "firstObserved": 1662774169000, "lastObserved": 1662967589000}],
                     "certificates": [],
                     "domains": [],
                     "ips": [
@@ -170,11 +140,11 @@ EXTERNAL_SERVICE_RESPONSE = {
                                 "countryCode": "US",
                                 "city": "ASHBURN",
                                 "regionCode": "VA",
-                                "timeZone": null
+                                "timeZone": null,
                             },
                             "activityStatus": "Active",
                             "lastObserved": 1662967589000,
-                            "firstObserved": 1662774169000
+                            "firstObserved": 1662774169000,
                         }
                     ],
                     "classifications": [
@@ -183,40 +153,30 @@ EXTERNAL_SERVICE_RESPONSE = {
                             "activityStatus": "Active",
                             "values": [
                                 {
-                                    "jsonValue": "{\"version\":\"2.0\",\"serverVersion\":\"OpenSSH_7.6p1\",\"extraInfo\":\"Ubuntu-4ubuntu0.7\"}",
+                                    "jsonValue": '{"version":"2.0","serverVersion":"OpenSSH_7.6p1","extraInfo":"Ubuntu-4ubuntu0.7"}',
                                     "firstObserved": 1662774169000,
-                                    "lastObserved": 1662967589000
+                                    "lastObserved": 1662967589000,
                                 }
                             ],
                             "firstObserved": 1662774120000,
-                            "lastObserved": 1662967560000
+                            "lastObserved": 1662967560000,
                         },
                         {
                             "name": "SSHWeakMACAlgorithmsEnabled",
                             "activityStatus": "Active",
-                            "values": [
-                                {
-                                    "jsonValue": "{}",
-                                    "firstObserved": 1662774169000,
-                                    "lastObserved": 1662958350000
-                                }
-                            ],
+                            "values": [{"jsonValue": "{}", "firstObserved": 1662774169000, "lastObserved": 1662958350000}],
                             "firstObserved": 1662774120000,
-                            "lastObserved": 1662958320000
+                            "lastObserved": 1662958320000,
                         },
                         {
                             "name": "OpenSSH",
                             "activityStatus": "Active",
                             "values": [
-                                {
-                                    "jsonValue": "{\"version\":\"7.6\"}",
-                                    "firstObserved": 1662774169000,
-                                    "lastObserved": 1662967589000
-                                }
+                                {"jsonValue": '{"version":"7.6"}', "firstObserved": 1662774169000, "lastObserved": 1662967589000}
                             ],
                             "firstObserved": 1662774120000,
-                            "lastObserved": 1662967560000
-                        }
+                            "lastObserved": 1662967560000,
+                        },
                     ],
                     "tlsVersions": [],
                     "inferredCvesObserved": [
@@ -232,12 +192,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -251,12 +211,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -270,12 +230,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -289,12 +249,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -308,12 +268,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -327,12 +287,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -346,12 +306,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -365,12 +325,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -384,12 +344,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -403,12 +363,12 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
+                            "lastObserved": 1662967589000,
                         },
                         {
                             "inferredCve": {
@@ -422,17 +382,17 @@ EXTERNAL_SERVICE_RESPONSE = {
                                     "product": "openssh",
                                     "confidence": "High",
                                     "vendor": "openbsd",
-                                    "version": "7.6"
-                                }
+                                    "version": "7.6",
+                                },
                             },
                             "activityStatus": "Active",
                             "firstObserved": 1662774169000,
-                            "lastObserved": 1662967589000
-                        }
+                            "lastObserved": 1662967589000,
+                        },
                     ],
                     "enrichedObservationSource": "CLOUD",
-                    "ip_ranges": {}
-                }
+                    "ip_ranges": {},
+                },
             }
         ]
     }
@@ -450,14 +410,8 @@ EXTERNAL_RANGES_RESPONSE = {
                 "ips_count": 64,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
-                "business_units": [
-                    "VanDelay Industries"
-                ],
-                "organization_handles": [
-                    "MAINT-HK-PCCW-BIA-CS",
-                    "TA66-AP",
-                    "BNA2-AP"
-                ]
+                "business_units": ["VanDelay Industries"],
+                "organization_handles": ["MAINT-HK-PCCW-BIA-CS", "TA66-AP", "BNA2-AP"],
             },
             {
                 "range_id": "6ef4638e-7788-3ef5-98a5-ad5b7f4e02f5",
@@ -466,17 +420,10 @@ EXTERNAL_RANGES_RESPONSE = {
                 "ips_count": 16,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
-                "business_units": [
-                    "VanDelay Industries"
-                ],
-                "organization_handles": [
-                    "EH92-RIPE",
-                    "EASYNET-UK-MNT",
-                    "AR17615-RIPE",
-                    "JW372-RIPE"
-                ]
-            }
-        ]
+                "business_units": ["VanDelay Industries"],
+                "organization_handles": ["EH92-RIPE", "EASYNET-UK-MNT", "AR17615-RIPE", "JW372-RIPE"],
+            },
+        ],
     }
 }
 
@@ -490,14 +437,8 @@ EXTERNAL_RANGE_RESPONSE = {
                 "ips_count": 64,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
-                "business_units": [
-                    "VanDelay Industries"
-                ],
-                "organization_handles": [
-                    "MAINT-HK-PCCW-BIA-CS",
-                    "TA66-AP",
-                    "BNA2-AP"
-                ],
+                "business_units": ["VanDelay Industries"],
+                "organization_handles": ["MAINT-HK-PCCW-BIA-CS", "TA66-AP", "BNA2-AP"],
                 "details": {
                     "networkRecords": [
                         {
@@ -517,12 +458,10 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "org": "",
                                     "formattedName": "",
                                     "kind": "group",
-                                    "roles": [
-                                        "registrant"
-                                    ],
+                                    "roles": ["registrant"],
                                     "lastChanged": null,
                                     "firstRegistered": null,
-                                    "remarks": ""
+                                    "remarks": "",
                                 },
                                 {
                                     "handle": "TA66-AP",
@@ -533,12 +472,10 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "org": "",
                                     "formattedName": "TECHNICAL ADMINISTRATORS",
                                     "kind": "group",
-                                    "roles": [
-                                        "technical"
-                                    ],
+                                    "roles": ["technical"],
                                     "lastChanged": 1468555410000,
                                     "firstRegistered": 1220514856000,
-                                    "remarks": ""
+                                    "remarks": "",
                                 },
                                 {
                                     "handle": "BNA2-AP",
@@ -549,18 +486,16 @@ EXTERNAL_RANGE_RESPONSE = {
                                     "org": "",
                                     "formattedName": "BIZ NETVIGATOR ADMINISTRATORS",
                                     "kind": "group",
-                                    "roles": [
-                                        "administrative"
-                                    ],
+                                    "roles": ["administrative"],
                                     "lastChanged": 1514892767000,
                                     "firstRegistered": 1220514857000,
-                                    "remarks": ""
-                                }
+                                    "remarks": "",
+                                },
                             ],
-                            "remarks": "Sears Holdings Global Sourcing Ltd"
+                            "remarks": "Sears Holdings Global Sourcing Ltd",
                         }
                     ]
-                }
+                },
             }
         ]
     }
@@ -572,35 +507,25 @@ EXTERNAL_EXPOSURES_RESPONSE = {
         "result_count": 2,
         "assets_internet_exposure": [
             {
-                "asm_ids": [
-                    "3c176460-8735-333c-b618-8262e2fb660c"
-                ],
+                "asm_ids": ["3c176460-8735-333c-b618-8262e2fb660c"],
                 "name": "*.acme.com",
                 "asset_type": "CERTIFICATE",
                 "cloud_provider": null,
                 "externally_detected_providers": [],
                 "region": null,
                 "ips": [],
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "management_status": [],
                 "iot_model": null,
                 "iot_category": null,
                 "iot_profile": null,
-                "sensor": [
-                    "XPANSE"
-                ],
+                "sensor": ["XPANSE"],
                 "service_type": [],
                 "last_observed": null,
                 "first_observed": null,
                 "has_active_externally_services": false,
                 "has_xdr_agent": "NA",
-                "certificate_classifications": [
-                    "Wildcard",
-                    "Expired",
-                    "InsecureSignature"
-                ],
+                "certificate_classifications": ["Wildcard", "Expired", "InsecureSignature"],
                 "certificate_issuer": "Thawte",
                 "certificate_algorithm": "SHA1withRSA",
                 "mac_addresses": [],
@@ -610,37 +535,28 @@ EXTERNAL_EXPOSURES_RESPONSE = {
                 "operation_system": null,
                 "asm_va_score": null,
                 "externally_inferred_cves": [],
-                "agent_id": null
+                "agent_id": null,
             },
             {
-                "asm_ids": [
-                    "43164fde-8e87-3d1e-8530-82f14cd3ae9a"
-                ],
+                "asm_ids": ["43164fde-8e87-3d1e-8530-82f14cd3ae9a"],
                 "name": "*.ch3.intra.kmart.com",
                 "asset_type": "CERTIFICATE",
                 "cloud_provider": null,
                 "externally_detected_providers": [],
                 "region": null,
                 "ips": [],
-                "business_units": [
-                    "VanDelay Industries"
-                ],
+                "business_units": ["VanDelay Industries"],
                 "management_status": [],
                 "iot_model": null,
                 "iot_category": null,
                 "iot_profile": null,
-                "sensor": [
-                    "XPANSE"
-                ],
+                "sensor": ["XPANSE"],
                 "service_type": [],
                 "last_observed": null,
                 "first_observed": null,
                 "has_active_externally_services": false,
                 "has_xdr_agent": "NA",
-                "certificate_classifications": [
-                    "Wildcard",
-                    "Expired"
-                ],
+                "certificate_classifications": ["Wildcard", "Expired"],
                 "certificate_issuer": "COMODO",
                 "certificate_algorithm": "SHA256withRSA",
                 "mac_addresses": [],
@@ -650,9 +566,9 @@ EXTERNAL_EXPOSURES_RESPONSE = {
                 "operation_system": null,
                 "asm_va_score": null,
                 "externally_inferred_cves": [],
-                "agent_id": null
-            }
-        ]
+                "agent_id": null,
+            },
+        ],
     }
 }
 
@@ -668,20 +584,14 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                 "externally_detected_providers": [],
                 "created": 1662987013779,
                 "ips": [],
-                "business_units": [
-                    "Acme"
-                ],
+                "business_units": ["Acme"],
                 "active_service_ids": [],
                 "all_service_ids": [],
                 "active_external_services_types": [],
                 "domain": null,
                 "certificate_issuer": "Thawte",
                 "certificate_algorithm": "SHA1withRSA",
-                "certificate_classifications": [
-                    "Wildcard",
-                    "Expired",
-                    "InsecureSignature"
-                ],
+                "certificate_classifications": ["Wildcard", "Expired", "InsecureSignature"],
                 "resolves": false,
                 "details": {
                     "providerDetails": [],
@@ -694,11 +604,7 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                     "latestSampledIp": null,
                     "subdomainMetadata": null,
                     "recentIps": [],
-                    "businessUnits": [
-                        {
-                            "name": "Acme"
-                        }
-                    ],
+                    "businessUnits": [{"name": "Acme"}],
                     "certificateDetails": {
                         "issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA",
                         "issuerAlternativeNames": "",
@@ -732,14 +638,14 @@ EXTERNAL_EXPOSURE_RESPONSE = {
                         "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=",
                         "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb",
                         "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8",
-                        "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"
+                        "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002",
                     },
                     "inferredCvesObserved": [],
-                    "ip_ranges": {}
+                    "ip_ranges": {},
                 },
                 "external_services": [],
                 "externally_inferred_vulnerability_score": null,
-                "externally_inferred_cves": []
+                "externally_inferred_cves": [],
             }
         ]
     }
@@ -747,35 +653,25 @@ EXTERNAL_EXPOSURE_RESPONSE = {
 
 INTERNET_EXPOSURE_PRE_FORMAT = [
     {
-        "asm_ids": [
-            "3c176460-8735-333c-b618-8262e2fb660c"
-        ],
+        "asm_ids": ["3c176460-8735-333c-b618-8262e2fb660c"],
         "name": "*.acme.com",
         "asset_type": "CERTIFICATE",
         "cloud_provider": null,
         "externally_detected_providers": [],
         "region": null,
         "ips": [],
-        "business_units": [
-            "Acme"
-        ],
+        "business_units": ["Acme"],
         "management_status": [],
         "iot_model": null,
         "iot_category": null,
         "iot_profile": null,
-        "sensor": [
-            "XPANSE"
-        ],
+        "sensor": ["XPANSE"],
         "service_type": [],
         "last_observed": null,
         "first_observed": null,
         "has_active_externally_services": false,
         "has_xdr_agent": "NA",
-        "certificate_classifications": [
-            "Wildcard",
-            "Expired",
-            "InsecureSignature"
-        ],
+        "certificate_classifications": ["Wildcard", "Expired", "InsecureSignature"],
         "certificate_issuer": "Thawte",
         "certificate_algorithm": "SHA1withRSA",
         "mac_addresses": [],
@@ -785,37 +681,28 @@ INTERNET_EXPOSURE_PRE_FORMAT = [
         "operation_system": null,
         "asm_va_score": null,
         "externally_inferred_cves": [],
-        "agent_id": null
+        "agent_id": null,
     },
     {
-        "asm_ids": [
-            "43164fde-8e87-3d1e-8530-82f14cd3ae9a"
-        ],
+        "asm_ids": ["43164fde-8e87-3d1e-8530-82f14cd3ae9a"],
         "name": "*.ch3.intra.kmart.com",
         "asset_type": "CERTIFICATE",
         "cloud_provider": null,
         "externally_detected_providers": [],
         "region": null,
         "ips": [],
-        "business_units": [
-            "VanDelay Industries"
-        ],
+        "business_units": ["VanDelay Industries"],
         "management_status": [],
         "iot_model": null,
         "iot_category": null,
         "iot_profile": null,
-        "sensor": [
-            "XPANSE"
-        ],
+        "sensor": ["XPANSE"],
         "service_type": [],
         "last_observed": null,
         "first_observed": null,
         "has_active_externally_services": false,
         "has_xdr_agent": "NA",
-        "certificate_classifications": [
-            "Wildcard",
-            "Expired"
-        ],
+        "certificate_classifications": ["Wildcard", "Expired"],
         "certificate_issuer": "COMODO",
         "certificate_algorithm": "SHA256withRSA",
         "mac_addresses": [],
@@ -825,8 +712,8 @@ INTERNET_EXPOSURE_PRE_FORMAT = [
         "operation_system": null,
         "asm_va_score": null,
         "externally_inferred_cves": [],
-        "agent_id": null
-    }
+        "agent_id": null,
+    },
 ]
 
 REMEDIATION_RULES_RESPONSE = {
@@ -839,40 +726,28 @@ REMEDIATION_RULES_RESPONSE = {
                 "created_by": "test@test.com",
                 "created_by_pretty": "Test User",
                 "criteria": [
-                    {
-                        "field": "severity",
-                        "operator": "eq",
-                        "value": "high"
-                    },
-                    {
-                        "field": "isCloudManaged",
-                        "operator": "eq",
-                        "value": "true"
-                    }
+                    {"field": "severity", "operator": "eq", "value": "high"},
+                    {"field": "isCloudManaged", "operator": "eq", "value": "true"},
                 ],
                 "criteria_conjunction": "AND",
                 "description": "for testing",
                 "rule_id": "b935cf69-add9-4e75-8c3d-fe32ee471554",
-                "rule_name": "TestRule"
+                "rule_name": "TestRule",
             }
         ],
-        "result_count": 1
+        "result_count": 1,
     }
 }
 
 RCS_START_SCAN_FAILURE_RESPONSE_100 = {
-    "reply": {
-        "err_code": 100,
-        "err_msg": "An error occurred while processing API call",
-        "err_extra": "Error running API"
-    }
+    "reply": {"err_code": 100, "err_msg": "An error occurred while processing API call", "err_extra": "Error running API"}
 }
 
 RCS_GET_SCAN_FAILURE_RESPONSE_404 = {
     "reply": {
         "err_code": 404,
         "err_msg": "Requested resource not found while processing XDR public API",
-        "err_extra": "Scan Id does not exist - Failed to get scan"
+        "err_extra": "Scan Id does not exist - Failed to get scan",
     }
 }
 
@@ -880,69 +755,37 @@ GENERAL_API_FAILURE_RESPONSE_400 = {
     "reply": {
         "err_code": 400,
         "err_msg": "Bad Request. Got an invalid JSON.",
-        "err_extra": "Expecting value: line 6 column 5 (char 158)"
+        "err_extra": "Expecting value: line 6 column 5 (char 158)",
     }
 }
 
-GENERAL_500_WAITRESS_ERROR = '''
+GENERAL_500_WAITRESS_ERROR = """
 Internal Server Error
 
 The server encountered an unexpected internal server error
 
 (generated by waitress)
-'''
+"""
 
 RCS_START_SCAN_SUCCESSFUL_RESPONSE_201 = {
-    "reply": {
-        "scanId": "12345abc-123a-1234-a123-efgh12345678",
-        "scan_creation_status": "created"
-    }
+    "reply": {"scanId": "12345abc-123a-1234-a123-efgh12345678", "scan_creation_status": "created"}
 }
 
 RCS_START_SCAN_SUCCESSFUL_RESPONSE_200 = {
-    "reply": {
-        "scanId": "12345abc-123a-1234-a123-efgh12345678",
-        "scan_creation_status": "existing"
-    }
+    "reply": {"scanId": "12345abc-123a-1234-a123-efgh12345678", "scan_creation_status": "existing"}
 }
 
-RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESPONSE_200 = {
-    "reply": {
-        "status": "SUCCESS",
-        "result": "REMEDIATED"
-    }
-}
+RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESPONSE_200 = {"reply": {"status": "SUCCESS", "result": "REMEDIATED"}}
 
-RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESPONSE_200 = {
-    "reply": {
-        "status": "SUCCESS",
-        "result": "UNREMEDIATED"
-    }
-}
+RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESPONSE_200 = {"reply": {"status": "SUCCESS", "result": "UNREMEDIATED"}}
 
-RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200 = {
-    "reply": {
-        "status": "IN_PROGRESS"
-    }
-}
+RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200 = {"reply": {"status": "IN_PROGRESS"}}
 
-RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200 = {
-    "reply": {
-        "status": "FAILED_ERROR"
-    }
-}
+RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200 = {"reply": {"status": "FAILED_ERROR"}}
 
-RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200 = {
-    "reply": {
-        "status": "FAILED_TIMEOUT"
-    }
-}
+RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200 = {"reply": {"status": "FAILED_TIMEOUT"}}
 
-RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200 = {
-    "reply": {
-        "status": "OTHER"
-    }
-}
+RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200 = {"reply": {"status": "OTHER"}}
 
 ASM_GET_ATTACK_SURFACE_RULE_RESPONSE = {
     "reply": {
@@ -958,10 +801,10 @@ ASM_GET_ATTACK_SURFACE_RULE_RESPONSE = {
                 "modified": 1605140275000,
                 "modified_by": None,
                 "priority": "High",
-                "remediation_guidance": "Recommendations to reduce the likelihood of malicious RDP attempts are as follows:\\n\\n1. Best practice is to not have RDP publicly accessible on the Internet and instead only on trusted local networks.\\n2. Implement a risk-based approach that prioritizes patching RDP vulnerabilities that have known weaponized public exploits.\\n3. Limit RDP access to a specific user group and implementing lockout policies is an additional measure to protect against RDP brute-forcing which is another common tactic used by attackers. In addition, enable NLA (Network Level Authentication) which is non-default on older versions.\\n4. If remote access to RDP or terminal services is a business requirement, it should only be made accessible through a secure Virtual Private Network (VPN) connection with multi-factor authentication (MFA) to the corporate network or through a zero-trust remote access gateway."
+                "remediation_guidance": "Recommendations to reduce the likelihood of malicious RDP attempts are as follows:\\n\\n1. Best practice is to not have RDP publicly accessible on the Internet and instead only on trusted local networks.\\n2. Implement a risk-based approach that prioritizes patching RDP vulnerabilities that have known weaponized public exploits.\\n3. Limit RDP access to a specific user group and implementing lockout policies is an additional measure to protect against RDP brute-forcing which is another common tactic used by attackers. In addition, enable NLA (Network Level Authentication) which is non-default on older versions.\\n4. If remote access to RDP or terminal services is a business requirement, it should only be made accessible through a secure Virtual Private Network (VPN) connection with multi-factor authentication (MFA) to the corporate network or through a zero-trust remote access gateway.",
             }
         ],
         "result_count": 1,
-        "total_count": 1
+        "total_count": 1,
     }
 }

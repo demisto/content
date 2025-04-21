@@ -18,6 +18,13 @@ configuration:
   type: 4
   hidden: true
   required: false
+- display: API Key ID
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+  section: Connect
+  displaypassword: API Key
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
   name: severity
@@ -80,7 +87,7 @@ script:
       required: true
     description: Disables IOCs in the Cortex server.
     name: core-iocs-disable
-  dockerimage: demisto/google-cloud-storage:1.0.0.78223
+  dockerimage: demisto/google-cloud-storage:1.0.0.117186
   runonce: false
   script: '-'
   subtype: python3

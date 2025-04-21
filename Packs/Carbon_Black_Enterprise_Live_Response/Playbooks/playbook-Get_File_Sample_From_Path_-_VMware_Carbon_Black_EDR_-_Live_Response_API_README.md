@@ -47,4 +47,4 @@ Exists
 
 ## Playbook Image
 ---
-![Get File Sample From Path - VMware Carbon Black EDR - Live Response API](https://raw.githubusercontent.com/demisto/content/8eb0c6e3e592d9eedbcf72b025c403d44a5ba395/Packs/Carbon_Black_Enterprise_Live_Response/doc_files/Get_File_Sample_From_Path_-_VMware_Carbon_Black_EDR_(Live_Response_API).png)
+![Get File Sample From Path - VMware Carbon Black EDR - Live Response API](../doc_files/Get_File_Sample_From_Path_-_VMware_Carbon_Black_EDR_-_Live_Response_API.png)

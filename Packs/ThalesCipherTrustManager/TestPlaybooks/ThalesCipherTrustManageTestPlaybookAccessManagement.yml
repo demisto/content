@@ -1,0 +1,546 @@
+id: Thales CipherTrust Test Playbook - Access Management
+version: -1
+name: Thales CipherTrust Test Playbook - Access Management
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5af6e349-f600-48a8-8f50-a86616c3f594
+    type: start
+    task:
+      id: 5af6e349-f600-48a8-8f50-a86616c3f594
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7c37690f-9025-47d5-80ac-68e107694fb1
+    type: regular
+    task:
+      id: 7c37690f-9025-47d5-80ac-68e107694fb1
+      version: -1
+      name: ciphertrust-group-create
+      description: Create a new group. The group name is required.
+      script: CipherTrust|||ciphertrust-group-create
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      description:
+        simple: this is a test group
+      name:
+        simple: playbook_test_group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 58be71a1-cd0c-4ba4-8188-f429cd0de682
+    type: regular
+    task:
+      id: 58be71a1-cd0c-4ba4-8188-f429cd0de682
+      version: -1
+      name: ciphertrust-group-update
+      description: Update the properties of a group given the group name.
+      script: CipherTrust|||ciphertrust-group-update
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      description:
+        simple: this is a new test group
+      group_name:
+        simple: playbook_test_group
+      new_group_name:
+        simple: new_playbook_test_group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b624c41e-1b54-4197-8de2-5117b970650c
+    type: regular
+    task:
+      id: b624c41e-1b54-4197-8de2-5117b970650c
+      version: -1
+      name: ciphertrust-group-list
+      description: Returns a list of group  Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
+      script: CipherTrust|||ciphertrust-group-list
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 17279f5c-7d30-453b-8e92-daff8a7ba381
+    type: regular
+    task:
+      id: 17279f5c-7d30-453b-8e92-daff8a7ba381
+      version: -1
+      name: ciphertrust-group-delete
+      description: Deletes a group given the group name.
+      script: CipherTrust|||ciphertrust-group-delete
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      force:
+        simple: "true"
+      group_name:
+        simple: new_playbook_test_group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1e18f035-3467-49bb-83d0-89b395194e4b
+    type: regular
+    task:
+      id: 1e18f035-3467-49bb-83d0-89b395194e4b
+      version: -1
+      name: ciphertrust-users-list
+      description: 'Returns a list of user  Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
+      script: CipherTrust|||ciphertrust-users-list
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: cb429865-0b19-4eb2-8f19-bcee79008149
+    type: regular
+    task:
+      id: cb429865-0b19-4eb2-8f19-bcee79008149
+      version: -1
+      name: ciphertrust-user-create
+      description: |-
+        Create a new user in a domain(including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.
+        The connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.
+        The connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.
+        To create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.
+        To enable certificate based authentication for a user, it is required to set certificate_subject_dn and add "user_certificate" authentication method in allowed_auth_methods. This functionality is available only for local users.
+        To assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.
+        To enable the two-factor authentication based on username-password and user certificate for a user, it is required to set "certificate_subject_dn" and add "password_with_user_certificate" authentication method in "allowed_auth_methods". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users.
+      script: CipherTrust|||ciphertrust-user-create
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      allowed_auth_methods:
+        simple: user_certificate
+      name:
+        simple: playbook_test_user
+      password:
+        simple: Testuserpassword123!
+      username:
+        simple: playbook_test_user
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fcbc562b-f99c-47a9-8cae-2ed5352932a4
+    type: regular
+    task:
+      id: fcbc562b-f99c-47a9-8cae-2ed5352932a4
+      version: -1
+      name: ciphertrust-user-to-group-add
+      description: 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
+      script: CipherTrust|||ciphertrust-user-to-group-add
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      group_name:
+        simple: new_playbook_test_group
+      user_id:
+        simple: ${CipherTrust.Users.[0].user_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5f13bef2-3585-40de-8e8a-227331ffa09c
+    type: regular
+    task:
+      id: 5f13bef2-3585-40de-8e8a-227331ffa09c
+      version: -1
+      name: ciphertrust-user-update
+      description: Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.
+      script: CipherTrust|||ciphertrust-user-update
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      prevent_ui_login:
+        simple: "true"
+      user_id:
+        simple: ${CipherTrust.Users.user_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9b3e7aeb-b82f-4b56-8b96-b298650e1d7e
+    type: regular
+    task:
+      id: 9b3e7aeb-b82f-4b56-8b96-b298650e1d7e
+      version: -1
+      name: ciphertrust-user-to-group-remove
+      description: Removes a user from a group.
+      script: CipherTrust|||ciphertrust-user-to-group-remove
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      group_name:
+        simple: new_playbook_test_group
+      user_id:
+        simple: ${CipherTrust.Users.[0].user_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: aaad0f18-1d39-40a9-8ce6-87255a669f30
+    type: regular
+    task:
+      id: aaad0f18-1d39-40a9-8ce6-87255a669f30
+      version: -1
+      name: ciphertrust-user-delete
+      description: Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to.
+      script: CipherTrust|||ciphertrust-user-delete
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      user_id:
+        simple: ${CipherTrust.Users.[0].user_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f1f96978-0490-4e3c-87e8-37e1ef09a26d
+    type: regular
+    task:
+      id: f1f96978-0490-4e3c-87e8-37e1ef09a26d
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: eb958bda-17bd-46a1-86fc-a8cbcaf1e4e0
+    type: regular
+    task:
+      id: eb958bda-17bd-46a1-86fc-a8cbcaf1e4e0
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: fdc63623-3e67-4965-89c4-34411f41b518
+    type: regular
+    task:
+      id: fdc63623-3e67-4965-89c4-34411f41b518
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2340,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: ''

@@ -1,0 +1,18 @@
+commonfields:
+  id: RasterizeImageOriginal
+  version: -1
+name: RasterizeImageOriginal
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/processing-image-file:1.0.0.1858714
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -2,28 +2,24 @@ This is the Email Hippo integration used to verify email sources as fake emails 
 .
 This integration was integrated and tested with version 2.0.1551 of Email Hippo.
 
-## Configure Email Hippo on Cortex XSOAR
+## Configure Email Hippo in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Email Hippo.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | MORE Server URL (e.g., https://api.hippoapi.com) |  | True |
-    | Email Hippo WHOIS Server URL (e.g., https://api.whoishippo.com) |  | True |
-    | MORE API Key |  | True |
-    | WHOIS API Key |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Create relationships | Create relationships between indicators as part of enrichment. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| MORE Server URL (e.g., https://api.hippoapi.com) |  | True |
+| Email Hippo WHOIS Server URL (e.g., https://api.whoishippo.com) |  | True |
+| MORE API Key |  | True |
+| WHOIS API Key |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Create relationships | Create relationships between indicators as part of enrichment. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### email-hippo-email-quota-get
@@ -502,4 +498,3 @@ Returns domain information and reputation.
 >|Domain Age|Expires On|Name servers|Registered On|Registrar|Status|Time To Expiry|Updated On|
 >|---|---|---|---|---|---|---|---|
 >| 0 year(s), 0 month(s), 0 week(s), 0 day(s) |  | {'Address': 'A.example.NET'},<br/>{'Address': 'B.example.NET'} |  |  |  | 0 year(s), 0 months, 0 week(s), 0 day(s) |  |
-

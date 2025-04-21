@@ -1,0 +1,2393 @@
+category: Authentication & Identity Management
+description: Manage secrets and protect sensitive data through Thales CipherTrust security platform.
+commonfields:
+  id: CipherTrust
+  version: -1
+name: CipherTrust
+display: Thales CipherTrust Manager
+configuration:
+- display: Server URL
+  name: server_url
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  commands:
+  - deprecated: false
+    description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned in the result. This means that both the CSR and the private key must be stored securely on the client side. The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
+    name: ciphertrust-csr-generate
+    arguments:
+    - name: cn
+      isArray: false
+      description: Common Name.
+      required: true
+      secret: false
+      default: false
+    - name: algorithm
+      isArray: false
+      description: RSA or ECDSA (default) algorithms are supported. A signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - RSA
+      - ECDSA
+      auto: PREDEFINED
+    - name: dns_names
+      isArray: true
+      description: A comma-separated list of Subject Alternative Names (SAN) values.
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: true
+      description: A comma-separated list of e-mail addresses.
+      required: false
+      secret: false
+      default: false
+    - name: ip
+      isArray: true
+      description: A comma-separated list of IP addresses.
+      required: false
+      secret: false
+      default: false
+    - name: name
+      isArray: false
+      description: A unique name of the CSR.
+      required: false
+      secret: false
+      default: false
+    - name: encryption_algo
+      isArray: false
+      description: Private key encryption algorithm.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - AES256
+      - AES192
+      - AES128
+      - TDES
+      auto: PREDEFINED
+    - name: name_fields_raw_json
+      isArray: true
+      description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]".'
+      required: false
+      secret: false
+      default: false
+    - name: name_fields_json_entry_id
+      isArray: false
+      description: Entry ID of the file that contains the JSON representation of the name_fields_raw_json.
+      required: false
+      secret: false
+      default: false
+    - name: key_size
+      isArray: false
+      description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521.'
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - '1024'
+      - '2048'
+      - '3072'
+      - '4096'
+      - '256'
+      - '384'
+      - '521'
+      auto: PREDEFINED
+    - name: encryption_password
+      isArray: false
+      description: Password to PEM-encrypt the private key. If not specified, the private key is not encrypted in return. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory.
+      required: false
+      secret: true
+      default: false
+    - name: private_key_file_password
+      isArray: false
+      description: Password to encrypt the private key file. It is strongly recommended to encrypt the private key. If not specified, the private key is encrypted with the password which must be provided.
+      required: false
+      secret: true
+      default: false
+    - name: private_key_bytes
+      isArray: false
+      description: Private Key bytes of the key which is to be used while creating CSR. (The algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+  - deprecated: false
+    description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
+    name: ciphertrust-certificate-issue
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: csr_entry_id
+      isArray: false
+      description: The entry ID of the file to upload that contains CSR in PEM format.
+      required: true
+      secret: false
+      default: false
+    - name: purpose
+      isArray: false
+      description: Purpose of the certificate.
+      required: true
+      secret: false
+      default: false
+      predefined:
+      - server
+      - client
+      - ca
+      auto: PREDEFINED
+    - name: duration
+      isArray: false
+      description: Duration in days of certificate. Either duration or not_after date must be specified.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 365
+    - name: name
+      isArray: false
+      description: A unique name of the certificate. If not provided, will be set to cert-<id>.
+      required: false
+      secret: false
+      default: false
+    - name: not_after
+      isArray: false
+      description: End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
+      required: false
+      secret: false
+      default: false
+    - name: not_before
+      isArray: false
+      description: Start date of the certificate.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.state
+      description: Current state of the CA (e.g., active, pending).
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
+  - deprecated: false
+    description: Returns a list of certificates issued by the specified CA. The results can be filtered, using the command arguments.
+    name: ciphertrust-certificate-list
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: subject
+      isArray: false
+      description: Filter by the subject.
+      required: false
+      secret: false
+      default: false
+    - name: issuer
+      isArray: false
+      description: Filter by the issuer.
+      required: false
+      secret: false
+      default: false
+    - name: cert
+      isArray: false
+      description: Filter by the cert.
+      required: false
+      secret: false
+      default: false
+    - name: id
+      isArray: false
+      description: Filter by ID or URI.
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of entries to return.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
+    outputs:
+    - contextPath: CipherTrust.CACertificate.name
+      description: The name of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the certificate was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the certificate.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
+  - deprecated: false
+    description: Certificate can be resumed only if it is revoked with reason certificateHold.
+    name: ciphertrust-certificate-resume
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: cert_id
+      isArray: false
+      description: An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CACertificate.name
+      description: The name of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the certificate was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the certificate.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.state
+      description: Current state of the certificate (e.g., active, revoked).
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
+  - deprecated: false
+    description: Revoke certificate with a given specific reason.
+    name: ciphertrust-certificate-revoke
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: cert_id
+      isArray: false
+      description: An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: reason
+      isArray: false
+      description: Specify one of the reasons to revoke a certificate according to RFC 5280.
+      required: true
+      secret: false
+      default: false
+      predefined:
+      - unspecified
+      - keyCompromise
+      - cACompromise
+      - affiliationChanged
+      - superseded
+      - cessationOfOperation
+      - certificateHold
+      - removeFromCRL
+      - privilegeWithdrawn
+      - aACompromise
+      auto: PREDEFINED
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CACertificate.name
+      description: The name of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the certificate was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the certificate.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.revoked_reason
+      description: Reason for revocation.
+      type: String
+    - contextPath: CipherTrust.CACertificate.state
+      description: Current state of the certificate (e.g., active, revoked).
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
+  - deprecated: false
+    description: Deletes an external CA certificate.
+    name: ciphertrust-external-ca-delete
+    arguments:
+    - name: external_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: Returns a list of external CA certificates. The results can be filtered, using the command arguments.
+    name: ciphertrust-external-ca-list
+    arguments:
+    - name: external_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: false
+      secret: false
+      default: false
+    - name: subject
+      isArray: false
+      description: Filter by the subject.
+      required: false
+      secret: false
+      default: false
+    - name: issuer
+      isArray: false
+      description: Filter by the issuer.
+      required: false
+      secret: false
+      default: false
+    - name: serial_number
+      isArray: false
+      description: Filter by the serial number.
+      required: false
+      secret: false
+      default: false
+    - name: cert
+      isArray: false
+      description: Filter by the cert.
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of entries to return.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g. ,"PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.ExternalCA.id
+      description: A unique identifier for the certificate authority (CA) certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.uri
+      description: Uniform Resource Identifier associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.account
+      description: Account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.devAccount
+      description: Developer account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.application
+      description: Application associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.createdAt
+      description: Timestamp of when the CA certificate was created.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.updatedAt
+      description: Timestamp of the last update of the CA certificate.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.name
+      description: Name of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.serialNumber
+      description: Serial number of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.subject
+      description: Subject of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.issuer
+      description: Issuer of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.notBefore
+      description: Timestamp of when the CA certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.notAfter
+      description: Timestamp of when the CA certificate is valid until.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
+      description: SHA1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
+      description: SHA256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
+      description: SHA512 fingerprint of the CA certificate.
+      type: String
+  - deprecated: false
+    description: Update an external CA.
+    name: ciphertrust-external-ca-update
+    arguments:
+    - name: external_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: allow_client_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for client authentication.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: allow_user_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for user authentication.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.ExternalCA.id
+      description: A unique identifier for the certificate authority (CA) certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.uri
+      description: Uniform Resource Identifier associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.account
+      description: Account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.devAccount
+      description: Developer account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.application
+      description: Application associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.createdAt
+      description: Timestamp of when the CA certificate was created.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.updatedAt
+      description: Timestamp of the last update of the CA certificate.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.name
+      description: Name of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.serialNumber
+      description: Serial number of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.subject
+      description: Subject of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.issuer
+      description: Issuer of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.notBefore
+      description: Timestamp of when the CA certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.notAfter
+      description: Timestamp of when the CA certificate is valid until.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
+      description: SHA1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
+      description: SHA256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
+      description: SHA512 fingerprint of the CA certificate.
+      type: String
+  - deprecated: false
+    description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.
+    name: ciphertrust-external-ca-upload
+    arguments:
+    - name: cert_entry_id
+      isArray: false
+      description: The entry ID of the file to upload that contains the external CA certificate in PEM format.
+      required: true
+      secret: false
+      default: false
+    - name: name
+      isArray: false
+      description: A unique name of the CA. If not provided, will be set to externalca-<id>.
+      required: false
+      secret: false
+      default: false
+    - name: parent
+      isArray: false
+      description: URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.ExternalCA.id
+      description: A unique identifier for the certificate authority (CA) certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.uri
+      description: Uniform Resource Identifier associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.account
+      description: Account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.devAccount
+      description: Developer account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.application
+      description: Application associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.createdAt
+      description: Timestamp of when the CA certificate was created.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.updatedAt
+      description: Timestamp of the last update of the CA certificate.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.name
+      description: Name of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.serialNumber
+      description: Serial number of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.subject
+      description: Subject of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.issuer
+      description: Issuer of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.notBefore
+      description: Timestamp of when the CA certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.notAfter
+      description: Timestamp of when the CA certificate is valid until.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
+      description: SHA-1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
+      description: SHA-256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
+      description: SHA-512 fingerprint of the CA certificate.
+      type: String
+  - deprecated: false
+    description: Create a new group. The group name is required.
+    name: ciphertrust-group-create
+    arguments:
+    - name: name
+      isArray: false
+      description: Name of the group.
+      required: true
+      secret: false
+      default: false
+    - name: description
+      isArray: false
+      description: Description of the group.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: CipherTrust.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: CipherTrust.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: CipherTrust.Group.updated_at
+      description: The time the group was last updated.
+      type: Date
+    - contextPath: CipherTrust.Group.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: CipherTrust.Group.users_count
+      description: The total user count associated with the group.
+      type: Number
+  - deprecated: false
+    description: Deletes a group given the group name.
+    name: ciphertrust-group-delete
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group.
+      required: true
+      secret: false
+      default: false
+    - name: force
+      isArray: false
+      description: When set to true, groupmaps within this group will be deleted.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    outputs: []
+  - deprecated: false
+    description: Returns a list of group  Command arguments can be used to filter the results. Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
+    name: ciphertrust-group-list
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Filter by group name.
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only a user ID. Using '-' at the beginning of user_id will return groups that the user is not part of.
+      required: false
+      secret: false
+      default: false
+    - name: connection
+      isArray: false
+      description: Filter by connection name or ID.
+      required: false
+      secret: false
+      default: false
+    - name: client_id
+      isArray: false
+      description: Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client_id will return groups that the client is not part of.
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of entries to return.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
+    outputs:
+    - contextPath: CipherTrust.Group.name
+      description: Name of the group.
+      type: String
+    - contextPath: CipherTrust.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: CipherTrust.Group.updated_at
+      description: The time the group was last updated.
+      type: Date
+    - contextPath: CipherTrust.Group.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.description
+      description: Description of the group.
+      type: String
+    - contextPath: CipherTrust.Group.users_count
+      description: The total user count associated with the group.
+      type: Number
+  - deprecated: false
+    description: Update the properties of a group given the group name.
+    name: ciphertrust-group-update
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group to update.
+      required: true
+      secret: false
+      default: false
+    - name: new_group_name
+      isArray: false
+      description: New name of the group.
+      required: false
+      secret: false
+      default: false
+    - name: description
+      isArray: false
+      description: New description of the group.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: CipherTrust.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: CipherTrust.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: CipherTrust.Group.updated_at
+      description: The time the group was last updated.
+      type: Date
+    - contextPath: CipherTrust.Group.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: CipherTrust.Group.users_count
+      description: The total user count associated with the group.
+      type: Number
+  - deprecated: false
+    description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling the ciphertrust-local-ca-self-sign command or signed by another CA and installed by calling the ciphertrust-local-ca-install command. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
+    name: ciphertrust-local-ca-create
+    arguments:
+    - name: cn
+      isArray: false
+      description: Common name.
+      required: true
+      secret: false
+      default: false
+    - name: algorithm
+      isArray: false
+      description: RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - RSA
+      - ECDSA
+      auto: PREDEFINED
+    - name: copy_from_ca
+      isArray: false
+      description: ID of any local CA. If given, the CSR properties are copied from the given CA.
+      required: false
+      secret: false
+      default: false
+    - name: dns_names
+      isArray: true
+      description: A comma-separated list of Subject Alternative Names (SAN) values.
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: true
+      description: A comma-separated list of e-mail addresses.
+      required: false
+      secret: false
+      default: false
+    - name: ip
+      isArray: true
+      description: A comma-separated list of IP addresses.
+      required: false
+      secret: false
+      default: false
+    - name: name
+      isArray: false
+      description: A unique name of the CA. If not provided, will be set to localca-<id>.
+      required: false
+      secret: false
+      default: false
+    - name: name_fields_raw_json
+      isArray: true
+      description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]".'
+      required: false
+      secret: false
+      default: false
+    - name: name_fields_json_entry_id
+      isArray: false
+      description: Entry ID of the file that contains JSON representation of the name_fields_raw_json.
+      required: false
+      secret: false
+      default: false
+    - name: size
+      isArray: false
+      description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521.'
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - '256'
+      - '384'
+      - '521'
+      - '1024'
+      - '2048'
+      - '3072'
+      - '4096'
+      auto: PREDEFINED
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.LocalCA.id
+      description: Unique identifier for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.uri
+      description: Uniform Resource Identifier for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.createdAt
+      description: Timestamp when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.updatedAt
+      description: Timestamp when the CA was last updated.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.state
+      description: State of the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.subject
+      description: Distinguished Name (DN) of the CA subject.
+      type: String
+    - contextPath: CipherTrust.LocalCA.notBefore
+      description: Timestamp before which the certificate is not valid.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.notAfter
+      description: Timestamp after which the certificate is not valid.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.sha1Fingerprint
+      description: SHA1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha256Fingerprint
+      description: SHA256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha512Fingerprint
+      description: SHA512 fingerprint of the CA certificate.
+      type: String
+  - deprecated: false
+    description: Deletes a local CA certificate.
+    name: ciphertrust-local-ca-delete
+    arguments:
+    - name: local_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: Installs a certificate signed by other CA to act as a local CA. Issuer can be both local or external CA. Typically used for intermediate CAs. The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.
+    name: ciphertrust-local-ca-install
+    arguments:
+    - name: local_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: cert_entry_id
+      isArray: false
+      description: The entry ID of the file to upload that contains the signed certificate in PEM format to install as a local CA.
+      required: true
+      secret: false
+      default: false
+    - name: parent_id
+      isArray: false
+      description: An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CAInstall.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.CAInstall.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.state
+      description: Current state of the CA (e.g., active, pending).
+      type: String
+    - contextPath: CipherTrust.CAInstall.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.updatedAt
+      description: Timestamp of the last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.notBefore
+      description: Start date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.notAfter
+      description: End date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CAInstall.sha1Fingerprint
+      description: SHA1 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.sha256Fingerprint
+      description: SHA256 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.sha512Fingerprint
+      description: SHA512 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CAInstall.purpose.client_authentication
+      description: Indicates if client authentication is enabled for the CA.
+      type: String
+    - contextPath: CipherTrust.CAInstall.purpose.user_authentication
+      description: Indicates if user authentication is enabled for the CA.
+      type: String
+  - deprecated: false
+    description: Returns a list of local CA certificates. The results can be filtered, using the command arguments. If local_ca_id is provided, a single local CA certificate is returned and the rest of the filters are ignored. A chained parameter is used to return the full CA chain with the certificate and can be used only if local_ca_id is provided.
+    name: ciphertrust-local-ca-list
+    arguments:
+    - name: subject
+      isArray: false
+      description: Filter by subject.
+      required: false
+      secret: false
+      default: false
+    - name: local_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: false
+      secret: false
+      default: false
+    - name: chained
+      isArray: false
+      description: When set to ‘true’ the full CA chain is returned with the certificate. Must be used with the local CA ID.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: issuer
+      isArray: false
+      description: Filter by issuer.
+      required: false
+      secret: false
+      default: false
+    - name: state
+      isArray: false
+      description: Filter by state.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - pending
+      - active
+      auto: PREDEFINED
+    - name: cert
+      isArray: false
+      description: Filter by cert.
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of entries to return.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.LocalCA.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.LocalCA.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.state
+      description: Current state of the CA (e.g., pending, active).
+      type: String
+    - contextPath: CipherTrust.LocalCA.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.updatedAt
+      description: Timestamp of last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.notBefore
+      description: Start date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.notAfter
+      description: End date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.sha1Fingerprint
+      description: SHA1 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha256Fingerprint
+      description: SHA256 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha512Fingerprint
+      description: SHA512 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.purpose.client_authentication
+      description: Indicates if client authentication is enabled for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.purpose.user_authentication
+      description: Indicates if user authentication is enabled for the CA.
+      type: String
+  - deprecated: false
+    description: Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration.
+    name: ciphertrust-local-ca-self-sign
+    arguments:
+    - name: local_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: duration
+      isArray: false
+      description: The duration of the certificate in days. Either not_after date or duration must be specified. not_after overrides duration if both are given.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 365
+    - name: not_after
+      isArray: false
+      description: End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
+      required: false
+      secret: false
+      default: false
+    - name: not_before
+      isArray: false
+      description: Start date of the certificate.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CASelfSign.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.CASelfSign.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.state
+      description: Current state of the CA (e.g., pending, active).
+      type: String
+    - contextPath: CipherTrust.CASelfSign.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.updatedAt
+      description: Timestamp of the last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.notBefore
+      description: Start date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.notAfter
+      description: End date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.CASelfSign.sha1Fingerprint
+      description: SHA1 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.sha256Fingerprint
+      description: SHA256 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.sha512Fingerprint
+      description: SHA512 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.purpose.client_authentication
+      description: Indicates if client authentication is enabled for the CA.
+      type: String
+    - contextPath: CipherTrust.CASelfSign.purpose.user_authentication
+      description: Indicates if user authentication is enabled for the CA.
+      type: String
+  - deprecated: false
+    description: Update a local CA.
+    name: ciphertrust-local-ca-update
+    arguments:
+    - name: local_ca_id
+      isArray: false
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: allow_client_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for client authentication.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: allow_user_authentication
+      isArray: false
+      description: If set to true, the certificates signed by the specified CA can be used for user authentication.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.LocalCA.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.LocalCA.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.state
+      description: Current state of the CA (e.g., pending, active).
+      type: String
+    - contextPath: CipherTrust.LocalCA.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.updatedAt
+      description: Timestamp of the last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.notBefore
+      description: Start date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.notAfter
+      description: End date of the CA's certificate validity.
+      type: Date
+    - contextPath: CipherTrust.LocalCA.sha1Fingerprint
+      description: SHA1 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha256Fingerprint
+      description: SHA256 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.sha512Fingerprint
+      description: SHA512 fingerprint of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.LocalCA.purpose.client_authentication
+      description: Indicates if client authentication is enabled for the CA.
+      type: String
+    - contextPath: CipherTrust.LocalCA.purpose.user_authentication
+      description: Indicates if user authentication is enabled for the CA.
+      type: String
+  - deprecated: false
+    description: Deletes a local certificate.
+    name: ciphertrust-local-certificate-delete
+    arguments:
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: local_ca_id
+      isArray: false
+      description: An identifier of the certificate resource.This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: "Create a new user in a domain (including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
+    name: ciphertrust-user-create
+    arguments:
+    - name: name
+      isArray: false
+      description: Full name of the user.
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: The ID of an existing root domain user. This field is used only when adding an existing root domain user to a different domain.
+      required: false
+      secret: false
+      default: false
+    - name: username
+      isArray: false
+      description: The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated. This attribute may also be used (instead of the user_id) when adding an existing root domain user to a different domain.
+      required: false
+      secret: false
+      default: false
+    - name: password
+      isArray: false
+      description: 'The password used to secure the users account. Allowed passwords are defined by the password policy. Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods. In all other cases, password is required. It is not included in user resource responses. Default global password complexity requirement: minimum characters = 8, maximum characters = 30, lower-case letters = 1, upper-case letters = 1, decimal digits = 1, special characters = 1.'
+      required: false
+      secret: true
+      default: false
+    - name: email
+      isArray: false
+      description: E-mail of the user.
+      required: false
+      secret: false
+      default: false
+    - name: allowed_auth_methods
+      isArray: true
+      description: 'A comma-separated list of login authentication methods allowed to the user. Default value - "password". Password Authentication is allowed by default. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. This property does not control login behavior for users in admin group.'
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - password
+      - user_certificate
+      - password_with_user_certificate
+      - none
+      auto: PREDEFINED
+    - name: allowed_client_types
+      isArray: true
+      description: "A comma-separated list of client types that can authenticate using the user's credentials. Default value - \"unregistered,public,confidential\" i.e., all clients can authenticate the user using user's credentials. Setting it to none, \"none\", authenticate the user using user's credentials. Setting it to none, \"none\", means no client can authenticate this user, which effectively means no one can login into this user This property does not control login behavior for users in admin group."
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - unregistered
+      - public
+      - confidential
+      auto: PREDEFINED
+    - name: certificate_subject_dn
+      isArray: false
+      description: The Distinguished Name of the user in certificate.
+      required: false
+      secret: false
+      default: false
+    - name: connection
+      isArray: false
+      description: The name of a connection or "local_account" for a local user.
+      required: false
+      secret: false
+      default: false
+      defaultValue: local_account
+    - name: expires_at
+      isArray: false
+      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to "never", removes the expiration date of the user account.
+      required: false
+      secret: false
+      default: false
+    - name: is_domain_user
+      isArray: false
+      description: This flag can be used to create the user in a non-root domain where user management is allowed.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: prevent_ui_login
+      isArray: false
+      description: If true, user is not allowed to login from the web UI.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: password_change_required
+      isArray: false
+      description: If set to true, the user will be required to change their password on the next successful login.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: password_policy
+      isArray: false
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: CipherTrust.Users.user_id
+      description: A unique identifier for API call usage.
+      type: String
+    - contextPath: CipherTrust.Users.username
+      description: The login name of the user. This attribute is required to create a user, but is omitted when getting or listing user. It cannot be updated.
+      type: String
+    - contextPath: CipherTrust.Users.connection
+      description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user. Defaults to 'local_account'.
+      type: String
+    - contextPath: CipherTrust.Users.email
+      description: E-mail of the user.
+      type: String
+    - contextPath: CipherTrust.Users.name
+      description: Full name of the user.
+      type: String
+    - contextPath: CipherTrust.Users.certificate_subject_dn
+      description: The Distinguished Name of the user in certificate.
+      type: String
+    - contextPath: CipherTrust.Users.enable_cert_auth
+      description: 'Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate.'
+      type: Boolean
+    - contextPath: CipherTrust.Users.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Users.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Users.logins_count
+      description: The number of logins.
+      type: Number
+    - contextPath: CipherTrust.Users.last_login
+      description: Timestamp of the last login.
+      type: Date
+    - contextPath: CipherTrust.Users.created_at
+      description: Timestamp of when user was created.
+      type: Date
+    - contextPath: CipherTrust.Users.updated_at
+      description: Timestamp of last update of the user.
+      type: Date
+    - contextPath: CipherTrust.Users.allowed_auth_methods
+      description: List of login authentication methods allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.expires_at
+      description: The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions.
+      type: Date
+    - contextPath: CipherTrust.Users.password_policy
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      type: String
+    - contextPath: CipherTrust.Users.allowed_client_types
+      description: List of client types allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.nickname
+      description: Nickname of the user.
+      type: String
+    - contextPath: CipherTrust.Users.failed_logins_count
+      description: Number of failed login attempts.
+      type: Number
+    - contextPath: CipherTrust.Users.account_lockout_at
+      description: Timestamp when the account was locked out.
+      type: Date
+    - contextPath: CipherTrust.Users.failed_logins_initial_attempt_at
+      description: Timestamp of the initial failed login attempt.
+      type: Date
+    - contextPath: CipherTrust.Users.last_failed_login_at
+      description: Timestamp of the last failed login attempt.
+      type: Date
+    - contextPath: CipherTrust.Users.password_changed_at
+      description: Timestamp of when the password was last changed.
+      type: Date
+    - contextPath: CipherTrust.Users.password_change_required
+      description: Indicates if a password change is required.
+      type: Boolean
+    - contextPath: CipherTrust.Users.auth_domain
+      description: Authentication domain of the user.
+      type: String
+    - contextPath: CipherTrust.Users.login_flags
+      description: Flags related to login permissions.
+      type: Unknown
+  - deprecated: false
+    description: Deletes a user given the user's user ID. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to.
+    name: ciphertrust-user-delete
+    arguments:
+    - name: user_id
+      isArray: false
+      description: The user ID of the user.
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: Change the current user's password. Can only be used to change the password of the currently authenticated user. The user will not be able to change their password to the same password.
+    name: ciphertrust-user-password-change
+    arguments:
+    - name: new_password
+      isArray: false
+      description: The new password.
+      required: true
+      secret: true
+      default: false
+    - name: password
+      isArray: false
+      description: The user's current password.
+      required: true
+      secret: true
+      default: false
+    - name: username
+      isArray: false
+      description: The login name of the current user.
+      required: true
+      secret: false
+      default: false
+    - name: auth_domain
+      isArray: false
+      description: The domain where the user needs to be authenticated. This is the domain where the user is created. Defaults to the root domain.
+      required: false
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
+    name: ciphertrust-user-to-group-add
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group. By default it will be added to the Key Users Group.
+      required: true
+      secret: false
+      default: false
+      defaultValue: Key Users
+    - name: user_id
+      isArray: false
+      description: The user ID of the user. Can be retrieved by using the command ciphertrust-users-list.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: CipherTrust.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: CipherTrust.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: CipherTrust.Group.updated_at
+      description: The time the group was last updated.
+      type: Date
+    - contextPath: CipherTrust.Group.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Group.client_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: CipherTrust.Group.users_count
+      description: The total user count associated with the group.
+      type: Number
+  - deprecated: false
+    description: Removes a user from a group.
+    name: ciphertrust-user-to-group-remove
+    arguments:
+    - name: group_name
+      isArray: false
+      description: Name of the group.
+      required: true
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: The user ID of the user. Can be retrieved by using the command ciphertrust-users-list.
+      required: true
+      secret: false
+      default: false
+    outputs: []
+  - deprecated: false
+    description: Change the properties of a user, for instance, the name, the password, or metadata. Permissions would normally restrict this to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.
+    name: ciphertrust-user-update
+    arguments:
+    - name: name
+      isArray: false
+      description: The user's full name.
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: The user ID of the user.
+      required: true
+      secret: false
+      default: false
+    - name: username
+      isArray: false
+      description: The login name of the user.
+      required: false
+      secret: false
+      default: false
+    - name: password
+      isArray: false
+      description: The password used to secure the user's account.
+      required: false
+      secret: true
+      default: false
+    - name: email
+      isArray: false
+      description: The email of the user.
+      required: false
+      secret: false
+      default: false
+    - name: password_change_required
+      isArray: false
+      description: If set to true, user will be required to change their password on next successful login.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: allowed_auth_methods
+      isArray: true
+      description: 'List of login authentication methods allowed to the user. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. This property does not control login behavior for users in admin group.'
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - password
+      - user_certificate
+      - password_with_user_certificate
+      - none
+      auto: PREDEFINED
+    - name: allowed_client_types
+      isArray: true
+      description: "A comma-separated list of client types that can authenticate using the user's credentials. Setting it to none, i.e., \"none\", means no client can authenticate this user, which effectively means no one can login into this user. This property does not control login behavior for users in admin group."
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - unregistered
+      - public
+      - confidential
+      auto: PREDEFINED
+    - name: certificate_subject_dn
+      isArray: false
+      description: The Distinguished Name of the user in certificate. For example, OU=organization unit,O=organization,L=location,ST=state,C=country.
+      required: false
+      secret: false
+      default: false
+    - name: expires_at
+      isArray: false
+      description: The "expires_at" field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the "expires_at" date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the "expires_at" argument to "never", removes the expiration date of the user account.
+      required: false
+      secret: false
+      default: false
+    - name: failed_logins_count
+      isArray: false
+      description: Set it to 0 to unlock a locked user account.
+      required: false
+      secret: false
+      default: false
+    - name: prevent_ui_login
+      isArray: false
+      description: If true, user is not allowed to login from the web UI.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: password_policy
+      isArray: false
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: CipherTrust.Users.user_id
+      description: A unique identifier for API call usage.
+      type: String
+    - contextPath: CipherTrust.Users.username
+      description: The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated.
+      type: String
+    - contextPath: CipherTrust.Users.connection
+      description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
+      type: String
+    - contextPath: CipherTrust.Users.email
+      description: E-mail of the user.
+      type: String
+    - contextPath: CipherTrust.Users.name
+      description: Full name of the user.
+      type: String
+    - contextPath: CipherTrust.Users.nickname
+      description: Nickname of the user.
+      type: String
+    - contextPath: CipherTrust.Users.certificate_subject_dn
+      description: The Distinguished Name of the user in certificate.
+      type: String
+    - contextPath: CipherTrust.Users.enable_cert_auth
+      description: 'Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate.'
+      type: Boolean
+    - contextPath: CipherTrust.Users.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Users.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Users.logins_count
+      description: Number of logins.
+      type: Number
+    - contextPath: CipherTrust.Users.last_login
+      description: Timestamp of the last login.
+      type: Date
+    - contextPath: CipherTrust.Users.created_at
+      description: Timestamp of when the user was created.
+      type: Date
+    - contextPath: CipherTrust.Users.updated_at
+      description: Timestamp of the last update of the user.
+      type: Date
+    - contextPath: CipherTrust.Users.allowed_auth_methods
+      description: List of login authentication methods allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.expires_at
+      description: The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions.
+      type: Date
+    - contextPath: CipherTrust.Users.password_policy
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      type: String
+    - contextPath: CipherTrust.Users.allowed_client_types
+      description: List of client types allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.failed_logins_count
+      description: Number of failed login attempts.
+      type: Number
+    - contextPath: CipherTrust.Users.failed_logins_initial_attempt_at
+      description: Timestamp of the initial failed login attempt.
+      type: Date
+    - contextPath: CipherTrust.Users.account_lockout_at
+      description: Timestamp of when the account was locked.
+      type: Date
+    - contextPath: CipherTrust.Users.last_failed_login_at
+      description: Timestamp of the last failed login attempt.
+      type: Date
+    - contextPath: CipherTrust.Users.password_changed_at
+      description: Timestamp of when the password was last changed.
+      type: Date
+    - contextPath: CipherTrust.Users.password_change_required
+      description: Indicates if a password change is required at next login.
+      type: Boolean
+    - contextPath: CipherTrust.Users.login_flags
+      description: Flags related to login, such as prevent_ui_login.
+      type: Unknown
+  - deprecated: false
+    description: Returns a list of users.
+    name: ciphertrust-users-list
+    arguments:
+    - name: name
+      isArray: false
+      description: Filter by the user's name.
+      required: false
+      secret: false
+      default: false
+    - name: user_id
+      isArray: false
+      description: If provided, gets the user with the specified user ID.  If the user ID 'self' is provided, it will return the current user's information.
+      required: false
+      secret: false
+      default: false
+    - name: username
+      isArray: false
+      description: The user’s username.
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: false
+      description: The user’s email.
+      required: false
+      secret: false
+      default: false
+    - name: groups
+      isArray: true
+      description: A comma-separated list of group names. Using 'nil' as the group name will return users that are not part of any group.
+      required: false
+      secret: false
+      default: false
+    - name: exclude_groups
+      isArray: true
+      description: A comma-separated list of groups to exclude.
+      required: false
+      secret: false
+      default: false
+    - name: auth_domain_name
+      isArray: false
+      description: The user’s auth domain.
+      required: false
+      secret: false
+      default: false
+    - name: account_expired
+      isArray: false
+      description: Whether to filter the list of users whose expiration time has passed.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: allowed_auth_methods
+      isArray: true
+      description: A comma-separated list of login authentication methods allowed to the users. A special value `empty` can be specified to get users to whom no authentication method is allowed.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - password
+      - user_certificate
+      - password_with_user_certificate
+      - empty
+      auto: PREDEFINED
+    - name: allowed_client_types
+      isArray: true
+      description: A comma-separated list of client types that can authenticate the user.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - unregistered
+      - public
+      - confidential
+      auto: PREDEFINED
+    - name: password_policy
+      isArray: false
+      description: The assigned password policy.
+      required: false
+      secret: false
+      default: false
+    - name: return_groups
+      isArray: false
+      description: If set to 'true', it returns the group's name in which user is associated along with all users information.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - name: page
+      isArray: false
+      description: Page to return.
+      required: false
+      secret: false
+      default: false
+    - name: page_size
+      isArray: false
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of entries to return.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 50
+    outputs:
+    - contextPath: CipherTrust.Users.username
+      description: The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated.
+      type: String
+    - contextPath: CipherTrust.Users.connection
+      description: This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'.
+      type: String
+    - contextPath: CipherTrust.Users.email
+      description: E-mail of the user.
+      type: String
+    - contextPath: CipherTrust.Users.name
+      description: Full name of the user.
+      type: String
+    - contextPath: CipherTrust.Users.certificate_subject_dn
+      description: The Distinguished Name of the user in certificate.
+      type: String
+    - contextPath: CipherTrust.Users.enable_cert_auth
+      description: 'Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate.'
+      type: Boolean
+    - contextPath: CipherTrust.Users.user_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences.
+      type: Unknown
+    - contextPath: CipherTrust.Users.app_metadata
+      description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
+      type: Unknown
+    - contextPath: CipherTrust.Users.logins_count
+      description: Number of logins.
+      type: Number
+    - contextPath: CipherTrust.Users.last_login
+      description: Timestamp of the last login.
+      type: Date
+    - contextPath: CipherTrust.Users.created_at
+      description: Timestamp of when the user was created.
+      type: Date
+    - contextPath: CipherTrust.Users.updated_at
+      description: Timestamp of the last update of the user.
+      type: Date
+    - contextPath: CipherTrust.Users.allowed_auth_methods
+      description: List of login authentication methods allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.expires_at
+      description: The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions.
+      type: Date
+    - contextPath: CipherTrust.Users.password_policy
+      description: The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.
+      type: String
+    - contextPath: CipherTrust.Users.allowed_client_types
+      description: List of client types allowed to the user.
+      type: Unknown
+    - contextPath: CipherTrust.Users.last_failed_login_at
+      description: Timestamp of the last failed login.
+      type: Date
+    - contextPath: CipherTrust.Users.failed_logins_count
+      description: Number of failed logins.
+      type: Number
+    - contextPath: CipherTrust.Users.failed_logins_initial_attempt_at
+      description: Timestamp of the first failed login.
+      type: Date
+    - contextPath: CipherTrust.Users.account_lockout_at
+      description: Timestamp of the account lockout.
+      type: Date
+    - contextPath: CipherTrust.Users.nickname
+      description: Nickname of the user.
+      type: String
+    - contextPath: CipherTrust.Users.user_id
+      description: The user's unique identifier.
+      type: String
+    - contextPath: CipherTrust.Users.password_changed_at
+      description: Timestamp of when the password was last changed.
+      type: Date
+    - contextPath: CipherTrust.Users.password_change_required
+      description: Flag indicating if password change is required.
+      type: Boolean
+    - contextPath: CipherTrust.Users.groups
+      description: List of groups the user belongs to.
+      type: Unknown
+    - contextPath: CipherTrust.Users.auth_domain
+      description: Authentication domain ID.
+      type: String
+    - contextPath: CipherTrust.Users.login_flags
+      description: Flags related to user login.
+      type: Unknown
+    - contextPath: CipherTrust.Users.auth_domain_name
+      description: Name of the authentication domain.
+      type: String
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/py3-tools:1.0.0.114656
+  feed: false
+  isfetch: false
+  runonce: false
+  longRunning: false
+  longRunningPort: false
+fromversion: 6.0.0
+tests:
+- Thales CipherTrust Test Playbook - Access Management
+- Thales CipherTrust Test Playbook - CA

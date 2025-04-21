@@ -1,18 +1,20 @@
 """
 DomainTools Iris Detect XSOAR Integration
 """
+
+from collections.abc import Callable
 from hashlib import sha256
 from hmac import new
 from math import ceil
-from typing import Callable, Tuple
 from urllib.parse import urlencode, urlunparse
-from urllib3 import disable_warnings
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from urllib3 import disable_warnings
 
 # Disable insecure warnings
 disable_warnings()  # pylint: disable=no-member
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 INTEGRATION_CONTEXT_NAME = "DomainToolsIrisDetect"
 DOMAINTOOLS_PARAMS: Dict[str, Any] = {
@@ -21,7 +23,10 @@ DOMAINTOOLS_PARAMS: Dict[str, Any] = {
     "app_version": "1",
 }
 
-DEFAULT_HEADERS: Dict[str, str] = {"accept": "application/json", "Content-Type": "application/json"}
+DEFAULT_HEADERS: Dict[str, str] = {
+    "accept": "application/json",
+    "Content-Type": "application/json",
+}
 TIMEOUT = 60.0
 RETRY = 3
 DOMAINTOOLS_API_BASE_URL = "api.domaintools.com"
@@ -41,12 +46,8 @@ DOMAINTOOLS_BLOCKED_DOMAINS_HEADER = "Blocked Domains"
 DOMAINTOOLS_NEW_DOMAINS_HEADER = "New Domains"
 DOMAINTOOLS_MONITORS_HEADER = "Monitor List"
 DOMAINTOOLS_NEW_DOMAINS_INCIDENT_NAME = "DomainTools Iris Detect New Domains Since"
-DOMAINTOOLS_CHANGED_DOMAINS_INCIDENT_NAME = (
-    "DomainTools Iris Detect Changed Domains Since"
-)
-DOMAINTOOLS_BLOCKED_DOMAINS_INCIDENT_NAME = (
-    "DomainTools Iris Detect Blocked Domains Since"
-)
+DOMAINTOOLS_CHANGED_DOMAINS_INCIDENT_NAME = "DomainTools Iris Detect Changed Domains Since"
+DOMAINTOOLS_BLOCKED_DOMAINS_INCIDENT_NAME = "DomainTools Iris Detect Blocked Domains Since"
 NEW_DOMAIN_TIMESTAMP = "new_domain_last_run"
 CHANGED_DOMAIN_TIMESTAMP = "changed_domain_last_run"
 DT_TIMESTAMP_DICT = {
@@ -71,7 +72,7 @@ INCLUDE_DOMAIN_DATA_VALUE = 1
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 NO_DOMAINS_FOUND = "No Domains Found."
 LIMIT_ERROR_MSG = "Invalid Input Error: limit should be greater than zero."
-DEFAULT_DAYS_BACK = '3 days'
+DEFAULT_DAYS_BACK = "3 days"
 MAX_DAYS_BACK = 30
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 DEFAULT_PAGE_SIZE = 50
@@ -118,9 +119,7 @@ class DTSigner:
             str: The generated digital signature.
         """
         params = "".join([self.api_username, timestamp, uri])
-        return new(
-            self.api_key.encode("utf-8"), params.encode("utf-8"), digestmod=sha256
-        ).hexdigest()
+        return new(self.api_key.encode("utf-8"), params.encode("utf-8"), digestmod=sha256).hexdigest()
 
 
 """ CLIENT CLASS """
@@ -150,18 +149,18 @@ class Client(BaseClient):
     """
 
     def __init__(
-            self,
-            username: str,
-            api_key: str,
-            new_domains: str,
-            changed_domains: str,
-            blocked_domains: str,
-            risk_score_ranges: List,
-            include_domain_data: Optional[bool] = None,
-            first_fetch: str = '3 days',
-            fetch_limit: Optional[int] = 50,
-            verify=None,
-            proxy=None,
+        self,
+        username: str,
+        api_key: str,
+        new_domains: str,
+        changed_domains: str,
+        blocked_domains: str,
+        risk_score_ranges: List,
+        include_domain_data: Optional[bool] = None,
+        first_fetch: str = "3 days",
+        fetch_limit: Optional[int] = 50,
+        verify=None,
+        proxy=None,
     ):
         super().__init__(
             DOMAINTOOLS_API_BASE_URL,
@@ -199,10 +198,9 @@ class Client(BaseClient):
         query = {
             "api_username": self.username,
             "signature": signer.sign(timestamp, end_point),
-            "timestamp": timestamp
+            "timestamp": timestamp,
         }
         full_url = urlunparse(("https", DOMAINTOOLS_API_BASE_URL, end_point, "", urlencode(query), None))
-
         return self._http_request(
             method=method,
             full_url=full_url,
@@ -241,9 +239,11 @@ class Client(BaseClient):
                 "irisdetectdiscovereddate": item.get("discovered_date", ""),
                 "irisdetectchangeddate": item.get("changed_date", ""),
                 "irisdetectdomainstatus": item.get("status", ""),
-                "irisdetectdomainstate": "blocked" if any(result.get("escalation_type", "") == "blocked" for result in
-                                                          item.get("escalations", [])) else item.get("state", ""),
-
+                "irisdetectdomainstate": (
+                    "blocked"
+                    if any(result.get("escalation_type", "") == "blocked" for result in item.get("escalations", []))
+                    else item.get("state", "")
+                ),
                 "domaintoolsriskscore": item.get("risk_score", ""),
                 "domaintoolsriskscorestatus": item.get("risk_score_status", ""),
                 "irisdetectdomainid": item.get("id", ""),
@@ -266,24 +266,25 @@ class Client(BaseClient):
                 ],
                 "registrant_name": item.get("registrar", ""),
                 "registrant_email": ", ".join(item.get("registrant_contact_email", [])),
-                "name_servers": ", ".join(
-                    result.get("host", "") for result in item.get("name_server", [])
-                ),
+                "name_servers": ", ".join(result.get("host", "") for result in item.get("name_server", [])),
                 "irisdetectmailserversexists": item.get("mx_exists", ""),
-                "irisdetectmailserverdetails": [
-                    {"host": result.get("host", "")} for result in item.get("mx", [])
-                ],
+                "irisdetectmailserverdetails": [{"host": result.get("host", "")} for result in item.get("mx", [])],
                 "domaintoolsriskscorecomponents": {
-                    key: risk_score_components.get(key, "")
-                    for key in ["proximity", "phishing", "malware", "spam", "evidence"]
+                    key: risk_score_components.get(key, "") for key in ["proximity", "phishing", "malware", "spam", "evidence"]
                 },
                 "last_seen_by_source": item.get("changed_date", ""),
                 "first_seen_by_source": item.get("discovered_date", ""),
             },
         }
 
-    def process_dt_domains_into_xsoar(self, domains_list: List[Dict[str, Any]], incident_name: str, last_run: str,
-                                      term: Dict[str, Any], enable_incidents: bool = True) -> List[Any]:
+    def process_dt_domains_into_xsoar(
+        self,
+        domains_list: List[Dict[str, Any]],
+        incident_name: str,
+        last_run: str,
+        term: Dict[str, Any],
+        enable_incidents: bool = True,
+    ) -> List[Any]:
         """
         Create indicators and, optionally, an incident in XSOAR for a list of
         DomainTools Iris Detect domains.
@@ -300,7 +301,7 @@ class Client(BaseClient):
             otherwise an empty list.
         """
         for domain in domains_list:
-            domain['monitor_term'] = join_dict_values_for_keys(domain.get("monitor_ids", []), term)
+            domain["monitor_term"] = join_dict_values_for_keys(domain.get("monitor_ids", []), term)
         indicators = [self.create_indicator_from_detect_domain(item, term) for item in domains_list]
         if not indicators:
             return []
@@ -310,13 +311,14 @@ class Client(BaseClient):
         demisto.info(f"Added {len(indicators)} indicators to demisto")
 
         if enable_incidents:
-            last_run_dt_without_ms = datetime.strptime(get_last_run(last_run), DATE_FORMAT).replace(
-                microsecond=0) if get_last_run(last_run) else None
+            last_run_dt_without_ms = (
+                datetime.strptime(get_last_run(last_run), DATE_FORMAT).replace(microsecond=0) if get_last_run(last_run) else None
+            )
             first_run_dt_without_ms = (datetime.now() - timedelta(days=validate_first_fetch(self.first_fetch))).replace(
-                microsecond=0)
+                microsecond=0
+            )
             incident = {
-                "name": f"{incident_name} "
-                        f"{last_run_dt_without_ms or first_run_dt_without_ms}",
+                "name": f"{incident_name} {last_run_dt_without_ms or first_run_dt_without_ms}",
                 "details": json.dumps(domains_list),
                 "rawJSON": json.dumps({"incidents": domains_list}),
                 "type": INCIDENT_TYPE[incident_name],
@@ -325,7 +327,7 @@ class Client(BaseClient):
 
         return []
 
-    def fetch_dt_domains_from_api(self, end_point: str, last_run: str) -> Tuple[List[Dict], str]:
+    def fetch_dt_domains_from_api(self, end_point: str, last_run: str) -> tuple[List[Dict], str]:
         """
         Makes an API call to the Domain Tools API endpoint and retrieves domain data based on the provided
         parameters.
@@ -344,16 +346,16 @@ class Client(BaseClient):
         if last_run_value:
             params = DOMAINTOOLS_PARAMS | {
                 DT_TIMESTAMP_DICT[last_run]: last_run_value,
-                "include_domain_data": INCLUDE_DOMAIN_DATA_VALUE if self.include_domain_data else 0,
+                "include_domain_data": (INCLUDE_DOMAIN_DATA_VALUE if self.include_domain_data else 0),
             }
-            demisto.info(f'Found last run, fetching domains from {last_run_value}')
+            demisto.info(f"Found last run, fetching domains from {last_run_value}")
         else:
             days_back = validate_first_fetch(self.first_fetch)
             params = DOMAINTOOLS_PARAMS | {
                 DT_TIMESTAMP_DICT[last_run]: datetime.now() - timedelta(days=days_back),
-                "include_domain_data": INCLUDE_DOMAIN_DATA_VALUE if self.include_domain_data else 0,
+                "include_domain_data": (INCLUDE_DOMAIN_DATA_VALUE if self.include_domain_data else 0),
             }
-            demisto.info(f'First run, fetching domains from last {days_back} days')
+            demisto.info(f"First run, fetching domains from last {days_back} days")
 
         if self.risk_score_ranges:
             params["risk_score_ranges[]"] = self.risk_score_ranges
@@ -371,11 +373,11 @@ class Client(BaseClient):
         """Fetches DomainTools domain information and creates incidents in XSOAR."""
 
         def process_domains(
-                process_endpoint: str,
-                process_timestamp_key: str,
-                process_incident_name: str,
-                import_only: bool,
-                process_filter_func: Optional[Callable[[List[Dict[str, Any]]], List[Dict[str, Any]]]] = None,
+            process_endpoint: str,
+            process_timestamp_key: str,
+            process_incident_name: str,
+            import_only: bool,
+            process_filter_func: Optional[Callable[[List[Dict[str, Any]]], List[Dict[str, Any]]]] = None,
         ) -> str:
             """
             Process domains by calling DomainTools API, filtering results, and converting them into XSOAR incidents.
@@ -391,9 +393,7 @@ class Client(BaseClient):
             Returns:
                 str: The last run timestamp.
             """
-            domains_list, last_run = self.fetch_dt_domains_from_api(
-                process_endpoint, process_timestamp_key
-            )
+            domains_list, last_run = self.fetch_dt_domains_from_api(process_endpoint, process_timestamp_key)
             if process_filter_func:
                 domains_list = process_filter_func(domains_list)
             incidents.extend(
@@ -420,17 +420,12 @@ class Client(BaseClient):
             return [
                 domain
                 for domain in domains
-                if domain.get("escalations") and any(
-                    escalation.get("escalation_type") == "blocked" for escalation in domain["escalations"])
+                if domain.get("escalations")
+                and any(escalation.get("escalation_type") == "blocked" for escalation in domain["escalations"])
             ]
 
-        monitor_result = self.query_dt_api(
-            DOMAINTOOLS_MONITOR_DOMAINS_ENDPOINT, "GET"
-        )
-        term = {
-            results.get("id"): results.get("term")
-            for results in monitor_result.get("monitors", [])
-        }
+        monitor_result = self.query_dt_api(DOMAINTOOLS_MONITOR_DOMAINS_ENDPOINT, "GET", params=DOMAINTOOLS_PARAMS)
+        term = {results.get("id"): results.get("term") for results in monitor_result.get("monitors", [])}
         incidents: List[Any] = []
 
         domains_to_process = [
@@ -459,11 +454,21 @@ class Client(BaseClient):
 
         last_runs = {CHANGED_DOMAIN_TIMESTAMP: "", NEW_DOMAIN_TIMESTAMP: ""}
 
-        for endpoint, timestamp_key, incident_name, domain_setting, filter_func in domains_to_process:
+        for (
+            endpoint,
+            timestamp_key,
+            incident_name,
+            domain_setting,
+            filter_func,
+        ) in domains_to_process:
             if domain_setting:
-                last_runs[timestamp_key] = process_domains(endpoint, timestamp_key, incident_name,
-                                                           domain_setting == "Import Indicators Only", filter_func,
-                                                           )
+                last_runs[timestamp_key] = process_domains(
+                    endpoint,
+                    timestamp_key,
+                    incident_name,
+                    domain_setting == "Import Indicators Only",
+                    filter_func,
+                )
 
         demisto.setIntegrationContext(last_runs)
         demisto.info(f"Adding {len(incidents)} incidents to demisto")
@@ -561,15 +566,17 @@ def dt_error_handler(response: requests.Response) -> None:
         403: "Forbidden: The request is understood, but it has been refused or access is not allowed.",
         404: "Not Found: The requested resource could not be found.",
         500: "Internal Server Error: An error occurred on the server side.",
-        206: "Partial Content: The requested resource has been partially returned."
+        206: "Partial Content: The requested resource has been partially returned.",
     }
 
     if response.status_code in {206} | set(range(400, 600)):
         try:
             error_json = response.json().get("error", {})
-            error_message = (error_json.get("message") or " ".join(
-                error_json.get("messages", [])) or specific_error_messages.get(response.status_code,
-                                                                               "An unknown error occurred."))
+            error_message = (
+                error_json.get("message")
+                or " ".join(error_json.get("messages", []))
+                or specific_error_messages.get(response.status_code, "An unknown error occurred.")
+            )
         except ValueError:
             error_message = specific_error_messages.get(response.status_code, "An unknown error occurred.")
 
@@ -671,10 +678,10 @@ def format_watchlist_fields(result: Dict[Any, Any]) -> Dict[str, Any]:
 
 
 def format_data(
-        result: Dict[str, List[Dict[str, Any]]],
-        field: str,
-        output_prefix: str,
-        data_key: str,
+    result: Dict[str, List[Dict[str, Any]]],
+    field: str,
+    output_prefix: str,
+    data_key: str,
 ) -> Dict[str, Any]:
     """
     Extracts and formats data.
@@ -763,17 +770,16 @@ def create_common_api_arguments(args: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "monitor_id": args.get("monitor_id"),
         "tlds[]": argToList(args.get("tlds")),
-        "include_domain_data": argToBoolean(args.get("include_domain_data")) if args.get(
-            "include_domain_data") else None,
+        "include_domain_data": (argToBoolean(args.get("include_domain_data")) if args.get("include_domain_data") else None),
         "risk_score_ranges[]": argToList(args.get("risk_score_ranges")),
         "sort[]": argToList(args.get("sort")),
         "order": args.get("order"),
-        "mx_exists": argToBoolean(args.get("mx_exists")) if args.get("mx_exists") else None,
+        "mx_exists": (argToBoolean(args.get("mx_exists")) if args.get("mx_exists") else None),
         "preview": argToBoolean(args.get("preview")) if args.get("preview") else None,
         "search": args.get("search"),
         "limit": arg_to_number(args.get("limit")),
         "page": arg_to_number(args.get("page")),
-        "page_size": arg_to_number(args.get("page_size"))
+        "page_size": arg_to_number(args.get("page_size")),
     }
 
 
@@ -794,21 +800,21 @@ def create_escalated_api_arguments(args: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "escalated_since": args.get("escalated_since"),
         "escalation_types[]": args.get("escalation_types"),
-        "changed_since": args.get("changed_since")
+        "changed_since": args.get("changed_since"),
     }
 
 
-def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]) -> Tuple[int, int]:
+def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]) -> tuple[int, int]:
     """
-     Define pagination.
-     Args:
-        limit: Records per page.
-        page: The page number.
-        page_size: The number of requested results per page.
-     Returns:
-        limit (int): Records per page.
-        offset (int): The number of records to be skipped.
-     """
+    Define pagination.
+    Args:
+       limit: Records per page.
+       page: The page number.
+       page_size: The number of requested results per page.
+    Returns:
+       limit (int): Records per page.
+       offset (int): The number of records to be skipped.
+    """
 
     if page is not None and page <= 0:
         raise DemistoException(PAGE_NUMBER_ERROR_MSG)
@@ -821,8 +827,7 @@ def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[in
     return limit or page_size or DEFAULT_PAGE_SIZE, (page - 1 if page else DEFAULT_OFFSET) * (page_size or DEFAULT_PAGE_SIZE)
 
 
-def get_command_title_string(sub_context: str, page: Optional[int], page_size: Optional[int],
-                             hits: Optional[int]) -> str:
+def get_command_title_string(sub_context: str, page: Optional[int], page_size: Optional[int], hits: Optional[int]) -> str:
     """
     Generates a command title string based on the provided context and pagination information.
 
@@ -837,8 +842,7 @@ def get_command_title_string(sub_context: str, page: Optional[int], page_size: O
     """
     if page and page_size and hits is not None and (page > 0 and page_size > 0):
         total_page = ceil(hits / page_size) if hits > 0 else 1
-        return f'{sub_context} \nCurrent page size: {page_size}\n' \
-               f'Showing page {page} out of {total_page}'
+        return f"{sub_context} \nCurrent page size: {page_size}\nShowing page {page} out of {total_page}"
 
     return f"{sub_context}"
 
@@ -867,16 +871,19 @@ def get_max_limit(end_point: str, dt_args: Dict[str, Any]) -> int:
     include_domain_data = dt_args.get("include_domain_data", False)
 
     return (
-        MONITOR_DOMAINS_LIMIT if end_point == DOMAINTOOLS_MONITOR_DOMAINS_ENDPOINT and not include_counts else
-        INCLUDE_COUNTS_LIMIT if include_counts else
-        INCLUDE_DOMAIN_DATA_LIMIT if include_domain_data else
-        DEFAULT_LIMIT
+        MONITOR_DOMAINS_LIMIT
+        if end_point == DOMAINTOOLS_MONITOR_DOMAINS_ENDPOINT and not include_counts
+        else (INCLUDE_COUNTS_LIMIT if include_counts else INCLUDE_DOMAIN_DATA_LIMIT if include_domain_data else DEFAULT_LIMIT)
     )
 
 
 def get_results_helper(
-        client: Client, end_point: str, dt_args: Dict[str, Any], result_key: str, tb_header_name: str
-) -> Tuple[List[Any], str]:
+    client: Client,
+    end_point: str,
+    dt_args: Dict[str, Any],
+    result_key: str,
+    tb_header_name: str,
+) -> tuple[List[Any], str]:
     """
     Helper function to get results for the given endpoint and result_key.
 
@@ -907,6 +914,7 @@ def get_results_helper(
             break
 
         dt_args.update({"offset": offset, "limit": fetch_size})
+
         response = client.query_dt_api(end_point, "GET", params=DOMAINTOOLS_PARAMS | dt_args)
 
         total_count = response.get("total_count", 0)
@@ -924,7 +932,7 @@ def get_results_helper(
 
 
 def fetch_domain_tools_api_results(
-        client: Client, end_point: str, tb_header_name: str, dt_args: Dict[str, Any]
+    client: Client, end_point: str, tb_header_name: str, dt_args: Dict[str, Any]
 ) -> CommandResults:
     """
     Gets the results for a DomainTools API endpoint.
@@ -939,15 +947,14 @@ def fetch_domain_tools_api_results(
         CommandResults: The results of the command.
 
     """
+
     results, title = get_results_helper(client, end_point, dt_args, "watchlist_domains", tb_header_name)
     indicator_list: List[Dict] = []
 
     if results:
         if dt_args.get("include_domain_data"):
             for result in results:
-                indicator = format_common_fields(result) | format_risk_score_components(
-                    result
-                )
+                indicator = format_common_fields(result) | format_risk_score_components(result)
                 indicator.update(
                     format_data(result, "ip", "dt_ip_address", "ip")
                     | format_data(result, "name_server", "dt_nameServer", "host")
@@ -956,23 +963,17 @@ def fetch_domain_tools_api_results(
                 indicator_list.append(indicator)
         else:
             for result in results:
-                indicator = format_common_fields(result) | format_risk_score_components(
-                    result
-                )
+                indicator = format_common_fields(result) | format_risk_score_components(result)
                 indicator_list.append(indicator)
     return CommandResults(
         outputs=results,
         outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.{CONTEXT_PATH_KEY[tb_header_name]}",
         outputs_key_field="domain",
-        readable_output=tableToMarkdown(name=title, t=indicator_list)
-        if indicator_list
-        else NO_DOMAINS_FOUND,
+        readable_output=(tableToMarkdown(name=title, t=indicator_list) if indicator_list else NO_DOMAINS_FOUND),
     )
 
 
-def domaintools_iris_detect_get_watched_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_get_watched_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     domaintools_iris_detect_get_watched_domains_command: Get the watched domains list.
     Args:
@@ -991,9 +992,7 @@ def domaintools_iris_detect_get_watched_domains_command(
     )
 
 
-def domaintools_iris_detect_get_new_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_get_new_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     domaintools_iris_detect_get_new_domains_command: Get the new domains list.
     Args:
@@ -1008,16 +1007,11 @@ def domaintools_iris_detect_get_new_domains_command(
         client,
         DOMAINTOOLS_NEW_DOMAINS_ENDPOINT,
         DOMAINTOOLS_NEW_DOMAINS_HEADER,
-        create_common_api_arguments(args)
-        | {
-            "discovered_since": args.get("discovered_since")
-        },
+        create_common_api_arguments(args) | {"discovered_since": args.get("discovered_since")},
     )
 
 
-def domaintools_iris_detect_get_ignored_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_get_ignored_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     domaintools_iris_detect_get_ignored_domains_command: Get the ignored domains list.
     Args:
@@ -1036,9 +1030,7 @@ def domaintools_iris_detect_get_ignored_domains_command(
     )
 
 
-def domaintools_iris_detect_get_blocklist_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_get_blocklist_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     domaintools_iris_detect_get_blocklist_domains_command: Get the blocked domains list.
     Args:
@@ -1057,9 +1049,7 @@ def domaintools_iris_detect_get_blocklist_domains_command(
     )
 
 
-def domaintools_iris_detect_get_escalated_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_get_escalated_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     domaintools_iris_detect_get_escalated_domains_command: Get the escalated domains
     list.
@@ -1075,14 +1065,11 @@ def domaintools_iris_detect_get_escalated_domains_command(
         client,
         DOMAINTOOLS_WATCHED_DOMAINS_ENDPOINT,
         DOMAINTOOLS_ESCALATE_DOMAINS_HEADER,
-        create_common_api_arguments(args) | create_escalated_api_arguments(args) | {
-            "escalation_types[]": "google_safe"},
+        create_common_api_arguments(args) | create_escalated_api_arguments(args) | {"escalation_types[]": "google_safe"},
     )
 
 
-def domaintools_iris_detect_get_monitors_list_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_get_monitors_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get the monitor domains list.
 
@@ -1103,13 +1090,14 @@ def domaintools_iris_detect_get_monitors_list_command(
         }
         | create_common_api_arguments(args)
         | create_escalated_api_arguments(args),
-        "monitors", DOMAINTOOLS_MONITORS_HEADER
+        "monitors",
+        DOMAINTOOLS_MONITORS_HEADER,
     )
+
     if results:
         monitor_data = [format_monitor_fields(result) for result in results]
         headers = list(monitor_data[0].keys())
-        readable_output = tableToMarkdown(name=title, t=monitor_data,
-                                          removeNull=True, headers=headers)
+        readable_output = tableToMarkdown(name=title, t=monitor_data, removeNull=True, headers=headers)
     else:
         readable_output = NO_DOMAINS_FOUND
     return CommandResults(
@@ -1120,9 +1108,7 @@ def domaintools_iris_detect_get_monitors_list_command(
     )
 
 
-def handle_domain_action(
-        client: Client, args: Dict[str, Any], action: str
-) -> CommandResults:
+def handle_domain_action(client: Client, args: Dict[str, Any], action: str) -> CommandResults:
     """
     Performs the specified action on one or more watchlist domains.
 
@@ -1141,28 +1127,28 @@ def handle_domain_action(
             DOMAINTOOLS_MANAGE_WATCHLIST_ENDPOINT,
             DOMAINTOOLS_WATCHED_DOMAINS_HEADER,
             format_watchlist_fields,
-            "WatchedDomain"
+            "WatchedDomain",
         ),
         "ignored": (
             "PATCH",
             DOMAINTOOLS_MANAGE_WATCHLIST_ENDPOINT,
             DOMAINTOOLS_IGNORE_DOMAINS_HEADER,
             format_watchlist_fields,
-            "IgnoredDomain"
+            "IgnoredDomain",
         ),
         "google_safe": (
             "POST",
             DOMAINTOOLS_ESCALATE_DOMAINS_ENDPOINT,
             DOMAINTOOLS_ESCALATE_DOMAINS_HEADER,
             format_blocklist_fields,
-            "EscalatedDomain"
+            "EscalatedDomain",
         ),
         "blocked": (
             "POST",
             DOMAINTOOLS_ESCALATE_DOMAINS_ENDPOINT,
             DOMAINTOOLS_BLOCKED_DOMAINS_HEADER,
             format_blocklist_fields,
-            "BlockedDomain"
+            "BlockedDomain",
         ),
     }
     method, endpoint, header, format_func, context_output_string = action_params[action]
@@ -1175,25 +1161,23 @@ def handle_domain_action(
         data |= {"escalation_type": action}
 
     indicators_list = [
-        dict(format_func(result)) for result in
-        client.query_dt_api(endpoint, method, json_data=data).get(
-            "watchlist_domains" if action in ["watched", "ignored"] else "escalations", [])
+        dict(format_func(result))
+        for result in client.query_dt_api(endpoint, method, json_data=data).get(
+            "watchlist_domains" if action in ["watched", "ignored"] else "escalations",
+            [],
+        )
     ]
 
     return CommandResults(
         outputs=indicators_list,
         outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.{context_output_string}",
         outputs_key_field="",
-        readable_output=tableToMarkdown(name=header, t=indicators_list)
-        if indicators_list
-        else NO_DOMAINS_FOUND,
+        readable_output=(tableToMarkdown(name=header, t=indicators_list) if indicators_list else NO_DOMAINS_FOUND),
         raw_response=indicators_list,
     )
 
 
-def domaintools_iris_detect_watch_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_watch_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Watch domains for changes using DomainTools Iris API.
 
@@ -1208,9 +1192,7 @@ def domaintools_iris_detect_watch_domains_command(
     return handle_domain_action(client, args, "watched")
 
 
-def domaintools_iris_detect_ignore_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_ignore_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Ignore domains using DomainTools Iris API.
 
@@ -1225,9 +1207,7 @@ def domaintools_iris_detect_ignore_domains_command(
     return handle_domain_action(client, args, "ignored")
 
 
-def domaintools_iris_detect_escalate_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_escalate_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Escalate domains to Google Safe Browsing using DomainTools Iris API.
 
@@ -1242,9 +1222,7 @@ def domaintools_iris_detect_escalate_domains_command(
     return handle_domain_action(client, args, "google_safe")
 
 
-def domaintools_iris_detect_blocklist_domains_command(
-        client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def domaintools_iris_detect_blocklist_domains_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Blocklist domains using DomainTools Iris API.
 
@@ -1272,15 +1250,15 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-    username = params.get('credentials', {}).get('identifier')
-    api_key = params.get('credentials', {}).get('password')
+    username = params.get("credentials", {}).get("identifier")
+    api_key = params.get("credentials", {}).get("password")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     handle_proxy()
     risk_score_ranges = argToList(params.get("risk_score_ranges"))
     include_domain_data = params.get("include_domain_data")
-    first_fetch_time = params.get('first_fetch', DEFAULT_DAYS_BACK).strip()
-    fetch_limit = arg_to_number(params.get('max_fetch', 50))
+    first_fetch_time = params.get("first_fetch", DEFAULT_DAYS_BACK).strip()
+    fetch_limit = arg_to_number(params.get("max_fetch", 50))
     new_domains = params.get("new_domains")
     changed_domains = params.get("changed_domains")
     blocked_domains = params.get("blocked_domains")

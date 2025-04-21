@@ -1,28 +1,28 @@
+from collections.abc import Iterable, Callable
+from typing import Any
+import google.cloud.storage
+import numpy as np
+import posixpath
+import dill as pickle
+import os
+import itertools
+import string
+import re
+import math
+from itertools import groupby
+import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+demisto.debug("pack name = Cortex Attack Surface Management, pack version = 1.7.65")
+
+
 """Script for identifying and recommending the most likely owners of a discovered service
 from those surfaced by Cortex ASM Enrichment.
 """
 
-import traceback
-from itertools import groupby
-import math
 
-import re
-import string
-import itertools
-import os
-import dill as pickle
-import posixpath
-import numpy as np
-import google.cloud.storage
-
-
-from typing import Any
-from collections.abc import Iterable, Callable
-
-
-STRING_DELIMITER = ' | '  # delimiter used for joining source fields and any additional fields of type string
+STRING_DELIMITER = " | "  # delimiter used for joining source fields and any additional fields of type string
 
 # Normalize owner scores to be within the following bounds.
 # We want to use a standard scale (e.g. between 0 and 1) for interpretability.
@@ -110,9 +110,10 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
 
     If we fail to load or run inference with the model, return uniform scores of SCORE_LOWER_BOUND
     """
+
     def scoring_fallback(owners: list[dict[str, Any]]):
         for owner in owners:
-            owner['ranking_score'] = SCORE_LOWER_BOUND
+            owner["ranking_score"] = SCORE_LOWER_BOUND
         return owners
 
     try:
@@ -130,7 +131,7 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
 
     normalized = normalize_scores(scores)
     for owner, score in zip(owners, normalized):
-        owner['ranking_score'] = score
+        owner["ranking_score"] = score
     return owners
 
 
@@ -141,8 +142,8 @@ def rank(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     See _get_k for hyperparameters that can be used to adjust the target value of k
     """
-    k = _get_k(scores=(owner['ranking_score'] for owner in owners))
-    return sorted(owners, key=lambda x: x['ranking_score'], reverse=True)[:k]
+    k = _get_k(scores=(owner["ranking_score"] for owner in owners))
+    return sorted(owners, key=lambda x: x["ranking_score"], reverse=True)[:k]
 
 
 def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
@@ -162,9 +163,9 @@ def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     The model takes the length of the chain into the account, with longer chains carrying less weight
     """
     for owner in owners:
-        normalized_source = owner.get('source', '').replace('Chain: ', '')
-        owner['source'] = normalized_source
-        owner['justification'] = normalized_source
+        normalized_source = owner.get("source", "").replace("Chain: ", "")
+        owner["source"] = normalized_source
+        owner["justification"] = normalized_source
     return owners
 
 
@@ -176,14 +177,14 @@ def _canonicalize(owner: dict[str, Any]) -> dict[str, Any]:
         2. whitespace-stripped and lower-cased name
         3. empty string if neither exists
     """
-    if owner.get('email', ''):
-        owner['canonicalization'] = owner['email'].strip().lower()
-        owner['email'] = owner['canonicalization']
-    elif owner.get('name', ''):
-        owner['canonicalization'] = owner['name'].strip().lower()
-        owner['name'] = owner['canonicalization']
+    if owner.get("email", ""):
+        owner["canonicalization"] = owner["email"].strip().lower()
+        owner["email"] = owner["canonicalization"]
+    elif owner.get("name", ""):
+        owner["canonicalization"] = owner["name"].strip().lower()
+        owner["name"] = owner["canonicalization"]
     else:
-        owner['canonicalization'] = ''
+        owner["canonicalization"] = ""
     return owner
 
 
@@ -214,61 +215,45 @@ def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     If type is neither of the above, all values of that key will be dropped from the aggregated owner.
     """
     deduped = []
-    sorted_owners = sorted(owners, key=lambda owner: owner['canonicalization'])
-    for key, group in groupby(sorted_owners, key=lambda owner: owner['canonicalization']):
+    sorted_owners = sorted(owners, key=lambda owner: owner["canonicalization"])
+    for key, group in groupby(sorted_owners, key=lambda owner: owner["canonicalization"]):
         duplicates = list(group)
-        email = duplicates[0].get('email', '')
+        email = duplicates[0].get("email", "")
         # the if condition in the list comprehension below defends against owners whose name value is None (not sortable)
-        names = sorted(
-            [owner.get('name', '') for owner in duplicates if owner.get('name')],
-            key=lambda x: len(x), reverse=True
-        )
-        name = names[0] if names else ''
+        names = sorted([owner.get("name", "") for owner in duplicates if owner.get("name")], key=lambda x: len(x), reverse=True)
+        name = names[0] if names else ""
         # aggregate source by union
-        source = STRING_DELIMITER.join(sorted(
-            {owner.get('source', '') for owner in duplicates if owner.get('source', '')}
-        ))
+        source = STRING_DELIMITER.join(sorted({owner.get("source", "") for owner in duplicates if owner.get("source", "")}))
         # take max timestamp if there's at least one; else empty string
-        timestamps = sorted(
-            [owner.get('timestamp', '') for owner in duplicates if owner.get('timestamp', '')], reverse=True
-        )
-        timestamp = timestamps[0] if timestamps else ''
-        owner = {
-            'name': name,
-            'email': email,
-            'source': source,
-            'timestamp': timestamp
-        }
+        timestamps = sorted([owner.get("timestamp", "") for owner in duplicates if owner.get("timestamp", "")], reverse=True)
+        timestamp = timestamps[0] if timestamps else ""
+        owner = {"name": name, "email": email, "source": source, "timestamp": timestamp}
 
         # aggregate remaining keys according to type
         all_keys = {k for owner in duplicates for k in owner}
         keys_to_types = {k: type(owner[k]) for owner in duplicates for k in owner}
         other_keys = []
         for key in all_keys:
-            if key.lower() not in {'name', 'email', 'source', 'timestamp', 'canonicalization'}:
+            if key.lower() not in {"name", "email", "source", "timestamp", "canonicalization"}:
                 other_keys.append(key)
         for other in other_keys:
-            if keys_to_types[other] == str:
+            if keys_to_types[other] is str:
                 # union over strings
-                owner[other] = STRING_DELIMITER.join(sorted(
-                    {owner.get(other, '') for owner in duplicates if owner.get(other, '')}
-                ))
+                owner[other] = STRING_DELIMITER.join(
+                    sorted({owner.get(other, "") for owner in duplicates if owner.get(other, "")})
+                )
             elif keys_to_types[other] in (int, float):
                 # max over numerical types
                 owner[other] = max(owner.get(other, 0) for owner in duplicates)  # type: ignore
             else:
-                demisto.info(f'Cannot aggregate owner detail {other} -- removing from service owner')
+                demisto.info(f"Cannot aggregate owner detail {other} -- removing from service owner")
                 continue
         deduped.append(owner)
     return deduped
 
 
 def _get_k(
-    scores: Iterable[float],
-    target_k: int = 5,
-    k_tol: int = 2,
-    a_tol: float = 1.0,
-    min_score_proportion: float = 0.75
+    scores: Iterable[float], target_k: int = 5, k_tol: int = 2, a_tol: float = 1.0, min_score_proportion: float = 0.75
 ) -> int:
     """
     Return a value of k such that:
@@ -337,11 +322,9 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str
     for moniker in personal_monikers:
         moniker = moniker.lower()
         if "@" in moniker:
-            moniker = moniker[:moniker.index("@")]
+            moniker = moniker[: moniker.index("@")]
 
-        split_full_moniker: list[str] = [
-            t.replace("-", "").replace("'", "") for t in moniker.split()
-        ]
+        split_full_moniker: list[str] = [t.replace("-", "").replace("'", "") for t in moniker.split()]
         result_set |= set(split_full_moniker)
 
         if len(split_full_moniker) >= 2:
@@ -359,9 +342,7 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str
                 result_set.add(f"{fname}{last_name}")
             # fm+l
             for fname in all_possible_first_names:
-                result_set.add(
-                    f"{fname[0]}{''.join([m[0] for m in middle_names])}{last_name[0]}"
-                )
+                result_set.add(f"{fname[0]}{''.join([m[0] for m in middle_names])}{last_name[0]}")
             # fl
             for fname in all_possible_first_names:
                 result_set.add(f"{fname[0]}{last_name[0]}")
@@ -370,9 +351,7 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str
                 result_set.add(f"{fname[0]}{last_name}")
             # fm*last
             for fname in all_possible_first_names:
-                result_set.add(
-                    f"{fname[0]}{''.join([m[0] for m in middle_names])}{last_name}"
-                )
+                result_set.add(f"{fname[0]}{''.join([m[0] for m in middle_names])}{last_name}")
 
     return result_set
 
@@ -395,9 +374,7 @@ def split_phrase(phrase: str) -> set[str]:
     all_components |= set(re.split(SPLITTER, phrase))
 
     for w in all_components.copy():
-        all_components |= set(
-            itertools.chain.from_iterable(re.findall(r"(\d*)([a-zA-Z]*)(\d*)", w))
-        )
+        all_components |= set(itertools.chain.from_iterable(re.findall(r"(\d*)([a-zA-Z]*)(\d*)", w)))
 
     all_components = {c.strip() for c in all_components if c}
     all_components -= {"", None}
@@ -424,14 +401,10 @@ def get_possible_3initials(personal_monikers: Iterable[str]) -> set[str]:
 
         if middle_names:
             # abort early
-            return {
-                f"{canonical_first_initial}{''.join([m[0] for m in middle_names])}{last_initial}"
-            }
+            return {f"{canonical_first_initial}{''.join([m[0] for m in middle_names])}{last_initial}"}
         else:
             for hypothesized_letter in string.ascii_lowercase:
-                result_set.add(
-                    f"{canonical_first_initial}{hypothesized_letter}{last_initial}"
-                )
+                result_set.add(f"{canonical_first_initial}{hypothesized_letter}{last_initial}")
 
     return result_set
 
@@ -488,7 +461,7 @@ def get_name_similarity_index(
     return total_indicators
 
 
-class OwnerFeaturizationPipeline():
+class OwnerFeaturizationPipeline:
     def __init__(self, sources: list | None = None):
         """
         Initialize a featurization pipeline.
@@ -504,7 +477,7 @@ class OwnerFeaturizationPipeline():
             ("num_distinct_sources", self.get_num_distinct_sources),
             ("min_path_length", self.get_min_path_length),
             ("is_attested_in_cmdb", self.get_in_cmdb),
-            ("is_attested_in_recent_logs", self.get_in_logs)
+            ("is_attested_in_recent_logs", self.get_in_logs),
         ]
 
         # features that require asmsystemid as an additional input
@@ -541,19 +514,17 @@ class OwnerFeaturizationPipeline():
         """
         Returns the minimum path length to reach this owner.
         """
-        min_path_length = float('inf')
+        min_path_length = float("inf")
         for src in self._get_sources(owner):
             src_path_length = 1
             while src.startswith("Chain: "):
                 src_path_length += 1
-                src = src[len("Chain: "):]
+                src = src[len("Chain: ") :]
             if min_path_length is None or src_path_length < min_path_length:
                 min_path_length = src_path_length
         return min_path_length
 
-    def get_name_similarity_person_asset(self,
-                                         service_identifiers: Iterable[str],
-                                         owner: dict[str, Any]) -> float:
+    def get_name_similarity_person_asset(self, service_identifiers: Iterable[str], owner: dict[str, Any]) -> float:
         """
         Returns >=1 if there is a blatant match between any `service_identifiers` and `owner`.
         Returns 0 if there is no match at all.
@@ -593,7 +564,7 @@ class OwnerFeaturizationPipeline():
         for sample_idx, owner in enumerate(owners):
             # Iterate over features which require both system ID and owner as inputs
             feature_idx = 0
-            for (method_name, method) in self.SYSTEM_ID_FEATURES:
+            for method_name, method in self.SYSTEM_ID_FEATURES:
                 try:
                     X[sample_idx, feature_idx] = method(service_identifiers, owner)
                 except Exception as e:
@@ -603,7 +574,7 @@ class OwnerFeaturizationPipeline():
                     feature_idx += 1
 
             # Iterate over features which only require the owner as input
-            for (method_name, method) in self.OWNER_FEATURES:
+            for method_name, method in self.OWNER_FEATURES:
                 try:
                     X[sample_idx, feature_idx] = method(owner)
                 except Exception as e:
@@ -614,24 +585,48 @@ class OwnerFeaturizationPipeline():
         return X
 
 
+def write_output_to_context_key(final_owners: list[dict[str, str]], owner_related_field: str, platform_tenant: str):
+    if not final_owners or not owner_related_field:
+        return_results(CommandResults(readable_output="No owners found"))
+
+    # For platform we are assuming that a multi-array normalized field will be used.
+    if platform_tenant.lower() == "true":
+        # Get list of emails, unless "n/a" and then use name.
+        final_owners_list = [
+            owner["email"] if "email" in owner and owner["email"].lower() != "n/a" else owner.get("name", "n/a")
+            for owner in final_owners
+        ]
+        res = demisto.executeCommand("setIssue", {owner_related_field: final_owners_list})
+    else:
+        res = demisto.executeCommand("setAlert", {owner_related_field: final_owners})
+
+    if isError(res):
+        raise ValueError(f"Unable to update field: {res}")
+
+    return_results(CommandResults(readable_output=f"Owners ranked and written to {owner_related_field}"))
+
+
 def main():
     try:
         # parse inputs
         unranked = demisto.args().get("owners", [])
+        if isinstance(unranked, dict):
+            unranked = [unranked]
         asm_system_ids = demisto.args().get("asmsystemids", [])
-
+        owner_related_field = demisto.args().get("ownerrelatedfield", "asmserviceowner")
+        platform_tenant_usage = demisto.args().get("tenantcommand", "False")
         # deduplicate/normalize, score, and rank owners
         normalized = aggregate(canonicalize(unranked))
         final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
 
-        # write output to context
-        demisto.executeCommand("setAlert", {"asmserviceowner": final_owners})
-        return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
+        write_output_to_context_key(
+            final_owners=final_owners, owner_related_field=owner_related_field, platform_tenant=platform_tenant_usage
+        )
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute RankServiceOwners. Error: {str(ex)}')
+        return_error(f"Failed to execute RankServiceOwners. Error: {str(ex)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

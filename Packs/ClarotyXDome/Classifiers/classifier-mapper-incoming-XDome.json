@@ -1,0 +1,189 @@
+{
+    "feed": false,
+    "id": "xDome - Incoming Mapper",
+    "name": "xDome - Incoming Mapper",
+    "description": "Maps incoming xDome incidents fields for use in Integration Playbooks.",
+    "type": "mapping-incoming",
+    "mapping": {
+        "Claroty xDome Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "alert_category"
+                },
+                "Alert ID": {
+                    "simple": "alert_id"
+                },
+                "Alert Name": {
+                    "simple": "alert_name"
+                },
+                "Device Id": {
+                    "simple": "device_uid"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "MITRE Technique ID": {
+					"complex": {
+						"filters": [],
+						"root": "mitre_technique_ics_ids",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "mitre_technique_enterprise_ids"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
+				"MITRE Technique Name": {
+					"complex": {
+						"filters": [],
+						"root": "mitre_technique_ics_names",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "mitre_technique_enterprise_names"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
+                "Claroty xDome Alert Assignees": {
+                    "simple": "alert_assignees"
+                },
+                "Claroty xDome Alert Class": {
+                    "simple": "alert_class"
+                },
+                "Claroty xDome Alert Labels": {
+                    "simple": "alert_labels"
+                },
+                "Claroty xDome Alert Type": {
+                    "simple": "alert_type_name"
+                },
+                "Claroty xDome Alert Description": {
+                    "simple": "alert_description"
+                },
+                "Claroty xDome Device Assignees": {
+                    "simple": "device_assignees"
+                },
+                "Claroty xDome Device Category": {
+                    "simple": "device_category"
+                },
+                "Claroty xDome Device Effective Likelihood Subscore": {
+                    "simple": "device_effective_likelihood_subscore"
+                },
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
+                    "simple": "device_effective_likelihood_subscore_points"
+                },
+                "Claroty xDome Device First Seen": {
+                    "simple": "device_first_seen_list"
+                },
+                "Claroty xDome Device IP": {
+                    "simple": "device_ip_list"
+                },
+                "Claroty xDome Device Impact Subscore": {
+                    "simple": "device_impact_subscore"
+                },
+                "Claroty xDome Device Impact Subscore Points": {
+                    "simple": "device_impact_subscore_points"
+                },
+                "Claroty xDome Device Insecure Protocols": {
+                    "simple": "device_insecure_protocols"
+                },
+                "Claroty xDome Device Insecure Protocols Points": {
+                    "simple": "device_insecure_protocols_points"
+                },
+                "Claroty xDome Device Internet Communication": {
+                    "simple": "device_internet_communication"
+                },
+                "Claroty xDome Device Known Vulnerabilities": {
+                    "simple": "device_known_vulnerabilities"
+                },
+                "Claroty xDome Device Known Vulnerabilities Points": {
+                    "simple": "device_known_vulnerabilities_points"
+                },
+                "Claroty xDome Device Labels": {
+                    "simple": "device_labels"
+                },
+                "Claroty xDome Device Last Seen": {
+                    "simple": "device_last_seen_list"
+                },
+                "Claroty xDome Device Likelihood Subscore": {
+                    "simple": "device_likelihood_subscore"
+                },
+                "Claroty xDome Device Likelihood Subscore Points": {
+                    "simple": "device_likelihood_subscore_points"
+                },
+                "Claroty xDome Device MAC": {
+                    "simple": "device_mac_list"
+                },
+                "Claroty xDome Device Manufacturer": {
+                    "simple": "device_manufacturer"
+                },
+                "Claroty xDome Device Network": {
+                    "simple": "device_network_list"
+                },
+                "Claroty xDome Device Purdue Level": {
+                    "simple": "device_purdue_level"
+                },
+                "Claroty xDome Device Risk Score": {
+                    "simple": "device_risk_score"
+                },
+                "Claroty xDome Device Risk Score Points": {
+                    "simple": "device_risk_score_points"
+                },
+                "Claroty xDome Device Site Name": {
+                    "simple": "device_site_name"
+                },
+                "Claroty xDome Device Subcategory": {
+                    "simple": "device_subcategory"
+                },
+                "Claroty xDome Device Type": {
+                    "simple": "device_type"
+                },
+                "Claroty xDome Device-Alert Detected Time": {
+                    "simple": "device_alert_detected_time"
+                },
+                "Claroty xDome Device-Alert Status": {
+                    "simple": "device_alert_status"
+                },
+                "Claroty xDome Device-Alert Updated Time": {
+                    "simple": "device_alert_updated_time"
+                },
+                "Claroty xDome Mitre Technique Enterprise IDs": {
+                    "simple": "mitre_technique_enterprise_ids"
+                },
+                "Claroty xDome Mitre Technique Enterprise Names": {
+                    "simple": "mitre_technique_enterprise_names"
+                },
+                "Claroty xDome Mitre Technique ICS IDs": {
+                    "simple": "mitre_technique_ics_ids"
+                },
+                "Claroty xDome Mitre Technique ICS Names": {
+                    "simple": "mitre_technique_ics_names"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

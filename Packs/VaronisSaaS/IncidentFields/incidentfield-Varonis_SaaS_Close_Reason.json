@@ -22,7 +22,17 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "singleSelect",
+    "selectValues": [
+        "none",
+        "other",
+        "benign activity",
+        "true positive",
+        "environment misconfiguration",
+        "alert recently customized",
+        "inaccurate alert logic",
+        "authorized activity"
+    ],
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false

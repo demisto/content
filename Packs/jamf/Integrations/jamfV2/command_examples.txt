@@ -37,3 +37,5 @@ jamf-get-mobile-device-configuration-profiles-subset identifier=id identifier_va
 jamf-get-computers-by-application application=safar* limit=3
 jamf-mobile-device-lost-mode id=114
 jamf-mobile-device-erase id=114
+jamf-get-computer-configuration-profiles-by-id id=1
+jamf-get-mobile-configuration-profiles-by-id id=1

@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Access_Investigation_QRadar](https://raw.githubusercontent.com/demisto/content/7417184a2a92d69f7b06e32a41595395fd0f9bc9/Packs/QRadar/doc_files/Access_Investigation_-_QRadar.png)
+![Access_Investigation_QRadar](../doc_files/Access_Investigation_-_QRadar.png)

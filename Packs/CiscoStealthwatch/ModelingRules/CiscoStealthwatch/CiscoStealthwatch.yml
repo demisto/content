@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Cisco_Stealthwatch
-name: Cisco Stealthwatch
+id: Cisco_Stealthwatch_ModelingRule
+name: Cisco Stealthwatch Modeling Rule
 rules: ''
 schema: ''
 tags: ''

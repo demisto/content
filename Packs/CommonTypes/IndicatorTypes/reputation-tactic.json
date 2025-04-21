@@ -1,0 +1,36 @@
+{
+    "id": "Tactic",
+    "version": -1,
+    "modified": "2024-10-14T14:58:13.930523378Z",
+    "shouldCommit": false,
+    "regex": "(?i)\\bTA-?\\d{4}\\b",
+    "details": "Tactic",
+    "prevDetails": "Tactic",
+    "formatScript": "MITRENameByID_Formatter",
+    "contextPath": "Tactic(val.Name \u0026\u0026 val.Name === obj.Name)",
+    "contextValue": "Name",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "description": {
+            "simple": "Tactic.Description"
+        },
+        "tags": {
+            "simple": "Tactic.Tags"
+        },
+        "mitreid": {
+            "simple": "Tactic.MITREID"
+        },
+        "stixid": {
+            "simple": "Tactic.STIXID",
+            "complex": null
+        }
+    },
+    "expiration": 0,
+    "layout": "Tactic Layout",
+    "fromVersion": "6.10.0"
+}

@@ -1,9 +1,34 @@
+import mimetypes
+from pathlib import Path
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from parse_emails.parse_emails import EmailParser
 
-logger = logging.getLogger('parse-email')  # type: ignore[assignment]
+logger = logging.getLogger("parse-email")  # type: ignore[assignment]
 logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
+
+
+def remove_bom(file_path: str, file_type: str, file_name: str) -> tuple[str, Optional[str], str]:
+    """
+    Removes the Byte Order Mark (BOM) from a file, saves the cleaned content,
+    and returns the path to the cleaned file, its MIME type, and its file name.
+    If no BOM, keep the previous behaviour.
+    """
+    path = Path(file_path)
+    content = path.read_bytes()
+    if content.startswith(b"\xef\xbb\xbf"):
+        content = content[3:]
+        # Write the cleaned content to a new file or overwrite the original file
+        cleaned_file_path = path.with_name("cleaned_" + path.name)
+        cleaned_file_path.write_bytes(content)
+        # Get the MIME type
+        mime_type, _ = mimetypes.guess_type(cleaned_file_path)
+        # Get the file name
+        file_name = cleaned_file_path.name
+        return str(cleaned_file_path), mime_type, file_name
+    else:  # keep the exists behaviour (without BOM)
+        return file_path, file_type, file_name
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
@@ -21,14 +46,14 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
 
     """
     if email_data is None:
-        return 'No data extracted from email'
+        return "No data extracted from email"
 
     md = "### Results:\n"
     if email_file_name:
         md = f"### {email_file_name}\n"
 
     if print_only_headers:
-        return tableToMarkdown(f"Email Headers: {email_file_name}", email_data.get('HeadersMap'))
+        return tableToMarkdown(f"Email Headers: {email_file_name}", email_data.get("HeadersMap"))
 
     if parent_email_file:
         md += f"### Containing email: {parent_email_file}\n"
@@ -38,14 +63,14 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     md += f"""* CC:\t{email_data.get('CC') or ""}\n"""
     md += f"""* BCC:\t{email_data.get('BCC') or ""}\n"""
     md += f"""* Subject:\t{email_data.get('Subject') or ""}\n"""
-    if email_data.get('Text'):
-        text = email_data['Text'].replace('<', '[').replace('>', ']')
+    if email_data.get("Text"):
+        text = email_data["Text"].replace("<", "[").replace(">", "]")
         md += f'* Body/Text:\t{text or ""}\n'
-    if email_data.get('HTML'):
+    if email_data.get("HTML"):
         md += f"""* Body/HTML:\t{email_data['HTML'] or ""}\n"""
 
     md += f"""* Attachments:\t{email_data.get('Attachments') or ""}\n"""
-    md += "\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
+    md += "\n\n" + tableToMarkdown("HeadersMap", email_data.get("HeadersMap"))
     return md
 
 
@@ -62,8 +87,8 @@ def save_file(file_name, file_content) -> str:
 
     """
     created_file = fileResult(file_name, file_content)
-    file_id = created_file.get('FileID')
-    attachment_internal_path = demisto.investigation().get('id') + '_' + file_id
+    file_id = created_file.get("FileID")
+    attachment_internal_path = demisto.investigation().get("id") + "_" + file_id
     return_results(created_file)
 
     return attachment_internal_path
@@ -81,34 +106,45 @@ def extract_file_info(entry_id: str) -> tuple:
         file_path(str): the file path.
         file_name(str):the file name.
     """
-    file_type = ''
-    file_path = ''
-    file_name = ''
+    file_type = ""
+    file_path = ""
+    file_name = ""
     try:
-        result = demisto.executeCommand('getFilePath', {'id': entry_id})
+        result = demisto.executeCommand("getFilePath", {"id": entry_id})
         if is_error(result):
             return_error(get_error(result))
 
-        file_path = result[0]['Contents']['path']
-        file_name = result[0]['Contents']['name']
+        file_path = result[0]["Contents"]["path"]
+        file_name = result[0]["Contents"]["name"]
 
         dt_file_type = demisto.dt(demisto.context(), f"File(val.EntryID=='{entry_id}').Type")
         file_type = dt_file_type[0] if isinstance(dt_file_type, list) else dt_file_type
 
+        dt_file_info = demisto.dt(demisto.context(), f"File(val.EntryID=='{entry_id}').Info")
+        file_info = dt_file_info[0] if isinstance(dt_file_info, list) else dt_file_info
+        demisto.debug(f"Context values: {dt_file_type=}, {file_type=}, {dt_file_info=}, {file_info=}")
+
+        if file_type in ("eml", "txt") and file_info and ("rfc" in file_info.lower() or "ascii" in file_info.lower()):
+            demisto.debug(f"{file_type=} seems wrong, changing it to {file_info=}")
+            file_type = file_info
+
     except Exception as ex:
         return_error(
             "Failed to load file entry with entry id: {}. Error: {}".format(
-                entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
+                entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()
+            )
+        )
 
+    demisto.debug(f"extract_file_info returning {file_type=}, {file_path=}, {file_name=}")
     return file_type, file_path, file_name
 
 
 def parse_nesting_level(nesting_level_to_return, output):
-    if nesting_level_to_return == 'Outer file':
+    if nesting_level_to_return == "Outer file":
         # return only the outer email info
         return [output[0]]
 
-    elif nesting_level_to_return == 'Inner file':
+    elif nesting_level_to_return == "Inner file":
         # the last file in list it is the inner attached file
         return [output[-1]]
     return output
@@ -116,55 +152,68 @@ def parse_nesting_level(nesting_level_to_return, output):
 
 def main():
     args = demisto.args()
-    entry_id = args.get('entryid')
-    max_depth = arg_to_number(args.get('max_depth', '3'))
+    entry_id = args.get("entryid")
+    max_depth = arg_to_number(args.get("max_depth", "3"))
     if not max_depth or max_depth < 1:
-        return_error('Minimum max_depth is 1, the script will parse just the top email')
-    parse_only_headers = argToBoolean(args.get('parse_only_headers', 'false'))
-    forced_encoding = args.get('forced_encoding')
-    default_encoding = args.get('default_encoding')
-    nesting_level_to_return = args.get('nesting_level_to_return', 'All files')
+        return_error("Minimum max_depth is 1, the script will parse just the top email")
+    parse_only_headers = argToBoolean(args.get("parse_only_headers", "false"))
+    forced_encoding = args.get("forced_encoding")
+    default_encoding = args.get("default_encoding")
+    nesting_level_to_return = args.get("nesting_level_to_return", "All files")
 
     file_type, file_path, file_name = extract_file_info(entry_id)
-    demisto.debug(f'{file_type=}, {file_path=}, {file_name=}')
+    demisto.debug(f"{file_type=}, {file_path=}, {file_name=}")
+
+    # Remove BOM and parse the email
+    cleaned_file_path, file_type, file_name = remove_bom(file_path, file_type, file_name)
 
     try:
-        email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
-                                   file_info=file_type, forced_encoding=forced_encoding,
-                                   default_encoding=default_encoding, file_name=file_name)
+        email_parser = EmailParser(
+            file_path=cleaned_file_path,
+            max_depth=max_depth,
+            parse_only_headers=parse_only_headers,
+            file_info=file_type,
+            forced_encoding=forced_encoding,
+            default_encoding=default_encoding,
+            file_name=file_name,
+        )
         output = email_parser.parse()
-        demisto.debug(f'{output=}')
+        demisto.debug(f"{output=}")
 
         results = []
         if isinstance(output, dict):
             output = [output]
 
-        elif output and nesting_level_to_return != 'All files':
+        elif output and nesting_level_to_return != "All files":
             output = parse_nesting_level(nesting_level_to_return, output)
 
         for email in output:
-            if email.get('AttachmentsData'):
-                for attachment in email.get('AttachmentsData'):
-                    if name := attachment.get('Name'):
-                        if content := attachment.get('FileData'):
-                            attachment['FilePath'] = save_file(name, content)
-                            del attachment['FileData']
+            if email.get("AttachmentsData"):
+                for attachment in email.get("AttachmentsData"):
+                    if name := attachment.get("Name"):
+                        if content := attachment.get("FileData"):
+                            attachment["FilePath"] = save_file(name, content)
+                            del attachment["FileData"]
                         else:
-                            attachment['FileData'] = None
+                            attachment["FileData"] = None
 
             # probably a wrapper and we can ignore the outer "email"
-            if email.get('Format') == 'multipart/signed' and all(not email.get(field) for field in ['To', 'From', 'Subject']):
+            if email.get("Format") == "multipart/signed" and all(not email.get(field) for field in ["To", "From", "Subject"]):
                 continue
 
             if isinstance(email.get("HTML"), bytes):
-                email['HTML'] = email.get("HTML").decode('utf-8')
+                email["HTML"] = email.get("HTML").decode("utf-8")
 
-            results.append(CommandResults(
-                outputs_prefix='Email',
-                outputs=email,
-                readable_output=data_to_md(email, file_name, email.get('ParentFileName', None),
-                                           print_only_headers=parse_only_headers),
-                raw_response=email))
+            results.append(
+                CommandResults(
+                    outputs_prefix="Email",
+                    outputs=email,
+                    readable_output=data_to_md(
+                        email, file_name, email.get("ParentFileName", None), print_only_headers=parse_only_headers
+                    ),
+                    raw_response=email,
+                )
+            )
 
         return_results(results)
 
@@ -172,5 +221,5 @@ def main():
         return_error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

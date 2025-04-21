@@ -47,81 +47,81 @@ script:
     arguments:
     - name: user
       required: true
-      description: User to validate
+      description: User to validate.
     outputs:
     - contextPath: Attivo.User.IsDeceptive
-      description: Is the user part of the Deception environment
+      description: Is the user part of the Deception environment.
       type: boolean
     - contextPath: Attivo.User.Groups
-      description: If the user is part of the Deception environment, the member is a member of these groups
-    description: Checks whether a user is deceptive
+      description: If the user is part of the Deception environment, the member is a member of these groups.
+    description: Checks whether a user is deceptive.
   - name: attivo-check-host
     arguments:
     - name: host
       required: true
       default: true
-      description: Hostname or IP to validate
+      description: Hostname or IP to validate.
     outputs:
     - contextPath: Attivo.Host.IsDeceptive
-      description: Is the IP or hostname part of the Decpetion environment
+      description: Is the IP or hostname part of the Decpetion environment.
       type: boolean
     - contextPath: Attivo.Host.IPAddress
-      description: IP Address of the deceptive host
+      description: IP Address of the deceptive host.
     - contextPath: Attivo.Host.Name
-      description: Hostname of the deceptive host
+      description: Hostname of the deceptive host.
     - contextPath: Attivo.Host.MACAddress
-      description: MAC address of the deceptive host
+      description: MAC address of the deceptive host.
     - contextPath: Attivo.Host.VLAN
-      description: VLAN of the deceptive host
+      description: VLAN of the deceptive host.
     - contextPath: Attivo.Host.UserDefined
-      description: Was this host manually defined
+      description: Was this host manually defined.
       type: boolean
     - contextPath: Attivo.Host.DHCP
-      description: Does the host have a dynamic IP address
+      description: Does the host have a dynamic IP address.
       type: boolean
     - contextPath: Attivo.Host.ThreatDirect.Name
-      description: Name of the ThreatDirect device projecting this deceptive host
+      description: Name of the ThreatDirect device projecting this deceptive host.
     - contextPath: Attivo.Host.ThreatDirect.Type
-      description: The type of ThreatDirect device projecting the deceptive host
-    description: Checks whether a host is deceptive
+      description: The type of ThreatDirect device projecting the deceptive host.
+    description: Checks whether a host is deceptive.
   - name: attivo-run-playbook
     arguments:
     - name: playbook_name
       required: true
-      description: The name of the prebuilt playbook
+      description: The name of the prebuilt playbook.
     - name: attacker_ip
       required: true
-      description: Malicious source IP
+      description: Malicious source IP.
     outputs:
     - contextPath: Attivo.Playbook.Message
-      description: Complete status message
+      description: Complete status message.
       type: string
     - contextPath: Attivo.Playbook.Status
-      description: Was the playbook successful
+      description: Was the playbook successful.
       type: boolean
-    description: Runs a prebuilt playbook on the BOTsink appliance
+    description: Runs a prebuilt playbook on the BOTsink appliance.
   - name: attivo-deploy-decoy
     arguments:
     - name: vulnerable_ip
       required: true
-      description: Used to determine which subnet to deploy to
+      description: Used to determine which subnet to deploy to.
     - name: decoy_number
       default: true
-      description: The number of decoys to deploy, default is "1"
+      description: The number of decoys to deploy, default is "1".
       defaultValue: "1"
     outputs:
     - contextPath: Attivo.DeployDecoy.Status
-      description: Was the network decoy successfully deployed
+      description: Was the network decoy successfully deployed.
       type: boolean
     - contextPath: Attivo.DeployDecoy.Message
-      description: Complete status message
+      description: Complete status message.
       type: string
-    description: 'Deploys a new network decoy '
+    description: 'Deploys a new network decoy.'
   - name: attivo-get-events
     arguments:
     - name: attacker_ip
       required: true
-      description: Source IP address
+      description: Source IP address.
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -131,58 +131,58 @@ script:
       - Low
       - VeryLow
       - SystemActivity
-      description: The minimum Attivo severity for the events, default is "Medium"; "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
+      description: The minimum Attivo severity for the events, default is "Medium"; "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity".
       defaultValue: Medium
     - name: alerts_start_date
-      description: Date and time to start looking for events, e.g.,  2018-12-10 or 2018-12-10T13:59:05Z
+      description: Date and time to start looking for events, e.g.,  2018-12-10 or 2018-12-10T13:59:05Z.
     - name: alerts_end_date
-      description: Date and time to stop looking for events, e.g.,  2018-12-10 or 2018-12-10T13:59:05Z
+      description: Date and time to stop looking for events, e.g.,  2018-12-10 or 2018-12-10T13:59:05Z.
     outputs:
     - contextPath: Attivo.Events.Count
-      description: Total number of events retrieved
+      description: Total number of events retrieved.
       type: number
     - contextPath: Attivo.Events.List.AttackName
-      description: Short name of the attack
+      description: Short name of the attack.
     - contextPath: Attivo.Events.List.Attack Phase
-      description: Kill chain phase of the attack
+      description: Kill chain phase of the attack.
       type: string
     - contextPath: Attivo.Events.List.Server
-      description: Internal name of the target decoy
+      description: Internal name of the target decoy.
       type: string
     - contextPath: Attivo.Events.List.Target
-      description: Display name of the target decoy
+      description: Display name of the target decoy.
       type: string
     - contextPath: Attivo.Events.List.TargetOS
-      description: Operating system of the target decoy
+      description: Operating system of the target decoy.
       type: string
     - contextPath: Attivo.Events.List.Attacker
-      description: Attacker IP address
+      description: Attacker IP address.
       type: string
     - contextPath: Attivo.Events.List.Service
-      description: The attacked service
+      description: The attacked service.
       type: string
     - contextPath: Attivo.Events.List.Timestamp
-      description: Time of the attack
+      description: Time of the attack.
       type: string
     - contextPath: Attivo.Events.List.TargetIP
-      description: IP address of the target decoy
+      description: IP address of the target decoy.
       type: string
     - contextPath: Attivo.Events.List.Severity
-      description: Attivo severity of the attack
+      description: Attivo severity of the attack.
       type: string
-    description: Retrieves events for a specified source IP
+    description: Retrieves events for a specified source IP.
   - name: attivo-list-playbooks
     arguments: []
-    description: List information about playbooks configured on the Attivo device
+    description: List information about playbooks configured on the Attivo device.
   - name: attivo-list-hosts
     arguments: []
-    description: List information about network decoys
+    description: List information about network decoys.
   - name: attivo-list-users
     arguments: []
-    description: List all deceptive users
+    description: List all deceptive users.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - AttivoBotsinkTest
 fromversion: 5.0.0

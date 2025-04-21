@@ -1,0 +1,75 @@
+{
+    "code": 200,
+    "status": "OK",
+    "result": {
+      "query": "ip=8.8.8.8",
+      "total": 1,
+      "duration": 266,
+      "hits": [
+        {
+          "services": [
+            {
+              "port": 53,
+              "transport_protocol": "UDP",
+              "extended_service_name": "DNS",
+              "service_name": "DNS"
+            },
+            {
+              "certificate": "XXXXXXX",
+              "extended_service_name": "HTTPS",
+              "port": 443,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP"
+            },
+            {
+              "service_name": "UNKNOWN",
+              "transport_protocol": "QUIC",
+              "extended_service_name": "UNKNOWN",
+              "port": 443
+            },
+            {
+              "transport_protocol": "TCP",
+              "service_name": "UNKNOWN",
+              "port": 853,
+              "certificate": "XXXXXXX",
+              "extended_service_name": "UNKNOWN"
+            }
+          ],
+          "labels": ["database","email","file-sharing","iot","login-page"],
+          "dns": {
+            "reverse_dns": {
+              "names": [
+                "dns.google"
+              ]
+            }
+          },
+          "autonomous_system": {
+            "country_code": "US",
+            "description": "GOOGLE",
+            "name": "GOOGLE",
+            "bgp_prefix": "8.8.8.8",
+            "asn": 15169
+          },
+          "ip": "8.8.8.8",
+          "location": {
+            "country": "United States",
+            "timezone": "America/Los_Angeles",
+            "province": "California",
+            "coordinates": {
+              "latitude": 37.4056,
+              "longitude": -122.0775
+            },
+            "continent": "North America",
+            "postal_code": "94043",
+            "city": "Mountain View",
+            "country_code": "US"
+          },
+          "last_updated_at": "2024-04-07T02:16:23.015Z"
+        }
+      ],
+      "links": {
+        "next": "",
+        "prev": ""
+      }
+    }
+  }

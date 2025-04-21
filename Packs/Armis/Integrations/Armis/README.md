@@ -1,30 +1,25 @@
 Use the Armis integration to search alerts and devices, tag and untag devices, and set alert statuses.
 This integration was integrated and tested with the latest version of Armis.
-## Configure Armis on Cortex XSOAR
+## Configure Armis in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Armis.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Maximum number of incidents per fetch |  | False |
-    | Fetch alerts with status (UNHANDLED, SUPPRESSED, RESOLVED) |  | False |
-    | Fetch alerts with type | The type of alerts are Policy Violation, System Policy Violation,
-    Anomaly Detection. If no type is chosen, all types will be fetched. | False |
-    | Minimum severity of alerts to fetch |  | True |
-    | First fetch time |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Secret API Key |  | True |
-    | Fetch Alerts AQL | Use this parameter to fetch incidents using a free AQL string rather than the simpler alert type, severity, etc. | False |
-    | Proxy | Whether to use the System proxy | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Maximum number of incidents per fetch |  | False |
+| Fetch alerts with status (UNHANDLED, SUPPRESSED, RESOLVED) |  | False |
+| Fetch alerts with type | The type of alerts are Policy Violation, System Policy Violation, Anomaly Detection If no type is chosen, all types will be fetched. | False |
+| Minimum severity of alerts to fetch |  | True |
+| First fetch time |  | False |
+| Trust any certificate (not secure) |  | False |
+| Secret API Key |  | True |
+| Fetch Alerts AQL | Use this parameter to fetch incidents using a free AQL string rather than the simpler alert type, severity, etc. | False |
+| Proxy | Whether to use the System proxy | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### armis-search-alerts
 ***

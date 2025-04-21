@@ -172,6 +172,15 @@
                             }
                         ]
                     }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "ID"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
                 }
             }
         }

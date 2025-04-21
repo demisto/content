@@ -1,2 +1,8 @@
 [file:Exabeam_image.png]
 ignore=IM111
+
+[file:layoutscontainer-Exabeam_Incident.json]
+ignore=LO107
+
+[file:layoutscontainer-Exabeam_Notable_User.json]
+ignore=LO107

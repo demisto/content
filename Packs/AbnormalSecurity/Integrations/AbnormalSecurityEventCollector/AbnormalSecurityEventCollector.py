@@ -1,16 +1,16 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-VENDOR = 'Abnormal_Security'
-PRODUCT = 'Email_Protection'
+VENDOR = "Abnormal_Security"
+PRODUCT = "Email_Protection"
 
 
 class Client(BaseClient):
     def list_threats(self, params):
-        return self._http_request('GET', params=params, url_suffix='threats')
+        return self._http_request("GET", params=params, url_suffix="threats")
 
     def get_threat(self, threat_id):
-        return self._http_request('GET', url_suffix=f'threats/{threat_id}')
+        return self._http_request("GET", url_suffix=f"threats/{threat_id}")
 
 
 def format_messages(messages: list):
@@ -25,9 +25,9 @@ def format_messages(messages: list):
 
     """
     for message in messages:
-        to_addresses = message.get('toAddresses')
+        to_addresses = message.get("toAddresses")
         if isinstance(to_addresses, str):
-            message['toAddresses'] = argToList(to_addresses)
+            message["toAddresses"] = argToList(to_addresses)
     return messages
 
 
@@ -43,13 +43,13 @@ def get_events(client: Client, after: str):
       str: the last run to be set for the next run.
 
     """
-    before = arg_to_datetime(arg='now', arg_name='before', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    before = arg_to_datetime(arg="now", arg_name="before", required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
     threats_ids = get_list_threats(client, after, before)
     messages = []
     if threats_ids:
         for threat in reversed(threats_ids):
-            messages += format_messages(get_messages_by_datetime(client, threat.get('threatId'), after, before))
-        ordered_messages = sorted(messages, key=lambda d: d['receivedTime'])
+            messages += format_messages(get_messages_by_datetime(client, threat.get("threatId"), after, before))
+        ordered_messages = sorted(messages, key=lambda d: d["receivedTime"])
         return ordered_messages, before
     return [], before
 
@@ -68,9 +68,9 @@ def get_messages_by_datetime(client: Client, threat_id: str, after: str, before:
     """
     messages = []
     res = client.get_threat(threat_id)
-    for message in res.get('messages'):
+    for message in res.get("messages"):
         # messages are ordered from newest to oldest
-        received_time = message.get('receivedTime')
+        received_time = message.get("receivedTime")
         if before >= received_time >= after:
             messages.append(message)
         elif received_time < after:
@@ -93,11 +93,11 @@ def get_list_threats(client: Client, after: str, before: str):
     is_next_page = True
     page_number = 1
     while is_next_page:
-        params = assign_params(pageSize=1000, filter=f'receivedTime gte {after} lte {before}', pageNumber=page_number)
+        params = assign_params(pageSize=1000, filter=f"receivedTime gte {after} lte {before}", pageNumber=page_number)
         res = client.list_threats(params)
-        threats += res.get('threats')
-        if res.get('nextPageNumber'):
-            page_number = res.get('nextPageNumber')
+        threats += res.get("threats")
+        if res.get("nextPageNumber"):
+            page_number = res.get("nextPageNumber")
         else:
             is_next_page = False
     return threats
@@ -107,42 +107,41 @@ def main():
     # Args is always stronger. Get last run even stronger
     params = demisto.params()
 
-    token = params['token']['password']
-    verify = params['verify']
-    proxy = params['proxy']
-    after = arg_to_datetime(
-        arg=params.get('after'), arg_name='after', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
-    client = Client(base_url='https://api.abnormalplatform.com/v1',
-                    verify=verify,
-                    proxy=proxy,
-                    headers={"Authorization": f"Bearer {token}"})
+    token = params["token"]["password"]
+    verify = params["verify"]
+    proxy = params["proxy"]
+    after = arg_to_datetime(arg="1 minute").strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    client = Client(
+        base_url="https://api.abnormalplatform.com/v1", verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {token}"}
+    )
 
-    last_run = demisto.getLastRun().get('last_run')
+    last_run = demisto.getLastRun().get("last_run")
     if last_run:
         after = last_run
 
     command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
     try:
         threats, last_run = get_events(client, after)
-        if command == 'test-module':
-            return_results('ok')
+        if command == "test-module":
+            return_results("ok")
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
-            demisto.setLastRun({'last_run': last_run})
+            demisto.setLastRun({"last_run": last_run})
 
-        elif command == 'abnormal-security-event-collector-get-events':
+        elif command == "abnormal-security-event-collector-get-events":
             command_results = CommandResults(
-                readable_output=tableToMarkdown(f'{VENDOR} - {PRODUCT} events', threats),
+                readable_output=tableToMarkdown(f"{VENDOR} - {PRODUCT} events", threats),
                 raw_response=threats,
             )
             return_results(command_results)
-            if argToBoolean(demisto.args().get('should_push_events', False)):
+            if argToBoolean(demisto.args().get("should_push_events", False)):
                 send_events_to_xsiam(threats, VENDOR, PRODUCT)
 
     except Exception as e:
         return_error(str(e))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -3,9 +3,11 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph M
 
 
 ## Fetch Incidents
+
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.
 
 ## OData Usage
+
 The OData parameter can be used to create different queries for the `msgraph-mail-list-emails` and `msgraph-mail-get-email` commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
 Examples:
 !msgraph-mail-list-emails odata=&quot;$select=from&quot;
@@ -16,64 +18,72 @@ Note:
 The query parameter `$filter` is not supported when using the `search` parameter.
 
 ## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-Note: For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
+**Note** - The credentials (created by the Cortex XSOAR application) are valid for a single instance only.
+
 
 ## Email Attachments Limitations
+
 * The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
 * The larger the attachment, the longer it would take for a command that supports adding attachments to run.
 * Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
 * When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
 
 ### Required Permissions
+
 The following permissions are required for all commands:
-- Mail.ReadWrite - Delegated
-- Mail.Send - Delegated
-- User.Read - Delegated 
-- MailboxSettings.ReadWrite - Delegated 
 
-## Configure Microsoft Graph Mail Single User on Cortex XSOAR
+* Mail.ReadWrite - Delegated
+* Mail.Send - Delegated
+* User.Read - Delegated 
+* MailboxSettings.ReadWrite - Delegated 
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Graph Mail Single User.
-3. Click **Add instance** to create and configure a new integration instance.
+The following permissions are required for Shared Mailbox:
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | ID or Client ID |  | False |
-    | Token or Tenant ID |  | False |
-    | Key or Client Secret |  | False |
-    | ID or Client ID - see Detailed Instructions (?) |  | False |
-    | Token or Tenant ID - see Detailed Instructions (?) |  | False |
-    | Key or Client Secret - see Detailed Instructions (?) |  | False |
-    | Certificate Thumbprint (optional for self-deployed Azure app) |  | False |
-    | Private Key |  | False |
-    | Certificate Thumbprint (optional for self-deployed Azure app) | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Authorization code (required for self-deployed Azure app) |  | False |
-    | Application redirect URI (required for self-deployed Azure app) |  | False |
-    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | Fetch incidents |  | False |
-    | Email address from which to fetch incidents (e.g., "example@demisto.com") | During authentication, ensure you are logged in to this email address. | True |
-    | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing) |  | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Maximum number of emails to pull per fetch |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Use a self-deployed Azure application | Select this checkbox if you are using a self-deployed Azure application. | False |
-    | Incident type |  | False |
-    | Display full email body | If not active, only a preview of the email will be fetched. | False |
-    | Fetch emails in HTML format | Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities. | False |
-    | Mark fetched emails as read | Relevant only if fetch incidents is active. | False |
-    | Incidents Fetch Interval |  | False |
+* Mail.Read.Shared
+* Mail.ReadBasic.Shared
+* Mail.ReadWrite.Shared
+* Mail.Send.Shared
 
-4. Click **Test** to validate the URLs, token, and connection.
+## Configure Microsoft Graph Mail Single User in Cortex
+
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| ID or Client ID |  | False |
+| Token or Tenant ID |  | False |
+| Key or Client Secret |  | False |
+| ID or Client ID - see Detailed Instructions (?) |  | False |
+| Token or Tenant ID - see Detailed Instructions (?) |  | False |
+| Key or Client Secret - see Detailed Instructions (?) |  | False |
+| Certificate Thumbprint (optional for self-deployed Azure app) |  | False |
+| Private Key |  | False |
+| Certificate Thumbprint (optional for self-deployed Azure app) | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Authorization code (required for self-deployed Azure app) |  | False |
+| Application redirect URI (required for self-deployed Azure app) |  | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+| Fetch incidents |  | False |
+| Email address from which to fetch incidents (e.g., "example@demisto.com") | During authentication, ensure you are logged in to this email address. | True |
+| Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing) |  | True |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Maximum number of emails to pull per fetch |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Use a self-deployed Azure application | Select this checkbox if you are using a self-deployed Azure application. | False |
+| Incident type |  | False |
+| Display full email body | If not active, only a preview of the email will be fetched. | False |
+| Fetch emails in HTML format | Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities. | False |
+| Mark fetched emails as read | Relevant only if fetch incidents is active. | False |
+| Incidents Fetch Interval |  | False |
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### msgraph-mail-create-draft
@@ -671,3 +681,11 @@ Delete a specific email rule by ID for a user's mailbox using Microsoft Graph AP
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+In case of a **hash verification** error:
+1. Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
+2. Execute the command ***!msgraph-mail-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
+3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
+4. After updating the credentials, test the integration.

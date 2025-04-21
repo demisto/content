@@ -1,8 +1,8 @@
+import uuid
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-import uuid
-import pyminizip
+from pyzipper import WZ_AES, ZIP_DEFLATED, AESZipFile
 
 DEFAULT_PWD_GENERATION_SCRIPT = "GeneratePassword"
 TEXT_FILE_NAME = "AD_Password"  # File name for the text file (within the zip file) to use
@@ -19,20 +19,29 @@ def find_file_entry_id(file_name: str) -> str:
     Returns:
         str: The entry ID of the file.
     """
-    file_entries = demisto.context().get('File', [])
+    file_entries = demisto.context().get("File", [])
 
     if isinstance(file_entries, dict):  # In case of a single entry
         file_entries = [file_entries]
 
     for item in file_entries:
-        if item['Name'] == file_name:
-            return item['EntryID']
+        if item["Name"] == file_name:
+            return item["EntryID"]
 
     raise DemistoException(f"Could not find file '{file_name}' in the context.")
 
 
-def generate_password(password_generation_script: str, min_lcase: str, max_lcase: str, min_ucase: str, max_ucase: str,
-                      min_digits: str, max_digits: str, min_symbols: str, max_symbols: str) -> str:
+def generate_password(
+    password_generation_script: str,
+    min_lcase: str,
+    max_lcase: str,
+    min_ucase: str,
+    max_ucase: str,
+    min_digits: str,
+    max_digits: str,
+    min_symbols: str,
+    max_symbols: str,
+) -> str:
     """
     Generate a random password using a script.
 
@@ -60,7 +69,7 @@ def generate_password(password_generation_script: str, min_lcase: str, max_lcase
             "min_digits": min_digits,
             "max_digits": max_digits,
             "min_symbols": min_symbols,
-            "max_symbols": max_symbols
+            "max_symbols": max_symbols,
         }
 
         pwd_generation_script_output = demisto.executeCommand(password_generation_script, script_params)
@@ -69,11 +78,13 @@ def generate_password(password_generation_script: str, min_lcase: str, max_lcase
         pwd_generation_script_output = demisto.executeCommand(password_generation_script, {})
 
     if is_error(pwd_generation_script_output):
-        raise Exception(f'An error occurred while trying to generate a new password for the user. '
-                        f'Error is:\n{get_error(pwd_generation_script_output)}')
+        raise Exception(
+            f"An error occurred while trying to generate a new password for the user. "
+            f"Error is:\n{get_error(pwd_generation_script_output)}"
+        )
 
     else:
-        password_output = pwd_generation_script_output[0]['Contents']
+        password_output = pwd_generation_script_output[0]["Contents"]
 
         if isinstance(password_output, dict):
             return password_output["NEW_PASSWORD"]
@@ -82,9 +93,11 @@ def generate_password(password_generation_script: str, min_lcase: str, max_lcase
             return password_output
 
         else:
-            raise Exception(f'Could not parse the generated password from {password_generation_script} outputs. '
-                            f'Please make sure the output of the script is a string, or a dictionary containing '
-                            f'a key named NEW_PASSWORD.')
+            raise Exception(
+                f"Could not parse the generated password from {password_generation_script} outputs. "
+                f"Please make sure the output of the script is a string, or a dictionary containing "
+                f"a key named NEW_PASSWORD."
+            )
 
 
 def ad_update_user(username: str, password: str, password_generation_script: str) -> None:
@@ -99,40 +112,44 @@ def ad_update_user(username: str, password: str, password_generation_script: str
     Raises:
         DemistoException: In case of a known potential error.
     """
-    ad_command_args = {
-        'username': username,
-        'password': password,
-        'attribute-name': 'pwdLastSet',
-        'attribute-value': -1
-    }
+    ad_command_args = {"username": username, "password": password, "attribute-name": "pwdLastSet", "attribute-value": -1}
 
     # Update user password
-    set_password_outputs = demisto.executeCommand('ad-set-new-password', ad_command_args)
+    set_password_outputs = demisto.executeCommand("ad-set-new-password", ad_command_args)
 
     if is_error(set_password_outputs):
         error_message = get_error(set_password_outputs)
-        if '5003' in error_message:
-            raise Exception(f"Could not set a new password for the user. "
-                            f"Please make sure that \"{password_generation_script}\" script "
-                            f"complies with your domain's password complexity policy.")
+        if "5003" in error_message:
+            raise Exception(
+                f"Could not set a new password for the user. "
+                f'Please make sure that "{password_generation_script}" script '
+                f"complies with your domain's password complexity policy."
+            )
         raise Exception(error_message)
 
     # Enable user (in case it was disabled)
     enable_outputs = demisto.executeCommand("ad-enable-account", ad_command_args)
 
     if is_error(enable_outputs):
-        raise Exception(f'Could not enable the user account:'
-                        f'\n{get_error(enable_outputs)}')
+        raise Exception(f"Could not enable the user account:\n{get_error(enable_outputs)}")
 
     update_outputs = demisto.executeCommand("ad-update-user", ad_command_args)
     if is_error(update_outputs):
-        raise Exception(f'Could not update the user account:'
-                        f'\n{get_error(update_outputs)}')
+        raise Exception(f"Could not update the user account:\n{get_error(update_outputs)}")
 
 
-def send_email(username: str, user_email: str, incident_id: str, email_recipient: str,
-               email_subject: str, email_body: str, display_name: str | None = None, error_message: str | None = None,
-               password: str | None = None, zip_file_entry_id: str | None = None) -> list | dict:
+def send_email(
+    username: str,
+    user_email: str,
+    incident_id: str,
+    email_recipient: str,
+    email_subject: str,
+    email_body: str,
+    display_name: str | None = None,
+    error_message: str | None = None,
+    password: str | None = None,
+    zip_file_entry_id: str | None = None,
+) -> list | dict:
     """
     Email the user with the password (plain text or encrypted).
     One of 'error_message', 'password' or 'zip_file_entry_id' must be provided.
@@ -157,29 +174,30 @@ def send_email(username: str, user_email: str, incident_id: str, email_recipient
 
     if error_message:
         email_subject = '"IAM - Activate User In Active Directory" '
-        email_subject += f"incident '{incident_id}' " if incident_id else ''
+        email_subject += f"incident '{incident_id}' " if incident_id else ""
         email_subject += f"failed for user '{display_name or username}'"
 
-        email_body = ('Hello,\n\n'
-                      'This message was sent to inform you that an error occurred while trying '
-                      f"to activate the user account of '{username}' in the active Directory.\n\n"
-                      f"Error: {error_message}\n\nRegards,\nIAM Team")
+        email_body = (
+            "Hello,\n\n"
+            "This message was sent to inform you that an error occurred while trying "
+            f"to activate the user account of '{username}' in the active Directory.\n\n"
+            f"Error: {error_message}\n\nRegards,\nIAM Team"
+        )
 
     else:
         if not email_subject:
             email_subject = f"[IAM] User '{display_name or username}' was successfully activated in Active Directory"
 
-        email_password = 'Available in the attached zip file' if zip_file_entry_id else password
+        email_password = "Available in the attached zip file" if zip_file_entry_id else password
 
         if not email_body:
-            email_body = ('Hello,\n\n'
-                          'The following account has been created in Active Directory:\n\n')
+            email_body = "Hello,\n\nThe following account has been created in Active Directory:\n\n"
             if display_name:
-                email_body += f'Name: {display_name}\n'
+                email_body += f"Name: {display_name}\n"
 
-            email_body += f'Username: {username}\nEmail: {user_email}\nPassword: {email_password}\n\nRegards,\nIAM Team'
+            email_body += f"Username: {username}\nEmail: {user_email}\nPassword: {email_password}\n\nRegards,\nIAM Team"
         else:
-            email_body += f'\nUsername: {username}\nEmail: {user_email}\nPassword: {email_password}'
+            email_body += f"\nUsername: {username}\nEmail: {user_email}\nPassword: {email_password}"
 
     send_email_args = {"to": email_recipient, "subject": email_subject, "body": email_body}
 
@@ -207,20 +225,23 @@ def create_zip_with_password(args: dict, generated_password: str, zip_password: 
     Returns:
         PollResult: The polling result.
     """
-    text_file_name = f'{TEXT_FILE_NAME}.txt'
-    zip_file_name = f'{EMAIL_ZIP_NAME}_{uuid.uuid4()}.zip'
+    text_file_name = f"{TEXT_FILE_NAME}.txt"
+    zip_file_name = f"{EMAIL_ZIP_NAME}_{uuid.uuid4()}.zip"
 
     try:
-        with open(text_file_name, 'w') as text_file:
+        with open(text_file_name, "w") as text_file:
             text_file.write(generated_password)
 
-        pyminizip.compress(text_file_name, '', zip_file_name, zip_password, 1)
+        demisto.debug(f"zipping {text_file_name=}")
+        with AESZipFile(zip_file_name, mode="w", compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+            zf.pwd = bytes(zip_password, "utf-8")
+            zf.write(text_file_name)
 
-        with open(zip_file_name, 'rb') as zip_file:
+        with open(zip_file_name, "rb") as zip_file:
             zip_content = zip_file.read()
 
     except Exception as e:
-        raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
+        raise DemistoException(f"Could not generate zip file. Error:\n{e!s}")
 
     finally:
         for file_name in (text_file_name, zip_file_name):
@@ -233,7 +254,7 @@ def create_zip_with_password(args: dict, generated_password: str, zip_password: 
         response=None,
         continue_to_poll=True,
         partial_result=CommandResults(readable_output=f"Encrypted zip file generated. File name: '{zip_file_name}'."),
-        args_for_next_run={**args, 'zip_file_name': zip_file_name},
+        args_for_next_run={**args, "zip_file_name": zip_file_name},
     )
 
 
@@ -252,12 +273,14 @@ def main():
 
     generated_password: str | None = None
     file_entry_id: str | None = None
-    context_outputs: dict[str, str] = {'success': 'true'}
+    context_outputs: dict[str, str] = {"success": "true"}
     error_message: str | None = None
 
     if not zip_password:
-        return_warning("It is highly recommended to run the script using the 'ZipProtectWithPassword' argument,"
-                       "as sending a plain text password in an email is an insecure practice.")
+        return_warning(
+            "It is highly recommended to run the script using the 'ZipProtectWithPassword' argument,"
+            "as sending a plain text password in an email is an insecure practice."
+        )
 
     # If zip file is already generated and this is the second iteration, we skip this section
     if not (zip_password and zip_file_name):
@@ -284,51 +307,54 @@ def main():
                 return
 
         except Exception as e:
-            context_outputs['success'] = 'false'
+            context_outputs["success"] = "false"
             error_message = str(e)
-            context_outputs['errorDetails'] = error_message
+            context_outputs["errorDetails"] = error_message
             demisto.error(traceback.format_exc())
 
     else:
         file_entry_id = find_file_entry_id(zip_file_name)
 
     try:
-        send_mail_outputs = send_email(username=username, user_email=user_email, incident_id=incident_id,
-                                       email_recipient=email_recipient, email_subject=email_subject, email_body=email_body,
-                                       display_name=display_name, error_message=error_message, password=generated_password,
-                                       zip_file_entry_id=file_entry_id)
+        send_mail_outputs = send_email(
+            username=username,
+            user_email=user_email,
+            incident_id=incident_id,
+            email_recipient=email_recipient,
+            email_subject=email_subject,
+            email_body=email_body,
+            display_name=display_name,
+            error_message=error_message,
+            password=generated_password,
+            zip_file_entry_id=file_entry_id,
+        )
 
         if is_error(send_mail_outputs):
-            raise Exception(f'An error occurred while trying to send mail:\n{get_error(send_mail_outputs)}')
+            raise Exception(f"An error occurred while trying to send mail:\n{get_error(send_mail_outputs)}")
 
-        context_outputs['sentMail'] = 'true'
+        context_outputs["sentMail"] = "true"
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        context_outputs['sentMail'] = 'false'
-        context_outputs['sendMailError'] = str(e)
+        context_outputs["sentMail"] = "false"
+        context_outputs["sendMailError"] = str(e)
 
-    if context_outputs['success'] and context_outputs['sentMail']:
-        readable_output = (f'Successfully activated user {username}. '
-                           f'An email with the user details was sent to {email_recipient}.')
+    if context_outputs["success"] and context_outputs["sentMail"]:
+        readable_output = f"Successfully activated user {username}. An email with the user details was sent to {email_recipient}."
 
     else:
-        readable_output = ''
+        readable_output = ""
 
         if error_message:
             readable_output += f"{error_message}"
 
-        if context_outputs.get('sendMailError'):
-            readable_output += '\n' if readable_output else ''  # Add a new line separator if there is an existing error message
-            readable_output += context_outputs['sendMailError']
+        if context_outputs.get("sendMailError"):
+            readable_output += "\n" if readable_output else ""  # Add a new line separator if there is an existing error message
+            readable_output += context_outputs["sendMailError"]
 
-    result = CommandResults(
-        outputs_prefix='IAM.InitADUser',
-        outputs=context_outputs,
-        readable_output=readable_output
-    )
+    result = CommandResults(outputs_prefix="IAM.InitADUser", outputs=context_outputs, readable_output=readable_output)
     return_results(result)
 
 
-if __name__ in ('__main__', 'builtin', 'builtins'):
+if __name__ in ("__main__", "builtin", "builtins"):
     main()

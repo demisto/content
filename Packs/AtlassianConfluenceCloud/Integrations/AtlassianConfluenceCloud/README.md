@@ -1,24 +1,23 @@
 Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users and groups. Users can also manage the space permissions.
 This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of Atlassian Confluence Cloud.
 
-## Configure Atlassian Confluence Cloud on Cortex XSOAR
+## Configure Atlassian Confluence Cloud in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Atlassian Confluence Cloud.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
-    | Email | The Atlassian account email. | True |
-    | API Token |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
+| Email | The Atlassian account email. | True |
+| API Token |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Events Fetch Interval |  | False |
+| Max number of events per fetch |  | False |
+| Fetch Events |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### confluence-cloud-space-create
 ***
@@ -4238,3 +4237,103 @@ Returns all user groups.
 >| 10453df5-f7fc-47be-8ca7-bc2949c1bd5b | administrators |
 >| e50e7fe6-7961-4775-9bbf-99e4b50f8701 | confluence-users |
 
+### confluence-cloud-get-events
+
+***
+Retrieves a list of events from the Atlassian Confluence Cloud instance.
+
+#### Base Command
+
+`confluence-cloud-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+| start_date | Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds. | Optional | 
+| limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ConfluenceCloud.Event.author.type | String | The type of author who created this event. | 
+| ConfluenceCloud.Event.author.displayName | String | The display nName of the author who created this event. | 
+| ConfluenceCloud.Event.author.operations | String | Nullable. Author's operations. | 
+| ConfluenceCloud.Event.author.username | String | Username of the author of this event. | 
+| ConfluenceCloud.Event.author.userKey | String | User key of the author of this event. | 
+| ConfluenceCloud.Event.author.accountId | String | Account ID of the author of this event. | 
+| ConfluenceCloud.Event.author.accountType | String | Type of account of the author of this event. | 
+| ConfluenceCloud.Event.author.externalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. | 
+| ConfluenceCloud.Event.author.isExternalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. | 
+| ConfluenceCloud.Event.author.publicName | String | The public name of the author of this event. | 
+| ConfluenceCloud.Event.remoteAddress | String | The remote address from which the event was performed. | 
+| ConfluenceCloud.Event.creationDate | Number | The creation date-time of the audit record, as a timestamp. | 
+| ConfluenceCloud.Event.summary | Strings | Summary of the audit. | 
+| ConfluenceCloud.Event.description | String | Description of the audit. | 
+| ConfluenceCloud.Event.category | String | Category of the event. | 
+| ConfluenceCloud.Event.sysAdmin | Boolean | Was the event created by a system administrator. | 
+| ConfluenceCloud.Event.superAdmin | Boolean | Was the event created by a super administrator. | 
+| ConfluenceCloud.Event.affectedObject.name | String | Name of the object affected by the event. | 
+| ConfluenceCloud.Event.affectedObject.objectType | String | Type of the object affected by the event. | 
+| ConfluenceCloud.Event.changedValues.name | String | Name of the changed value. | 
+| ConfluenceCloud.Event.changedValues.oldValue | String | The old value before the change the event describes. | 
+| ConfluenceCloud.Event.changedValues.hiddenOldValue | String | The old hidden value before the change the event describes. | 
+| ConfluenceCloud.Event.changedValues.newValue | String | The new value after the change the event describes. | 
+| ConfluenceCloud.Event.changedValues.hiddenNewValue | String | The new hidden value after the change the event describes. | 
+| ConfluenceCloud.Event.associatedObjects.name | String | Name of the associated object. | 
+| ConfluenceCloud.Event.associatedObjects.objectType | String | Type of the associated object. | 
+
+#### Command Example
+```!confluence-cloud-get-events limit=1```
+
+#### Context Example
+```json
+{
+    "ConfluenceCloud": {
+        "Event": [
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```

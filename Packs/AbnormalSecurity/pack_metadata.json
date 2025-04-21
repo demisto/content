@@ -2,26 +2,37 @@
     "name": "Abnormal Security",
     "description": "Abnormal Security detects and protects against the whole spectrum of email attacks",
     "support": "partner",
-    "currentVersion": "2.2.7",
+    "currentVersion": "2.3.1",
     "author": "Abnormal Security",
     "url": "",
     "email": "support@abnormalsecurity.com",
-    "tags": [],
+    "tags": [
+        "Email"
+    ],
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Email"
     ],
     "useCases": [
         "Phishing"
     ],
     "keywords": [
-        "email",
-        "phishing"
+        "Email",
+        "Phishing",
+        "AbnormalSecurity"
     ],
     "githubUser": [
         "fraankwang"
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "defaultDataSource": "Abnormal Security Event Collector",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

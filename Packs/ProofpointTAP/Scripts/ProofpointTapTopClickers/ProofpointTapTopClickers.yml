@@ -10,7 +10,7 @@ enabled: true
 comment: Exports a list of Proofpoint TAP top clickers to the Cortex XSOAR widget.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

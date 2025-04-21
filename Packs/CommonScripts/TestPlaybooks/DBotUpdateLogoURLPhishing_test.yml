@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 82e6639b-8bec-4d92-817b-d08e958ca843
+    taskid: 43baa319-c468-4f1e-8074-9661436931aa
     type: start
     task:
-      id: 82e6639b-8bec-4d92-817b-d08e958ca843
+      id: 43baa319-c468-4f1e-8074-9661436931aa
       version: -1
       name: ""
       iscommand: false
@@ -30,12 +30,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3f8d4c47-1ffe-462b-8fab-2ee030d1e23a
+    taskid: 02075ffd-31c8-4d91-8569-2c7995c45d4b
     type: regular
     task:
-      id: 3f8d4c47-1ffe-462b-8fab-2ee030d1e23a
+      id: 02075ffd-31c8-4d91-8569-2c7995c45d4b
       version: -1
       name: Display all logos
       description: Add, remove, or modify logos from the URL Phishing model.
@@ -45,20 +48,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       action:
         simple: DisplayAllLogos
-      associatedDomains: {}
-      debug: {}
-      logoName: {}
-      logoImageId: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -66,12 +65,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 65dba3db-384e-4120-8b74-5b6b3f3909f2
+    taskid: bd898a0d-7f86-4e69-8f45-73ce5cbd992a
     type: title
     task:
-      id: 65dba3db-384e-4120-8b74-5b6b3f3909f2
+      id: bd898a0d-7f86-4e69-8f45-73ce5cbd992a
       version: -1
       name: Done
       type: title
@@ -83,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 540
+          "y": 1245
         }
       }
     note: false
@@ -91,12 +93,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 21709482-4858-46a0-8aa8-f90a21286f06
+    taskid: e145ccf6-f52b-4624-85e3-797d108ee86a
     type: regular
     task:
-      id: 21709482-4858-46a0-8aa8-f90a21286f06
+      id: e145ccf6-f52b-4624-85e3-797d108ee86a
       version: -1
       name: Delete context
       description: |-
@@ -104,14 +109,16 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -128,12 +135,172 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5e18d59c-3020-4971-845b-d0ec819df701
+    type: regular
+    task:
+      id: 5e18d59c-3020-4971-845b-d0ec819df701
+      version: -1
+      name: Download image
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://github.com/demisto/content/blob/master/Packs/CommonScripts/Scripts/ReadQRCode/test_data/not_a_qr_code.png?raw=true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 265e6176-cc40-4310-8e71-4bc30a553ecc
+    type: regular
+    task:
+      id: 265e6176-cc40-4310-8e71-4bc30a553ecc
+      version: -1
+      name: Add image to model
+      description: Add, remove, or modify logos from the URL Phishing model.
+      scriptName: DBotUpdateLogoURLPhishing
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      action:
+        simple: AddLogo
+      associatedDomains:
+        simple: demisto.com
+      logoImageId:
+        simple: ${File.EntryID}
+      logoName:
+        simple: dbot
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d65ed81b-b620-4ad6-883a-7af066218149
+    type: regular
+    task:
+      id: d65ed81b-b620-4ad6-883a-7af066218149
+      version: -1
+      name: Modify image in model
+      description: Add, remove, or modify logos from the URL Phishing model.
+      scriptName: DBotUpdateLogoURLPhishing
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: ModifiedDomainForLogo
+      associatedDomains:
+        simple: xsoar.com
+      logoName:
+        simple: dbot
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d10f2478-e804-4024-869e-a279440360c8
+    type: regular
+    task:
+      id: d10f2478-e804-4024-869e-a279440360c8
+      version: -1
+      name: Remove image from model
+      description: Add, remove, or modify logos from the URL Phishing model.
+      scriptName: DBotUpdateLogoURLPhishing
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      action:
+        simple: RemoveLogo
+      logoName:
+        simple: dbot
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 555,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
@@ -143,6 +310,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''
-marketplaces:
-- xsoar
+description: test

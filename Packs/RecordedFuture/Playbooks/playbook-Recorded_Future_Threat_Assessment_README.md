@@ -66,4 +66,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future Threat Assessment](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/triage_playbook.png)
+![Recorded Future Threat Assessment](../doc_files/triage_playbook.png)

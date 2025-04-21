@@ -1,5 +1,5 @@
 [file:CrowdStrikeFalcon.yml]
-ignore=IN126,IN136,IN144,IN124
+ignore=IN126,IN136,IN144
 
 [file:README.md]
 ignore=RM102,RM104,RM106
@@ -22,9 +22,13 @@ IOA
 enrichments
 cspm
 ioarules
+checkbox
 
 [file:classifier-CrowdStrike_Falcon_Incident_Classifier.json]
 ignore=BA101
 
 [file:Packs/CrowdStrikeFalcon/ReleaseNotes/1_11_1.md]
 ignore=RN115
+
+[file:incidentfield-Grand_Parent_Process.json]
+ignore=IF113

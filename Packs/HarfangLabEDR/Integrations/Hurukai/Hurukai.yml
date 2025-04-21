@@ -56,12 +56,52 @@ configuration:
   - CLOSED
   type: 15
   required: false
-- additionalinfo: Start fetching alerts whose creation date is higher than now minus <first_fetch> days.
+- additionalinfo: Fetch maximum <max_fetch> security events and/or threats per call (leave empty if unlimited).
+  display: Maximum number of incidents to fetch per call
+  name: max_fetch
+  defaultvalue: 200
+  required: false
+  type: 0
+- additionalinfo: Start fetching alerts and/or threats whose creation date is higher than now minus <first_fetch> days.
   defaultvalue: '10'
   display: First fetch time
   name: first_fetch
   required: true
   type: 0
+- display: Mirroring Direction
+  name: mirror_direction
+  required: false
+  type: 15
+  additionalinfo: 'Choose the direction to mirror the detection: Incoming (from HarfangLab EDR to Cortex XSOAR), Outgoing (from Cortex XSOAR to HarfangLab EDR), or Incoming and Outgoing (to/from HarfangLab EDR and Cortex XSOAR).'
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+- defaultvalue: 'Security Events'
+  display: 'Fetch types'
+  name: fetch_types
+  options:
+  - 'Security Events'
+  - 'Threats'
+  type: 16
+  advanced: True
+- additionalinfo: When selected, closes the XSOAR incident, which is mirrored from the HarfangLab EDR.
+  defaultvalue: 'false'
+  display: Close Mirrored security event or threat in the XSOAR
+  name: close_incident
+  required: false
+  type: 8
+  advanced: true
+- additionalinfo: When selected, closes the HarfangLab EDR security event or threat in the HarfangLab EDR.
+  defaultvalue: 'false'
+  display: Close Mirrored security event or threat in HarfangLab EDR
+  name: close_in_hfl
+  required: false
+  type: 8
+  advanced: true
+
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -72,700 +112,934 @@ configuration:
   name: proxy
   type: 8
   required: false
-defaultmapperin: Hurukai alert mapper
+defaultmapperin: Hurukai - Incoming mapper
+defaultmapperout: Hurukai - Outgoing mapper
+defaultclassifier: Hurukai classifier
 description: |-
   HarfangLab EDR Connector,
-  Compatible version 2.13.7+
+  Compatible version 2.13.7+.
 display: HarfangLab EDR
 name: Hurukai
 script:
   commands:
   - name: test-module
     arguments: []
-    description: Allows to test that the HarfangLab EDR API is reachable
+    description: Allows to test that the HarfangLab EDR API is reachable.
   - name: fetch-incidents
     arguments: []
-    description: Allows to retrieve incidents from the HarfangLab EDR API
+    description: Allows to retrieve incidents from the HarfangLab EDR API.
+  - arguments: []
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - arguments:
+    - description: The remote security event or threat ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The security event or threat is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets remote data from a remote security event or threat. This method does not update the current security event or threat, and should be used for debugging purposes only.
+    name: get-remote-data
+  - arguments:
+    - description: Date string representing the local time. The security event or threat is only returned if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets the list of security events and threats that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    name: get-modified-remote-data
+  - arguments: []
+    description: Updates the remote security event or threat with local security event or threat changes. This method is only used for debugging purposes and will not update the current security event or threat.
+    name: update-remote-system
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
-    description: Get endpoint information from agent_id
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
+    description: Get endpoint information from agent_id.
     name: harfanglab-get-endpoint-info
     outputs:
     - contextPath: Harfanglab.Agent
-      description: Agent information
+      description: Agent information.
+  - arguments:
+    - name: process_uuid
+      description: Process UUID.
+    description: Get a process graph.
+    name: harfanglab-telemetry-process-graph
+    outputs:
+    - contextPath: Harfanglab.ProcessGraph
+      description: Process Graph.
+      type: unknown
+
+  - arguments:
+    - name: keyword
+      description: Keyword to search whitelist.
+    - name: provided_by_hlab
+      description: Boolean indicating whether to search in whitelists provided by HarfangLab or not.
+      default: false
+      type: boolean
+    description: Search whitelists from a keyword.
+    name: harfanglab-whitelist-search
+    outputs:
+    - contextPath: Harfanglab.Whitelists
+      description: Whitelists.
+      type: unknown
+
+  - arguments:
+    - name: comment
+      description: Comment associated to the whitelist.
+    - name: target
+      description: Detection engine associated to the whitelist (all, sigma, yara, hlai, vt, ransom, orion, glimps, cape, driver).
+    - name: sigma_rule_id
+      description: UUID of the targeted sigma rule (for sigma whitelist).
+    - name: field
+      description: Field used for checking the criterion.
+    - name: case_insensitive
+      description: Whether checking must be case sensitive or not.
+      default: true
+      type: boolean
+    - name: operator
+      description: Operator used for the criterion (eq, contains, regex).
+    - name: value
+      description: Value used for the criterion.
+    description: Add a whitelist.
+    name: harfanglab-whitelist-add
+    outputs:
+    - contextPath: Harfanglab.Whitelists
+      description: Whitelists.
+      type: unknown
+
+  - arguments:
+    - name: id
+      description: Whitelist id.
+    - name: field
+      description: Field used for checking the criterion.
+    - name: case_insensitive
+      description: Whether checking must be case sensitive or not.
+      default: true
+      type: boolean
+    - name: operator
+      description: Operator used for the criterion (eq, contains, regex).
+    - name: value
+      description: Value used for the criterion.
+    description: Add a criterion to an existing whitelist.
+    name: harfanglab-whitelist-add-criterion
+    outputs:
+    - contextPath: Harfanglab.Whitelists
+      description: Whitelists.
+      type: unknown
+
+  - arguments:
+    - name: id
+      description: Whitelist identifier.
+    description: Delete a whitelist.
+    name: harfanglab-whitelist-delete
+    outputs:
+
   - arguments:
     - name: hostname
-      description: Endpoint hostname
-    description: Search for endpoint information from a hostname
+      description: Endpoint hostname.
+    description: Search for endpoint information from a hostname.
     name: harfanglab-endpoint-search
     outputs:
     - contextPath: Harfanglab.Agent
-      description: Agent information
+      description: Agent information.
       type: unknown
     - contextPath: Harfanglab.Agent.id
-      description: agent id (DEPRECATED)
+      description: agent id (DEPRECATED).
       type: string
     - contextPath: Harfanglab.status
-      description: Status (DEPRECATED)
+      description: Status (DEPRECATED).
       type: string
+
+  - arguments:
+    - name: api_method
+      description: API method (GET, POST...).
+    - name: api_endpoint
+      description: API endpoint (/api/version, /api/data/alert/alert/Alert/...).
+    - name: parameters
+      description: URL parameters .
+    - name: data
+      description: Posted data .
+    description: Perform a generic API call.
+    name: harfanglab-api-call
+    outputs:
+    - contextPath: Harfanglab.API
+      description: API call result.
+      type: unknown
+
   - arguments:
     - name: hash
-      description: filehash to search (md5, sha1, sha256)
+      description: filehash to search (md5, sha1, sha256).
     - name: hostname
-      description: Endpoint hostname
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      description: Endpoint hostname.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
-      description: Maximum number of elements to fetch
+      description: Maximum number of elements to fetch.
       default: true
       defaultValue: 100
-    description: Search processes
+    description: Search processes.
     name: harfanglab-telemetry-processes
     outputs:
     - contextPath: Harfanglab.Telemetryprocesses.processes
-      description: Provides a list of processes
+      description: Provides a list of processes.
     - contextPath: agent.agentid
-      description: An agent's identifier (DEPRECATED)
+      description: An agent's identifier (DEPRECATED).
       type: string
     - contextPath: current_directory
-      description: 'DEPRECATED'
+      description: 'DEPRECATED.'
       type: string
     - contextPath: hashes.sha256
-      description: 'DEPRECATED'
+      description: 'DEPRECATED.'
       type: string
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname.
+    - name: requested_name
+      description: Requested domain name.
+    - name: query_type
+      description: 'DNS type (A, AAAA, TXT...).'
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch.
+      defaultValue: 100
+    description: Search DNS resolutions.
+    name: harfanglab-telemetry-dns
+    outputs:
+    - contextPath: Harfanglab.TelemetryDNS.resolutions
+      description: Provides a list of DNS resolutions.
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname.
+      required: true
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: to_date
+    - name: limit
+      description: Fetch only the top n users who successfully authenticated on the host.
+      defaultValue: 3
+    description: Get the top n users who successfully authenticated on the host.
+    name: harfanglab-telemetry-authentication-users
+    outputs:
+    - contextPath: Harfanglab.Authentications.Users
+      description: Provides a list of users who successfully authenticated on the host with interactive logon (sorted per decreasing occurrence).
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname.
+    - name: source_address
+      description: Source IP address.
+    - name: success
+      description: Whether authentication succeeded or not.
+      type: boolean
+    - name: source_username
+      description: Source username.
+    - name: target_username
+      description: Target username.
+    - name: logon_title
+      description: Logon title.
+    - name: logon_type
+      description: Logon type.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch.
+      defaultValue: 100
+    description: Search Windows authentication telemetry.
+    name: harfanglab-telemetry-authentication-windows
+    outputs:
+    - contextPath: Harfanglab.TelemetryWindowsAuthentications.authentications
+      description: Provides a list of Windows authentications.
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname.
+    - name: source_address
+      description: Source IP address.
+    - name: success
+      description: Whether authentication succeeded or not.
+      type: boolean
+    - name: source_username
+      description: Source username.
+    - name: target_username
+      description: Target username.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch.
+      defaultValue: 100
+    description: Search Linux authentication telemetry.
+    name: harfanglab-telemetry-authentication-linux
+    outputs:
+    - contextPath: Harfanglab.TelemetryLinuxAuthentications.authentications
+      description: Provides a list of Linux authentications.
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname.
+    - name: source_address
+      description: Source IP address.
+    - name: success
+      description: Whether authentication succeeded or not.
+      type: boolean
+    - name: source_username
+      description: Source username.
+    - name: target_username
+      description: Target username.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch.
+      defaultValue: 100
+    description: Search Macos authentication telemetry.
+    name: harfanglab-telemetry-authentication-macos
+    outputs:
+    - contextPath: Harfanglab.TelemetryMacosAuthentications.authentications
+      description: Provides a list of Macos authentications.
+
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of pipes from a host (Windows)
+    description: Start a job to get the list of pipes from a host (Windows).
     name: harfanglab-job-pipelist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
     - name: filename
-      description: Path of the file to download
+      description: Path of the file to download.
       required: true
-    description: Start a job to download a file from a host (Windows / Linux)
+    description: Start a job to download a file from a host (Windows / Linux).
     name: harfanglab-job-artifact-downloadfile
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of prefetches from a host (Windows)
+    description: Start a job to get the list of prefetches from a host (Windows).
     name: harfanglab-job-prefetchlist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of run keys from a host (Windows)
+    description: Start a job to get the list of run keys from a host (Windows).
     name: harfanglab-job-runkeylist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of scheduled tasks from a host (Windows)
+    description: Start a job to get the list of scheduled tasks from a host (Windows).
     name: harfanglab-job-scheduledtasklist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of drivers from a host (Windows)
+    description: Start a job to get the list of drivers from a host (Windows).
     name: harfanglab-job-driverlist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of services from a host (Windows)
+    description: Start a job to get the list of services from a host (Windows).
     name: harfanglab-job-servicelist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of processes from a host (Windows / Linux)
+    description: Start a job to get the list of processes from a host (Windows / Linux).
     name: harfanglab-job-processlist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of network connections from a host (Windows / Linux)
+    description: Start a job to get the list of network connections from a host (Windows / Linux).
     name: harfanglab-job-networkconnectionlist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of network shares from a host (Windows)
+    description: Start a job to get the list of network shares from a host (Windows).
     name: harfanglab-job-networksharelist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of sessions from a host (Windows)
+    description: Start a job to get the list of sessions from a host (Windows).
     name: harfanglab-job-sessionlist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of persistence items from a host (Linux)
+    description: Start a job to get the list of persistence items from a host (Linux).
     name: harfanglab-job-persistencelist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    - description: exact filename to search
+    - description: exact filename to search.
       name: filename
-    - description: exact filepath to search
+    - description: exact filepath to search.
       name: filepath
-    - description: filehash to search (md5, sha1, sha256)
+    - description: filehash to search (md5, sha1, sha256).
       name: hash
-    - description: restrict searchs for filename or filepath or filepath_regex to a given path
+    - description: restrict search for filename or filepath or filepath_regex to a given path.
       name: search_in_path
     - description: size of the file associated to the 'hash' parameters (DEPRECATED, rather use the 'filesize' parameter). If known, it will speed up the search process.
       name: hash_filesize
     - description: size of the file to search in bytes (can be used when searching a file from a hash or from a filename). If known, it will speed up the search process.
       name: filesize
-    - description: regex to search in registry (key or value)
+    - description: regex to search in registry (key or value).
       name: registry
-    - description: 'search a regex on a filepath '
+    - description: 'search a regex on a filepath.'
       name: filepath_regex
-    description: Start a job to search for IOCs on a host (Windows / Linux)
+    description: Start a job to search for IOCs on a host (Windows / Linux).
     name: harfanglab-job-ioc
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of startup items from a host (Windows)
+    description: Start a job to get the list of startup items from a host (Windows).
     name: harfanglab-job-startuplist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the list of WMI items from a host (Windows)
+    description: Start a job to get the list of WMI items from a host (Windows).
     name: harfanglab-job-wmilist
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to download the MFT from a host (Windows)
+    description: Start a job to download the MFT from a host (Windows).
     name: harfanglab-job-artifact-mft
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to download the hives from a host (Windows)
+    description: Start a job to download the hives from a host (Windows).
     name: harfanglab-job-artifact-hives
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to download the event logs from a host (Windows)
+    description: Start a job to download the event logs from a host (Windows).
     name: harfanglab-job-artifact-evtx
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to download Linux log files from a host (Linux)
+    description: Start a job to download Linux log files from a host (Linux).
     name: harfanglab-job-artifact-logs
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to download Linux filesystem entries from a host (Linux)
+    description: Start a job to download Linux filesystem entries from a host (Linux).
     name: harfanglab-job-artifact-filesystem
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list)
+    description: Start a job to download all artifacts from a host (Windows MFT, Hives, evt/evtx, Prefetch, USN, Linux logs and file list).
     name: harfanglab-job-artifact-all
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the entine RAM from a host (Windows / Linux)
+    description: Start a job to get the entire RAM from a host (Windows / Linux).
     name: harfanglab-job-artifact-ramdump
     outputs:
     - contextPath: Harfanglab.Job.ID
-      description: id
+      description: id.
       type: string
     - contextPath: Harfanglab.Job.Action
-      description: HarfangLab job action
+      description: HarfangLab job action.
   - arguments:
     - name: hostname
-      description: Endpoint hostname
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      description: Endpoint hostname.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: source_address
-      description: Source IP address
+      description: Source IP address.
     - name: source_port
-      description: Source port
+      description: Source port.
     - name: destination_address
-      description: Destination IP address
+      description: Destination IP address.
     - name: destination_port
-      description: Destination port
+      description: Destination port.
     - name: limit
-      description: Maximum number of elements to fetch
+      description: Maximum number of elements to fetch.
       default: true
       defaultValue: 100
     outputs:
     - contextPath: Harfanglab.Telemetrynetwork.network
-      description: Provides a list of network connections
-    description: Search network connections
+      description: Provides a list of network connections.
+    description: Search network connections.
     name: harfanglab-telemetry-network
   - arguments:
     - name: hostname
-      description: Endpoint hostname
+      description: Endpoint hostname.
     - name: event_id
-      description: Event id
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      description: Event id.
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
-      description: Maximum number of elements to fetch
+      description: Maximum number of elements to fetch.
       default: true
       defaultValue: 100
     outputs:
     - contextPath: Harfanglab.Telemetryeventlog.eventlog
-      description: Provides a list of event logs
-    description: Search event logs
+      description: Provides a list of event logs.
+    description: Search event logs.
     name: harfanglab-telemetry-eventlog
   - arguments:
-    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS).'
       name: from_date
-    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: hash
-      description: filehash to search (md5, sha1, sha256)
+      description: filehash to search (md5, sha1, sha256).
     - name: limit
-      description: Maximum number of elements to fetch
+      description: Maximum number of elements to fetch.
       default: true
       defaultValue: 100
     outputs:
     - contextPath: Harfanglab.Telemetrybinary.binary
       description: Provides a list of binaries with associated download links.
-    description: Search for binaries
+    description: Search for binaries.
     name: harfanglab-telemetry-binary
   - arguments:
     - isArray: true
       name: ids
-      description: Coma-separated list of job ids
+      description: Coma-separated list of job ids.
       required: true
-    description: Get job status information
+    description: Get job status information.
     name: harfanglab-job-info
     outputs:
     - contextPath: Harfanglab.Job.Info
-      description: Job Status
+      description: Job Status.
       type: unknown
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's list of pipes from job results
+    description: Get a hostname's list of pipes from job results.
     name: harfanglab-result-pipelist
     outputs:
     - contextPath: Harfanglab.Pipe.data
-      description: Provides a list of named pipes
+      description: Provides a list of named pipes.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's list of prefetches from job results
+    description: Get a hostname's list of prefetches from job results.
     name: harfanglab-result-prefetchlist
     outputs:
     - contextPath: Harfanglab.Prefetch.data
-      description: Provides a list of prefetch files
+      description: Provides a list of prefetch files.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's list of run keys from job results
+    description: Get a hostname's list of run keys from job results.
     name: harfanglab-result-runkeylist
     outputs:
     - contextPath: Harfanglab.RunKey.data
-      description: Provides a list of Run Keys
+      description: Provides a list of Run Keys.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
-    description: Get a hostname's list of scheduled tasks from job results
+      description: Job id as returned by the job submission commands.
+    description: Get a hostname's list of scheduled tasks from job results.
     name: harfanglab-result-scheduledtasklist
     outputs:
     - contextPath: Harfanglab.ScheduledTask.data
-      description: Provides a list of scheduled tasks
+      description: Provides a list of scheduled tasks.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
-    description: Get a hostname's loaded drivers from job results
+      description: Job id as returned by the job submission commands.
+    description: Get a hostname's loaded drivers from job results.
     name: harfanglab-result-driverlist
     outputs:
     - contextPath: Harfanglab.Driver.data
-      description: Provides a list of loaded drivers
+      description: Provides a list of loaded drivers.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
-    description: Get a hostname's list of services from job results
+      description: Job id as returned by the job submission commands.
+    description: Get a hostname's list of services from job results.
     name: harfanglab-result-servicelist
     outputs:
     - contextPath: Harfanglab.Service.data
-      description: Provides a list of services
+      description: Provides a list of services.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's list of processes from job results
+    description: Get a hostname's list of processes from job results.
     name: harfanglab-result-processlist
     outputs:
     - contextPath: Harfanglab.Process.data
-      description: Provides a list of processes
+      description: Provides a list of processes.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's network connections from job results
+    description: Get a hostname's network connections from job results.
     name: harfanglab-result-networkconnectionlist
     outputs:
     - contextPath: Harfanglab.NetworkConnection.data
-      description: Provides a list of active network connections
+      description: Provides a list of active network connections.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's network shares from job results
+    description: Get a hostname's network shares from job results.
     name: harfanglab-result-networksharelist
     outputs:
     - contextPath: Harfanglab.NetworkShare.data
-      description: Provides a list of network shares
+      description: Provides a list of network shares.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's sessions from job results
+    description: Get a hostname's sessions from job results.
     name: harfanglab-result-sessionlist
     outputs:
     - contextPath: Harfanglab.Session.data
-      description: Provides a list of active sessions
+      description: Provides a list of active sessions.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's persistence items from job results
+    description: Get a hostname's persistence items from job results.
     name: harfanglab-result-persistencelist
     outputs:
     - contextPath: Harfanglab.Persistence.data
-      description: Provides a list of persistence means
+      description: Provides a list of persistence means.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get the list of items matching IOCs searched in an IOC job
+    description: Get the list of items matching IOCs searched in an IOC job.
     name: harfanglab-result-ioc
     outputs:
     - contextPath: Harfanglab.IOC.data
-      description: Provides a list of matching elements
+      description: Provides a list of matching elements.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's startup items from job results
+    description: Get a hostname's startup items from job results.
     name: harfanglab-result-startuplist
     outputs:
     - contextPath: Harfanglab.Startup.data
-      description: Provides a list of startup files
+      description: Provides a list of startup files.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's WMI items from job results
+    description: Get a hostname's WMI items from job results.
     name: harfanglab-result-wmilist
     outputs:
     - contextPath: Harfanglab.Wmi.data
-      description: Provides a list of WMI items
+      description: Provides a list of WMI items.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's MFT from job results
+    description: Get a hostname's MFT from job results.
     name: harfanglab-result-artifact-mft
     outputs:
     - contextPath: Harfanglab.Artifact.MFT
-      description: Provides a link to download the raw MFT
+      description: Provides a link to download the raw MFT.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's hives from job results
+    description: Get a hostname's hives from job results.
     name: harfanglab-result-artifact-hives
     outputs:
     - contextPath: Harfanglab.Artifact.HIVES
-      description: Provides a link to download the raw hives
+      description: Provides a link to download the raw hives.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
-    description: Get a hostname's log files from job results
+      description: Job id as returned by the job submission commands.
+    description: Get a hostname's log files from job results.
     name: harfanglab-result-artifact-evtx
     outputs:
     - contextPath: Harfanglab.Artifact.EVTX
-      description: Provides a link to download the evt/evtx files
+      description: Provides a link to download the evt/evtx files.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
-    description: Get a hostname's log files from job results
+      description: Job id as returned by the job submission commands.
+    description: Get a hostname's log files from job results.
     name: harfanglab-result-artifact-logs
     outputs:
     - contextPath: Harfanglab.Artifact.LOGS
-      description: Provides a link to download the log files
+      description: Provides a link to download the log files.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
-    description: Get a hostname's filesystem entries from job results
+      description: Job id as returned by the job submission commands.
+    description: Get a hostname's filesystem entries from job results.
     name: harfanglab-result-artifact-filesystem
     outputs:
     - contextPath: Harfanglab.Artifact.FS
-      description: Provides a link to download the CSV file with filesystem entries
+      description: Provides a link to download the CSV file with filesystem entries.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
-    description: Get all artifacts from a hostname from job results
+      description: Job id as returned by the job submission commands.
+    description: Get all artifacts from a hostname from job results.
     name: harfanglab-result-artifact-all
     outputs:
     - contextPath: Harfanglab.Artifact.ALL
-      description: Provides a link to download an archive with all raw artifacts
+      description: Provides a link to download an archive with all raw artifacts.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's file from job results
+    description: Get a hostname's file from job results.
     name: harfanglab-result-artifact-downloadfile
     outputs:
     - contextPath: Harfanglab.DownloadFile.data
-      description: Provides a link to download the file
+      description: Provides a link to download the file.
   - arguments:
     - name: job_id
-      description: Job id as returned by the job submission commands
+      description: Job id as returned by the job submission commands.
       required: true
-    description: Get a hostname's RAM dump from job results
+    description: Get a hostname's RAM dump from job results.
     name: harfanglab-result-artifact-ramdump
     outputs:
     - contextPath: Harfanglab.Ramdump.data
-      description: Provides a link to download the raw RAM dump
+      description: Provides a link to download the raw RAM dump.
   - arguments:
     - name: hash
-      description: filehash to search (md5, sha1, sha256)
+      description: filehash to search (md5, sha1, sha256).
       required: true
     outputs:
     - contextPath: Harfanglab.Hash
-      description: Provides statistics associated to currently running processes and previously executed processes associated to hash
-    description: Command used to search a hash IOC in database
+      description: Provides statistics associated to currently running processes and previously executed processes associated to hash.
+    description: Command used to search a hash IOC in database.
     name: harfanglab-hunt-search-hash
   - arguments:
     - name: hash
-      description: filehash to search (sha256)
+      description: filehash to search (sha256).
       required: true
     outputs:
     - contextPath: Harfanglab.HuntRunningProcessSearch.data
-      description: List of all systems where processes associated to hash are running
-    description: Command used to search running process associated with Hash
+      description: List of all systems where processes associated to hash are running.
+    description: Command used to search running process associated with Hash.
     name: harfanglab-hunt-search-running-process-hash
   - arguments:
     - name: hash
-      description: filehash to search (sha256)
+      description: filehash to search (sha256).
       required: true
     outputs:
     - contextPath: Harfanglab.HuntRunnedProcessSearch.data
-      description: List of all systems where processes associated to hash have been previously running
-    description: Command used to search runned process associated with Hash
+      description: List of all systems where processes associated to hash have been previously running.
+    description: Command used to search runned process associated with Hash.
     name: harfanglab-hunt-search-runned-process-hash
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Command used to isolate an endpoint from the network while remaining connected to the EDR manager
+    description: Command used to isolate an endpoint from the network while remaining connected to the EDR manager.
     name: harfanglab-isolate-endpoint
   - arguments:
     - name: agent_id
-      description: Agent unique identifier as provided by the HarfangLab EDR Manager
+      description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Command used to deisolate an endpoint and reconnect it to the network
+    description: Command used to deisolate an endpoint and reconnect it to the network.
     name: harfanglab-deisolate-endpoint
   - arguments:
     - name: security_event_id
-      description: Security event id
+      description: Security event id.
       required: true
     - name: status
-      description: New status of the security event id (New, Investigating, False Positive, Closed)
+      description: New status of the security event id (New, Investigating, False Positive, Closed).
       required: true
       type: '15'
-    description: Command used to change the status of a security event
+    description: Command used to change the status of a security event.
     name: harfanglab-change-security-event-status
   - arguments:
     - name: agentid
-      description: Agent identifier
+      description: Agent identifier.
       required: true
     - name: policy
-      description: Policy name
+      description: Policy name.
       required: true
-    description: Assign a policy to an agent
+    description: Assign a policy to an agent.
     name: harfanglab-assign-policy-to-agent
   - arguments:
     - name: ioc_value
-      description: IOC value
+      description: IOC value.
       required: true
     - name: ioc_type
-      description: IOC type (hash, filename, filepath)
+      description: IOC type (hash, filename, filepath).
       required: true
     - name: ioc_comment
-      description: Comment associated to IOC
+      description: Comment associated to IOC.
     - name: ioc_status
-      description: IOC status (stable, testing)
+      description: IOC status (stable, testing).
       required: true
     - name: source_name
-      description: IOC Source Name
+      description: IOC Source Name.
       required: true
-    description: Add an IOC to a Threat Intelligence source
+    description: Add an IOC to a Threat Intelligence source.
     name: harfanglab-add-ioc-to-source
   - arguments:
     - name: ioc_value
-      description: IOC value
+      description: IOC value.
       required: true
     - name: source_name
-      description: IOC Source Name
+      description: IOC Source Name.
       required: true
-    description: Delete an IOC from a Threat Intelligence source
+    description: Delete an IOC from a Threat Intelligence source.
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
-  longRunning: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  longRunning: false
   script: ''
   subtype: python3
   type: python

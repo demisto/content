@@ -2,7 +2,7 @@
     "name": "Check Point Harmony Email and Collaboration (HEC)",
     "description": "The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.1.9",
     "author": "Check Point Harmony Email & Collaboration (HEC)",
     "url": "https://supportcenter.checkpoint.com/",
     "email": "EmailSecurity_Support@checkpoint.com",
@@ -14,6 +14,7 @@
         "Security"
     ],
     "useCases": [],
+    "itemPrefix": "CheckPointHEC",
     "keywords": [
         "checkpoint",
         "check point",
@@ -23,7 +24,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "christiang@checkpoint.com"
@@ -32,5 +34,11 @@
         "chkp-christiang"
     ],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

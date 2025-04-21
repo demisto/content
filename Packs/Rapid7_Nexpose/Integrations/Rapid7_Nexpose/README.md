@@ -2386,3 +2386,722 @@ Update an existing shared credential.
 #### Context Output
 
 There is no context output for this command.
+
+### nexpose-add-site-included-asset
+
+***
+
+#### Base Command
+
+`nexpose-add-site-included-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+| assets | List of addresses to add to the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| asset_group_ids | List of asset group identifiers. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-add-site-included-asset site_id=848 assets=8.8.8.8```
+
+#### Human Readable Output
+
+>Added assets 8.8.8.8 to site with ID 848
+
+### nexpose-remove-tag-asset
+
+***
+Remove an asset from a tag. Note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
+
+#### Base Command
+
+`nexpose-remove-tag-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The tag ID. | Required | 
+| asset_id | The asset ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-remove-tag-asset asset_id=25 tag_id=61```
+
+#### Human Readable Output
+
+>Asset 25 was removed from tag 61 successfully
+
+### nexpose-list-tag-asset
+
+***
+Return a list of assets for a tag.
+
+#### Base Command
+
+`nexpose-list-tag-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The tag ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.TagAsset.id | int | Asset ID. | 
+| Nexpose.TagAsset.sources | string | The asset sources. | 
+
+#### Command example
+```!nexpose-list-tag-asset tag_id=33```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "TagAsset": [
+            {
+                "id": 18,
+                "sources": [
+                    "tag"
+                ]
+            },
+            {
+                "id": 25,
+                "sources": [
+                    "tag"
+                ]
+            },
+            {
+                "id": 28,
+                "sources": [
+                    "tag"
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tag 33 assets
+>|Id|Sources|
+>|---|---|
+>| 18 | tag |
+>| 25 | tag |
+>| 28 | tag |
+
+
+### nexpose-delete-tag
+
+***
+Delete a tag.
+
+#### Base Command
+
+`nexpose-delete-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The tag ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-list-site-included-asset
+
+***
+Return a list of included assets for a site.
+
+#### Base Command
+
+`nexpose-list-site-included-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.IncludedAsset.site_id | int | The site ID. | 
+| Nexpose.IncludedAsset.addresses | string | A list of addresses of the included assets for the specified site. | 
+
+#### Command example
+```!nexpose-list-site-included-asset site_id=848```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "IncludedAsset": {
+            "addresses": [
+                "8.8.8.8",
+                "1.1.1.1"
+            ],
+            "site_id": 848
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset list for site ID 848
+>|Addresses|
+>|---|
+>| 8.8.8.8 |
+>| 1.1.1.1 |
+
+
+### nexpose-list-site-excluded-asset-group
+
+***
+Return a list of excluded asset groups for a site.
+
+#### Base Command
+
+`nexpose-list-site-excluded-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.ExcludedAssetGroup.site_id | int | The site ID. | 
+| Nexpose.ExcludedAssetGroup.resources | int | The asset group ID. | 
+
+#### Command example
+```!nexpose-list-site-excluded-asset-group site_id=848```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "ExcludedAssetGroup": {
+            "resources": [],
+            "site_id": 848
+        }
+    }
+}
+```
+
+
+### nexpose-list-site-included-asset-group
+
+***
+Return a list of included asset groups for a site.
+
+#### Base Command
+
+`nexpose-list-site-included-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.IncludedAssetGroup.site_id | int | The site ID. | 
+| Nexpose.IncludedAssetGroup.resources | int | The asset group ID. | 
+
+#### Command example
+```!nexpose-list-site-included-asset-group site_id=848```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "IncludedAssetGroup": {
+            "resources": [],
+            "site_id": 848
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset group list for site ID 848
+>**No entries.**
+
+
+### nexpose-remove-tag-asset-group
+
+***
+Remove an asset group from a tag.
+
+#### Base Command
+
+`nexpose-remove-tag-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The tag ID. | Required | 
+| asset_group_id | The asset group ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-remove-tag-asset-group asset_group_id=1 tag_id=61```
+
+#### Human Readable Output
+
+>Asset group 1 was removed from tag 61 successfully
+
+### nexpose-create-tag
+
+***
+Create a tag.
+
+#### Base Command
+
+`nexpose-create-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The tag name. | Required | 
+| type | The tag type. Possible values are: Owner, Location, Custom. | Required | 
+| color | The tag color - relevant only for "Custom" type. Possible values are: Blue, Green, Orange, Red, Purple, Default. Default is Default. | Optional | 
+| ip_address_is | A specific IP address to search for. | Optional | 
+| host_name_is | A specific host name to search for. | Optional | 
+| risk_score_higher_than | A minimum risk score to use as a filter. | Optional | 
+| vulnerability_title_contains | A string to search for in vulnerability titles. | Optional | 
+| site_id_in | Site IDs to filter for. Can be a comma-separated list. | Optional | 
+| site_name_in | Site names to filter for. Can be a comma-separated list. | Optional | 
+| match | Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included. Possible values are: All, Any. Default is Any. | Optional | 
+| query | Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.Tag.id | int | The tag ID. | 
+
+### nexpose-add-tag-asset
+
+***
+Add an existing asset to an existing tag.
+
+#### Base Command
+
+`nexpose-add-tag-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The tag ID. | Required | 
+| asset_id | The asset ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-add-tag-asset asset_id=25 tag_id=61```
+
+#### Human Readable Output
+
+>Asset 25 was added in tag 61 successfully
+
+### nexpose-remove-site-excluded-asset
+
+***
+Remove excluded assets from a site.
+
+#### Base Command
+
+`nexpose-remove-site-excluded-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+| assets | List of addresses to remove from the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| asset_group_ids | List of asset group IDs to remove from the site's exclusion list. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-remove-site-excluded-asset site_id=848 assets=8.8.8.8```
+
+#### Human Readable Output
+
+>Removed assets 8.8.8.8 from site with ID 848
+
+### nexpose-remove-site-included-asset
+
+***
+
+#### Base Command
+
+`nexpose-remove-site-included-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+| assets | List of addresses to remove from the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| asset_group_ids | List of asset group identifiers. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-remove-site-included-asset site_id=848 assets=8.8.8.8```
+
+#### Human Readable Output
+
+>Removed assets 8.8.8.8 from site with ID 848
+
+### nexpose-update-tag-search-criteria
+
+***
+Update tag search criteria.
+
+#### Base Command
+
+`nexpose-update-tag-search-criteria`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The tag ID. | Required | 
+| ip_address_is | A specific IP address to search for. | Optional | 
+| host_name_is | A specific host name to search for. | Optional | 
+| risk_score_higher_than | A minimum risk score to use as a filter. | Optional | 
+| vulnerability_title_contains | A string to search for in vulnerability titles. | Optional | 
+| site_id_in | Site IDs to filter for. Can be a comma-separated list. | Optional | 
+| site_name_in | Site names to filter for. Can be a comma-separated list. | Optional | 
+| match | Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included. Possible values are: All, Any. Default is Any. | Optional | 
+| query | Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'. | Optional | 
+| overwrite | Whether to overwrite the original search values or append new conditions to the existing search. Possible values are: yes, no. Default is no. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-add-tag-asset-group
+
+***
+Add existing asset groups to an existing tag.()
+
+#### Base Command
+
+`nexpose-add-tag-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The tag ID. | Required | 
+| asset_group_ids | The asset group IDs to add. Can be a comma-separated list. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-list-site-excluded-asset
+
+***
+Return a list of excluded assets for a site.
+
+#### Base Command
+
+`nexpose-list-site-excluded-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.ExcludedAsset.site_id | int | The site ID. | 
+| Nexpose.ExcludedAsset.addresses | string | A list of addresses of the excluded assets for the specified site. | 
+
+#### Command example
+```!nexpose-list-site-excluded-asset site_id=848```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "ExcludedAsset": {
+            "site_id": 848
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset list for site ID 848
+>**No entries.**
+
+
+### nexpose-list-tag-asset-group
+
+***
+Return a list of asset groups for a tag.
+
+#### Base Command
+
+`nexpose-list-tag-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tag_id | The tag ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.TagAssetGroup.id | int | Asset group ID. | 
+
+#### Command example
+```!nexpose-list-tag-asset-group tag_id=2```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "TagAssetGroup": [
+            3
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tag 2 asset groups.
+>|Asset groups IDs|
+>|---|
+>| 3 |
+
+
+### nexpose-list-tag
+
+***
+Return a list of tags.
+
+#### Base Command
+
+`nexpose-list-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Get tag by ID. | Optional | 
+| name | Filters the returned tags to only those containing the value within their name. | Optional | 
+| type | Filters the returned tags to only those of this type. | Optional | 
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| limit | A number of records to limit the response to. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.Tag.color | String | The color associated with the tag. | 
+| Nexpose.Tag.created | Date | The date when the tag was created. | 
+| Nexpose.Tag.id | Number | The unique identifier of the tag. | 
+| Nexpose.Tag.name | String | The name of the tag. | 
+| Nexpose.Tag.searchCriteria.match | String | The match criteria used for the tag search \(e.g., "all" or "any"\). | 
+| Nexpose.Tag.searchCriteria.filters.field | String | The field name used in the tag search filter. | 
+| Nexpose.Tag.searchCriteria.filters.operator | String | The operator used in the tag search filter \(e.g., "is", "contains", "is-greater-than"\). | 
+| Nexpose.Tag.searchCriteria.filters.lower | String | The lower bound of the range used in the tag search filter. | 
+| Nexpose.Tag.searchCriteria.filters.upper | String | The upper bound of the range used in the tag search filter. | 
+| Nexpose.Tag.source | String | The source of the tag. | 
+| Nexpose.Tag.type | String | The type of the tag. | 
+| Nexpose.Tag.searchCriteria.filters.value | String | The value used in the tag search filter. | 
+| Nexpose.Tag.page.number | Number | The current page number in the paginated response. | 
+| Nexpose.Tag.page.size | Number | The number of items per page in the paginated response. | 
+| Nexpose.Tag.page.totalResources | Number | The total number of resources available. | 
+| Nexpose.Tag.page.totalPages | Number | The total number of pages available. | 
+
+
+#### Command example
+```!nexpose-list-tag limit=2 name=test```
+
+#### Context Example
+```json
+{
+    "resources": [
+        {
+            "color": "default",
+            "created": "2024-05-06T13:32:58.454Z",
+            "id": 45,
+            "name": "test",
+            "searchCriteria": {
+                "match": "all",
+                "filters": [
+                    {
+                        "field": "risk-score",
+                        "operator": "in-range",
+                        "lower": "193.841",
+                        "upper": "187.841"
+                    }
+                ]
+            },
+            "source": "custom",
+            "type": "Owner"
+        },
+        {
+            "color": "default",
+            "created": "2024-05-06T13:43:52.874Z",
+            "id": 46,
+            "name": "new_test2",
+            "searchCriteria": {
+                "match": "any",
+                "filters": [
+                    {
+                        "field": "ip-address",
+                        "operator":"is",
+                        "value":"3.3.3.3"
+                    }
+                ]
+            },
+            "source": "custom",
+            "type": "Owner"
+        }
+    ],
+    "page": {
+        "number": 0,
+        "size": 2,
+        "totalResources": 8,
+        "totalPages": 4
+    }
+}
+```
+
+
+### nexpose-add-site-excluded-asset
+
+***
+Add excluded assets to a site.
+
+#### Base Command
+
+`nexpose-add-site-excluded-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | A URL parameter. | Required | 
+| assets | List of addresses to add to the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation. | Optional | 
+| asset_group_ids | List of asset group IDs to exclude. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-add-site-excluded-asset site_id=848 assets=8.8.8.8```
+
+#### Human Readable Output
+
+>Added assets 8.8.8.8 to site with ID 848
+
+### nexpose-list-asset-group
+
+***
+Return a list of asset groups.
+
+#### Base Command
+
+`nexpose-list-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | Get asset group by ID. | Optional | 
+| group_name | Filters the returned asset groups to only those containing the value within their name. | Optional | 
+| type | Filters the returned asset groups to only those of this type. Possible values are: static, dynamic. | Optional | 
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| limit | A number of records to limit the response to. | Optional | 
+| sort | The criteria to sort the records by, in the format property[,ASC\|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssetGroup.assets | Number | The number of assets in the asset group. | 
+| Nexpose.AssetGroup.id | Number | The unique identifier of the asset group. | 
+| Nexpose.AssetGroup.name | String | The name of the asset group. | 
+| Nexpose.AssetGroup.riskScore | Number | The cumulative risk score of the asset group. | 
+| Nexpose.AssetGroup.type | String | The type of the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.critical | Number | The number of critical vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.moderate | Number | The number of moderate vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.severe | Number | The number of severe vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.vulnerabilities.total | Number | The total number of vulnerabilities in the asset group. | 
+| Nexpose.AssetGroup.description | String | The description of the asset group. | 
+#### Command example
+```!nexpose-list-asset-group limit=2```
+### nexpose-create-asset-group
+
+***
+Create an asset group.
+
+#### Base Command
+
+`nexpose-create-asset-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The asset group name. | Required | 
+| type | The asset group type. Possible values are: static, dynamic. | Required | 
+| description | The description of the asset group. | Required | 
+| ip_address_is | A specific IP address to search for. | Optional | 
+| host_name_is | A specific host name to search for. | Optional | 
+| risk_score_higher_than | A minimum risk score to use as a filter. | Optional | 
+| vulnerability_title_contains | A string to search for in vulnerability titles. | Optional | 
+| site_id_in | Site IDs to filter for. Can be a comma-separated list. | Optional | 
+| site_name_in | Site names to filter for. Can be a comma-separated list. | Optional | 
+| match | Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included. Possible values are: All, Any. Default is Any. | Optional | 
+| query | Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssetGroup.id | int | The asset group ID. | 
+
+#### Command example
+```!nexpose-create-asset-group name=test3 type=dynamic ip_address_is=1.1.1.1 query=`risk-score is-greater-than 8000` escription=test```

@@ -1,0 +1,26 @@
+[
+  {
+    "value": "https://url1.com",
+    "type": "URL",
+    "FeedURL": "https://openphish.com/feed.txt"
+  },
+  {
+    "value": "https://url2.com",
+    "type": "URL",
+    "FeedURL": "https://openphish.com/feed.txt"
+  },
+  {
+    "value": "https://url3.com",
+    "type": "URL",
+    "FeedURL": "https://openphish.com/feed.txt"
+  },
+  {
+    "value": "https://url4.com",
+    "type": "URL",
+    "FeedURL": "https://openphish.com/feed.txt"
+  },
+  {
+    "value": "https://url5.com",
+    "type": "URL",
+    "FeedURL": "https://openphish.com/feed.txt"
+  }]

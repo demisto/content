@@ -1,0 +1,120 @@
+{
+    "keeper_security_raw": {
+      "audit_event_type": {
+        "type": "string",
+        "is_array": false
+      },
+        "id": {
+        "type": "int",
+        "is_array": false
+      },
+        "ip_address": {
+        "type": "string",
+        "is_array": false
+      },
+        "username": {
+        "type": "string",
+        "is_array": false
+      },
+        "node_id": {
+        "type": "int",
+        "is_array": false
+      },
+        "from_username": {
+        "type": "string",
+        "is_array": false
+      },
+        "email": {
+        "type": "string",
+        "is_array": false
+      },
+        "to_username": {
+        "type": "string",
+        "is_array": false
+      },
+        "recipient": {
+        "type": "string",
+        "is_array": false
+      },
+        "keeper_version": {
+        "type": "string",
+        "is_array": false
+      },
+        "file_format": {
+        "type": "string",
+        "is_array": false
+      },
+        "folder_uid": {
+        "type": "string",
+        "is_array": false
+      },
+        "attachment_id": {
+        "type": "string",
+        "is_array": false
+      },
+        "device_name": {
+        "type": "string",
+        "is_array": false
+      },
+        "record_uid": {
+        "type": "string",
+        "is_array": false
+      },
+        "node": {
+        "type": "string",
+        "is_array": false
+      },
+        "role_id": {
+        "type": "string",
+        "is_array": false
+      },
+        "team_uid": {
+        "type": "string",
+        "is_array": false
+      },
+        "shared_folder_uid": {
+        "type": "string",
+        "is_array": false
+      },
+        "plan": {
+        "type": "string",
+        "is_array": false
+      },
+        "gateway_uid": {
+        "type": "string",
+        "is_array": false
+      },
+        "value": {
+        "type": "string",
+        "is_array": false
+      },
+        "enforcement": {
+        "type": "string",
+        "is_array": false
+      },
+        "email_domain": {
+        "type": "string",
+        "is_array": false
+      },
+        "secret_uid": {
+        "type": "string",
+        "is_array": false
+      },
+        "report_name": {
+        "type": "string",
+        "is_array": false
+      },
+        "name": {
+        "type": "string",
+        "is_array": false
+      },
+        "result_code": {
+        "type": "string",
+        "is_array": false
+      },
+        "protocol": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

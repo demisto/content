@@ -1,10 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import datetime as dt
-from typing import TYPE_CHECKING, cast
 from collections.abc import Iterator
+from typing import TYPE_CHECKING, cast
 
+import demistomock as demisto  # noqa: F401
 from AWSApiModule import *
+from CommonServerPython import *  # noqa: F401
 
 # The following import are used only for type hints and autocomplete.
 # It is not used at runtime, and not exist in the docker image.
@@ -13,11 +13,11 @@ if TYPE_CHECKING:
     from mypy_boto3_securityhub.type_defs import AwsSecurityFindingTypeDef
 
 
-VENDOR = 'AWS'
-PRODUCT = 'Security Hub'
-TIME_FIELD = 'CreatedAt'
+VENDOR = "AWS"
+PRODUCT = "Security Hub"
+TIME_FIELD = "CreatedAt"
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-DEFAULT_FIRST_FETCH = '3 days'
+DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_RESULTS = 1000
 API_MAX_PAGE_SIZE = 100  # The API only allows a maximum of 100 results per request. Using more raises an error.
 
@@ -43,20 +43,25 @@ def generate_last_run(events: list["AwsSecurityFindingTypeDef"]) -> dict[str, An
     # Since the "_time" key is added to each event, the event type changes from "AwsSecurityFindingTypeDef" to just dict
     events = cast(list[dict[str, Any]], events)
     for event in events:
-        event['_time'] = event[TIME_FIELD]
+        event["_time"] = event[TIME_FIELD]
 
         if event[TIME_FIELD] == last_update_date:
-            ignore_list.append(event['Id'])
+            ignore_list.append(event["Id"])
 
     return {
-        'last_update_date': last_update_date,
-        'last_update_date_finding_ids': ignore_list,
+        "last_update_date": last_update_date,
+        "last_update_date_finding_ids": ignore_list,
     }
 
 
-def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = None,
-               end_time: dt.datetime | None = None, id_ignore_list: list[str] | None = None,
-               page_size: int = API_MAX_PAGE_SIZE, limit: int = 0) -> Iterator[List["AwsSecurityFindingTypeDef"]]:
+def get_events(
+    client: "SecurityHubClient",
+    start_time: dt.datetime | None = None,
+    end_time: dt.datetime | None = None,
+    id_ignore_list: list[str] | None = None,
+    page_size: int = API_MAX_PAGE_SIZE,
+    limit: int = 0,
+) -> Iterator[List["AwsSecurityFindingTypeDef"]]:
     """
     Fetch events from AWS Security Hub.
 
@@ -72,20 +77,19 @@ def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = Non
     Yields:
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
     """
-    kwargs: dict = {'SortCriteria': [{'Field': TIME_FIELD, 'SortOrder': 'asc'}]}
+    kwargs: dict = {"SortCriteria": [{"Field": TIME_FIELD, "SortOrder": "asc"}]}
     filters: dict = {}
 
     if end_time and not start_time:
-        raise ValueError('start_time must be set if end_time is used.')
+        raise ValueError("start_time must be set if end_time is used.")
 
     if start_time:
-        filters[TIME_FIELD] = [{
-            'Start':
-                start_time.strftime(DATETIME_FORMAT),
-            'End':
-                end_time.strftime(DATETIME_FORMAT) if end_time else
-                dt.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-        }]
+        filters[TIME_FIELD] = [
+            {
+                "Start": start_time.strftime(DATETIME_FORMAT),
+                "End": end_time.strftime(DATETIME_FORMAT) if end_time else dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            }
+        ]
 
     if id_ignore_list:
         id_ignore_set = set(id_ignore_list)
@@ -95,36 +99,40 @@ def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = Non
     if filters:
         # We send kwargs because passing Filters=None to get_findings() tries to use a None value for filters,
         # which raises an error.
-        kwargs['Filters'] = filters
+        kwargs["Filters"] = filters
 
     count = 0
 
     while True:
         if limit and limit - count < page_size:
-            kwargs['MaxResults'] = limit - count
+            kwargs["MaxResults"] = limit - count
 
         else:
-            kwargs['MaxResults'] = page_size
+            kwargs["MaxResults"] = page_size
 
         response = client.get_findings(**kwargs)
-        result = response.get('Findings', [])
+        result = response.get("Findings", [])
 
         # Filter out events based on id_ignore_set
-        result = [event for event in result if event['Id'] not in id_ignore_set]
+        result = [event for event in result if event["Id"] not in id_ignore_set]
 
         count += len(result)
-        yield result
+        yield result  # type: ignore
 
-        if 'NextToken' in response and (limit == 0 or count < limit):
-            kwargs['NextToken'] = response['NextToken']
+        if "NextToken" in response and (limit == 0 or count < limit):
+            kwargs["NextToken"] = response["NextToken"]
 
         else:
             break
 
 
-def fetch_events(client: "SecurityHubClient", last_run: dict, first_fetch_time: dt.datetime | None,
-                 page_size: int = API_MAX_PAGE_SIZE, limit: int = 0
-                 ) -> tuple[list["AwsSecurityFindingTypeDef"], dict, Exception | None]:
+def fetch_events(
+    client: "SecurityHubClient",
+    last_run: dict,
+    first_fetch_time: dt.datetime | None,
+    page_size: int = API_MAX_PAGE_SIZE,
+    limit: int = 0,
+) -> tuple[list["AwsSecurityFindingTypeDef"], dict, Exception | None]:
     """
     Fetch events from AWS Security Hub and send them to XSIAM.
 
@@ -135,43 +143,41 @@ def fetch_events(client: "SecurityHubClient", last_run: dict, first_fetch_time: 
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
         limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).
     """
-    if last_run.get('last_update_date'):
-        start_time = parse_date_string(last_run['last_update_date'])
+    if last_run.get("last_update_date"):
+        start_time = parse_date_string(last_run["last_update_date"])
 
     else:
         start_time = first_fetch_time
 
-    id_ignore_list: list = last_run.get('last_update_date_finding_ids', [])
+    id_ignore_list: list = last_run.get("last_update_date_finding_ids", [])
 
-    events: list["AwsSecurityFindingTypeDef"] = []
+    events: list[AwsSecurityFindingTypeDef] = []
     error = None
 
     try:
-        for events_batch in get_events(client=client, start_time=start_time, id_ignore_list=id_ignore_list,
-                                       page_size=page_size, limit=limit):
+        for events_batch in get_events(
+            client=client, start_time=start_time, id_ignore_list=id_ignore_list, page_size=page_size, limit=limit
+        ):
             events.extend(events_batch)
 
     except Exception as e:
-        demisto.error(f'Error while fetching events.'
-                      f'Events fetched so far: {len(events)}'
-                      f'Error: {e}')
+        demisto.error(f"Error while fetching events.Events fetched so far: {len(events)}Error: {e}")
         error = e
 
     # --- Set next_run data ---
     if events:
-        demisto.info(f'Fetched {len(events)} findings.')
+        demisto.info(f"Fetched {len(events)} findings.")
         next_run = generate_last_run(events)
-        demisto.info(f'Last run data updated to: {next_run}.')
+        demisto.info(f"Last run data updated to: {next_run}.")
 
     else:
-        demisto.info('No new findings were found.')
+        demisto.info("No new findings were found.")
         next_run = last_run
 
     return events, next_run, error
 
 
-def get_events_command(client: "SecurityHubClient", should_push_events: bool,
-                       page_size: int, limit: int = 0) -> CommandResults:
+def get_events_command(client: "SecurityHubClient", should_push_events: bool, page_size: int, limit: int = 0) -> CommandResults:
     """
     Fetch events from AWS Security Hub.
 
@@ -190,14 +196,10 @@ def get_events_command(client: "SecurityHubClient", should_push_events: bool,
         events.extend(events_batch)
 
     if should_push_events:
-        send_events_to_xsiam(
-            events,
-            vendor=VENDOR,
-            product=PRODUCT
-        )
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     return CommandResults(
-        readable_output=tableToMarkdown('AWS Security Hub Events', events, sort_headers=False),
+        readable_output=tableToMarkdown("AWS Security Hub Events", events, sort_headers=False),
     )
 
 
@@ -206,26 +208,24 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    aws_role_arn = params.get('role_arn')
-    aws_role_session_name = params.get('role_session_name')
-    aws_default_region = params.get('default_region')
-    aws_role_session_duration = params.get('role_session_duration')
-    aws_access_key_id = demisto.get(params, 'credentials.identifier')
-    aws_secret_access_key = demisto.get(params, 'credentials.password')
-    verify_certificate = not params.get('insecure', True)
-    timeout = params.get('timeout')
-    retries = params.get('retries', 5)
+    aws_role_arn = params.get("role_arn")
+    aws_role_session_name = params.get("role_session_name")
+    aws_default_region = params.get("default_region")
+    aws_role_session_duration = params.get("role_session_duration")
+    aws_access_key_id = demisto.get(params, "credentials.identifier")
+    aws_secret_access_key = demisto.get(params, "credentials.password")
+    verify_certificate = not params.get("insecure", True)
+    timeout = params.get("timeout")
+    retries = params.get("retries", 5)
 
-    limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_RESULTS
+    limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_RESULTS
 
     if limit <= 0:
         raise ValueError("Max fetch value cannot be lower than 1.")
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', DEFAULT_FIRST_FETCH),
-        arg_name='First fetch time',
-        required=True
+        arg=params.get("first_fetch", DEFAULT_FIRST_FETCH), arg_name="First fetch time", required=True
     )
 
     try:
@@ -250,39 +250,37 @@ def main():  # pragma: no cover
             retries=retries,
         )
 
-        client: "SecurityHubClient" = aws_client.aws_session(
-            service='securityhub',
+        client: SecurityHubClient = aws_client.aws_session(
+            service="securityhub",
             region=aws_default_region,
             role_arn=aws_role_arn,
             role_session_name=aws_role_session_name,
             role_session_duration=aws_role_session_duration,
         )
 
-        demisto.info(f'Executing \"{command}\" command...')
+        demisto.info(f'Executing "{command}" command...')
 
-        if command == 'test-module':
+        if command == "test-module":
             next(get_events(client=client, limit=1))
-            return_results('ok')
+            return_results("ok")
 
-        elif command == 'aws-securityhub-get-events':
-            should_push_events = argToBoolean(args.get('should_push_events', False))
-            page_size = arg_to_number(args.get('page_size', API_MAX_PAGE_SIZE))
+        elif command == "aws-securityhub-get-events":
+            should_push_events = argToBoolean(args.get("should_push_events", False))
+            page_size = arg_to_number(args.get("page_size", API_MAX_PAGE_SIZE))
 
             if page_size is None or page_size > 100:
-                raise ValueError('Page size cannot be larger than 100 (not supported by the API).')
+                raise ValueError("Page size cannot be larger than 100 (not supported by the API).")
 
-            limit = arg_to_number(args.get('limit')) or 1
+            limit = arg_to_number(args.get("limit")) or 1
 
             if limit is None or limit <= 0:
                 raise ValueError("Max fetch value cannot be lower than 1.")
 
             return_results(
-                get_events_command(client=client,
-                                   should_push_events=should_push_events,
-                                   page_size=page_size,
-                                   limit=limit))
+                get_events_command(client=client, should_push_events=should_push_events, page_size=page_size, limit=limit)
+            )
 
-        elif command == 'fetch-events':
+        elif command == "fetch-events":
             events, next_run, error = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
@@ -294,21 +292,23 @@ def main():  # pragma: no cover
             demisto.setLastRun(next_run)
 
             if error and events:
-                raise Exception(f'An error occurred while running fetch-events. '
-                                f'The operation was partially successful, but failed midway.\n'
-                                f'A total of {len(events)} events were successfully fetched '
-                                f'before the error occurred.') from error
+                raise Exception(
+                    f"An error occurred while running fetch-events. "
+                    f"The operation was partially successful, but failed midway.\n"
+                    f"A total of {len(events)} events were successfully fetched "
+                    f"before the error occurred."
+                ) from error
 
             elif error:
                 raise error
 
         else:
-            raise NotImplementedError(f'Command \"{command}\" is not implemented.')
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{e}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

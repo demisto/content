@@ -2111,11 +2111,423 @@ script:
       name: username
     description: Update an existing shared credential.
     name: nexpose-update-shared-credential
+  - name: nexpose-create-tag
+    arguments:
+    - name: name
+      required: true
+      description: The tag name.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - owner
+      - location
+      - custom
+      description: The tag type.
+    - name: color
+      auto: PREDEFINED
+      predefined:
+      - blue
+      - green
+      - orange
+      - red
+      - purple
+      - default
+      description: The tag color - relevant only for "custom" type.
+      defaultValue: Default
+    - name: ip_address_is
+      description: A specific IP address to search for.
+    - name: host_name_is
+      description: A specific host name to search for.
+    - name: risk_score_higher_than
+      description: A minimum risk score to use as a filter.
+    - name: vulnerability_title_contains
+      description: A string to search for in vulnerability titles.
+    - name: site_id_in
+      description: Site IDs to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: site_name_in
+      description: Site names to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: match
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Any
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
+      defaultValue: Any
+    - name: query
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+    description: Create a tag.
+    outputs:
+    - contextPath: Nexpose.Tag.id
+      description: The tag ID.
+      type: int
+  - name: nexpose-delete-tag
+    arguments:
+    - name: id
+      required: true
+      description: The tag ID.
+    description: Delete a tag.
+  - name: nexpose-list-tag
+    arguments:
+    - name: id
+      description: Get tag by ID.
+    - name: name
+      description: Filters the returned tags to only those containing the value within their name.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - owner
+      - location
+      - custom
+      description: Filters the returned tags to only those of this type.
+    - name: page_size
+      description: Number of records to retrieve in each API call when pagination is used.
+    - name: page
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
+    - name: limit
+      description: A number of records to limit the response to.
+    description: Return a list of tags.
+    outputs:
+    - contextPath: Nexpose.Tag.color
+      description: The color associated with the tag.
+      type: String
+    - contextPath: Nexpose.Tag.created
+      description: The date when the tag was created.
+      type: Date
+    - contextPath: Nexpose.Tag.id
+      description: The unique identifier of the tag.
+      type: Number
+    - contextPath: Nexpose.Tag.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Nexpose.Tag.searchCriteria.match
+      description: The match criteria used for the tag search (e.g., "all" or "any").
+      type: String
+    - contextPath: Nexpose.Tag.searchCriteria.filters.field
+      description: The field name used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.searchCriteria.filters.operator
+      description: The operator used in the tag search filter (e.g., "is", "contains", "is-greater-than").
+      type: String
+    - contextPath: Nexpose.Tag.searchCriteria.filters.lower
+      description: The lower bound of the range used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.searchCriteria.filters.upper
+      description: The upper bound of the range used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.source
+      description: The source of the tag.
+      type: String
+    - contextPath: Nexpose.Tag.type
+      description: The type of the tag.
+      type: String
+    - contextPath: Nexpose.Tag.searchCriteria.filters.value
+      description: The value used in the tag search filter.
+      type: String
+    - contextPath: Nexpose.Tag.page.number
+      description: The current page number in the paginated response.
+      type: Number
+    - contextPath: Nexpose.Tag.page.size
+      description: The number of items per page in the paginated response.
+      type: Number
+    - contextPath: Nexpose.Tag.page.totalResources
+      description: The total number of resources available.
+      type: Number
+    - contextPath: Nexpose.Tag.page.totalPages
+      description: The total number of pages available.
+      type: Number
+  - name: nexpose-update-tag-search-criteria
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: ip_address_is
+      description: A specific IP address to search for.
+    - name: host_name_is
+      description: A specific host name to search for.
+    - name: risk_score_higher_than
+      description: A minimum risk score to use as a filter.
+    - name: vulnerability_title_contains
+      description: A string to search for in vulnerability titles.
+    - name: site_id_in
+      description: Site IDs to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: site_name_in
+      description: Site names to filter for. Can be a comma-separated list.
+    - name: match
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Any
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
+      defaultValue: Any
+    - name: query
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+    - name: overwrite
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether to overwrite the original search values or append new conditions to the existing search.
+      defaultValue: "no"
+    description: Update tag search criteria.
+  - name: nexpose-list-tag-asset-group
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    description: Return a list of asset groups for a tag.
+    outputs:
+    - contextPath: Nexpose.TagAssetGroup.id
+      description: Asset group ID.
+      type: int
+  - name: nexpose-add-tag-asset-group
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_group_ids
+      required: true
+      description: The asset group IDs to add. Can be a comma-separated list.
+    description: Add existing asset groups to an existing tag.
+  - name: nexpose-remove-tag-asset-group
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_group_id
+      required: true
+      description: The asset group ID.
+    description: Remove an asset group from a tag.
+  - name: nexpose-list-tag-asset
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    description: Return the tag assets list.
+    outputs:
+    - contextPath: Nexpose.TagAsset.id
+      description: Asset ID.
+      type: int
+    - contextPath: Nexpose.TagAsset.sources
+      description: The asset sources.
+      type: string
+  - name: nexpose-add-tag-asset
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_id
+      required: true
+      description: The asset ID.
+    description: Add an existing asset to an existing tag.
+  - name: nexpose-remove-tag-asset
+    arguments:
+    - name: tag_id
+      required: true
+      description: The tag ID.
+    - name: asset_id
+      required: true
+      description: The asset ID.
+    description: Remove an asset from a tag. Note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
+  - name: nexpose-add-site-included-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    - name: assets
+      description: List of addresses to add to the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      isArray: true
+    - name: asset_group_ids
+      isArray: true
+      description: List of asset group identifiers.
+    description: Add included assets to a site.
+  - name: nexpose-remove-site-included-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    - name: assets
+      isArray: true
+      description: List of addresses to remove from the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+    - name: asset_group_ids
+      isArray: true
+      description: List of asset group identifiers.
+    description: Remove included assets from a site.
+  - name: nexpose-list-site-included-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    description: Return a list of included assets for a site.
+    outputs:
+    - contextPath: Nexpose.IncludedAsset.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.IncludedAsset.addresses
+      description: A list of addresses of the included assets for the specified site.
+      type: string
+  - name: nexpose-list-site-included-asset-group
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    description: Return a list of included asset groups for a site.
+    outputs:
+    - contextPath: Nexpose.IncludedAssetGroup.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.IncludedAssetGroup.resources
+      description: The asset group ID.
+      type: int
+  - name: nexpose-add-site-excluded-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    - name: assets
+      description: List of addresses to add to the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+    - name: asset_group_ids
+      description: List of asset group IDs to exclude.
+    description: Add excluded assets to a site.
+  - name: nexpose-remove-site-excluded-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    - name: assets
+      description: List of addresses to remove from the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+    - name: asset_group_ids
+      description: List of asset group IDs to remove from the site's exclusion list.
+    description: Remove excluded assets from a site.
+  - name: nexpose-list-site-excluded-asset
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    description: Return a list of excluded assets for a site.
+    outputs:
+    - contextPath: Nexpose.ExcludedAsset.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.ExcludedAsset.addresses
+      description: A list of addresses of the excluded assets for the specified site.
+      type: string
+  - name: nexpose-list-site-excluded-asset-group
+    arguments:
+    - name: site_id
+      required: true
+      description: A URL parameter.
+    description: Return a list of excluded asset groups for a site.
+    outputs:
+    - contextPath: Nexpose.ExcludedAssetGroup.site_id
+      description: The site ID.
+      type: int
+    - contextPath: Nexpose.ExcludedAssetGroup.resources
+      description: The asset group ID.
+      type: int
+  - name: nexpose-create-asset-group
+    arguments:
+    - name: name
+      required: true
+      description: The asset group name.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - static
+      - dynamic
+      description: The asset group type.
+    - name: description
+      required: true
+      description: The description of the asset group.
+    - name: ip_address_is
+      description: A specific IP address to search for.
+    - name: host_name_is
+      description: A specific host name to search for.
+    - name: risk_score_higher_than
+      description: A minimum risk score to use as a filter.
+    - name: vulnerability_title_contains
+      description: A string to search for in vulnerability titles.
+    - name: site_id_in
+      description: Site IDs to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: site_name_in
+      description: Site names to filter for. Can be a comma-separated list.
+      isArray: true
+    - name: match
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Any
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
+      defaultValue: Any
+    - name: query
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+    description: 'Create an asset group. Note: All filters are relevant only for Dynamic asset groups.'
+    outputs:
+    - contextPath: Nexpose.AssetGroup.id
+      description: The asset group ID.
+      type: int
+  - name: nexpose-list-asset-group
+    arguments:
+    - name: group_id
+      description: Get asset group by ID.
+    - name: group_name
+      description: Filters the returned asset groups to only those containing the value within their name.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - static
+      - dynamic
+      description: Filters the returned asset groups to only those of this type.
+    - name: page_size
+      description: Number of records to retrieve in each API call when pagination is used.
+    - name: page
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
+    - name: limit
+      description: A number of records to limit the response to.
+    - name: sort
+      description: The criteria to sort the records by, in the format property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters.
+    description: Return a list of asset groups.
+    outputs:
+    - contextPath: Nexpose.AssetGroup.assets
+      description: 'The number of assets in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.id
+      description: 'The unique identifier of the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.name
+      description: 'The name of the asset group.'
+      type: String
+    - contextPath: Nexpose.AssetGroup.riskScore
+      description: 'The cumulative risk score of the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.type
+      description: 'The type of the asset group.'
+      type: String
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.critical
+      description: 'The number of critical vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.moderate
+      description: 'The number of moderate vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.severe
+      description: 'The number of severe vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.vulnerabilities.total
+      description: 'The total number of vulnerabilities in the asset group.'
+      type: Number
+    - contextPath: Nexpose.AssetGroup.description
+      description: 'The description of the asset group.'
+      type: String
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.11.1940698
 fromversion: 5.0.0
 tests:
 - nexpose_test

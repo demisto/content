@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Xpanse Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xpanseattacksurfacerulename",
+    "closeForm": false,
+    "content": true,
+    "description": "Attack Surface Rule Name",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_xpanseattacksurfacerulename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Xpanse Attack Surface Rule Name",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

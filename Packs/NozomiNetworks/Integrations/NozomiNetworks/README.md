@@ -1,27 +1,25 @@
-The Nozomi Networks Guardian platform is a hardware or virtual appliance that is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution.
-  This integration is used to gather alert and asset information from Nozomi.
+The Nozomi Networks integration enables the collection of alert and asset information from Nozomi’s suite of products, including Guardian, CMC, and the cloud-based Vantage platform. These solutions provide comprehensive OT/IoT/IT network monitoring through asset discovery, network visualization, vulnerability assessment, risk monitoring, and threat detection — all within a unified platform.
 
-## Configure Nozomi Networks on Cortex XSOAR
+This integration is used to gather alert and asset information from Nozomi.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Nozomi Networks.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Nozomi Networks in Cortex
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| endpoint | Endpoint url | True |
-| username | Username | True |
-| password | Password | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| isFetch | Fetch incidents | False |
-| fetchTime | Get incidents from last | False |
-| riskFrom | Get incidents from risk level | False |
-| fecthAlsoIncidents | Fetch also nozomi incidents | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description**                                        | **Required** |
+| --- |--------------------------------------------------------| --- |
+| endpoint | Endpoint url                                           | True |
+| username | Username                                               | True |
+| password | Password                                               | True |
+| insecure | Trust any certificate \(not secure\)                   | False |
+| proxy | Use system proxy settings                              | False |
+| isFetch | Fetch incidents                                        | False |
+| fetchTime | Get incidents from last                                | False |
+| riskFrom | Get incidents from risk level                          | False |
+| fecthAlsoIncidents | Fetch also nozomi incidents                            | False |
+| incidentPerRun | Specifies the maximum number of incidents to retrieve  | False |
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nozomi-find-assets
 ***

@@ -4,7 +4,7 @@ commonfields:
 name: SafewalkReports
 display: Safewalk Reports
 category: Analytics & SIEM
-description: Safewalk server integration
+description: Safewalk server integration.
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
@@ -121,15 +121,15 @@ script:
   - name: safewalk-get-associated-users
     outputs:
     - contextPath: Safewalk.reports.associated_users.data.id
-      description: 'users data id'
+      description: 'users data id.'
       type: String
     - contextPath: Safewalk.reports.associated_users.data.label
-      description: 'users data label'
+      description: 'users data label.'
       type: String
     arguments:
     - name: devicetype
-      description: devicetype
-    description: safewalk-get-associated-users
+      description: devicetype.
+    description: safewalk-get-associated-users.
   - name: safewalk-get-authentication-methods-distribution
     outputs:
     - contextPath: Safewalk.reports.device_auth_distribution.data.id
@@ -145,7 +145,7 @@ script:
       description: 'device_auth_distribution.data'
       type: Number
     arguments: []
-    description: safewalk-get-authentication-methods-distribution
+    description: safewalk-get-authentication-methods-distribution.
   - name: safewalk-get-authentication-rate-per-device
     outputs:
     - contextPath: Safewalk.reports.device_auth_rate.data.id
@@ -161,7 +161,7 @@ script:
       description: 'device_auth_rate.data'
       type: Number
     arguments: []
-    description: safewalk-get-authentication-rate-per-device
+    description: safewalk-get-authentication-rate-per-device.
   - name: safewalk-get-least-active-users
     outputs:
     - contextPath: Safewalk.reports.inactive_users.data.id
@@ -172,52 +172,52 @@ script:
       type: String
     arguments:
     - name: sincedate
-      description: sincedate
+      description: sincedate.
     - name: userinformation
-      description: userinformation
-    description: safewalk-get-least-active-users
+      description: userinformation.
+    description: safewalk-get-least-active-users.
   - name: safewalk-get-licenses-inventory
     outputs:
     - contextPath: Safewalk.reports.licensesinventory.total
-      description: 'licenses inventory total'
+      description: 'licenses inventory total.'
       type: Number
     - contextPath: Safewalk.reports.licensesinventory.data.id
-      description: 'icenses inventory data id'
+      description: 'icenses inventory data id.'
       type: String
     - contextPath: Safewalk.reports.licensesinventory.data.label
-      description: 'licenses inventory data label'
+      description: 'licenses inventory data label.'
       type: String
     - contextPath: Safewalk.reports.licensesinventory.data.type
-      description: 'licenses inventory data type'
+      description: 'licenses inventory data type.'
       type: String
     - contextPath: Safewalk.reports.licensesinventory.data
-      description: 'licenses inventory data'
+      description: 'licenses inventory data.'
       type: Number
     arguments: []
-    description: safewalk-get-licenses-inventory
+    description: safewalk-get-licenses-inventory.
   - name: safewalk-get-licenses-usage
     outputs:
     - contextPath: Safewalk.reports.licensesusage.total
-      description: 'licenses usage total'
+      description: 'licenses usage total.'
       type: Number
     - contextPath: Safewalk.reports.licensesusage.data.id
-      description: 'licenses usage data id'
+      description: 'licenses usage data id.'
       type: String
     - contextPath: Safewalk.reports.licensesusage.data.label
-      description: 'licenses usage data label'
+      description: 'licenses usage data label.'
       type: String
     - contextPath: Safewalk.reports.licensesusage.data.type
-      description: 'licenses usage data type'
+      description: 'licenses usage data type.'
       type: String
     - contextPath: Safewalk.reports.licensesusage.data
-      description: 'licenses usage data'
+      description: 'licenses usage data.'
       type: Number
     arguments:
     - name: begindate
-      description: begindate
+      description: begindate.
     - name: enddate
-      description: enddate
-    description: safewalk-get-licenses-usage
+      description: enddate.
+    description: safewalk-get-licenses-usage.
   - name: safewalk-get-most-active-users
     outputs:
     - contextPath: Safewalk.reports.mostactiveusers.data.id
@@ -234,12 +234,12 @@ script:
       type: String
     arguments:
     - name: days
-      description: days
+      description: days.
     - name: limit
-      description: limit
+      description: limit.
     - name: userinformation
-      description: userinformation
-    description: safewalk-get-most-active-users
+      description: userinformation.
+    description: safewalk-get-most-active-users.
   - name: safewalk-get-physical-tokens-inventory
     outputs:
     - contextPath: Safewalk.reports.physicaltokeninventory.total
@@ -258,7 +258,7 @@ script:
       description: 'physicaltokeninventory.data'
       type: Number
     arguments: []
-    description: safewalk-get-physical-tokens-inventory
+    description: safewalk-get-physical-tokens-inventory.
   - name: safewalk-get-registered-devices-distribution
     outputs:
     - contextPath: Safewalk.reports.registereddevices.total
@@ -277,7 +277,7 @@ script:
       description: 'registereddevices.data'
       type: Number
     arguments: []
-    description: safewalk-get-registered-devices-distribution
+    description: safewalk-get-registered-devices-distribution.
   - name: safewalk-get-registration
     outputs:
     - contextPath: Safewalk.reports.registration.total
@@ -294,12 +294,12 @@ script:
       type: String
     arguments:
     - name: begindate
-      description: begindate
+      description: begindate.
     - name: enddate
-      description: enddate
+      description: enddate.
     - name: userinformation
-      description: userinformation
-    description: safewalk-get-registration
+      description: userinformation.
+    description: safewalk-get-registration.
   - name: safewalk-get-users-associations-indicators
     outputs:
     - contextPath: Safewalk.reports.usersassociations.total
@@ -318,8 +318,8 @@ script:
       description: 'usersassociations.data'
       type: Number
     arguments: []
-    description: safewalk-get-users-associations-indicators
-  dockerimage: demisto/python3:3.10.12.63474
+    description: safewalk-get-users-associations-indicators.
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,30 @@
+{
+  "trigger_id": "259eeaa4dfd198e11af883e4ecc8ab5f",
+  "playbook_id": "silent-MFA was disabled for an Azure identity",
+  "suggestion_reason": "Recommended for 'MFA was disabled for an Azure identity' and 'MFA was disabled for an Azure identity from a new country' alerts",
+  "description": "This trigger runs the A MFA was disabled for an Azure identity playbook, which handles the 'MFA was disabled for an Azure identity' and 'MFA was disabled for an Azure identity from a new country' alerts.",
+  "trigger_name": "silent-MFA was disabled for an Azure identity",
+  "issilent": true,
+  "fromVersion": "8.9.0", 
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "MFA was disabled for an Azure identity"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "MFA was disabled for an Azure identity from a new country."
+                }
+                ]
+            }
+        ]    
+    }
+  }
+}
+

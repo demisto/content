@@ -1,0 +1,124 @@
+{
+    "items": [
+        {
+            "__event_id": "ZXZlbnRzLTUyYmQwNDVmLTQxOTktNDM2MS04MjY3LWNkZWJmYzc4NDM5Mi0",
+            "timestamp": "2024-04-25T14:11:10.652Z",
+            "agent.id": "6a779e00ed1642ab91a9afcb20b4b4de371a62d28",
+            "agent.version": "v1.5.0+909fc425bc21b",
+            "process.args": "C:\\Windows\\system32\\SekoiaTest.exe",
+            "process.parent.args": "C:\\Windows\\system32\\SekoiaTest.exe",
+            "process.parent.name": "SekoiaTest.exe",
+            "process.parent.pid": 1002,
+            "process.parent.command_line": "C:\\Windows\\system32\\SekoiaTest.exe",
+            "process.parent.executable": "C:\\Windows\\System32\\SekoiaTest.exe",
+            "process.name": "processNameTest.exe",
+            "process.pid": 623,
+            "process.command_line": "\"C:\\Windows\\system32\\processNameTest.exe\" -ServerName:testserver",
+            "process.executable": "C:\\Windows\\system32\\processNameTest.exe",
+            "message": "{}",
+            "related.hosts": "laptop-test",
+            "related.ip": "1.2.3.4",
+            "related.user": "joe.done",
+            "sekoiaio.any_tag": "rfc5555, rfc1111",
+            "sekoiaio.process.parent_guid": "52bff9b3-fa38-4724",
+            "sekoiaio.process.guid": "dd924315-2807-45de",
+            "sekoiaio.assets.host.hostname.uuid": [
+                "85dbcf0f-cc30-421e"
+            ],
+            "sekoiaio.assets.host.ip.uuid": [
+                "85dbcf0f-cc30-421e"
+            ],
+            "sekoiaio.assets.host.name.uuid": [
+                "85dbcf0f-cc30-421e"
+            ],
+            "sekoiaio.assets.user.name.uuid": [
+                "9d99b786-6eaf-46d7"
+            ],
+            "sekoiaio.any_asset.uuid": [
+                [
+                    "85dbcf0f-cc30-421e"
+                ],
+                [
+                    "9d99b786-6eaf-46d7"
+                ]
+            ],
+            "sekoiaio.any_asset.criticality_value": [
+                [
+                    0
+                ],
+                [
+                    0
+                ]
+            ],
+            "sekoiaio.any_asset.name": [
+                [
+                    "laptop-test"
+                ],
+                [
+                    "joe.done"
+                ]
+            ],
+            "sekoiaio.intake.parsing_status": "success",
+            "sekoiaio.intake.dialect": "sekoia.io endpoint agent",
+            "sekoiaio.intake.name": "Sekoia Agent ARY",
+            "sekoiaio.intake.dialect_uuid": "250e4095-fa08-4101",
+            "sekoiaio.intake.uuid": "834a2d7f-3623-4b26",
+            "sekoiaio.intake.key": "WJ4KkMbT8wkiFVkWpv",
+            "sekoiaio.entity.name": "Sekoia Agent ARY",
+            "sekoiaio.entity.id": "1001",
+            "sekoiaio.entity.uuid": "7f7676e7-a254-43c3",
+            "sekoiaio.tags.related.ip": [
+                "rfc5735",
+                "rfc1918"
+            ],
+            "sekoiaio.tags.host.ip": [
+                "rfc5735",
+                "rfc1918"
+            ],
+            "sekoiaio.customer.community_name": "Sandbox",
+            "sekoiaio.customer.community_uuid": "52bd045f-4199-4361",
+            "sekoiaio.customer.id": "Sandbox",
+            "host.hostname": "laptop-test",
+            "host.os.type": "windows",
+            "host.ip": "1.2.3.4",
+            "host.name": "laptop-test",
+            "action.name": "process-created",
+            "action.id": 1,
+            "action.properties.ExitStatus": "259",
+            "action.properties.ProviderGuid": "{3D6FA8D0-FE05-11D0}",
+            "action.properties.Keywords": "0x0",
+            "action.properties.ImageFileName": "SekoiaTest.exe",
+            "action.properties.PackageFullName": "",
+            "action.properties.SourceName": "Kernel-Process",
+            "action.properties.Severity": "LOG_ALWAYS",
+            "action.properties.UniqueProcessKey": "0xFFFFB3811111111",
+            "action.properties.Flags": "0",
+            "action.properties.ApplicationId": "",
+            "action.properties.SessionId": "2",
+            "action.properties.DirectoryTableBase": "0x933E111",
+            "action.outcome": "success",
+            "event.code": "1",
+            "event.dialect": "sekoia.io endpoint agent",
+            "event.provider": "SEKOIA-IO",
+            "event.created": "2024-04-25T14:11:28.073386+00:00",
+            "event.action": "process-created",
+            "event.id": "0b83c211-6e79-4a28",
+            "event.dialect_uuid": "250e4095-fa08-4101",
+            "event.type": "creation",
+            "event.category": "process",
+            "event.outcome": "success",
+            "user.domain": "DomainTEST",
+            "user.name": "joe.done",
+            "entity.name": "IT test",
+            "entity.id": "1000",
+            "entity.uuid": "7f7676e7-a254-43c3",
+            "customer.intake_key": "WJ4KkMbT8wkiFVk",
+            "customer.community_name": "Sandbox",
+            "customer.intake_uuid": "834a2d7f-3623-4b26",
+            "customer.community_uuid": "52bd045f-4199-4361",
+            "customer.id": "Sandbox",
+            "customer.intake_name": "Sekoia Agent ARY"
+        }
+    ],
+    "total": 1
+}

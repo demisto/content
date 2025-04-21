@@ -81,9 +81,14 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.81101
+dockerimage: demisto/py3-tools:1.0.0.114656
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
 - IAMInitOktaUser - Test
 polling: true
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

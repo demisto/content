@@ -18,28 +18,28 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: National Vulnerability Database
+description: National Vulnerability Database.
 display: Nist NVD
 name: Nist NVD
 script:
   commands:
   - arguments:
     - default: true
-      defaultValue: "12"
-      description: 'Get vulnerability last time that given parameter Example: time=24'
+      defaultValue: '30'
+      description: 'Get vulnerability within this time frame (in days - max range is 120 days). Example: time=30.'
       name: time
       required: true
     - defaultValue: "20"
-      description: 'Default: 20'
+      description: 'Default: 20.'
       name: resultsPerPage
     - defaultValue: "0"
-      description: 'Using for paging. Default: 0'
+      description: 'Using for paging. Default: 0.'
       name: startIndex
     description: You can get latest vulnerabilities with given time from National Vulnerability Database.
     name: nvd-get-vulnerability
   - arguments:
     - default: true
-      description: 'Example: keyword=apple'
+      description: 'Example: keyword=apple.'
       name: keyword
       required: true
     - auto: PREDEFINED
@@ -50,87 +50,88 @@ script:
       - "true"
       - "false"
       required: true
-    - defaultValue: "24"
-      description: 'Get vulnerability last time that given parameter Example: time=24'
+    - defaultValue: '30'
+      description: 'Get vulnerability within this time frame (in days - max range is 120 days). Example: time=30.'
       name: time
     - defaultValue: "20"
-      description: 'Default: 20'
+      description: 'Default: 20.'
       name: resultsPerPage
     - defaultValue: "0"
-      description: 'Using for paging. Default: 0'
+      description: 'Using for paging. Default: 0.'
       name: startIndex
     description: The keyword parameter allows your application to retrieve records where a word or phrase is found in the vulnerability description or reference links.
     name: nvd-search-keyword
   - arguments:
     - auto: PREDEFINED
       default: true
-      defaultValue: cvssV3
-      description: cvssV3 or cvssV2
+      defaultValue: cvssV4
+      description: cvssV4, cvssV3 or cvssV2.
       name: cvssType
       predefined:
-      - cvssV3
       - cvssV2
+      - csvsV3
+      - cvssV4
       required: true
     - auto: PREDEFINED
       defaultValue: Severity
-      description: 'Search parameter that use with CVSS. Example: cvssV2Severity | cvssV3Metrics'
+      description: 'Search parameter that use with CVSS. Example: cvssV3Metrics | cvssV4Severity.'
       name: key
       predefined:
       - Severity
       - Metrics
       required: true
-    - description: 'Two pairs of parameters allow you to filter vulnerabilities based on CVSS base scores. Use either the cvssV2Severity or cvssV3Severity parameter to find vulnerabilities having a LOW, MEDIUM, or HIGH version 2 or 3.x score, respectively. For CVSS V3.x, cvssV3Severity=CRITICAL is also supported. Example: cvssV2Severity=HIGH | cvssV3Metrics=C:H/A:N | cvssV3Metrics=AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N'
+    - description: 'Two pairs of parameters allow you to filter vulnerabilities based on CVSS base scores. Use either the cvssV2Severity or cvssV3Severity parameter to find vulnerabilities having a LOW, MEDIUM, or HIGH version 2 or 3.x score, respectively. For CVSS V3.x, cvssV3Severity=CRITICAL is also supported. Example: cvssV2Severity=HIGH | cvssV3Metrics=C:H/A:N | cvssV3Metrics=AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N.'
       name: value
       required: true
-    - defaultValue: "24"
-      description: 'Get vulnerability last time that given parameter Example: time=24'
+    - defaultValue: '30'
+      description: 'Get vulnerability within this time frame (in days - max range is 120 days). Example: time=30.'
       name: time
     - defaultValue: "20"
-      description: 'Default: 20'
+      description: 'Default: 20.'
       name: resultsPerPage
     - defaultValue: "0"
-      description: 'Using for paging. Default: 0'
+      description: 'Using for paging. Default: 0.'
       name: startIndex
     description: CVSS refers to the scoring system used by NIST to assess the severity of vulnerabilities, https://www.first.org/cvss/. NVD provides base scores using the CVSS version 2 and, more recently, version 3.x.
     name: nvd-search-cvss
   - arguments:
     - default: true
-      description: 'Example: cweId=CWE-20'
+      description: 'Example: cweId=CWE-20.'
       name: cweId
       required: true
-    - defaultValue: "24"
-      description: 'Get vulnerability last time that given parameter Example: time=24'
+    - defaultValue: '30'
+      description: 'Get vulnerability within this time frame (in days - max range is 120 days). Example: time=30.'
       name: time
     - defaultValue: "20"
-      description: 'Default: 20'
+      description: 'Default: 20.'
       name: resultsPerPage
     - defaultValue: "0"
-      description: 'Using for paging. Default: 0'
+      description: 'Using for paging. Default: 0.'
       name: startIndex
-    description: 'CWE refers to the classification of vulnerabilities at https://cwe.mitre.org/. NIST staff associate one or more CWE to each vulnerability during the analysis process. In the following example, CWE-20 means vulnerabilities caused by Improper Input Validation. To filter search results based on CWE, use the cweId parameter. Example: cweId=CWE-20'
+    description: 'CWE refers to the classification of vulnerabilities at https://cwe.mitre.org/. NIST staff associate one or more CWE to each vulnerability during the analysis process. In the following example, CWE-20 means vulnerabilities caused by Improper Input Validation. To filter search results based on CWE, use the cweId parameter. Example: cweId=CWE-20.'
     name: nvd-search-cwe
   - arguments:
-    - description: 'Example: cpe:2.3:o:microsoft:windows_10 | cpe:2.3:o:microsoft:windows_10:1511 | cpe:2.3:*:microsoft'
+    - description: 'Example: cpe:2.3:o:microsoft:windows_10 | cpe:2.3:o:microsoft:windows_10:1511 | cpe:2.3:*:microsoft.'
       name: cpe
       required: true
-    - defaultValue: "24"
-      description: 'Get vulnerability last time that given parameter Example: time=24'
+    - defaultValue: '30'
+      description: 'Get vulnerability within this time frame (in days - max range is 120 days). Example: time=30.'
       name: time
     - defaultValue: "20"
-      description: 'Default: 20'
+      description: 'Default: 20.'
       name: resultsPerPage
     - defaultValue: "0"
-      description: 'Using for paging. Default: 0'
+      description: 'Using for paging. Default: 0.'
       name: startIndex
     description: NVD analysts identify which product or products are affected by each vulnerability. The set of associated products is known as the applicability statement of the CVE. NVD uses the Common Platform Enumeration (CPE), version 2.3, to convey product vendors, names, versions, etc. For more information, see https://cpe.mitre.org/.
     name: nvd-search-cpe
   - arguments:
-    - description: 'CVEID. Example: CVE-2020-1000'
+    - description: 'CVEID. Example: CVE-2020-1000.'
       name: cve
       required: true
-    description: Search specific CVE
+    description: Search specific CVE.
     name: nvd-search-cve
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
   subtype: python3

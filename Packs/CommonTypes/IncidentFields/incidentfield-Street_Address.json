@@ -6,7 +6,8 @@
   "IAM - Update User",
   "IAM - Terminate User",
   "IAM - Sync User",
-  "IAM - Rehire User"
+  "IAM - Rehire User",
+  "IBM QRadar SOAR Incident"
  ],
  "caseInsensitive": true,
  "cliName": "streetaddress",

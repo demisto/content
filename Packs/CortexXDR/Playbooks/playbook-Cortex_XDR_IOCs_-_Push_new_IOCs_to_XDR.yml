@@ -1,7 +1,5 @@
 id: Cortex XDR IOCs - Push new IOCs to XDR
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex XDR IOCs - Push new IOCs to XDR
 description: This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR - Main" and should not be run on its own. This sub-playbook retrieves IOCs according to the users query input (passed from the main playbook) and pushes them into Cortex XDR, and marks them as "xdr_pushed" or "xdr_not_processed" for further processing.
 tags:
@@ -10,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 41de43ef-0cc6-4cf0-8c2e-6d78dd263bb2
+    taskid: cef9ec15-5ccd-495a-8542-19fd1739b1f6
     type: start
     task:
-      id: 41de43ef-0cc6-4cf0-8c2e-6d78dd263bb2
+      id: cef9ec15-5ccd-495a-8542-19fd1739b1f6
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3e3dc584-06cf-4613-8470-e75fec709b0f
+    taskid: 29e20b4f-91a5-4afe-87f9-32a154c09b95
     type: regular
     task:
-      id: 3e3dc584-06cf-4613-8470-e75fec709b0f
+      id: 29e20b4f-91a5-4afe-87f9-32a154c09b95
       version: -1
       name: Set Done to True
       description: Set a value in context under the key you entered.
@@ -66,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2910,
-          "y": 910
+          "x": 2490,
+          "y": 1050
         }
       }
     note: false
@@ -79,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ed7563d8-ccdf-45d6-86c9-e6eedf159863
+    taskid: 728fc52d-c821-448a-82a6-13129097146e
     type: regular
     task:
-      id: ed7563d8-ccdf-45d6-86c9-e6eedf159863
+      id: 728fc52d-c821-448a-82a6-13129097146e
       version: -1
       name: xdr-iocs-push
       description: Push modified IOCs to Cortex XDR.
@@ -110,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 1830
+          "x": 760,
+          "y": 2240
         }
       }
     note: false
@@ -123,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2e1915a9-44a0-497e-8a4c-178064229803
+    taskid: 3e8cc71e-3c87-4dab-8215-a5bd250f7897
     type: regular
     task:
-      id: 2e1915a9-44a0-497e-8a4c-178064229803
+      id: 3e8cc71e-3c87-4dab-8215-a5bd250f7897
       version: -1
       name: Add xdr_pushed tag
       description: Appends values to the specified indicator field. Supported field types are tags and multi-select.
@@ -149,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 1995
+          "x": 760,
+          "y": 2415
         }
       }
     note: false
@@ -162,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: a33e9b9f-ab00-45e8-85ae-6cb89d84b994
+    taskid: 210fa9a6-3fcc-4096-8127-7dff59c6e4f8
     type: condition
     task:
-      id: a33e9b9f-ab00-45e8-85ae-6cb89d84b994
+      id: 210fa9a6-3fcc-4096-8127-7dff59c6e4f8
       version: -1
       name: Check results
       description: Checks that the IOCs were set in the context.
@@ -206,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6537ae02-847f-4a58-8d94-cd0aa7eb653f
+    taskid: 8837d9d4-caaf-470e-8ad1-cbaba75441d8
     type: regular
     task:
-      id: 6537ae02-847f-4a58-8d94-cd0aa7eb653f
+      id: 8837d9d4-caaf-470e-8ad1-cbaba75441d8
       version: -1
       name: DeleteContext
       description: |-
@@ -217,7 +215,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2180
+          "x": 1370,
+          "y": 2600
         }
       }
     note: false
@@ -248,10 +248,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 1c8efb79-e1e8-41cc-85d8-64d85968dbf0
+    taskid: 82bcb832-074c-44f5-816f-2516e5606f21
     type: title
     task:
-      id: 1c8efb79-e1e8-41cc-85d8-64d85968dbf0
+      id: 82bcb832-074c-44f5-816f-2516e5606f21
       version: -1
       name: Hashes
       type: title
@@ -260,16 +260,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "30"
       - "32"
-      - "36"
+      - "42"
+      - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 910
+          "x": 1370,
+          "y": 1050
         }
       }
     note: false
@@ -281,10 +281,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 0f209921-b352-47d8-8f39-470bffc329a3
+    taskid: 800042d1-a8f3-43e1-8d9a-142a377a178b
     type: title
     task:
-      id: 0f209921-b352-47d8-8f39-470bffc329a3
+      id: 800042d1-a8f3-43e1-8d9a-142a377a178b
       version: -1
       name: IPs and Domains
       type: title
@@ -299,8 +299,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1095,
-          "y": 910
+          "x": 475,
+          "y": 1050
         }
       }
     note: false
@@ -312,10 +312,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e43126f1-6557-4812-80c3-4c23e6fecdde
+    taskid: 832d6236-9369-40f8-8c05-a65395f02d9b
     type: condition
     task:
-      id: e43126f1-6557-4812-80c3-4c23e6fecdde
+      id: 832d6236-9369-40f8-8c05-a65395f02d9b
       version: -1
       name: Has domains or IPs
       description: Are there domains or IOCs to be pushed into Cortex XDR.
@@ -351,8 +351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1095,
-          "y": 1070
+          "x": 475,
+          "y": 1220
         }
       }
     note: false
@@ -364,10 +364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 55450668-f57f-499a-83fd-0cd6f90f7869
+    taskid: e66c89c9-5f6d-4820-8e2f-4f356c0fecdf
     type: title
     task:
-      id: 55450668-f57f-499a-83fd-0cd6f90f7869
+      id: e66c89c9-5f6d-4820-8e2f-4f356c0fecdf
       version: -1
       name: No Domains or IPs
       type: title
@@ -382,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 1315
+          "x": 20,
+          "y": 1500
         }
       }
     note: false
@@ -395,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 3aeb69ec-c52e-4e0e-8663-be1e863e32fd
+    taskid: 28308963-259f-403e-88eb-f5a48cd24593
     type: title
     task:
-      id: 3aeb69ec-c52e-4e0e-8663-be1e863e32fd
+      id: 28308963-259f-403e-88eb-f5a48cd24593
       version: -1
       name: Iteration finished
       type: title
@@ -410,8 +410,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2355
+          "x": 1370,
+          "y": 2775
         }
       }
     note: false
@@ -423,10 +423,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 659faaf6-efb3-4a43-85fc-f55bf87959e9
+    taskid: 2c224f65-12d4-4c6b-8e0c-16494783b268
     type: title
     task:
-      id: 659faaf6-efb3-4a43-85fc-f55bf87959e9
+      id: 2c224f65-12d4-4c6b-8e0c-16494783b268
       version: -1
       name: Done
       type: title
@@ -441,8 +441,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2910,
-          "y": 1660
+          "x": 2490,
+          "y": 2445
         }
       }
     note: false
@@ -454,10 +454,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a21d3afe-7f4a-4145-8042-18dd335781b3
+    taskid: 2c32a92a-da5b-403c-85f3-e1ceaf182ab3
     type: title
     task:
-      id: a21d3afe-7f4a-4145-8042-18dd335781b3
+      id: 2c32a92a-da5b-403c-85f3-e1ceaf182ab3
       version: -1
       name: Domains and IPs done
       type: title
@@ -466,14 +466,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "43"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 1660
+          "x": 250,
+          "y": 1860
         }
       }
     note: false
@@ -485,10 +485,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: bce32652-4b35-4661-8620-b56d09558c2f
+    taskid: a95f8ffd-b23c-4c1b-8f1a-68170411f56a
     type: regular
     task:
-      id: bce32652-4b35-4661-8620-b56d09558c2f
+      id: a95f8ffd-b23c-4c1b-8f1a-68170411f56a
       version: -1
       name: Set SHA256 in context
       description: Set a value in context under the key you entered.
@@ -496,9 +496,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
     scriptarguments:
       append:
         simple: "true"
@@ -516,14 +513,22 @@ tasks:
               right:
                 value:
                   simple: File
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIndicators.sha256
+                iscontext: true
+              right:
+                value:
+                  simple: n/a
           accessor: sha256
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": 1285
+          "x": 940,
+          "y": 1470
         }
       }
     note: false
@@ -533,61 +538,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 6a0454ee-06a7-46db-8cb0-1f051843a34a
-    type: condition
-    task:
-      id: 6a0454ee-06a7-46db-8cb0-1f051843a34a
-      version: -1
-      name: Has SHA256
-      description: Are there SHA256 indicators to push into Cortex XDR.
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
-      '#default#':
-      - "33"
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: foundIndicators.indicator_type
-            iscontext: true
-          right:
-            value:
-              simple: File
-      - - operator: isExists
-          left:
-            value:
-              simple: foundIndicators.sha256
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1610,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+      '#none#':
+      - "45"
   "31":
     id: "31"
-    taskid: 7bb99889-7189-4a23-838c-6aa9cf8b1add
+    taskid: f515a7d6-8aef-4727-804b-bc26cee421a3
     type: regular
     task:
-      id: 7bb99889-7189-4a23-838c-6aa9cf8b1add
+      id: f515a7d6-8aef-4727-804b-bc26cee421a3
       version: -1
       name: Set MD5 in context
       description: Set a value in context under the key you entered.
@@ -597,7 +556,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+      - "45"
     scriptarguments:
       append:
         simple: "true"
@@ -615,14 +574,22 @@ tasks:
               right:
                 value:
                   simple: File
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIndicators.md5
+                iscontext: true
+              right:
+                value:
+                  simple: n/a
           accessor: md5
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 1285
+          "x": 1370,
+          "y": 1470
         }
       }
     note: false
@@ -634,10 +601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: f086a48f-6571-4542-81f9-c97ae1abd828
+    taskid: 1d919de0-aa10-46ab-817c-31fe7a86f263
     type: condition
     task:
-      id: f086a48f-6571-4542-81f9-c97ae1abd828
+      id: 1d919de0-aa10-46ab-817c-31fe7a86f263
       version: -1
       name: Has MD5
       description: Are there MD5 indicators to be pushed.
@@ -646,117 +613,43 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "33"
+      - "45"
       "yes":
       - "31"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: foundIndicators.indicator_type
-            iscontext: true
-          right:
-            value:
-              simple: File
-      - - operator: isExists
-          left:
-            value:
-              simple: foundIndicators.md5
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2030,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: b44d928f-5850-41ef-84c9-721b18d6bd1d
-    type: title
-    task:
-      id: b44d928f-5850-41ef-84c9-721b18d6bd1d
-      version: -1
-      name: Hashes Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2030,
-          "y": 1660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 2f027e73-7331-4930-80bf-2315c199b591
-    type: condition
-    task:
-      id: 2f027e73-7331-4930-80bf-2315c199b591
-      version: -1
-      name: Any non MD5, SHA256 Hash
-      description: No viable hashes found.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "33"
-      "yes":
-      - "41"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: foundIndicators.indicator_type
-            iscontext: true
-          right:
-            value:
-              simple: File
-      - - operator: isNotExists
-          left:
-            value:
-              simple: foundIndicators.sha256
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              simple: foundIndicators.md5
+              complex:
+                root: foundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.md5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                accessor: value
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2450,
-          "y": 1070
+          "x": 1370,
+          "y": 1220
         }
       }
     note: false
@@ -768,10 +661,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c3983277-c900-48b3-8474-c5bbc02c0f6e
+    taskid: dc23d8e8-3baf-4a03-835c-934d0a936d22
     type: regular
     task:
-      id: c3983277-c900-48b3-8474-c5bbc02c0f6e
+      id: dc23d8e8-3baf-4a03-835c-934d0a936d22
       version: -1
       name: Add `xdr_not_processed` tag to irrelevant hashes
       description: Appends values to the specified indicator field. Supported field types are tags and multi-select.
@@ -781,7 +674,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "33"
+      - "45"
     scriptarguments:
       field:
         simple: tags
@@ -794,8 +687,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2450,
-          "y": 1445
+          "x": 1800,
+          "y": 1650
         }
       }
     note: false
@@ -807,10 +700,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: c86ff417-e6ea-4495-8246-d9ad283ecf30
+    taskid: 37c91ceb-5d5b-476f-82ba-0218f451bbfe
     type: regular
     task:
-      id: c86ff417-e6ea-4495-8246-d9ad283ecf30
+      id: 37c91ceb-5d5b-476f-82ba-0218f451bbfe
       version: -1
       name: SearchIndicator
       description: |-
@@ -851,10 +744,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 6593c1c0-69b1-4c20-8025-2a2f3c45aecf
+    taskid: 70f23a01-be15-4612-823f-a66cf93d94ef
     type: regular
     task:
-      id: 6593c1c0-69b1-4c20-8025-2a2f3c45aecf
+      id: 70f23a01-be15-4612-823f-a66cf93d94ef
       version: -1
       name: set iocs to push to xdr
       description: Set a value in context under the key you entered.
@@ -886,8 +779,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1095,
-          "y": 1285
+          "x": 475,
+          "y": 1470
         }
       }
     note: false
@@ -899,10 +792,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: b3291fff-2ed3-44ad-8932-d442f9d112f2
+    taskid: 5309491c-794d-419c-886a-5178246bbe62
     type: regular
     task:
-      id: b3291fff-2ed3-44ad-8932-d442f9d112f2
+      id: 5309491c-794d-419c-886a-5178246bbe62
       version: -1
       name: Save irrelevant hashes in context for marking
       description: Set a value in context under the key you entered.
@@ -930,24 +823,236 @@ tasks:
               right:
                 value:
                   simple: File
-          - - operator: isNotExists
+          - - operator: isEqualString
               left:
                 value:
                   simple: foundIndicators.md5
                 iscontext: true
-          - - operator: isNotExists
+              right:
+                value:
+                  simple: n/a
+          - - operator: isEqualString
               left:
                 value:
                   simple: foundIndicators.sha256
                 iscontext: true
+              right:
+                value:
+                  simple: n/a
           accessor: value
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2450,
-          "y": 1285
+          "x": 1800,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 526502b1-eb0e-432e-8862-a364857c2169
+    type: condition
+    task:
+      id: 526502b1-eb0e-432e-8862-a364857c2169
+      version: -1
+      name: Has SHA256
+      description: Are there SHA256 indicators to push into Cortex XDR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.sha256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                accessor: value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: b55480d0-ba6b-4288-835d-981faf6e314f
+    type: condition
+    task:
+      id: b55480d0-ba6b-4288-835d-981faf6e314f
+      version: -1
+      name: Are there indicators to push?
+      description: Checks if there are any new IOCs that we need to push into XDR
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ${iocs_to_push}
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 55d16a7d-9ae9-42f4-83a5-27ba8da9fa12
+    type: title
+    task:
+      id: 55d16a7d-9ae9-42f4-83a5-27ba8da9fa12
+      version: -1
+      name: Hashes Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 7df5d74a-a0a0-4284-8476-adcba3c048ba
+    type: condition
+    task:
+      id: 7df5d74a-a0a0-4284-8476-adcba3c048ba
+      version: -1
+      name: Are there any irrelevant hashes in the context for marking?
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.md5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.sha256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: n/a
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIndicators.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                transformers:
+                - operator: uniq
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": 1220
         }
       }
     note: false
@@ -960,14 +1065,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "30_29_yes": 0.65,
-      "32_31_yes": 0.66
+      "32_31_yes": 0.66,
+      "42_29_yes": 0.61,
+      "43_7_yes": 0.49,
+      "46_41_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 2050,
-        "width": 2670,
-        "x": 620,
+        "height": 2470,
+        "width": 2850,
+        "x": 20,
         "y": 370
       }
     }
@@ -987,14 +1094,8 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test XDR Playbook general commands
-- Test Playbook - Cortex XDR - Endpoint Investigation
-- Test XDR Playbook
-- Test Playbook - Cortex XDR - Get File Path from alerts by hash
-- Cortex XDR - XQL Query - Test
-- Test Playbook - Cortex XDR - Retrieve File by sha256
-- Test Playbook - Cortex XDR Malware - Incident Enrichment
 - Cortex XDR - IOC - Test
-- Test Playbook - Cortex XDR - False Positive Incident Handling
 - Cortex XDR - IOC - Test without fetch
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}

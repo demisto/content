@@ -3,6 +3,7 @@ import logging
 import os
 from uuid import uuid4
 
+
 # File is copied to each package dir when running tests.
 # More info about conftest.py at:
 #   https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-plugins  # disable-secrets-detection
@@ -76,3 +77,12 @@ def pytest_configure(config):
             config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))
         else:
             config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--client_conf",
+        action="store",
+        default=None,
+        help="Client configuration in the format: key1=value1,key2=value2",
+    )

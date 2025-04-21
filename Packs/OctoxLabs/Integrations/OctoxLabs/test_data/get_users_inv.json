@@ -1,0 +1,16 @@
+{
+  "count": 1,
+  "results": [
+    {
+      "Username": [
+        "octouser-1"
+      ],
+      "Adapters": [
+        "active-directory"
+      ],
+      "LastLogOnTime": [
+        "2024-12-05T00:00:00.000Z"
+      ]
+    }
+  ]
+}

@@ -1,18 +1,21 @@
-from datetime import datetime, timezone
 import json
+from datetime import UTC, datetime
 from math import floor
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any
+
 from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa: F401
 from datadog_api_client import ApiClient, Configuration
+from datadog_api_client.exceptions import ForbiddenException, UnauthorizedException
 from datadog_api_client.v1.api.authentication_api import AuthenticationApi
 from datadog_api_client.v1.api.events_api import EventsApi
+from datadog_api_client.v1.api.metrics_api import MetricsApi
+from datadog_api_client.v1.api.tags_api import TagsApi
 from datadog_api_client.v1.model.event_alert_type import EventAlertType
 from datadog_api_client.v1.model.event_create_request import EventCreateRequest
+from datadog_api_client.v1.model.event_list_response import EventListResponse
 from datadog_api_client.v1.model.event_priority import EventPriority
-from datadog_api_client.v1.api.tags_api import TagsApi
+from datadog_api_client.v1.model.event_response import EventResponse
 from datadog_api_client.v1.model.host_tags import HostTags
-from datadog_api_client.v1.api.metrics_api import MetricsApi
 from datadog_api_client.v1.model.metric_metadata import MetricMetadata
 from datadog_api_client.v2.api.incidents_api import IncidentsApi
 from datadog_api_client.v2.model.incident_create_attributes import (
@@ -26,9 +29,11 @@ from datadog_api_client.v2.model.incident_field_attributes_single_value import (
 from datadog_api_client.v2.model.incident_field_attributes_single_value_type import (
     IncidentFieldAttributesSingleValueType,
 )
-from datadog_api_client.v2.model.incident_type import IncidentType
 from datadog_api_client.v2.model.incident_notification_handle import (
     IncidentNotificationHandle,
+)
+from datadog_api_client.v2.model.incident_search_sort_order import (
+    IncidentSearchSortOrder,
 )
 from datadog_api_client.v2.model.incident_timeline_cell_create_attributes import (
     IncidentTimelineCellCreateAttributes,
@@ -39,19 +44,16 @@ from datadog_api_client.v2.model.incident_timeline_cell_markdown_content_type im
 from datadog_api_client.v2.model.incident_timeline_cell_markdown_create_attributes_content import (
     IncidentTimelineCellMarkdownCreateAttributesContent,
 )
-from datadog_api_client.v2.model.incident_update_data import IncidentUpdateData
-from datadog_api_client.v2.model.incident_update_request import IncidentUpdateRequest
+from datadog_api_client.v2.model.incident_type import IncidentType
 from datadog_api_client.v2.model.incident_update_attributes import (
     IncidentUpdateAttributes,
 )
-from datadog_api_client.v2.model.incident_search_sort_order import (
-    IncidentSearchSortOrder,
-)
+from datadog_api_client.v2.model.incident_update_data import IncidentUpdateData
+from datadog_api_client.v2.model.incident_update_request import IncidentUpdateRequest
 from dateparser import parse
 from urllib3 import disable_warnings
-from datadog_api_client.exceptions import ForbiddenException, UnauthorizedException
-from datadog_api_client.v1.model.event_list_response import EventListResponse
-from datadog_api_client.v1.model.event_response import EventResponse
+
+from CommonServerUserPython import *  # noqa: F401
 
 # Disable insecure warnings
 disable_warnings()
@@ -78,7 +80,7 @@ AUTHENTICATION_ERROR_MSG = "Authentication Error: Invalid API Key. Make sure API
 # """ HELPER FUNCTIONS """
 
 
-def get_paginated_results(results: List, offset: int, limit: int) -> List:
+def get_paginated_results(results: list, offset: int, limit: int) -> list:
     """
     Results for pagination.
     Args:
@@ -88,12 +90,10 @@ def get_paginated_results(results: List, offset: int, limit: int) -> List:
     Returns:
         Paginated results list.
     """
-    return results[offset:offset + limit]
+    return results[offset : offset + limit]
 
 
-def table_header(
-    sub_context: str, page: Optional[int], page_size: Optional[int]
-) -> str:
+def table_header(sub_context: str, page: int | None, page_size: int | None) -> str:
     """
     The header for table with pagination.
     Args:
@@ -104,10 +104,7 @@ def table_header(
         Returns the title for the readable output
     """
     if page and page_size and (page > 0 and page_size > 0):
-        return (
-            f"{sub_context} List\nCurrent page size: {page_size}\n"
-            f"Showing page {page} out of others that may exist"
-        )
+        return f"{sub_context} List\nCurrent page size: {page_size}\nShowing page {page} out of others that may exist"
 
     return sub_context
 
@@ -130,7 +127,7 @@ def is_within_time(timestamp: int, time: int = 18) -> bool:
     return time_diff_hours <= time
 
 
-def lookup_to_markdown(results: List[Dict], title: str) -> str:
+def lookup_to_markdown(results: list[dict], title: str) -> str:
     """
     Convert a list of dictionaries to a Markdown table.
 
@@ -143,12 +140,10 @@ def lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     """
     headers = results[0] if results else {}
-    return tableToMarkdown(
-        title, results, headers=list(headers.keys()), removeNull=True
-    )
+    return tableToMarkdown(title, results, headers=list(headers.keys()), removeNull=True)
 
 
-def event_for_lookup(event: Dict) -> Dict:
+def event_for_lookup(event: dict) -> dict:
     """
     Returns a dictionary with selected event information.
 
@@ -161,15 +156,11 @@ def event_for_lookup(event: Dict) -> Dict:
     return {
         "Title": event.get("title"),
         "Text": event.get("text"),
-        "Date Happened": datetime.utcfromtimestamp(
-            event.get("date_happened", 0)
-        ).strftime(UI_DATE_FORMAT),
+        "Date Happened": datetime.utcfromtimestamp(event.get("date_happened", 0)).strftime(UI_DATE_FORMAT),
         "Id": event.get("id"),
         "Priority": event.get("priority"),
         "Source": event.get("source"),
-        "Tags": ",".join(tag for tag in event.get("tags", []))
-        if event.get("tags")
-        else None,
+        "Tags": ",".join(tag for tag in event.get("tags", [])) if event.get("tags") else None,
         "Is Aggregate": event.get("is_aggregate"),
         "Host": event.get("host"),
         "Device Name": event.get("device_name"),
@@ -178,7 +169,7 @@ def event_for_lookup(event: Dict) -> Dict:
     }
 
 
-def incident_for_lookup(incident: Dict) -> Dict:
+def incident_for_lookup(incident: dict) -> dict:
     """
     Returns a dictionary with selected incident information.
 
@@ -191,92 +182,45 @@ def incident_for_lookup(incident: Dict) -> Dict:
     return {
         "ID": str(incident.get("id")),
         "Title": str(incident.get("attributes", {}).get("title", "")),
-        "Created": datetime.fromisoformat(
-            incident.get("attributes", {}).get("created", "")
-        ).strftime(UI_DATE_FORMAT)
+        "Created": datetime.fromisoformat(incident.get("attributes", {}).get("created", "")).strftime(UI_DATE_FORMAT)
         if incident.get("attributes", {}).get("created", "")
         else "",
-        "Customer Impacted": str(
-            incident.get("attributes", {}).get("customer_impacted", "")
-        ),
-        "Customer Impact Duration": str(
-            incident.get("attributes", {}).get("customer_impact_duration", "")
-        ),
-        "Customer Impact Scope": str(
-            incident.get("attributes", {}).get("customer_impact_scope", "")
-        ),
-        "Customer Impact Start": datetime.fromisoformat(
-            incident.get("attributes", {}).get("customer_impact_start", "")
-        ).strftime(UI_DATE_FORMAT)
+        "Customer Impacted": str(incident.get("attributes", {}).get("customer_impacted", "")),
+        "Customer Impact Duration": str(incident.get("attributes", {}).get("customer_impact_duration", "")),
+        "Customer Impact Scope": str(incident.get("attributes", {}).get("customer_impact_scope", "")),
+        "Customer Impact Start": datetime.fromisoformat(incident.get("attributes", {}).get("customer_impact_start", "")).strftime(
+            UI_DATE_FORMAT
+        )
         if incident.get("attributes", {}).get("customer_impact_start", "")
         else "",
-        "Customer Impact End": datetime.fromisoformat(
-            incident.get("attributes", {}).get("customer_impact_end", "")
-        ).strftime(UI_DATE_FORMAT)
+        "Customer Impact End": datetime.fromisoformat(incident.get("attributes", {}).get("customer_impact_end", "")).strftime(
+            UI_DATE_FORMAT
+        )
         if incident.get("attributes", {}).get("customer_impact_end", "")
         else "",
-        "Detected": datetime.fromisoformat(
-            incident.get("attributes", {}).get("detected", "")
-        ).strftime(UI_DATE_FORMAT)
+        "Detected": datetime.fromisoformat(incident.get("attributes", {}).get("detected", "")).strftime(UI_DATE_FORMAT)
         if incident.get("attributes", {}).get("detected", "")
         else "",
         "Resolved": str(incident.get("attributes", {}).get("resolved", "")),
         "Time to Detect": str(incident.get("attributes", {}).get("time_to_detect", "")),
-        "Time to Internal Response": str(
-            incident.get("attributes", {}).get("time_to_internal_response", "")
-        ),
+        "Time to Internal Response": str(incident.get("attributes", {}).get("time_to_internal_response", "")),
         "Time to Repair": str(incident.get("attributes", {}).get("time_to_repair", "")),
-        "Time to Resolve": str(
-            incident.get("attributes", {}).get("time_to_resolve", "")
-        ),
-        "Severity": str(
-            incident.get("attributes", {})
-            .get("fields", {})
-            .get("severity", {})
-            .get("value", "")
-        ),
-        "State": str(
-            incident.get("attributes", {})
-            .get("fields", {})
-            .get("state", {})
-            .get("value", "")
-        ),
-        "Detection Method": str(
-            incident.get("attributes", {})
-            .get("fields", {})
-            .get("detection_method", {})
-            .get("value", "")
-        ),
-        "Root Cause": str(
-            incident.get("attributes", {})
-            .get("fields", {})
-            .get("root_cause", {})
-            .get("value", "")
-        ),
-        "Summary": str(
-            incident.get("attributes", {})
-            .get("fields", {})
-            .get("summary", {})
-            .get("value", "")
-        ),
-        "Notification Display Name": str(
-            incident.get("attributes", {})
-            .get("notification_handles")[0]
-            .get("display_name")
-        )
+        "Time to Resolve": str(incident.get("attributes", {}).get("time_to_resolve", "")),
+        "Severity": str(incident.get("attributes", {}).get("fields", {}).get("severity", {}).get("value", "")),
+        "State": str(incident.get("attributes", {}).get("fields", {}).get("state", {}).get("value", "")),
+        "Detection Method": str(incident.get("attributes", {}).get("fields", {}).get("detection_method", {}).get("value", "")),
+        "Root Cause": str(incident.get("attributes", {}).get("fields", {}).get("root_cause", {}).get("value", "")),
+        "Summary": str(incident.get("attributes", {}).get("fields", {}).get("summary", {}).get("value", "")),
+        "Notification Display Name": str(incident.get("attributes", {}).get("notification_handles")[0].get("display_name"))
         if incident.get("attributes", {}).get("notification_handles")
         else None,
-        "Notification Handle": str(
-            incident.get("attributes", {}).get("notification_handles")[0].get("handle")
-        )
+        "Notification Handle": str(incident.get("attributes", {}).get("notification_handles")[0].get("handle"))
         if incident.get("attributes", {}).get("notification_handles")
         else None,
     }
 
 
-def pagination(
-    limit: Optional[int], page: Optional[int], page_size: Optional[int]
-) -> Tuple[int, int]:
+def pagination(limit: int | None, page: int | None, page_size: int | None) -> tuple[int, int]:
     """
     Define pagination.
     Args:
@@ -303,9 +247,7 @@ def pagination(
     return limit, offset
 
 
-def metric_command_results(
-    results: Any, metric_name: str
-) -> Union[CommandResults, DemistoException]:
+def metric_command_results(results: Any, metric_name: str) -> CommandResults | DemistoException:
     """
     Helper function that returns CommandResults with list of metric data for lookup table.
 
@@ -330,9 +272,7 @@ def metric_command_results(
             "Type": results.get("type"),
             "Unit": results.get("unit"),
         }
-        readable_output = lookup_to_markdown(
-            [lookup_data], table_header("Metric Metadata Details", None, None)
-        )
+        readable_output = lookup_to_markdown([lookup_data], table_header("Metric Metadata Details", None, None))
     else:
         readable_output = NO_RESULTS_FROM_API_MSG
     return CommandResults(
@@ -343,7 +283,7 @@ def metric_command_results(
     )
 
 
-def convert_datetime_to_str(data: Dict) -> Dict:
+def convert_datetime_to_str(data: dict) -> dict:
     """
     Converts any datetime objects found in the input dictionary to ISO-formatted strings.
 
@@ -362,7 +302,7 @@ def convert_datetime_to_str(data: Dict) -> Dict:
     return data
 
 
-def tags_context_and_readable_output(tags: HostTags) -> Tuple:
+def tags_context_and_readable_output(tags: HostTags) -> tuple:
     """
     Returns Context output and lookup data for Tags.
 
@@ -408,9 +348,7 @@ def module_test(configuration: Configuration) -> str:
         return "ok"
 
 
-def create_event_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def create_event_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Creates an event in Datadog.
 
@@ -432,15 +370,9 @@ def create_event_command(
 
     if date_happened:
         date_happened_timestamp = parse(date_happened, settings={"TIMEZONE": "UTC"})
-        if not is_within_time(
-            int(date_happened_timestamp.timestamp() if date_happened_timestamp else 0)
-        ):
-            return CommandResults(
-                readable_output="The time of the event cannot be older than 18 hours!\n"
-            )
-    date_happened = (
-        parse(date_happened, settings={"TIMEZONE": "UTC"}) if date_happened else None
-    )
+        if not is_within_time(int(date_happened_timestamp.timestamp() if date_happened_timestamp else 0)):
+            return CommandResults(readable_output="The time of the event cannot be older than 18 hours!\n")
+    date_happened = parse(date_happened, settings={"TIMEZONE": "UTC"}) if date_happened else None
     event_body = {
         "title": args.get("title"),
         "text": args.get("text"),
@@ -448,16 +380,14 @@ def create_event_command(
         "alert_type": EventAlertType(args.get("alert_type")),
         "priority": EventPriority(args.get("priority")),
         "aggregation_key": args.get("aggregation_key"),
-        "related_event_id": int(args.get("related_event_id", 0))
-        if args.get("related_event_id")
-        else None,
+        "related_event_id": int(args.get("related_event_id", 0)) if args.get("related_event_id") else None,
         "host": args.get("host_name"),
         "device_name": args.get("device_name"),
         "date_happened": int(date_happened.timestamp()) if date_happened else None,
         "source_type_name": args.get("source_type_name"),
     }
     body = EventCreateRequest(
-        **{key: value for key, value in event_body.items() if value is not None}
+        **{key: value for key, value in event_body.items() if value is not None}  # type: ignore[arg-type]
     )
 
     with ApiClient(configuration) as api_client:
@@ -474,9 +404,7 @@ def create_event_command(
         )
 
 
-def get_events_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def get_events_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     List or get details of events from Datadog.
 
@@ -504,12 +432,8 @@ def get_events_command(
                 readable_output = "No event to present.\n"
 
         else:
-            start_time = parse(
-                args.get("start_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"}
-            )
-            end_time = parse(
-                args.get("end_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"}
-            )
+            start_time = parse(args.get("start_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"})
+            end_time = parse(args.get("end_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"})
             page = arg_to_number(args.get("page"), arg_name="page")
             page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
             limit = arg_to_number(args.get("limit"), arg_name="limit")
@@ -521,25 +445,19 @@ def get_events_command(
                 "priority": args.get("priority"),
                 "sources": args.get("sources"),
                 "tags": args.get("tags"),
-                "unaggregated": argToBoolean(args.get("unaggregated"))
-                if args.get("unaggregated")
-                else None,
-                "exclude_aggregate": argToBoolean(args.get("exclude_aggregate"))
-                if args.get("exclude_aggregate")
-                else None,
+                "unaggregated": argToBoolean(args.get("unaggregated")) if args.get("unaggregated") else None,
+                "exclude_aggregate": argToBoolean(args.get("exclude_aggregate")) if args.get("exclude_aggregate") else None,
                 "page": datadog_page,
             }
             event_list_response: EventListResponse = api_instance.list_events(
-                **{key: value for key, value in body_dict.items() if value is not None}
+                **{key: value for key, value in body_dict.items() if value is not None}  # type: ignore[arg-type]
             )
             results = event_list_response.get("events", [])
             resp = get_paginated_results(results, offset, limit)
             data = [event.to_dict() for event in resp]
             if data:
                 events_list = [event_for_lookup(event) for event in data]
-                readable_output = lookup_to_markdown(
-                    events_list, table_header("Events List", page, page_size)
-                )
+                readable_output = lookup_to_markdown(events_list, table_header("Events List", page, page_size))
             else:
                 readable_output = NO_RESULTS_FROM_API_MSG
         return CommandResults(
@@ -550,9 +468,7 @@ def get_events_command(
         )
 
 
-def get_tags_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def get_tags_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Retrieve a list of tags, and paginate them according to the specified page, page size, and limit parameters.
     Args:
@@ -573,22 +489,13 @@ def get_tags_command(
     source = args.get("source")
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
-        response = (
-            tags_api.list_host_tags()
-            if not source
-            else tags_api.list_host_tags(source=source)
-        )
+        response = tags_api.list_host_tags() if not source else tags_api.list_host_tags(source=source)
         results = response.get("tags", {})
         if results:
             tags_list = [{"Tag": k, "Hostname": v} for k, v in results.items()]
             tags_list = get_paginated_results(tags_list, offset, limit)
-            lookup_data = [
-                {"Tag": tags["Tag"], "Host Name": tags["Hostname"]}
-                for tags in tags_list
-            ]
-            readable_output = lookup_to_markdown(
-                lookup_data, table_header("Tags List", page, page_size)
-            )
+            lookup_data = [{"Tag": tags["Tag"], "Host Name": tags["Hostname"]} for tags in tags_list]
+            readable_output = lookup_to_markdown(lookup_data, table_header("Tags List", page, page_size))
         else:
             readable_output = NO_RESULTS_FROM_API_MSG
         return CommandResults(
@@ -599,9 +506,7 @@ def get_tags_command(
         )
 
 
-def get_host_tags_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def get_host_tags_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
      Retrieves the tags for a given host name and optional source.
 
@@ -623,6 +528,7 @@ def get_host_tags_command(
     page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
     limit = arg_to_number(args.get("limit"), arg_name="limit")
     limit, offset = pagination(limit, page, page_size)
+    context_output: dict = {}
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
         response = (
@@ -632,14 +538,10 @@ def get_host_tags_command(
         )
         tags = response.get("tags", [])
     if tags:
-        host_tags_list = get_paginated_results(
-            [{"Tags": tag} for tag in tags], offset, limit
-        )
+        host_tags_list = get_paginated_results([{"Tags": tag} for tag in tags], offset, limit)
         host_tags = [obj.get("Tags") for obj in host_tags_list]
         context_output = {"Tag": host_tags, "Hostname": host_name}
-        readable_output = lookup_to_markdown(
-            host_tags_list, table_header("Host Tags List", page, page_size)
-        )
+        readable_output = lookup_to_markdown(host_tags_list, table_header("Host Tags List", page, page_size))
     else:
         readable_output = NO_RESULTS_FROM_API_MSG
 
@@ -651,9 +553,7 @@ def get_host_tags_command(
     )
 
 
-def add_tags_to_host_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def add_tags_to_host_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
      This function adds tags to a specified host in Datadog.
 
@@ -684,9 +584,7 @@ def add_tags_to_host_command(
     )
 
 
-def update_host_tags_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def update_host_tags_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     This function updates the tags of a specified host in Datadog.
 
@@ -718,9 +616,7 @@ def update_host_tags_command(
     )
 
 
-def delete_host_tags_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def delete_host_tags_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Deletes all tags associated with the specified host name.
 
@@ -741,9 +637,7 @@ def delete_host_tags_command(
     return CommandResults(readable_output=readable_output)
 
 
-def active_metrics_list_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def active_metrics_list_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Get a list of active metrics from the API and return them in a paginated format.
 
@@ -762,12 +656,10 @@ def active_metrics_list_command(
       outputs key field, and outputs data.
 
     """
-
-    from_arg: Optional[str] = args.get("from")
+    from_timestamp: datetime | None = None
+    from_arg: str | None = args.get("from")
     if from_arg:
-        from_timestamp: Optional[datetime] = parse(
-            from_arg, settings={"TIMEZONE": "UTC"}
-        )
+        from_timestamp = parse(from_arg, settings={"TIMEZONE": "UTC"})
     if not from_timestamp:
         return DemistoException(DATE_ERROR_MSG)
     search_params = {
@@ -779,7 +671,7 @@ def active_metrics_list_command(
     page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
     limit = arg_to_number(args.get("limit"), arg_name="limit")
     limit, offset = pagination(limit, page, page_size)
-
+    context_output: dict = {}
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.list_active_metrics(
@@ -790,9 +682,7 @@ def active_metrics_list_command(
             metrics_list = results.get("metrics")
             paginated_results = get_paginated_results(metrics_list, offset, limit)
             lookup_metric_list = {
-                "From": datetime.utcfromtimestamp(
-                    int(results.get("_from", 0))
-                ).strftime("%Y-%m-%d %H:%M:%S"),
+                "From": datetime.utcfromtimestamp(int(results.get("_from", 0))).strftime("%Y-%m-%d %H:%M:%S"),
                 "Metric Name": paginated_results,
             }
 
@@ -814,9 +704,7 @@ def active_metrics_list_command(
         )
 
 
-def metrics_search_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def metrics_search_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Search for metrics that match a given query and return them in a formatted table.
 
@@ -831,6 +719,7 @@ def metrics_search_command(
 
     """
     query = args.get("query")
+    context_output: dict = {}
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.list_metrics(
@@ -840,9 +729,7 @@ def metrics_search_command(
             results = response.to_dict()
             table_lookup_data = {"Metric Name": results.get("results").get("metrics")}
             context_output = {"metric_name": results.get("results").get("metrics")}
-            readable_output = lookup_to_markdown(
-                [table_lookup_data], table_header("Metrics Search List", None, None)
-            )
+            readable_output = lookup_to_markdown([table_lookup_data], table_header("Metrics Search List", None, None))
         else:
             readable_output = NO_RESULTS_FROM_API_MSG
         return CommandResults(
@@ -853,9 +740,7 @@ def metrics_search_command(
         )
 
 
-def get_metric_metadata_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def get_metric_metadata_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Get the metadata for a specific metric and return it in a formatted table.
 
@@ -877,9 +762,7 @@ def get_metric_metadata_command(
         return metric_command_results(response, metric_name)
 
 
-def update_metric_metadata_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def update_metric_metadata_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Update the metadata of a metric with the specified parameters.
 
@@ -904,9 +787,7 @@ def update_metric_metadata_command(
         "description": args.get("description"),
         "per_unit": args.get("per_unit"),
         "short_name": args.get("short_name"),
-        "statsd_interval": int(args.get("statsd_interval", 0))
-        if args.get("statsd_interval")
-        else None,
+        "statsd_interval": int(args.get("statsd_interval", 0)) if args.get("statsd_interval") else None,
         "type": args.get("type"),
         "unit": args.get("unit"),
     }
@@ -922,9 +803,7 @@ def update_metric_metadata_command(
         return metric_command_results(response, metric_name)
 
 
-def create_incident_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def create_incident_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Creates an incident in Datadog.
 
@@ -953,39 +832,35 @@ def create_incident_command(
             attributes=IncidentCreateAttributes(
                 title=str(title),
                 customer_impacted=customer_impacted,
-                fields=dict(
-                    state=IncidentFieldAttributesSingleValue(
+                fields={
+                    "state": IncidentFieldAttributesSingleValue(
                         type=IncidentFieldAttributesSingleValueType.DROPDOWN,
                         value=state,
                     ),
-                    severity=IncidentFieldAttributesSingleValue(
+                    "severity": IncidentFieldAttributesSingleValue(
                         type=IncidentFieldAttributesSingleValueType.DROPDOWN,
                         value=severity,
                     ),
-                    detection_method=IncidentFieldAttributesSingleValue(
+                    "detection_method": IncidentFieldAttributesSingleValue(
                         type=IncidentFieldAttributesSingleValueType.DROPDOWN,
                         value=detection_method,
                     ),
-                    root_cause=IncidentFieldAttributesSingleValue(
+                    "root_cause": IncidentFieldAttributesSingleValue(
                         type=IncidentFieldAttributesSingleValueType.TEXTBOX,
                         value=root_cause,
                     ),
-                    summary=IncidentFieldAttributesSingleValue(
+                    "summary": IncidentFieldAttributesSingleValue(
                         type=IncidentFieldAttributesSingleValueType.TEXTBOX,
                         value=summary,
                     ),
-                ),
+                },
                 notification_handles=[
                     IncidentNotificationHandle(display_name=display_name, handle=handle)  # type: ignore
                 ],
                 initial_cells=[
                     IncidentTimelineCellCreateAttributes(
-                        cell_type=IncidentTimelineCellMarkdownContentType(
-                            value="markdown"
-                        ),
-                        content=IncidentTimelineCellMarkdownCreateAttributesContent(
-                            content=content
-                        ),
+                        cell_type=IncidentTimelineCellMarkdownContentType(value="markdown"),
+                        content=IncidentTimelineCellMarkdownCreateAttributesContent(content=content),
                         important=important,
                     )
                 ]
@@ -1012,9 +887,7 @@ def create_incident_command(
         )
 
 
-def update_incident_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def update_incident_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Updates incident associated with the specified ID.
 
@@ -1026,11 +899,7 @@ def update_incident_command(
         CommandResults: The object containing the command results, including the readable output, outputs prefix,
          outputs key field, and outputs data.
     """
-    if (
-        args.get("customer_impact_start")
-        or args.get("customer_impact_end")
-        or args.get("customer_impact_scope")
-    ):
+    if args.get("customer_impact_start") or args.get("customer_impact_end") or args.get("customer_impact_scope"):
         if args.get("customer_impact_scope") and not args.get("customer_impact_start"):
             return DemistoException("Customer Impact Start is required.")
         if not args.get("customer_impact_scope"):
@@ -1044,18 +913,12 @@ def update_incident_command(
     incident_attributes = {
         "title": args.get("title"),
         "customer_impacted": False,
-        "detected": parse(str(args.get("detected")), settings={"TIMEZONE": "UTC"})
-        if args.get("detected")
-        else None,
+        "detected": parse(str(args.get("detected")), settings={"TIMEZONE": "UTC"}) if args.get("detected") else None,
         "customer_impact_scope": args.get("customer_impact_scope"),
-        "customer_impact_start": parse(
-            str(args.get("customer_impact_start")), settings={"TIMEZONE": "UTC"}
-        )
+        "customer_impact_start": parse(str(args.get("customer_impact_start")), settings={"TIMEZONE": "UTC"})
         if args.get("customer_impact_start")
         else None,
-        "customer_impact_end": parse(
-            str(args.get("customer_impact_end")), settings={"TIMEZONE": "UTC"}
-        )
+        "customer_impact_end": parse(str(args.get("customer_impact_end")), settings={"TIMEZONE": "UTC"})
         if args.get("customer_impact_end")
         else None,
     }
@@ -1096,10 +959,8 @@ def update_incident_command(
             id=str(incident_id),
             type=IncidentType.INCIDENTS,
             attributes=IncidentUpdateAttributes(
-                **{
-                    key: value
-                    for key, value in incident_attributes.items()
-                    if value is not None
+                **{  # type: ignore[arg-type]
+                    key: value for key, value in incident_attributes.items() if value is not None
                 },
                 fields=dict(
                     **{key: value for key, value in incident_fields.items() if value},
@@ -1126,9 +987,7 @@ def update_incident_command(
         )
 
 
-def delete_incident_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def delete_incident_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     """
     Deletes incident with the specified ID.
 
@@ -1150,9 +1009,7 @@ def delete_incident_command(
         return CommandResults(readable_output="### Incident deleted successfully!\n")
 
 
-def get_incident_command(
-    configuration: Configuration, args: Dict[str, Any]
-) -> Union[CommandResults, DemistoException]:
+def get_incident_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
     incident_id = args.get("incident_id")
     with ApiClient(configuration) as api_client:
         api_instance = IncidentsApi(api_client)
@@ -1166,9 +1023,7 @@ def get_incident_command(
             if data:
                 data = convert_datetime_to_str(data)
                 incident_lookup = incident_for_lookup(data)
-                readable_output = lookup_to_markdown(
-                    [incident_lookup], "Incident Details"
-                )
+                readable_output = lookup_to_markdown([incident_lookup], "Incident Details")
             else:
                 readable_output = "No incident to present.\n"
         else:
@@ -1199,16 +1054,12 @@ def get_incident_command(
     )
 
 
-def incident_serach_query(args: Dict) -> str:
+def incident_serach_query(args: dict) -> str:
     query = ""
     if args.get("state"):
         query += f"state:{args.get('state')}"
     if args.get("severity"):
-        query += (
-            f" AND severity:{args.get('severity')}"
-            if len(query)
-            else f"severity:{args.get('severity')}"
-        )
+        query += f" AND severity:{args.get('severity')}" if len(query) else f"severity:{args.get('severity')}"
     if args.get("customer_impacted"):
         query += (
             f" AND customer_impacted:{args.get('customer_impacted', '').lower()}"
@@ -1226,7 +1077,7 @@ def incident_serach_query(args: Dict) -> str:
     return query
 
 
-def query_timeseries_points_command(configuration: Configuration, args: Dict[str, Any]):
+def query_timeseries_points_command(configuration: Configuration, args: dict[str, Any]):
     query = str(args.get("query"))
     from_time = parse(args.get("from", ""), settings={"TIMEZONE": "UTC"})
     to_time = parse(args.get("to", ""), settings={"TIMEZONE": "UTC"})
@@ -1254,7 +1105,7 @@ def query_timeseries_points_command(configuration: Configuration, args: Dict[str
         ]
 
 
-def fetch_incidents(configuration: Configuration, params: Dict):
+def fetch_incidents(configuration: Configuration, params: dict):
     first_fetch_time = params.get("first_fetch", "3 days")
     fetch_limit = params.get("max_fetch", 50)
     first_fetch_time = dateparser.parse(f"-{first_fetch_time}")
@@ -1266,7 +1117,7 @@ def fetch_incidents(configuration: Configuration, params: Dict):
 
         response = api_instance.search_incidents(
             query=incident_serach_query({}),
-            page_size=int(fetch_limit) if int(fetch_limit) < 200 else 200,
+            page_size=min(200, int(fetch_limit)),
             sort=IncidentSearchSortOrder("-created"),
         )
         results = response.to_dict()
@@ -1276,9 +1127,7 @@ def fetch_incidents(configuration: Configuration, params: Dict):
             incident
             for incident in data
             if (
-                datetime.fromisoformat(incident["attributes"]["modified"])
-                .replace(tzinfo=None)
-                .timestamp()
+                datetime.fromisoformat(incident["attributes"]["modified"]).replace(tzinfo=None).timestamp()
                 > datetime.fromisoformat(last_run.get("lastRun")).timestamp()
                 if last_run.get("lastRun")
                 else first_fetch_time.timestamp()
@@ -1289,14 +1138,10 @@ def fetch_incidents(configuration: Configuration, params: Dict):
         for obj in data_list:
             new_obj = obj["attributes"]
             new_obj["type"] = obj["type"]
-            new_obj["detected"] = datetime.fromisoformat(
-                obj["attributes"]["detected"]
-            ).strftime(UI_DATE_FORMAT)
+            new_obj["detected"] = datetime.fromisoformat(obj["attributes"]["detected"]).strftime(UI_DATE_FORMAT)
             new_obj["relationships"] = obj["relationships"]
             new_obj["id"] = obj["id"]
-            new_obj["detection_method"] = obj["attributes"]["fields"][
-                "detection_method"
-            ]["value"]
+            new_obj["detection_method"] = obj["attributes"]["fields"]["detection_method"]["value"]
             new_obj["root_cause"] = obj["attributes"]["fields"]["root_cause"]["value"]
             new_obj["summary"] = obj["attributes"]["fields"]["summary"]["value"]
             new_obj["notification_display_name"] = (
@@ -1305,9 +1150,7 @@ def fetch_incidents(configuration: Configuration, params: Dict):
                 else None
             )
             new_obj["notification_handle"] = (
-                obj["attributes"]["notification_handles"][0]["handle"]
-                if obj["attributes"]["notification_handles"]
-                else None
+                obj["attributes"]["notification_handles"][0]["handle"] if obj["attributes"]["notification_handles"] else None
             )
             incident = {
                 "name": obj["attributes"]["title"],
@@ -1318,9 +1161,7 @@ def fetch_incidents(configuration: Configuration, params: Dict):
             }
             incidents.append(incident)
         if data_list:
-            demisto.setLastRun(
-                {"lastRun": data_list[0].get("attributes", {}).get("modified", "")}
-            )
+            demisto.setLastRun({"lastRun": data_list[0].get("attributes", {}).get("modified", "")})
     demisto.incidents(incidents)
     return "OK"
 
@@ -1337,7 +1178,7 @@ def add_utc_offset(dt_str: str):
         str: A string representing the input datetime with a UTC offset, in ISO format (YYYY-MM-DDTHH:MM:SS[.ffffff]+00:00)
     """
     dt = datetime.fromisoformat(dt_str)
-    dt_with_offset = dt.replace(tzinfo=timezone.utc)
+    dt_with_offset = dt.replace(tzinfo=UTC)
     return dt_with_offset.isoformat()
 
 
@@ -1351,8 +1192,8 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
     try:
         configuration = Configuration()
-        configuration.api_key["apiKeyAuth"] = params.get('api_key_creds', {}).get('password') or params.get("api_key")
-        configuration.api_key["appKeyAuth"] = params.get('app_key_creds', {}).get('password') or params.get("app_key")
+        configuration.api_key["apiKeyAuth"] = params.get("api_key_creds", {}).get("password") or params.get("api_key")
+        configuration.api_key["appKeyAuth"] = params.get("app_key_creds", {}).get("password") or params.get("app_key")
         configuration.server_variables["site"] = params.get("site")
 
         commands = {
@@ -1385,7 +1226,7 @@ def main() -> None:
         error = None
         if type(e) in (ForbiddenException, UnauthorizedException):
             error = AUTHENTICATION_ERROR_MSG
-        return_error(error or f"Failed to execute {command} command. Error: {str(e)}")
+        return_error(error or f"Failed to execute {command} command. Error: {e!s}")
 
 
 """ ENTRY POINT """

@@ -432,8 +432,9 @@ Adds a new indicator to ThreatConnect.
 | hashType | The type of hash for the file indicator. Possible values are: md5, sha1, sha256. | Optional | 
 | rating | The threat rating of the indicator. Can be "0" - "Unknown", "1" - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical". | Optional | 
 | confidence | The confidence rating of the indicator. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed". | Optional | 
-| description | The description of the indicator. | Optional | 
 | tags | A comma-separated list of the tags to apply to the campaign. | Optional | 
+| description | The description of the indicator. | Optional | 
+| owner | The name of the owner to which the Indicator belongs. | Optional | 
 
 #### Context Output
 

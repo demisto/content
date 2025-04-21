@@ -1,0 +1,18 @@
+!cyberwatch-list-cves page=1 per_page=5
+!cyberwatch-list-cves prioritized=true page=1 per_page=5
+!cyberwatch-list-cves exploit_code_maturity[]=functional,high access_vector[]=access_vector_physical,access_vector_network active=true level=level_critical ignored=false page=1 per_page=5
+!cyberwatch-list-cves page=1 per_page=5 groups[]=ENV_PRODUCTION,Cloud active=true ignored=false prioritized=true
+!cyberwatch-list-cves exploit_code_maturity[]=high,functional technology_vendor=openbsd technology_product=openssh page=1 per_page=5
+!cyberwatch-list-cves hard_limit=1 per_page=1
+!cyberwatch-fetch-cve cve_code=CVE-2024-21413
+!cyberwatch-list-assets page=1 per_page=5
+!cyberwatch-list-assets environment_id=27 page=1 per_page=5
+!cyberwatch-list-assets reboot_required=true communication_failed=false page=1 per_page=5
+!cyberwatch-list-assets hostname=WIN-GNVEC8UIKUD page=1 per_page=5
+!cyberwatch-list-assets address=10.2.0.19 page=1 per_page=5
+!cyberwatch-list-assets os=windows_2008_r2 category=server group_id=768 page=1 per_page=5
+!cyberwatch-fetch-asset id=1206
+!cyberwatch-fetch-asset-fulldetails id=1206
+!cyberwatch-list-securityissues page=1 per_page=5 level=level_critical
+!cyberwatch-list-securityissues sid=WSTG-INPV-05 page=1 per_page=5
+!cyberwatch-fetch-securityissue id=47

@@ -1,24 +1,20 @@
 This package allows retrieving asset monitoring results from monitoring tasks that can be configured in Resecurity® CTI and Resecurity® DRM platforms.
 This integration was integrated and tested with version 1.01 of ResecurityMonitoring
 
-## Configure Resecurity Monitoring on Cortex XSOAR
+## Configure Resecurity Monitoring in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Resecurity Monitoring.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | API Key | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| API Key | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### resecurity-get-task-monitor-results-data-breaches
@@ -159,4 +155,3 @@ Retrieve monitoring results from a specific monitor task
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2016-12-07 15:53:00 | 2023-03-18 13:14:04 | <test@test.test> | 361424177 |  |  | aaaaaa |  | test.test |  | source3 |  |
 >| 2016-12-07 15:53:00 | 2023-03-18 13:14:04 | <test@test.test> | 361832967 |  |  | pppppp |  | test.test |  | source3 |  |
-

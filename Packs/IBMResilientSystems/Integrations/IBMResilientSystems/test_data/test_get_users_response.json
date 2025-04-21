@@ -1,0 +1,102 @@
+[
+    {
+        "id": 9,
+        "fname": "Demisto",
+        "lname": "Resilient",
+        "display_name": "Demisto Resilient",
+        "status": "A",
+        "email": "",
+        "phone": "",
+        "cell": "",
+        "title": "",
+        "locked": false,
+        "password_changed": false,
+        "org_last_modified_time": 1600861952913,
+        "last_login": 1725199688657,
+        "last_modified_time": 1725199688657,
+        "create_date": 1600861952367,
+        "system_permission_handles": [
+        ],
+        "incs_assigned": 64,
+        "tasks_assigned": 4,
+        "org_id": 0,
+        "roles": {
+            "master_administrator": true,
+            "administrator": false,
+            "observer": false,
+            "create_incs": true
+        },
+        "role_handles": [
+            1001
+        ],
+        "instance_roles": [
+            {
+                "role_handles": [
+                    1001
+                ],
+                "effective_permissions": [
+
+                ],
+                "typed_object": {
+                    "parent": null,
+                    "object_id": 201,
+                    "object_name": "Demisto",
+                    "type_id": 7,
+                    "type_name": "organization"
+                }
+            }
+        ],
+        "group_ids": [],
+        "enabled": true,
+        "is_external": false,
+        "ui_theme": "darkmode"
+    },
+    {
+        "id": 10,
+        "fname": "Admin",
+        "lname": "",
+        "display_name": "Admin",
+        "status": "A",
+        "email": "",
+        "locked": false,
+        "password_changed": false,
+        "org_last_modified_time": 1600862048911,
+        "last_login": 1709115289275,
+        "last_modified_time": 1709115289275,
+        "create_date": 1600862048391,
+        "system_permission_handles": [
+        ],
+        "incs_assigned": 1,
+        "tasks_assigned": 0,
+        "org_id": 201,
+        "roles": {
+            "master_administrator": true,
+            "administrator": false,
+            "observer": false,
+            "create_incs": true
+        },
+        "role_handles": [
+            1001
+        ],
+        "instance_roles": [
+            {
+                "role_handles": [
+                    1001
+                ],
+                "effective_permissions": [
+                ],
+                "typed_object": {
+                    "parent": null,
+                    "object_id": 201,
+                    "object_name": "Demisto",
+                    "type_id": 7,
+                    "type_name": "organization"
+                }
+            }
+        ],
+        "group_ids": [],
+        "enabled": true,
+        "is_external": false,
+        "ui_theme": "verydarkmode"
+    }
+]

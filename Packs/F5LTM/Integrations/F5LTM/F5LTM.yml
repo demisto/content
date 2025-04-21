@@ -517,7 +517,7 @@ script:
     - contextPath: F5.LTM.Nodes.name
       description: The node name
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

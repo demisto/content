@@ -7,22 +7,22 @@ args:
   description: The field to extract from each item (Optional).
   name: getField
   predefined:
-  - ""
+  - ''
 - auto: PREDEFINED
-  defaultValue: "false"
+  defaultValue: 'false'
   description: Whether the argument should be saved as a string (Optional).
   name: stringify
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
 comment: Retrieves fields from an object using dot notation
 commonfields:
   id: GetFields
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.63474
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: GetFields
 runas: DBotWeakRole

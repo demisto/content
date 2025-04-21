@@ -1,14 +1,14 @@
 import json
+
 from Netmiko import cmds_command
 
 
 def get_test_data():
-    with open('test_data/test_data.json', 'r') as f:
+    with open("test_data/test_data.json") as f:
         return json.loads(f.read())
 
 
-class MockClient():
-
+class MockClient:
     def __init__(self, args):
         self.platform = args["platform"]
         self.hostname = args["hostname"]
@@ -19,8 +19,7 @@ class MockClient():
         self.net_connect = None
 
     def cmds(self, require_exit, exit_argument, commands, enable, isConfig):
-        return {"Hostname": self.hostname, "DateTimeUTC": "1973-01-01T00:00:59+00:00",
-                "Commands": commands, "Output": "root"}
+        return {"Hostname": self.hostname, "DateTimeUTC": "1973-01-01T00:00:59+00:00", "Commands": commands, "Output": "root"}
 
 
 def test_cmds_command():

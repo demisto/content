@@ -92,7 +92,7 @@ script:
     - description: ID of the job to execute.
       name: job_id
       required: true
-    - description: 'Execution arguments for the selected job. For example: -opt1 value1 -opt2 value2'
+    - description: 'Execution arguments for the selected job. For example: -opt1 value1 -opt2 value2.'
       name: arg_string
     - auto: PREDEFINED
       description: 'The log level. Possible values are: "DEBUG", "VERBOSE", "INFO", "WARN", and "ERROR".'
@@ -197,7 +197,7 @@ script:
       description: The arguments for the job's execution.
       type: String
   - arguments:
-    - description: 'Execution arguments for the selected job. For example: -opt1 value1 -opt2 value2'
+    - description: 'Execution arguments for the selected job. For example: -opt1 value1 -opt2 value2.'
       name: arg_string
     - description: ID of the execution you want to retry.
       name: execution_id
@@ -256,7 +256,7 @@ script:
       description: The ID of the executed job.
       type: String
     - contextPath: Rundeck.ExecutedJobs.job.averageDuration
-      description: The average time for the job's executions
+      description: The average time for the job's executions.
       type: Number
     - contextPath: Rundeck.ExecutedJobs.job.name
       description: The name of the job.
@@ -360,7 +360,7 @@ script:
     name: rundeck-job-executions-query
     outputs:
     - contextPath: Rundeck.ExecutionsQuery.paging.count
-      description: The number of results returned
+      description: The number of results returned.
       type: Number
     - contextPath: Rundeck.ExecutionsQuery.paging.total
       description: The number of total executions.
@@ -465,7 +465,7 @@ script:
     name: rundeck-job-execution-output
     outputs:
     - contextPath: Rundeck.ExecutionsOutput.id
-      description: ID of the execution
+      description: ID of the execution.
       type: Number
     - contextPath: Rundeck.ExecutionsOutput.offset
       description: Byte offset to read from in the file. 0 indicates the beginning.
@@ -750,7 +750,7 @@ script:
     - contextPath: Rundeck.WebhookEvent.executionId
       description: The ID of the execution.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.11.1940698
   runonce: false
   script: '-'
   subtype: python3

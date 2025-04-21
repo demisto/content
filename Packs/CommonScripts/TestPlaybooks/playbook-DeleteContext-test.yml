@@ -1,20 +1,20 @@
 id: DeleteContext-test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: DeleteContext-test
-description: 'Testing DeleteContext automation.'
+description: Testing DeleteContext automation.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 47a39e51-a802-416f-88ea-3e1fdc46479c
+    taskid: cce2fb21-b4ec-4aa8-857e-04914b971ff1
     type: start
     task:
-      id: 47a39e51-a802-416f-88ea-3e1fdc46479c
+      id: cce2fb21-b4ec-4aa8-857e-04914b971ff1
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": -10
+          "x": 910,
+          "y": 50
         }
       }
     note: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 481f82e8-46a8-4097-8ef9-616f29c55593
+    taskid: 81b92088-8d99-43f2-882a-7c46e9297623
     type: regular
     task:
-      id: 481f82e8-46a8-4097-8ef9-616f29c55593
+      id: 81b92088-8d99-43f2-882a-7c46e9297623
       version: -1
       name: 'Set key #1'
       description: Sets a value into the context with the given context key
@@ -61,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 230
+          "x": 1125,
+          "y": 195
         }
       }
     note: false
@@ -74,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a7845012-d219-418f-8214-d9bdf27d38d4
+    taskid: 7ae61390-9ec7-4eed-8d10-6208dfac6026
     type: regular
     task:
-      id: a7845012-d219-418f-8214-d9bdf27d38d4
+      id: 7ae61390-9ec7-4eed-8d10-6208dfac6026
       version: -1
       name: 'Delete all keys except '
       description: Delete field from context
@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 940
+          "x": 1125,
+          "y": 895
         }
       }
     note: false
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 417ccc9c-3ffd-4cb0-8d30-beff0b508135
+    taskid: b13f0482-a531-416e-87df-854f5b706610
     type: condition
     task:
-      id: 417ccc9c-3ffd-4cb0-8d30-beff0b508135
+      id: b13f0482-a531-416e-87df-854f5b706610
       version: -1
       name: Check if excluded key exists
       type: condition
@@ -146,8 +146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1130
+          "x": 1125,
+          "y": 1070
         }
       }
     note: false
@@ -159,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a2d62678-d1ea-4289-84d2-9ff08ca753b1
+    taskid: 21ede93f-e36a-4c44-8063-fca81c5f6bd3
     type: regular
     task:
-      id: a2d62678-d1ea-4289-84d2-9ff08ca753b1
+      id: 21ede93f-e36a-4c44-8063-fca81c5f6bd3
       version: -1
       name: FAIL - Excluded key deleted
       description: Prints an error entry with a given message
@@ -178,8 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 1340
+          "x": 910,
+          "y": 2820
         }
       }
     note: false
@@ -191,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f4c7c939-7a9c-4a0e-8492-623988fa5af3
+    taskid: 1bc3dc27-44c3-4f8c-8f83-39be1b5c26f3
     type: title
     task:
-      id: f4c7c939-7a9c-4a0e-8492-623988fa5af3
+      id: 1bc3dc27-44c3-4f8c-8f83-39be1b5c26f3
       version: -1
       name: all good
       description: Prints text to war room (Markdown supported)
@@ -206,8 +206,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2815
+          "x": 480,
+          "y": 2835
         }
       }
     note: false
@@ -219,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5379d481-4472-416e-87f1-d9cfdb69060d
+    taskid: 5f9d869a-d3fe-429d-82dc-671ca8d81ede
     type: regular
     task:
-      id: 5379d481-4472-416e-87f1-d9cfdb69060d
+      id: 5f9d869a-d3fe-429d-82dc-671ca8d81ede
       version: -1
       name: Print current playbook id
       description: Prints text to war room (Markdown supported)
@@ -238,8 +238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 220
+          "x": 695,
+          "y": 195
         }
       }
     note: false
@@ -251,10 +251,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 193b8b89-6608-427a-8b74-1f36012bd170
+    taskid: 463eb433-e038-429d-898b-73fd47849297
     type: regular
     task:
-      id: 193b8b89-6608-427a-8b74-1f36012bd170
+      id: 463eb433-e038-429d-898b-73fd47849297
       version: -1
       name: 'Set key #2'
       description: Sets a value into the context with the given context key
@@ -275,8 +275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 400
+          "x": 1125,
+          "y": 370
         }
       }
     note: false
@@ -288,10 +288,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: be85f1fe-913a-4456-84f1-fe40d5ff2a64
+    taskid: 49a4e140-c914-4934-85c2-e24bd89fa750
     type: regular
     task:
-      id: be85f1fe-913a-4456-84f1-fe40d5ff2a64
+      id: 49a4e140-c914-4934-85c2-e24bd89fa750
       version: -1
       name: Set object key
       description: Set a value in context under the key you entered.
@@ -314,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 2200
+          "x": 60,
+          "y": 2295
         }
       }
     note: false
@@ -327,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 9ef222c3-30b9-4b4b-8473-2c70842da3c1
+    taskid: 1139e89a-df28-46aa-8272-f3662475fd17
     type: regular
     task:
-      id: 9ef222c3-30b9-4b4b-8473-2c70842da3c1
+      id: 1139e89a-df28-46aa-8272-f3662475fd17
       version: -1
       name: Delete object key
       description: |-
@@ -338,7 +338,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -356,8 +358,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 2420
+          "x": 60,
+          "y": 2470
         }
       }
     note: false
@@ -369,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7a5f0b52-c88f-4fcb-8d2f-228b7887b18f
+    taskid: 63942543-9e27-43c0-8281-b4ec5201d5ef
     type: condition
     task:
-      id: 7a5f0b52-c88f-4fcb-8d2f-228b7887b18f
+      id: 63942543-9e27-43c0-8281-b4ec5201d5ef
       version: -1
       name: Check if object key deleted
       type: condition
@@ -398,8 +400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 2620
+          "x": 60,
+          "y": 2645
         }
       }
     note: false
@@ -411,10 +413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0e64f19c-0b02-4d1d-8698-32dba5fddc6a
+    taskid: bc927240-0634-4831-8eb4-8fabd88ac971
     type: regular
     task:
-      id: 0e64f19c-0b02-4d1d-8698-32dba5fddc6a
+      id: bc927240-0634-4831-8eb4-8fabd88ac971
       version: -1
       name: FAIL - Object key not deleted
       description: Prints an error entry with a given message.
@@ -430,8 +432,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 2800
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -443,10 +445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 55137319-0962-401c-8b9d-0e58b812fdbf
+    taskid: b2e73c48-92b2-436b-81dd-fcb2a3ddff91
     type: regular
     task:
-      id: 55137319-0962-401c-8b9d-0e58b812fdbf
+      id: b2e73c48-92b2-436b-81dd-fcb2a3ddff91
       version: -1
       name: 'Set key #3'
       description: Sets a value into the context with the given context key
@@ -467,8 +469,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 570
+          "x": 1125,
+          "y": 545
         }
       }
     note: false
@@ -480,10 +482,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 937ec50b-cb3c-43a1-898d-66f6ec65c949
+    taskid: 3495ff02-1b76-4d0f-8c22-ef7e4dc77b1f
     type: regular
     task:
-      id: 937ec50b-cb3c-43a1-898d-66f6ec65c949
+      id: 3495ff02-1b76-4d0f-8c22-ef7e4dc77b1f
       version: -1
       name: 'Set key #4'
       description: Sets a value into the context with the given context key
@@ -504,8 +506,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 760
+          "x": 1125,
+          "y": 720
         }
       }
     note: false
@@ -517,10 +519,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 79235338-4164-4384-8b8c-387ffda79396
+    taskid: 71b59848-6822-45f9-8e19-a711cc6e84e2
     type: regular
     task:
-      id: 79235338-4164-4384-8b8c-387ffda79396
+      id: 71b59848-6822-45f9-8e19-a711cc6e84e2
       version: -1
       name: Delete csv keys
       description: |-
@@ -528,7 +530,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -544,8 +548,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1350
+          "x": 1237.5,
+          "y": 1245
         }
       }
     note: false
@@ -557,10 +561,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6245fb84-ee99-4460-8db6-a849a73cd835
+    taskid: de359cd2-5860-4a10-85e6-4bfcf2cfd255
     type: condition
     task:
-      id: 6245fb84-ee99-4460-8db6-a849a73cd835
+      id: de359cd2-5860-4a10-85e6-4bfcf2cfd255
       version: -1
       name: ' Check if key deleted #1'
       type: condition
@@ -584,8 +588,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1530
+          "x": 1237.5,
+          "y": 1420
         }
       }
     note: false
@@ -597,10 +601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8db0814f-76d3-47b8-8ff4-59ceb9a5b3ed
+    taskid: 42cb9c8d-070b-4d84-8a8b-989e42d4cd8e
     type: regular
     task:
-      id: 8db0814f-76d3-47b8-8ff4-59ceb9a5b3ed
+      id: 42cb9c8d-070b-4d84-8a8b-989e42d4cd8e
       version: -1
       name: FAIL - Check keys deleted
       description: Prints an error entry with a given message.
@@ -616,8 +620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 1990
+          "x": 1452.5,
+          "y": 1770
         }
       }
     note: false
@@ -629,10 +633,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 3e65e605-c278-4a33-83c3-4e67da047267
+    taskid: 60662f8a-fe3c-4ad4-8ea7-943a69aa1f90
     type: condition
     task:
-      id: 3e65e605-c278-4a33-83c3-4e67da047267
+      id: 60662f8a-fe3c-4ad4-8ea7-943a69aa1f90
       version: -1
       name: 'Check if key deleted #2'
       type: condition
@@ -640,7 +644,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "20"
       "yes":
       - "16"
     separatecontext: false
@@ -658,8 +662,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1770
+          "x": 1032.5,
+          "y": 1595
         }
       }
     note: false
@@ -671,16 +675,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b7564b93-12d0-45cc-860f-f36c08e0d419
+    taskid: df4aa20c-b819-4c39-80c9-4b9d9f9f1f1c
     type: title
     task:
-      id: b7564b93-12d0-45cc-860f-f36c08e0d419
+      id: df4aa20c-b819-4c39-80c9-4b9d9f9f1f1c
       version: -1
       name: DISABLED - Can not set & delete an object key
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -689,8 +692,244 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,        
-          "y": 2005
+          "x": 60,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9d7fddf5-9a0c-46a3-8e96-03845b797098
+    type: regular
+    task:
+      id: 9d7fddf5-9a0c-46a3-8e96-03845b797098
+      version: -1
+      name: Test py script - executeCommand 'DeleteContext'
+      script: test-executecommand-deletecontext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: be7bf469-55c3-41e5-8732-30ebf5d66b9b
+    type: regular
+    task:
+      id: be7bf469-55c3-41e5-8732-30ebf5d66b9b
+      version: -1
+      name: 'Set key #5'
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: key5
+      value:
+        simple: value5
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 82947d8f-ec1b-47da-86e5-476140294fea
+    type: regular
+    task:
+      id: 82947d8f-ec1b-47da-86e5-476140294fea
+      version: -1
+      name: Add DBotScore To Context
+      description: Add DBot score to context for indicators with custom vendor, score,
+        reliability, and type.
+      scriptName: AddDBotScoreToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      indicator:
+        simple: 1.1.1.1
+      indicatorType:
+        simple: ip
+      score:
+        simple: "2"
+      vendor:
+        simple: some
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5bf65f87-ced5-4c98-8779-82834bd41916
+    type: regular
+    task:
+      id: 5bf65f87-ced5-4c98-8779-82834bd41916
+      version: -1
+      name: 'Set key #6'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: key6
+      value:
+        simple: some_value6
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 882636bb-f03b-4720-8080-4a1fa6bf922b
+    type: regular
+    task:
+      id: 882636bb-f03b-4720-8080-4a1fa6bf922b
+      version: -1
+      name: DeleteContext all=yes keysToKeep=DBotScore
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: DBotScore
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 134ad55c-287b-4e9d-836a-484c8a98bb9d
+    type: condition
+    task:
+      id: 134ad55c-287b-4e9d-836a-484c8a98bb9d
+      version: -1
+      name: 'Check DBotScore is kept and key #6 is gone'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: key6
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2645
         }
       }
     note: false
@@ -703,18 +942,19 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "10_5_yes": 0.81,
       "17_16_yes": 0.23,
       "3_4_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 2905,
-        "width": 1550,
-        "x": -40,
-        "y": -10
+        "height": 2865,
+        "width": 1782.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 6.9.0
+fromversion: 5.0.0

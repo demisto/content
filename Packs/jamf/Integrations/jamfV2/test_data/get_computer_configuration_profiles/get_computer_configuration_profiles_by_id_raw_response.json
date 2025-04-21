@@ -1,0 +1,216 @@
+{
+    "os_x_configuration_profile":
+    {
+      "general": {
+        "id": 1,
+        "name": "Corporate Wireless",
+        "description": "string",
+        "site": {
+          "id": -1,
+          "name": "None"
+        },
+        "category": {
+          "id": -1,
+          "name": "Unknown"
+        },
+        "distribution_method": "Install Automatically",
+        "user_removable": true,
+        "level": "computer",
+        "uuid": "88F8C1DB-D92A-4D10-95FB-CE7EDE82B93E",
+        "redeploy_on_update": "Newly Assigned",
+        "payloads": "string"
+      },
+      "scope": {
+        "all_computers": false,
+        "all_jss_users": false,
+        "computers": [
+          {
+            "computer": {
+              "id": 1,
+              "name": "Admins MacBook Pro",
+              "udid": "55900BDC-347C-58B1-D249-F32244B11D30"
+            }
+          }
+        ],
+        "buildings": [
+          {
+            "building": {
+              "id": 1,
+              "name": "string"
+            }
+          }
+        ],
+        "departments": [
+          {
+            "department": {
+              "id": 1,
+              "name": "string"
+            }
+          }
+        ],
+        "computer_groups": [
+          {
+            "computer_group": {
+              "id": 1,
+              "name": "string"
+            }
+          }
+        ],
+        "jss_users": [
+          {
+            "users": {
+              "id": 1,
+              "name": "string"
+            }
+          }
+        ],
+        "jss_user_groups": [
+          {
+            "jss_user_group": {
+              "id": 1,
+              "name": "string"
+            }
+          }
+        ],
+        "limitations": {
+          "users": [
+            {
+              "user": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "user_groups": [
+            {
+              "user_group": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "network_segments": [
+            {
+              "network_segment": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "ibeacons": [
+            {
+              "ibeacon": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ]
+        },
+        "exclusions": {
+          "computers": [
+            {
+              "computer": {
+                "id": 1,
+                "name": "Johns iMac",
+                "udid": "55900BDC-347C-58B1-D249-F32244B11D30"
+              }
+            }
+          ],
+          "buildings": [
+            {
+              "building": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "departments": [
+            {
+              "department": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "computer_groups": [
+            {
+              "computer_group": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "users": [
+            {
+              "user": {
+                "name": "Adam"
+              }
+            }
+          ],
+          "user_groups": [
+            {
+              "user_group": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "network_segments": [
+            {
+              "network_segment": {
+                "id": 1,
+                "uid": "string",
+                "name": "New York"
+              }
+            }
+          ],
+          "ibeacons": [
+            {
+              "ibeacon": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "jss_users": [
+            {
+              "jss_user": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ],
+          "jss_user_groups": [
+            {
+              "jss_user_group": {
+                "id": 1,
+                "name": "string"
+              }
+            }
+          ]
+        }
+      },
+      "self_service": {
+        "install_button_text": "Install",
+        "self_service_description": "string",
+        "force_users_to_view_description": true,
+        "self_service_icon": {
+          "id": 1,
+          "uri": "https://company.jamfcloud.com/iconservlet/?id=1",
+          "data": "string"
+        },
+        "feature_on_main_page": true,
+        "self_service_categories": {
+          "category": {
+            "id": 1,
+            "name": "Compliance",
+            "display_in": true,
+            "feature_in": false
+          }
+        },
+        "notification": "string",
+        "notification_subject": "Install Me!!!",
+        "notification_message": "You need access to corporate resources. Install this profile to get the premium WiFis."
+      }
+    }
+}

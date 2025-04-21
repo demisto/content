@@ -5,11 +5,11 @@ args:
 - description: The name of the file. The file must be uploaded to the War Room.
   name: file
   deprecated: true
-- description: The column number that contains IP Addresses. Other IOC types should not be in that column. (First column is column 0)
+- description: The column number that contains IP Addresses. Other IOC types should not be in that column. (First column is column 0).
   name: ips
-- description: The column number that contains domains. Other IOC types should not be in that column. (First column is column 0)
+- description: The column number that contains domains. Other IOC types should not be in that column. (First column is column 0).
   name: domains
-- description: The column number that contains file hashes. Other IOC types should not be in that column. (First column is column 0)
+- description: The column number that contains file hashes. Other IOC types should not be in that column. (First column is column 0).
   name: hashes
 - auto: PREDEFINED
   defaultValue: 'yes'
@@ -19,7 +19,7 @@ args:
   - 'yes'
   - 'no'
 - defaultValue: utf-8
-  description: The codec type used to parse the file. (some character sets are not UTF-8 supported)
+  description: The codec type used to parse the file. (some character sets are not UTF-8 supported).
   name: codec
 comment: This script will parse a CSV file and place the unique IPs, Domains and Hashes into the context.
 commonfields:
@@ -58,4 +58,4 @@ runas: DBotWeakRole
 tests:
 - No tests
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186

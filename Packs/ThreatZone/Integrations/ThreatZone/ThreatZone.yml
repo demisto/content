@@ -123,9 +123,6 @@ script:
         - contextPath: ThreatZone.Submission.Sandbox.UUID
           description: UUID of sample.
           type: String
-        - contextPath: ThreatZone.Submission.Sandbox.URL
-          description: URL of analysis of sample.
-          type: String
         - contextPath: ThreatZone.Limits.E_Mail
           description: The owner e-mail of current plan.
           type: String
@@ -144,12 +141,25 @@ script:
         - name: entry_id
           description: Entry ID of the file to submit.
           required: true
+        - name: private
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
+          defaultValue: "false"
+        - name: extension_check
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype.
+          defaultValue: "true"
       outputs:
         - contextPath: ThreatZone.Submission.Static.UUID
           description: UUID of sample.
-          type: String
-        - contextPath: ThreatZone.Submission.Static.URL
-          description: URL of analysis of sample.
           type: String
         - contextPath: ThreatZone.Limits.E_Mail
           description: The owner e-mail of current plan.
@@ -169,12 +179,25 @@ script:
         - name: entry_id
           description: Entry ID of the file to submit.
           required: true
+        - name: private
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
+          defaultValue: "true"
+        - name: extension_check
+          required: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype.
+          defaultValue: "true"
       outputs:
         - contextPath: ThreatZone.Submission.CDR.UUID
           description: UUID of sample.
-          type: String
-        - contextPath: ThreatZone.Submission.CDR.URL
-          description: URL of analysis of sample.
           type: String
         - contextPath: ThreatZone.Limits.E_Mail
           description: The owner e-mail of current plan.
@@ -200,9 +223,6 @@ script:
           type: String
         - contextPath: ThreatZone.Analysis.LEVEL
           description: Threat Level of the scanned file. (malicious, suspicious or informative).
-          type: String
-        - contextPath: ThreatZone.Analysis.URL
-          description: The result page url of the submission.
           type: String
         - contextPath: ThreatZone.Analysis.INFO
           description: Contains the file name, scan process status and public status.
@@ -302,7 +322,7 @@ script:
         - contextPath: ThreatZone.Limits.Daily_Submission_Limit
           description: The remaining/total daily submission limits of the current plan.
           type: String
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   subtype: python3
 fromversion: 6.9.0

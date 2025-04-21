@@ -1,0 +1,872 @@
+description: Find all the users who might’ve performed the actions using root (via the source IP), validate it with them using Slack and resolve the alert in case these actions were planned.
+id: "Gem Handle Alert for Root Usage"
+inputs: []
+name: Gem Handle Alert for Root Usage
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0dc56a28-3e8f-4a90-8a1a-4001bfd85c4e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ""
+    taskid: 0dc56a28-3e8f-4a90-8a1a-4001bfd85c4e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+      - condition:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.gemmainentitytype
+              operator: isEqualString
+              right:
+                value:
+                  simple: root_user
+        label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#default#":
+        - "3"
+      "yes":
+        - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the alert is a root action
+      id: f42294a1-ffe6-4827-892d-ed4b0b3999e3
+      iscommand: false
+      name: Is root user used?
+      type: condition
+      version: -1
+    taskid: f42294a1-ffe6-4827-892d-ed4b0b3999e3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      end_time:
+        simple: ${time.now}
+      entity_id:
+        simple: ${Triggering_events.source_ip}
+      entity_type:
+        simple: external_ip
+      start_time:
+        simple: ${time.aweekago}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Gem
+      description: List all entities that used an entity in a specific timeframe. The results are sorted by activity volume.
+      id: 569bd7d1-b399-4509-864d-6996b04e6504
+      iscommand: true
+      name: Get users using the source ip
+      script: Gem|||gem-list-using-entities
+      type: regular
+      version: -1
+    taskid: 569bd7d1-b399-4509-864d-6996b04e6504
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Not root action
+      id: 803b71de-fddd-465a-8a19-9fb2cc503fa4
+      iscommand: false
+      name: Ignore
+      type: regular
+      version: -1
+    taskid: 803b71de-fddd-465a-8a19-9fb2cc503fa4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 370
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "5"
+        - "11"
+        - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_id:
+        simple: ${incident.alertid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Gem
+      description: Get details about a specific alert
+      id: 267d7ec2-0d90-433c-8ad7-530d4990a7f3
+      iscommand: true
+      name: gem-get-alert-details
+      script: Gem|||gem-get-alert-details
+      type: regular
+      version: -1
+    taskid: 267d7ec2-0d90-433c-8ad7-530d4990a7f3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: Triggering_events.events
+      value:
+        complex:
+          filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: Gem.Alert.triage_configuration.event_groups.type
+                operator: isEqualString
+                right:
+                  value:
+                    simple: triggering
+          root: Gem.Alert.triage_configuration.event_groups
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b7d48485-00fe-4f7f-8e35-92c683ebcb90
+      iscommand: false
+      name: Set triggering events
+      script: Set
+      type: regular
+      version: -1
+    taskid: b7d48485-00fe-4f7f-8e35-92c683ebcb90
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+        - "13"
+      "yes":
+        - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      first:
+        complex:
+          accessor: names
+          root: users
+          transformers:
+            - args:
+                keys: {}
+              operator: DedupBy
+            - operator: count
+      second:
+        simple: "3"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      id: aedffd9e-1e48-4c38-8300-0fa6c3782236
+      iscommand: false
+      name: More then 3 Users?
+      script: IsGreaterThan
+      type: condition
+      version: -1
+    taskid: aedffd9e-1e48-4c38-8300-0fa6c3782236
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Probably an office
+      id: 295aba05-c923-4255-8026-a6b342d164e9
+      iscommand: false
+      name: Ignore, all good
+      type: regular
+      version: -1
+    taskid: 295aba05-c923-4255-8026-a6b342d164e9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1595
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: "Hi,  \nWe've detected some suspicious activity related to your user: *${Gem.Alert.alert_context.title}*\n\nWe wanted to verify you're familiar with the following actions (Showing only first 10) :\n${zipped_list.[0]}\n${zipped_list.[1]}\n${zipped_list.[2]}\n${zipped_list.[3]}\n${zipped_list.[4]}\n${zipped_list.[5]}\n${zipped_list.[6]}\n${zipped_list.[7]}\n${zipped_list.[8]}\n${zipped_list.[9]}"
+      cc:
+      format: ""
+      methods:
+        - SlackV3
+      replyOptions:
+        - "*Yes, it's me*"
+        - "*No, I didn't do any of these*"
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${users.names.[0]},${users.names.[1]},${users.names.[2]},${users.names}
+    nexttasks:
+      "*No, I didn't do any of these*":
+        - "15"
+      "*Yes, it's me*":
+        - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send a slack message to all involved users
+      id: 4d5bee4e-91d9-4b86-88da-bdd6213093cf
+      iscommand: false
+      name: Validate with users
+      type: condition
+      version: -1
+    taskid: 4d5bee4e-91d9-4b86-88da-bdd6213093cf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: Triggering_events.source_ip
+      value:
+        complex:
+          accessor: ip_address
+          root: Triggering_events.events.metadata.source_ip
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ae6f9cc1-b46d-4443-8916-29d5533cd642
+      iscommand: false
+      name: Set source ip
+      script: Set
+      type: regular
+      version: -1
+    taskid: ae6f9cc1-b46d-4443-8916-29d5533cd642
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 19cb3084-caba-4524-8cef-083e47032947
+      iscommand: false
+      name: Get time now
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 19cb3084-caba-4524-8cef-083e47032947
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "7"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 281d91ec-fcbb-4e27-897e-4995faa70401
+      iscommand: false
+      name: Get the time a week ago
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 281d91ec-fcbb-4e27-897e-4995faa70401
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: users.names
+      value:
+        complex:
+          filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: Gem.Entity.Using.ENTITY_ID
+                operator: containsString
+                right:
+                  value:
+                    simple: "@"
+          root: Gem.Entity.Using.ENTITY_ID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 3883ca17-9446-4b10-86d1-c42b216c4d31
+      iscommand: false
+      name: Get users using
+      script: Set
+      type: regular
+      version: -1
+    taskid: 3883ca17-9446-4b10-86d1-c42b216c4d31
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      format:
+        simple: •  {1}  *Preformed at* {2}
+      list1:
+        simple: ${Triggering_events.events.description}
+      list2:
+        simple: ${Triggering_events.events.start_time}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Joins values from two lists by index according to a given format.
+      id: 3c12f16b-d0fa-4db7-8ef3-f2db18d9f956
+      iscommand: false
+      name: Format slack message
+      script: ZipStrings
+      type: regular
+      version: -1
+    taskid: 3c12f16b-d0fa-4db7-8ef3-f2db18d9f956
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      reason:
+        simple: Root action planned, verified using XSOAR
+      status:
+        simple: resolved
+      threat_id:
+        simple: ${incident.gemthreatid}
+      verdict:
+        simple: planned_action
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Gem
+      description: Set a threat's status to open, in progress or resolved.
+      id: db875a13-13d0-4568-8a9e-9b94d3e0388a
+      iscommand: true
+      name: A planned action, resolve
+      script: Gem|||gem-update-threat-status
+      type: regular
+      version: -1
+    taskid: db875a13-13d0-4568-8a9e-9b94d3e0388a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Not a planned action, don't resolve
+      id: 5f50aa16-4b63-49ba-8877-602bf2461880
+      iscommand: false
+      name: Not a planned action
+      type: regular
+      version: -1
+    taskid: 5f50aa16-4b63-49ba-8877-602bf2461880
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5c288440-f8a2-4877-8f89-3d2ff25fd68f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ""
+    taskid: 5c288440-f8a2-4877-8f89-3d2ff25fd68f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 560
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c8b8a762-cbb3-4f83-8c68-bc73a469ae90
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ""
+    taskid: c8b8a762-cbb3-4f83-8c68-bc73a469ae90
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1785
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: time.aweekago
+      value:
+        simple: ${TimeNow.[0]}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: db94ddef-91c2-435f-80c6-a4f5de40c035
+      iscommand: false
+      name: Set time a week ago
+      script: Set
+      type: regular
+      version: -1
+    taskid: db94ddef-91c2-435f-80c6-a4f5de40c035
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: time.now
+      value:
+        simple: ${TimeNow.[1]}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 34b96d73-270c-4618-88ea-f60e6a048675
+      iscommand: false
+      name: Set time now
+      script: Set
+      type: regular
+      version: -1
+    taskid: 34b96d73-270c-4618-88ea-f60e6a048675
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+  "20":
+    conditions:
+      - condition:
+          - - left:
+                iscontext: true
+                value:
+                  complex:
+                    filters:
+                      - - left:
+                            iscontext: true
+                            value:
+                              simple: Gem.Entity.Using.ENTITY_ID
+                          operator: containsGeneral
+                          right:
+                            value:
+                              simple: "@"
+                    root: Gem.Entity.Using.ENTITY_ID
+                    transformers:
+                      - args:
+                          keys: {}
+                        operator: DedupBy
+                      - operator: count
+              operator: isEqualNumber
+              right:
+                value:
+                  simple: "0"
+        label: "yes"
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#default#":
+        - "12"
+      "yes":
+        - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 99e52e14-50f1-47aa-8955-9032d86133f8
+      iscommand: false
+      name: No users in the last week?
+      type: condition
+      version: -1
+      description: "Check if no users used that source ip address in the last week"
+    taskid: 99e52e14-50f1-47aa-8955-9032d86133f8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55120ccc-fc6f-4c09-8252-dfc7fa294c9e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ""
+    taskid: 55120ccc-fc6f-4c09-8252-dfc7fa294c9e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1260
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_14_*Yes, it's me*": 0.74,
+      "8_15_*No, I didn't do any of these*": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1990,
+        "width": 1885,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+  - No tests (auto formatted)
+fromversion: 6.12.0

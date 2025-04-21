@@ -1,0 +1,10 @@
+{
+    "access_token": "access_token",
+    "refresh_token": "refresh_token",
+    "expires_in": 7775999,
+    "expires": 1721806543,
+    "token_type": "Bearer",
+    "scope": "certificate",
+    "identity": "local:{identity}",
+    "refresh_until": 1745566543
+}

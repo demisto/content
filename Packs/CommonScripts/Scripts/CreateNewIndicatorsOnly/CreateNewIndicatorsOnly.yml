@@ -45,6 +45,13 @@ args:
 - name: tags
   description: The tags to add to the new indicators.
   isArray: true
+- name: associate_to_current
+  auto: PREDEFINED
+  predefined:
+    - "true"
+    - "false"
+  defaultValue: "false"
+  description: Whether to force the association of the indicator to the current incident.
 - name: verbose
   auto: PREDEFINED
   predefined:
@@ -69,7 +76,7 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.89009
+dockerimage: demisto/python3:3.11.11.1940698
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

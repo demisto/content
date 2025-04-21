@@ -1,11 +1,11 @@
 commonfields:
   id: DisplayIndicatorReputationContent
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: DisplayIndicatorReputationContent
 runas: DBotWeakRole
-comment: 'Display the indicator context object in markdown format in a dynamic section layout'
+comment: Display the indicator context object in markdown format in a dynamic section layout
 script: ''
 scripttarget: 0
 subtype: python3

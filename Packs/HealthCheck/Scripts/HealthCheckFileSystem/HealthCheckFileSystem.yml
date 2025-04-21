@@ -10,7 +10,7 @@ comment: read and parse filesystem.log
 commonfields:
   id: HealthCheckFileSystem
   version: -1
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.11.10.113941
 enabled: true
 name: HealthCheckFileSystem
 runas: DBotWeakRole

@@ -1,0 +1,3 @@
+!zafran-mitigations-export
+!zafran-mitigation-performed mitigationstatus_id="id" mitigationstatus_external_ticket_id="ticketid" mitigationstatus_external_ticket_url="ticketurl" mitigationstatus_state=in_progress
+!zafran-mitigations-performed mitigationsstatus_mitigation_ids=id1,id2 mitigationsstatus_state=in_progress

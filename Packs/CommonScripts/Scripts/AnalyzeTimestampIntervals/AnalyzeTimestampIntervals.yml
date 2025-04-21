@@ -1,0 +1,54 @@
+commonfields:
+  id: AnalyzeTimestampIntervals
+  version: -1
+name: AnalyzeTimestampIntervals
+comment: Analyze a list of Unix timestamps in milliseconds, to detect simple patterns of consistency or high frequency. The script can aid in the investigation of multi-event alerts that contain a list of timestamps.
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: timestamps
+  required: true
+  description: List of Unix timestamps (in milliseconds) representing time intervals.
+  isArray: true
+- name: max_intervals_per_window
+  description: The maximum number of intervals allowed within a specific time window.
+  defaultValue: '60'
+- name: interval_consistency_threshold
+  description: The threshold for determining how consistent the intervals are (in seconds).
+  defaultValue: '0.1'
+- name: verbose
+  description: If true, includes detailed interval information in the output.
+  defaultValue: 'false'
+outputs:
+- contextPath: IntervalAnalysis.TimestampCount
+  description: The total number of timestamps analyzed.
+  type: number
+- contextPath: IntervalAnalysis.MeanIntervalInSeconds
+  description: The average time interval (in seconds) between consecutive timestamps.
+  type: number
+- contextPath: IntervalAnalysis.MedianIntervalInSeconds
+  description: The median time interval (in seconds) between consecutive timestamps.
+  type: number
+- contextPath: IntervalAnalysis.StandardDeviationInSeconds
+  description: The standard deviation of the time intervals (in seconds) between consecutive timestamps.
+  type: number
+- contextPath: IntervalAnalysis.HighFrequencyDetected
+  description: Indicates whether a high frequency of intervals within a short time window was detected.
+  type: boolean
+- contextPath: IntervalAnalysis.ConsistentIntervalsDetected
+  description: Indicates whether the intervals between timestamps were consistent based on the standard deviation threshold.
+  type: boolean
+- contextPath: IntervalAnalysis.IsPatternLikelyAutomated
+  description: Indicates whether the pattern of intervals is likely automated based on analysis. Intervals with high frequency or consistency can suggest the use of an automation.
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

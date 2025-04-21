@@ -1,2 +1,6 @@
 [file:README.md]
 ignore=RM104
+
+# GR103 is temporary, see CIAC-11656
+[file:playbook-Trello_-_Generic.yml]
+ignore=GR103

@@ -1,26 +1,22 @@
 Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
 This integration was integrated and tested with version 4 of Google Sheets API.
 
-## Configure Google Sheets on Cortex XSOAR
+## Configure Google Sheets in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Sheets.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Service Account Key | A service account key from Google. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Email - Associate to Google Drive | Used to impersonate a Google workspace user, so the spreadsheets is created in the associated Google Drive and is easily accessible from a UI. This parameter is used during the authentication process.<br/> | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Service Account Key | A service account key from Google. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Email - Associate to Google Drive | Used to impersonate a Google workspace user, so the spreadsheets is created in the associated Google Drive and is easily accessible from a UI. This parameter is used during the authentication process.<br/> | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Known limitations
 You can only delete a spreadsheet with the Google Drive integrations. 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-sheets-spreadsheet-create
 ***
@@ -1305,4 +1301,3 @@ This is a custom update command, used to apply any of the Google Sheets API opti
 #### Human Readable Output
 
 >### Success
-

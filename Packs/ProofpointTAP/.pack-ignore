@@ -8,6 +8,7 @@ setcontext
 setandhandleempty
 ccAddresses
 messageTime
+Mailboxed
 
 [file:ProofpointTapTopClickers.yml]
 ignore=BA124
@@ -23,3 +24,7 @@ ignore=MR108
 
 [file:ProofpointTAPModelingRules_1_3.yml]
 ignore=MR108
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-ProofPointTAP_Message_Layout.json]
+ignore=GR103

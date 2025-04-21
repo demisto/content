@@ -1,6 +1,6 @@
-id: Symantec_Endpoint_Protection
-name: Symantec_Endpoint_Protection
-fromversion: 6.10.0
+name: Symantec Endpoint Protection Parsing Rule
+id: Symantec_Endpoint_Protection_ParsingRule
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''

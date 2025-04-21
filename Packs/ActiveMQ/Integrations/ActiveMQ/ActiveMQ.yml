@@ -27,7 +27,7 @@ configuration:
   required: false
 - display: Client certificate key (.key)
   name: client_key
-  type: 12
+  type: 14
   required: false
 - display: Root Certificate
   name: root_ca
@@ -81,7 +81,7 @@ script:
       name: queue-name
     description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     name: activemq-subscribe
-  dockerimage: demisto/py3-tools:1.0.0.87415
+  dockerimage: demisto/py3-tools:1.0.0.114656
   isfetch: true
   runonce: false
   script: '-'

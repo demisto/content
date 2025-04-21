@@ -55,13 +55,14 @@ script:
       name: limit
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.111039
   isfetchevents: true
   script: '-'
   subtype: python3
   type: python
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

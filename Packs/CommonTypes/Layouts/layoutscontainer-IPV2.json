@@ -1,756 +1,884 @@
 {
     "fromVersion": "6.10.0",
-    "edit": {
-        "sections": [
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "indicator_value",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_indicatortype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_score",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_expiration",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_comment",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_investigationids",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Basic Information",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": "basicInformationSection"
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "indicator_blocked",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_communitynotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_description",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_stixid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_tags",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_trafficlightprotocol",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_internal",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Custom fields - core",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "indicator_geocountry",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "indicator_geolocation",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Custom fields - unique",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
-            }
-        ]
-    },
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_value",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_indicatortype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_score",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_expiration",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_comment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_investigationids",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "basicInformationSection"
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_enrichmentexcluded",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_blocked",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_communitynotes",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_description",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_stixid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_tags",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_trafficlightprotocol",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_internal",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom fields - core",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_geocountry",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_geolocation",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom fields - unique",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
     "group": "indicator",
     "id": "ipRep",
-    "indicatorsDetails": {
-        "tabs": [
+	"indicatorsDetails": {
+		"tabs": [
+			{
+				"id": "main",
+				"name": "Summary",
+				"sections": [
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "id",
+								"width": 110
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "severity",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 80
+							}
+						],
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
+						"isVisible": true,
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Related Incidents",
+						"readOnly": true,
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 7
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "enrichmentexcluded",
+								"filters": [
+									[
+										{
+											"id": 0,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "enrichmentExcluded"
+												}
+											},
+											"operator": "isTrue",
+											"right": null,
+											"type": "boolean"
+										}
+									]
+								],
+								"height": 26,
+								"id": "0686163e-4aa2-4c2c-bad2-62b7e508d1d5",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "timestamp",
+								"height": 26,
+								"id": "02f22c20-6eee-11ec-95bd-11b39a3d194b",
+								"index": 1,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 26,
+								"id": "7d7f7b70-97ba-11eb-b107-d54cb1092446",
+								"index": 2,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 26,
+								"id": "40842a70-76be-11ec-ad89-f112118947c2",
+								"index": 3,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "description",
+								"height": 52,
+								"id": "cfd916c0-9871-11ec-a272-434da3f30006",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "internal",
+								"height": 26,
+								"id": "299ca380-ac60-11e9-8443-17259235cee7",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "comment",
+								"height": 26,
+								"id": "0b9dd200-a09e-11e9-8956-390f602b039a",
+								"index": 6,
+								"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "blocked",
+								"height": 26,
+								"id": "e7017d50-76b7-11ec-ad89-f112118947c2",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "geocountry",
+								"height": 26,
+								"id": "1b89e2d0-ac60-11e9-8443-17259235cee7",
+								"index": 7,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "geolocation",
+								"height": 26,
+								"id": "38b90d10-8a6e-11ec-b66a-f1cce9b9d7c0",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "trafficlightprotocol",
+								"height": 26,
+								"id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
+								"index": 9,
+								"listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 26,
+								"id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
+								"index": 10,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "tags"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"id": "a3ae49b0-a751-11eb-8813-85174f038837",
+								"index": 11,
+								"listId": "main-7f057390-7924-11ec-b67f-eb261672616f",
+								"name": "Add tags",
+								"scriptId": "Builtin|||appendIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "tags"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "a1fd3e50-a751-11eb-8813-85174f038837",
+								"index": 11,
+								"listId": "main-7f057390-7924-11ec-b67f-eb261672616f",
+								"name": "Remove tags",
+								"scriptId": "Builtin|||removeIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IP Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "main-8bd4f460-a875-11e9-8523-e5faf0ec1f6b",
+						"isVisible": true,
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Geo Location",
+						"query": "ShowLocationOnMap",
+						"queryType": "script",
+						"readOnly": true,
+						"static": false,
+						"type": "dynamicIndicator",
+						"w": 1,
+						"x": 2,
+						"y": 1
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "main-9cfd13c0-3d54-11ea-8f80-71a50769e869",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Reputation Status",
+						"static": false,
+						"type": "reputationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "main-a42a8a60-3d54-11ea-8f80-71a50769e869",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Expiration Status",
+						"static": false,
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"h": 2,
+						"i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 2,
+						"y": 7
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
+						"items": [
+							{
+								"args": {},
+								"endCol": 1,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"id": 0,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "enrichmentExcluded"
+												}
+											},
+											"operator": "isFalse",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": ""
+												}
+											},
+											"type": "boolean"
+										},
+										{
+											"id": 1,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "enrichmentExcluded"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "boolean"
+										}
+									]
+								],
+								"height": 44,
+								"id": "e3595b00-aa49-11ea-9e46-5ff91c1cf9b7",
+								"index": 0,
+								"name": "Enrich indicator",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": null,
+								"endCol": 1,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"id": 0,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "enrichmentExcluded"
+												}
+											},
+											"operator": "isTrue",
+											"right": null,
+											"type": "boolean"
+										}
+									]
+								],
+								"height": 44,
+								"hexColor": "#979797",
+								"id": "f8d15860-3124-4a8f-8e55-2320a622b319",
+								"index": 1,
+								"name": "Enrich indicator",
+								"scriptId": "enrich_exclude_button",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "012a4ae0-bf71-11ea-b085-3f354e53d3e6",
+								"index": 0,
+								"name": "Expire indicator",
+								"scriptId": "Builtin|||expireIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Actions",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "main-2e126740-96e4-11eb-a8d1-098e2c945225",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Relationships",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"h": 2,
+						"i": "main-986e1a20-6ef8-11ec-95bd-11b39a3d194b",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Verdict",
+						"static": false,
+						"type": "reputationSources",
+						"w": 1,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "i0yw3qwiqc",
+				"name": "Additional Details",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 4,
+						"i": "i0yw3qwiqc-a7a15750-de2f-11eb-b5cc-73114eddb812",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Custom Details",
+						"static": false,
+						"type": "customDetails",
+						"w": 3,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "i0yw3qwiqc-11c94670-76be-11ec-ad89-f112118947c2",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "communitynotes",
+								"height": 106,
+								"id": "1af59a50-76be-11ec-ad89-f112118947c2",
+								"index": 0,
+								"listId": "i0yw3qwiqc-11c94670-76be-11ec-ad89-f112118947c2",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "publications",
+								"height": 106,
+								"id": "50ade440-76be-11ec-ad89-f112118947c2",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Additional Details",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
             {
-                "id": "main",
-                "name": "Summary",
-                "sections": [
-                    {
-                        "columns": [
-                            {
-                                "displayed": true,
-                                "isDefault": false,
-                                "key": "id",
-                                "width": 110
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "name",
-                                "width": 300
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": false,
-                                "key": "severity",
-                                "width": 80
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "type",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "status",
-                                "width": 80
-                            }
-                        ],
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
-                        "isVisible": true,
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Related Incidents",
-                        "readOnly": true,
-                        "static": false,
-                        "type": "relatedIncidents",
-                        "w": 2,
-                        "x": 0,
-                        "y": 7
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 4,
-                        "hideName": false,
-                        "i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "timestamp",
-                                "height": 22,
-                                "id": "02f22c20-6eee-11ec-95bd-11b39a3d194b",
-                                "index": 0,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "7d7f7b70-97ba-11eb-b107-d54cb1092446",
-                                "index": 1,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "stixid",
-                                "height": 22,
-                                "id": "40842a70-76be-11ec-ad89-f112118947c2",
-                                "index": 2,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "description",
-                                "height": 44,
-                                "id": "cfd916c0-9871-11ec-a272-434da3f30006",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "internal",
-                                "height": 22,
-                                "id": "299ca380-ac60-11e9-8443-17259235cee7",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "comment",
-                                "height": 22,
-                                "id": "0b9dd200-a09e-11e9-8956-390f602b039a",
-                                "index": 4,
-                                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "blocked",
-                                "height": 22,
-                                "id": "e7017d50-76b7-11ec-ad89-f112118947c2",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "geocountry",
-                                "height": 22,
-                                "id": "1b89e2d0-ac60-11e9-8443-17259235cee7",
-                                "index": 5,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "geolocation",
-                                "height": 22,
-                                "id": "38b90d10-8a6e-11ec-b66a-f1cce9b9d7c0",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 22,
-                                "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 8,
-                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 22,
-                                "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 9,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "field": {
-                                        "simple": "tags"
-                                    }
-                                },
-                                "dropEffect": "move",
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "a3ae49b0-a751-11eb-8813-85174f038837",
-                                "index": 10,
-                                "listId": "main-7f057390-7924-11ec-b67f-eb261672616f",
-                                "name": "Add tags",
-                                "scriptId": "Builtin|||appendIndicatorField",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "field": {
-                                        "simple": "tags"
-                                    }
-                                },
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "a1fd3e50-a751-11eb-8813-85174f038837",
-                                "index": 10,
-                                "listId": "main-7f057390-7924-11ec-b67f-eb261672616f",
-                                "name": "Remove tags",
-                                "scriptId": "Builtin|||removeIndicatorField",
-                                "sectionItemType": "button",
-                                "startCol": 1
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "IP Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 3,
-                        "hideName": false,
-                        "i": "main-8bd4f460-a875-11e9-8523-e5faf0ec1f6b",
-                        "isVisible": true,
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Geo Location",
-                        "query": "ShowLocationOnMap",
-                        "queryType": "script",
-                        "readOnly": true,
-                        "static": false,
-                        "type": "dynamicIndicator",
-                        "w": 1,
-                        "x": 2,
-                        "y": 1
-                    },
-                    {
-                        "h": 1,
-                        "hideName": true,
-                        "i": "main-9cfd13c0-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Reputation Status",
-                        "static": false,
-                        "type": "reputationStatus",
-                        "w": 1,
-                        "x": 0,
-                        "y": 1
-                    },
-                    {
-                        "h": 1,
-                        "hideName": true,
-                        "i": "main-a42a8a60-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Expiration Status",
-                        "static": false,
-                        "type": "expirationStatus",
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "h": 3,
-                        "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Timeline",
-                        "static": false,
-                        "type": "indicatorTimeline",
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "h": 2,
-                        "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Comments",
-                        "static": false,
-                        "type": "comments",
-                        "w": 1,
-                        "x": 2,
-                        "y": 7
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
-                        "items": [
-                            {
-                                "args": {},
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "e3595b00-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 0,
-                                "name": "Enrich indicator",
-                                "scriptId": "Builtin|||enrichIndicators",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {},
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "012a4ae0-bf71-11ea-b085-3f354e53d3e6",
-                                "index": 1,
-                                "name": "Expire indicator",
-                                "scriptId": "Builtin|||expireIndicators",
-                                "sectionItemType": "button",
-                                "startCol": 1
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Actions",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "h": 3,
-                        "i": "main-2e126740-96e4-11eb-a8d1-098e2c945225",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Relationships",
-                        "static": false,
-                        "type": "relationshipsTable",
-                        "w": 2,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "h": 2,
-                        "i": "main-986e1a20-6ef8-11ec-95bd-11b39a3d194b",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Verdict",
-                        "static": false,
-                        "type": "reputationSources",
-                        "w": 1,
-                        "x": 0,
-                        "y": 2
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "i0yw3qwiqc",
-                "name": "Additional Details",
-                "sections": [
-                    {
-                        "displayType": "CARD",
-                        "h": 4,
-                        "i": "i0yw3qwiqc-a7a15750-de2f-11eb-b5cc-73114eddb812",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Custom Details",
-                        "static": false,
-                        "type": "customDetails",
-                        "w": 3,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 4,
-                        "hideName": false,
-                        "i": "i0yw3qwiqc-11c94670-76be-11ec-ad89-f112118947c2",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "communitynotes",
-                                "height": 106,
-                                "id": "1af59a50-76be-11ec-ad89-f112118947c2",
-                                "index": 0,
-                                "listId": "i0yw3qwiqc-11c94670-76be-11ec-ad89-f112118947c2",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "publications",
-                                "height": 106,
-                                "id": "50ade440-76be-11ec-ad89-f112118947c2",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Additional Details",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
-                    }
-                ],
-                "type": "custom"
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
-        ]
-    },
-    "indicatorsQuickView": {
-        "tabs": [
-            {
-                "id": "indicator-quick-view-info",
-                "name": "Info",
-                "sections": [
-                    {
-                        "h": 1,
-                        "hideName": true,
-                        "i": "indicator-quick-view-info-expirationStatus",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Expiration Status",
-                        "static": false,
-                        "type": "expirationStatus",
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "columns": [
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "name",
-                                "width": 157
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "type",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "status",
-                                "width": 80
-                            }
-                        ],
-                        "h": 2,
-                        "i": "indicator-quick-view-info-relatedIncidents",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Related Incidents",
-                        "static": false,
-                        "type": "relatedIncidents",
-                        "w": 1,
-                        "x": 0,
-                        "y": 6
-                    },
-                    {
-                        "h": 3,
-                        "i": "indicator-quick-view-info-comments",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Comments",
-                        "static": false,
-                        "type": "comments",
-                        "w": 1,
-                        "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "h": 1,
-                        "hideName": true,
-                        "i": "indicator-quick-view-info-8524f2b0-871b-11eb-a029-7dc36024189f",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Reputation Status",
-                        "static": false,
-                        "type": "reputationStatus",
-                        "w": 1,
-                        "x": 0,
-                        "y": 1
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "indicator-quick-view-info-e73d2a60-84e7-11ec-a589-e73aadc98c9a",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "timestamp",
-                                "height": 22,
-                                "id": "f5f8d540-84e7-11ec-a589-e73aadc98c9a",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "fb5d24a0-84e7-11ec-a589-e73aadc98c9a",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "stixid",
-                                "height": 22,
-                                "id": "13db6ff0-84e8-11ec-a589-e73aadc98c9a",
-                                "index": 2,
-                                "listId": "indicator-quick-view-info-e73d2a60-84e7-11ec-a589-e73aadc98c9a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "internal",
-                                "height": 22,
-                                "id": "fe518570-84e7-11ec-a589-e73aadc98c9a",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "blocked",
-                                "height": 22,
-                                "id": "03486d00-84e8-11ec-a589-e73aadc98c9a",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "geocountry",
-                                "height": 22,
-                                "id": "058a94d0-84e8-11ec-a589-e73aadc98c9a",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "geolocation",
-                                "height": 22,
-                                "id": "3c6943d0-8a6e-11ec-b66a-f1cce9b9d7c0",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 22,
-                                "id": "1c2a0e00-84e8-11ec-a589-e73aadc98c9a",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 22,
-                                "id": "1f0f2c90-84e8-11ec-a589-e73aadc98c9a",
-                                "index": 8,
-                                "listId": "indicator-quick-view-info-e73d2a60-84e7-11ec-a589-e73aadc98c9a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "IP Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-454a5de0-8a6e-11ec-b66a-f1cce9b9d7c0",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Verdict",
-                        "static": false,
-                        "type": "reputationSources",
-                        "w": 1,
-                        "x": 0,
-                        "y": 2
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "dmxl1iqhix",
-                "name": "Relationships",
-                "sections": [
-                    {
-                        "h": 8,
-                        "i": "dmxl1iqhix-8049eb50-96e4-11eb-a8d1-098e2c945225",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Relationships",
-                        "static": false,
-                        "type": "relationshipsTable",
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    }
-                ],
-                "type": "custom"
-            }
-        ]
-    },
+		]
+	},
+	"indicatorsQuickView": {
+		"tabs": [
+			{
+				"id": "indicator-quick-view-info",
+				"name": "Info",
+				"sections": [
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "indicator-quick-view-info-expirationStatus",
+						"maxW": 3,
+						"moved": false,
+						"name": "Expiration Status",
+						"static": false,
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 157
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 80
+							}
+						],
+						"h": 2,
+						"i": "indicator-quick-view-info-relatedIncidents",
+						"maxW": 3,
+						"moved": false,
+						"name": "Related Incidents",
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"h": 3,
+						"i": "indicator-quick-view-info-comments",
+						"maxW": 3,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "indicator-quick-view-info-8524f2b0-871b-11eb-a029-7dc36024189f",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Reputation Status",
+						"static": false,
+						"type": "reputationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "indicator-quick-view-info-e73d2a60-84e7-11ec-a589-e73aadc98c9a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "enrichmentexcluded",
+								"filters": [
+									[
+										{
+											"id": 0,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "enrichmentExcluded"
+												}
+											},
+											"operator": "isTrue",
+											"right": null,
+											"type": "boolean"
+										}
+									]
+								],
+								"height": 26,
+								"id": "0d830b5a-4f4c-4b8b-b7af-b56796f97071",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "timestamp",
+								"height": 26,
+								"id": "f5f8d540-84e7-11ec-a589-e73aadc98c9a",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 26,
+								"id": "fb5d24a0-84e7-11ec-a589-e73aadc98c9a",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 26,
+								"id": "13db6ff0-84e8-11ec-a589-e73aadc98c9a",
+								"index": 3,
+								"listId": "indicator-quick-view-info-e73d2a60-84e7-11ec-a589-e73aadc98c9a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "internal",
+								"height": 26,
+								"id": "fe518570-84e7-11ec-a589-e73aadc98c9a",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "blocked",
+								"height": 26,
+								"id": "03486d00-84e8-11ec-a589-e73aadc98c9a",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "geocountry",
+								"height": 26,
+								"id": "058a94d0-84e8-11ec-a589-e73aadc98c9a",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "geolocation",
+								"height": 26,
+								"id": "3c6943d0-8a6e-11ec-b66a-f1cce9b9d7c0",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "trafficlightprotocol",
+								"height": 26,
+								"id": "1c2a0e00-84e8-11ec-a589-e73aadc98c9a",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 26,
+								"id": "1f0f2c90-84e8-11ec-a589-e73aadc98c9a",
+								"index": 9,
+								"listId": "indicator-quick-view-info-e73d2a60-84e7-11ec-a589-e73aadc98c9a",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IP Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-454a5de0-8a6e-11ec-b66a-f1cce9b9d7c0",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Verdict",
+						"static": false,
+						"type": "reputationSources",
+						"w": 1,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "dmxl1iqhix",
+				"name": "Relationships",
+				"sections": [
+					{
+						"h": 8,
+						"i": "dmxl1iqhix-8049eb50-96e4-11eb-a8d1-098e2c945225",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Relationships",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
     "name": "IP Indicator",
     "system": false,
     "version": -1,

@@ -1,0 +1,2 @@
+domain,email,username,password,breach_name,impacted_domain,discovered_date,created_date
+zerofox.com,me@zerofox.com,me@zerofox.com,password123,Combolist: 'paste.services.txt' (202,998 Records),N/A,2024-05-27T00:00:00Z,2024-05-27T23:20:24.288508611Z

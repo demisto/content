@@ -77,7 +77,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   type: 17
   required: false
 - name: feedExpirationInterval
@@ -113,7 +112,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: unit42intel-objects-feed-get-indicators
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

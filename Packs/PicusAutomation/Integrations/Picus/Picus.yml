@@ -36,7 +36,7 @@ script:
     name: picus-get-vector-list
     outputs:
     - contextPath: Picus.vectorlist.description
-      description: Description info of the vector
+      description: Description info of the vector.
       type: String
     - contextPath: Picus.vectorlist.heartbeat_results.is_successful
       description: Was the heartbeat end successfully?
@@ -45,7 +45,7 @@ script:
       description: On which module did the heartbeat executed?
       type: String
     - contextPath: Picus.vectorlist.heartbeat_results.result_time
-      description: When the heartbeat is executed? (End time)
+      description: When the heartbeat is executed? (End time).
       type: Date
     - contextPath: Picus.vectorlist.heartbeat_results.variant
       description: On which variant did the heartbeat executed?
@@ -54,19 +54,19 @@ script:
       description: Is the vector status disabled?
       type: Boolean
     - contextPath: Picus.vectorlist.name
-      description: Name of the vector
+      description: Name of the vector.
       type: String
     - contextPath: Picus.vectorlist.trusted
-      description: Trusted peer name
+      description: Trusted peer name.
       type: String
     - contextPath: Picus.vectorlist.type
-      description: 'Type of the vector, if error is encountered, "Unknown" is returned. Other valid values are: "Network", "Email, "Endpoint"'
+      description: 'Type of the vector, if error is encountered, "Unknown" is returned. Other valid values are: "Network", "Email, "Endpoint".'
       type: String
     - contextPath: Picus.vectorlist.untrusted
-      description: Untrusted peer name
+      description: Untrusted peer name.
       type: String
     - contextPath: Picus.vectorlist.users
-      description: Users assigned to this vector
+      description: Users assigned to this vector.
       type: Unknown
   - description: Returns the peer list with current statuses.
     name: picus-get-peer-list
@@ -75,16 +75,16 @@ script:
       description: Is Peer Alive?
       type: Boolean
     - contextPath: Picus.peerlist.latest_attack
-      description: Latest Attack Time of the Peer
+      description: Latest Attack Time of the Peer.
       type: Date
     - contextPath: Picus.peerlist.name
-      description: Peer Name
+      description: Peer Name.
       type: String
     - contextPath: Picus.peerlist.registered_ip
-      description: IP of the peer
+      description: IP of the peer.
       type: String
     - contextPath: Picus.peerlist.type
-      description: Peer's Type
+      description: Peer's Type.
       type: String
   - arguments:
     - description: Untrusted peer name.
@@ -103,64 +103,64 @@ script:
     name: picus-get-attack-results
     outputs:
     - contextPath: Picus.attackresults.results.threat_ids
-      description: Threat ID List
+      description: Threat ID List.
       type: String
     - contextPath: Picus.attackresults.results.begin_time
-      description: begin time of the attack
+      description: begin time of the attack.
       type: Date
     - contextPath: Picus.attackresults.results.destination_port
-      description: Value "0" indicates it is not applicable such as all vector types except network
+      description: Value "0" indicates it is not applicable such as all vector types except network.
       type: Number
     - contextPath: Picus.attackresults.results.end_time
-      description: end time of the attack
+      description: end time of the attack.
       type: Date
     - contextPath: Picus.attackresults.results.id
-      description: id
+      description: id.
       type: Number
     - contextPath: Picus.attackresults.results.l1_category_name
-      description: Level 1 Category Name of the attack
+      description: Level 1 Category Name of the attack.
       type: String
     - contextPath: Picus.attackresults.results.scenario_details.action_id
-      description: Action ID of the threat scenario action
+      description: Action ID of the threat scenario action.
       type: Number
     - contextPath: Picus.attackresults.results.scenario_details.action_name
-      description: Action Name of the threat scenario action
+      description: Action Name of the threat scenario action.
       type: String
     - contextPath: Picus.attackresults.results.scenario_details.end
-      description: The time attack ended
+      description: The time attack ended.
       type: Date
     - contextPath: Picus.attackresults.results.scenario_details.id
-      description: Primary key
+      description: Primary key.
       type: Number
     - contextPath: Picus.attackresults.results.scenario_details.process_results
-      description: ' Process Results(play and rewind)'
+      description: 'Process Results(play and rewind).'
       type: Unknown
     - contextPath: Picus.attackresults.results.scenario_details.result
-      description: Final result of the scenario action
+      description: Final result of the scenario action.
       type: String
     - contextPath: Picus.attackresults.results.scenario_details.technique_id
-      description: Technique ID of the threat scenario action
+      description: Technique ID of the threat scenario action.
       type: String
     - contextPath: Picus.attackresults.results.source_port
-      description: Value "0" indicates it is not applicable such as all vector types except network and wats attacks
+      description: Value "0" indicates it is not applicable such as all vector types except network and wats attacks.
       type: Number
     - contextPath: Picus.attackresults.results.string
-      description: Attack Result
+      description: Attack Result.
       type: String
     - contextPath: Picus.attackresults.results.threat_id
-      description: Threat ID of the attack
+      description: Threat ID of the attack.
       type: Number
     - contextPath: Picus.attackresults.results.threat_name
-      description: Threat Name of the attack
+      description: Threat Name of the attack.
       type: String
     - contextPath: Picus.attackresults.results.trusted
-      description: Trusted peer name
+      description: Trusted peer name.
       type: String
     - contextPath: Picus.attackresults.results.untrusted
-      description: Untrusted peer name
+      description: Untrusted peer name.
       type: String
     - contextPath: Picus.attackresults.results.variant
-      description: Variant info
+      description: Variant info.
       type: String
   - arguments:
     - description: Threat ID list ("111,222,333,...") or single threat ID can be given.
@@ -173,7 +173,7 @@ script:
       name: victim_peer
       required: true
     - auto: PREDEFINED
-      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP.
       name: variant
       predefined:
       - HTTP
@@ -183,7 +183,7 @@ script:
     name: picus-run-attacks
     outputs:
     - contextPath: Picus.runattacks
-      description: IDs of the assessed attacks
+      description: IDs of the assessed attacks.
       type: String
   - arguments:
     - description: Threat ID list ("111,222,333,...") or single threat ID can be given.
@@ -196,7 +196,7 @@ script:
       name: victim_peer
       required: true
     - auto: PREDEFINED
-      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP.
       name: variant
       predefined:
       - HTTP
@@ -206,22 +206,22 @@ script:
     name: picus-get-threat-results
     outputs:
     - contextPath: Picus.threatresults.results.threat_results
-      description: Threat Results(ID and result combination)
+      description: Threat Results(ID and result combination).
       type: String
     - contextPath: Picus.threatresults.results.l1_category
-      description: Level 1 Category Name of the attack
+      description: Level 1 Category Name of the attack.
       type: String
     - contextPath: Picus.threatresults.results.last_time
-      description: Last Threat Result Time
+      description: Last Threat Result Time.
       type: Date
     - contextPath: Picus.threatresults.results.result
-      description: Threat Result
+      description: Threat Result.
       type: String
     - contextPath: Picus.threatresults.results.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: Picus.threatresults.results.threat_id
-      description: Threat ID of the attack
+      description: Threat ID of the attack.
       type: Number
   - arguments:
     - description: Untrusted peer name.
@@ -231,7 +231,7 @@ script:
       name: victim_peer
       required: true
     - auto: PREDEFINED
-      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP.
       name: variant
       predefined:
       - HTTP
@@ -243,33 +243,33 @@ script:
     - defaultValue: '3'
       description: Set days parameter.
       name: days
-    description: Set parameter on playbook. (This command is only used on playbook)
+    description: Set parameter on playbook. (This command is only used on playbook).
     name: picus-set-paramPB
     outputs:
     - contextPath: Picus.param.attacker_peer
-      description: Untrusted peer name
+      description: Untrusted peer name.
       type: String
     - contextPath: Picus.param.days
-      description: days
+      description: days.
       type: Number
     - contextPath: Picus.param.mitigation_product
-      description: Products info of the mitigation
+      description: Products info of the mitigation.
       type: String
     - contextPath: Picus.param.variant
-      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP.
       type: String
     - contextPath: Picus.param.victim_peer
-      description: Trusted peer name
+      description: Trusted peer name.
       type: String
   - arguments:
     - description: Threat id and result combine. Used for playbook.
       name: threatinfo
       required: true
-    description: Filter insecure attacks on playbook. (This command is only used on playbook)
+    description: Filter insecure attacks on playbook. (This command is only used on playbook).
     name: picus-filter-insecure-attacks
     outputs:
     - contextPath: Picus.filterinsecure
-      description: Insecure Attack List
+      description: Insecure Attack List.
       type: String
   - arguments:
     - description: Threat ID list ("111,222,333,...") or single threat ID can be given.
@@ -282,16 +282,16 @@ script:
     name: picus-get-mitigation-list
     outputs:
     - contextPath: Picus.mitigationresults.signature_id
-      description: ID of the signature
+      description: ID of the signature.
       type: String
     - contextPath: Picus.mitigationresults.signature_name
-      description: Name of the signature
+      description: Name of the signature.
       type: String
     - contextPath: Picus.mitigationresults.threat_id
-      description: Threat ID of Picus Attack
+      description: Threat ID of Picus Attack.
       type: Number
     - contextPath: Picus.mitigationresults.vendor
-      description: Product name of the mitigation
+      description: Product name of the mitigation.
       type: String
   - arguments:
     - description: Untrusted peer name.
@@ -307,13 +307,13 @@ script:
     name: picus-get-vector-compare
     outputs:
     - contextPath: Picus.vectorresults.name
-      description: Name of Picus Attack
+      description: Name of Picus Attack.
       type: String
     - contextPath: Picus.vectorresults.status
-      description: Compare Result
+      description: Compare Result.
       type: String
     - contextPath: Picus.vectorresults.threat_id
-      description: Threat ID of Picus Attack
+      description: Threat ID of Picus Attack.
       type: String
   - description: Returns the current Picus version and the update time config.
     name: picus-version
@@ -325,20 +325,20 @@ script:
       description: When to update?
       type: Number
     - contextPath: Picus.versioninfo.version
-      description: Current version
+      description: Current version.
       type: Number
   - description: Triggers the Picus product update mechanism manually.
     name: picus-trigger-update
     outputs:
     - contextPath: Picus.triggerupdate.data
-      description: Collected data that will be returned
+      description: Collected data that will be returned.
       type: Boolean
     - contextPath: Picus.triggerupdate.success
       description: Is the operation Succeed?
       type: Boolean
   - description: Generates an access token for api usage. Looks for X-Refresh-Token on header or refresh-token cookie.
     name: picus-get-access-token
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.11.1940698
   runonce: false
   script: '-'
   subtype: python3

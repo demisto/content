@@ -27,7 +27,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   subtype: python3
   commands:
@@ -50,46 +50,46 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
     - contextPath: File.Malicious.Vendor
-      description: "N/A"
+      description: "N/A."
     - contextPath: File.MD5
-      description: The MD5 hash of the file
+      description: The MD5 hash of the file.
     - contextPath: FireEyeDoD.engine_results.cache_lookup.sha256
-      description: The sha256 value of the file
+      description: The sha256 value of the file.
       type: String
     - contextPath: FireEyeDoD.engine_results.cache_lookup.signature_name
-      description: The name of the virus signature
+      description: The name of the virus signature.
       type: String
     - contextPath: FireEyeDoD.engine_results.cache_lookup.is_malicious
-      description: True/False if the file is malicious
+      description: True/False if the file is malicious.
       type: Number
     - contextPath: FireEyeDoD.engine_results.cache_lookup.verdict
-      description: The overall verdict of all analysis engines
+      description: The overall verdict of all analysis engines.
       type: String
     - contextPath: FireEyeDoD.engine_results.cache_lookup.file_extension
-      description: The extension of the file
+      description: The extension of the file.
       type: String
     - contextPath: FireEyeDoD.engine_results.cache_lookup.weight
-      description: How important this engine result is to determining malicious activity
+      description: How important this engine result is to determining malicious activity.
       type: Number
     - contextPath: FireEyeDoD.engine_results.dynamic_analysis.verdict
-      description: This particular engine's verdict on whether or not the file is malicious
+      description: This particular engine's verdict on whether or not the file is malicious.
       type: String
     - contextPath: FireEyeDoD.engine_results.av_lookup.verdict
-      description: This particular engine's verdict on whether or not the file is malicious
+      description: This particular engine's verdict on whether or not the file is malicious.
       type: String
     - contextPath: FireEyeDoD.engine_results.avs_lookup.verdict
-      description: This particular engine's verdict on whether or not the file is malicious
+      description: This particular engine's verdict on whether or not the file is malicious.
       type: String
     - contextPath: FireEyeDoD.engine_results.dti_lookup.verdict
-      description: This particular engine's verdict on whether or not the file is malicious
+      description: This particular engine's verdict on whether or not the file is malicious.
       type: String
     - contextPath: FireEyeDoD.md5
-      description: The MD5 hash of the file
+      description: The MD5 hash of the file.
       type: String
     - contextPath: FireEyeDoD.is_malicious
-      description: True/False if the file is malicious
+      description: True/False if the file is malicious.
       type: Number
-    description: Queries FireEye Detection on Demand reports for the provided md5 hashes
+    description: Queries FireEye Detection on Demand reports for the provided md5 hashes.
   - name: fireeye-dod-submit-file
     arguments:
     - name: entryID
@@ -106,43 +106,43 @@ script:
       - "True"
       - "False"
       defaultValue: "False"
-      description: Extract screenshot of screen activity during dynamic analysis if true, which later can be downloaded with artifacts api
+      description: Extract screenshot of screen activity during dynamic analysis if true, which later can be downloaded with artifacts api.
     - name: video
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
       defaultValue: "False"
-      description: Extract video activity during dynamic analysis if true, which later can be downloaded with artifacts api
+      description: Extract video activity during dynamic analysis if true, which later can be downloaded with artifacts api.
     - name: fileExtraction
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
       defaultValue: "False"
-      description: Extract dropped files from vm during dynamic analysis if true, which later can be downloaded with artifacts api
+      description: Extract dropped files from vm during dynamic analysis if true, which later can be downloaded with artifacts api.
     - name: memoryDump
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
       defaultValue: "False"
-      description: Extract memory dump files from vm during dynamic analysis if true, which later can be downloaded with artifacts api
+      description: Extract memory dump files from vm during dynamic analysis if true, which later can be downloaded with artifacts api.
     - name: pcap
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
       defaultValue: "False"
-      description: Extract pcap files from vm during dynamic analysis if true, which later can be downloaded with artifacts api
+      description: Extract pcap files from vm during dynamic analysis if true, which later can be downloaded with artifacts api.
     outputs:
     - contextPath: FireEyeDoD.Scan.report_id
-      description: The report ID can be used to query the status and results of the file submission
+      description: The report ID can be used to query the status and results of the file submission.
     - contextPath: FireEyeDoD.Scan.status
-      description: The current status of the file submission
+      description: The current status of the file submission.
     - contextPath: FireEyeDoD.Scan.filename
-      description: The name of the file that was submitted
-    description: Submits file to FireEye Detection on Demand for analysis
+      description: The name of the file that was submitted.
+    description: Submits file to FireEye Detection on Demand for analysis.
   - name: fireeye-dod-submit-urls
     arguments:
     - name: urls
@@ -152,10 +152,10 @@ script:
       description: A comma separated list of URLs to scan.  Maximum of 10 per request.
     outputs:
     - contextPath: FireEyeDoD.Scan.report_id
-      description: The ID of the report
+      description: The ID of the report.
     - contextPath: FireEyeDoD.Scan.status
       description: The status of the file submission.  Will be "DONE" when all engines are finished.
-    description: Submits URLs to FireEye Detection on Demand for analysis
+    description: Submits URLs to FireEye Detection on Demand for analysis.
   - name: fireeye-dod-get-reports
     arguments:
     - name: report_ids
@@ -163,7 +163,7 @@ script:
       required: true
       isArray: true
     - name: extended_report
-      description: If True, additional information will be returned
+      description: If True, additional information will be returned.
       auto: PREDEFINED
       predefined:
       - "True"
@@ -174,62 +174,62 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Whether or not to get screenshot artifacts from the report
+      description: Whether or not to get screenshot artifacts from the report.
       defaultValue: "False"
     - name: get_artifact
       auto: PREDEFINED
       predefined:
       - all
       - screenshot
-      description: Which report artifacts to retrieve (if any)
+      description: Which report artifacts to retrieve (if any).
     outputs:
     - contextPath: FireEyeDoD.Scan.report_id
-      description: The ID of the report
+      description: The ID of the report.
       type: String
     - contextPath: FireEyeDoD.Scan.overall_status
-      description: The overall status of all of the engines
+      description: The overall status of all of the engines.
       type: String
     - contextPath: FireEyeDoD.Scan.is_malicious
-      description: True/False if the file is malicious
+      description: True/False if the file is malicious.
       type: Number
     - contextPath: FireEyeDoD.Scan.started_at
-      description: The UTC time the scan was started
+      description: The UTC time the scan was started.
       type: Date
     - contextPath: FireEyeDoD.Scan.completed_at
-      description: The UTC time the scan was completed
+      description: The UTC time the scan was completed.
       type: Date
     - contextPath: FireEyeDoD.Scan.duration
       description: How long, in seconds, the scan took to complete.
       type: Number
     - contextPath: FireEyeDoD.Scan.file_name
-      description: The name of the submitted file
+      description: The name of the submitted file.
       type: String
     - contextPath: FireEyeDoD.Scan.file_size
-      description: The size of the file in bytes
+      description: The size of the file in bytes.
       type: Number
     - contextPath: FireEyeDoD.Scan.file_extension
       description: The extension of the submitted file.  If a URL was submitted, this will be empty.
       type: String
     - contextPath: FireEyeDoD.Scan.md5
-      description: The MD5 hash of the submitted file
+      description: The MD5 hash of the submitted file.
       type: String
     - contextPath: FireEyeDoD.Scan.sha256
-      description: The sha256 hash of the submitted file
+      description: The sha256 hash of the submitted file.
       type: String
     - contextPath: FireEyeDoD.Scan.signature_name
-      description: List of signatures extracted by all engines
+      description: List of signatures extracted by all engines.
       type: String
-    description: Retrieves one or more reports of file scans
+    description: Retrieves one or more reports of file scans.
   - name: fireeye-dod-get-report-url
     arguments:
     - name: report_id
-      description: The ID of the report to fetch
+      description: The ID of the report to fetch.
       required: true
     - name: expiration
       default: true
       description: Expiration (in hours) for browser viewable report pre-signed URL link. Default value is 72 hours.  Minimum is 1 hour, and maximum is 8760 hours (365 days).
       defaultValue: "72"
-    description: Generates a pre-signed URL for a report
+    description: Generates a pre-signed URL for a report.
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

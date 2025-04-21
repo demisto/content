@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cyberpion Domain State](./../doc_files/Cyberpion Domain State.png)
+![Cyberpion Domain State](./../doc_files/Cyberpion_Domain_State.png)

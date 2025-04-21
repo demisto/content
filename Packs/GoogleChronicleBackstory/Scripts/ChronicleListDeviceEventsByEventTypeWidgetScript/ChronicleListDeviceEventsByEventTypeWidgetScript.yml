@@ -10,7 +10,7 @@ comment: Displays a pie chart of the number of events, categorized by its event 
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.14.90585
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

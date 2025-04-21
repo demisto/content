@@ -28,38 +28,68 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Filter name
+  name: client_name
+  type: 0
+  required: false
+  additionalinfo: Fetch operations which contain this name.
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 7 days
+  name: first_fetch
+  type: 0
+  required: false
+- display: Maximum number of incidents per fetch
+  additionalinfo: The maximum number of incidents per fetch. Cannot exceed 50.
+  name: max_fetch
+  type: 0
+  defaultvalue: "50"
+  required: false
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  isfetch: true
+  dockerimage: demisto/python3:3.11.10.115186
   commands:
   - name: caldera-create-fact
-    description: Create a Fact
+    description: Create a Fact.
     arguments:
     - name: fact_name
-      description: Fact name
+      description: Fact name.
     - name: fact_links
-      description: Fact links (CSV of IDs)
+      description: Fact links (CSV of IDs).
       isArray: true
     - name: fact_relationships
-      description: Fact relationships (CSV of IDs)
+      description: Fact relationships (CSV of IDs).
       isArray: true
     - name: fact_origin_type
-      description: Fact origin type
+      description: Fact origin type.
     - name: fact_limit_count
-      description: Fact limit count
+      description: Fact limit count.
     - name: fact_technique_id
-      description: Fact technique ID
+      description: Fact technique ID.
     - name: fact_trait
-      description: Fact trait
+      description: Fact trait.
       required: true
     - name: fact_source
-      description: Fact source
+      description: Fact source.
     - name: fact_score
-      description: Fact score
+      description: Fact score.
     - name: fact_value
-      description: Fact value
+      description: Fact value.
     outputs:
     - type: String
       contextPath: MitreCaldera.Facts.unique
@@ -89,21 +119,21 @@ script:
     description: Create a Fact Source.
     arguments:
     - name: name
-      description: Name
+      description: Name.
     - name: adjustments
-      description: Adjustments (array of adjustment objects)
+      description: Adjustments (array of adjustment objects).
       isArray: true
     - name: relationships
-      description: Relationships (array of relationship objects)
+      description: Relationships (array of relationship objects).
       isArray: true
     - name: rules
-      description: Rules (array of rule objects)
+      description: Rules (array of rule objects).
       isArray: true
     - name: facts
-      description: Facts (array of fact objects)
+      description: Facts (array of fact objects).
       isArray: true
     - name: plugin
-      description: Plugin
+      description: Plugin.
     outputs:
     - type: String
       contextPath: MitreCaldera.Sources.name
@@ -169,22 +199,22 @@ script:
       contextPath: MitreCaldera.Sources.plugin
       description: ''
   - name: caldera-create-adversary
-    description: Create a new adversary
+    description: Create a new adversary.
     arguments:
     - name: name
-      description: Adversary name
+      description: Adversary name.
     - name: tags
-      description: Tags (CSV of tag names)
+      description: Tags (CSV of tag names).
       isArray: true
     - name: objective
-      description: Objective
+      description: Objective.
     - name: atomic_ordering
-      description: Atomic ordering (CSV of ability IDs)
+      description: Atomic ordering (CSV of ability IDs).
       isArray: true
     - name: plugin
-      description: Plugin
+      description: Plugin.
     - name: description
-      description: Description
+      description: Description.
     outputs:
     - type: String
       contextPath: MitreCaldera.Adversaries.name
@@ -205,74 +235,74 @@ script:
       contextPath: MitreCaldera.Adversaries.description
       description: ''
   - name: caldera-create-agent
-    description: Create a new agent
+    description: Create a new agent.
     arguments:
     - name: watchdog
-      description: Watchdog timer
+      description: Watchdog timer.
     - name: deadman_enabled
-      description: Deadman enabled (true or false)
+      description: Deadman enabled (true or false).
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
       defaultValue: 'false'
     - name: ppid
-      description: PPID
+      description: PPID.
     - name: pid
-      description: PID
+      description: PID.
     - name: proxy_receivers
-      description: Proxy Receivers (JSON dict)
+      description: Proxy Receivers (JSON dict).
     - name: origin_link_id
-      description: Origin link ID
+      description: Origin link ID.
     - name: available_contacts
-      description: Available contacts (CSV of contact IDs)
+      description: Available contacts (CSV of contact IDs).
       isArray: true
     - name: platform
-      description: Platform
+      description: Platform.
     - name: host
-      description: Host
+      description: Host.
     - name: group
-      description: Group
+      description: Group.
     - name: location
-      description: Location
+      description: Location.
     - name: display_name
-      description: Display name
+      description: Display name.
     - name: upstream_dest
-      description: Upstream destination
+      description: Upstream destination.
     - name: host_ip_addrs
-      description: Host IP addresses (CSV of IP addresses)
+      description: Host IP addresses (CSV of IP addresses).
       isArray: true
     - name: sleep_max
-      description: Sleep maximum
+      description: Sleep maximum.
     - name: architecture
-      description: Architecture
+      description: Architecture.
     - name: sleep_min
-      description: Sleep minimum
+      description: Sleep minimum.
     - name: server
-      description: Server
+      description: Server.
     - name: contact
-      description: Contact
+      description: Contact.
     - name: exeutors
-      description: Executors (CSV of executor IDs)
+      description: Executors (CSV of executor IDs).
       isArray: true
     - name: privilege
-      description: Privilege
+      description: Privilege.
     - name: username
-      description: Username
+      description: Username.
     - name: trusted
-      description: Trusted
+      description: Trusted.
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
       defaultValue: 'true'
     - name: proxy_chain
-      description: Proxy chain (array of proxy arrays)
+      description: Proxy chain (array of proxy arrays).
       isArray: true
     - name: paw
-      description: Agent PAW
+      description: Agent PAW.
     - name: exe_name
-      description: EXE name
+      description: EXE name.
     outputs:
     - type: Number
       contextPath: MitreCaldera.Agents.watchdog
@@ -461,24 +491,24 @@ script:
       contextPath: MitreCaldera.Agents.exe_name
       description: ''
   - name: caldera-create-operation
-    description: Create a new CALDERA operation record
+    description: Create a new CALDERA operation record.
     arguments:
     - name: name
-      description: Operation name
+      description: Operation name.
       required: true
     - name: autonomous
-      description: Autonomous (autonomous or manual)
+      description: Autonomous (autonomous or manual).
       auto: PREDEFINED
       predefined:
       - autonomous
       - manual
       defaultValue: autonomous
     - name: objective_id
-      description: Objective ID
+      description: Objective ID.
     - name: visibility
-      description: How visible should the operation be to the defense (1-100), default is 51
+      description: How visible should the operation be to the defense (1-100), default is 51.
     - name: state
-      description: State
+      description: State.
       auto: PREDEFINED
       predefined:
       - running
@@ -486,15 +516,15 @@ script:
       - run_one_link
       defaultValue: running
     - name: group
-      description: Group
+      description: Group.
     - name: host_group
-      description: Host group
+      description: Host group.
       isArray: true
     - name: planner_id
-      description: Planner ID
+      description: Planner ID.
       required: true
     - name: obfuscator
-      description: Obfuscator
+      description: Obfuscator.
       auto: PREDEFINED
       predefined:
       - base64
@@ -505,22 +535,22 @@ script:
       - steganography
       defaultValue: plain-text
     - name: use_learning_parsers
-      description: Use learning parsers
+      description: Use learning parsers.
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
       defaultValue: 'false'
     - name: source_id
-      description: Source ID
+      description: Source ID.
       required: true
     - name: jitter
-      description: Jitter is defined as a fraction (default is "2/8")
+      description: Jitter is defined as a fraction (default is "2/8").
     - name: adversary_id
-      description: adversary id
+      description: adversary id.
       required: true
     - name: auto_close
-      description: Auto close
+      description: Auto close.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -747,15 +777,15 @@ script:
       contextPath: MitreCaldera.Operations.auto_close
       description: ''
   - name: caldera-create-objective
-    description: Create a new objective
+    description: Create a new objective.
     arguments:
     - name: name
-      description: Objective name
+      description: Objective name.
     - name: goals
-      description: Goals (array of objective objects)
+      description: Goals (array of objective objects).
       isArray: true
     - name: description
-      description: Description
+      description: Description.
     outputs:
     - type: String
       contextPath: MitreCaldera.Objectives.name
@@ -785,7 +815,7 @@ script:
       contextPath: MitreCaldera.Objectives.description
       description: ''
   - name: caldera-create-relationship
-    description: Create a Relationship
+    description: Create a Relationship.
     arguments:
     - name: relationship_unique
       description: ''
@@ -794,32 +824,32 @@ script:
     - name: relationship_edge
       description: ''
     - name: relationship_source_unique
-      description: relationship_source unique
+      description: relationship_source unique.
     - name: relationship_source_name
-      description: relationship_source name
+      description: relationship_source name.
     - name: relationship_source_links
-      description: relationship_source links
+      description: relationship_source links.
     - name: relationship_source_relationships
-      description: relationship_source relationships
+      description: relationship_source relationships.
     - name: relationship_source_origin_type
-      description: relationship_source origin_type
+      description: relationship_source origin_type.
     - name: relationship_source_created
-      description: relationship_source created
+      description: relationship_source created.
     - name: relationship_source_limit_count
-      description: relationship_source limit_count
+      description: relationship_source limit_count.
     - name: relationship_source_technique_id
-      description: relationship_source technique_id
+      description: relationship_source technique_id.
     - name: relationship_source_trait
-      description: relationship_source trait
+      description: relationship_source trait.
       required: true
     - name: relationship_source_source
-      description: relationship_source source
+      description: relationship_source source.
     - name: relationship_source_score
-      description: relationship_source score
+      description: relationship_source score.
     - name: relationship_source_value
-      description: relationship_source value
+      description: relationship_source value.
     - name: relationship_source_collected_by
-      description: relationship_source collected_by
+      description: relationship_source collected_by.
     - name: relationship_score
       description: ''
     - name: relationship_target
@@ -952,7 +982,7 @@ script:
       contextPath: MitreCaldera.Abilities.description
       description: ''
   - name: caldera-create-potential-link
-    description: Creates a potential Link
+    description: Creates a potential Link.
     arguments:
     - name: operation_id
       description: UUID of the operation object for the link to be created on.
@@ -967,9 +997,9 @@ script:
     - name: link_pid
       description: ''
     - name: link_visibility_adjustments
-      description: link_visibility adjustments
+      description: link_visibility adjustments.
     - name: link_visibility_score
-      description: link_visibility score
+      description: link_visibility score.
     - name: link_finish
       description: ''
     - name: link_pin
@@ -986,37 +1016,37 @@ script:
     - name: link_host
       description: ''
     - name: link_ability_ability_id
-      description: link_ability ability_id
+      description: link_ability ability_id.
     - name: link_ability_name
-      description: link_ability name
+      description: link_ability name.
     - name: link_ability_buckets
-      description: link_ability buckets
+      description: link_ability buckets.
     - name: link_ability_technique_id
-      description: link_ability technique_id
+      description: link_ability technique_id.
     - name: link_ability_delete_payload
-      description: link_ability delete_payload
+      description: link_ability delete_payload.
     - name: link_ability_executors
-      description: link_ability executors
+      description: link_ability executors.
     - name: link_ability_privilege
-      description: link_ability privilege
+      description: link_ability privilege.
     - name: link_ability_requirements
-      description: link_ability requirements
+      description: link_ability requirements.
     - name: link_ability_plugin
-      description: link_ability plugin
+      description: link_ability plugin.
     - name: link_ability_access
-      description: link_ability access
+      description: link_ability access.
     - name: link_ability_tactic
-      description: link_ability tactic
+      description: link_ability tactic.
     - name: link_ability_additional_info
-      description: link_ability additional_info
+      description: link_ability additional_info.
     - name: link_ability_singleton
-      description: link_ability singleton
+      description: link_ability singleton.
     - name: link_ability_technique_name
-      description: link_ability technique_name
+      description: link_ability technique_name.
     - name: link_ability_repeatable
-      description: link_ability repeatable
+      description: link_ability repeatable.
     - name: link_ability_description
-      description: link_ability description
+      description: link_ability description.
     - name: link_status
       description: ''
     - name: link_score
@@ -1033,31 +1063,31 @@ script:
       description: ''
       isArray: true
     - name: link_executor_name
-      description: link_executor name
+      description: link_executor name.
     - name: link_executor_cleanup
-      description: link_executor cleanup
+      description: link_executor cleanup.
     - name: link_executor_platform
-      description: link_executor platform
+      description: link_executor platform.
     - name: link_executor_language
-      description: link_executor language
+      description: link_executor language.
     - name: link_executor_uploads
-      description: link_executor uploads
+      description: link_executor uploads.
     - name: link_executor_variations
-      description: link_executor variations
+      description: link_executor variations.
     - name: link_executor_build_target
-      description: link_executor build_target
+      description: link_executor build_target.
     - name: link_executor_payloads
-      description: link_executor payloads
+      description: link_executor payloads.
     - name: link_executor_timeout
-      description: link_executor timeout
+      description: link_executor timeout.
     - name: link_executor_parsers
-      description: link_executor parsers
+      description: link_executor parsers.
     - name: link_executor_command
-      description: link_executor command
+      description: link_executor command.
     - name: link_executor_additional_info
-      description: link_executor additional_info
+      description: link_executor additional_info.
     - name: link_executor_code
-      description: link_executor code
+      description: link_executor code.
     - name: link_paw
       description: ''
     - name: link_output
@@ -1175,45 +1205,45 @@ script:
       contextPath: MitreCaldera.Links.output
       description: ''
   - name: caldera-create-schedule
-    description: Create Schedule
+    description: Create Schedule.
     arguments:
     - name: schedule_schedule
       description: ''
       required: true
     - name: schedule_task_name
-      description: schedule_task name
+      description: schedule_task name.
     - name: schedule_task_autonomous
-      description: schedule_task autonomous
+      description: schedule_task autonomous.
     - name: schedule_task_id
-      description: schedule_task id
+      description: schedule_task id.
     - name: schedule_task_objective
-      description: schedule_task objective
+      description: schedule_task objective.
     - name: schedule_task_visibility
-      description: schedule_task visibility
+      description: schedule_task visibility.
     - name: schedule_task_state
-      description: schedule_task state
+      description: schedule_task state.
     - name: schedule_task_group
-      description: schedule_task group
+      description: schedule_task group.
     - name: schedule_task_host_group
-      description: schedule_task host_group
+      description: schedule_task host_group.
     - name: schedule_task_planner
-      description: schedule_task planner
+      description: schedule_task planner.
     - name: schedule_task_obfuscator
-      description: schedule_task obfuscator
+      description: schedule_task obfuscator.
     - name: schedule_task_chain
-      description: schedule_task chain
+      description: schedule_task chain.
     - name: schedule_task_use_learning_parsers
-      description: schedule_task use_learning_parsers
+      description: schedule_task use_learning_parsers.
     - name: schedule_task_source
-      description: schedule_task source
+      description: schedule_task source.
     - name: schedule_task_jitter
-      description: schedule_task jitter
+      description: schedule_task jitter.
     - name: schedule_task_start
-      description: schedule_task start
+      description: schedule_task start.
     - name: schedule_task_adversary
-      description: schedule_task adversary
+      description: schedule_task adversary.
     - name: schedule_task_auto_close
-      description: schedule_task auto_close
+      description: schedule_task auto_close.
     - name: schedule_id
       description: ''
     outputs:
@@ -1224,10 +1254,10 @@ script:
       contextPath: MitreCaldera.Schedule.id
       description: ''
   - name: caldera-delete-agent
-    description: Delete an Agent
+    description: Delete an Agent.
     arguments:
     - name: paw
-      description: paw of the Agent to be deleted
+      description: paw of the Agent to be deleted.
       required: true
   - name: caldera-delete-fact-source
     description: Delete an existing Fact Source.
@@ -1236,13 +1266,13 @@ script:
       description: The id of the Fact Source to be deleted.
       required: true
   - name: caldera-delete-operation
-    description: Delete an operation by operation id
+    description: Delete an operation by operation id.
     arguments:
     - name: operation_id
       description: UUID of the Operation object to be retrieved.
       required: true
   - name: caldera-delete-facts
-    description: Delete One or More Facts
+    description: Delete One or More Facts.
     arguments:
     - name: fact_unique
       description: ''
@@ -1299,7 +1329,7 @@ script:
       contextPath: MitreCaldera.Facts.score
       description: ''
   - name: caldera-delete-relationships
-    description: Delete One or More Relationships
+    description: Delete One or More Relationships.
     arguments:
     - name: relationship_unique
       description: ''
@@ -1308,31 +1338,31 @@ script:
     - name: relationship_edge
       description: ''
     - name: relationship_source_unique
-      description: relationship_source unique
+      description: relationship_source unique.
     - name: relationship_source_name
-      description: relationship_source name
+      description: relationship_source name.
     - name: relationship_source_links
-      description: relationship_source links
+      description: relationship_source links.
     - name: relationship_source_relationships
-      description: relationship_source relationships
+      description: relationship_source relationships.
     - name: relationship_source_origin_type
-      description: relationship_source origin_type
+      description: relationship_source origin_type.
     - name: relationship_source_created
-      description: relationship_source created
+      description: relationship_source created.
     - name: relationship_source_limit_count
-      description: relationship_source limit_count
+      description: relationship_source limit_count.
     - name: relationship_source_technique_id
-      description: relationship_source technique_id
+      description: relationship_source technique_id.
     - name: relationship_source_trait
-      description: relationship_source trait
+      description: relationship_source trait.
     - name: relationship_source_source
-      description: relationship_source source
+      description: relationship_source source.
     - name: relationship_source_score
-      description: relationship_source score
+      description: relationship_source score.
     - name: relationship_source_value
-      description: relationship_source value
+      description: relationship_source value.
     - name: relationship_source_collected_by
-      description: relationship_source collected_by
+      description: relationship_source collected_by.
     - name: relationship_score
       description: ''
     - name: relationship_target
@@ -1363,7 +1393,7 @@ script:
       description: UUID of the adversary to be deleted.
       required: true
   - name: caldera-delete-schedule
-    description: Delete Schedule
+    description: Delete Schedule.
     arguments:
     - name: schedule_id
       description: UUID of the Schedule to be deleted.
@@ -1372,7 +1402,7 @@ script:
     description: Get all Abilities with optional ability ID.
     arguments:
     - name: ability_id
-      description: Optional UUID of the Ability to be retrieved
+      description: Optional UUID of the Ability to be retrieved.
     - name: sort
       description: Results are sorted if no Ability ID is provided.
     - name: include
@@ -1458,10 +1488,10 @@ script:
       contextPath: MitreCaldera.Abilities.description
       description: ''
   - name: caldera-get-adversaries
-    description: Get all Adversaries with optional Adversary ID
+    description: Get all Adversaries with optional Adversary ID.
     arguments:
     - name: adversary_id
-      description: Optional UUID of the adversary to be retrieved
+      description: Optional UUID of the adversary to be retrieved.
     - name: sort
       description: Results are sorted if no Adversary ID is provided.
     - name: include
@@ -1490,10 +1520,10 @@ script:
       contextPath: MitreCaldera.Adversaries.description
       description: ''
   - name: caldera-get-agents
-    description: Retrieves all agents with optional Agent PAW
+    description: Retrieves all agents with optional Agent PAW.
     arguments:
     - name: paw
-      description: Optioanl PAW ID of the Agent to retrieve information about
+      description: Optioanl PAW ID of the Agent to retrieve information about.
     - name: sort
       description: ''
     - name: include
@@ -1690,57 +1720,57 @@ script:
       contextPath: MitreCaldera.Agents.exe_name
       description: ''
   - name: caldera-get-config
-    description: Retrieve Config
+    description: Retrieve Config.
     arguments:
     - name: name
-      description: 'Name of the configuration file to be retrieved (example: main)'
+      description: 'Name of the configuration file to be retrieved (example: main).'
       required: true
       defaultValue: main
     outputs:
     - type: String
       contextPath: MitreCaldera.Name
-      description: Config name
+      description: Config name.
     - type: Unknown
       contextPath: MitreCaldera.Config
-      description: Config settings
+      description: Config settings.
   - name: caldera-get-contacts
-    description: Retrieve a List of all available Contact reports
+    description: Retrieve a List of all available Contact reports.
     arguments:
     - name: name
       description: Optional name of the contact to get beacons for, e.g. HTTP, TCP, et cetera.
     outputs:
     - type: Unknnown
       contextPath: MitreCaldera.Contacts
-      description: List of contacts
+      description: List of contacts.
   - name: caldera-get-deploy-commands
-    description: Retrieve deploy commands with optional Ability ID
+    description: Retrieve deploy commands with optional Ability ID.
     arguments:
     - name: ability_id
-      description: ID of the ability to retrieve deploy commands for
+      description: ID of the ability to retrieve deploy commands for.
     outputs:
     - type: String
       contextPath: MitreCaldera.DeployCommands.command
-      description: Command
+      description: Command.
     - type: String
       contextPath: MitreCaldera.DeployCommands.description
-      description: Description
+      description: Description.
     - type: String
       contextPath: MitreCaldera.DeployCommands.executor
-      description: Executor
+      description: Executor.
     - type: String
       contextPath: MitreCaldera.DeployCommands.name
-      description: Name
+      description: Name.
     - type: String
       contextPath: MitreCaldera.DeployCommands.platform
-      description: Platform
+      description: Platform.
     - type: String
       contextPath: MitreCaldera.DeployCommands.variations.command
-      description: Command
+      description: Command.
     - type: String
       contextPath: MitreCaldera.DeployCommands.variations.description
-      description: Description
+      description: Description.
   - name: caldera-get-facts
-    description: Retrieve Facts with optional Operation ID
+    description: Retrieve Facts with optional Operation ID.
     arguments:
     - name: sort
       description: ''
@@ -1751,7 +1781,7 @@ script:
       description: ''
       isArray: true
     - name: operation_id
-      description: Optional Operation ID
+      description: Optional Operation ID.
     outputs:
     - type: String
       contextPath: MitreCaldera.Facts.unique
@@ -1778,7 +1808,7 @@ script:
       contextPath: MitreCaldera.Facts.score
       description: ''
   - name: caldera-get-health
-    description: Health endpoints returns the status of CALDERA
+    description: Health endpoints returns the status of CALDERA.
     outputs:
     - type: String
       contextPath: MitreCaldera.CalderaInfo.application
@@ -1799,10 +1829,10 @@ script:
       contextPath: MitreCaldera.CalderaInfo.plugins.address
       description: ''
   - name: caldera-get-obfuscators
-    description: Retrieve obfuscators with optional name
+    description: Retrieve obfuscators with optional name.
     arguments:
     - name: name
-      description: Name of the Obfuscator
+      description: Name of the Obfuscator.
     - name: sort
       description: ''
     - name: include
@@ -1822,10 +1852,10 @@ script:
       contextPath: MitreCaldera.Obfuscators.description
       description: ''
   - name: caldera-get-objectives
-    description: Retrieve objectives with optional Objective ID
+    description: Retrieve objectives with optional Objective ID.
     arguments:
     - name: id
-      description: Optional UUID of the objective to be retrieved
+      description: Optional UUID of the objective to be retrieved.
     - name: sort
       description: ''
     - name: include
@@ -1863,7 +1893,7 @@ script:
       contextPath: MitreCaldera.Objectives.description
       description: ''
   - name: caldera-get-operations
-    description: Retrieve operations
+    description: Retrieve operations.
     arguments:
     - name: id
       description: Optional UUID of the Operation object to be retrieved.
@@ -2096,7 +2126,7 @@ script:
       contextPath: MitreCaldera.Operations.auto_close
       description: ''
   - name: caldera-get-operation-links
-    description: Get Links from Operation with optional Link ID
+    description: Get Links from Operation with optional Link ID.
     arguments:
     - name: operation_id
       description: ''
@@ -2224,7 +2254,7 @@ script:
       contextPath: MitreCaldera.OperationLinks.output
       description: ''
   - name: caldera-get-operation-links-result
-    description: Retrieve the result of a link
+    description: Retrieve the result of a link.
     arguments:
     - name: operation_id
       description: UUID of the operation object to be retrieved.
@@ -2479,7 +2509,7 @@ script:
       contextPath: MitreCaldera.OperationLinks.output
       description: ''
   - name: caldera-get-planners
-    description: Retrieve planners with optional Planner ID
+    description: Retrieve planners with optional Planner ID.
     arguments:
     - name: planner_id
       description: UUID of the Planner object to be retrieved.
@@ -2535,10 +2565,10 @@ script:
       contextPath: MitreCaldera.Planners.description
       description: ''
   - name: caldera-get-plugins
-    description: Retrieve plugins with optional Name
+    description: Retrieve plugins with optional Name.
     arguments:
     - name: name
-      description: The name of the plugin
+      description: The name of the plugin.
     - name: sort
       description: ''
     - name: include
@@ -2567,7 +2597,7 @@ script:
       contextPath: MitreCaldera.Plugins.description
       description: ''
   - name: caldera-get-relationships
-    description: Retrieve Relationships with optional Operation ID
+    description: Retrieve Relationships with optional Operation ID.
     arguments:
     - name: operation_id
       description: ''
@@ -2593,7 +2623,7 @@ script:
       contextPath: MitreCaldera.Relationships.score
       description: ''
   - name: caldera-get-schedules
-    description: Retrieve Schedules with optional Schedule ID
+    description: Retrieve Schedules with optional Schedule ID.
     arguments:
     - name: schedule_id
       description: Optional UUID of the Schedule to be retrieved.
@@ -2613,10 +2643,10 @@ script:
       contextPath: MitreCaldera.Schedules.id
       description: ''
   - name: caldera-get-sources
-    description: Retrieve all Fact Sources with optional Fact Source ID
+    description: Retrieve all Fact Sources with optional Fact Source ID.
     arguments:
     - name: source_id
-      description: The id of the Fact Source
+      description: The id of the Fact Source.
     - name: sort
       description: ''
     - name: include
@@ -2690,7 +2720,7 @@ script:
       contextPath: MitreCaldera.Sources.plugin
       description: ''
   - name: caldera-get-operation-event-logs
-    description: Get Operation Event Logs
+    description: Get Operation Event Logs.
     arguments:
     - name: operation_id
       description: ''
@@ -2749,7 +2779,7 @@ script:
       contextPath: MitreCaldera.Operations.EventLogs.delegated_timestamp
       description: ''
   - name: caldera-get-operation-report
-    description: Get Operation Report
+    description: Get Operation Report.
     arguments:
     - name: operation_id
       description: ''
@@ -2808,7 +2838,7 @@ script:
     description: Replaces an existing ability.
     arguments:
     - name: ability_id
-      description: UUID of the Ability to be retrieved
+      description: UUID of the Ability to be retrieved.
       required: true
     - name: ability_name
       description: ''
@@ -2920,7 +2950,7 @@ script:
       contextPath: MitreCaldera.Abilities.description
       description: ''
   - name: caldera-replace-schedule
-    description: Replace Schedule
+    description: Replace Schedule.
     arguments:
     - name: schedule_id
       description: UUID of the Schedule to be replaced.
@@ -2928,39 +2958,39 @@ script:
     - name: partial_schedule_schedule
       description: ''
     - name: partial_schedule_task_name
-      description: partial_schedule_task name
+      description: partial_schedule_task name.
     - name: partial_schedule_task_autonomous
-      description: partial_schedule_task autonomous
+      description: partial_schedule_task autonomous.
     - name: partial_schedule_task_id
-      description: partial_schedule_task id
+      description: partial_schedule_task id.
     - name: partial_schedule_task_objective
-      description: partial_schedule_task objective
+      description: partial_schedule_task objective.
     - name: partial_schedule_task_visibility
-      description: partial_schedule_task visibility
+      description: partial_schedule_task visibility.
     - name: partial_schedule_task_state
-      description: partial_schedule_task state
+      description: partial_schedule_task state.
     - name: partial_schedule_task_group
-      description: partial_schedule_task group
+      description: partial_schedule_task group.
     - name: partial_schedule_task_host_group
-      description: partial_schedule_task host_group
+      description: partial_schedule_task host_group.
     - name: partial_schedule_task_planner
-      description: partial_schedule_task planner
+      description: partial_schedule_task planner.
     - name: partial_schedule_task_obfuscator
-      description: partial_schedule_task obfuscator
+      description: partial_schedule_task obfuscator.
     - name: partial_schedule_task_chain
-      description: partial_schedule_task chain
+      description: partial_schedule_task chain.
     - name: partial_schedule_task_use_learning_parsers
-      description: partial_schedule_task use_learning_parsers
+      description: partial_schedule_task use_learning_parsers.
     - name: partial_schedule_task_source
-      description: partial_schedule_task source
+      description: partial_schedule_task source.
     - name: partial_schedule_task_jitter
-      description: partial_schedule_task jitter
+      description: partial_schedule_task jitter.
     - name: partial_schedule_task_start
-      description: partial_schedule_task start
+      description: partial_schedule_task start.
     - name: partial_schedule_task_adversary
-      description: partial_schedule_task adversary
+      description: partial_schedule_task adversary.
     - name: partial_schedule_task_auto_close
-      description: partial_schedule_task auto_close
+      description: partial_schedule_task auto_close.
     outputs:
     - type: String
       contextPath: MitreCaldera.Schedules.schedule
@@ -2969,7 +2999,7 @@ script:
       contextPath: MitreCaldera.Schedules.id
       description: ''
   - name: caldera-update-agent-config
-    description: Update Agent Config
+    description: Update Agent Config.
     arguments:
     - name: watchdog
       description: ''
@@ -3007,10 +3037,10 @@ script:
       contextPath: MitreCaldera.AgentConfig.implant_name
       description: ''
   - name: caldera-update-adversary
-    description: Update an adversary
+    description: Update an adversary.
     arguments:
     - name: adversary_id
-      description: UUID of the adversary to be updated
+      description: UUID of the adversary to be updated.
       required: true
     - name: adversaryname
       description: ''
@@ -3048,10 +3078,10 @@ script:
       contextPath: MitreCaldera.Adversaries.description
       description: ''
   - name: caldera-update-agent
-    description: Update an Agent
+    description: Update an Agent.
     arguments:
     - name: paw
-      description: ID of the Agent to update
+      description: ID of the Agent to update.
       required: true
     - name: watchdog
       description: ''
@@ -3341,10 +3371,10 @@ script:
       contextPath: MitreCaldera.Sources.plugin
       description: ''
   - name: caldera-update-objective
-    description: Update an objective
+    description: Update an objective.
     arguments:
     - name: objective_id
-      description: UUID of the Objective to be updated
+      description: UUID of the Objective to be updated.
       required: true
     - name: name
       description: ''
@@ -3382,7 +3412,7 @@ script:
       contextPath: MitreCaldera.Objectives.description
       description: ''
   - name: caldera-update-operation-fields
-    description: Update fields within an operation
+    description: Update fields within an operation.
     arguments:
     - name: operation_id
       description: UUID of the Operation object to be retrieved.
@@ -3614,7 +3644,7 @@ script:
       contextPath: MitreCaldera.Operations.auto_close
       description: ''
   - name: caldera-update-main-config
-    description: Update Main Config
+    description: Update Main Config.
     arguments:
     - name: property
       description: ''
@@ -3623,60 +3653,60 @@ script:
       description: ''
       required: true
   - name: caldera-update-facts
-    description: Update One or More Facts
+    description: Update One or More Facts.
     arguments:
     - name: unique
-      description: partial_factupdaterequest_updates unique
+      description: partial_factupdaterequest_updates unique.
     - name: name
-      description: partial_factupdaterequest_updates name
+      description: partial_factupdaterequest_updates name.
     - name: links
-      description: partial_factupdaterequest_updates links
+      description: partial_factupdaterequest_updates links.
     - name: relationships
-      description: partial_factupdaterequest_updates relationships
+      description: partial_factupdaterequest_updates relationships.
     - name: origin_type
-      description: partial_factupdaterequest_updates origin_type
+      description: partial_factupdaterequest_updates origin_type.
     - name: created
-      description: partial_factupdaterequest_updates created
+      description: partial_factupdaterequest_updates created.
     - name: limit_count
-      description: partial_factupdaterequest_updates limit_count
+      description: partial_factupdaterequest_updates limit_count.
     - name: technique_id
-      description: partial_factupdaterequest_updates technique_id
+      description: partial_factupdaterequest_updates technique_id.
     - name: trait
-      description: partial_factupdaterequest_updates trait
+      description: partial_factupdaterequest_updates trait.
     - name: source
-      description: partial_factupdaterequest_updates source
+      description: partial_factupdaterequest_updates source.
     - name: score
-      description: partial_factupdaterequest_updates score
+      description: partial_factupdaterequest_updates score.
     - name: value
-      description: partial_factupdaterequest_updates value
+      description: partial_factupdaterequest_updates value.
     - name: collected_by
-      description: partial_factupdaterequest_updates collected_by
+      description: partial_factupdaterequest_updates collected_by.
     - name: criteria_unique
-      description: partial_factupdaterequest_criteria unique
+      description: partial_factupdaterequest_criteria unique.
     - name: criteria_name
-      description: partial_factupdaterequest_criteria name
+      description: partial_factupdaterequest_criteria name.
     - name: criteria_links
-      description: partial_factupdaterequest_criteria links
+      description: partial_factupdaterequest_criteria links.
     - name: criteria_relationships
-      description: partial_factupdaterequest_criteria relationships
+      description: partial_factupdaterequest_criteria relationships.
     - name: criteria_origin_type
-      description: partial_factupdaterequest_criteria origin_type
+      description: partial_factupdaterequest_criteria origin_type.
     - name: criteria_created
-      description: partial_factupdaterequest_criteria created
+      description: partial_factupdaterequest_criteria created.
     - name: criteria_limit_count
-      description: partial_factupdaterequest_criteria limit_count
+      description: partial_factupdaterequest_criteria limit_count.
     - name: criteria_technique_id
-      description: partial_factupdaterequest_criteria technique_id
+      description: partial_factupdaterequest_criteria technique_id.
     - name: criteria_trait
-      description: partial_factupdaterequest_criteria trait
+      description: partial_factupdaterequest_criteria trait.
     - name: criteria_source
-      description: partial_factupdaterequest_criteria source
+      description: partial_factupdaterequest_criteria source.
     - name: criteria_score
-      description: partial_factupdaterequest_criteria score
+      description: partial_factupdaterequest_criteria score.
     - name: criteria_value
-      description: partial_factupdaterequest_criteria value
+      description: partial_factupdaterequest_criteria value.
     - name: criteria_collected_by
-      description: partial_factupdaterequest_criteria collected_by
+      description: partial_factupdaterequest_criteria collected_by.
     outputs:
     - type: String
       contextPath: MitreCaldera.Facts.unique
@@ -3703,32 +3733,32 @@ script:
       contextPath: MitreCaldera.Facts.score
       description: ''
   - name: caldera-update-relationships
-    description: Update One or More Relationships
+    description: Update One or More Relationships.
     arguments:
     - name: unique
-      description: partial_relationshipupdate_updates unique
+      description: partial_relationshipupdate_updates unique.
     - name: origin
-      description: partial_relationshipupdate_updates origin
+      description: partial_relationshipupdate_updates origin.
     - name: edge
-      description: partial_relationshipupdate_updates edge
+      description: partial_relationshipupdate_updates edge.
     - name: source
-      description: partial_relationshipupdate_updates source
+      description: partial_relationshipupdate_updates source.
     - name: score
-      description: partial_relationshipupdate_updates score
+      description: partial_relationshipupdate_updates score.
     - name: target
-      description: partial_relationshipupdate_updates target
+      description: partial_relationshipupdate_updates target.
     - name: criteria_unique
-      description: partial_relationshipupdate_criteria unique
+      description: partial_relationshipupdate_criteria unique.
     - name: criteria_origin
-      description: partial_relationshipupdate_criteria origin
+      description: partial_relationshipupdate_criteria origin.
     - name: criteria_edge
-      description: partial_relationshipupdate_criteria edge
+      description: partial_relationshipupdate_criteria edge.
     - name: criteria_source
-      description: partial_relationshipupdate_criteria source
+      description: partial_relationshipupdate_criteria source.
     - name: criteria_score
-      description: partial_relationshipupdate_criteria score
+      description: partial_relationshipupdate_criteria score.
     - name: criteria_target
-      description: partial_relationshipupdate_criteria target
+      description: partial_relationshipupdate_criteria target.
     outputs:
     - type: String
       contextPath: MitreCaldera.Relationships.unique
@@ -3746,7 +3776,7 @@ script:
     description: Updates an existing ability.
     arguments:
     - name: ability_id
-      description: UUID of the Ability to be retrieved
+      description: UUID of the Ability to be retrieved.
       required: true
     - name: name
       description: ''
@@ -3851,7 +3881,7 @@ script:
       contextPath: MitreCaldera.Abilities.description
       description: ''
   - name: caldera-update-schedule
-    description: Update Schedule
+    description: Update Schedule.
     arguments:
     - name: schedule_id
       description: UUID of the Schedule to be updated.
@@ -3859,11 +3889,11 @@ script:
     - name: schedule
       description: ''
     - name: task_obfuscator
-      description: task obfuscator
+      description: task obfuscator.
     - name: task_autonomous
-      description: task autonomous
+      description: task autonomous.
     - name: task_state
-      description: task state
+      description: task state.
     outputs:
     - type: String
       contextPath: MitreCaldera.Schedules.schedule
@@ -3872,7 +3902,7 @@ script:
       contextPath: MitreCaldera.Schedules.id
       description: ''
   - name: caldera-update-operation-link
-    description: Update the specified link within an operation
+    description: Update the specified link within an operation.
     arguments:
     - name: operation_id
       description: String UUID of the Operation containing desired link.

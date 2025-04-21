@@ -6,7 +6,7 @@
 - Identify security incidents filtered by severity (critical, medium and low)
 - See the full context of the incident, including CVE id, name, description, and affected hostnames.
 
-### Configure RecordedFutureASI on Cortex XSOAR
+### Configure RecordedFutureASI in Cortex
 #### Get your Project ID
 - Log in to SecurityTrails SurfaceBrowser
 - Go to the Projects page by clicking the `Projects` link in the top right
@@ -21,9 +21,6 @@
 - Create a new API key with a note that it is being used for the XSOAR Integration
 
 #### Setting up the Integration
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RecordedFutureASI.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**                                                                                      | **Required** |
 |----------------------------------------------------------------------------------------------------|--------------|
@@ -38,10 +35,9 @@
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False        |
 | Max Fetch                                                                                          | False        |
 
-4. Click **Test** to validate the token and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### asi-project-issues-fetch
 ***

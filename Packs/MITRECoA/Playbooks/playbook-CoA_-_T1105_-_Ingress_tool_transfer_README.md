@@ -53,4 +53,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1105 - Ingress tool transfer](../doc_files/MITRE_ATT&CK_CoA_-_T1105_-_Ingress_tool_transfer.png)
+![MITRE ATT&CK CoA - T1105 - Ingress tool transfer](../doc_files/MITRE_ATTandCK_CoA_-_T1105_-_Ingress_tool_transfer.png)

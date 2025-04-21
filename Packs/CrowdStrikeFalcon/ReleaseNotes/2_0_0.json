@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Due to the Raptor release, the outputs from the following commands will no longer be available in post-Raptor release instances: For the command: ***cs-falcon-list-detection-summaries*** the following outputs will be missing: ***CrowdStrike.Detections.behaviors.ioc_source***, ***CrowdStrike.Detections.behaviors.ioc_description***, ***CrowdStrike.Detections.first_behavior***, ***CrowdStrike.Detections.max_confidence***, ***CrowdStrike.Detections.max_severity_displayname***, ***CrowdStrike.Detections.behaviors.behavior_id***, ***CrowdStrike.Detections.last_behavior***, ***CrowdStrike.Detections.max_severity***, ***CrowdStrike.Detections.assigned_to_uid***, ***CrowdStrike.Detections.assigned_to_name***"
+}

@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - Remediation Objectives
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
@@ -14,10 +14,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* RemediationPathRuleEvaluation
 * GetTime
-* Set
 * GridFieldSetup
+* Set
+* RemediationPathRuleEvaluation
 
 ### Commands
 

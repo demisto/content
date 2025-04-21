@@ -8,21 +8,21 @@
     "Trending",
     "Threat Intelligence"
   ],
-  "Getting Started":[
+  "Getting Started": [
     "MalwareInvestigationAndResponse",
     "Phishing",
     "CaseManagement-Generic",
     "ShiftManagement",
-    "TIM_Processing", 
+    "TIM_Processing",
     "TIM_SIEM",
     "HelloWorld",
     "IntegrationsAndIncidentsHealthCheck",
     "PANWComprehensiveInvestigation",
     "Compliance"
-    ],
+  ],
   "Featured": [
     "SlashNextPhishingIncidentResponse",
-    "Pcysys", 
+    "Pcysys",
     "MajorBreachesInvestigationandResponse",
     "MITRECoA",
     "Flashpoint",
@@ -32,17 +32,17 @@
     "Sixgill-Darkfeed",
     "CVE_2021_44228"
   ],
-  "Partner Spotlight":[
-   "Infinipoint",
-   "SailPointIdentityIQ",
-   "SailPointIdentityNow",
-   "Code42", 
-   "SafeBreach",
-   "ReversingLabs_Titanium_Cloud",
-   "CommonTypes",
-   "RecordedFuture",
-   "AgariPhishingDefense",
-   "Claroty",
-   "UrlScan"
-    ]
-} 
+  "Partner Spotlight": [
+    "Infinipoint",
+    "SailPointIdentityIQ",
+    "SailPointIdentityNow",
+    "Code42",
+    "SafeBreach",
+    "ReversingLabs_Titanium_Cloud",
+    "CommonTypes",
+    "RecordedFuture",
+    "AgariPhishingDefense",
+    "Claroty",
+    "UrlScan"
+  ]
+}

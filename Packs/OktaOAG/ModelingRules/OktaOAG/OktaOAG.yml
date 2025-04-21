@@ -1,5 +1,5 @@
-name: Okta Access Gateway
-id: okta_Access_gateway_modeling_rule
+name: Okta Access Gateway Modeling Rule
+id: Okta_Access_Gateway_ModelingRule
 fromversion: 6.8.0
 toversion: 6.9.9
 tags: Okta Access Gateway

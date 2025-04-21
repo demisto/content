@@ -1,0 +1,31 @@
+{
+    "id": "incident_exabeamvendors",
+    "version": -1,
+    "modified": "2024-08-05T11:42:34.537431575Z",
+    "name": "Exabeam Vendors",
+    "ownerOnly": false,
+    "cliName": "exabeamvendors",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Exabeam Platform Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

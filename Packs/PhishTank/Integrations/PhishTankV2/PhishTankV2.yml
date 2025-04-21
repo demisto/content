@@ -63,7 +63,7 @@ script:
       description: For malicious URLs, the reason the vendor tagged the URL as malicious.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The URL tested.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -81,11 +81,11 @@ script:
     name: phishtank-reload
   - description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
     name: phishtank-status
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
-- PhishTank Testing
+- No tests
 fromversion: 5.0.0

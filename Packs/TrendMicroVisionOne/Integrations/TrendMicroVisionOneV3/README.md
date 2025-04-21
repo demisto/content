@@ -1,31 +1,27 @@
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. We previously added 4 actions, one to fetch email activity data with count, one to fetch endpoint activity data with count and an action to restore a quarantined email message. In this release we have added 6 new custom script actions allowing the user to fetch a list of available custom scripts in XDR portal, ability to run a custom script on a specified endpoint, capacity to add, download, update and delete a custom script from XDR portal.
 This integration was integrated and tested with version 3 API of Trend Micro Vision One.
 
-## Configure Trend Micro Vision One V3. on Cortex XSOAR
+## Configure Trend Micro Vision One V3. in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Micro Vision One V3..
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API | True |
-    | API Key | The API token to access data | True |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | Sync On First Run (days) |  | False |
-    | Max Incidents |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Severity | Severity of the incident being fetched. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API | True |
+| API Key | The API token to access data | True |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
+| Sync On First Run (days) |  | False |
+| Max Incidents |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Severity | Severity of the incident being fetched. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### trendmicro-visionone-enable-user-account
@@ -396,6 +392,11 @@ Retrieves information about a specific endpoint.
 | VisionOne.Endpoint_Info.os_description | string | Description of the Operating System of the endpoint queried. | 
 | VisionOne.Endpoint_Info.product_code | string | Product code of the Trend Micro product running on the endpoint. | 
 | VisionOne.Endpoint_Info.installed_product_codes | string | Product code of the Trend Micro product installed on the endpoint. | 
+| VisionOne.Endpoint_Info.component_update_policy | string | The update policy for the module/pattern of the agent installed on the endpoint. | 
+| VisionOne.Endpoint_Info.component_update_status | string | The status of the module/pattern updates of the agent installed on the endpoint. | 
+| VisionOne.Endpoint_Info.component_version | string | The agent component version. | 
+| VisionOne.Endpoint_Info.policy_name | string | The name of a policy for an event. |
+| VisionOne.Endpoint_Info.protection_manager | string | The name of your protection manager. |
 
 ### trendmicro-visionone-get-endpoint-activity-data
 
@@ -416,6 +417,8 @@ Displays search results from the Endpoint Activity Data source that match the pa
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | top | Number of records displayed on a page. e.g. top=5. | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName". | Optional | 
+| fetch_max_count | Max results to be fetched by call. | Optional | 
+| fetch_all | Do you want to fetch all matching records or only records matching the top value. | Optional | 
 
 #### Context Output
 
@@ -509,6 +512,8 @@ Displays search results from the Email Activity Data source that match the param
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | top | Number of records displayed on a page. e.g. top=5. | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses". | Optional | 
+| fetch_max_count | Max results to be fetched by call. | Optional | 
+| fetch_all | Do you want to fetch all matching records or only records matching the top value. | Optional | 
 
 #### Context Output
 
@@ -899,6 +904,14 @@ Fetches details for a specific alert.
 | VisionOne.Alert_Details.alert.created_date_time | string | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the created date time of the alert. | 
 | VisionOne.Alert_Details.alert.updated_date_time | string | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the last updated date time of the alert. | 
 | VisionOne.Alert_Details.alert.investigation_status | string | Workbench alert status. | 
+| VisionOne.Alert_Details.alert.first_investigated_date_time | string | The date and time the case status was changed to 'In progress' in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ, UTC). | 
+| VisionOne.Alert_Details.alert.incident_id | string | The unique identifier of an incident. | 
+| VisionOne.Alert_Details.alert.case_id | string | The unique identifier of a case. | 
+| VisionOne.Alert_Details.alert.owner_ids | string | The owners of the Workbench alert. | 
+| VisionOne.Alert_Details.alert.model_id | string | ID of the detection model that triggered the alert. | 
+| VisionOne.Alert_Details.alert.model_type | string | Type of the detection model that triggered the alert. | 
+| VisionOne.Alert_Details.alert.status | string | The status of a case or investigation. | 
+| VisionOne.Alert_Details.alert.investigation_result | string | The findings of a case or investigation. | 
 
 ### trendmicro-visionone-run-sandbox-submission-polling
 
@@ -1009,7 +1022,9 @@ Updates the status of a workbench alert.
 | --- | --- | --- |
 | workbench_id | ID of the workbench you would like to update the status for. e.g. workbench_id="WB-14-20190709-00003". | Required | 
 | if_match | Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details. e.g. if_match="d41d8cd98f00b204e9800998ecf8427e". | Required | 
-| status | Status to assign to the workbench alert. e.g. status="true_positive". Possible values are: new, in_progress, true_positive, false_positive, benign_true_positive, closed. | Required | 
+| status | Status to assign to the workbench alert. e.g. status="closed". Possible values are: open, in_progress, closed. | Optional | 
+| inv_status | The status of an investigation. *NOTE: THIS FIELD IS DEPRECATED!* e.g. inv_status="true_positive". Possible values are: new, in_progress, true_positive, false_positive, benign_true_positive, closed. | Optional | 
+| inv_result | The findings of a case or investigation. e.g. status="noteworthy". Possible values are: noteworthy, true_positive, false_positive, benign_true_positive, no_findings. | Optional | 
 
 #### Context Output
 
@@ -1157,3 +1172,38 @@ Updates the contents of a custom script based on script ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VisionOne.Update_Custom_Script.status | string | The Success or Error status. | 
+
+### trendmicro-visionone-get-observed-attack-techniques
+
+***
+Displays a list of Observed Attack Techniques events that match the specified criteria.
+
+#### Base Command
+
+`trendmicro-visionone-get-observed-attack-techniques`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of the collected Observed Attack Techniques events e.g. {"endpointName":"sample-host","riskLevel":"low"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get>). | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a subset of the collected Observed Attack Techniques events. Possible values: and/or. Ex. `or`: the results retrieved will contain OAT events for endpoint(s) matching endpointName OR riskLevel. `and`: will contain OAT events data for endpoint matching endpointName AND riskLevel. Defaults to `and`. Possible values are: and, or. | Optional | 
+| detected_start | The start of the event detection data retrieval time range in ISO 8601 format. Default: 1 hour before the time you make the request. e.g. detected_start="2023-10-01T08:00:00Z". | Optional | 
+| detected_end | The end of the event detection data retrieval time range in ISO 8601 format. Default: The time you make the request. e.g. detected_end="2023-12-01T08:00:00Z". | Optional | 
+| ingested_start | The beginning of the data ingestion time range in ISO 8601 format. e.g. ingested_start="2023-12-01T08:00:00Z". | Optional | 
+| ingested_end | The end of the data ingestion time range in ISO 8601 format. e.g. ingested_end="2023-12-01T08:00:00Z". | Optional | 
+| top | Number of records displayed on a page. e.g. top=5. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VisionOne.Get_Observed_Attack_Techniques.id | string | Unique alphanumeric string that identifies an Observed Attack Techniques event. | 
+| VisionOne.Get_Observed_Attack_Techniques.source | string | The data sources associated with log types. | 
+| VisionOne.Get_Observed_Attack_Techniques.detail | string | Object that contains detailed information about an Observed Attack Technique event. Object may vary depending on the products purchased by the customer and the products supported in their respective regions. | 
+| VisionOne.Get_Observed_Attack_Techniques.filters | string | List of filters and associated information. | 
+| VisionOne.Get_Observed_Attack_Techniques.endpoint | string | Object that contains information about an endpoint. This field is displayed only when the detection event is related to endpoints. | 
+| VisionOne.Get_Observed_Attack_Techniques.entity_name | string | Name associated with an entity. | 
+| VisionOne.Get_Observed_Attack_Techniques.entity_type | string | Entity type associated with an event is determined by the products purchased by the customer and the products supported in their regions. | 
+| VisionOne.Get_Observed_Attack_Techniques.detected_date_time | string | Timestamp in ISO 8601 format that indicates when an Observed Attack Techniques event was detected. | 
+| VisionOne.Get_Observed_Attack_Techniques.ingested_date_time | string | Timestamp in ISO 8601 format that indicates when the pipeline ingested data related to an Observed Attack Techniques event. This field is displayed only when ingestedStartDateTime and ingestedEndDateTime are used to define the data retrieval time range. | 

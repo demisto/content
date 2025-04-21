@@ -22,14 +22,15 @@ description: |-
   - XLSB
   - DOT
   - PPSM.
+  The playbook does not support encrypted / password-protected files such as XLSB. Such files will be skipped.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c33ca9eb-1ff3-450a-8c2d-b9aa72f7f771
+    taskid: 872fa459-b3f9-41a4-85ea-0aa06bc63d8b
     type: start
     task:
-      id: c33ca9eb-1ff3-450a-8c2d-b9aa72f7f771
+      id: 872fa459-b3f9-41a4-85ea-0aa06bc63d8b
       version: -1
       name: ""
       iscommand: false
@@ -56,10 +57,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ea98aae7-5a6e-4eab-8348-4cb62716a5f7
+    taskid: 359dee17-14b5-4800-8429-16255df23121
     type: condition
     task:
-      id: ea98aae7-5a6e-4eab-8348-4cb62716a5f7
+      id: 359dee17-14b5-4800-8429-16255df23121
       version: -1
       name: Is there a file?
       description: |
@@ -100,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7cbad10d-b188-4999-8c0f-aad2a33000b3
+    taskid: 4c38c426-3444-4c6b-83dc-2ac1cda0aa3c
     type: title
     task:
-      id: 7cbad10d-b188-4999-8c0f-aad2a33000b3
+      id: 4c38c426-3444-4c6b-83dc-2ac1cda0aa3c
       version: -1
       name: Done
       type: title
@@ -128,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7697255d-fcab-4619-8a3d-bfa51bc758d9
+    taskid: 0aaef151-686c-4b5d-8632-cdd9dad3c501
     type: title
     task:
-      id: 7697255d-fcab-4619-8a3d-bfa51bc758d9
+      id: 0aaef151-686c-4b5d-8632-cdd9dad3c501
       version: -1
       name: Extract Indicators From Files
       type: title
@@ -166,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b3bc875f-d706-4180-802b-238c7d29381e
+    taskid: a8ed00fd-f07a-492a-8a9a-d2af590ab91d
     type: condition
     task:
-      id: b3bc875f-d706-4180-802b-238c7d29381e
+      id: a8ed00fd-f07a-492a-8a9a-d2af590ab91d
       version: -1
       name: Is there a text-based file?
       description: Checks if there is a text-based file in context. Skips MSG and EML files.
@@ -332,10 +333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4ba573d4-5094-4e80-883b-a3b84ed21791
+    taskid: e5274670-6c0c-4595-864f-0df9591c3f11
     type: regular
     task:
-      id: 4ba573d4-5094-4e80-883b-a3b84ed21791
+      id: e5274670-6c0c-4595-864f-0df9591c3f11
       version: -1
       name: Extract indicators from text-based file
       description: Extracts indicators from text-based files.
@@ -483,10 +484,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0e5716b4-d88b-45dc-8aa4-c68a6dbf2df6
+    taskid: 4126190b-f834-4906-858c-7645baea24d0
     type: condition
     task:
-      id: 0e5716b4-d88b-45dc-8aa4-c68a6dbf2df6
+      id: 4126190b-f834-4906-858c-7645baea24d0
       version: -1
       name: Is there a PDF file?
       description: Checks if there is a PDF file in context.
@@ -497,7 +498,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "8"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -550,10 +551,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: da76292f-3f94-4097-857d-1ddc6d3828d4
+    taskid: effd1883-322e-43b7-8ce7-0f8c87f29df2
     type: regular
     task:
-      id: da76292f-3f94-4097-857d-1ddc6d3828d4
+      id: effd1883-322e-43b7-8ce7-0f8c87f29df2
       version: -1
       name: Extract indicators from PDF file
       description: Load a PDF file's content and metadata into context.
@@ -607,7 +608,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 900
+          "y": 1010
         }
       }
     note: false
@@ -619,10 +620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 884b6c9a-7e2f-467c-8b05-5f711bf59686
+    taskid: b1b59f7d-7360-4392-829e-eb6d1fb39adf
     type: condition
     task:
-      id: 884b6c9a-7e2f-467c-8b05-5f711bf59686
+      id: b1b59f7d-7360-4392-829e-eb6d1fb39adf
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -755,7 +756,12 @@ tasks:
                       value:
                         simple: pptx
                     ignorecase: true
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -784,7 +790,12 @@ tasks:
                     right:
                       value:
                         simple: xlsm
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -792,7 +803,12 @@ tasks:
                     right:
                       value:
                         simple: docm
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -810,6 +826,14 @@ tasks:
                       value:
                         simple: oft
                     ignorecase: true
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Encrypted
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -833,10 +857,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: bd5234cd-bca5-49c3-844e-478ec0e69f2a
+    taskid: 0ecedf15-716d-48cd-8980-1812cb900663
     type: title
     task:
-      id: bd5234cd-bca5-49c3-844e-478ec0e69f2a
+      id: 0ecedf15-716d-48cd-8980-1812cb900663
       version: -1
       name: No File To Parse
       type: title
@@ -864,10 +888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b2cbcfd1-04a0-43cb-88ed-712c131d53e5
+    taskid: 302236a9-6e02-4ca8-86ab-52e5a8c10b14
     type: regular
     task:
-      id: b2cbcfd1-04a0-43cb-88ed-712c131d53e5
+      id: 302236a9-6e02-4ca8-86ab-52e5a8c10b14
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -998,7 +1022,12 @@ tasks:
               right:
                 value:
                   simple: xlsm
-          - - operator: isNotEqualString
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
               left:
                 value:
                   simple: inputs.File.Extension
@@ -1016,6 +1045,14 @@ tasks:
                 value:
                   simple: oft
               ignorecase: true
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Encrypted
           accessor: EntryID
           transformers:
           - operator: uniq
@@ -1038,10 +1075,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: fc037219-4b91-402f-8ad8-dc099bc2e67b
+    taskid: 61e4f247-0d0f-4a85-8f28-491314b03130
     type: condition
     task:
-      id: fc037219-4b91-402f-8ad8-dc099bc2e67b
+      id: 61e4f247-0d0f-4a85-8f28-491314b03130
       version: -1
       name: Is Image OCR enabled?
       description: Checks whether there is an active instance of the Image OCR integration. enabled.
@@ -1089,10 +1126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 67aa8abc-03b8-4df4-8d81-75ba4b4f0521
+    taskid: b00731f6-af3b-4011-8be2-3680f778777e
     type: regular
     task:
-      id: 67aa8abc-03b8-4df4-8d81-75ba4b4f0521
+      id: b00731f6-af3b-4011-8be2-3680f778777e
       version: -1
       name: Extract text from images
       description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
@@ -1153,8 +1190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2190,
-          "y": 1310
+          "x": 2640,
+          "y": 1320
         }
       }
     note: false
@@ -1166,10 +1203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: fe69f8c7-5257-4b62-8ddd-a82a514bdc44
+    taskid: bebd1cad-b2c2-4a97-82c7-10d8e02c4d5a
     type: condition
     task:
-      id: fe69f8c7-5257-4b62-8ddd-a82a514bdc44
+      id: bebd1cad-b2c2-4a97-82c7-10d8e02c4d5a
       version: -1
       name: Is there another supported document type?
       description: |-
@@ -1279,7 +1316,12 @@ tasks:
                       value:
                         simple: text/rtf
                     ignorecase: true
-                - - operator: isNotEqualString
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
                     left:
                       value:
                         simple: inputs.File.Extension
@@ -1287,19 +1329,49 @@ tasks:
                     right:
                       value:
                         simple: xlsb
-                  - operator: notContainsGeneral
+                    ignorecase: true
+                - - operator: notContainsGeneral
                     left:
                       value:
-                        simple: inputs.File
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
-                        simple: xlsb
+                        simple: CDFV2 Encrypted
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docx
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: doc
                 accessor: EntryID
                 transformers:
                 - operator: uniq
             iscontext: true
           ignorecase: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1317,10 +1389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 7f3736b6-092c-4c5d-878d-1d1fb71ae749
+    taskid: 44043d32-09a6-4681-8091-12ad898a44d0
     type: regular
     task:
-      id: 7f3736b6-092c-4c5d-878d-1d1fb71ae749
+      id: 44043d32-09a6-4681-8091-12ad898a44d0
       version: -1
       name: Convert a document to PDF
       description: |-
@@ -1426,7 +1498,12 @@ tasks:
                 value:
                   simple: text/rtf
               ignorecase: true
-          - - operator: notContainsGeneral
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
               left:
                 value:
                   simple: inputs.File.Extension
@@ -1434,10 +1511,46 @@ tasks:
               right:
                 value:
                   simple: xlsb
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: doc
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: CDFV2 Encrypted
+              ignorecase: true
           accessor: EntryID
           transformers:
           - operator: uniq
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1456,10 +1569,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: feb4ec48-681e-44c1-8c02-4226ce97de5f
+    taskid: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
     type: regular
     task:
-      id: feb4ec48-681e-44c1-8c02-4226ce97de5f
+      id: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
@@ -1499,10 +1612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 31a1d53b-2b50-490f-8bb7-1d6f112ac92f
+    taskid: 7f7c2617-8a16-46bc-8141-96f650642272
     type: playbook
     task:
-      id: 31a1d53b-2b50-490f-8bb7-1d6f112ac92f
+      id: 7f7c2617-8a16-46bc-8141-96f650642272
       version: -1
       name: Microsoft Office File Enrichment - Oletools
       description: |-
@@ -1554,10 +1667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f561dd7e-9772-489e-8be2-af2e0d87844f
+    taskid: 6bead496-6144-44a8-8973-6e43547abcf3
     type: condition
     task:
-      id: f561dd7e-9772-489e-8be2-af2e0d87844f
+      id: 6bead496-6144-44a8-8973-6e43547abcf3
       version: -1
       name: Is there an image file?
       description: |-
@@ -1570,7 +1683,7 @@ tasks:
       - "10"
       "yes":
       - "13"
-      - "24"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1639,10 +1752,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a9713787-fe05-4ba6-8b99-b8980598b0dd
+    taskid: 1b7979ee-7c46-429d-84ae-f0af5678b192
     type: regular
     task:
-      id: a9713787-fe05-4ba6-8b99-b8980598b0dd
+      id: 1b7979ee-7c46-429d-84ae-f0af5678b192
       version: -1
       name: Extract indicators from docx file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -1707,10 +1820,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 6a194cfc-0af6-4776-8290-28b7deb60579
+    taskid: 86766e4e-e9f9-4df3-8dc9-13646c82d2fa
     type: condition
     task:
-      id: 6a194cfc-0af6-4776-8290-28b7deb60579
+      id: 86766e4e-e9f9-4df3-8dc9-13646c82d2fa
       version: -1
       name: Is there a Word docx file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -1782,10 +1895,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4ee7917b-6813-4e61-8612-5f7116bd30eb
+    taskid: ca969180-8bc8-43a8-8018-6fc398457815
     type: regular
     task:
-      id: 4ee7917b-6813-4e61-8612-5f7116bd30eb
+      id: ca969180-8bc8-43a8-8018-6fc398457815
       version: -1
       name: Extract Text from QR Code
       description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
@@ -1804,12 +1917,28 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: inputs.File.Type
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
-                  simple: image
+                  simple: image/png
               ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/jpeg
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/jpg
           accessor: EntryID
           transformers:
           - operator: append
@@ -1831,8 +1960,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1530,
-          "y": 1310
+          "x": 1320,
+          "y": 1350
         }
       }
     note: false
@@ -1844,10 +1973,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 35ed31ed-41e9-4108-8580-e94786764ae8
+    taskid: 01fbc9fb-75db-4c5a-8336-c97950443b5e
     type: regular
     task:
-      id: 35ed31ed-41e9-4108-8580-e94786764ae8
+      id: 01fbc9fb-75db-4c5a-8336-c97950443b5e
       version: -1
       name: Convert PDF to Image
       description: Converts a PDF file to an image file.
@@ -1902,7 +2031,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 1130
+          "y": 1170
         }
       }
     note: false
@@ -1914,10 +2043,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 608bdaf3-5ea5-4ea7-85bc-0343f8535b0d
+    taskid: 4fb08fe7-5b0b-48ef-8d70-8cc00cb5c6c8
     type: condition
     task:
-      id: 608bdaf3-5ea5-4ea7-85bc-0343f8535b0d
+      id: 4fb08fe7-5b0b-48ef-8d70-8cc00cb5c6c8
       version: -1
       name: Is there a PPTX/XSLX file?
       description: Checks if there is a PowerPoint or Excel file (PPTX/XSLX) in context.
@@ -2007,10 +2136,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: eefbac0c-db14-4ba0-85f7-fbb67a0f40b3
+    taskid: 213aae05-47d1-4361-8a40-a5f58b03d241
     type: regular
     task:
-      id: eefbac0c-db14-4ba0-85f7-fbb67a0f40b3
+      id: 213aae05-47d1-4361-8a40-a5f58b03d241
       version: -1
       name: Extract Hyper-Links from Office Files
       description: 'Extracts hyperlinks from Office files. Supported file types are: xlsx, docx, pptx.'
@@ -2091,6 +2220,122 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: ff1834e4-8544-4395-86e4-81f108cf6920
+    type: condition
+    task:
+      id: ff1834e4-8544-4395-86e4-81f108cf6920
+      version: -1
+      name: Does ReadQRCode support the image?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.File.Info
+            iscontext: true
+          right:
+            value:
+              simple: image/png
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.File.Info
+            iscontext: true
+          right:
+            value:
+              simple: image/jpeg
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.File.Info
+            iscontext: true
+          right:
+            value:
+              simple: image/jpg
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: f127825e-9cc0-45f3-852c-beabcce6848a
+    type: condition
+    task:
+      id: f127825e-9cc0-45f3-852c-beabcce6848a
+      version: -1
+      name: Is PDF File Encrypted
+      description: Checks if the PDF file is encrypted or not.
+      scriptName: IsPDFFileEncrypted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "19"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2101,17 +2346,19 @@ view: |-
       "21_10_#default#": 0.1,
       "23_10_#default#": 0.14,
       "23_22_yes": 0.43,
+      "29_19_yes": 0.13,
+      "29_8_no": 0.57,
       "5_10_#default#": 0.33,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.1,
-      "7_8_yes": 0.24,
+      "7_29_yes": 0.42,
       "9_10_#default#": 0.18,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
         "height": 1815,
-        "width": 3545,
+        "width": 3995,
         "x": -975,
         "y": -10
       }
@@ -2388,4 +2635,3 @@ fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
-quiet: true

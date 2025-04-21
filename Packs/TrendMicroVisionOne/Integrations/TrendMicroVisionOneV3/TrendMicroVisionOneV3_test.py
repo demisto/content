@@ -1,95 +1,99 @@
+import json
 from typing import Any
-from TrendMicroVisionOneV3 import (
-    add_note,
-    collect_file,
-    update_status,
-    force_sign_out,
-    get_task_status,
-    get_endpoint_info,
-    get_alert_details,
-    terminate_process,
-    run_custom_script,
-    add_custom_script,
-    update_custom_script,
-    delete_custom_script,
-    force_password_reset,
-    restore_email_message,
-    submit_urls_to_sandbox,
-    get_custom_script_list,
-    download_custom_script,
-    add_to_suspicious_list,
-    submit_file_to_sandbox,
-    get_email_activity_data,
-    get_file_analysis_status,
-    get_file_analysis_result,
-    download_analysis_report,
-    get_endpoint_activity_data,
-    delete_from_suspicious_list,
-    submit_file_entry_to_sandbox,
-    get_sandbox_submission_status,
-    get_email_activity_data_count,
-    add_or_remove_from_block_list,
-    isolate_or_restore_connection,
-    enable_or_disable_user_account,
-    download_investigation_package,
-    download_suspicious_object_list,
-    get_endpoint_activity_data_count,
-    add_or_delete_from_exception_list,
-    quarantine_or_delete_email_message,
-    download_information_collected_file,
-)
+
+# import unittest
+from unittest.mock import Mock
+
+import demistomock as demisto
+import TrendMicroVisionOneV3
 from pytmv1 import (
+    Account,
     AccountTaskResp,
     AddAlertNoteResp,
-    BytesResp,
+    AddCustomScriptResp,
     BaseTaskResp,
+    BytesResp,
     CollectFileTaskResp,
     Digest,
     EmailActivity,
     Endpoint,
     EndpointActivity,
     GetAlertResp,
-    AddCustomScriptResp,
+    GetEmailActivitiesCountResp,
+    Iam,
     ListCustomScriptsResp,
     ListEmailActivityResp,
     ListEndpointActivityResp,
-    GetEmailActivitiesCountResp,
+    ListOatsResp,
+    ListSandboxSuspiciousResp,
     MsData,
-    TextResp,
     MsDataUrl,
     MultiResp,
-    ObjectType,
-    ScriptType,
     MultiResult,
     MultiUrlResp,
     NoContentResp,
+    OatEvent,
+    ObjectType,
     OperatingSystem,
     ProductCode,
     QueryOp,
     Result,
     ResultCode,
     RiskLevel,
-    Status,
-    Account,
-    Iam,
     SandboxAction,
-    SandboxObjectType,
-    SubmitFileToSandboxResp,
-    SandboxSuspiciousObject,
     SandboxAnalysisResultResp,
-    ListSandboxSuspiciousResp,
+    SandboxObjectType,
     SandboxSubmissionStatusResp,
+    SandboxSuspiciousObject,
+    ScriptType,
+    Status,
+    SubmitFileToSandboxResp,
     TaskAction,
+    TextResp,
     Value,
     ValueList,
 )
 from pytmv1.model.common import Script
-import demistomock as demisto
-import json
-import TrendMicroVisionOneV3
-
-# import unittest
-from unittest.mock import Mock
+from TrendMicroVisionOneV3 import (
+    add_custom_script,
+    add_note,
+    add_or_delete_from_exception_list,
+    add_or_remove_from_block_list,
+    add_to_suspicious_list,
+    collect_file,
+    delete_custom_script,
+    delete_from_suspicious_list,
+    download_analysis_report,
+    download_custom_script,
+    download_information_collected_file,
+    download_investigation_package,
+    download_suspicious_object_list,
+    enable_or_disable_user_account,
+    force_password_reset,
+    force_sign_out,
+    get_alert_details,
+    get_custom_script_list,
+    get_email_activity_data,
+    get_email_activity_data_count,
+    get_endpoint_activity_data,
+    get_endpoint_activity_data_count,
+    get_endpoint_info,
+    get_file_analysis_result,
+    get_file_analysis_status,
+    get_observed_attack_techniques,
+    get_sandbox_submission_status,
+    get_task_status,
+    isolate_or_restore_connection,
+    quarantine_or_delete_email_message,
+    restore_email_message,
+    run_custom_script,
+    submit_file_entry_to_sandbox,
+    submit_file_to_sandbox,
+    submit_urls_to_sandbox,
+    terminate_process,
+    update_custom_script,
+    update_status,
+)
 
 # Provide valid API KEY
 api_key = "test api key"
@@ -121,9 +125,7 @@ def test_enable_user_account(mocker):
             ]
         )
     }
-    result = TrendMicroVisionOneV3.enable_or_disable_user_account(
-        client, "trendmicro-visionone-enable-user-account", args
-    )
+    result = TrendMicroVisionOneV3.enable_or_disable_user_account(client, "trendmicro-visionone-enable-user-account", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000010"
     assert result.outputs_prefix == "VisionOne.User_Account"
@@ -153,9 +155,7 @@ def test_disable_user_account(mocker):
             ]
         )
     }
-    result = enable_or_disable_user_account(
-        client, "trendmicro-visionone-disable-user-account", args
-    )
+    result = enable_or_disable_user_account(client, "trendmicro-visionone-disable-user-account", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000009"
     assert result.outputs_prefix == "VisionOne.User_Account"
@@ -251,9 +251,7 @@ def test_add_blocklist(mocker):
             ]
         )
     }
-    result = add_or_remove_from_block_list(
-        client, "trendmicro-visionone-add-to-block-list", args
-    )
+    result = add_or_remove_from_block_list(client, "trendmicro-visionone-add-to-block-list", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000007"
     assert result.outputs_prefix == "VisionOne.BlockList"
@@ -286,9 +284,7 @@ def test_remove_blocklist(mocker):
             ]
         )
     }
-    result = add_or_remove_from_block_list(
-        client, "trendmicro-visionone-remove-from-block-list", args
-    )
+    result = add_or_remove_from_block_list(client, "trendmicro-visionone-remove-from-block-list", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000008"
     assert result.outputs_prefix == "VisionOne.BlockList"
@@ -314,19 +310,14 @@ def test_quarantine_email_message(mocker):
         "email_identifiers": json.dumps(
             [
                 {
-                    "message_id": (
-                        "<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn="
-                        "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"
-                    ),
+                    "message_id": ("<CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com>"),
                     "mailbox": "kjshdfjksahd@trendenablement.com",
                     "description": "quarantine email",
                 }
             ]
         )
     }
-    result = quarantine_or_delete_email_message(
-        client, "trendmicro-visionone-quarantine-email-message", args
-    )
+    result = quarantine_or_delete_email_message(client, "trendmicro-visionone-quarantine-email-message", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000002"
     assert result.outputs_prefix == "VisionOne.Email"
@@ -351,18 +342,13 @@ def test_delete_email_message(mocker):
         "email_identifiers": json.dumps(
             [
                 {
-                    "unique_id": (
-                        "CANUJTKTjto9GAHTr9V=TFqMZhRXqVn="
-                        "MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com"
-                    ),
+                    "unique_id": ("CANUJTKTjto9GAHTr9V=TFqMZhRXqVn=MfSqmTdAMyv9PDX3k+vQ0w@mail.gmail.com"),
                     "description": "delete email",
                 }
             ]
         )
     }
-    result = quarantine_or_delete_email_message(
-        client, "trendmicro-visionone-delete-email-message", args
-    )
+    result = quarantine_or_delete_email_message(client, "trendmicro-visionone-delete-email-message", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000001"
     assert result.outputs_prefix == "VisionOne.Email"
@@ -425,9 +411,7 @@ def test_isolate_endpoint(mocker):
             ]
         )
     }
-    result = isolate_or_restore_connection(
-        client, "trendmicro-visionone-isolate-endpoint", args
-    )
+    result = isolate_or_restore_connection(client, "trendmicro-visionone-isolate-endpoint", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000004"
     assert result.outputs_prefix == "VisionOne.Endpoint_Connection"
@@ -459,9 +443,7 @@ def test_restore_endpoint(mocker):
             ]
         )
     }
-    result = isolate_or_restore_connection(
-        client, "trendmicro-visionone-restore-endpoint-connection", args
-    )
+    result = isolate_or_restore_connection(client, "trendmicro-visionone-restore-endpoint-connection", args)
     assert result.outputs[0]["status"] == 202
     assert result.outputs[0]["task_id"] == "00000005"
     assert result.outputs_prefix == "VisionOne.Endpoint_Connection"
@@ -482,9 +464,7 @@ def terminate_process_mock_response(*args, **kwargs):
 def test_terminate_process(mocker):
     """Test terminate process positive scenario."""
     client = Mock()
-    client.endpoint.terminate_process = Mock(
-        return_value=terminate_process_mock_response()
-    )
+    client.endpoint.terminate_process = Mock(return_value=terminate_process_mock_response())
     args = {
         "process_identifiers": json.dumps(
             [
@@ -530,9 +510,7 @@ def test_add_object_to_exception_list(mocker):
             ]
         )
     }
-    result = add_or_delete_from_exception_list(
-        client, "trendmicro-visionone-add-objects-to-exception-list", args
-    )
+    result = add_or_delete_from_exception_list(client, "trendmicro-visionone-add-objects-to-exception-list", args)
     assert result.outputs["message"] == "success"
     assert isinstance(result.outputs["total_items"], int)
     assert result.outputs_prefix == "VisionOne.Exception_List"
@@ -565,9 +543,7 @@ def test_delete_object_from_exception_list(mocker):
             ]
         )
     }
-    result = add_or_delete_from_exception_list(
-        client, "trendmicro-visionone-delete-objects-from-exception-list", args
-    )
+    result = add_or_delete_from_exception_list(client, "trendmicro-visionone-delete-objects-from-exception-list", args)
     assert result.outputs["message"] == "success"
     assert isinstance(result.outputs["total_items"], int)
     assert result.outputs_prefix == "VisionOne.Exception_List"
@@ -624,9 +600,7 @@ def delete_suspicious_mock_response(*args, **kwargs):
 def test_delete_object_from_suspicious_list(mocker):
     """Test delete object from suspicious list."""
     client = Mock()
-    client.object.delete_suspicious = Mock(
-        return_value=delete_suspicious_mock_response()
-    )
+    client.object.delete_suspicious = Mock(return_value=delete_suspicious_mock_response())
     args = {
         "block_objects": json.dumps(
             [
@@ -673,9 +647,7 @@ def mock_file_analysis_status_response(*args, **kwargs):
 def test_get_file_analysis_status(mocker):
     """Test to get status of file"""
     client = Mock()
-    client.sandbox.get_submission_status = Mock(
-        return_value=mock_file_analysis_status_response()
-    )
+    client.sandbox.get_submission_status = Mock(return_value=mock_file_analysis_status_response())
     args = {"task_id": "921674d0-9735-4f79-b7de-c852e00a003d"}
     result = get_file_analysis_status(client, args)
     assert isinstance(result.outputs["is_cached"], bool)
@@ -796,9 +768,7 @@ def mock_download_collected_file_info_response(*args, **kwargs):
 def test_get_forensic_file_information(mocker):
     """Test endpoint to get collected file information based on task id"""
     client = Mock()
-    client.task.get_result_class = Mock(
-        return_value=mock_download_collected_file_info_response()
-    )
+    client.task.get_result_class = Mock(return_value=mock_download_collected_file_info_response())
     args = {
         "task_id": "00000003",
         "poll": "true",
@@ -835,9 +805,7 @@ def test_download_analysis_report(mocker):
     file analysis status.
     """
     client = Mock()
-    client.sandbox.download_analysis_result = Mock(
-        return_value=mock_download_analysis_report_response()
-    )
+    client.sandbox.download_analysis_result = Mock(return_value=mock_download_analysis_report_response())
     args = {
         "submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22",
         "poll": "true",
@@ -866,9 +834,7 @@ def test_download_investigation_package(mocker):
     by get file analysis status.
     """
     client = Mock()
-    client.sandbox.download_investigation_package = Mock(
-        return_value=mock_download_investigation_package_response()
-    )
+    client.sandbox.download_investigation_package = Mock(return_value=mock_download_investigation_package_response())
     args = {
         "submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22",
         "poll": "true",
@@ -910,9 +876,7 @@ def test_download_suspicious_object_list(mocker):
     exist, a 404 not found error will be returned.
     """
     client = Mock()
-    client.sandbox.list_suspicious = Mock(
-        return_value=mock_download_suspicious_object_list_response()
-    )
+    client.sandbox.list_suspicious = Mock(return_value=mock_download_suspicious_object_list_response())
     args = {
         "submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22",
         "poll": "true",
@@ -996,9 +960,7 @@ def mocked_requests_post(*args, **kwargs):
 
 def test_submit_file_to_sandbox(mocker):
     client = Mock()
-    client.sandbox.submit_file = Mock(
-        return_value=mock_submit_file_to_sandbox_response()
-    )
+    client.sandbox.submit_file = Mock(return_value=mock_submit_file_to_sandbox_response())
     args = {
         "file_path": "https://someurl.com/test.json",
         "filename": "dummy.pdf",
@@ -1023,9 +985,7 @@ def test_submit_file_entry_to_sandbox(mocker):
         return_value={"id": id, "path": "README.md", "name": "test.txt"},
     )
     client = Mock()
-    client.sandbox.submit_file = Mock(
-        return_value=mock_submit_file_to_sandbox_response()
-    )
+    client.sandbox.submit_file = Mock(return_value=mock_submit_file_to_sandbox_response())
     mocker.patch("TrendMicroVisionOneV3.requests.get", mocked_requests_get)
     mocker.patch("TrendMicroVisionOneV3.requests.post", mocked_requests_post)
     args = {
@@ -1075,18 +1035,14 @@ def test_submit_urls_to_sandbox(mocker):
 def test_sandbox_submission_polling(mocker):
     """Test sandbox submission polling."""
     client = Mock()
-    client.sandbox.get_submission_status = Mock(
-        return_value=mock_file_analysis_status_response()
-    )
+    client.sandbox.get_submission_status = Mock(return_value=mock_file_analysis_status_response())
     client.sandbox.get_analysis_result = Mock(return_value=mock_file_result_response())
     mocker.patch.object(
         demisto,
         "demistoVersion",
         return_value={"version": "6.2.0", "buildNumber": "12345"},
     )
-    mocker.patch(
-        "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
-    )
+    mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None)
 
     args = {"task_id": "800f908d-9578-4333-91e5-822794ed5483"}
     result = get_sandbox_submission_status(args, client)
@@ -1145,9 +1101,7 @@ def test_check_task_status(mocker):
     client = Mock()
     client.task.get_result = Mock(return_value=get_base_task_result_mock_response())
     client.task.get_result_class = Mock(return_value=check_task_status_mock_response())
-    mocker.patch(
-        "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
-    )
+    mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None)
     args = {
         "task_id": "00000004",
         "poll": "true",
@@ -1170,9 +1124,7 @@ def mock_get_endpoint_info_response(*args, **kwargs):
             value=["MSEDGEWIN10\\\\IEUser"],
             updated_date_time="2020-06-01T02:12:56Z",
         ),
-        endpoint_name=Value(
-            value="MSEDGEWIN10", updated_date_time="2020-06-01T02:12:56Z"
-        ),
+        endpoint_name=Value(value="MSEDGEWIN10", updated_date_time="2020-06-01T02:12:56Z"),
         mac_address=ValueList(
             updated_date_time="2020-06-01T02:12:56Z",
             value=["00:1c:42:be:22:5f"],
@@ -1200,9 +1152,7 @@ def test_get_endpoint_information(mocker):
     client = Mock()
     my_list = []
     client.endpoint.consume_data = Mock(side_effect=side_effect)
-    client.endpoint.consume_data(
-        lambda cons: my_list.append(cons), QueryOp.AND, **json.loads(args["endpoint"])
-    )
+    client.endpoint.consume_data(lambda cons: my_list.append(cons), QueryOp.AND, **json.loads(args["endpoint"]))
     result = get_endpoint_info(client, args)
     assert isinstance(result.outputs[0]["agent_guid"], str)
     assert isinstance(result.outputs[0]["login_account"], dict)
@@ -1234,12 +1184,8 @@ def get_endpoint_activity_data_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_endpoint_activity_data(mocker):
     client = Mock()
-    client.endpoint.get_activity_count = Mock(
-        return_value=get_endpoint_activity_data_count_mock_response()
-    )
-    client.endpoint.list_activity = Mock(
-        return_value=get_endpoint_activity_data_mock_response()
-    )
+    client.endpoint.get_activity_count = Mock(return_value=get_endpoint_activity_data_count_mock_response())
+    client.endpoint.list_activity = Mock(return_value=get_endpoint_activity_data_mock_response())
     args = {
         "start": "2022-10-04T08:22:37Z",
         "end": "2023-10-04T08:22:37Z",
@@ -1247,6 +1193,8 @@ def test_get_endpoint_activity_data(mocker):
         "query_op": "or",
         "select": "dpt,dst,endpointHostName",
         "get_activity_data_count": "true",
+        "fetch_all": "false",
+        "fetch_max_count": "50",
         "fields": json.dumps({"dpt": "443", "endpointHostName": "MSEDGEWIN10"}),
     }
     result = get_endpoint_activity_data(client, args)
@@ -1265,9 +1213,7 @@ def get_endpoint_activity_data_count_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_endpoint_activity_data_count(mocker):
     client = Mock()
-    client.endpoint.get_activity_count = Mock(
-        return_value=get_endpoint_activity_data_count_mock_response()
-    )
+    client.endpoint.get_activity_count = Mock(return_value=get_endpoint_activity_data_count_mock_response())
     args = {
         "start": "2022-10-04T08:22:37Z",
         "end": "2023-10-04T08:22:37Z",
@@ -1298,21 +1244,17 @@ def get_email_activity_data_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_email_activity_data(mocker):
     client = Mock()
-    client.email.get_activity_count = Mock(
-        return_value=get_email_activity_data_count_mock_response()
-    )
-    client.email.list_activity = Mock(
-        return_value=get_email_activity_data_mock_response()
-    )
+    client.email.get_activity_count = Mock(return_value=get_email_activity_data_count_mock_response())
+    client.email.list_activity = Mock(return_value=get_email_activity_data_mock_response())
     args = {
         "start": "2022-10-04T08:22:37Z",
         "end": "2023-10-04T08:22:37Z",
         "top": 50,
         "query_op": "or",
         "select": "mailFromAddresses,mailToAddresses",
-        "fields": json.dumps(
-            {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}
-        ),
+        "fetch_all": "false",
+        "fetch_max_count": "50",
+        "fields": json.dumps({"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}),
     }
     result = get_email_activity_data(client, args)
     assert isinstance(result.outputs[0]["mail_msg_id"], str)
@@ -1330,17 +1272,13 @@ def get_email_activity_data_count_mock_response(*args, **kwargs):
 # Test case for get email activity data count
 def test_get_email_activity_data_count(mocker):
     client = Mock()
-    client.email.get_activity_count = Mock(
-        return_value=get_email_activity_data_count_mock_response()
-    )
+    client.email.get_activity_count = Mock(return_value=get_email_activity_data_count_mock_response())
     args = {
         "start": "2022-10-04T08:22:37Z",
         "end": "2023-10-04T08:22:37Z",
         "query_op": "or",
         "select": "mailFromAddresses,mailToAddresses",
-        "fields": json.dumps(
-            {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}
-        ),
+        "fields": json.dumps({"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}),
     }
     result = get_email_activity_data_count(client, args)
     assert isinstance(result.outputs["email_activity_count"], int)
@@ -1353,9 +1291,7 @@ def get_alert_details_mock_response(*args, **kwargs):
         alert = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=GetAlertResp(
-            etag="33a64df551425fcc55e4d42a148795d9f25f89d4", data=alert
-        ),
+        response=GetAlertResp(etag="33a64df551425fcc55e4d42a148795d9f25f89d4", data=alert),
     )
 
 
@@ -1407,6 +1343,7 @@ def test_update_status(mocker):
         "workbench_id": "WB-20837-20220418-00000",
         "if_match": "d41d8cd98f00b204e9800998ecf8427e",
         "status": "in_progress",
+        "inv_result": "no_findings",
     }
     result = update_status(client, args)
     assert result.outputs["code"] == 204
@@ -1559,11 +1496,9 @@ def test_delete_custom_script(mocker):
 
 # Mock function to add custom script
 def add_custom_script_mock_response(*args, **kwargs):
-    with open("./test_data/add_custom_script.json") as f:
-        return_value: dict[str, str] = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=AddCustomScriptResp(**return_value),
+        response=AddCustomScriptResp(script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1"),
     )
 
 
@@ -1612,7 +1547,7 @@ def test_update_custom_script(mocker):
     Given:
         - filename -> Name of the custom script
         - filetype -> Filetype of the custom script
-        - script_id => ID of the custom script to update
+        - script_id -> ID of the custom script to update
         - script_contents -> New contents of the custom script
         - description -> Optional description for the custom script
     When:
@@ -1635,3 +1570,53 @@ def test_update_custom_script(mocker):
     assert result.outputs["status"] == "SUCCESS"
     assert result.outputs_prefix == "VisionOne.Update_Custom_Script"
     assert result.outputs_key_field == "status"
+
+
+# Mock response for get observed attack techniques events
+def get_observed_attack_techniques_mock_response(*args, **kwargs):
+    with open("./test_data/get_observed_attack_techniques.json") as f:
+        attack_techniques: dict[str, Any] = json.load(f)
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=ListOatsResp(
+            next_link="https://somelink.com",
+            items=[OatEvent(**attack_techniques)],
+            total_count=30,
+            count=10,
+        ),
+    )
+
+
+# Test case for fetching observed attack techniques
+def test_get_observed_attack_techniques(mocker):
+    """
+    Given:
+        - detected_start -> Detection start date time
+        - detected_end -> Detection end date time
+        - ingested_start -> Ingestion start date time
+        - ingested_end -> Ingestion end date time
+        - top -> Number of records displayed on a page.
+        - query_op -> Conditional operator used to build request that allows
+            user to retrieve a subset of the collected Observed Attack Techniques events
+        - fields -> Required filter (A dictionary object with key/value used to create a query string) for
+            retrieving a subset of the collected Observed Attack Techniques events
+    When:
+        - Execute get_observed_attack_techniques command
+    Then:
+        - validate a string id response
+    """
+    client = Mock()
+    client.oat.list = Mock(return_value=get_observed_attack_techniques_mock_response())
+    args = {
+        "detected_start": "2024-01-15T10:00:00Z",
+        "detected_end": "2024-05-15T10:00:00Z",
+        "ingested_start": "2024-01-15T10:00:00Z",
+        "ingested_end": "2024-05-15T10:00:00Z",
+        "top": 10,
+        "query_op": "or",
+        "fields": json.dumps({"endpointName": "sample-host", "riskLevel": "low"}),
+    }
+    result = get_observed_attack_techniques(client, args)
+    assert isinstance(result.outputs[0]["id"], str)
+    assert result.outputs_prefix == "VisionOne.Get_Observed_Attack_Techniques"
+    assert result.outputs_key_field == "id"

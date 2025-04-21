@@ -1,0 +1,7 @@
+{
+    "GoogleChronicleBackstory.VerifyRule(val.command_name == obj.command_name)": {
+        "context": "generic::invalid_argument: semantic analysis: event variable e and its child variables not used in condition section",
+        "success": false,
+        "command_name": "gcb-verify-rule"
+    }
+}

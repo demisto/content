@@ -8,16 +8,13 @@ ignore=BA101
 ignore=PB118
 
 [file:EWSO365.yml]
-ignore=IN126,DS107,IN124
+ignore=IN126,DS107
 
 [file:EWSv2.yml]
 ignore=IN126,IN135
 
 [file:SecurityAndCompliance.yml]
 ignore=IN128
-
-[file:SecurityAndComplianceV2.yml]
-ignore=IN124
 
 [file:README.md]
 ignore=RM102,RM106

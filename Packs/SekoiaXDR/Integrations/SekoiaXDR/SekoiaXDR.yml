@@ -1,0 +1,1190 @@
+commonfields:
+  id: Sekoia XDR
+  version: -1
+name: Sekoia XDR
+display: Sekoia XDR
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+description: Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions.
+configuration:
+- section: Connect
+  display: API key
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- section: Connect
+  display: Server URL (i.e. https://api.sekoia.io)
+  name: url
+  defaultvalue: https://api.sekoia.io
+  type: 0
+  required: true
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- section: Collect
+  display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- section: Collect
+  display: First fetch timestamp (<sign + or -><number><time unit>, e.g., -7d, -1h)
+  name: first_fetch
+  defaultvalue: -7d
+  type: 0
+  required: true
+- section: Collect
+  display: Maximum incidents to fetch per interval.
+  name: max_fetch
+  defaultvalue: "10"
+  type: 0
+  required: true
+  additionalinfo: By default the max_fetch is set to 10
+- section: Collect
+  advanced: true
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- section: Collect
+  advanced: true
+  display: Alerts status.
+  name: alerts_status
+  defaultvalue: Pending,Acknowledged,Ongoing
+  type: 16
+  required: false
+  options:
+  - Pending
+  - Acknowledged
+  - Ongoing
+  - Rejected
+  - Closed
+  additionalinfo: Filter alerts to fetch by status. You can write and press enter to insert new types.
+- section: Collect
+  advanced: true
+  display: Alerts types.
+  name: alerts_type
+  type: 16
+  required: false
+  options:
+  - spam
+  - ddos
+  - outage
+  - phishing
+  - unauthorized-use-of-resources
+  - unauthorised-information-access
+  - appsacan
+  - scanner
+  - brute-force
+  - exploit
+  - sniffing
+  - ransomware
+  - malware
+  - trojan
+  - rootkit
+  - worm
+  - virus
+  - privileged-account-compromise
+  - unprivileged-account-compromise
+  - application-compromise
+  - bot
+  - defacement
+  - system-compromise
+  - backdoor
+  - privilege-escalation
+  - lateral-move
+  - reconnaissance
+  - c&c
+  - payload
+  - tunnel
+  - exfiltration
+  - blacklist
+  additionalinfo: Filter alerts to fetch by types. You can write and press enter to insert new types.
+- section: Collect
+  advanced: true
+  display: 'Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ).'
+  name: alerts_urgency
+  type: 0
+  required: false
+  additionalinfo: Filter alerts by their urgency levels. Use the format "MINurgency, MAXurgency"
+- section: Collect
+  display: Fetch mode
+  name: fetch_mode
+  defaultvalue: Fetch Without Events
+  type: 15
+  required: true
+  options:
+  - Fetch Without Events
+  - Fetch With All Events
+  additionalinfo: If there's no max_fetch it will fetch 10 incidents by default.
+- section: Collect
+  display: Replace "dots" in event field names with another character.
+  name: replace_dots_event
+  defaultvalue: _
+  type: 15
+  required: true
+  options:
+  - _
+  - '-'
+  additionalinfo: Replacing dots in events will make names look pretty good for users
+- section: Collect
+  advanced: true
+  display: Events fields to exclude from the events search result.
+  name: exclude_info_events
+  type: 16
+  required: false
+  options:
+  - original.message
+  - message
+  - __event_id
+  - agent.name
+  - alert_short_ids
+  - client.address
+  - client.ip
+  - client.user.id
+  - customer.community_name
+  - customer.community_uuid
+  - customer.id
+  - customer.intake_key
+  - customer.intake_name
+  - customer.intake_uuid
+  - ecs.version
+  - entity.id
+  - entity.name
+  - entity.uuid
+  - event.created
+  - event.dialect
+  - event.dialect_uuid
+  - event.id
+  - event.outcome
+  - http.request.method
+  - sekoiaio.customer.community_name
+  additionalinfo: These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter.
+- section: Collect
+  advanced: true
+  display: Include assets information in the alerts when fetching.
+  name: fetch_with_assets
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: |-
+    When selected, it includes the assets information in the alert when fetched from Sekoia.
+    And also If there's no max_fetch it will fetch 10 incidents by default.
+- section: Collect
+  advanced: true
+  display: Include kill chain information in the alerts when fetching.
+  name: fetch_with_kill_chain
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: |-
+    When selected, it includes the kill chain information in the alert when fetched from Sekoia.
+    And also If there's no max_fetch it will fetch 10 incidents by default.
+- section: Collect
+  display: Incident Mirroring Direction.
+  name: mirror_direction
+  defaultvalue: None
+  type: 15
+  required: true
+  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming and Outgoing
+- section: Collect
+  advanced: true
+  display: Include events in the mirroring of the alerts.
+  name: mirror_events
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia.
+- section: Collect
+  advanced: true
+  display: Include kill chain information in the mirroring of the alerts.
+  name: mirror_kill_chain
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia.
+- section: Collect
+  advanced: true
+  display: Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
+  name: reopen_incident
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident.
+- section: Collect
+  advanced: true
+  display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
+  name: close_incident
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident.
+- section: Collect
+  display: Close notes.
+  name: close_notes
+  defaultvalue: Closed by Sekoia.
+  type: 0
+  required: true
+  additionalinfo: Change the closing notes that will be added to the tickets closed automatically by the automation.
+- section: Collect
+  display: Timezone ( TZ format )
+  name: timezone
+  defaultvalue: Europe/Paris
+  type: 0
+  required: true
+  additionalinfo: This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc.
+script:
+  script: "-"
+  type: python
+  commands:
+  - name: sekoia-xdr-list-alerts
+    arguments:
+    - name: limit
+      description: The number of alerts to return. The allowed range is 1-100, default is 20.
+      defaultValue: "20"
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - Pending
+      - Acknowledged
+      - Ongoing
+      - Rejected
+      - Closed
+      description: Match alerts by their status name (separated by commas).
+      isArray: true
+    - name: created_at
+      description: 'Filter alerts by their creation dates, starting date followed by ending date, i.e:  "-3d,now" , "-1w,now" or "2023-01-15,2023-01-17".'
+    - name: updated_at
+      description: 'Filter alerts by their update dates starting date followed by ending date, i.e:  "-3d,now" , "-1w,now" or "2023-01-15,2023-01-17".'
+    - name: urgency
+      description: 'Filter alerts by their urgencies range in the following format: "MINurgency,MAXurgency". i.e: 80,100.'
+    - name: Alerts type
+      auto: PREDEFINED
+      predefined:
+      - spam
+      - ddos
+      - outage
+      - phishing
+      - unauthorized-use-of-resources
+      - unauthorised-information-access
+      - appscan
+      - scanner
+      - brute-force
+      - exploit
+      description: Match alerts by their categories (separated by commas).
+      isArray: true
+    - name: sort_by
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - created_at
+      - updated_at
+      - target
+      - urgency
+      - status
+      description: Sort the alerts by any information.
+      defaultValue: created_at
+    outputs:
+    - contextPath: SekoiaXDR.ListAlerts.updated_at
+      description: The time at which the alert was updated.
+    - contextPath: SekoiaXDR.ListAlerts.updated_by
+      description: The user who last updated the alert.
+    - contextPath: SekoiaXDR.ListAlerts.uuid
+      description: The unique identifier of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.title
+      description: The title of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.time_to_respond
+      description: The time it took to respond to the alert.
+    - contextPath: SekoiaXDR.ListAlerts.short_id
+      description: The short identifier of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.community_uuid
+      description: The unique identifier of the community associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.kill_chain_short_id
+      description: The short identifier of the kill chain associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.number_of_unseen_comments
+      description: The number of unseen comments on the alert.
+    - contextPath: SekoiaXDR.ListAlerts.updated_by_type
+      description: The type of user who last updated the alert.
+    - contextPath: SekoiaXDR.ListAlerts.source
+      description: The source of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.alert_type.value
+      description: The type of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.alert_type.category
+      description: The category type of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.time_to_acknowledge
+      description: The time it took to acknowledge the alert.
+    - contextPath: SekoiaXDR.ListAlerts.stix
+      description: The STIX data associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.first_seen_at
+      description: The time the alert was first seen.
+    - contextPath: SekoiaXDR.ListAlerts.ttps.type
+      description: The type of the TTP associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.ttps.name
+      description: The name of the TTP associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.ttps.id
+      description: The unique identifier of the TTP associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.ttps.description
+      description: The description of the TTP associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.adversaries.type
+      description: The type of the adversary associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.adversaries.name
+      description: The name of the adversary associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.adversaries.id
+      description: The unique identifier of the adversary associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.adversaries.description
+      description: The description of the adversary associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.time_to_ingest
+      description: The time it took to ingest the alert.
+    - contextPath: SekoiaXDR.ListAlerts.target
+      description: The target of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.time_to_resolve
+      description: The time it took to resolve the alert.
+    - contextPath: SekoiaXDR.ListAlerts.created_at
+      description: The time at which the alert was created.
+    - contextPath: SekoiaXDR.ListAlerts.last_seen_at
+      description: The time at which the alert was last seen.
+    - contextPath: SekoiaXDR.ListAlerts.assets
+      description: The assets associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.rule.severity
+      description: The severity level of the rule that triggered the alert.
+    - contextPath: SekoiaXDR.ListAlerts.rule.type
+      description: The type of rule that triggered the alert.
+    - contextPath: SekoiaXDR.ListAlerts.rule.uuid
+      description: The unique identifier of the rule that triggered the alert.
+    - contextPath: SekoiaXDR.ListAlerts.rule.name
+      description: The name of the rule that triggered the alert.
+    - contextPath: SekoiaXDR.ListAlerts.rule.description
+      description: The description of the rule that triggered the alert.
+    - contextPath: SekoiaXDR.ListAlerts.rule.pattern
+      description: The pattern of the rule that triggered the alert.
+    - contextPath: SekoiaXDR.ListAlerts.similar
+      description: The number of similar alerts to this one.
+    - contextPath: SekoiaXDR.ListAlerts.status.name
+      description: The name of the status of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.status.description
+      description: The description of the status of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.status.uuid
+      description: The unique identifier of the status of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.urgency.criticity
+      description: The level of criticity of the urgency of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.urgency.current_value
+      description: The current value of the urgency of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.urgency.severity
+      description: The severity level of the urgency of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.urgency.display
+      description: The display of the urgency of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.urgency.value
+      description: The value of the urgency of the alert.
+    - contextPath: SekoiaXDR.ListAlerts.created_by
+      description: The user who created the alert.
+    - contextPath: SekoiaXDR.ListAlerts.number_of_total_comments
+      description: The total number of comments on the alert.
+    - contextPath: SekoiaXDR.ListAlerts.time_to_detect
+      description: The time it took to detect the alert.
+    - contextPath: SekoiaXDR.ListAlerts.entity.name
+      description: The name of the entity associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.entity.uuid
+      description: The unique identifier of the entity associated with the alert.
+    - contextPath: SekoiaXDR.ListAlerts.created_by_type
+      description: The type of user who created the alert.
+    - contextPath: SekoiaXDR.ListAlerts.details
+      description: The details of the alert.
+    description: Command to retrieve a list of Alerts from Sekoia XDR.
+  - name: sekoia-xdr-get-alert
+    arguments:
+    - name: id
+      required: true
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+    outputs:
+    - contextPath: SekoiaXDR.Alert.short_id
+      description: Short ID of the alert.
+      type: string
+    - contextPath: SekoiaXDR.Alert.title
+      description: Title of the alert.
+      type: string
+    - contextPath: SekoiaXDR.Alert.urgency
+      description: urgency of the alert.
+      type: string
+    description: Command to retrieve a specific alert by uuid or short_id from Sekoia XDR.
+  - name: sekoia-xdr-events-execute-query
+    arguments:
+    - name: earliest_time
+      required: true
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z.
+    - name: lastest_time
+      required: true
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z.
+    - name: query
+      defaultValue: ""
+      description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
+    - name: max_last_events
+      description: Maximum number of listed events.
+    outputs:
+    - contextPath: SekoiaXDR.Events.Query.uuid
+      description: The unique identifier for the event.
+    - contextPath: SekoiaXDR.Events.Query.term
+      description: The search term associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.started_at
+      description: The time at which the event started.
+    - contextPath: SekoiaXDR.Events.Query.short_histogram.cases
+      description: The number of cases associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.short_histogram.total
+      description: The total number of events associated with the search term.
+    - contextPath: SekoiaXDR.Events.Query.short_histogram.alerts
+      description: The number of alerts associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.short_histogram.earliest_time
+      description: The earliest time associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.short_histogram.length
+      description: The length of the histogram for the event.
+    - contextPath: SekoiaXDR.Events.Query.created_by
+      description: The user who created the event.
+    - contextPath: SekoiaXDR.Events.Query.expired
+      description: A boolean indicating whether the event has expired.
+    - contextPath: SekoiaXDR.Events.Query.latest_time
+      description: The latest time associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.expiration_date
+      description: The date on which the event will expire.
+    - contextPath: SekoiaXDR.Events.Query.created_at
+      description: The time at which the event was created.
+    - contextPath: SekoiaXDR.Events.Query.status
+      description: The status of the event.
+    - contextPath: SekoiaXDR.Events.Query.view_uuid
+      description: The unique identifier for the view associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.canceled_at
+      description: The time at which the event was canceled.
+    - contextPath: SekoiaXDR.Events.Query.only_eternal
+      description: A boolean indicating whether the event is only eternal.
+    - contextPath: SekoiaXDR.Events.Query.results_ttl
+      description: The time-to-live for the event results.
+    - contextPath: SekoiaXDR.Events.Query.canceled_by
+      description: The user who canceled the event.
+    - contextPath: SekoiaXDR.Events.Query.term_lang
+      description: The language of the search term associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.ended_at
+      description: The time at which the event ended.
+    - contextPath: SekoiaXDR.Events.Query.earliest_time
+      description: The earliest time associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.max_last_events
+      description: The maximum number of events to include in the results.
+    - contextPath: SekoiaXDR.Events.Query.canceled_by_type
+      description: The type of the user who canceled the event.
+    - contextPath: SekoiaXDR.Events.Query.total
+      description: The total number of events associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.created_by_type
+      description: The type of the user who created the event.
+    - contextPath: SekoiaXDR.Events.Query.community_uuids
+      description: The list of community UUIDs associated with the event.
+    - contextPath: SekoiaXDR.Events.Query.filters.field
+      description: The field associated with the filter.
+    - contextPath: SekoiaXDR.Events.Query.filters.value
+      description: The value associated with the filter.
+    - contextPath: SekoiaXDR.Events.Query.filters.operator
+      description: The operator used in the filter.
+    - contextPath: SekoiaXDR.Events.Query.filters.excluded
+      description: Indicates whether the filter is excluded or not.
+    - contextPath: SekoiaXDR.Events.Query.filters.disabled
+      description: Indicates whether the filter is disabled or not.
+    description: Command to create an event search job on Sekoia XDR, after this execute "sekoia-xdr-status-events-query" to see the status of the query job and "sekoia-xdr-results-events-query" to retrieve the results..
+  - name: sekoia-xdr-events-status-query
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the query executed previously with the "sekoia-xdr-query-events" command.
+    outputs:
+    - contextPath: SekoiaXDR.Events.Status.uuid
+      description: The unique identifier for the event.
+    - contextPath: SekoiaXDR.Events.Status.term
+      description: The term associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.started_at
+      description: The time at which the event started.
+    - contextPath: SekoiaXDR.Events.Status.short_histogram.cases
+      description: The number of cases associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.short_histogram.total
+      description: The total number of events associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.short_histogram.alerts
+      description: The number of alerts associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.short_histogram.earliest_time
+      description: The earliest time associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.short_histogram.length
+      description: The length associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.created_by
+      description: The user who created the event.
+    - contextPath: SekoiaXDR.Events.Status.expired
+      description: Whether the event is expired.
+    - contextPath: SekoiaXDR.Events.Status.latest_time
+      description: The latest time associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.expiration_date
+      description: The date when the event expires.
+    - contextPath: SekoiaXDR.Events.Status.created_at
+      description: The time when the event was created.
+    - contextPath: SekoiaXDR.Events.Status.status
+      description: The current status of the event.
+    - contextPath: SekoiaXDR.Events.Status.view_uuid
+      description: The view associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.canceled_at
+      description: The time when the event was canceled.
+    - contextPath: SekoiaXDR.Events.Status.only_eternal
+      description: Whether only eternal events are associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.results_ttl
+      description: The time-to-live for the event results.
+    - contextPath: SekoiaXDR.Events.Status.canceled_by
+      description: The user who canceled the event.
+    - contextPath: SekoiaXDR.Events.Status.term_lang
+      description: The language associated with the term for the event.
+    - contextPath: SekoiaXDR.Events.Status.ended_at
+      description: The time when the event ended.
+    - contextPath: SekoiaXDR.Events.Status.earliest_time
+      description: The earliest time associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.max_last_events
+      description: The maximum number of events to retrieve.
+    - contextPath: SekoiaXDR.Events.Status.canceled_by_type
+      description: The type of user who canceled the event.
+    - contextPath: SekoiaXDR.Events.Status.total
+      description: The total number of events associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.created_by_type
+      description: The type of user who created the event.
+    - contextPath: SekoiaXDR.Events.Status.community_uuids[0]
+      description: The community associated with the event.
+    - contextPath: SekoiaXDR.Events.Status.filters.field
+      description: The field used for filtering events.
+    - contextPath: SekoiaXDR.Events.Status.filters.field
+      description: The field used in the filter.
+    - contextPath: SekoiaXDR.Events.Status.filters.value
+      description: The value of the filter.
+    - contextPath: SekoiaXDR.Events.Status.filters.operator
+      description: The operator used in the filter.
+    - contextPath: SekoiaXDR.Events.Status.filters.excluded
+      description: A boolean indicating whether the filter is excluded or not.
+    - contextPath: SekoiaXDR.Events.Status.filters.disabled
+      description: A boolean indicating whether the filter is disabled or not.
+    description: Command to query the status of the search job on Sekoia XDR.
+  - name: sekoia-xdr-events-results-query
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID from response of the query executed previously with the "sekoia-xdr-query-events" command.
+    outputs:
+    - contextPath: SekoiaXDR.Events.Results
+      description: The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results.
+    description: Command to retrieve the events from the search job "sekoia-xdr-execute-events-query" previously done on Sekoia XDR.
+  - name: sekoia-xdr-search-events
+    polling: true
+    arguments:
+    - name: earliest_time
+      required: true
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z.
+    - name: lastest_time
+      required: true
+      description: Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z.
+    - name: query
+      description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
+      defaultValue: ""
+    - name: max_last_events
+      description: Maximum number of listed events.
+    - name: exclude_info
+      auto: PREDEFINED
+      predefined:
+      - original.message
+      - message
+      - __event_id
+      - agent.name
+      - alert_short_ids
+      - client.address
+      - client.ip
+      - client.user.id
+      - customer.community_name
+      - customer.community_uuid
+      - customer.id
+      - customer.intake_key
+      - customer.intake_name
+      - customer.intake_uuid
+      - ecs.version
+      - entity.id
+      - entity.name
+      - entity.uuid
+      - event.created
+      - event.dialect
+      - event.dialect_uuid
+      - event.id
+      - event.outcome
+      - http.request.method
+      - http.request.referrer
+      - related.ip
+      - sekoiaio.activity.client.id
+      - sekoiaio.activity.client.type
+      - sekoiaio.customer.community_name
+      - sekoiaio.customer.community_uuid
+      - sekoiaio.customer.id
+      - sekoiaio.entity.id
+      - sekoiaio.entity.name
+      - sekoiaio.entity.uuid
+      - sekoiaio.intake.dialect
+      - sekoiaio.intake.dialect_uuid
+      - sekoiaio.intake.key
+      - sekoiaio.intake.name
+      - sekoiaio.intake.parsing_status
+      - sekoiaio.intake.uuid
+      - timestamp
+      - url.domain
+      - url.original
+      - url.path
+      - url.port
+      - url.query
+      - url.registered_domain
+      - url.scheme
+      - url.subdomain
+      - url.top_level_domain
+      - user_agent.original
+      description: "Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter."
+      isArray: true
+    - name: job_uuid
+      description: The job UUID to retrieve query results.
+      hidden: true
+    outputs:
+    - contextPath: SekoiaXDR.Events.Results
+      description: The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results.
+    description: "Command to search and retrieve the events from an alert. This is a combination of 3 commands: sekoia-xdr-events-execute-query, sekoia-xdr-events-status-query and sekoia-xdr-events-results-query."
+  - name: sekoia-xdr-update-status-alert
+    arguments:
+    - name: id
+      required: true
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - Acknowledged
+      - Rejected
+      - Ongoing
+      - Closed
+      description: The status you want to apply. (Acknowledged, Rejected, Ongoing, Closed)).
+      required: true
+    - name: comment
+      description: Comment to describe why the alert status has changed.
+    description: Command to update the status of a specific Alert by uuid or short_id.
+  - name: sekoia-xdr-post-comment-alert
+    arguments:
+    - name: id
+      required: true
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+    - name: comment
+      required: true
+      description: Content of the comment to be posted on the alert.
+    - name: author
+      description: Author of the comment.
+    description: Command to post comments to alerts in Sekoia XDR.
+  - name: sekoia-xdr-get-comments
+    arguments:
+    - name: id
+      required: true
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+    outputs:
+    - contextPath: SekoiaXDR.Comments.total
+      description: The total number of items in the comments.
+    - contextPath: SekoiaXDR.Comments.items.date
+      description: The date at which the comment was created.
+    - contextPath: SekoiaXDR.Comments.items.created_by
+      description: The user who created the comment.
+    - contextPath: SekoiaXDR.Comments.items.uuid
+      description: The unique identifier for the comment.
+    - contextPath: SekoiaXDR.Comments.items.content
+      description: The content of the comment.
+    - contextPath: SekoiaXDR.Comments.items.created_by_type
+      description: The type of the user who created the comment.
+    - contextPath: SekoiaXDR.Comments.items.unseen
+      description: Indicates whether the comment has been seen by the user.
+    - contextPath: SekoiaXDR.Comments.items.author
+      description: The author of the comment.
+    description: Command to get all the comments from an alert in Sekoia XDR.
+  - name: sekoia-xdr-get-workflow-alert
+    arguments:
+    - name: id
+      required: true
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+    outputs:
+    - contextPath: SekoiaXDR.StatusTransitions.actions.name
+      description: The name of the action.
+    - contextPath: SekoiaXDR.StatusTransitions.actions.description
+      description: The description of the action.
+    - contextPath: SekoiaXDR.StatusTransitions.actions.id
+      description: The ID of the action.
+    description: Command to get the possible transitions of status on the alert.
+  - name: sekoia-xdr-get-cases-alert
+    arguments:
+    - name: alert_id
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      required: true
+    - name: case_id
+      description: 'The short_id of the case to retrieve from sekoia plateform or from this command without case_is param i.e: "CAQNurTJM8q2".'
+    outputs:
+    - contextPath: SekoiaXDR.Cases.updated_at
+      description: The time at which the case was updated.
+    - contextPath: SekoiaXDR.Cases.updated_by
+      description: The user who updated the case.
+    - contextPath: SekoiaXDR.Cases.uuid
+      description: The unique identifier of the case.
+    - contextPath: SekoiaXDR.Cases.title
+      description: The title of the case.
+    - contextPath: SekoiaXDR.Cases.priority
+      description: The priority level of the case.
+    - contextPath: SekoiaXDR.Cases.short_id
+      description: The short ID of the case.
+    - contextPath: SekoiaXDR.Cases.community_uuid
+      description: The unique identifier of the community to which the case belongs.
+    - contextPath: SekoiaXDR.Cases.updated_by_type
+      description: The type of user who updated the case.
+    - contextPath: SekoiaXDR.Cases.first_seen_at
+      description: The time at which the case was first seen.
+    - contextPath: SekoiaXDR.Cases.number_of_comments
+      description: The number of comments on the case.
+    - contextPath: SekoiaXDR.Cases.alerts.updated_at
+      description: The time at which the alert was updated.
+    - contextPath: SekoiaXDR.Cases.alerts.updated_by
+      description: The user who updated the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.uuid
+      description: The unique identifier of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.title
+      description: The title of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.time_to_respond
+      description: The time it took to respond to the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.short_id
+      description: The short ID of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.community_uuid
+      description: The unique identifier of the community to which the alert belongs.
+    - contextPath: SekoiaXDR.Cases.alerts.kill_chain_short_id
+      description: The short ID of the kill chain.
+    - contextPath: SekoiaXDR.Cases.alerts.number_of_unseen_comments
+      description: The number of unseen comments on the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.updated_by_type
+      description: The type of user who updated the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.source
+      description: The source of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.alert_type.value
+      description: The type of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.alert_type.category
+      description: The category type of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.time_to_acknowledge
+      description: The time it took to acknowledge the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.stix
+      description: The STIX data of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.first_seen_at
+      description: The time at which the alert was first seen.
+    - contextPath: SekoiaXDR.Cases.alerts.ttps.type
+      description: The type of TTP associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.ttps.name
+      description: The name of the TTP associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.ttps.id
+      description: The ID of the TTP associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.ttps.description
+      description: The description of the TTP associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.adversaries.type
+      description: The type of adversary associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.adversaries.name
+      description: The name of the adversary associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.adversaries.id
+      description: The ID of the adversary associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.adversaries.description
+      description: The description of the adversary associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.time_to_ingest
+      description: The time it took to ingest the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.target
+      description: The target of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.time_to_resolve
+      description: The time it took to resolve the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.created_at
+      description: The time at which the alert was created.
+    - contextPath: SekoiaXDR.Cases.alerts.last_seen_at
+      description: The time at which the alert was last seen.
+    - contextPath: SekoiaXDR.Cases.alerts.assets
+      description: The assets associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.rule.severity
+      description: The severity level of the rule associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.rule.type
+      description: The type of rule associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.rule.uuid
+      description: The unique identifier of the rule associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.rule.name
+      description: The name of the rule associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.rule.description
+      description: The description of the rule associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.rule.pattern
+      description: The pattern of the rule associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.similar
+      description: The number of similar alerts.
+    - contextPath: SekoiaXDR.Cases.alerts.status.name
+      description: The name of the status of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.status.description
+      description: The description of the status of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.status.uuid
+      description: The unique identifier of the status of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.urgency.criticity
+      description: The level of criticality of the urgency of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.urgency.current_value
+      description: The current value of the urgency of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.urgency.severity
+      description: The severity level of the urgency of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.urgency.display
+      description: The display value of the urgency of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.urgency.value
+      description: The value of the urgency of the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.created_by
+      description: The user who created the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.number_of_total_comments
+      description: The total number of comments on the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.time_to_detect
+      description: The time it took to detect the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.entity.name
+      description: The name of the entity associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.entity.uuid
+      description: The unique identifier of the entity associated with the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.created_by_type
+      description: The type of user who created the alert.
+    - contextPath: SekoiaXDR.Cases.alerts.details
+      description: The details of the alert.
+    - contextPath: SekoiaXDR.Cases.number_of_alerts
+      description: The number of alerts in the case.
+    - contextPath: SekoiaXDR.Cases.created_at
+      description: The time at which the case was created.
+    - contextPath: SekoiaXDR.Cases.last_seen_at
+      description: The time at which the case was last seen.
+    - contextPath: SekoiaXDR.Cases.status
+      description: The status of the case.
+    - contextPath: SekoiaXDR.Cases.description
+      description: The description of the case.
+    - contextPath: SekoiaXDR.Cases.status_uuid
+      description: The unique identifier of the status of the case.
+    - contextPath: SekoiaXDR.Cases.created_by
+      description: The user who created the case.
+    - contextPath: SekoiaXDR.Cases.tags
+      description: The tags associated with the case.
+    - contextPath: SekoiaXDR.Cases.created_by_type
+      description: The type of user who created the case.
+    - contextPath: SekoiaXDR.Cases.subscribers.avatar_uuid
+      description: The unique identifier of the avatar of the subscriber.
+    - contextPath: SekoiaXDR.Cases.subscribers.type
+      description: The type of subscriber.
+    description: Command to retrieve the cases related to an Alert from Sekoia XDR. If a case_id is given, returns the information about it, and if not it will give all cases in this alert.
+  - name: sekoia-xdr-get-asset
+    arguments:
+    - name: asset_uuid
+      required: true
+      description: 'UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
+    outputs:
+    - contextPath: SekoiaXDR.Asset.owners
+      description: The owners of the asset.
+    - contextPath: SekoiaXDR.Asset.category.types.description
+      description: The description of the category type of the asset.
+    - contextPath: SekoiaXDR.Asset.category.types.name
+      description: The name of the category type of the asset.
+    - contextPath: SekoiaXDR.Asset.category.types.uuid
+      description: The UUID of the category type of the asset.
+    - contextPath: SekoiaXDR.Asset.category.description
+      description: The description of the category of the asset.
+    - contextPath: SekoiaXDR.Asset.category.name
+      description: The name of the category of the asset.
+    - contextPath: SekoiaXDR.Asset.category.uuid
+      description: The UUID of the category of the asset.
+    - contextPath: SekoiaXDR.Asset.created_at
+      description: The time at which the asset was created.
+    - contextPath: SekoiaXDR.Asset.keys.value
+      description: The value of the keys of the asset.
+    - contextPath: SekoiaXDR.Asset.keys.name
+      description: The name of the keys of the asset.
+    - contextPath: SekoiaXDR.Asset.keys.uuid
+      description: The UUID of the keys of the asset.
+    - contextPath: SekoiaXDR.Asset.attributes.value
+      description: The value of the attributes of the asset.
+    - contextPath: SekoiaXDR.Asset.attributes.name
+      description: The name of the attributes of the asset.
+    - contextPath: SekoiaXDR.Asset.attributes.uuid
+      description: The UUID of the attributes of the asset.
+    - contextPath: SekoiaXDR.Asset.updated_at
+      description: The time at which the asset was updated.
+    - contextPath: SekoiaXDR.Asset.asset_type.description
+      description: The description of the asset type.
+    - contextPath: SekoiaXDR.Asset.asset_type.name
+      description: The name of the asset type.
+    - contextPath: SekoiaXDR.Asset.asset_type.uuid
+      description: The UUID of the asset type.
+    - contextPath: SekoiaXDR.Asset.criticity.value
+      description: The criticality value of the asset.
+    - contextPath: SekoiaXDR.Asset.criticity.display
+      description: The display value of the criticality of the asset.
+    - contextPath: SekoiaXDR.Asset.description
+      description: The description of the asset.
+    - contextPath: SekoiaXDR.Asset.community_uuid
+      description: The UUID of the community of the asset.
+    - contextPath: SekoiaXDR.Asset.name
+      description: The name of the asset.
+    - contextPath: SekoiaXDR.Asset.uuid
+      description: The UUID of the asset.
+    description: Get an asset by its UUID from Sekoia XDR.
+  - name: get-remote-data
+    arguments:
+    - name: id
+      description: The remote alert ID.
+    - name: lastUpdate
+      description: ISO format date with timezone, e.g., 2023-03-01T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
+      defaultValue: "0"
+    description: This command gets new information about the incidents in the remote system and updates existing incidents in Cortex XSOAR.
+  - name: get-modified-remote-data
+    arguments:
+    - name: lastUpdate
+      description: ISO format date with timezone, e.g., 2023-03-01T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
+      defaultValue: "0"
+    description: available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update.
+  - name: get-mapping-fields
+    arguments: []
+    description: This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
+  - name: sekoia-xdr-list-assets
+    arguments:
+    - name: limit
+      description: 'Limit a number of items.'
+      defaultValue: "10"
+    - name: assets_type
+      description: Type of assets to list (computer, network, etc).
+    description: Command to retrieve a list of Assets from Sekoia XDR.
+    outputs:
+    - contextPath: SekoiaXDR.Assets.total
+      description: The total number of items in the response.
+    - contextPath: SekoiaXDR.Assets.items.0.owners.0
+      description: The ID of the owner of the asset.
+    - contextPath: SekoiaXDR.Assets.items.0.category.types.0.description
+      description: The description of the type of the asset category.
+    - contextPath: SekoiaXDR.Assets.items.0.category.types.0.name
+      description: The name of the type of the asset category.
+    - contextPath: SekoiaXDR.Assets.items.0.category.types.0.uuid
+      description: The UUID of the type of the asset category.
+    - contextPath: SekoiaXDR.Assets.items.0.category.description
+      description: The description of the asset category.
+    - contextPath: SekoiaXDR.Assets.items.0.category.name
+      description: The name of the asset category.
+    - contextPath: SekoiaXDR.Assets.items.0.category.uuid
+      description: The UUID of the asset category.
+    - contextPath: SekoiaXDR.Assets.items.0.created_at
+      description: The time at which the asset was created.
+    - contextPath: SekoiaXDR.Assets.items.0.keys.0.value
+      description: The value of the asset key.
+    - contextPath: SekoiaXDR.Assets.items.0.keys.0.name
+      description: The name of the asset key.
+    - contextPath: SekoiaXDR.Assets.items.0.keys.0.uuid
+      description: The UUID of the asset key.
+    - contextPath: SekoiaXDR.Assets.items.0.attributes.0.value
+      description: The value of the asset attribute.
+    - contextPath: SekoiaXDR.Assets.items.0.attributes.0.name
+      description: The name of the asset attribute.
+    - contextPath: SekoiaXDR.Assets.items.0.attributes.0.uuid
+      description: The UUID of the asset attribute.
+    - contextPath: SekoiaXDR.Assets.items.0.updated_at
+      description: The time at which the asset was last updated.
+    - contextPath: SekoiaXDR.Assets.items.0.asset_type.description
+      description: The description of the asset type.
+    - contextPath: SekoiaXDR.Assets.items.0.asset_type.name
+      description: The name of the asset type.
+    - contextPath: SekoiaXDR.Assets.items.0.asset_type.uuid
+      description: The UUID of the asset type.
+    - contextPath: SekoiaXDR.Assets.items.0.criticity.value
+      description: The numeric value of the asset criticality.
+    - contextPath: SekoiaXDR.Assets.items.0.criticity.display
+      description: The display value of the asset criticality.
+    - contextPath: SekoiaXDR.Assets.items.0.description
+      description: The description of the asset.
+    - contextPath: SekoiaXDR.Assets.items.0.community_uuid
+      description: The UUID of the community to which the asset belongs.
+    - contextPath: SekoiaXDR.Assets.items.0.name
+      description: The name of the asset.
+    - contextPath: SekoiaXDR.Assets.items.0.uuid
+      description: The UUID of the asset.
+  - name: sekoia-xdr-get-user
+    arguments:
+    - name: user_uuid
+      required: true
+      description: UUID of the user, you get it from `sekoia-xdr-get-comments` for example. But make sure that `created_by_type` field is `user`.
+    outputs:
+    - contextPath: SekoiaXDR.User.creator.description
+      description: The description of the creator.
+    - contextPath: SekoiaXDR.User.creator.name
+      description: The name of the creator.
+    - contextPath: SekoiaXDR.User.creator.uuid
+      description: The UUID of the creator.
+    - contextPath: SekoiaXDR.User.updated_at
+      description: The time at which the object was last updated.
+    - contextPath: SekoiaXDR.User.created_by
+      description: The UUID of the user who created the object.
+    - contextPath: SekoiaXDR.User.total_members
+      description: The total number of members in the community.
+    - contextPath: SekoiaXDR.User.subcommunities
+      description: The UUIDs of the subcommunities.
+    - contextPath: SekoiaXDR.User.parent_community_uuid
+      description: The UUID of the parent community.
+    - contextPath: SekoiaXDR.User.applications.description
+      description: The description of the application.
+    - contextPath: SekoiaXDR.User.applications.name
+      description: The name of the application.
+    - contextPath: SekoiaXDR.User.applications.uuid
+      description: The UUID of the application.
+    - contextPath: SekoiaXDR.User.is_parent
+      description: Whether the community is a parent community.
+    - contextPath: SekoiaXDR.User.name
+      description: The name of the community.
+    - contextPath: SekoiaXDR.User.members.uuid
+      description: The UUID of the member.
+    - contextPath: SekoiaXDR.User.members.created_at
+      description: The time at which the member was created.
+    - contextPath: SekoiaXDR.User.members.user.firstname
+      description: The first name of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.mfa_enabled
+      description: Whether multi-factor authentication is enabled for the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.uuid
+      description: The UUID of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.company_name
+      description: The company name of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.lastname
+      description: The last name of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.created_at
+      description: The time at which the user associated with the member was created.
+    - contextPath: SekoiaXDR.User.members.user.picture_mode
+      description: The picture mode of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.last_activity
+      description: The last activity time of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.updated_at
+      description: The time at which the user associated with the member was last updated.
+    - contextPath: SekoiaXDR.User.members.user.auth_provider
+      description: The authentication provider of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.email
+      description: The email address of the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.user.invitation_v2.email
+      description: The email address for the invitation associated with the user associated with the member.
+    - contextPath: SekoiaXDR.User.members.name
+      description: The name of the member.
+    - contextPath: SekoiaXDR.User.members.updated_at
+      description: The time at which the member was last updated.
+    - contextPath: SekoiaXDR.User.members.status_changed_at
+      description: The time at which the status of the member was last changed.
+    - contextPath: SekoiaXDR.User.members.status
+      description: The status of the member.
+    - contextPath: SekoiaXDR.User.session_timeout
+      description: The session timeout for the community.
+    - contextPath: SekoiaXDR.User.is_mfa_enforced
+      description: Whether multi-factor authentication is enforced for the community.
+    - contextPath: SekoiaXDR.User.uuid
+      description: The UUID of the community.
+    - contextPath: SekoiaXDR.User.created_at
+      description: The time at which the community was created.
+    - contextPath: SekoiaXDR.User.picture_mode
+      description: The picture mode for the community.
+    - contextPath: SekoiaXDR.User.homepage_url
+      description: The homepage URL for the community.
+    - contextPath: SekoiaXDR.User.created_by_type
+      description: The type of the user who created the community.
+    - contextPath: SekoiaXDR.User.disable_inactive_avatars
+      description: Whether inactive avatars are disabled for the community.
+    - contextPath: SekoiaXDR.User.description
+      description: The description of the community.
+    description: Command to get information about a user in Sekoia XDR. Used also in the command !sekoia-xdr-get-comments to have the name of the persons who made the comments.
+  - name: sekoia-xdr-add-attributes-asset
+    arguments:
+    - name: asset_uuid
+      required: true
+      description: 'UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
+    - name: name
+      required: true
+      description: "The name of attributes."
+    - name: value
+      required: true
+      description: The value of attributes.
+    description: Command to add attributes to an asset in Sekoia XDR.
+  - name: sekoia-xdr-add-keys-asset
+    arguments:
+    - name: asset_uuid
+      required: true
+      description: 'UUID of the asset to get, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
+    - name: name
+      required: true
+      description: The name of the key to be added.
+    - name: value
+      required: true
+      description: The value of the key to be added.
+    description: "Command to add keys to an asset in Sekoia XDR."
+  - name: sekoia-xdr-get-kill-chain
+    arguments:
+    - name: kill_chain_uuid
+      required: true
+      description: UUID or short_id of the kill chain the UUID should appear with "sekoia-xdr-list-alerts".
+    description: Command to retrieve the definition of a Cyber Kill Chain Step.
+    outputs:
+    - contextPath: SekoiaXDR.KillChain.stix_name
+      description: The name of the STIX object.
+    - contextPath: SekoiaXDR.KillChain.description
+      description: The description of the STIX object.
+    - contextPath: SekoiaXDR.KillChain.name
+      description: The common name of the STIX object.
+    - contextPath: SekoiaXDR.KillChain.uuid
+      description: The unique identifier of the STIX object.
+    - contextPath: SekoiaXDR.KillChain.short_id
+      description: The short identifier of the STIX object.
+    - contextPath: SekoiaXDR.KillChain.order_id
+      description: The order identifier of the STIX object.
+  - name: sekoia-xdr-remove-attribute-asset
+    arguments:
+    - name: asset_uuid
+      required: true
+      description: 'UUID of the asset, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
+    - name: attribute_uuid
+      required: true
+      description: "UUID of the attribute to delete. Note: use !sekoia-xdr-get-asset to find the attribute_uuid to delete."
+    description: "Command to remove an attribute from an asset in Sekoia XDR. Note: use !sekoia-xdr-get-asset to find the attribute_uuid to delete."
+  - name: sekoia-xdr-remove-key-asset
+    arguments:
+    - name: asset_uuid
+      required: true
+      description: 'UUID of the asset, the UUID should appear with "sekoia-xdr-list-assets" if that alert have assets related, example: "d4cc3b05-a78d-4f29-b27c-c637d86fa03a".'
+    - name: key_uuid
+      required: true
+      description: "UUID of the key to remove. Note: use !sekoia-xdr-get-asset to find the key_uuid to delete."
+    description: "Command to remove a key from an asset in Sekoia XDR. Note: use !sekoia-xdr-get-asset to find the key_uuid to delete."
+  - name: sekoia-xdr-http-request
+    arguments:
+    - name: method
+      required: true
+      description: Method to use with the http request (GET,POST,etc).
+      defaultValue: GET
+    - name: url_sufix
+      required: true
+      description: The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
+    - name: parameters
+      description: Query parameters, i.e. limit -> 10 , match['status_name'] -> Ongoing.
+      type: keyValue
+    description: Command that performs a HTTP request to Sekoia using the integration authentication configured.
+  dockerimage: demisto/python3:3.11.10.111039
+  isfetch: true
+  runonce: false
+  subtype: python3
+  isFetchSamples: true
+  ismappable: true
+  isremotesyncin: true
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

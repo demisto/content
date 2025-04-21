@@ -77,7 +77,7 @@ configuration:
   name: incidents_max_fetch
   type: 0
   required: false
-description: Fetch incidents, search for supporting data and tag interesting datapoints in/from your Coralogix account
+description: Fetch incidents, search for supporting data and tag interesting datapoints in/from your Coralogix account.
 display: Coralogix
 name: Coralogix
 script:
@@ -88,31 +88,31 @@ script:
       required: true
     - description: The point in time to tag in Coralogix.
       name: timestamp
-    - description: A link to an icon file (png, jpeg, SVG) that will be used as the tag image in Coralogix. Cannot exceed 50KB
+    - description: A link to an icon file (png, jpeg, SVG) that will be used as the tag image in Coralogix. Cannot exceed 50KB.
       name: icon_url
-    description: Tag timestamp in Coralogix
+    description: Tag timestamp in Coralogix.
     name: coralogix-tag
   - arguments:
-    - description: A Coralogix Lucene query
+    - description: A Coralogix Lucene query.
       name: query
       required: true
-    - description: Narrows the search to the specified Coralogix Application name
+    - description: Narrows the search to the specified Coralogix Application name.
       name: app_name
-    - description: Narrows the search to the specified Coralogix Subsystem name
+    - description: Narrows the search to the specified Coralogix Subsystem name.
       name: subsystem_name
-    - description: Narrows the search to the specified Coralogix severity value
+    - description: Narrows the search to the specified Coralogix severity value.
       name: severity
-    - description: Limit the search to the data that arrived after a certain timestamp. If not set will search for all the data matching the query
+    - description: Limit the search to the data that arrived after a certain timestamp. If not set will search for all the data matching the query.
       name: since_timestamp
-    - description: Limit the search to data that arrived until a certain timestamp.If not set will search for all the data matching the query
+    - description: Limit the search to data that arrived until a certain timestamp.If not set will search for all the data matching the query.
       name: to_timestamp
     - defaultValue: '50'
-      description: The maximum number of events to retrieve per query
+      description: The maximum number of events to retrieve per query.
       name: max_items_to_retrieve
       required: true
-    description: Query Coralogix for information
+    description: Query Coralogix for information.
     name: coralogix-search
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'

@@ -41,19 +41,19 @@ script:
       - DNSKEY
       - NS
     - auto: PREDEFINED
-      defaultValue: "True"
+      defaultValue: 'True'
       description: If you only want to return the answers
       name: only_answers
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     description: Resolve a name to IP over HTTPS
     name: doh-resolve
     outputs:
     - contextPath: DNSoOverHTTPS.Results
       description: DNS query results
       type: list
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   script: ''
   subtype: python3
   type: python

@@ -1,22 +1,14 @@
-[file:incidentfield-CheckPointHEC_Campaign_Task.json]
-ignore=IF113
+[file:incidentfield-CheckPointHEC_Scan_Info.json]
+ignore=IF115
 
-[file:incidentfield-CheckPointHEC_Farm.json]
-ignore=IF113
-
-[file:incidentfield-CheckPointHEC_Email_Sender.json]
-ignore=IF113
-
-[file:incidentfield-CheckPointHEC_Email_Subject.json]
-ignore=IF113
-
-[file:incidentfield-CheckPointHEC_Reported.json]
-ignore=IF113
-
-[file:incidentfield-CheckPointHEC_Task.json]
-ignore=IF113
+[file:CheckPointHEC_Get_email_for_incident.yml]
+ignore=PB118
 
 [known_words]
 HEC
 CP
 Saas
+Classifiers
+Mappers
+Mapper
+Graymail

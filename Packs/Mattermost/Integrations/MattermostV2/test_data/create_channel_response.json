@@ -1,0 +1,23 @@
+{
+    "id": "id",
+    "create_at": 1697024204532,
+    "update_at": 1697024204532,
+    "delete_at": 0,
+    "team_id": "team_id",
+    "type": "O",
+    "display_name": "display_name",
+    "name": "name",
+    "header": "",
+    "purpose": "",
+    "last_post_at": 0,
+    "total_msg_count": 0,
+    "extra_update_at": 0,
+    "creator_id": "creator_id",
+    "scheme_id": null,
+    "props": null,
+    "group_constrained": null,
+    "shared": null,
+    "total_msg_count_root": 0,
+    "policy_id": null,
+    "last_root_post_at": 0
+}

@@ -1,44 +1,51 @@
 {
-  "name": "Vectra XDR",
-  "description": "Vectra XDR pack empowers the SOC to create incidents using Vectra AI's Attack Signal Intelligence.",
-  "support": "partner",
-  "currentVersion": "1.0.3",
-  "author": "Vectra AI",
-  "url": "https://support.vectra.ai",
-  "email": "support@vectra.ai",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [
-    "Network",
-    "Security",
-    "Incident Handling",
-    "Incident Response",
-    "Breach",
-    "Security Analytics"
-  ],
-  "useCases": [
-    "Network Security",
-    "Asset Management",
-    "Vulnerability Management",
-    "Breach Notification",
-    "Incident Response"
-  ],
-  "keywords": [
-    "Vectra XDR",
-    "Vectra",
-    "Entity",
-    "Detections",
-    "Vectra AI",
-    "Security",
-    "Respond",
-    "Respond UX",
-    "Vectra Platform"
-  ],
-  "marketplaces": [
-    "xsoar",
-    "marketplacev2"
-  ],
-  "devEmail": [],
-  "githubUser": []
+    "name": "Vectra XDR",
+    "description": "Vectra XDR pack empowers the SOC to create incidents using Vectra AI's Attack Signal Intelligence.",
+    "support": "partner",
+    "currentVersion": "1.0.13",
+    "author": "Vectra AI",
+    "url": "https://support.vectra.ai",
+    "email": "support@vectra.ai",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Network",
+        "Security",
+        "Incident Handling",
+        "Incident Response",
+        "Breach",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Network Security",
+        "Asset Management",
+        "Vulnerability Management",
+        "Breach Notification",
+        "Incident Response"
+    ],
+    "keywords": [
+        "Vectra XDR",
+        "Vectra",
+        "Entity",
+        "Detections",
+        "Vectra AI",
+        "Security",
+        "Respond",
+        "Respond UX",
+        "Vectra Platform"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "devEmail": [],
+    "githubUser": [],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

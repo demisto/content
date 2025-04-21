@@ -54,7 +54,7 @@ configuration:
   type: 1
   required: false
 script:
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   type: python
   subtype: python3
   script: '-'
@@ -64,15 +64,16 @@ script:
     - name: ip
       required: true
       description: IPv4 address to look up in the SlashNext Threat Intelligence database.
+      default: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -121,10 +122,10 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -173,10 +174,10 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -907,16 +908,18 @@ script:
     arguments: []
     outputs:
     - contextPath: SlashNext.Quota.LicensedQuota
-      description: Licensed Quota
+      description: Licensed Quota.
       type: string
     - contextPath: SlashNext.Quota.RemainingQuota
-      description: Remaining Quota
+      description: Remaining Quota.
       type: string
     - contextPath: SlashNext.Quota.ExpirationDate
-      description: Quota Expiration Date
+      description: Quota Expiration Date.
       type: date
     - contextPath: SlashNext.Quota.IsExpired
-      description: Quota Expiration Status
+      description: Quota Expiration Status.
       type: boolean
     description: Queries the SlashNext cloud database and retrieves the details of API quota.
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,34 +1,32 @@
 Run nmap scans with the given parameters.
-This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the integration Docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html. Some scan options require **root** access for using raw packet scanning techniques. See [here](https://nmap.org/book/man-port-scanning-techniques.html) for detailed scanning techniques. If you've configured the server to run Docker images with a non-root internal user and you want to use raw packet scanning (for example via the *-sS* option for SYN/ACK scan), make sure to exclude the *demisto/nmap* Docker image as documented [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users).
+This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the integration Docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html. Some scan options require **root** access for using raw packet scanning techniques. See [here](https://nmap.org/book/man-port-scanning-techniques.html) for detailed scanning techniques. If you've configured the server to run Docker images with a non-root internal user and you want to use raw packet scanning (for example via the *-sS* option for SYN/ACK scan), make sure to exclude the *demisto/nmap* Docker image as documented For Cortex XSOAR 6 [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide).
 
-## Configure nmap on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for *nmap*.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure nmap in Cortex
 
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nmap-scan
+
 ***
-Scan targets with the given parameters
+Scan targets with the given parameters.
 
-
-##### Base Command
+#### Base Command
 
 `nmap-scan`
-##### Input
+
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | targets | The targets to scan. Accepts comma-separated list. | Required | 
 | options | The nmap options to use as documented by nmap. | Required | 
 
-
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -38,24 +36,26 @@ Scan targets with the given parameters
 | NMAP.Scan.Ended | unknown | End time epoch. | 
 | NMAP.Scan.CommandLine | unknown | The command line being used. | 
 | NMAP.Scan.ScanType | unknown | The type of discovery scan. | 
-| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned hostץ | 
+| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned host. | 
 | NMAP.Scan.Hosts.Address | unknown | Scanned host address. | 
-| NMAP.Scan.Hosts.Status | unknown | Is the host up or down? | 
+| NMAP.Scan.Hosts.Status | unknown | Is the host up or down. | 
 | NMAP.Scan.Hosts.Services.Port | unknown | The port of the service. | 
 | NMAP.Scan.Hosts.Services.Protocol | unknown | The protocol of the service. | 
 | NMAP.Scan.Hosts.Services.State | unknown | The state of the service. | 
 | NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service. | 
 | NMAP.Scan.Hosts.Services.Service | unknown | The service name. | 
-| NMAP.Scan.Hosts.ScriptResults.ID | unknown | The name of the script used. |
-| NMAP.Scan.Hosts.ScriptResults.Output | unknown | The raw results of the script execution. |
-| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | Additional parseable fields from the script output. |
+| NMAP.Scan.Hosts.ScriptResults.ID | unknown | The name of the script used. | 
+| NMAP.Scan.Hosts.ScriptResults.Output | unknown | The raw results of the script execution. | 
+| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | Additional parseable fields from the script output. | 
 
 
 #### Command Example
+
 ```!nmap-scan options="-sV" targets=scanme.nmap.org```
 
 #### Context Example
-```
+
+```json
 {
     "NMAP": {
         "Scan": {

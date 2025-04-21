@@ -1,2 +1,9 @@
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:playbook-CVE-2021-44228_-_Log4j_RCE.yml]
+ignore=GR107
+
+[file:playbook-CVE-2021-44228_-_Log4j_RCE_6_5.yml]
+ignore=GR107
+

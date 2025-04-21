@@ -1,3 +1,9 @@
-{
-    "response": "SUCCESS"
-}
+[
+    {
+      "message": "Test comment post",
+      "username": "exampleUser",
+      "time": 1727202568000,
+      "pid": 2509,
+      "commentid": 570
+    }
+]

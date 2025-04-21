@@ -57,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2290,
+          "x": -2960,
           "y": -870
         }
       }
@@ -88,7 +88,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1670,
+          "x": -2540,
           "y": -870
         }
       }
@@ -236,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1450,
-          "y": -410
+          "x": -2540,
+          "y": -370
         }
       }
     note: false
@@ -353,8 +353,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2070,
-          "y": -410
+          "x": -2960,
+          "y": -360
         }
       }
     note: false
@@ -470,8 +470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4410,
-          "y": -410
+          "x": -4630,
+          "y": -370
         }
       }
     note: false
@@ -507,8 +507,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: Rapid7 InsightIDR
-    results:
-    - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -545,7 +543,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3490,
+          "x": -3790,
           "y": -870
         }
       }
@@ -662,8 +660,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3270,
-          "y": -410
+          "x": -3790,
+          "y": -370
         }
       }
     note: false
@@ -731,7 +729,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDSHA1Field} CONTAINS-ANY [${SHA1Parsed}])
+        simple: where(${inputs.InsightIDRSHA1Field} CONTAINS-ANY [${SHA1Parsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -779,8 +777,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3900,
-          "y": -410
+          "x": -4200,
+          "y": -370
         }
       }
     note: false
@@ -810,7 +808,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4120,
+          "x": -4200,
           "y": -870
         }
       }
@@ -927,8 +925,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2670,
-          "y": -410
+          "x": -3370,
+          "y": -370
         }
       }
     note: false
@@ -958,7 +956,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2890,
+          "x": -3370,
           "y": -870
         }
       }
@@ -989,8 +987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1670,
-          "y": -235
+          "x": -2540,
+          "y": -205
         }
       }
     note: false
@@ -1020,8 +1018,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2290,
-          "y": -235
+          "x": -2960,
+          "y": -205
         }
       }
     note: false
@@ -1051,8 +1049,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2890,
-          "y": -235
+          "x": -3370,
+          "y": -205
         }
       }
     note: false
@@ -1082,8 +1080,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3490,
-          "y": -235
+          "x": -3790,
+          "y": -205
         }
       }
     note: false
@@ -1113,8 +1111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4120,
-          "y": -235
+          "x": -4200,
+          "y": -205
         }
       }
     note: false
@@ -1145,7 +1143,7 @@ tasks:
       {
         "position": {
           "x": -4630,
-          "y": -235
+          "y": -205
         }
       }
     note: false
@@ -1170,7 +1168,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "121"
+      - "175"
       "yes":
       - "163"
     separatecontext: false
@@ -1189,7 +1187,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1670,
+          "x": -2540,
           "y": -740
         }
       }
@@ -1215,7 +1213,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "122"
+      - "175"
       "yes":
       - "164"
     separatecontext: false
@@ -1234,7 +1232,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2290,
+          "x": -2960,
           "y": -740
         }
       }
@@ -1260,7 +1258,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "123"
+      - "175"
       "yes":
       - "165"
     separatecontext: false
@@ -1279,7 +1277,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2890,
+          "x": -3370,
           "y": -740
         }
       }
@@ -1305,7 +1303,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "124"
+      - "175"
       "yes":
       - "166"
     separatecontext: false
@@ -1324,7 +1322,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3490,
+          "x": -3790,
           "y": -740
         }
       }
@@ -1350,7 +1348,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "125"
+      - "175"
       "yes":
       - "167"
     separatecontext: false
@@ -1369,7 +1367,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4120,
+          "x": -4200,
           "y": -740
         }
       }
@@ -1395,7 +1393,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "126"
+      - "175"
       "yes":
       - "168"
     separatecontext: false
@@ -1438,7 +1436,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1470,8 +1470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1450,
-          "y": -570
+          "x": -2540,
+          "y": -530
         }
       }
     note: false
@@ -1494,7 +1494,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1526,8 +1528,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2070,
-          "y": -570
+          "x": -2960,
+          "y": -520
         }
       }
     note: false
@@ -1550,7 +1552,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1582,8 +1586,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2670,
-          "y": -570
+          "x": -3370,
+          "y": -530
         }
       }
     note: false
@@ -1606,7 +1610,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1638,8 +1644,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3270,
-          "y": -570
+          "x": -3790,
+          "y": -530
         }
       }
     note: false
@@ -1662,7 +1668,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1694,8 +1702,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3900,
-          "y": -570
+          "x": -4200,
+          "y": -530
         }
       }
     note: false
@@ -1718,7 +1726,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1750,8 +1760,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4410,
-          "y": -570
+          "x": -4630,
+          "y": -530
         }
       }
     note: false
@@ -1779,7 +1789,7 @@ tasks:
       {
         "position": {
           "x": -4860,
-          "y": 80
+          "y": 110
         }
       }
     note: false
@@ -1833,8 +1843,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3190,
-          "y": -90
+          "x": -3570,
+          "y": -60
         }
       }
     note: false
@@ -1847,17 +1857,24 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "137_175_#default#": 0.1,
+      "138_175_#default#": 0.1,
+      "139_175_#default#": 0.1,
+      "140_175_#default#": 0.1,
+      "141_175_#default#": 0.16,
+      "142_168_yes": 0.43,
+      "142_175_#default#": 0.18,
       "56_11_yes": 0.9,
       "56_13_yes": 0.39,
-      "56_175_#default#": 0.8,
+      "56_175_#default#": 0.13,
       "56_74_yes": 0.65,
       "56_77_yes": 0.83,
       "56_8_yes": 0.87
     },
     "paper": {
       "dimensions": {
-        "height": 1315,
-        "width": 3790,
+        "height": 1345,
+        "width": 2700,
         "x": -4860,
         "y": -1170
       }

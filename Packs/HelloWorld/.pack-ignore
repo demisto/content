@@ -12,3 +12,7 @@ ignore=BA111
 
 [file:classifier-HelloWorld.json]
 ignore=BA101
+
+# GR103 is temporary, see CIAC-11656
+[file:playbook-HelloWorld-Test.yml]
+ignore=GR103

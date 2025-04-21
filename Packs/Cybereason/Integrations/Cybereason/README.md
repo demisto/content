@@ -1,29 +1,84 @@
 Endpoint detection and response to manage and query malops, connections and processes.
 This integration was integrated and tested with version 21.2 of Cybereason
 
-## Configure Cybereason on Cortex XSOAR
+## Configure Cybereason in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cybereason.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. <https://192.168.0.1>) | True |
-    | Credentials | False |
-    | Password | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-    | Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. <https://192.168.0.1>) | True |
+| Credentials | False |
+| Password | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+| Fetch by "MALOP UPDATE TIME" (Fetching by Malop creation time is no longer supported) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
+## Cybereason MalOp to XSOAR Incident Map
+
+This involves the mapping of response fields to XSOAR incidents, enhancing the ability to manage and track security incidents effectively.
+
+### Overview
+
+1. **Incident Mapping:** The integration maps specific response fields to corresponding incident fields within XSOAR, ensuring that all relevant information is captured accurately.
+2. **Custom Fields:** In addition to standard incident fields, custom fields have been introduced to accommodate unique data requirements specific to our workflow. These fields provide flexibility and enhance the granularity of the incident information.
+- `malopcreationtime`
+- `malopupdatetime`
+- `maloprootcauseelementname`
+- `maloprootcauseelementtype`
+- `malopseverity`
+- `malopdetectiontype`
+- `malopedr`
+- `malopurl`
+- `malopgroup`
+
+These custom fields provide flexibility and enhance the granularity of the incident information.
+
+### Usage
+
+1. **Configure Custom Fields:** Ensure that all custom fields are properly set up in XSOAR before running the fetch function.
+2. **Enable Fetch Incidents:**  Functionality responsible to fetch Malops.
+3. **Monitor Incidents:** Once the MalOps are converted, they will appear as incidents in XSOAR, allowing for effective incident management.
+
+## Cybereason MalOp to XSOAR Incident Map
+
+This involves the mapping of response fields to XSOAR incidents, enhancing the ability to manage and track security incidents effectively.
+
+### Overview
+
+1. **Incident Mapping:** The integration maps specific response fields to corresponding incident fields within XSOAR, ensuring that all relevant information is captured accurately.
+2. **Custom Fields:** In addition to standard incident fields, custom fields have been introduced to accommodate unique data requirements specific to our workflow. These fields provide flexibility and enhance the granularity of the incident information.
+
+- `malopcreationtime`
+- `malopupdatetime`
+- `maloprootcauseelementname`
+- `maloprootcauseelementtype`
+- `malopseverity`
+- `malopdetectiontype`
+- `malopedr`
+- `malopurl`
+- `malopgroup`
+
+These custom fields provide flexibility and enhance the granularity of the incident information.
+
+### Fetchin MalOps
+
+The functionality for fetching MalOps is implemented through the `fetch_incidents` function. This function is responsible for retrieving MalOps and subsequently converting them into XSOAR incidents.
+
+- **Conversion Process:** The conversion from MalOps to incidents is handled by the `malop_to_incident` function. This function processes MalOps one by one, ensuring each is correctly mapped to its corresponding incident structure.
+
+### Usage
+
+1. **Configure Custom Fields:** Ensure that all custom fields are properly set up in XSOAR before running the fetch function.
+2. **Run Fetch Incidents:** Execute the `fetch_incidents` function to initiate the retrieval and conversion process.
+3. **Monitor Incidents:** Once the MalOps are converted, they will appear as incidents in XSOAR, allowing for effective incident management.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cybereason-query-processes
@@ -1633,6 +1688,14 @@ Get the results related to machines.
 | Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
 | Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
 | Cybereason.Malops.Status | string | Malop managemant status | 
+| Cybereason.Malops.MalopCloserName | string | List of Malop Closer Name involved in this Malop |
+| Cybereason.Malops.Machines | string | List of Machines involved in this Malop |
+| Cybereason.Malops.Severity | string | Severity of Malop |
+| Cybereason.Malops.MitreTechniques | string | List of Mitre Techniques involved in this Malop |
+| Cybereason.Malops.Users | string | List of Users involved in this Malop |
+| Cybereason.Malops.DetectionTypes | string | List of Detection Types involved in this Malop |
+| Cybereason.Malops.DecisionStatuses | string | List of Decision Statuses involved in this Malop |
+| Cybereason.Malops.DetectionEngines | string | List of Detection Engines involved in this Malop |
 
 #### Command example
 
@@ -1690,3 +1753,47 @@ Get the results related to machines.
 }
 ```
 
+
+### cybereason-update-malop-investigation-status
+
+***
+Updates malop investigation status.
+
+#### Base Command
+
+`cybereason-update-malop-investigation-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | Malop GUID to update its investigation status. | Required | 
+| investigationStatus | Investigation status to update. Possible values are: Pending, Reopened, Under Investigation, On Hold, Closed. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | Malop GUID. | 
+| Cybereason.Malops.InvestigationStatus | string | Malop investigation status: Pending, Reopened, Under Investigation, On Hold, Closed. | 
+
+#### Command example
+
+```!cybereason-update-malop-investigation-status malopGuid=<malop_guid> investigationStatus="Under Investigation"```
+
+#### Context Example
+
+```json
+{
+    "Cybereason": {
+        "Malops": {
+            "GUID": "<malop_guid>",
+            "InvestigationStatus": "Under Investigation"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> Successfully updated malop <malop_guid> to investigation status "Under Investigation"!

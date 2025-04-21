@@ -1,0 +1,53 @@
+args:
+- name: input
+  required: true
+  description: The input to be defanged.
+  type: unknown
+- name: defang_options
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - ip
+  - mail
+  - url
+  description: Specify which IOC needs defanging.
+  isArray: true
+  defaultValue: ip, mail, url
+- name: mail_options
+  auto: PREDEFINED
+  predefined:
+  - dot
+  - at
+  description: Mail defang can be configured to merely defang . or @ or both.
+  isArray: true
+  defaultValue: dot, at
+- name: url_options
+  auto: PREDEFINED
+  predefined:
+  - dot
+  - http
+  - colon
+  description: URL defang can be configured to merely defang . or https or :// or all.
+  isArray: true
+  defaultValue: dot, http, colon
+outputs:
+- contextPath: Defang.output
+  description: The defanged output.
+  type: string
+comment: Defangs IP, Mail and URL address to prevent them from being recognized.
+commonfields:
+  id: Defang
+  version: -1
+dockerimage: demisto/python3:3.12.8.1983910
+enabled: true
+name: Defang
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+type: python
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

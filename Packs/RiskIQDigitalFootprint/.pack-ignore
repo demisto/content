@@ -6,4 +6,3 @@ ignore=PB114,PB116
 
 [file:playbook-RiskIQAsset_Enrichment_-_RiskIQ_Digital_Footprint.yml]
 ignore=PB114
-

@@ -65,6 +65,7 @@ configuration:
   type: 0
   section: Collect
   required: false
+  additionalinfo: If the API returns duplicates, the duplicates will be dropped, causing the total number of alerts fetched to potentially be fewer than the set limit.
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -83,13 +84,39 @@ script:
       description: Workflow state to update.
       name: state
       predefined:
-      - dismissed
-      - open
+      - IN_PROGRESS
+      - CLOSED
+      - DISMISSED
+      - OPEN
+    - description: Value judgement of whether the alert(s) represent a true or false positive.
+      name: remediation_state
+      auto: PREDEFINED
+      predefined:
+      - TRUE_POSITIVE
+      - FALSE_POSITIVE
+      - NONE
+    - description: Relative time range for the request. Should not be provided if using `start` and `end` arguments.
+      name: time_range
+      defaultValue: -2w
+    - name: start
+      description: The lower bound of the time range. Requires end and must be a timestamp before end.
+    - name: end
+      description: The upper bound of the time range. Requires start and must be a timestamp after start.
+    - name: closure_reason
+      description: The closure reason.
+      auto: PREDEFINED
+      predefined:
+      - NO_REASON
+      - RESOLVED
+      - RESOLVED_BENIGN_KNOWN_GOOD
+      - DUPLICATE_CLEANUP
+      - OTHER
     - description: Comment to include with the operation.
       name: comment
-    - description: Description of the changes done in the workflow state.
-      name: remediation_state
-    description: Updates the workflow of a single event.
+    - description: Request ID to retrieve.
+      name: request_id
+      hidden: true
+    description: Updates the workflow of a single alert.
     name: cb-eedr-alert-workflow-update
     outputs:
     - contextPath: CarbonBlackEEDR.Alert.AlertID
@@ -110,6 +137,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.State
       description: The alert state.
       type: String
+    polling: true
   - arguments:
     - description: The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values.
       name: device_id
@@ -199,6 +227,7 @@ script:
       description: Maximum number of rows to return.
       name: limit
     - auto: PREDEFINED
+      defaultValue: last_contact_time
       description: Sort Fields.
       name: sort_field
       predefined:
@@ -371,13 +400,6 @@ script:
       description: The MAC address of the endpoint.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: Whether to group results.
-      name: group_results
-      predefined:
-      - 'true'
-      - 'false'
     - description: Alert minimum severity (In range of 1-10).
       name: minimum_severity
     - description: Device OS version. Supports comma-separated values.
@@ -402,31 +424,27 @@ script:
       name: reputation
     - description: Alert type. Supports comma-separated values.
       name: alert_type
-    - description: Alert category. Supports comma-separated values.
-      name: alert_category
-    - description: Alert workflow. Supports comma-separated values.
-      name: workflow
-    - description: Device name. Supports comma-separated values.
+    - description: A comma-separated list of device names. Examples- "C:\\Users\\example_user\\Example" or  "/home/example_user/Example".
       name: device_name
-    - description: Process name. Supports comma-separated values.
+    - description: A comma-separated list of process names. Examples- "C:\\Users\\example_user\\Example" or  "/home/example_user/Example".
       name: process_name
-    - auto: PREDEFINED
-      defaultValue: first_event_time
-      description: Field by which to sort the results. Can be "first_event_time", or "last_event_time".
+    - description: Field by which to sort the results.
       name: sort_field
+      auto: PREDEFINED
+      defaultValue: first_event_timestamp
       predefined:
-      - first_event_time
-      - last_event_time
-    - auto: PREDEFINED
-      defaultValue: DESC
-      description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
+      - first_event_timestamp
+      - last_event_timestamp
+    - description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
       name: sort_order
+      auto: PREDEFINED
+      defaultValue: DESC
       predefined:
       - ASC
       - DESC
-    - defaultValue: '10'
-      description: The maximum number of results to return.
+    - description: The maximum number of results to return.
       name: limit
+      defaultValue: '10'
     - description: Alert start time.
       name: start_time
     - description: Alert end time.
@@ -548,9 +566,6 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.severity
       description: Alert severity.
       type: Number
-    - contextPath: CarbonBlackEEDR.Alert.category
-      description: Alert category.
-      type: String
     - contextPath: CarbonBlackEEDR.Alert.threat_cause_vector
       description: Threat cause vector.
       type: String
@@ -570,7 +585,7 @@ script:
       description: Alert workflow - remediation.
       type: String
     - contextPath: CarbonBlackEEDR.Alert.workflow.state
-      description: Alert workflow - state.
+      description: Alert workflow state.
       type: String
   - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
@@ -1126,7 +1141,23 @@ script:
       name: end_time
     - description: Index of first records to fetch. Default is 0.
       name: start
-    description: Creates a process search job.
+    - description: Job ID to retrieve.
+      name: job_id
+      hidden: true
+    - description: whether to run the command with polling.
+      name: polling
+      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The time in seconds to wait between polling.
+      name: interval_in_seconds
+      defaultValue: '60'
+    - description: The timeout duration in seconds for polling retries.
+      name: time_out
+      defaultValue: 600
+    description: Creates a process search job and returns results if 'polling' argument is True.
     name: cb-eedr-process-search
     outputs:
     - contextPath: CarbonBlackEEDR.SearchProcess.job_id
@@ -1135,6 +1166,94 @@ script:
     - contextPath: CarbonBlackEEDR.SearchProcess.status
       description: The status of the job found by the search.
       type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.device_id
+      description: The device ID that is guaranteed to be unique within each PSC environment.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.process_username
+      description: The user names related to the process.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.backend_timestamp
+      description: A date/time field formatted as an ISO-8601 string based on the UTC timezone. For example, device_timestamp:2018-03-14T21:06:45.183Z.
+      type: Date
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.childproc_count
+      description: The cumulative count of child-process creations since process tracking started.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.crossproc_count
+      description: The cumulative count of cross-process events since process tracking started.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.device_group_id
+      description: The ID of the sensor group where the device belongs.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.device_name
+      description: The name of the device.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.device_policy_id
+      description: The ID of the policy applied to the device.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.device_timestamp
+      description: The time displayed on the sensor based on the sensor’s clock. The time is an ISO-8601 formatted time string based on the UTC timezone.
+      type: Date
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.enriched
+      description: True if the process document came from the CBD data stream.
+      type: Boolean
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.enriched_event_type
+      description: The CBD enriched event type.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.event_type
+      description: 'The CBD event type (valid only for events coming through analytics). Possible values are: CREATE_PROCESS, DATA_ACCESS, FILE_CREATE, INJECT_CODE, NETWORK, POLICY_ACTION, REGISTRY_ACCESS, and SYSTEM_API_CALL.'
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.filemod_count
+      description: The cumulative count of file modifications since process tracking started.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.ingress_time
+      description: Unknown.
+      type: Date
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.legacy
+      description: True if the process document came from the legacy data stream (deprecated, use enriched).
+      type: Boolean
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.modload_count
+      description: The cumulative count of module loads since process tracking started.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.netconn_count
+      description: The cumulative count of network connections since process tracking started.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.org_id
+      description: The globally unique organization key. This will most likely be the PSC organization ID + PSC environment ID or some other unique token used across environments.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.parent_guid
+      description: The process GUID of the parent process.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.parent_pid
+      description: The PID of the parent process.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.process_guid
+      description: Unique ID of the solr document. Appears as process_guid + server-side timestamp in epoch ms (1/1/1970 based).
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.process_hash
+      description: The MD5 and SHA-256 hashes of the process's main module in a multi-valued field.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.process_name
+      description: The tokenized file path of the process's main module.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.process_pid
+      description: The PID of a process. Can be multi-valued in case of exec/fork on Linux/OSX.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.process_username
+      description: User names related to the process.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.regmod_count
+      description: The cumulative count of registry modifications since process tracking started.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
+      description: The cumulative count of loaded scripts since process tracking started.
+      type: Number
+    - contextPath: CarbonBlackEEDR.SearchProcess.job_id
+      description: The ID of the job found by the search.
+      type: String
+    - contextPath: CarbonBlackEEDR.SearchProcess.status
+      description: The status of the job found by the search.
+      type: String
+    polling: true
   - arguments:
     - description: The process GUID to search. Must be focused on a single process.
       name: process_guid
@@ -1358,7 +1477,7 @@ script:
       description: Threat ID.
     - contextPath: CarbonBlackEEDR.Threat.Tags
       description: Threat tags.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: ''
@@ -1366,4 +1485,6 @@ script:
   type: python
 tests:
 - Carbon Black Enterprise EDR Test
+- Carbon Black Enterprise EDR process search with polling Test
+- Carbon Black Enterprise EDR alert-workflow-update Test
 fromversion: 5.0.0

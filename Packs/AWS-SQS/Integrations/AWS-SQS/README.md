@@ -4,32 +4,28 @@ For more information regarding the AWS SQS service, please visit the official do
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-## Configure AWS - SQS on Cortex XSOAR
+## Configure AWS - SQS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - SQS.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | False        |
-    | Role Arn | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. | False        |
-    | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False        |
-    | Access Key  | The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False        |
-    | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False        |
-    | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False        |
-    | Queue URL | URL of an existing Amazon SQS queue. | False        |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False        |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False        |
-    | Fetch incidents |  | False        |
-    | Maximum incidents for one fetch. Hard cap of 100. | Maximum number of incidents for a single fetch. | 10           |
-    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`)  | False        |
-    | Incident type |  | False        |
-    | Use system proxy settings |  | False        |
-    | Trust any certificate (not secure) |  | False        |
-    | Parse SQS message body as a JSON string |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | False        |
+| Role Arn | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. | False        |
+| Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False        |
+| Access Key  | The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False        |
+| Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False        |
+| Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False        |
+| Queue URL | URL of an existing Amazon SQS queue. | False        |
+| Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False        |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False        |
+| Fetch incidents |  | False        |
+| Maximum incidents for one fetch. Hard cap of 100. | Maximum number of incidents for a single fetch. | 10           |
+| First fetch timestamp | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`)  | False        |
+| Incident type |  | False        |
+| Use system proxy settings |  | False        |
+| Trust any certificate (not secure) |  | False        |
+| Parse SQS message body as a JSON string |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### There are three options to sign in to the service:
 1. Provide Access Key ID and Secret Key ID.
@@ -38,7 +34,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-sqs-get-queue-url
 ***
@@ -268,4 +264,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 The Queue has been Purged
-

@@ -2,26 +2,22 @@ Deprecated. Use VMware Carbon Black EDR v2 instead.
 Query and response with Carbon Black endpoint detection and response.
 
 This integration was integrated and tested with version 6.2.0 of Carbon Black Response
-## Configure carbonblack-v2 on Cortex XSOAR
+## Configure carbonblack-v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for carbonblack-v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | API Token | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Fetch Alert Severity Threshold Higher Than | False |
-    | Maximum Number Of Incidents To Fetch | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| API Token | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| Fetch Alert Severity Threshold Higher Than | False |
+| Maximum Number Of Incidents To Fetch | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cb-alert
 ***
@@ -801,5 +797,4 @@ Retrieve a binary from CarbonBlack based on hash. Returns a .zip file containing
 ``` ```
 
 #### Human Readable Output
-
 

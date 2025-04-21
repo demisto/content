@@ -9,8 +9,8 @@ The integration helps ensure that privileged credentials are secured in the Vaul
 
 The CyberArk Credential Provider can be used for managing privileged credentials from both Palo Alto XSOAR and XSIAM. By doing this, XSOAR and XSIAM can securely retrieve privileged credentials from the CyberArk Vault.
 
-<b><h3> Use Cases &amp; Benefits</h3></b>
-<b><h4> Manage, rotate and secure secrets used by XSOAR and XSIAM:</h4></b>
+### Use Cases & Benefits
+#### Manage, rotate and secure secrets used by XSOAR and XSIAM:
 
 * High performance: Meets the needs of the enterprise’s most mission critical and demanding applications.
 * Strong authentication: Verifies the origin of any application requesting the credential.

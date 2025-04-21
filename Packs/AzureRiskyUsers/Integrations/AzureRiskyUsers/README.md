@@ -181,9 +181,13 @@ Returns a list of all risky users and their properties.
 | --- | --- | --- |
 | risk_state | Sets the Risk State to retrieve. Possible values are: atRisk, confirmedCompromised, remediated, dismissed. | Optional | 
 | limit | Limit of results to retrieve. Default is 50. | Optional | 
+| page | Page number. | Optional | 
 | page_size | Amount of results per request. Value can be between 1 and 500. When only page_size is given, the first page results will be fetched. | Optional | 
 | next_token | The URL for the next set of items to return during pagination. (This URL can be retrieved from a previous call). | Optional | 
 | risk_level | Sets the Risk Level to retrieve. Possible values are: low, medium, high. | Optional | 
+| order_by | The method used to order the retrieved results. Possible values are: riskLastUpdatedDateTime desc, riskLastUpdatedDateTime asc. Default is riskLastUpdatedDateTime desc. | Optional | 
+| updated_before | Displays all RiskyUsers before a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours". | Optional | 
+| updated_after | Displays all RiskyUsers after a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours". | Optional | 
 
 #### Context Output
 
@@ -199,6 +203,7 @@ Returns a list of all risky users and their properties.
 | AzureRiskyUsers.RiskyUser.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
 | AzureRiskyUsers.RiskyUser.riskDetail | String | Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | 
 | AzureRiskyUsers.RiskyUserListNextToken | String | A property in the response that contains a URL to the next page of results. | 
+
 
 #### Command example
 ```!azure-risky-users-list page_size=2```
@@ -530,4 +535,3 @@ Read the properties and relationships of a riskDetection object.
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Ip Address|Detection Timing Type|Last Updated Date Time|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 6565 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |
-

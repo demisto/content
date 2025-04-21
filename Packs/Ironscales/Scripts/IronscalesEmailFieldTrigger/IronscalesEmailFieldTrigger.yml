@@ -6,10 +6,12 @@ script: ""
 type: python
 tags:
 - field-change-triggered
-comment: Automatically changes email field when choosing classification
+comment: Automatically changes email field when choosing classification.
 fromversion: 6.0.0
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
+tests:
+- No tests (auto formatted)

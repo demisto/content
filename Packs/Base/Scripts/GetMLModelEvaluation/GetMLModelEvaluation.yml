@@ -15,7 +15,7 @@ args:
   isArray: true
   name: targetRecall
 - defaultValue: 'true'
-  description: if set to 'true', the output will include a full exaplanation of the confidence threshold meaning.
+  description: if set to 'true', the output will include a full explanation of the confidence threshold meaning.
   isArray: true
   name: detailedOutput
   predefined:
@@ -32,7 +32,7 @@ outputs:
   description: The found thresholds which meets the conditions of precision and recall.
   type: String
 - contextPath: GetMLModelEvaluation.ConfusionMatrixAtThreshold
-  description: The model evaluation confusion matrix for mails above the threhsold.
+  description: The model evaluation confusion matrix for mails above the threshold.
   type: Unknown
 - contextPath: GetMLModelEvaluation.Metrics
   description: Metrics per each class (includes precision, true positive, coverage, etc.)
@@ -43,8 +43,9 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/ml:1.0.0.88591
+dockerimage: demisto/ml:1.0.0.1870375
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
 runas: DBotWeakRole
+autoUpdateDockerImage: false

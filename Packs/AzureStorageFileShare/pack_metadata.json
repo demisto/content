@@ -2,18 +2,25 @@
     "name": "Azure Storage FileShare",
     "description": "Create and Manage Azure FileShare Files and Directories.",
     "support": "xsoar",
-    "currentVersion": "1.0.27",
+    "currentVersion": "1.0.30",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

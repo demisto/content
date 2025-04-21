@@ -240,6 +240,9 @@ script:
     - contextPath: Azure.Compute.UserData
       description: UserData for the VM.
       type: string
+    - contextPath: Azure.Compute.Tags
+      description: Tags associated with the VM.
+      type: string
   - arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
@@ -645,7 +648,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-vm-auth-reset
-  dockerimage: demisto/crypto:1.0.0.83343
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: '-'
   subtype: python3

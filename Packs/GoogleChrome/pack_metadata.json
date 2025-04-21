@@ -2,7 +2,7 @@
     "name": "Google Chrome",
     "description": "The official browser from Google. Chrome is a cross-platform web browser which brings you the best of Google.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,8 +11,22 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "google",
+        "Chrome",
+        "chrome",
+        "Browser",
+        "browser"
+    ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

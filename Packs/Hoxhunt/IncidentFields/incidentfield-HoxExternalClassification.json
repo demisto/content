@@ -1,0 +1,39 @@
+{
+    "id": "incident_hoxexternalclassification",
+    "version": -1,
+    "modified": "2024-10-09T05:43:51.501836216Z",
+    "fromVersion": "6.10.0",
+    "name": "Hox External Classification",
+    "ownerOnly": false,
+    "description": "Classification given for the incident by external SOC",
+    "cliName": "hoxexternalclassification",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "MALICIOUS",
+        "SAFE",
+        "SPAM"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Hoxhunt BEC",
+        "Hoxhunt Campaign",
+        "Hoxhunt User Acted"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

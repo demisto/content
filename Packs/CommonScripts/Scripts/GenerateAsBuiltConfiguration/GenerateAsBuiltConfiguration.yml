@@ -1,0 +1,27 @@
+args:
+- description: A comma-separated list of playbook names for which to fetch custom data including automation, integration and sub-playbooks.
+  isArray: true
+  name: playbook
+comment: Generate a JSON file that can be downloaded and used to create the As-Built document for Cortex XSOAR.
+commonfields:
+  id: GenerateAsBuiltConfiguration
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: GenerateAsBuiltConfiguration
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+tests:
+- No tests (auto formatted)

@@ -13,12 +13,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Domain - Generic v2
-* Block URL - Generic v2
-* Block Email - Generic v2
-* Block IP - Generic v3
-* Block File - Generic v2
 * Block Account - Generic v2
+* Block Domain - Generic v2
+* Block Email - Generic v2
+* Block File - Generic v2
+* Block IP - Generic v3
+* Block URL - Generic v2
 
 ### Integrations
 
@@ -46,7 +46,7 @@ This playbook does not use any integrations.
 | FilesToBlock | Array of malicious file hashes to block. | DBotScore.Indicator | Optional |
 | DomainToBlock | The domain that you wish to block. | DBotScore.Indicator | Optional |
 | EmailToBlock | The email address that you wish to block. | DBotScore.Indicator | Optional |
-| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| AutoBlockIndicators | Should the given indicators be automatically blocked, or should the user be prompted to select whether to block them?<br/><br/>Possible values: True/False. <br/>Default value: True.<br/><br/>If set to True - No prompt will appear. All of the provided indicators will be blocked automatically.<br/><br/>If set to False - The user will be prompted to select which indicators to block. | True | Optional |
 | CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.<br/>Specify "True" to create new Custom Block Rules \(2 FW rules inside the PAN-OS device\). <br/>For "False" - no rules will be created. | True | Optional |
 | LogForwarding | Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |  | Optional |
 | AutoCommit | This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. <br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |

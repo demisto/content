@@ -1,21 +1,17 @@
 This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet
 
-## Configure ClickSend on Cortex XSOAR
+## Configure ClickSend in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ClickSend.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Api Key | You'll find your api key here: <https://dashboard.clicksend.com/account/subaccounts> | True |
-    | Username | You'll find your username here: <https://dashboard.clicksend.com/account/subaccounts> | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Api Key | You'll find your api key here: <https://dashboard.clicksend.com/account/subaccounts> | True |
+| Username | You'll find your username here: <https://dashboard.clicksend.com/account/subaccounts> | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### clicksend-text-to-voice

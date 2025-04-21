@@ -10,3 +10,6 @@ ignore=BA124
 [file:CyrenShowThreatIndicators.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Cyren_Inbox_Security_layout.json]
+ignore=GR103

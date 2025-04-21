@@ -1,0 +1,30 @@
+{
+    "id": "XMCO - Serenety Mapper",
+    "name": "XMCO - Serenety Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming XMCO alert fields.",
+    "fromVersion": "6.10.0",
+    "mapping": {
+        "XMCO Serenety Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "name": {
+                    "simple": "title"
+                },
+                "Rendered HTML": {
+                    "simple": "description"
+                },
+                "Sub Category": {
+                    "simple": "custom_fields.subcategory"
+                },
+                "XMCO Serenety identification": {
+                    "simple": "custom_fields.identification"
+                },
+                "XMCO Serenety monitoring": {
+                    "simple": "custom_fields.scope"
+                }
+            }
+        }
+    },
+    "version": -1
+}

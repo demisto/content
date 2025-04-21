@@ -1,0 +1,55 @@
+args:
+- description: ID of the AWS Ec2 instance.
+  name: instance_id
+  required: true
+- description: ASM alert rule ID.
+  name: asm_rule_id
+  required: true
+- auto: PREDEFINED
+  description: Region of the EC2 instance.
+  name: region
+  predefined:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+  required: true
+- description: Name of an AWS role to assume (should be the same for all organizations).
+  name: assume_role
+- description: AWS account ID.
+  name: account_id
+comment: This is an AWS script that upgrades a package on the AWS EC2 instance using AWS Systems manager.
+commonfields:
+  id: AWSPackageUpgrade
+  version: -1
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AWSPackageUpgrade
+outputs:
+- contextPath: awspackageupgrade
+  description: The command ID of the command initiated by the AWS SSM command.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

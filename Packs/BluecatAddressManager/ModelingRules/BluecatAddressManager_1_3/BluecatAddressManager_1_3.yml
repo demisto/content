@@ -1,6 +1,6 @@
-fromversion: 8.2.0
-id: Bluecat_AddressManager
-name: Bluecat Address Manager
+fromversion: 8.4.0
+id: Bluecat_AddressManager_ModelingRule
+name: Bluecat Address Manager Modeling Rule
 rules: ''
 schema: ''
 tags: Bluecat Address Manager

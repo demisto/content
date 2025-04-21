@@ -1,10 +1,7 @@
 Use the Google IP Ranges Feed integration to get GCP and Google global IP ranges
 
-## Configure Google IP Ranges Feed on Cortex XSOAR
+## Configure Google IP Ranges Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google IP Ranges Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,6 +15,7 @@ Use the Google IP Ranges Feed integration to get GCP and Google global IP ranges
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedTags | Tags | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
+| Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
@@ -29,9 +27,8 @@ The IP Address Ranges Parameter determines the group of IP ranges for the feed t
 - All available Google IP ranges:
   This option will fetch All Google IP ranges from https://www.gstatic.com/ipranges/goog.json.
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google_ip_rages-get-indicators
 ***
@@ -66,4 +63,3 @@ There is no context output for this command.
 |---|---|
 | 52.86.122.241/18 | CIDR |
 | 52.15.91.198/18 | CIDR |
-

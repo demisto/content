@@ -1,0 +1,2922 @@
+id: CheckPointHarmonyEndpoint
+version: -1
+name: CheckPointHarmonyEndpoint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 81cec45d-59f1-4d3f-8469-edab2193e6f1
+    type: start
+    task:
+      id: 81cec45d-59f1-4d3f-8469-edab2193e6f1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d0dad84d-05ca-4799-8762-d85e188d1a17
+    type: regular
+    task:
+      id: d0dad84d-05ca-4799-8762-d85e188d1a17
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d47be8da-db81-4265-88eb-bdf6b53a87ed
+    type: regular
+    task:
+      id: d47be8da-db81-4265-88eb-bdf6b53a87ed
+      version: -1
+      name: harmony-ep-job-status-get
+      script: HarmonyEndpoint|||harmony-ep-job-status-get
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      job_id:
+        simple: 561097ab-cec6-43c0-8d4f-fd5c891d5c7a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0dcbf24b-dddc-4bf2-83b7-d9fc4c6e19b5
+    type: condition
+    task:
+      id: 0dcbf24b-dddc-4bf2-83b7-d9fc4c6e19b5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Job.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Job.status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0d28a01d-170b-411f-8f0a-2b25dde4a0cb
+    type: regular
+    task:
+      id: 0d28a01d-170b-411f-8f0a-2b25dde4a0cb
+      version: -1
+      name: harmony-ep-ioc-list
+      script: HarmonyEndpoint|||harmony-ep-ioc-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1a9509dd-0b2b-48a6-890f-a992a0b616c3
+    type: condition
+    task:
+      id: 1a9509dd-0b2b-48a6-890f-a992a0b616c3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.IOC.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.IOC.modifiedOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.IOC.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.IOC.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.IOC.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e39fa08d-72f6-4246-8fed-8f602ef41547
+    type: regular
+    task:
+      id: e39fa08d-72f6-4246-8fed-8f602ef41547
+      version: -1
+      name: harmony-ep-ioc-update
+      script: HarmonyEndpoint|||harmony-ep-ioc-update
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      comment:
+        simple: test
+      ioc_id:
+        simple: c6628b2c-c4a0-5c51-609d-e98028859165
+      type:
+        simple: IP
+      value:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1f7916de-4e53-4b24-860b-1deeed7e44cf
+    type: regular
+    task:
+      id: 1f7916de-4e53-4b24-860b-1deeed7e44cf
+      version: -1
+      name: harmony-ep-ioc-create
+      script: HarmonyEndpoint|||harmony-ep-ioc-create
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      comment:
+        simple: test
+      type:
+        simple: Domain
+      value:
+        simple: talali.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e7ff8ba6-a9c2-4e1a-84e9-2fb3c3ae671a
+    type: regular
+    task:
+      id: e7ff8ba6-a9c2-4e1a-84e9-2fb3c3ae671a
+      version: -1
+      name: harmony-ep-ioc-delete
+      script: HarmonyEndpoint|||harmony-ep-ioc-delete
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      delete_all:
+        simple: "false"
+      ids:
+        simple: "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 48c42e17-62e2-47e5-87c7-51c8855c6e47
+    type: regular
+    task:
+      id: 48c42e17-62e2-47e5-87c7-51c8855c6e47
+      version: -1
+      name: harmony-ep-policy-rule-assignments-get
+      script: HarmonyEndpoint|||harmony-ep-policy-rule-assignments-get
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      rule_id:
+        simple: 3604df6f-a13b-47df-ac1e-b3e2f822aa20@705b1672-7be5-47e8-9837-c849b9b16632@b1503d7b-48f5-45fe-bff5-f07f22faac44@df7fc627-5d6d-489e-94d3-15a1990db27e
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 8ef55e17-d78e-4f27-81f7-69fda6896cbe
+    type: condition
+    task:
+      id: 8ef55e17-d78e-4f27-81f7-69fda6896cbe
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.Assignments.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.Assignments.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.Assignments.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 09b73116-cde2-4ca8-8cd6-fe7c014aeff4
+    type: regular
+    task:
+      id: 09b73116-cde2-4ca8-8cd6-fe7c014aeff4
+      version: -1
+      name: harmony-ep-policy-rule-assignments-add
+      script: HarmonyEndpoint|||harmony-ep-policy-rule-assignments-add
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entities_ids:
+        simple: 00000000-0000-0000-0000-000000000000
+      rule_id:
+        simple: 3604df6f-a13b-47df-ac1e-b3e2f822aa20@705b1672-7be5-47e8-9837-c849b9b16632@b1503d7b-48f5-45fe-bff5-f07f22faac44@df7fc627-5d6d-489e-94d3-15a1990db27e
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 4cabb560-a0e8-474d-8142-1e5ead85459b
+    type: regular
+    task:
+      id: 4cabb560-a0e8-474d-8142-1e5ead85459b
+      version: -1
+      name: harmony-ep-policy-rule-assignments-remove
+      script: HarmonyEndpoint|||harmony-ep-policy-rule-assignments-remove
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entities_ids:
+        simple: 00000000-0000-0000-0000-000000000000
+      rule_id:
+        simple: 3604df6f-a13b-47df-ac1e-b3e2f822aa20@705b1672-7be5-47e8-9837-c849b9b16632@b1503d7b-48f5-45fe-bff5-f07f22faac44@df7fc627-5d6d-489e-94d3-15a1990db27e
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 1cf80022-e287-4026-86bd-1d1a8720228c
+    type: regular
+    task:
+      id: 1cf80022-e287-4026-86bd-1d1a8720228c
+      version: -1
+      name: harmony-ep-policy-rule-install
+      script: HarmonyEndpoint|||harmony-ep-policy-rule-install
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e1b0631d-29e1-468e-8ad6-328cfceb78c6
+    type: condition
+    task:
+      id: e1b0631d-29e1-468e-8ad6-328cfceb78c6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PolicyRuleInstall.job_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 076c4876-bfd7-42da-808b-a647dffd36ac
+    type: regular
+    task:
+      id: 076c4876-bfd7-42da-808b-a647dffd36ac
+      version: -1
+      name: harmony-ep-policy-rule-modifications-get
+      script: HarmonyEndpoint|||harmony-ep-policy-rule-modifications-get
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      rule_id:
+        simple: 3604df6f-a13b-47df-ac1e-b3e2f822aa20@705b1672-7be5-47e8-9837-c849b9b16632@b1503d7b-48f5-45fe-bff5-f07f22faac44@df7fc627-5d6d-489e-94d3-15a1990db27e
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3e205bf2-4289-4cb6-8905-4ddee071b1ec
+    type: condition
+    task:
+      id: 3e205bf2-4289-4cb6-8905-4ddee071b1ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.family
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 285f9043-9b84-4c02-8da9-4ba5e2ede998
+    type: regular
+    task:
+      id: 285f9043-9b84-4c02-8da9-4ba5e2ede998
+      version: -1
+      name: harmony-ep-policy-rule-metadata-list
+      script: HarmonyEndpoint|||harmony-ep-policy-rule-metadata-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9c36e0e4-6004-4740-84a9-e9b786cea70e
+    type: condition
+    task:
+      id: 9c36e0e4-6004-4740-84a9-e9b786cea70e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.order
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Rule.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: a61d1929-716f-4a31-81b1-c7bbf5512042
+    type: regular
+    task:
+      id: a61d1929-716f-4a31-81b1-c7bbf5512042
+      version: -1
+      name: harmony-ep-push-operation-status-list
+      script: HarmonyEndpoint|||harmony-ep-push-operation-status-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 29a021a8-a3d9-4ab0-8220-d709f3deb581
+    type: condition
+    task:
+      id: 29a021a8-a3d9-4ab0-8220-d709f3deb581
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.adminName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.aborted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.remainingTimeoutSeconds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.createdOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 77721ea6-633c-4454-800e-ce3c48134ba3
+    type: regular
+    task:
+      id: 77721ea6-633c-4454-800e-ce3c48134ba3
+      version: -1
+      name: harmony-ep-push-operation-get
+      script: HarmonyEndpoint|||harmony-ep-push-operation-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      remediation_operation_id:
+        simple: 861597dc-e5a3-4b34-ad01-65defb5f4a70
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bad20af5-b661-4517-8b01-55452fc2817d
+    type: condition
+    task:
+      id: bad20af5-b661-4517-8b01-55452fc2817d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5fe922f2-ca85-41da-8fc8-f5c42ec7e4ca
+    type: regular
+    task:
+      id: 5fe922f2-ca85-41da-8fc8-f5c42ec7e4ca
+      version: -1
+      name: harmony-ep-push-operation-abort
+      script: HarmonyEndpoint|||harmony-ep-push-operation-abort
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      remediation_operation_id:
+        simple: 861597dc-e5a3-4b34-ad01-65defb5f4a70
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 46cb0c41-3c2a-44c3-8253-819d9486264d
+    type: condition
+    task:
+      id: 46cb0c41-3c2a-44c3-8253-819d9486264d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperationAbort.job_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 47759c58-8ea5-4e4c-8f79-b515cd84e667
+    type: regular
+    task:
+      id: 47759c58-8ea5-4e4c-8f79-b515cd84e667
+      version: -1
+      name: harmony-ep-anti-malware-scan
+      script: HarmonyEndpoint|||harmony-ep-anti-malware-scan
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 48520b82-3b94-40c3-8373-96d947697f32
+    type: condition
+    task:
+      id: 48520b82-3b94-40c3-8373-96d947697f32
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.AntiMalwareScan.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a3916fb5-644e-42ad-846f-3421d53a6723
+    type: regular
+    task:
+      id: a3916fb5-644e-42ad-846f-3421d53a6723
+      version: -1
+      name: harmony-ep-anti-malware-update
+      script: HarmonyEndpoint|||harmony-ep-anti-malware-update
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b6a8e707-ccbb-4500-8c3c-6b5b79078b84
+    type: condition
+    task:
+      id: b6a8e707-ccbb-4500-8c3c-6b5b79078b84
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.AntiMalwareUpdate.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 75310e70-88a1-4bc0-839c-e4345428dc0a
+    type: regular
+    task:
+      id: 75310e70-88a1-4bc0-839c-e4345428dc0a
+      version: -1
+      name: harmony-ep-anti-malware-restore
+      script: HarmonyEndpoint|||harmony-ep-anti-malware-restore
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      files:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 56b9ced4-8f74-401b-839c-8c236b156076
+    type: condition
+    task:
+      id: 56b9ced4-8f74-401b-839c-8c236b156076
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.FileRestore.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 36c246ca-a03c-44f9-8c68-3ec1e9237d8f
+    type: regular
+    task:
+      id: 36c246ca-a03c-44f9-8c68-3ec1e9237d8f
+      version: -1
+      name: harmony-ep-forensics-indicator-analyze
+      script: HarmonyEndpoint|||harmony-ep-forensics-indicator-analyze
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      indicator_type:
+        simple: IP
+      indicator_value:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 5993bee2-e9f7-49f8-80af-af82520b9cf5
+    type: condition
+    task:
+      id: 5993bee2-e9f7-49f8-80af-af82520b9cf5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.IndicatorAnalyze.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 97bde934-b0ae-4e3b-8bc7-f2ef5a8a18e5
+    type: regular
+    task:
+      id: 97bde934-b0ae-4e3b-8bc7-f2ef5a8a18e5
+      version: -1
+      name: harmony-ep-forensics-file-quarantine
+      script: HarmonyEndpoint|||harmony-ep-forensics-file-quarantine
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      file_type:
+        simple: PATH
+      file_value:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 744df3d1-38ed-44b2-80f5-6b8ec10574a1
+    type: condition
+    task:
+      id: 744df3d1-38ed-44b2-80f5-6b8ec10574a1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.FileQuarantine.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 5e1cefbe-1eca-4fe7-82c7-1d21065d9249
+    type: regular
+    task:
+      id: 5e1cefbe-1eca-4fe7-82c7-1d21065d9249
+      version: -1
+      name: harmony-ep-forensics-file-restore
+      script: HarmonyEndpoint|||harmony-ep-forensics-file-restore
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      file_type:
+        simple: PATH
+      file_value:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: f9c28da5-2d52-4c47-86cd-9739b32c1850
+    type: condition
+    task:
+      id: f9c28da5-2d52-4c47-86cd-9739b32c1850
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.FileRestore.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 0f1d13c2-5ecd-4c41-8678-c6e04776337d
+    type: regular
+    task:
+      id: 0f1d13c2-5ecd-4c41-8678-c6e04776337d
+      version: -1
+      name: harmony-ep-remediation-computer-isolate
+      script: HarmonyEndpoint|||harmony-ep-remediation-computer-isolate
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 07c6c3ca-aadf-4094-8d08-d56d79525bb0
+    type: condition
+    task:
+      id: 07c6c3ca-aadf-4094-8d08-d56d79525bb0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.ComputerIsolate.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: ebdf94b9-f975-42e5-8ead-fdd4ffb7b459
+    type: regular
+    task:
+      id: ebdf94b9-f975-42e5-8ead-fdd4ffb7b459
+      version: -1
+      name: harmony-ep-remediation-computer-deisolate
+      script: HarmonyEndpoint|||harmony-ep-remediation-computer-deisolate
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 38287c8a-a64b-4efa-8e4f-607967bf99d0
+    type: condition
+    task:
+      id: 38287c8a-a64b-4efa-8e4f-607967bf99d0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.ComputerDeisolate.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 21a9a913-26c5-4907-8966-69713c615eeb
+    type: regular
+    task:
+      id: 21a9a913-26c5-4907-8966-69713c615eeb
+      version: -1
+      name: harmony-ep-agent-computer-restart
+      script: HarmonyEndpoint|||harmony-ep-agent-computer-restart
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 44243633-bbf9-4a0f-8793-feb2c41243b2
+    type: condition
+    task:
+      id: 44243633-bbf9-4a0f-8793-feb2c41243b2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.ComputerRestart.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 470d500d-b096-4bda-857b-34ab397d1d77
+    type: regular
+    task:
+      id: 470d500d-b096-4bda-857b-34ab397d1d77
+      version: -1
+      name: harmony-ep-agent-computer-shutdown
+      script: HarmonyEndpoint|||harmony-ep-agent-computer-shutdown
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3251da13-81ff-445c-82d8-83ffd3becd3f
+    type: condition
+    task:
+      id: 3251da13-81ff-445c-82d8-83ffd3becd3f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.ComputerShutdown.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 3b87b86d-cf34-436c-8351-064c34b278fb
+    type: regular
+    task:
+      id: 3b87b86d-cf34-436c-8351-064c34b278fb
+      version: -1
+      name: harmony-ep-agent-computer-repair
+      script: HarmonyEndpoint|||harmony-ep-agent-computer-repair
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: b5e9d5a8-a534-4c4e-8b86-6ca183c4735c
+    type: condition
+    task:
+      id: b5e9d5a8-a534-4c4e-8b86-6ca183c4735c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.ComputerRepair.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 97fa981c-309f-437a-89f2-dd63b5bef5e8
+    type: regular
+    task:
+      id: 97fa981c-309f-437a-89f2-dd63b5bef5e8
+      version: -1
+      name: harmony-ep-computer-list
+      script: HarmonyEndpoint|||harmony-ep-computer-list
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 523e1bb5-d242-401b-8351-fd698a53bff1
+    type: condition
+    task:
+      id: 523e1bb5-d242-401b-8351-fd698a53bff1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Computer.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Computer.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Computer.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Computer.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.Computer.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 2df09170-e54c-4cc4-8cf8-a06ca17a70ae
+    type: regular
+    task:
+      id: 2df09170-e54c-4cc4-8cf8-a06ca17a70ae
+      version: -1
+      name: harmony-ep-agent-process-information-get
+      script: HarmonyEndpoint|||harmony-ep-agent-process-information-get
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 13b1b151-8b77-4ee6-8816-a3600381d861
+    type: condition
+    task:
+      id: 13b1b151-8b77-4ee6-8816-a3600381d861
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.ProcessInformation.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: acb1602b-43ec-43eb-81ab-ddab3a2dfd91
+    type: regular
+    task:
+      id: acb1602b-43ec-43eb-81ab-ddab3a2dfd91
+      version: -1
+      name: harmony-ep-agent-process-terminate
+      script: HarmonyEndpoint|||harmony-ep-agent-process-terminate
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: a650e273-d9ec-4c0f-8d75-3a9f6d52df89
+    type: condition
+    task:
+      id: a650e273-d9ec-4c0f-8d75-3a9f6d52df89
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.ProcessTerminate.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: dd9ec49f-0393-47c5-8a0a-54507f7a6860
+    type: regular
+    task:
+      id: dd9ec49f-0393-47c5-8a0a-54507f7a6860
+      version: -1
+      name: harmony-ep-agent-registry-key-add
+      script: HarmonyEndpoint|||harmony-ep-agent-registry-key-add
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      hive:
+        simple: HKEY_USERS
+      key:
+        simple: test
+      value_data:
+        simple: test
+      value_name:
+        simple: test
+      value_type:
+        simple: STRING (REG_GZ)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 5a00c20d-c2fa-4d37-8b9e-c14e3c821e9f
+    type: condition
+    task:
+      id: 5a00c20d-c2fa-4d37-8b9e-c14e3c821e9f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.RegistryKeyAdd.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: e6823eb3-7354-47e9-829a-cc961a0a394c
+    type: regular
+    task:
+      id: e6823eb3-7354-47e9-829a-cc961a0a394c
+      version: -1
+      name: harmony-ep-agent-registry-key-delete
+      script: HarmonyEndpoint|||harmony-ep-agent-registry-key-delete
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      hive:
+        simple: HKEY_USERS
+      key:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 2d31ec7e-00ca-460d-8f18-e58e60ed20c9
+    type: condition
+    task:
+      id: 2d31ec7e-00ca-460d-8f18-e58e60ed20c9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.RegistryKeyDelete.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 6a410c99-af6e-43c4-891a-12a8c3700893
+    type: regular
+    task:
+      id: 6a410c99-af6e-43c4-891a-12a8c3700893
+      version: -1
+      name: harmony-ep-agent-file-copy
+      script: HarmonyEndpoint|||harmony-ep-agent-file-copy
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      destination_absolute_path:
+        simple: test
+      source_absolute_path:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 074e4ff2-41b9-4cf9-8fdf-1bae59415694
+    type: condition
+    task:
+      id: 074e4ff2-41b9-4cf9-8fdf-1bae59415694
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.FileCopy.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 51c85196-4676-4f20-80bf-9a9045ca6e9f
+    type: regular
+    task:
+      id: 51c85196-4676-4f20-80bf-9a9045ca6e9f
+      version: -1
+      name: harmony-ep-agent-file-move
+      script: HarmonyEndpoint|||harmony-ep-agent-file-move
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      destination_absolute_path:
+        simple: test
+      source_absolute_path:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 46078d68-efb6-41dd-8301-49c4667d7680
+    type: condition
+    task:
+      id: 46078d68-efb6-41dd-8301-49c4667d7680
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.FileMove.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f4830ec8-5a12-4e5a-8caf-0911f5201099
+    type: regular
+    task:
+      id: f4830ec8-5a12-4e5a-8caf-0911f5201099
+      version: -1
+      name: harmony-ep-agent-file-delete
+      script: HarmonyEndpoint|||harmony-ep-agent-file-delete
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      target_absolute_path:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: b4aa1120-6f62-4b7f-8f5b-40dc28c0ce27
+    type: condition
+    task:
+      id: b4aa1120-6f62-4b7f-8f5b-40dc28c0ce27
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.FileDelete.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: c39e5ca2-6b38-4a40-8f16-5e702f9e61f8
+    type: regular
+    task:
+      id: c39e5ca2-6b38-4a40-8f16-5e702f9e61f8
+      version: -1
+      name: harmony-ep-agent-vpn-site-add
+      script: HarmonyEndpoint|||harmony-ep-agent-vpn-site-add
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      authentication_method:
+        simple: USERNAME_PASSWORD
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      fingerprint:
+        simple: test
+      host:
+        simple: test
+      remote_access_gateway_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 8b882806-1427-4ddd-865a-59d73ea6242a
+    type: condition
+    task:
+      id: 8b882806-1427-4ddd-865a-59d73ea6242a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.VPNsiteConfigurationAdd.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: aa8ec5fd-a886-4251-8fda-6426f6b305ee
+    type: regular
+    task:
+      id: aa8ec5fd-a886-4251-8fda-6426f6b305ee
+      version: -1
+      name: harmony-ep-agent-vpn-site-remove
+      script: HarmonyEndpoint|||harmony-ep-agent-vpn-site-remove
+      type: regular
+      iscommand: true
+      brand: HarmonyEndpoint
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      computer_ids:
+        simple: 1beeda40-2c49-4909-83fd-225e20e32a74
+      display_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 0315b82e-9359-451a-803a-f96551efd99a
+    type: condition
+    task:
+      id: 0315b82e-9359-451a-803a-f96551efd99a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.VPNsiteConfigurationRemove.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HarmonyEP.PushOperation.machine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: b9295b12-8ffa-4e56-8c1f-770c33569523
+    type: title
+    task:
+      id: b9295b12-8ffa-4e56-8c1f-770c33569523
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 13615,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: Check Point Harmony Endpoint

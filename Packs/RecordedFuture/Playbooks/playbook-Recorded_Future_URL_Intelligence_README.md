@@ -117,4 +117,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future URL Intelligence](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/url_enrich.png)
+![Recorded Future URL Intelligence](../doc_files/url_enrich.png)

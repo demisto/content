@@ -1,0 +1,16 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "username": "---unused---",
+      "agent": {
+        "hostname": "---unused---",
+        "osproducttype": "---unused---",
+        "osversion": "---unused---"
+      },
+      "image_name": "---unused---"
+    }
+  ]
+}

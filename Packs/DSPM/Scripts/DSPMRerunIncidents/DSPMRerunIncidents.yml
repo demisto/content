@@ -1,0 +1,26 @@
+commonfields:
+  id: DSPMRerunIncidents
+  version: -1
+name: DSPMRerunIncidents
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: time_duration
+  description: Time Duration under which we are going to re-run the incident.
+- name: incident_list
+  required: true
+  description: DSPM Incident list data.
+- name: rerun_time
+  description: Re-run time to be checked of an incident to run.
+scripttarget: 0
+subtype: python3
+timeout: 100800h0m0s
+runonce: false
+dockerimage: demisto/google-cloud-storage:1.0.0.117186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

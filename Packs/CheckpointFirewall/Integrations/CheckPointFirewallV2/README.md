@@ -14,9 +14,6 @@ In the Smart Console, enable the web api: **Management & Setting** → **Blades*
 
 Enable sftp on your server Check Point guide to walk you through: https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&solutionid=sk82281 
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CheckPoint_FW.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -28,11 +25,10 @@ Enable sftp on your server Check Point guide to walk you through: https://suppor
 | proxy | Use system proxy settings | False |
 
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### checkpoint-host-list
 ***

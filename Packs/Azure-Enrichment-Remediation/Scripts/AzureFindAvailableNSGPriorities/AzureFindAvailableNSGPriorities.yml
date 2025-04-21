@@ -13,7 +13,7 @@ comment: This script takes in a list of numbers that represent Azure priorities 
 commonfields:
   id: AzureFindAvailableNSGPriorities
   version: -1
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: AzureFindAvailableNSGPriorities
 outputs:

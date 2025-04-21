@@ -2,12 +2,14 @@
     "name": "Xsoar_Utils",
     "description": "This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.4",
     "author": "Arun Narayanan",
     "url": "",
     "email": "",
     "created": "2022-01-19T09:04:15Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -16,6 +18,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -1,0 +1,16 @@
+{
+    "id": 1,
+    "email": "",
+    "username": "xsoar",
+    "name": "XSOAR OctoxLabs",
+    "first_name": "XSOAR",
+    "last_name": "OctoxLabs",
+    "is_active": true,
+    "is_ldap": false,
+    "groups": [
+        {
+            "id": 1,
+            "name": "Administrators"
+        }
+    ]
+}

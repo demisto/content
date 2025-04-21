@@ -1,0 +1,111 @@
+category: Cloud Services
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Azure Resource Graph
+  version: -1
+configuration:
+- display: Server URL (e.g., https://management.azure.com)
+  name: host
+  defaultvalue: https://management.azure.com
+  type: 0
+  required: true
+  section: Connect
+- displaypassword: ID / Client ID
+  name: cred_auth_id
+  type: 9
+  required: false
+  hiddenusername: true
+  display: ""
+  section: Connect
+- displaypassword: Token / Tenant ID
+  name: cred_token
+  type: 9
+  required: false
+  hiddenusername: true
+  display: ""
+  section: Connect
+- displaypassword: Key / Client Secret
+  name: cred_enc_key
+  type: 9
+  required: false
+  hiddenusername: true
+  display: ""
+  section: Connect
+- display: ""
+  displaypassword: Certificate Thumbprint
+  name: cred_certificate_thumbprint
+  type: 9
+  required: false
+  hiddenusername: true
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  section: Connect
+- display: Private Key
+  name: private_key
+  type: 14
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  hidden: true
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  type: 8
+  required: false
+description: 'Azure Resource Graph integration is designed to allow for executing Azure Resource Graph commands, like querying resource data.'
+display: Azure Resource Graph
+name: Azure Resource Graph
+script:
+  commands:
+  - name: azure-rg-auth-reset
+    arguments: []
+    description: Run this command if for some reason you need to rerun the authentication process.
+  - name: azure-rg-list-operations
+    arguments:
+    - description: 'The maximum number of operations to return. NOTE: Do not use with "page" and "page_size".'
+      name: limit
+    - description: The maximum number of operations to return for page.
+      name: page_size
+    - description: The page number to return.
+      name: page
+    outputs:
+    - contextPath: AzureResourceGraph.Operations
+      description: A list of available Azure Resource Graph operations permissions and descriptions.
+      type: String
+    description: Gets all Azure Resource Graph operations permissions and descriptions.
+  - name: azure-rg-query
+    arguments:
+    - description: 'The maximum number of operations to return (Default is 50). NOTE: Do not use with "page" and "page_size".'
+      name: limit
+    - description: The maximum number of operations to return for page.
+      name: page_size
+    - description: The page number to return.
+      name: page
+    - name: management_groups
+      description: "Azure management groups against which to execute the query. Example: 'mg1, mg2'."
+      isArray: true
+    - name: subscriptions
+      description: "Azure subscriptions against which to execute the query. Example: 'sub1, sub2'."
+      isArray: true
+    - name: query
+      required: true
+      description: |-
+        The query for the Azure Resource Graph to execute.
+        For example: `resources | where (resourceGroup =~ ('demisto-sentinel2'))`. 
+        The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
+    outputs:
+    - contextPath: AzureResourceGraph.Query
+      description: Data returned from query.
+      type: String
+    description: 'Executes a given Azure Resource Graph Query. (Ex: query="Resources | project name, type | limit 5 | order by name asc").'
+  dockerimage: demisto/crypto:1.0.0.114611
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

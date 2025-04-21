@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Process_Survey_Response](https://raw.githubusercontent.com/demisto/content/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Process_Survey_Response.png)
+![Process_Survey_Response](../doc_files/Process_Survey_Response.png)

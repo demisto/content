@@ -83,4 +83,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Microsoft 365 Defender - Threat Hunting Generic](../doc_files/Microsoft_365_Defender_-_Threat_Hunting_Generic.png)
+![Microsoft Defender XDR - Threat Hunting Generic](../doc_files/Microsoft_365_Defender_-_Threat_Hunting_Generic.png)

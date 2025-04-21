@@ -14,7 +14,7 @@ dependson:
   - SplunkPy|||splunk-search
   should:
   - SplunkPy|||splunk-search
-dockerimage: demisto/python3:3.10.13.75921
+dockerimage: demisto/python3:3.11.10.116439
 enabled: true
 name: Splunk_ShortID
 runas: DBotWeakRole

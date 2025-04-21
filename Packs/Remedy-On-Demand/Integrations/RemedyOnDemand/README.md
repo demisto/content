@@ -1,25 +1,21 @@
 Deprecated. use BMC Helix ITSM instead.
 
 This integration was integrated and tested with version 9.1 of Remedy On-Demand
-## Configure Remedy On-Demand on Cortex XSOAR
+## Configure Remedy On-Demand in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Remedy On-Demand.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL \(e.g. 'https://myurl.com', 'http://41.79.151.82'\) | True |
-    | port | Port | False |
-    | credentials | Username | True |
-    | proxy | Use system proxy settings | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Server URL \(e.g. 'https://myurl.com', 'http://41.79.151.82'\) | True |
+| port | Port | False |
+| credentials | Username | True |
+| proxy | Use system proxy settings | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### remedy-incident-create
 ***

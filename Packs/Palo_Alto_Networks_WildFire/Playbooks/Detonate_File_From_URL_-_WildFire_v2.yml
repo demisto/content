@@ -281,13 +281,13 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Duration for executing the pooling (in minutes).
+  description: Duration for executing the pooling (in seconds).
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "8"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes).
+  description: The duration after which to stop pooling and to resume the playbook (in seconds).
   playbookInputQuery:
 - key: ReportFileType
   value: {}

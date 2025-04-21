@@ -1,0 +1,308 @@
+[
+    {
+        "id": 1,
+        "updated": "2024-08-09T20:38:33.445669Z",
+        "publish": {
+            "portal": {
+                "portalRequestTypeIds": [
+                    1
+                ],
+                "submitOnCreate": true,
+                "validateOnCreate": true
+            }
+        },
+        "design": {
+            "settings": {
+                "templateId": 1,
+                "name": "8/9/2024 New Form",
+                "submit": {
+                    "lock": false,
+                    "pdf": false
+                }
+            },
+            "layout": [
+                {
+                    "version": 1,
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Test form"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": []
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 2
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Person making request"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "layoutSection",
+                            "content": [
+                                {
+                                    "type": "layoutColumn",
+                                    "attrs": {
+                                        "width": 50
+                                    },
+                                    "content": [
+                                        {
+                                            "type": "extension",
+                                            "attrs": {
+                                                "extensionType": "com.thinktilt.proforma",
+                                                "extensionKey": "question",
+                                                "parameters": {
+                                                    "id": 1
+                                                },
+                                                "layout": "default"
+                                            }
+                                        },
+                                        {
+                                            "type": "extension",
+                                            "attrs": {
+                                                "extensionType": "com.thinktilt.proforma",
+                                                "extensionKey": "question",
+                                                "parameters": {
+                                                    "id": 2
+                                                },
+                                                "layout": "default"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "layoutColumn",
+                                    "attrs": {
+                                        "width": 50
+                                    },
+                                    "content": [
+                                        {
+                                            "type": "extension",
+                                            "attrs": {
+                                                "extensionType": "com.thinktilt.proforma",
+                                                "extensionKey": "question",
+                                                "parameters": {
+                                                    "id": 3
+                                                },
+                                                "layout": "default"
+                                            }
+                                        },
+                                        {
+                                            "type": "extension",
+                                            "attrs": {
+                                                "extensionType": "com.thinktilt.proforma",
+                                                "extensionKey": "question",
+                                                "parameters": {
+                                                    "id": 4
+                                                },
+                                                "layout": "default"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 2
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Access requested"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "extension",
+                            "attrs": {
+                                "extensionType": "com.thinktilt.proforma",
+                                "extensionKey": "question",
+                                "parameters": {
+                                    "id": 5
+                                },
+                                "layout": "default"
+                            }
+                        },
+                        {
+                            "type": "extension",
+                            "attrs": {
+                                "extensionType": "com.thinktilt.proforma",
+                                "extensionKey": "question",
+                                "parameters": {
+                                    "id": 6
+                                },
+                                "layout": "default"
+                            }
+                        },
+                        {
+                            "type": "extension",
+                            "attrs": {
+                                "extensionType": "com.thinktilt.proforma",
+                                "extensionKey": "question",
+                                "parameters": {
+                                    "id": 7
+                                },
+                                "layout": "default"
+                            }
+                        },
+                        {
+                            "type": "heading",
+                            "attrs": {
+                                "level": 2
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Terms and conditions"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Paste your terms and conditions here for reference."
+                                }
+                            ]
+                        },
+                        {
+                            "type": "extension",
+                            "attrs": {
+                                "extensionType": "com.thinktilt.proforma",
+                                "extensionKey": "question",
+                                "parameters": {
+                                    "id": 8
+                                },
+                                "layout": "default"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "conditions": {},
+            "sections": {},
+            "questions": {
+                "8": {
+                    "type": "cm",
+                    "label": "",
+                    "description": "",
+                    "validation": {
+                        "rq": true,
+                        "ch": "26"
+                    },
+                    "choices": [
+                        {
+                            "id": "26",
+                            "label": "I have read and agree to the terms and conditions."
+                        }
+                    ],
+                    "questionKey": "q_terms"
+                },
+                "4": {
+                    "type": "te",
+                    "label": "Email",
+                    "description": "",
+                    "validation": {
+                        "rq": false
+                    },
+                    "choices": [],
+                    "questionKey": "q_email"
+                },
+                "5": {
+                    "type": "tl",
+                    "label": "Name of person needing building access",
+                    "description": "",
+                    "validation": {
+                        "rq": false
+                    },
+                    "choices": [],
+                    "questionKey": "q_request_for"
+                },
+                "6": {
+                    "type": "pg",
+                    "label": "Request description",
+                    "description": "",
+                    "validation": {
+                        "rq": false
+                    },
+                    "choices": [],
+                    "questionKey": "q_description"
+                },
+                "1": {
+                    "type": "ts",
+                    "label": "Name",
+                    "description": "",
+                    "validation": {
+                        "rq": false
+                    },
+                    "choices": [],
+                    "questionKey": "q_name"
+                },
+                "2": {
+                    "type": "ts",
+                    "label": "Phone",
+                    "description": "",
+                    "validation": {
+                        "rq": false
+                    },
+                    "choices": [],
+                    "questionKey": "q_phone"
+                },
+                "7": {
+                    "type": "pg",
+                    "label": "Reason for access",
+                    "description": "",
+                    "validation": {
+                        "rq": false
+                    },
+                    "choices": [],
+                    "questionKey": "q_reason"
+                },
+                "3": {
+                    "type": "ts",
+                    "label": "Job title",
+                    "description": "",
+                    "validation": {
+                        "rq": false
+                    },
+                    "choices": [],
+                    "questionKey": "q_job_title"
+                }
+            }
+        },
+        "hash": "62f070d6ef0c6850d71555eb31da4e569dfe21c8d6f937b90e46a32ee1f94575",
+        "state": {
+            "visibility": "e",
+            "status": "s",
+            "answers": {
+                "8": {
+                    "choices": [
+                        "26"
+                    ]
+                },
+                "1": {
+                    "text": "Chris"
+                },
+                "2": {
+                    "text": "555-555-1212"
+                }
+            }
+        }
+    }
+]

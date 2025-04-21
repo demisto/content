@@ -54,11 +54,12 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: mimecast-get-events
-  dockerimage: demisto/fastapi:1.0.0.86524
+  dockerimage: demisto/py3-tools:1.0.0.114656
   isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.8.0
 tests:
 - No tests

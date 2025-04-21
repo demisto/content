@@ -1,3 +1,6 @@
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: RecordedFuturePlaybookAlerts
   version: -1
@@ -14,30 +17,44 @@ configuration:
   defaultvalue: https://api.recordedfuture.com/gw/xsoar/
   type: 0
   required: true
+  section: Connect
 - displaypassword: API Token
   name: token
   defaultvalue: ""
   type: 9
   hiddenusername: true
   required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  defaultvalue: '1'
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
 - display: 'First Incidient Fetch: Time Range'
   additionalinfo: 'Limit incidents to include in the first fetch by time range. Input format: "NN hours" or "NN days". E.g., input "5 days" to fetch all incidents created in the last 5 days.'
   defaultvalue: 24 hours
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: 'Playbook Alerts: Fetched Categories'
   name: pa_categories
   additionalinfo: 'Some listed Playbook alert Categories might be unavailable due to limitations in the current Recorded Future subscription'
@@ -49,11 +66,13 @@ configuration:
   - Vulnerability
   - Code Repo Leakage
   required: false
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
+  section: Collect
 - display: 'Playbook Alerts: Fetched Statuses'
   name: pa_statuses
   type: 16
@@ -64,6 +83,7 @@ configuration:
   - Dismissed
   - Resolved
   required: false
+  section: Collect
 - display: 'Playbook Alerts: Fetched Priorities Threshold'
   name: pa_priorities
   type: 15
@@ -74,16 +94,18 @@ configuration:
   - Moderate
   - Informational
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   defaultvalue: Recorded Future Playbook Alert
   type: 13
   required: false
+  section: Collect
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.12.8.1983910
   commands:
   - name: recordedfuture-playbook-alerts-details
     description: Get Playbook alert details by id.
@@ -92,7 +114,7 @@ script:
       required: true
       description: Ids of the playbook alert that should be fetched.
     - name: detail_sections
-      description: What evidence sections to include in the fetch, fetches all available if not specified.
+      description: What evidence sections to include in the fetch. Fetches all available if not specified.
       auto: PREDEFINED
       predefined:
       - status
@@ -512,6 +534,16 @@ script:
       - in-progress
       - dismissed
       - resolved
+    - name: comment
+      description: Add comment to all alerts in alert_ids.
+      required: false
+    - name: reopen
+      description: 'Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - never
+        - significant_updates
     outputs:
     - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert in Recorded Future.
@@ -530,7 +562,7 @@ script:
     description: Search playbook alerts based on filters.
     arguments:
     - name: category
-      description: filter what playbook alert categories that is wanted. (default = all available).
+      description: The playbook alert categories to retrieve. Default is all_available.
       auto: PREDEFINED
       predefined:
       - all_available
@@ -538,9 +570,9 @@ script:
       - vulnerability
       - code_repo_leakage
     - name: limit
-      description: Limits the number of alerts to fetch.
+      description: The maximum number of alerts to fetch.
     - name: time_since_update
-      description: Time between now and e.g. "2 hours" or "7 days" ago.
+      description: The amount of time since the last update. E.g., "2 hours" or "7 days" ago.
     - name: playbook_alert_status
       auto: PREDEFINED
       predefined:
@@ -548,7 +580,7 @@ script:
       - in-progress
       - dismissed
       - resolved
-      description: Filter what statuses are fetched, defaults to only new status if not specified.
+      description: The statuses to retrieve. Defaults to only new status if not specified.
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -561,7 +593,7 @@ script:
       predefined:
       - updated
       - created
-      description: Actions pritority assigned in Recorded Future.
+      description: The order by which to search for playbook alerts.
     outputs:
     - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert.

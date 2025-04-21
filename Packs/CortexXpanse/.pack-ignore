@@ -6,3 +6,7 @@ APIS
 assignee
 mapper
 mappers
+
+# GR103 is temporary, see CIAC-11705
+[file:classifier-Xpanse_-_Classifier.json]
+ignore=GR103

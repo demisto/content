@@ -3,14 +3,14 @@ args:
   name: URL
   required: true
 - default: true
-  defaultValue: "443"
+  defaultValue: '443'
   description: Port to check
   name: Port
 comment: Use this automation to check for validity of your SSL certificate and get the time until expiration.
 commonfields:
   id: SSLVerifierV2
   version: -1
-dockerimage: demisto/ansible-runner:1.0.0.47562
+dockerimage: demisto/ansible-runner:1.0.0.2024530
 enabled: true
 name: SSLVerifierV2
 outputs:

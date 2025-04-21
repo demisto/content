@@ -24,3 +24,7 @@ ignore=IF116
 
 [file:incidentfield-FreshworksFreshservice_Problem_Status.json]
 ignore=IF116
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-FreshworkFreshservice_Test.yml]
+ignore=GR103

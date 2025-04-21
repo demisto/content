@@ -1,5 +1,5 @@
 [file:Shodan_v2.yml]
-ignore=BA108,BA109,IN144,BA124
+ignore=BA108,BA109,IN144,BA124,IN161
 
 [file:Shodan_v2_image.png]
 ignore=IM111

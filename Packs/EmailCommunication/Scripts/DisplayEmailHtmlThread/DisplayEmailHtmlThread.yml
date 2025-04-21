@@ -12,7 +12,7 @@ comment: |-
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/btfl-soup:1.0.1.87353
+dockerimage: demisto/btfl-soup:1.0.1.115405
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

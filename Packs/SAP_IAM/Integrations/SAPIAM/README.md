@@ -1,25 +1,21 @@
 Integrate with SAP's services to execute get and disable operations for employee lifecycle processes.
 
-## Configure SAP - IAM on Cortex XSOAR
+## Configure SAP - IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SAP - IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Allow disabling users | Determines whether users can be disabled using the SAP IAM integration  | False |
-    | Incoming Mapper |  | True |
-    | Outgoing Mapper |  | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL |  | True |
+| Username |  | True |
+| Password |  | True |
+| Allow disabling users | Determines whether users can be disabled using the SAP IAM integration  | False |
+| Incoming Mapper |  | True |
+| Outgoing Mapper |  | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### iam-get-user

@@ -1,0 +1,24 @@
+[
+    {
+        "adaptivePolicyId": "111",
+        "sourceGroup": {
+            "id": "222",
+            "name": "IoT Devices",
+            "sgt": 50
+        },
+        "destinationGroup": {
+            "id": "333",
+            "name": "IoT Servers",
+            "sgt": 51
+        },
+        "acls": [
+            {
+                "id": "444",
+                "name": "Block web"
+            }
+        ],
+        "lastEntryRule": "allow",
+        "createdAt": "2019-06-27T21:34:25.253480Z",
+        "updatedAt": "2019-06-27T21:34:25.253480Z"
+    }
+]

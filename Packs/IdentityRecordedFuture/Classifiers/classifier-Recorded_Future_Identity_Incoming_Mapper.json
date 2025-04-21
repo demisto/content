@@ -1,0 +1,327 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Recorded Future Identity - Incoming Mapper",
+    "mapping": {
+        "Recorded Future Identity Exposure": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": {
+                        "accessor": "case_rule_label",
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": []
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "playbook_alert_id",
+                        "transformers": []
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "accessor": "case_rule_label",
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Identity Assessment": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "panel_evidence_summary.assessments",
+                        "transformers": [
+                            {
+                                "operator": "StringifyArray"
+                            },
+                            {
+                                "args": {
+                                    "chars": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "[]"
+                                        }
+                                    }
+                                },
+                                "operator": "StripChars"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\""
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ", "
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Recorded Future Identity Authorization URL": {
+                    "complex": {
+                        "accessor": "authorization_url",
+                        "filters": [],
+                        "root": "panel_evidence_summary",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Identity Compromised Host": {
+                    "complex": {
+                        "accessor": "compromised_host",
+                        "filters": [],
+                        "root": "panel_evidence_summary",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "description",
+                        "filters": [],
+                        "root": "panel_evidence_summary.dump",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Identity Dump Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "panel_evidence_summary.dump",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Identity Exposed Hint": {
+                    "complex": {
+                        "accessor": "clear_text_hint",
+                        "filters": [],
+                        "root": "panel_evidence_summary.exposed_secret.details",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Identity Exposed Properties": {
+                    "complex": {
+                        "accessor": "properties",
+                        "filters": [],
+                        "root": "panel_evidence_summary.exposed_secret.details",
+                        "transformers": [
+                            {
+                                "operator": "StringifyArray"
+                            },
+                            {
+                                "args": {
+                                    "chars": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "[]"
+                                        }
+                                    }
+                                },
+                                "operator": "StripChars"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "\""
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ", "
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Recorded Future Identity Exposed Secret": {
+                    "complex": {
+                        "accessor": "hashes",
+                        "filters": [],
+                        "root": "panel_evidence_summary.exposed_secret",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Recorded Future Identity Exposed Value": {
+                    "complex": {
+                        "accessor": "clear_text_value",
+                        "filters": [],
+                        "root": "panel_evidence_summary.exposed_secret.details",
+                        "transformers": []
+                    }
+                },
+                "Exposure Level": {
+                    "complex": {
+                        "accessor": "properties",
+                        "filters": [],
+                        "root": "data.panel_evidence_summary.exposed_secret.details",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Identity Name": {
+                    "complex": {
+                        "accessor": "subject",
+                        "filters": [],
+                        "root": "panel_evidence_summary",
+                        "transformers": []
+                    }
+                },
+                "Recorded Future Identity Malware Family": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "panel_evidence_summary.malware_family",
+                        "transformers": []
+                    }
+                },
+                "Source IP": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "panel_evidence_summary.infrastructure",
+                        "transformers": []
+                    }
+                },
+                "Source Priority": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "panel_evidence_summary.technologies",
+                        "transformers": []
+                    }
+                },
+                "Target": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "panel_status.targets",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "priority",
+                        "filters": [],
+                        "root": "panel_status",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Informational"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Moderate"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "Recorded Future Identity - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

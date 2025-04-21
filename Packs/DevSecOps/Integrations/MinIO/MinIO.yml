@@ -216,7 +216,7 @@ script:
     - contextPath: MinIO.Objects.tags
       description: MinIO Object Tags.
     description: Set tags configuration to an object.
-  dockerimage: demisto/py3-tools:1.0.0.77497
+  dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
   subtype: python3

@@ -16,6 +16,15 @@ ignore=PB114
 [file:1_6_17.md]
 ignore=RN115
 
+[file:layoutscontainer-ASM_Alert_Layout.json]
+ignore=LO107
+
+[file:README.md]
+ignore=RM108
+
+[file:RankServiceOwners.yml]
+ignore=GR103
+
 [known_words]
 ASM
 CMDB
@@ -48,3 +57,4 @@ ml
 vpc
 Prisma
 ITSM
+Terrapin

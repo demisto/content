@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 66a949cd-1099-4df5-8cae-086f995dccbf
+    taskid: 4168dba7-a436-49f7-8217-64f3cebc9895
     type: start
     task:
-      id: 66a949cd-1099-4df5-8cae-086f995dccbf
+      id: 4168dba7-a436-49f7-8217-64f3cebc9895
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f235836d-af12-4b51-8bd3-a4a2f4f62594
+    taskid: 2e44eea0-add3-4ee5-8e13-61d2a369f1eb
     type: regular
     task:
-      id: f235836d-af12-4b51-8bd3-a4a2f4f62594
+      id: 2e44eea0-add3-4ee5-8e13-61d2a369f1eb
       version: -1
       name: Set domains key
       description: Set a value in context under the key you entered.
@@ -49,6 +49,7 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      - "18"
     scriptarguments:
       key:
         simple: domains
@@ -59,7 +60,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 515
         }
       }
@@ -72,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: bad2b9cd-06f7-484d-84f0-ef1e67c5e229
+    taskid: e797e719-10a8-4146-830b-8a0196979fdf
     type: regular
     task:
-      id: bad2b9cd-06f7-484d-84f0-ef1e67c5e229
+      id: e797e719-10a8-4146-830b-8a0196979fdf
       version: -1
       name: IsEmailAddressInternal
       description: Checks if the email address is part of the internal domains
@@ -112,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 08c9749a-c1e0-4561-8617-93b9e259d85e
+    taskid: e6fc63ef-78b9-4905-8f6e-22ec294ed53c
     type: regular
     task:
-      id: 08c9749a-c1e0-4561-8617-93b9e259d85e
+      id: e6fc63ef-78b9-4905-8f6e-22ec294ed53c
       version: -1
       name: Set emails key
       description: Set a value in context under the key you entered.
@@ -130,7 +131,7 @@ tasks:
       key:
         simple: emails
       value:
-        simple: '["email@domain.com", "email@sub.test.com", "invalidmail"]'
+        simple: '["email@domain.com", "email@sub.test.com"]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -149,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f2ad839d-0911-4926-83a5-93ec29948d1f
+    taskid: d7323d51-2fd3-4ff4-832b-a5c7f86be524
     type: regular
     task:
-      id: f2ad839d-0911-4926-83a5-93ec29948d1f
+      id: d7323d51-2fd3-4ff4-832b-a5c7f86be524
       version: -1
       name: IsEmailAddressInternal include_subdomains
       description: Checks if the email address is part of the internal domains
@@ -189,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6240a0a0-8d24-4458-80b6-e392577517d1
+    taskid: 87dfce25-7c1a-482e-86b5-3d34c49eb901
     type: condition
     task:
-      id: 6240a0a0-8d24-4458-80b6-e392577517d1
+      id: 87dfce25-7c1a-482e-86b5-3d34c49eb901
       version: -1
       name: Checking the results
       type: condition
@@ -268,10 +269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e5aebdc7-1f45-4225-8246-72a8642f73e5
+    taskid: 28ca2d46-be4e-4dc4-8c3f-271213335bea
     type: title
     task:
-      id: e5aebdc7-1f45-4225-8246-72a8642f73e5
+      id: 28ca2d46-be4e-4dc4-8c3f-271213335bea
       version: -1
       name: Test IsEmailAddressInternal
       type: title
@@ -286,7 +287,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 370
         }
       }
@@ -299,10 +300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 8a2b4c2b-f20f-4340-8aab-e4649e8ceb64
+    taskid: bd106b65-427c-4314-8c1b-6a1e08c2a75b
     type: condition
     task:
-      id: 8a2b4c2b-f20f-4340-8aab-e4649e8ceb64
+      id: bd106b65-427c-4314-8c1b-6a1e08c2a75b
       version: -1
       name: Checking the results
       type: condition
@@ -378,10 +379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 3f8cca12-12f9-4818-81f8-44d2ec1200a9
+    taskid: 05333f3e-0499-421a-8885-40e832935583
     type: title
     task:
-      id: 3f8cca12-12f9-4818-81f8-44d2ec1200a9
+      id: 05333f3e-0499-421a-8885-40e832935583
       version: -1
       name: Done
       type: title
@@ -393,8 +394,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1565
+          "x": 60,
+          "y": 1580
         }
       }
     note: false
@@ -406,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: f7e77ece-0799-43d4-8b0c-f341891a5376
+    taskid: 5843f6c9-316d-42b5-879f-ae4118db24ca
     type: regular
     task:
-      id: f7e77ece-0799-43d4-8b0c-f341891a5376
+      id: 5843f6c9-316d-42b5-879f-ae4118db24ca
       version: -1
       name: DeleteContext
       description: |-
@@ -417,7 +418,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -433,8 +436,119 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f8dc3b52-f833-451e-82f7-4d9cb4f5dd49
+    type: regular
+    task:
+      id: f8dc3b52-f833-451e-82f7-4d9cb4f5dd49
+      version: -1
+      name: Set invalid email key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: invalid_emails
+      value:
+        simple: '"invalidmail"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 03f3549e-de89-4645-8262-d2760df70c29
+    type: regular
+    task:
+      id: 03f3549e-de89-4645-8262-d2760df70c29
+      version: -1
+      name: IsEmailAddressInternal
+      description: Checks if the email address is part of the internal domains
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "9"
+      '#none#':
+      - "20"
+    scriptarguments:
+      domain:
+        simple: ${domains}
+      email:
+        simple: ${invalid_emails}
+      include_subdomains:
+        simple: "no"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: cf79b114-1a67-4115-84c6-615493c3d669
+    type: regular
+    task:
+      id: cf79b114-1a67-4115-84c6-615493c3d669
+      version: -1
+      name: Failure - Print Error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: test was not sucess
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1565
         }
       }
     note: false
@@ -449,8 +563,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1580,
-        "width": 380,
+        "height": 1610,
+        "width": 830,
         "x": 50,
         "y": 50
       }
@@ -460,4 +574,4 @@ inputs: []
 outputs: []
 sourceplaybookid: eb884611-de10-45e7-8433-f33b0c0a9bdd
 fromversion: 6.9.0
-description: Test for IsEmailAddressInternal automation
+description: Test for IsEmailAddressInternal automation.

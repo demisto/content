@@ -187,7 +187,8 @@ script:
       description: 'a string identifying a specific VM to use. Options: win7-x64: Windows 7 64bit, win7-x64-2: Windows 7 64-bit Profile 2, win10-x64-2-beta: Windows 10 LTSC 2019 (beta), win10-x64-browser: Windows 10 Browser, win10-x64-jp: Windows 10 Japanese, win10-x64-kr: Windows 10 Korean, win10-x64-phishing-beta: Windows 10 (Phishing), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese character sets, such as S-JIS, submit to the appropriate VM.'
     - name: hide_polling_output
       description: Whether to hide the polling result (automatically filled by polling).
-      deprecated: true
+      hidden: true
+      defaultValue: true
     outputs:
     - contextPath: ThreatGrid.Sample.id
       description: The sample id.
@@ -1409,7 +1410,7 @@ script:
     - contextPath: ThreatGrid.DomainAssociatedIp.ips
       description: The associated IP.
       type: String
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

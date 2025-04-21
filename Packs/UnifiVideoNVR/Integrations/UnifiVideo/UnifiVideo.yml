@@ -57,89 +57,89 @@ display: UnifiVideo
 name: UnifiVideo
 script:
   commands:
-  - description: Gets the list of cameras bound with the NVR
+  - description: Gets the list of cameras bound with the NVR.
     name: unifivideo-get-camera-list
     outputs:
     - contextPath: UnifiVideo.Cameras
-      description: The camera list
+      description: The camera list.
       type: Unknown
   - arguments:
-    - description: The name of the camera
+    - description: The name of the camera.
       name: camera_name
       required: true
-    description: The name of the camera to take the snapshot from. If empty then all camera snapshots will be taken
+    description: The name of the camera to take the snapshot from. If empty then all camera snapshots will be taken.
     name: unifivideo-get-snapshot
   - arguments:
-    - description: The id of the recording
+    - description: The id of the recording.
       name: recording_id
       required: true
-    description: Download a recording to file
+    description: Download a recording to file.
     name: unifivideo-get-recording
     outputs:
     - contextPath: UnifiVideo.Recordings
-      description: The recording list
+      description: The recording list.
       type: Unknown
   - arguments:
-    - description: The camera name
+    - description: The camera name.
       name: camera_name
       required: true
     - auto: PREDEFINED
       defaultValue: motion
-      description: Recording setting, motion,fulltime or disable
+      description: Recording setting, motion,fulltime or disable.
       name: rec_set
       predefined:
       - fulltime
       - motion
       - disable
       required: true
-    description: Set the recording settings
+    description: Set the recording settings.
     execution: true
     name: unifivideo-set-recording-settings
   - arguments:
-    - description: The camera name
+    - description: The camera name.
       name: camera_name
       required: true
     - auto: PREDEFINED
       defaultValue: auto
-      description: The Infra-Red LED mode
+      description: The Infra-Red LED mode.
       name: ir_leds
       predefined:
       - auto
       - 'on'
       - 'off'
       required: true
-    description: Turn ON or OFF the camera Infra-Red LED
+    description: Turn ON or OFF the camera Infra-Red LED.
     execution: true
     name: unifivideo-ir-leds
-  - description: Get the list of all recordings
+  - description: Get the list of all recordings.
     execution: true
     name: unifivideo-get-recording-list
   - arguments:
-    - description: File entryID of the video file
+    - description: File entryID of the video file.
       name: entryid
       required: true
     - description: Frame to take from the video.
       name: frame
       required: true
-    description: Get a snapshot from video file based on the frame number
+    description: Get a snapshot from video file based on the frame number.
     name: unifivideo-get-snapshot-at-frame
   - arguments:
     - defaultValue: '150'
-      description: The frame to snapshot
+      description: The frame to snapshot.
       name: frame
       required: true
-    - description: the ubnt_id of the recording
+    - description: the ubnt_id of the recording.
       name: recording_id
       required: true
-    description: Get the recording snapshot (at frame) based on the recording id
+    description: Get the recording snapshot (at frame) based on the recording id.
     name: unifivideo-get-recording-snapshot
   - arguments:
-    - description: the ubnt_id of the recording
+    - description: the ubnt_id of the recording.
       name: recording_id
       required: true
-    description: Gets the frame snapshot that has triggered the motion event
+    description: Gets the frame snapshot that has triggered the motion event.
     name: unifivideo-get-recording-motion-snapshot
-  dockerimage: demisto/unifi-video:1.0.0.16705
+  dockerimage: demisto/unifi-video:1.0.0.114769
   isfetch: true
   runonce: true
   script: '-'

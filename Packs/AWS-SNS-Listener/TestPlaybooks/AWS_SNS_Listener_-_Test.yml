@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 976ffcfd-467b-4c2a-82ee-9285ddb6d84a
+    taskid: 64cc1343-1a27-4851-8516-ef258dcce846
     type: start
     task:
-      id: 976ffcfd-467b-4c2a-82ee-9285ddb6d84a
+      id: 64cc1343-1a27-4851-8516-ef258dcce846
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 89106f4b-7057-44e3-81d0-5715f937de6d
+    taskid: bd8049e4-8452-4cf7-8d81-2784a7d8a291
     type: regular
     task:
-      id: 89106f4b-7057-44e3-81d0-5715f937de6d
+      id: bd8049e4-8452-4cf7-8d81-2784a7d8a291
       version: -1
       name: Post a msg to SNS-Listener
       description: Sends http request. Returns the response as json.
@@ -52,45 +52,46 @@ tasks:
     scriptarguments:
       body:
         simple: |-
-          {"Type": "Notification",
-          "MessageId": "afe031bb-5ef5-53b1-b1ad-6c4a4288defb",
-          "TopicArn": "arn:aws:sns:eu-central-1:test:test",
-          "Subject": "SNS-test-subject",
-          "Message": "SNS-test-message body",
-          "Timestamp": "2023-12-11T14:18:37.923Z",
-          "SignatureVersion": "1",
-          "Signature": "Signature_test",
-          "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-01d088a6f77103d0fe307c0069e40ed6.pem",
-          "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe"
+          {
+            "Type": "Notification",
+            "MessageId": "8b2d1fb3-991d-5620-94db-4122378cde65",
+            "TopicArn": "{{AWS.SNS.Topics[0].TopicArn}}",
+            "Subject": "SNS-test-subject",
+            "Message": "SNS-test-subject",
+            "Timestamp": "2024-04-11T09:24:33.550Z",
+            "SignatureVersion": "1",
+            "Signature": "URJNiNbbC3YJAiAL8UGzyTfbwTEh1yKgx1uPdLQ7lPRt5UmQhlgjCsuh76Tjl6IB9bTHrqsWznC6yKYXEABNMnJxpMx8EssnofmmTH+5sEB5nd/yz9U8qMCPP22mSmkGtkAAFwxi0fBo9Pg3mzhitO2l7yo3v//V4KVQu03ggbSqTXnLZNXpN3sAjgrKFfye8x9OJ0NGMdDWrnFOEYMbJEGgetkxjJV/H7L+BCz01W1V+xjPFzbfmWFIyKArjEv7cI2dytQBdIf9QhB7zOYIpKPNz/NMp0a+3e/hxt2rarBLx/sqii5yWDCT/jAVAWBNyv6ZiGQwScWgjuu8ICnzDQ==",
+            "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-60eadc530605d63b8e62a523676ef735.pem",
+            "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn={{AWS.SNS.Subscriptions[0].SubscriptionArn}}"
           }
       headers:
-        simple: Authorization:token
+        simple: x-amz-sns-message-type:Notification
       method:
         simple: POST
       url:
-        simple: http://localhost:9000/incident/aws/
+        simple: ${apiurl}/snsv2
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 38bf8674-3546-47e1-8d8f-8c921e45733a
+    taskid: 5744ac86-a779-4d00-8576-7914979fc519
     type: regular
     task:
-      id: 38bf8674-3546-47e1-8d8f-8c921e45733a
+      id: 5744ac86-a779-4d00-8576-7914979fc519
       version: -1
       name: Search the incident
       description: Searches Demisto incidents
@@ -109,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 265,
+          "y": 2120
         }
       }
     note: false
@@ -122,10 +123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0ee4c9b7-8a4b-4c59-8064-d01b5214d888
+    taskid: ffc95d48-eeee-46f4-88fb-351f82a4add4
     type: condition
     task:
-      id: 0ee4c9b7-8a4b-4c59-8064-d01b5214d888
+      id: ffc95d48-eeee-46f4-88fb-351f82a4add4
       version: -1
       name: Verify incident was created successfully
       type: condition
@@ -147,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
@@ -160,12 +161,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3daf5a1f-bf67-474d-8a4e-c63f02eb544c
+    taskid: c3a25669-cd78-472c-8373-7dac9816de61
     type: regular
     task:
-      id: 3daf5a1f-bf67-474d-8a4e-c63f02eb544c
+      id: c3a25669-cd78-472c-8373-7dac9816de61
       version: -1
-      name: Close webhook triggered incident
+      name: Close triggered incident
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -182,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 265,
+          "y": 2470
         }
       }
     note: false
@@ -195,10 +196,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5bf72787-3920-4dd6-87c2-11e307629d7c
+    taskid: f167e7f6-9d0a-44ac-8f7b-613ffafc1c36
     type: regular
     task:
-      id: 5bf72787-3920-4dd6-87c2-11e307629d7c
+      id: f167e7f6-9d0a-44ac-8f7b-613ffafc1c36
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -217,7 +218,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -230,10 +231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 813fcb90-ff23-4e50-80df-48cc4890cf29
+    taskid: 9c987c76-9443-4232-8189-9694473f90c8
     type: condition
     task:
-      id: 813fcb90-ff23-4e50-80df-48cc4890cf29
+      id: 9c987c76-9443-4232-8189-9694473f90c8
       version: -1
       name: Verify Success HTTP Response
       type: condition
@@ -258,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 1770
         }
       }
     note: false
@@ -271,10 +272,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 813e76da-af96-4d95-8d93-fe10e0a71e56
+    taskid: e52dd614-97e2-402a-8a75-97e95f907614
     type: regular
     task:
-      id: 813e76da-af96-4d95-8d93-fe10e0a71e56
+      id: e52dd614-97e2-402a-8a75-97e95f907614
       version: -1
       name: Sleep 10 seconds to let the webserver spin up
       description: Sleep for X seconds
@@ -284,7 +285,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "11"
     scriptarguments:
       seconds:
         simple: "10"
@@ -293,7 +294,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -306,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2bb0bae1-4241-4c88-8d85-ebe7c1586580
+    taskid: 4c840af4-91ad-4224-8c92-3bdb34fc2908
     type: regular
     task:
-      id: 2bb0bae1-4241-4c88-8d85-ebe7c1586580
+      id: 4c840af4-91ad-4224-8c92-3bdb34fc2908
       version: -1
       name: Sleep 10 seconds before searching the incident
       description: Sleep for X seconds
@@ -328,8 +329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 265,
+          "y": 1945
         }
       }
     note: false
@@ -341,10 +342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: d5fbc51b-96bc-4723-8c71-ff960b4eab70
+    taskid: 6b6a6105-221a-44c8-8abf-2a48a129c4ec
     type: title
     task:
-      id: d5fbc51b-96bc-4723-8c71-ff960b4eab70
+      id: 6b6a6105-221a-44c8-8abf-2a48a129c4ec
       version: -1
       name: Done
       type: title
@@ -356,8 +357,292 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 571fff3d-701c-4697-87b4-5645267da22c
+    type: regular
+    task:
+      id: 571fff3d-701c-4697-87b4-5645267da22c
+      version: -1
+      name: GetServerInfo
+      scriptName: GetServerInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 591aa886-df80-4da8-826f-8646ddcba566
+    type: condition
+    task:
+      id: 591aa886-df80-4da8-826f-8646ddcba566
+      version: -1
+      name: is xsoar 6
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: ServerInfo.version.version
+            iscontext: true
+          right:
+            value:
+              simple: "6"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0aaa194b-b471-498c-8cb9-a98b04dd8085
+    type: regular
+    task:
+      id: 0aaa194b-b471-498c-8cb9-a98b04dd8085
+      version: -1
+      name: set localhost
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: apiurl
+      value:
+        simple: http://a:a@localhost:34515
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 18c8712e-d597-4330-8e02-90bbc1bf48c1
+    type: regular
+    task:
+      id: 18c8712e-d597-4330-8e02-90bbc1bf48c1
+      version: -1
+      name: Get instance name
+      description: Given an integration name, returns the instance name.
+      scriptName: GetInstanceName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      integration_name:
+        simple: AWS-SNS-Listener
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 50,
-          "y": 1580
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 36c0cab8-2ac3-4d34-8fd1-95d623e9ecd2
+    type: regular
+    task:
+      id: 36c0cab8-2ac3-4d34-8fd1-95d623e9ecd2
+      version: -1
+      name: set serverurl
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: apiurl
+      value:
+        complex:
+          root: ${ServerInfo.urls
+          accessor: server}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /xsoar/instance/execute/
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: https://a:a@ext-
+              toReplace:
+                value:
+                  simple: https://
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Instances.instanceName
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 6a8b002f-2fbd-496d-8e33-ad5cf84e9401
+    type: regular
+    task:
+      id: 6a8b002f-2fbd-496d-8e33-ad5cf84e9401
+      version: -1
+      name: Get list of topics
+      description: Returns a list of the requester's topics.
+      script: AWS - SNS|||aws-sns-list-topics
+      type: regular
+      iscommand: true
+      brand: AWS - SNS
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d7f488a8-c98b-4b82-86d8-a79965f294e0
+    type: regular
+    task:
+      id: d7f488a8-c98b-4b82-86d8-a79965f294e0
+      version: -1
+      name: Get subscription by first topic
+      description: Returns a list of the subscriptions to a specific topic. Each call returns a limited list of subscriptions, up to 100.
+      script: '|||aws-sns-list-subscriptions-by-topic'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      topicArn:
+        complex:
+          root: AWS.SNS.Topics
+          accessor: TopicArn
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: TopicArn
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -372,8 +657,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1595,
-        "width": 380,
+        "height": 2660,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -382,4 +667,7 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
 description: ''

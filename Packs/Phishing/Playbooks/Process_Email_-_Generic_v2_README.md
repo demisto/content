@@ -79,6 +79,10 @@ This playbook does not use any integrations.
 | Email.Format | The format of the email if available. | string |
 | File | The file object. | string |
 
+## Known Limitations
+---
+The playbook currently only support one eml attachment at a time - if you run this playbook with an email that contains multiple eml attachments - only the first attachment will be processed.
+
 ## Playbook Image
 
 ---

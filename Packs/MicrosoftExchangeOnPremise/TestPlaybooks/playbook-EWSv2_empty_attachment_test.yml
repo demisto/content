@@ -2,81 +2,374 @@ id: EWSv2_empty_attachment_test
 version: -1
 name: EWSv2_empty_attachment_test
 starttaskid: "0"
-description: ""
 tasks:
   "0":
     id: "0"
-    taskid: 4398b442-0e88-4a0b-8f69-5d6704628f22
+    taskid: ada0286e-3be5-4c82-8264-9a4c7b232955
     type: start
     task:
-      description: ""
-      id: 4398b442-0e88-4a0b-8f69-5d6704628f22
+      id: ada0286e-3be5-4c82-8264-9a4c7b232955
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
-    evidencedata:
-      description:
-      occurred:
-      tags:
-      customfields: {}
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9ee95d9f-d075-44e9-80c6-5796b2b5e0d6
+    taskid: 9d2e0189-85f6-41e5-812c-d14b7c92f6aa
     type: regular
     task:
-      description: ""
-      id: 9ee95d9f-d075-44e9-80c6-5796b2b5e0d6
+      description: "Retrieves the actual attachments from an item (email message). To get all attachments for a message, only specify the item-id argument."
+      id: 9d2e0189-85f6-41e5-812c-d14b7c92f6aa
       version: -1
       name: Verify getting empty attachment does not return error
-      script: EWS v2|||ews-get-attachment
+      script: '|||ews-get-attachment'
       type: regular
       iscommand: true
-      brand: EWS v2
+      brand: ""
     scriptarguments:
-      attachment-ids: {}
       item-id:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAABe4mnAAABL/fkrvLLNQrnWSaIq1hMZAABe4vgwAAA=
-      target-mailbox: {}
+        simple: ${EWS.Items.itemId}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 222
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
-    evidencedata:
-      description:
-      occurred:
-      tags:
-      customfields: {}
+    nexttasks:
+      '#none#':
+      - "10"
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: cf7da2d8-3fc8-4e7d-83ff-3b1ddecabdaf
+    type: condition
+    task:
+      id: cf7da2d8-3fc8-4e7d-83ff-3b1ddecabdaf
+      version: -1
+      name: |
+        check file is created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b4ca1ef8-0e34-467f-8b7e-164316b28f71
+    type: regular
+    task:
+      id: b4ca1ef8-0e34-467f-8b7e-164316b28f71
+      version: -1
+      name: send-mail
+      description: Sends an email using EWS.
+      script: EWS v2|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      attachIDs:
+        simple: ${File.EntryID}
+      body:
+        simple: EWSv2_empty_attachment_test, triggered in ${incident.incidentlink}
+      subject:
+        simple: EWSv2_empty_attachment_test_${ServerURL.Host}_${incident.created}
+      to:
+        simple: ${inputs.target_mail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 61257cb8-1267-4104-873c-2e664457499c
+    type: regular
+    task:
+      id: 61257cb8-1267-4104-873c-2e664457499c
+      version: -1
+      name: create empty file
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      data:
+        simple: '""'
+      filename:
+        simple: emptyfile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5b13b9b3-1cd9-4116-81e2-b866105ed9fe
+    type: title
+    task:
+      id: 5b13b9b3-1cd9-4116-81e2-b866105ed9fe
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 13c0cba9-3d1f-4540-88d5-fa1b8485cfcc
+    type: regular
+    task:
+      id: 13c0cba9-3d1f-4540-88d5-fa1b8485cfcc
+      version: -1
+      name: Delete the email we sent
+      description: Delete items from mailbox.
+      script: '|||ews-delete-items'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      item-ids:
+        simple: ${EWS.Items.itemId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5f312abf-44f4-45b8-849c-7424f446202c
+    type: regular
+    task:
+      id: 5f312abf-44f4-45b8-849c-7424f446202c
+      version: -1
+      name: Sleep 120 seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 9f31b387-bcdb-4264-8f93-e7620cd894dd
+    type: regular
+    task:
+      id: 9f31b387-bcdb-4264-8f93-e7620cd894dd
+      version: -1
+      name: Search The Email
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      query:
+        simple: EWSv2_empty_attachment_test_${ServerURL.Host}_${incident.created}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7fd3e961-5568-49a8-8a98-efd105fd52ec
+    type: regular
+    task:
+      id: 7fd3e961-5568-49a8-8a98-efd105fd52ec
+      version: -1
+      name: GetServerURL
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 267,
+        "height": 1610,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: target_mail
+  value:
+    simple: demistoadmin@demisto.int
+  required: false
+  description: ""
+  playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
-
+description: ''

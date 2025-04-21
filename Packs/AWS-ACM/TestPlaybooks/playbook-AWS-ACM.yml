@@ -48,8 +48,6 @@ tasks:
       extendedKeyUsage: {}
       keyTypes: {}
       keyUsage: {}
-      region:
-        simple: us-west-2
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}

@@ -17,7 +17,7 @@ ignore=IF115
 ignore=PA116
 
 [file:ExtraHop_v2.yml]
-ignore=BA108,BA109,IN124
+ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM106
@@ -186,6 +186,7 @@ xc
 j
 odk
 untagged
+unselect
 assignee
 cve-2019-0708
 extrahop-detections-list
@@ -205,4 +206,7 @@ extrahop-watchlist-edit
 
 [file:ExtraHopTrackIncidents.yml]
 ignore=BA124
+
+[file:playbook-ExtraHop_-_CVE-2019-0708_BlueKeep.yml]
+ignore=GR107
 

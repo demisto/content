@@ -194,7 +194,7 @@
 <p><code>!ip ip=8.8.8.8 days=30 verbose=true</code></p>
 <h5>Context Example</h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" alt="image"></a></p>
+<p><a href="../../doc_files/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png" alt="image"></a></p>
 <h3 id="h_130633879481545911083799">2. Query a block of IP addresses</h3>
 <hr>
 <p>Queries a block of IPs to check against the database</p>
@@ -350,7 +350,7 @@
 <p><code>!abuseipdb-check-cidr-block network="127.0.0.2/24" days="30" limit="40" threshold="80"</code></p>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" alt="image"></a></p>
+<p><a href="../../doc_files/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png" alt="image"></a></p>
 <h3 id="h_720330259911545911111279">3. Report an IP address</h3>
 <hr>
 <p>Report an IP address to AbuseIPDB</p>
@@ -384,7 +384,7 @@
 <h5>Command Example</h5>
 <p><code>!abuseipdb-report-ip ip=8.8.8.8 categories="18,22,23"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" alt="image"></a></p>
+<p><a href="../../doc_files/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png" alt="image"></a></p>
 <h3 id="h_5900568011321545911147791">4. Get a list of the most reported IP addresses</h3>
 <hr>
 <p>Returns a list of the most reported IP addresses</p>
@@ -440,7 +440,7 @@
 <p><code>!abuseipdb-get-blacklist days=30 limit=5</code></p>
 <h5>Context Example</h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" alt="image"></a></p>
+<p><a href="../../doc_files/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png" alt="image"></a></p>
 <h3 id="h_7763511091731545911176964">5. Get a list of report categories</h3>
 <hr>
 <p>Returns a list of report categories from AbuseIPDB</p>
@@ -470,7 +470,7 @@
 <p><code>!abuseipdb-get-categories</code></p>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/44546251/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/44546251/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" alt="image"></a></p>
+<p><a href="../../doc_files/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" alt="image"></a></p>
 <h2>Additional Information</h2>
 <ul>
 <li>

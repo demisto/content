@@ -1,3 +1,11 @@
+!druva-find-device search_string=sah
+!druva-list-quarantine-ranges
+!druva-quarantine-resource resource_id=4497505 resource_type=Endpoint from_date=2020-03-01 to_date=2020-03-10
+!druva-view-quarantine-range range_id=415 resource_id=4497505
+!druva-update-quarantine-range range_id=415 resource_id=4497505 from_date=2020-07-13 to_date=2020-07-15 resource_type=Endpoint
+!druva-list-quarantine-snapshots range_id=415 resource_id=4497505
+!druva-delete-quarantined-snapshot range_id=415 resource_id=4497505 snapshot_id=MTMyNzQtV2VkIEp1bCAxNSAxMTozODoyMCAyMDIw
+!druva-endpoint-search-file-hash sha1_checksum=cec8ad914b1e9db83626b98e8d98512616975fdf
 !druva-find-userDevice userID=10000135
 !druva-find-user user_string=rit1
 !druva-find-sharedDrives search_string="rahul_drive"

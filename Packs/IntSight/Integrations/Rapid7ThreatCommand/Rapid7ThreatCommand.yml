@@ -1253,7 +1253,7 @@ script:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
       name: alert_id
       required: true
-    description: Get alert's analyst response
+    description: Get alert's analyst response.
     name: threat-command-alert-analyst-conversation-list
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1948,7 +1948,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: IP.ASN
       description: IP ASN.
@@ -2010,7 +2010,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: URL.Data
       description: The URL value.
@@ -2076,7 +2076,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: Domain.DNSRecords
       description: DNS records of the domain.
@@ -2094,7 +2094,7 @@ script:
       description: Domain updated date.
       type: String
     description: Checks the reputation of a domain.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: "-"

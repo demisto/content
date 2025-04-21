@@ -34,7 +34,7 @@ configuration:
   - System Cleared
   type: 16
   required: false
-- additionalinfo: In some cases, performance might be impacted by using 'Fetch With Events' mode.
+- additionalinfo: Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance.
   defaultvalue: Fetch Without Events
   display: Fetch Mode
   name: fetch_mode
@@ -330,7 +330,7 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
-    description: List events by the specified incident ID.
+    description: Lists events by the specified incident ID. Available for FortiSiem version 6.6 and earlier.
     name: fortisiem-event-list-by-incident
     outputs:
     - contextPath: FortiSIEM.Event.eventType
@@ -701,7 +701,7 @@ script:
     - contextPath: FortiSIEM.WatchlistEntry.ageOut
       description: Expiration date of the entry.
       type: String
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   runonce: false
   script: '-'

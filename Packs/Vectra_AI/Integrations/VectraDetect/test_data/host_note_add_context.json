@@ -1,0 +1,9 @@
+{
+    "Vectra.Host.Notes(val.note_id && val.note_id == obj.note_id)": {
+        "date_created": "2024-07-10T07:31:58.574942Z",
+        "created_by": "xsoar",
+        "note": "test note for host",
+        "note_id": 1960,
+        "host_id": 7
+    }
+}

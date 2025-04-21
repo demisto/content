@@ -2,12 +2,12 @@
     "name": "Thales SafeNet Trusted Access",
     "description": "SafeNet Trusted Access by Thales is an access management solution that allows organizations to centrally manage and secure access to business applications.",
     "support": "partner",
-    "currentVersion": "2.0.39",
+    "currentVersion": "2.0.43",
     "author": "Thales",
     "url": "https://supportportal.gemalto.com/csm/?id=portal_home_page",
     "email": "",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],
@@ -29,6 +29,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

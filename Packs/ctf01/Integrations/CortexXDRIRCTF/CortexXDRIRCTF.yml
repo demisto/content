@@ -725,7 +725,7 @@ script:
       description: Whether the alert is starred or not.
       type: Boolean
     description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   subtype: python3

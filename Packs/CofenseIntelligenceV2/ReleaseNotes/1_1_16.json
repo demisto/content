@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Due to a fixed issue in `Base` pack (Version `1.33.52`) Cofense Intelligence V2 will now correctly input email addresses into context under `Account.Email` and not under `Email` as it did up until now."
+}

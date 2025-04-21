@@ -1,29 +1,22 @@
 Use the Cisco Adaptive Security Appliance Software integration to manage interfaces, rules, and network objects.
 This integration was integrated and tested with version 9.16(3)23 of Cisco ASA
 
-## Configure Cisco ASA on Cortex XSOAR
+## Configure Cisco ASA in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco ASA.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |  "objectId": "api"
-                }
-            },
-            {
-    | Server URL (e.g., https://192.168.0.1) | True |
-    | Credentials | True |
-    | Password | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-    | Is ASAv | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., https://192.168.0.1) | True |
+| Credentials | True |
+| Password | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
+| Is ASAv | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cisco-asa-list-network-object-group
@@ -1072,4 +1065,3 @@ There are no input arguments for this command.
 >| Global | -1 |  |
 >| In | GigabitEthernet0_API_SLASH_0 | outside |
 >| Out | Management0_API_SLASH_0 | inside |
-

@@ -9,11 +9,8 @@ This integration was integrated and tested with Branch: stable-50 of XDR.
 
 An API key of type **Advanced** with an **Administrator** role.
 
-## Configure Cortex XDR - IOC on Cortex XSOAR  
+## Configure Cortex XDR - IOC in Cortex
   
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.  
-2. Search for Cortex XDR - IOC.  
-3. Click **Add instance** to create and configure a new integration instance.  
   
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
@@ -21,7 +18,8 @@ An API key of type **Advanced** with an **Administrator** role.
 | apikey_id | API Key ID | True |  
 | apikey | API Key | True |  
 | feed | Fetch indicators | False |  
-| severity | the severity in Cortex XDR | True |  
+| severity | The severity in Cortex XDR | True |  
+| Tags | Appears in Cortex XSOAR if a modification was made on the Cortex XDR side and is being "mirrored" to Cortex XSOAR | False |  
 | query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
 | xsoar_severity_field | The Cortex XSOAR indicator field used as severity. | True |  
@@ -33,17 +31,21 @@ An API key of type **Advanced** with an **Administrator** role.
 | tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy |  | False |  
 | feedExpirationInterval |  | False |  
-| feedFetchInterval | Feed Fetch Interval | False |  
+| feedFetchInterval | Feed Fetch Interval (make sure to set it to at least 15 minutes) | False |  
 | feedBypassExclusionList | Bypass exclusion list | False |  
   
-4. Click **Test** to validate the URLs, token, and connection.  
 ## Commands  
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.  
+You can execute these commands from the CLI, as part of an automation, or in a playbook.  
 After you successfully execute a command, a DBot message appears in the War Room with the command details.  
 ### xdr-iocs-sync  
-***  
-run once when configure the integration (do NOT run this twice!). 
-will all the indicators that was synced with XDR and then resync.
+***
+Sync IOCs with Cortex XDR.
+Run this command manually only when configuring the instance integration with fetch indicators disabled (run this only once).
+It is not recommended to run this manually when there are more then 40,000 indicators.
+
+When `fetch indicators` is enabled, the sync mechanism is used by default. This sets the current time as the last sync time and fetches IOCs from Cortex XSOAR to Cortex XDR, sorted by modification time, in batches of 40,000, up to that time. Upon reaching the last sync point, the synchronization becomes bi-directional, first from Cortex XSOAR to Cortex XDR, then from Cortex XDR to Cortex XSOAR.
+
+As a result, the duration of the first sync depends on the number of IOCs in the Cortex XSOAR tenant and the Feed Fetch Interval. For example, if there are 800,000 indicators in Cortex XSOAR and the `Feed Fetch Interval` is set to 20 minutes as recommended, the initial sync process will take approximately 7 hours.
   
 #### Base Command  
   
@@ -64,7 +66,7 @@ There is no context output for this command.
   
 ### xdr-iocs-push
 ***  
-Push new IOCs to XDR. run This every minute (without indicator argument) or ioc trigerd (using indicator argument).
+Push new or modified IOCs to Cortex XDR.
   
   
 #### Base Command  

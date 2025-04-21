@@ -1,10 +1,7 @@
 Tanium Threat Response - This Integration works with Tanium Threat Response version below 3.0.159. In order to use Tanium Threat Response version 3.0.159 and above, use Tanium Threat Response V2 Integration.
 
-## Configure Tanium Threat Response on Cortex XSOAR
+## Configure Tanium Threat Response in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Tanium Threat Response.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ Tanium Threat Response - This Integration works with Tanium Threat Response vers
 | fetch_time | First fetch timestamp ({number} {time unit}, e.g., 12 hours, 7 days) | False |
 | filter_alerts_by_state | A comma-separated list of alert states to filter by in fetch incidents command. Possible options are: unresolved, in progress, resolved or suppressed. Empty list won't filter the incidents by state. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### tanium-tr-get-intel-doc-by-id
 ***
@@ -521,7 +517,6 @@ Returns all local snapshots of a single connection.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Tanium.LocalSnapshot.ConnectionName | String | The snapshot connection name. | 
-| Tanium.LocalSnapshot.Deleted | Boolean | Whether the snapshot has been deleted. | 
 | Tanium.LocalSnapshot.FileName | String | The snapshot file name. | 
 
 
@@ -2351,4 +2346,3 @@ Scan a computer group for hashes in intel document. Computer groups can be viewe
 Alert Count|ComputerGroupId|CreatedAt|ID|IntelDocId|QuestionID|UserID|
 |---|---|---|---|---|---|---|
 | 0 | 1 | 2019-07-31T18:46:28.814Z | 5 | 2 | 4 | 3 |
-

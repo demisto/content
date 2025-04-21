@@ -1,7 +1,7 @@
 commonfields:
   id: NCSCFieldProtection
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: NCSCFieldProtection
 runas: DBotWeakRole
@@ -14,4 +14,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-comment: 'This script protects the fields associated with the assessment from accidental modification.'
+comment: This script protects the fields associated with the assessment from accidental modification.

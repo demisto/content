@@ -31,6 +31,14 @@ configuration:
   name: key
   type: 0
   required: false
+  hidden: true
+- additionalinfo: Relevant only if user wants to block public access of a container.
+  display: ""
+  displaypassword: Shared Key
+  name: shared_key
+  type: 9
+  required: false
+  hiddenusername: true
 description: Create and Manage Azure Storage Container services.
 display: Azure Storage Container
 name: Azure Storage Container
@@ -291,6 +299,12 @@ script:
     - description: Name of a container.
       name: container_name
       required: true
+    description: Block public access to a container.
+    name: azure-storage-container-block-public-access
+  - arguments:
+    - description: Name of a container.
+      name: container_name
+      required: true
     - defaultValue: '1'
       description: Expiry time for sas token(hours).
       name: expiry_time
@@ -313,9 +327,11 @@ script:
     - description: specifies a public IP address or a range of public IP addresses from which to accept requests.
       name: signed_ip
       type: unknown
+    - description: The account key to create the SAS token with.
+      name: account_key
     description: create SAS token for container.
     name: azure-storage-container-sas-create
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

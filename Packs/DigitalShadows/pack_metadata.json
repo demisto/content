@@ -1,12 +1,12 @@
 {
-    "name": "ReliaQuest GreyMatter DRP",
-    "description": "Digital Shadows monitors and manages an organization's digital risk across the open, deep, and dark web.",
+    "name": "ReliaQuest GreyMatter DRP Incidents",
+    "description": "ReliaQuest GreyMatter DRP monitors and manages an organization's digital risk across the open, deep, and dark web.",
     "support": "partner",
-    "currentVersion": "2.0.0",
-    "author": "Digital Shadows",
-    "url": "https://www.digitalshadows.com/",
-    "email": "info@digitalshadows.com",
-    "created": "2020-04-14T00:00:00Z",
+    "currentVersion": "2.0.6",
+    "author": "ReliaQuest",
+    "url": "https:// www.reliaquest.com/",
+    "email": "drpsupport@reliaquest.com",
+    "created": "2024-07-07T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -33,17 +33,16 @@
         "SearchLight"
     ],
     "githubUser": [
-        "ds-jdcockrill",
-        "rossbowerman"
+        "rq-vsarode"
     ],
     "devEmail": [
-        "jamie.cockrill@digitalshadows.com",
-        "integrations@digitalshadows.com"
+        "vsarode@reliaquest.com"
     ],
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "CommonScripts": {
@@ -73,5 +72,12 @@
         "DS",
         "Digital Shadows",
         "SearchLight"
+    ],
+    "defaultDataSource": "ReliaQuest GreyMatter DRP Incidents",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

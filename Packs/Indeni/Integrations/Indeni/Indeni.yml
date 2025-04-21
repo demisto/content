@@ -55,106 +55,106 @@ name: Indeni
 script:
   commands:
   - arguments:
-    - description: device id string
+    - description: device id string.
       name: device_id
       required: true
-    description: get the device information
+    description: get the device information.
     name: indeni-get-device-info
     outputs:
     - contextPath: Indeni.DeviceInfo.DeviceId
-      description: device id string
+      description: device id string.
       type: string
     - contextPath: Indeni.DeviceInfo.DeviceIP
-      description: device ip string
+      description: device ip string.
       type: string
     - contextPath: Indeni.DeviceInfo.DeviceName
-      description: device hostname
+      description: device hostname.
       type: string
     - contextPath: Indeni.DeviceInfo.DeviceModel
-      description: device model
+      description: device model.
       type: string
     - contextPath: Indeni.DeviceInfo.OSVersion
-      description: device OS version
+      description: device OS version.
       type: string
     - contextPath: Indeni.DeviceInfo.CriticalAlertStats
-      description: '# of critical alerts on the device'
+      description: '# of critical alerts on the device.'
       type: number
     - contextPath: Indeni.DeviceInfo.ErrorAlertStats
-      description: '# of error alerts on the device'
+      description: '# of error alerts on the device.'
       type: number
     - contextPath: Indeni.DeviceInfo.WarnAlertStats
-      description: '# of warn alerts on the device'
+      description: '# of warn alerts on the device.'
       type: number
     - contextPath: Indeni.DeviceInfo.InfoAlertStats
-      description: '# of info alerts on the device'
+      description: '# of info alerts on the device.'
       type: number
   - arguments:
-    - description: the id of the alert
+    - description: the id of the alert.
       name: alert_id
       required: true
-    description: Get detailed alert info
+    description: Get detailed alert info.
     name: indeni-get-alert-info
     outputs:
     - contextPath: Indeni.AlertInfo.AlertId
-      description: id of the alert
+      description: id of the alert.
       type: string
     - contextPath: Indeni.AlertInfo.Headline
-      description: headline of the alert
+      description: headline of the alert.
       type: string
     - contextPath: Indeni.AlertInfo.DeviceId
-      description: device id
+      description: device id.
       type: string
     - contextPath: Indeni.AlertInfo.AlertType
-      description: the alert type unique identifier
+      description: the alert type unique identifier.
       type: string
   - arguments:
-    - description: identifier for alert type
+    - description: identifier for alert type.
       name: alert_type_identifier
       required: true
-    description: Get summary of given alert type for all devices
+    description: Get summary of given alert type for all devices.
     name: indeni-get-alert-summary
     outputs:
     - contextPath: Indeni.AffectedDevices.AlertType
-      description: Alert type that's affecting the devices
+      description: Alert type that's affecting the devices.
       type: String
     - contextPath: Indeni.AffectedDevices.Device.DeviceName
-      description: Name of the affected device
+      description: Name of the affected device.
       type: String
     - contextPath: Indeni.AffectedDevices.Device.DeviceId
-      description: Id of the affected device
+      description: Id of the affected device.
       type: String
   - arguments:
-    - description: the id of the alert
+    - description: the id of the alert.
       name: alert_id
       required: true
-    - description: the content of the note
+    - description: the content of the note.
       name: note
       required: true
-    description: Post a note to a given issue id
+    description: Post a note to a given issue id.
     name: indeni-post-note
   - arguments:
-    - description: the alert id of the issue
+    - description: the alert id of the issue.
       name: alert_id
       required: true
-    description: Archive an issue for the given alert id
+    description: Archive an issue for the given alert id.
     name: indeni-archive-issue
   - arguments:
-    - description: the alert id of the issue
+    - description: the alert id of the issue.
       name: alert_id
       required: true
-    description: Unarchive an existing issue
+    description: Unarchive an existing issue.
     name: indeni-unarchive-issue
   - arguments:
-    - description: The id of the alert
+    - description: The id of the alert.
       name: alert_id
       required: true
-    description: Get the notes from issue
+    description: Get the notes from issue.
     name: indeni-get-notes
     outputs:
     - contextPath: Indeni.AlertInfo.Note
-      description: Notes for the given issue
+      description: Notes for the given issue.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   longRunning: true
   runonce: false
@@ -164,3 +164,5 @@ script:
 fromversion: 5.0.0
 defaultclassifier: Indeni
 defaultmapperin: Indeni-mapper
+tests:
+- No tests (auto formatted)

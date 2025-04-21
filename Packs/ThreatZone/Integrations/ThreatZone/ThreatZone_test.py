@@ -1,20 +1,21 @@
-from CommonServerPython import *
 import unittest
-from unittest.mock import patch, MagicMock, ANY
+from unittest.mock import ANY, MagicMock, patch
+
+from CommonServerPython import *
+from ThreatZone import Client as tz_client
 from ThreatZone import (
-    generate_dbotscore,
-    threatzone_return_results,
     encode_file_name,
-    threatzone_static_cdr_upload_sample,
-    threatzone_sandbox_upload_sample,
-    threatzone_check_limits,
+    generate_dbotscore,
     generate_indicator,
     get_reputation_reliability,
-    translate_score,
+    threatzone_check_limits,
     threatzone_get_result,
     threatzone_get_sanitized_file,
+    threatzone_return_results,
+    threatzone_sandbox_upload_sample,
+    threatzone_static_cdr_upload_sample,
+    translate_score,
 )
-from ThreatZone import Client as tz_client
 
 DBOT_SCORES = {
     "Reliability": "A - Completely reliable",
@@ -63,11 +64,10 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
 
     def test_threatzone_return_results(self):
         uuid = "12345"
-        url = "http://example.com"
         readable_output = "Some readable output"
         availability = {"Limits": {"SomeLimit": "SomeValue"}}
         scan_type = "cdr"
-        results = threatzone_return_results(scan_type, uuid, url, readable_output, availability)
+        results = threatzone_return_results(scan_type, uuid, readable_output, availability)
 
         assert len(results) == 2
 
@@ -75,7 +75,7 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
 
         assert first_result.outputs_prefix == "ThreatZone.Submission.CDR"
         assert first_result.outputs_key_field == "UUID"
-        assert first_result.outputs == {"UUID": uuid, "URL": url}
+        assert first_result.outputs == {"UUID": uuid}
         assert first_result.readable_output == "Some readable output"
 
         assert second_result.outputs_prefix == "ThreatZone.Limits"
@@ -104,7 +104,6 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
 
 
 class TestTranslateScore(unittest.TestCase):
-
     def test_translate_score_zero(self):
         score = 0
         result = translate_score(score)
@@ -127,7 +126,6 @@ class TestTranslateScore(unittest.TestCase):
 
 
 class TestGetReputationReliability(unittest.TestCase):
-
     def test_get_reputation_reliability_A_PLUS(self):
         reliability = "A+ - 3rd party enrichment"
         result = get_reputation_reliability(reliability)
@@ -211,14 +209,14 @@ class TestClient(unittest.TestCase):
         param = {
             "scan_type": "sandbox",
             "environment": "some_environment",
-            "private": True,
+            "private": "true",
             "timeout": 3600,
             "work_path": "some_work_path",
-            "mouse_simulation": False,
-            "https_inspection": False,
-            "internet_connection": False,
-            "raw_logs": True,
-            "snapshot": False,
+            "mouse_simulation": "false",
+            "https_inspection": "false",
+            "internet_connection": "false",
+            "raw_logs": "true",
+            "snapshot": "false",
             "files": [("file", ("test.txt", b"test file data", "application/octet-stream"))],
         }
         mock_http_request.return_value = {
@@ -226,20 +224,23 @@ class TestClient(unittest.TestCase):
             "message": "You have successfully submitted a submission.",
         }
         result = self.client.threatzone_add(param)
+        expected_data = [
+            {"metafieldId": "environment", "value": "some_environment"},
+            {"metafieldId": "private", "value": True},
+            {"metafieldId": "timeout", "value": 3600},
+            {"metafieldId": "work_path", "value": "some_work_path"},
+            {"metafieldId": "mouse_simulation", "value": False},
+            {"metafieldId": "https_inspection", "value": False},
+            {"metafieldId": "internet_connection", "value": False},
+            {"metafieldId": "raw_logs", "value": True},
+            {"metafieldId": "snapshot", "value": False},
+        ]
+        expected_data_as_str = json.dumps(expected_data)
+        payload = {"analyzeConfig": expected_data_as_str}
         mock_http_request.assert_called_with(
             method="POST",
             url_suffix="/public-api/scan/sandbox",
-            data=[
-                {"metafieldId": "environment", "value": "some_environment"},
-                {"metafieldId": "private", "value": True},
-                {"metafieldId": "timeout", "value": 3600},
-                {"metafieldId": "work_path", "value": "some_work_path"},
-                {"metafieldId": "mouse_simulation", "value": False},
-                {"metafieldId": "https_inspection", "value": False},
-                {"metafieldId": "internet_connection", "value": False},
-                {"metafieldId": "raw_logs", "value": True},
-                {"metafieldId": "snapshot", "value": False},
-            ],
+            data=payload,
             files=[("file", ("test.txt", b"test file data", "application/octet-stream"))],
         )
         assert result == {
@@ -349,6 +350,8 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
         args = {}
         args["entry_id"] = self.args["entry_id"]
         args["scan_type"] = "static-scan"
+        args["private"] = "false"
+        args["extensionCheck"] = "false"
         results = threatzone_static_cdr_upload_sample(self.client, args)
 
         assert len(results) == 2
@@ -365,6 +368,8 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
         args = {}
         args["entry_id"] = self.args["entry_id"]
         args["scan_type"] = "cdr"
+        args["private"] = "false"
+        args["extensionCheck"] = "false"
         results = threatzone_static_cdr_upload_sample(self.client, args)
 
         assert len(results) == 2

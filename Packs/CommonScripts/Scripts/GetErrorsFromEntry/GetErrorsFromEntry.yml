@@ -18,7 +18,7 @@ outputs:
   description: Contents of the errors associated with the entry/entries.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.80014
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

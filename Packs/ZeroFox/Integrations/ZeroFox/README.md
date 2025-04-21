@@ -1,30 +1,26 @@
 Cloud-based SaaS to detect risks found on social media and digital channels.
 This integration was integrated and tested with versions 1.0 and 2.0 of ZeroFox.
 
-## Configure ZeroFox on Cortex XSOAR
+## Configure ZeroFox in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ZeroFox.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL (e.g., https://api.zerofox.com/) | True |
-    | Username | True |
-    | Password | True |
-    | Fetch only escalated alerts | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Fetch Limit | True |
-    | Fetch incidents | False |
-    | Incident type | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| URL (e.g., https://api.zerofox.com/) | True |
+| Username | True |
+| Password | True |
+| Fetch only escalated alerts | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+| Fetch Limit | True |
+| Fetch incidents | False |
+| Incident type | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### zerofox-get-alert
@@ -842,6 +838,38 @@ Looks for registered exploits in ZeroFox's CTI feeds.
 | ZeroFox.Exploits.CreatedAt | string | Date in which the ip was found related to a threat. |
 | ZeroFox.Exploits.CVECode | string | CVE Code to identify the exploit. |
 | ZeroFox.Exploits.URLs | string | URLs associated to the threat separated by commas. |
+
+### zerofox-get-compromised-credentials
+
+***
+Gets compromised credentials data for a given ZeroFox alert and uploads it to the current investigation War Room.
+
+#### Base Command
+
+`zerofox-get-compromised-credentials`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
 
 ## Incident Mirroring
 

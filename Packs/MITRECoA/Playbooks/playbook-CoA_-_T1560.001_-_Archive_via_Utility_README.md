@@ -48,4 +48,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1560.001 - Archive via Utility](../doc_files/MITRE_ATT&CK_CoA_-_T1560.001_-_Archive_via_Utility.png)
+![MITRE ATT&CK CoA - T1560.001 - Archive via Utility](../doc_files/MITRE_ATTandCK_CoA_-_T1560_001_-_Archive_via_Utility.png)

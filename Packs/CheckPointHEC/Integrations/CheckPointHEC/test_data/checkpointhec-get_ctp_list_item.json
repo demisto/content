@@ -1,0 +1,18 @@
+{
+    "responseEnvelope": {
+        "requestId": "00000000-0000-0000-0000-000000000000",
+        "responseCode": 200,
+        "responseText": "",
+        "additionalText": "",
+        "recordsNumber": 2,
+        "scrollId": ""
+    },
+    "responseData": {
+        "created_at": "2024-10-08T14:40:19.611763",
+        "created_by": "a@b.test",
+        "listid": "0",
+        "listitemid": "0000000000000000",
+        "listitemname": "www3.example.com",
+        "listname": "whitelist"
+    }
+}

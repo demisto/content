@@ -137,6 +137,11 @@
             "cliName": "typeoffense",
             "type": "shortText",
             "name": "Type - Offense"
+        },
+        {
+            "cliName": "symantecescemailmalwarecategory",
+            "type": "shortText",
+            "name": "Symantec ESC Email Malware Category"
         }
     ]
 }

@@ -69,12 +69,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 95eb0459-76df-462b-8458-265fecaa39b5
+      id: c3d67325-3dde-4dc0-82a7-afb029163173
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 95eb0459-76df-462b-8458-265fecaa39b5
+    taskid: c3d67325-3dde-4dc0-82a7-afb029163173
     timertriggers: []
     type: start
     view: |-
@@ -102,13 +102,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3e2bf113-40c2-45e5-8a72-6bfa5d5db83b
+      id: 61c391e2-a19b-4f86-8dc1-bb31c96023c7
       iscommand: false
       name: DeleteContext
       type: regular
       version: -1
       scriptName: DeleteContext
-    taskid: 3e2bf113-40c2-45e5-8a72-6bfa5d5db83b
+    taskid: 61c391e2-a19b-4f86-8dc1-bb31c96023c7
     timertriggers: []
     type: regular
     view: |-
@@ -138,13 +138,13 @@ tasks:
     skipunavailable: false
     task:
       brand: Code42
-      id: 005c7021-f6c3-4d0d-81ea-c5384384e24b
+      id: 9c6f21e9-ec1a-4553-8593-afe2baf46105
       iscommand: true
       name: code42-alert-get
       script: Code42|||code42-alert-get
       type: regular
       version: -1
-    taskid: 005c7021-f6c3-4d0d-81ea-c5384384e24b
+    taskid: 9c6f21e9-ec1a-4553-8593-afe2baf46105
     timertriggers: []
     type: regular
     view: |-
@@ -177,12 +177,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 25db814a-8d82-4dc2-8303-389a033c4991
+      id: 57cb2897-b2ec-4309-89db-cc92198af17d
       iscommand: false
       name: Validate code42-alert-get
       type: condition
       version: -1
-    taskid: 25db814a-8d82-4dc2-8303-389a033c4991
+    taskid: 57cb2897-b2ec-4309-89db-cc92198af17d
     timertriggers: []
     type: condition
     view: |-
@@ -210,13 +210,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 150bc8ae-8d68-4f2e-8c84-e533e2f2fca2
+      id: 1b9dc599-5f67-4afa-82e2-b4a1195c7878
       iscommand: false
       name: DeleteContext
       type: regular
       version: -1
       scriptName: DeleteContext
-    taskid: 150bc8ae-8d68-4f2e-8c84-e533e2f2fca2
+    taskid: 1b9dc599-5f67-4afa-82e2-b4a1195c7878
     timertriggers: []
     type: regular
     view: |-
@@ -246,13 +246,13 @@ tasks:
     skipunavailable: false
     task:
       brand: Code42
-      id: e5172822-3c21-4110-8697-f08cb3618f85
+      id: 55876f04-4948-4a3f-84b8-a7e7f134f188
       iscommand: true
       name: code42-alert-resolve
       script: Code42|||code42-alert-resolve
       type: regular
       version: -1
-    taskid: e5172822-3c21-4110-8697-f08cb3618f85
+    taskid: 55876f04-4948-4a3f-84b8-a7e7f134f188
     timertriggers: []
     type: regular
     view: |-
@@ -278,123 +278,6 @@ tasks:
     ignoreworker: false
     nexttasks:
       "yes":
-      - "9"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: b3477876-2534-4b47-8d59-45e6daa4d65a
-      iscommand: false
-      name: Validate code42-alert-resolve
-      type: condition
-      version: -1
-    taskid: b3477876-2534-4b47-8d59-45e6daa4d65a
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "16"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 4bd88219-4ac5-43b2-8ae4-77241f554816
-      iscommand: false
-      name: DeleteContext
-      type: regular
-      version: -1
-      scriptName: DeleteContext
-    taskid: 4bd88219-4ac5-43b2-8ae4-77241f554816
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "17"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      extend-context:
-        simple: searchresults=
-      json:
-        simple: ${inputs.search-payload}
-      results:
-        simple: "100"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      id: d1bddd96-538c-4380-8f47-a688405713d5
-      iscommand: true
-      name: code42-securitydata-search
-      script: Code42|||code42-securitydata-search
-      type: regular
-      version: -1
-    taskid: d1bddd96-538c-4380-8f47-a688405713d5
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: SecurityData
-                root: Code42
-                transformers:
-                - operator: count
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: "0"
-      label: "yes"
-    id: "17"
-    ignoreworker: false
-    nexttasks:
-      "yes":
       - "18"
     note: false
     quietmode: 0
@@ -402,19 +285,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0bfdd31a-7acf-41d8-8a83-cfbe6c53e37b
+      id: 99c18e26-9727-4f53-8027-2293f382fa99
       iscommand: false
-      name: Validate code42-securitydata-search
+      name: Validate code42-alert-resolve
       type: condition
       version: -1
-    taskid: 0bfdd31a-7acf-41d8-8a83-cfbe6c53e37b
+    taskid: 99c18e26-9727-4f53-8027-2293f382fa99
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1070
         }
       }
     continueonerrortype: ""
@@ -429,20 +312,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9696dca8-dbb1-47b2-845e-b9746700694b
+      id: 2cf6c3a5-4230-4d2b-84f9-613d9086e4a2
       iscommand: false
       name: Test Succeeded
       type: title
       version: -1
       description: ''
-    taskid: 9696dca8-dbb1-47b2-845e-b9746700694b
+    taskid: 2cf6c3a5-4230-4d2b-84f9-613d9086e4a2
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1300
         }
       }
     continueonerrortype: ""
@@ -454,7 +337,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 1315,
         "width": 380,
         "x": 50,
         "y": 50

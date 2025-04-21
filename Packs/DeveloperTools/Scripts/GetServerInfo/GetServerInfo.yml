@@ -1,0 +1,19 @@
+comment: Get version and URL of current XSOAR server.
+commonfields:
+  id: GetServerInfo
+  version: -1
+name: GetServerInfo
+outputs:
+- contextPath: ServerInfo
+  description: 'A dictionary of "URLs" and "version".'
+  type: Dictionary
+script: '-'
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.9.0
+tests:
+- No test

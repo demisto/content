@@ -242,7 +242,7 @@ script:
     - contextPath: Lansweeper.Mac.siteName
       description: The name of the site to which the asset belongs.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

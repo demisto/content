@@ -38,14 +38,14 @@ script:
       description: The SecBI incident IDs List.
       type: String
   - arguments:
-    - description: The SecBI incident ID
+    - description: The SecBI incident ID.
       name: incident_id
       required: true
     description: Returns a specific SecBI Incident by SecBI incident ID.
     name: secbi-get-incident
     outputs:
     - contextPath: SecBI.Incident.ID
-      description: The SecBI incident ID
+      description: The SecBI incident ID.
       type: String
     - contextPath: SecBI.Incident.Host
       description: The host names of the SecBI Incident.
@@ -60,7 +60,7 @@ script:
       description: The server IP addresses of the SecBI incident.
       type: String
     - contextPath: SecBI.Incident.FirstAppearance
-      description: The first appearance of data of the SecBI incident
+      description: The first appearance of data of the SecBI incident.
       type: Date
     - contextPath: SecBI.Incident.LastAppearance
       description: The last appearance of data of the SecBI incident.
@@ -93,7 +93,7 @@ script:
     - contextPath: SecBI.Incident.LastAppearance
       description: The last appearance of data of the SecBI incident.
       type: Date
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   subtype: python3

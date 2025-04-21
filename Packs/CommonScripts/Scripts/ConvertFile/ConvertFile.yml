@@ -21,10 +21,10 @@ args:
 - name: all_files
   auto: PREDEFINED
   predefined:
-  - "yes"
-  - "no"
+  - 'yes'
+  - 'no'
   description: If "yes", will return all generated files. If "no", will return only the main file. Relevant for formats that might generate multiple files, such as html (which will generate image files additionally to the main html file). Default is "no".
-  defaultValue: "no"
+  defaultValue: 'no'
 outputs:
 - contextPath: File.Name
   description: The name of the output file.
@@ -42,7 +42,7 @@ outputs:
   description: The file type.
   type: String
 scripttarget: 0
-dockerimage: demisto/office-utils:2.0.0.88735
+dockerimage: demisto/office-utils:2.0.0.2020302
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

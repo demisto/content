@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
-from typing import Dict, Any, List
+from typing import Any
 from requests import Response  # Used to typing Response as a return from functions
 
 # Disable insecure warnings
@@ -31,7 +31,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def list_remediation_rule_request(self, request_data: Dict) -> Dict[str, Any]:
+    def list_remediation_rule_request(self, request_data: dict) -> dict[str, Any]:
         """Get a list of all your remediation rules using the 'xpanse_remediation_rules/rules/' endpoint.
 
         Args:
@@ -50,7 +50,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_external_service_request(self, search_params: List[Dict]) -> Dict[str, Any]:
+    def list_external_service_request(self, search_params: list[dict]) -> dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
         Args:
@@ -59,9 +59,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of external services.
         """
-        data = {
-            "request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}
-        }
+        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
 
         response = self._http_request(
             "POST",
@@ -72,7 +70,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_external_service_request(self, service_id_list: List[str]) -> Dict[str, Any]:
+    def get_external_service_request(self, service_id_list: list[str]) -> dict[str, Any]:
         """Get service details using the '/assets/get_external_service/' endpoint.
 
         Args:
@@ -92,7 +90,7 @@ class Client(BaseClient):
 
         return response
 
-    def list_external_ip_address_range_request(self) -> Dict[str, Any]:
+    def list_external_ip_address_range_request(self) -> dict[str, Any]:
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
 
         Returns:
@@ -109,9 +107,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_external_ip_address_range_request(
-        self, range_id_list: List[str]
-    ) -> Dict[str, Any]:
+    def get_external_ip_address_range_request(self, range_id_list: list[str]) -> dict[str, Any]:
         """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
 
         Args:
@@ -131,9 +127,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_attack_surface_rule_request(
-        self, search_params: List[dict]
-    ) -> Dict[str, Any]:
+    def get_attack_surface_rule_request(self, search_params: list[dict]) -> dict[str, Any]:
         """Get Attack Surface Rule details for an attack surface rule id using the '/get_attack_surface_rules/' endpoint.
 
         Args:
@@ -143,17 +137,10 @@ class Client(BaseClient):
             dict: dict containing information about Attack surface rule.
         """
         data = {"request_data": {"filters": search_params}}
-        response = self._http_request(
-            "POST",
-            "/get_attack_surface_rules/",
-            json_data=data,
-            error_handler=get_api_error
-        )
+        response = self._http_request("POST", "/get_attack_surface_rules/", json_data=data, error_handler=get_api_error)
         return response
 
-    def list_asset_internet_exposure_request(
-        self, search_params: List[dict]
-    ) -> Dict[str, Any]:
+    def list_asset_internet_exposure_request(self, search_params: list[dict]) -> dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -162,9 +149,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of internet exposure assets.
         """
-        data = {
-            "request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}
-        }
+        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
 
         response = self._http_request(
             "POST",
@@ -175,9 +160,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_asset_internet_exposure_request(
-        self, asm_id_list: List[str]
-    ) -> Dict[str, Any]:
+    def get_asset_internet_exposure_request(self, asm_id_list: list[str]) -> dict[str, Any]:
         """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
 
         Args:
@@ -250,11 +233,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: dictionary containing response information that includes a scan ID.
         """
-        data = {
-            "request_data": {
-                "filters": [{"field": "id", "operator": "EQ", "value": scan_id}]
-            }
-        }
+        data = {"request_data": {"filters": [{"field": "id", "operator": "EQ", "value": scan_id}]}}
 
         response = self._http_request(
             method="POST",
@@ -270,7 +249,24 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def format_asm_id(formatted_response: List[dict]) -> List[dict]:
+def append_search_param(search_params, field, operator, value):
+    """
+    Appends a search parameter to the given list of search parameters.
+
+    Args:
+        search_params (list): The list of search parameters to append to.
+        field (str): The name of the field to search on.
+        operator (str): The operator to use for the search (e.g. "eq", "contains", "in").
+        value (any): The value to search for.
+
+    Returns:
+        None
+    """
+
+    search_params.append({"field": field, "operator": operator, "value": value})
+
+
+def format_asm_id(formatted_response: list[dict]) -> list[dict]:
     """
     Takes the response from the asm-list-asset-internet-exposure command and converts `asm_id` key from list to str
 
@@ -320,7 +316,7 @@ def get_api_error(response: Response):
 """ COMMAND FUNCTIONS """
 
 
-def list_remediation_rule_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def list_remediation_rule_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-remediation-rule command: Returns list of remediation path rules.
 
@@ -341,9 +337,7 @@ def list_remediation_rule_command(args: Dict[str, Any], client: Client) -> Comma
     # create list of search parameters or pass empty list.
     search_params = []
     if asm_rule_id:
-        search_params.append(
-            {"field": "attack_surface_rule_id", "operator": "eq", "value": asm_rule_id}
-        )
+        search_params.append({"field": "attack_surface_rule_id", "operator": "eq", "value": asm_rule_id})
     if sort_by_creation_time:
         request_data = {
             "request_data": {
@@ -381,7 +375,7 @@ def list_remediation_rule_command(args: Dict[str, Any], client: Client) -> Comma
     return command_results
 
 
-def list_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def list_external_service_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-external-service command: Returns list of external services.
 
@@ -404,19 +398,13 @@ def list_external_service_command(args: Dict[str, Any], client: Client) -> Comma
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
-        search_params.append(
-            {"field": "ip_address", "operator": "eq", "value": ip_address}
-        )
+        search_params.append({"field": "ip_address", "operator": "eq", "value": ip_address})
     if domain:
         search_params.append({"field": "domain", "operator": "contains", "value": domain})
     if is_active:
-        search_params.append(
-            {"field": "is_active", "operator": "in", "value": [is_active]}
-        )
+        search_params.append({"field": "is_active", "operator": "in", "value": [is_active]})
     if discovery_type:
-        search_params.append(
-            {"field": "discovery_type", "operator": "in", "value": [discovery_type]}
-        )
+        search_params.append({"field": "discovery_type", "operator": "in", "value": [discovery_type]})
 
     response = client.list_external_service_request(search_params)
     parsed = response.get("reply", {}).get("external_services")
@@ -437,7 +425,7 @@ def list_external_service_command(args: Dict[str, Any], client: Client) -> Comma
     return command_results
 
 
-def get_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def get_external_service_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-get-external-service command: Returns details of single external service.
     Returns error if more than one service_id was provided in comma separated format.
@@ -476,9 +464,7 @@ def get_external_service_command(args: Dict[str, Any], client: Client) -> Comman
     return command_results
 
 
-def list_external_ip_address_range_command(
-    args: Dict[str, Any], client: Client
-) -> CommandResults:
+def list_external_ip_address_range_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-external-ip-address-range command: Returns list of external ip ranges.
 
@@ -509,9 +495,7 @@ def list_external_ip_address_range_command(
     return command_results
 
 
-def get_external_ip_address_range_command(
-    args: Dict[str, Any], client: Client
-) -> CommandResults:
+def get_external_ip_address_range_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-get-external-ip-address-range command: Returns details of single external ip range.
     Returns error if more than one range_id was provided in comma separated format.
@@ -550,9 +534,7 @@ def get_external_ip_address_range_command(
     return command_results
 
 
-def get_attack_surface_rule_command(
-    args: Dict[str, Any], client: Client
-) -> CommandResults:
+def get_attack_surface_rule_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-get-attack-surface-rule command: Returns attack surface rule details.
 
@@ -571,29 +553,13 @@ def get_attack_surface_rule_command(
 
     search_params = []
     if attack_surface_rule_id:
-        search_params.append({
-            "field": "attack_surface_rule_id",
-            "operator": "in",
-            "value": attack_surface_rule_id.split(",")
-        })
+        search_params.append({"field": "attack_surface_rule_id", "operator": "in", "value": attack_surface_rule_id.split(",")})
     if enabled_status:
-        search_params.append({
-            "field": "enabled_status",
-            "operator": "in",
-            "value": enabled_status.split(",")
-        })
+        search_params.append({"field": "enabled_status", "operator": "in", "value": enabled_status.split(",")})
     if priority:
-        search_params.append({
-            "field": "priority",
-            "operator": "in",
-            "value": priority.split(",")
-        })
+        search_params.append({"field": "priority", "operator": "in", "value": priority.split(",")})
     if category:
-        search_params.append({
-            "field": "category",
-            "operator": "in",
-            "value": category.split(",")
-        })
+        search_params.append({"field": "category", "operator": "in", "value": category.split(",")})
 
     response = client.get_attack_surface_rule_request(search_params)
     parsed = response.get("reply", {}).get("attack_surface_rules")
@@ -607,9 +573,7 @@ def get_attack_surface_rule_command(
     return command_results
 
 
-def list_asset_internet_exposure_command(
-    args: Dict[str, Any], client: Client
-) -> CommandResults:
+def list_asset_internet_exposure_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-asset-internet-exposure command: Returns list of external internet exposures.
 
@@ -629,24 +593,64 @@ def list_asset_internet_exposure_command(
     name = args.get("name")
     asm_type = args.get("type")
     has_active_external_services = args.get("has_active_external_services")
+    asm_id_list = args.get("asm_id_list")
+    ipv6_address = args.get("ipv6_address")
+    gcp_cloud_tags = args.get("gcp_cloud_tags")
+    azure_cloud_tags = args.get("azure_cloud_tags")
+    aws_cloud_tags = args.get("aws_cloud_tags")
+    has_xdr_agent = args.get("has_xdr_agent")
+    externally_detected_providers = args.get("externally_detected_providers")
+    externally_inferred_cves = args.get("externally_inferred_cves")
+    business_units_list = args.get("business_units_list")
+    has_bu_overrides = args.get("has_bu_overrides")
+    mac_addresses = args.get("mac_addresses")
     # create list of search parameters or pass empty list.
-    search_params = []
+    search_params: list[dict[str, Any]] = []
+
     if ip_address:
-        search_params.append(
-            {"field": "ip_address", "operator": "eq", "value": ip_address}
-        )
+        append_search_param(search_params, "ip_address", "eq", ip_address)
+
     if name:
-        search_params.append({"field": "name", "operator": "contains", "value": name})
+        append_search_param(search_params, "name", "contains", name)
+
     if asm_type:
-        search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
+        append_search_param(search_params, "type", "in", [asm_type])
+
     if has_active_external_services:
-        search_params.append(
-            {
-                "field": "has_active_external_services",
-                "operator": "in",
-                "value": [has_active_external_services],
-            }
-        )
+        append_search_param(search_params, "has_active_external_services", "in", [has_active_external_services])
+
+    if asm_id_list:
+        append_search_param(search_params, "asm_id_list", "in", str(asm_id_list).split(","))
+
+    if ipv6_address:
+        append_search_param(search_params, "ipv6_address", "eq", str(ipv6_address))
+
+    if aws_cloud_tags:
+        append_search_param(search_params, "aws_cloud_tags", "in", str(aws_cloud_tags).split(","))
+
+    if gcp_cloud_tags:
+        append_search_param(search_params, "gcp_cloud_tags", "in", str(gcp_cloud_tags).split(","))
+
+    if azure_cloud_tags:
+        append_search_param(search_params, "azure_cloud_tags", "in", str(azure_cloud_tags).split(","))
+
+    if has_xdr_agent:
+        append_search_param(search_params, "has_xdr_agent", "in", str(has_xdr_agent).split(","))
+
+    if externally_detected_providers:
+        append_search_param(search_params, "externally_detected_providers", "contains", externally_detected_providers)
+
+    if externally_inferred_cves:
+        append_search_param(search_params, "externally_inferred_cves", "contains", str(externally_inferred_cves))
+
+    if business_units_list:
+        append_search_param(search_params, "business_units_list", "in", str(business_units_list).split(","))
+
+    if has_bu_overrides:
+        append_search_param(search_params, "has_bu_overrides", "eq", has_bu_overrides.lower() != "false")
+
+    if mac_addresses:
+        append_search_param(search_params, "mac_addresses", "contains", mac_addresses)
 
     response = client.list_asset_internet_exposure_request(search_params)
     formatted_response = response.get("reply", {}).get("assets_internet_exposure", [])
@@ -668,9 +672,7 @@ def list_asset_internet_exposure_command(
     return command_results
 
 
-def get_asset_internet_exposure_command(
-    args: Dict[str, Any], client: Client
-) -> CommandResults:
+def get_asset_internet_exposure_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-get-asset-internet-exposure command: Returns details of single external internet exposure.
     Returns error if more than one asm_id was provided in comma separated format.
@@ -709,9 +711,7 @@ def get_asset_internet_exposure_command(
     return command_results
 
 
-def start_remediation_confirmation_scan_command(
-    args: Dict[str, Any], client: Client
-) -> CommandResults:
+def start_remediation_confirmation_scan_command(args: dict[str, Any], client: Client) -> CommandResults:
     """
     asm-start-remediation-confirmation-scan command: Starts a new scan or gets an existing scan ID.
 
@@ -727,9 +727,7 @@ def start_remediation_confirmation_scan_command(
     attack_surface_rule_id = str(args.get("attack_surface_rule_id"))
     alert_internal_id = int(args.get("alert_internal_id", ""))
     if alert_internal_id < 0:
-        raise ValueError(
-            f"Expected a non-negative integer, but got {alert_internal_id}."
-        )
+        raise ValueError(f"Expected a non-negative integer, but got {alert_internal_id}.")
 
     response = client.start_remediation_confirmation_scan(
         alert_internal_id=alert_internal_id,
@@ -763,12 +761,13 @@ def start_remediation_confirmation_scan_command(
     return command_results
 
 
-@polling_function(name=demisto.command(),
-                  interval=arg_to_number(demisto.args().get('interval_in_seconds', 600)),
-                  timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 11000)),
-                  requires_polling_arg=False  # This means it will always be default to poll, poll=true
-                  )
-def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], client: Client):
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 600)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 11000)),
+    requires_polling_arg=False,  # This means it will always be default to poll, poll=true
+)
+def get_remediation_confirmation_scan_status_command(args: dict[str, Any], client: Client):
     """
     asm-get-remediation-confirmation-scan-status command: Polls for status of an existing remediation confirmation scan.
 
@@ -783,7 +782,7 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
     scan_id = str(args.get("scan_id"))
     response = client.get_remediation_confirmation_scan_status(scan_id=scan_id)
     json_response = response.json()
-    scan_status = json_response.get('reply').get('status')
+    scan_status = json_response.get("reply").get("status")
 
     if scan_status == "IN_PROGRESS":
         return PollResult(
@@ -791,10 +790,10 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
             partial_result=CommandResults(
                 outputs_prefix="ASM.RemediationScan",
                 outputs_key_field="scan_id",
-                readable_output="Waiting for remediation confirmation scan to finish..."
+                readable_output="Waiting for remediation confirmation scan to finish...",
             ),
             continue_to_poll=True,
-            args_for_next_run={"scan_id": scan_id, **args}
+            args_for_next_run={"scan_id": scan_id, **args},
         )
     elif scan_status == "SUCCESS":
         formatted_outputs = json_response.get("reply", {})
@@ -811,9 +810,7 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
             raw_response=json_response,
             readable_output=markdown,
         )
-        return PollResult(
-            response=command_results,
-            continue_to_poll=False)
+        return PollResult(response=command_results, continue_to_poll=False)
     elif scan_status == "FAILED_TIMEOUT" or scan_status == "FAILED_ERROR":
         formatted_outputs = json_response.get("reply", {})
         command_results = CommandResults(
@@ -821,7 +818,7 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
             outputs_key_field="",
             outputs=formatted_outputs,
             raw_response=json_response,
-            readable_output="The remediation confirmation scan timed out or failed."
+            readable_output="The remediation confirmation scan timed out or failed.",
         )
         return PollResult(response=command_results, continue_to_poll=False)
     else:
@@ -831,7 +828,7 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
             outputs_key_field="",
             outputs=formatted_outputs,
             raw_response=json_response,
-            readable_output="The remediation confirmation scan timed out or failed."
+            readable_output="The remediation confirmation scan timed out or failed.",
         )
         return PollResult(response=command_results, continue_to_poll=False)
 
@@ -863,8 +860,8 @@ def main() -> None:
     """
     main function
     """
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
@@ -887,9 +884,7 @@ def main() -> None:
         url = params.get("url", "")
         add_sensitive_log_strs(api)
         base_url = urljoin(url, url_suffix)
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         commands = {
             "asm-list-external-service": list_external_service_command,

@@ -7,7 +7,7 @@ type: python
 tags:
 - dynamic-section
 comment: |-
-  Logs detections data ( detection vs risk-contribution )
+  Logs detections data ( detection vs risk-contribution ).
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -16,7 +16,7 @@ dependson:
   - Confluera|||confluera-fetch-detections
   should:
   - Confluera|||confluera-fetch-detections
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

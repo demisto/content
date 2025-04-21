@@ -1,0 +1,149 @@
+category: Utilities
+commonfields:
+  id: Impartner
+  version: -1
+configuration:
+- defaultvalue: https://prod.impartner.live
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+description: 'Impartner is the fastest-growing, most award-winning channel management solution provider on the market.'
+display: Impartner
+name: Impartner
+script:
+  commands:
+  - arguments:
+    - description: 'query for searching accounts.'
+      name: query
+      required: false
+    - description: 'Comma separated list of fields to retrieve.'
+      name: fields
+      required: false
+      defaultValue: "name, id, recordLink, tech_BD_Assigned_for_XSOAR__cf"
+    - description: 'Optional where clause (eg, Field1 = Val1 and Field2 > Val2).'
+      name: filter
+      required: false
+    - description: 'Comma separated list of fields to sort by.'
+      name: orderby
+      required: false
+    - description: 'Number of results to skip for pagination.'
+      name: skip
+      required: false
+    - description: 'Number of results to take for pagination.'
+      name: take
+      required: false
+    description: 'Get account IDs from Impartner.'
+    name: impartner-get-account-list
+    outputs:
+    - contextPath: Impartner.Account.count
+      description: Number of results returned.
+      type: String
+    - contextPath: Impartner.Account.entity
+      description: Type of entity returned.
+      type: String
+    - contextPath: Impartner.Account.results.id
+      description: ID of account.
+      type: String
+    - contextPath: Impartner.Account.results.name
+      description: Name of account.
+      type: String
+    - contextPath: Impartner.Account.results.recordLink
+      description: Link to account.
+      type: String
+    - contextPath: Impartner.Account.results.tech_BD_Assigned_for_XSOAR__cf
+      description: Tech partner BD assigned to account.
+      type: String
+  - arguments:
+    - description: 'id of Impartner account.'
+      name: id
+      required: true
+    - description: 'Comma separated list of fields to retrieve.'
+      name: fields
+      required: false
+      defaultValue: "name, id, recordLink, tech_BD_Assigned_for_XSOAR__cf"
+    - auto: PREDEFINED
+      description: "Whether to return all fields."
+      name: all_fields
+      predefined:
+        - 'TRUE'
+        - 'FALSE'
+      defaultValue: 'FALSE'
+    description: 'Get account details from Impartner'
+    name: impartner-get-account-id
+    outputs:
+    - contextPath: Impartner.Account.id
+      description: Account ID.
+      type: Number
+    - contextPath: Impartner.Account.isActive
+      description: Is account active.
+      type: Boolean
+    - contextPath: Impartner.Account.tech_BD_Assigned_for_XSOAR__cf
+      description: Tech partner BD assigned to account.
+      type: String
+    - contextPath: Impartner.Account.mailingCity
+      description: City of account.
+      type: String
+    - contextPath: Impartner.Account.mailingCountry
+      description: Country of account.
+      type: String
+    - contextPath: Impartner.Account.mailingPostalCode
+      description: Account postal code.
+      type: String
+    - contextPath: Impartner.Account.mailingState
+      description: State of account.
+      type: String
+    - contextPath: Impartner.Account.mailingStreet
+      description: Street of account.
+      type: String
+    - contextPath: Impartner.Account.name
+      description: Account Name.
+      type: String
+    - contextPath: Impartner.Account.recordLink
+      description: Link to account in Impartner.
+      type: String
+    - contextPath: Impartner.Account.website
+      description: Account website.
+      type: String
+    - contextPath: Impartner.Account.mainProductToIntegrate
+      description: Partner main product they are looking to integrate with.
+      type: String
+    - contextPath: Impartner.Account.mutualCustomer
+      description: Partner mutual customer with XSOAR.
+      type: String
+    - contextPath: Impartner.Account.tpA_Product_s__cf
+      description: Cortex products TPA is signed for.
+      type: String
+    - contextPath: Impartner.Account.target_customers__cf
+      description: Target customers for partner.
+      type: String
+    - contextPath: Impartner.Account.company_Main_Market_Segment__cf
+      description: Partner main market segment.
+      type: String
+    - contextPath: Impartner.Account.panW_Integration_Product__cf
+      description: Cortex integrated products.
+      type: String
+    - contextPath: Impartner.Account.account_Integration_Status__cf
+      description: Account integration status.
+      type: String
+    - contextPath: Impartner.Account.accountTimeline
+      description: Account timeline.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

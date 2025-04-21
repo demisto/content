@@ -1,0 +1,156 @@
+{
+  "execution_id": "77bdfe6464ac4c_98969_inv",
+  "number_of_results": 24,
+  "query_cost": {
+    "3204872200335": 0.0017491666666666667
+  },
+  "query_name": "",
+  "remaining_quota": 64.90273805555556,
+  "results": [
+    {
+      "_time": 1734238800000,
+      "count": 3961,
+      "time_eng": "Dec 15 05 AM",
+      "time_ymd": "2024-12-15 05 AM"
+    },
+    {
+      "_time": 1734256800000,
+      "count": 3906,
+      "time_eng": "Dec 15 10 AM",
+      "time_ymd": "2024-12-15 10 AM"
+    },
+    {
+      "_time": 1734210000000,
+      "count": 4084,
+      "time_eng": "Dec 14 21 PM",
+      "time_ymd": "2024-12-14 21 PM"
+    },
+    {
+      "_time": 1734271200000,
+      "count": 3887,
+      "time_eng": "Dec 15 14 PM",
+      "time_ymd": "2024-12-15 14 PM"
+    },
+    {
+      "_time": 1734206400000,
+      "count": 4160,
+      "time_eng": "Dec 14 20 PM",
+      "time_ymd": "2024-12-14 20 PM"
+    },
+    {
+      "_time": 1734264000000,
+      "count": 3949,
+      "time_eng": "Dec 15 12 PM",
+      "time_ymd": "2024-12-15 12 PM"
+    },
+    {
+      "_time": 1734217200000,
+      "count": 3921,
+      "time_eng": "Dec 14 23 PM",
+      "time_ymd": "2024-12-14 23 PM"
+    },
+    {
+      "_time": 1734192000000,
+      "count": 4138,
+      "time_eng": "Dec 14 16 PM",
+      "time_ymd": "2024-12-14 16 PM"
+    },
+    {
+      "_time": 1734249600000,
+      "count": 3841,
+      "time_eng": "Dec 15 08 AM",
+      "time_ymd": "2024-12-15 08 AM"
+    },
+    {
+      "_time": 1734242400000,
+      "count": 3954,
+      "time_eng": "Dec 15 06 AM",
+      "time_ymd": "2024-12-15 06 AM"
+    },
+    {
+      "_time": 1734224400000,
+      "count": 3977,
+      "time_eng": "Dec 15 01 AM",
+      "time_ymd": "2024-12-15 01 AM"
+    },
+    {
+      "_time": 1734246000000,
+      "count": 3978,
+      "time_eng": "Dec 15 07 AM",
+      "time_ymd": "2024-12-15 07 AM"
+    },
+    {
+      "_time": 1734195600000,
+      "count": 4495,
+      "time_eng": "Dec 14 17 PM",
+      "time_ymd": "2024-12-14 17 PM"
+    },
+    {
+      "_time": 1734202800000,
+      "count": 4033,
+      "time_eng": "Dec 14 19 PM",
+      "time_ymd": "2024-12-14 19 PM"
+    },
+    {
+      "_time": 1734253200000,
+      "count": 3996,
+      "time_eng": "Dec 15 09 AM",
+      "time_ymd": "2024-12-15 09 AM"
+    },
+    {
+      "_time": 1734231600000,
+      "count": 4086,
+      "time_eng": "Dec 15 03 AM",
+      "time_ymd": "2024-12-15 03 AM"
+    },
+    {
+      "_time": 1734267600000,
+      "count": 3993,
+      "time_eng": "Dec 15 13 PM",
+      "time_ymd": "2024-12-15 13 PM"
+    },
+    {
+      "_time": 1734260400000,
+      "count": 3959,
+      "time_eng": "Dec 15 11 AM",
+      "time_ymd": "2024-12-15 11 AM"
+    },
+    {
+      "_time": 1734199200000,
+      "count": 4066,
+      "time_eng": "Dec 14 18 PM",
+      "time_ymd": "2024-12-14 18 PM"
+    },
+    {
+      "_time": 1734235200000,
+      "count": 4377,
+      "time_eng": "Dec 15 04 AM",
+      "time_ymd": "2024-12-15 04 AM"
+    },
+    {
+      "_time": 1734228000000,
+      "count": 3891,
+      "time_eng": "Dec 15 02 AM",
+      "time_ymd": "2024-12-15 02 AM"
+    },
+    {
+      "_time": 1734213600000,
+      "count": 3823,
+      "time_eng": "Dec 14 22 PM",
+      "time_ymd": "2024-12-14 22 PM"
+    },
+    {
+      "_time": 1734220800000,
+      "count": 3937,
+      "time_eng": "Dec 15 00 AM",
+      "time_ymd": "2024-12-15 00 AM"
+    },
+    {
+      "_time": 1734188400000,
+      "count": 4151,
+      "time_eng": "Dec 14 15 PM",
+      "time_ymd": "2024-12-14 15 PM"
+    }
+  ],
+  "status": "SUCCESS"
+}

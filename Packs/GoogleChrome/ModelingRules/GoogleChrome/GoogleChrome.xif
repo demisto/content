@@ -1,26 +1,40 @@
 [MODEL: dataset = google_workspace_chrome_raw]
-// Extracting fields
-alter
-        device_platform = lowercase(parameters -> DEVICE_PLATFORM),
-        url_category = uppercase(parameters -> URL_CATEGORY)
-// Mapping to xdm fields
+// Extracting and organizing data from logs 
+alter tmp_event_name = arrayindex(events -> [], 0) -> name
+
+| alter tmp_event_os = concat(parameters -> os_platform," ", parameters -> os_version),
+        event_name = coalesce(tmp_event_name , parameters -> event)
+| alter temporary_os = coalesce(tmp_event_os , parameters -> device_platform)
+
+|alter
+        device_platform = lowercase(temporary_os),
+        tmp_local_url = coalesce(parameters -> localized_url_category, parameters -> url_category),
+        tmp_int_user_username = coalesce(parameters ->profile_user, parameters ->profile_user_name),
+        tmp_reason = coalesce(parameters -> event_reason, parameters -> reason),
+        tmp_result = coalesce(parameters -> event_result, parameters -> result)
+
+|alter 
+        url_category = uppercase(tmp_local_url)
+
+// Mapping to XDM fields
 | alter
-        xdm.event.type = events -> name,
-        xdm.event.description = parameters -> EVENT_REASON,
-        xdm.event.outcome_reason = parameters -> TRIGGER_TYPE,
-        xdm.source.host.device_id = parameters -> DEVICE_ID,
-        xdm.source.host.hostname = parameters -> DEVICE_NAME,
-        xdm.source.host.os_family = if(device_platform contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, device_platform contains "mac", XDM_CONST.OS_FAMILY_MACOS, device_platform contains "linux", XDM_CONST.OS_FAMILY_LINUX, device_platform contains "android", XDM_CONST.OS_FAMILY_ANDROID, device_platform contains "ios", XDM_CONST.OS_FAMILY_IOS, device_platform contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, device_platform contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, device_platform contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, device_platform contains "centos", XDM_CONST.OS_FAMILY_CENTOS, device_platform contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, device_platform contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, device_platform contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(device_platform)),
-        xdm.source.host.os = parameters -> DEVICE_PLATFORM,
-        xdm.network.http.browser = concat(parameters -> CLIENT_TYPE, " ", parameters -> BROWSER_VERSION),
-        xdm.source.user.username = lowercase(parameters -> DEVICE_USER),
-        xdm.intermediate.user.username = lowercase(parameters -> PROFILE_USER_NAME),
-        xdm.observer.action = parameters -> EVENT_RESULT,
-        xdm.network.http.url = parameters -> URL,
+        xdm.event.type = event_name,
+        xdm.event.description = tmp_reason,
+        xdm.event.outcome_reason = parameters -> trigger_type,
+        xdm.source.host.device_id = parameters -> device_id,
+        xdm.source.host.hostname = parameters -> device_name,
+        xdm.source.host.os = device_platform,
+        xdm.source.user.domain = parameters -> trigger_user,
+        xdm.network.http.browser = concat(parameters -> client_type, " ", parameters -> browser_version),
+        xdm.source.user.username = lowercase(parameters -> device_user),
+        xdm.intermediate.user.username = lowercase(tmp_int_user_username),
+        xdm.observer.action = tmp_result,
+        xdm.source.user_agent = parameters -> user_agent,
+        xdm.target.resource.name = parameters -> app_name,
+        xdm.target.resource.id = parameters -> app_id,
+        xdm.target.file.filename = parameters -> content_name,
+        xdm.target.file.sha256 = parameters -> content_hash,
+        xdm.target.file.size = to_integer(parameters -> content_size),
+        xdm.network.http.url = parameters -> url,
         xdm.network.http.url_category = if(url_category contains "ABORTION", XDM_CONST.URL_CATEGORY_ABORTION, url_category contains "DRUGS", XDM_CONST.URL_CATEGORY_ABUSED_DRUGS, url_category contains "ADULT", XDM_CONST.URL_CATEGORY_ADULT, url_category contains "ALCOHOL" or url_category contains "TOBACCO", XDM_CONST.URL_CATEGORY_ALCOHOL_AND_TOBACCO, url_category contains "AUCTIONS", XDM_CONST.URL_CATEGORY_AUCTIONS, url_category contains "BUSINESS" or url_category contains "ECONOMY", XDM_CONST.URL_CATEGORY_BUSINESS_AND_ECONOMY, url_category contains "COMMAND AND CONTROL" or url_category contains "C&C", XDM_CONST.URL_CATEGORY_COMMAND_AND_CONTROL, url_category contains "COMPUTER" or url_category contains "INTERNET", XDM_CONST.URL_CATEGORY_COMPUTER_AND_INTERNET_INFO, url_category contains "CONTENT DELIVERY NETWORKS" or url_category contains "CDN", XDM_CONST.URL_CATEGORY_CONTENT_DELIVERY_NETWORKS, url_category contains "COPYRIGHT", XDM_CONST.URL_CATEGORY_COPYRIGHT_INFRINGEMENT, url_category contains "CRYPTO", XDM_CONST.URL_CATEGORY_CRYPTOCURRENCY, url_category contains "DATING", XDM_CONST.URL_CATEGORY_DATING, url_category contains "DYNAMIC DNS", XDM_CONST.URL_CATEGORY_DYNAMIC_DNS, url_category contains "EDUCATIONAL INSTITUTIONS", XDM_CONST.URL_CATEGORY_EDUCATIONAL_INSTITUTIONS, url_category contains "ENTERTAINMENT" and url_category contains "ARTS", XDM_CONST.URL_CATEGORY_ENTERTAINMENT_AND_ARTS, url_category contains "EXTREMISM", XDM_CONST.URL_CATEGORY_EXTREMISM, url_category contains "FINANCIAL" or url_category contains "FINANCE", XDM_CONST.URL_CATEGORY_FINANCIAL_SERVICES, url_category contains "GAMBLING", XDM_CONST.URL_CATEGORY_GAMBLING, url_category contains "GAMES", XDM_CONST.URL_CATEGORY_GAMES, url_category contains "GOVERNMENT", XDM_CONST.URL_CATEGORY_GOVERNMENT, url_category contains "GRAYWARE", XDM_CONST.URL_CATEGORY_GRAYWARE, url_category contains "HACKING", XDM_CONST.URL_CATEGORY_HACKING, url_category contains "HEALTH" or url_category contains "MEDICINE", XDM_CONST.URL_CATEGORY_HEALTH_AND_MEDICINE, url_category contains "HOME" or url_category contains "GARDEN", XDM_CONST.URL_CATEGORY_HOME_AND_GARDEN, url_category contains "HUNTING" or url_category contains "FISHING", XDM_CONST.URL_CATEGORY_HUNTING_AND_FISHING, url_category contains "INSUFFICIENT CONTENT", XDM_CONST.URL_CATEGORY_INSUFFICIENT_CONTENT, url_category contains "INTERNET COMMUNICATIONS" and url_category contains "TELEPHONY", XDM_CONST.URL_CATEGORY_INTERNET_COMMUNICATIONS_AND_TELEPHONY, url_category contains "INTERNET PORTALS", XDM_CONST.URL_CATEGORY_INTERNET_PORTALS, url_category contains "JOB", XDM_CONST.URL_CATEGORY_JOB_SEARCH, url_category contains "LEGAL", XDM_CONST.URL_CATEGORY_LEGAL, url_category contains "MALWARE", XDM_CONST.URL_CATEGORY_MALWARE, url_category contains "MILITARY", XDM_CONST.URL_CATEGORY_MILITARY, url_category contains "MOTOR VEHICLES", XDM_CONST.URL_CATEGORY_MOTOR_VEHICLES, url_category contains "MUSIC", XDM_CONST.URL_CATEGORY_MUSIC, url_category contains "DOMAIN" and url_category contains "REGIST", XDM_CONST.URL_CATEGORY_NEWLY_REGISTERED_DOMAIN, url_category contains "NEWS", XDM_CONST.URL_CATEGORY_NEWS, url_category contains "NOT RESOLVED", XDM_CONST.URL_CATEGORY_NOT_RESOLVED, url_category contains "NUDITY", XDM_CONST.URL_CATEGORY_NUDITY, url_category contains "ONLINE STORAGE" and url_category contains "BACKUP", XDM_CONST.URL_CATEGORY_ONLINE_STORAGE_AND_BACKUP, url_category contains "PARKED", XDM_CONST.URL_CATEGORY_PARKED, url_category contains "PEER TO PEER", XDM_CONST.URL_CATEGORY_PEER_TO_PEER, url_category contains "PERSONAL SITES" or url_category contains "BLOG", XDM_CONST.URL_CATEGORY_PERSONAL_SITES_AND_BLOGS, url_category contains "PHILOSOPHY" or url_category contains "POLITICAL ADVOCACY", XDM_CONST.URL_CATEGORY_PHILOSOPHY_AND_POLITICAL_ADVOCACY, url_category contains "PHISHING", XDM_CONST.URL_CATEGORY_PHISHING, url_category contains "PRIVATE IP ADDRESSES", XDM_CONST.URL_CATEGORY_PRIVATE_IP_ADDRESSES, url_category contains "PROXY" or url_category contains "ANONYMIZERS", XDM_CONST.URL_CATEGORY_PROXY_AVOIDANCE_AND_ANONYMIZERS, url_category contains "QUESTIONABLE", XDM_CONST.URL_CATEGORY_QUESTIONABLE, url_category contains "REAL ESTATE", XDM_CONST.URL_CATEGORY_REAL_ESTATE, url_category contains "HOBBIES" or url_category contains "RECREATION", XDM_CONST.URL_CATEGORY_RECREATION_AND_HOBBIES, url_category contains "REFERENCE", XDM_CONST.URL_CATEGORY_REFERENCE_AND_RESEARCH, url_category contains "RELIGION", XDM_CONST.URL_CATEGORY_RELIGION, url_category contains "SEARCH ENGINES", XDM_CONST.URL_CATEGORY_SEARCH_ENGINES, url_category contains "SEX EDUCATION", XDM_CONST.URL_CATEGORY_SEX_EDUCATION, url_category contains "SHAREWARE" and url_category contains "FREEWARE", XDM_CONST.URL_CATEGORY_SHAREWARE_AND_FREEWARE, url_category contains "SHOPPING", XDM_CONST.URL_CATEGORY_SHOPPING, url_category contains "SOCIAL_NETWORK", XDM_CONST.URL_CATEGORY_SOCIAL_NETWORKING, url_category contains "SOCIETY", XDM_CONST.URL_CATEGORY_SOCIETY, url_category contains "SPORTS", XDM_CONST.URL_CATEGORY_SPORTS, url_category contains "STOCK", XDM_CONST.URL_CATEGORY_STOCK_ADVICE_AND_TOOLS, url_category contains "MEDIA" and url_category contains "STREAM", XDM_CONST.URL_CATEGORY_STREAMING_MEDIA, url_category contains "INTIMATE APPAREL", XDM_CONST.URL_CATEGORY_SWIMSUITS_AND_INTIMATE_APPAREL, url_category contains "TRAINING" and url_category contains "Sport", XDM_CONST.URL_CATEGORY_TRAINING_AND_TOOLS, url_category contains "TRANSLATION", XDM_CONST.URL_CATEGORY_TRANSLATION, url_category contains "TRAVEL", XDM_CONST.URL_CATEGORY_TRAVEL, url_category contains "UNKNOWN", XDM_CONST.URL_CATEGORY_UNKNOWN, url_category contains "WEAPONS", XDM_CONST.URL_CATEGORY_WEAPONS, url_category contains "WEB ADVERTISEMENTS", XDM_CONST.URL_CATEGORY_WEB_ADVERTISEMENTS, url_category contains "WEB HOSTING", XDM_CONST.URL_CATEGORY_WEB_HOSTING, url_category contains "WEB BASED EMAIL", XDM_CONST.URL_CATEGORY_WEB_BASED_EMAIL, to_string(url_category)),
-        xdm.source.user_agent = parameters -> USER_AGENT,
-        xdm.target.resource.name = parameters -> APP_NAME,
-        xdm.target.resource.id = parameters -> APP_ID,
-        xdm.target.file.filename = parameters -> CONTENT_NAME,
-        xdm.target.file.sha256 = parameters -> CONTENT_HASH,
-        xdm.target.file.size = to_integer(parametersint -> CONTENT_SIZE);
+        xdm.source.host.os_family = if(device_platform contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, device_platform contains "mac", XDM_CONST.OS_FAMILY_MACOS, device_platform contains "linux", XDM_CONST.OS_FAMILY_LINUX, device_platform contains "android", XDM_CONST.OS_FAMILY_ANDROID, device_platform contains "ios", XDM_CONST.OS_FAMILY_IOS, device_platform contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, device_platform contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, device_platform contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, device_platform contains "centos", XDM_CONST.OS_FAMILY_CENTOS, device_platform contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, device_platform contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, device_platform contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(device_platform));

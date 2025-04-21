@@ -1,0 +1,76 @@
+{
+    "description": "Maps incoming CTM360 HackerView incidents.",
+    "feed": false,
+    "id": "CTM360-HackerView - Incoming Mapper",
+    "mapping": {
+        "HackerView Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Affected Hosts": {
+                    "simple": "CustomFields.host"
+                },
+                "CTM360 HackerView Asset Type": {
+                    "simple": "CustomFields.asset_type"
+                },
+                "CTM360 HackerView Potential Attack Types": {
+                    "simple": "CustomFields.potential_attack_type"
+                },
+                "CTM360 HackerView Potential Impact": {
+                    "simple": "CustomFields.potential_impact"
+                },
+                "CTM360 HackerView Technologies": {
+                    "simple": "CustomFields.technologies"
+                },
+				"CVE ID": {
+					"simple": "CustomFields.cve_id"
+				},
+                "Categories": {
+                    "simple": "CustomFields.issue_category"
+                },
+                "External Confidence": {
+                    "simple": "CustomFields.confidence"
+                },
+                "External Link": {
+                    "simple": "CustomFields.hackerview_link"
+                },
+                "External Status": {
+                    "simple": "external_status"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "xsoar_mirroring.mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "xsoar_mirroring.mirror_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "xsoar_mirroring.mirror_instance"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "occurred",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "CTM360-HackerView - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

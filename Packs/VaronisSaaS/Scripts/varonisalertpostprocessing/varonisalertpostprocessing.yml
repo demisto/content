@@ -1,0 +1,16 @@
+comment: Varonis alert post processing script to set the alert status to closed when an incident is closed.
+commonfields:
+  id: varonis-alert-post-processing
+  version: -1
+enabled: true
+name: varonis-alert-post-processing
+script: '-'
+tags:
+- post-processing
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.1983910
+tests:
+- No tests
+fromversion: 6.5.0

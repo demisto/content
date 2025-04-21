@@ -136,7 +136,7 @@
 ]</pre>
 <p> </p>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/33279417/34202907-e1afa1c2-e581-11e7-8bfe-4d53507a5d13.png" width="684" height="130"></p>
+<p><img src="../../doc_files/34202907-e1afa1c2-e581-11e7-8bfe-4d53507a5d13.png" width="684" height="130"></p>
 <p class="wysiwyg-indent6 wysiwyg-text-align-left"> </p>
 <h3 id="h_678957016291530013276887">2. Get incident information</h3>
 <hr>
@@ -216,7 +216,7 @@
 "Comment":"CommentTest"
 }</pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/33279417/34202791-8091b81c-e581-11e7-985e-81d2f6f149e9.png" width="672" height="388"></p>
+<p><img src="../../doc_files/34202791-8091b81c-e581-11e7-985e-81d2f6f149e9.png" width="672" height="388"></p>
 <h3 id="h_898299089511530013283952">3. Update an incident</h3>
 <hr>
 <p>Updates an incident's workflow, specified by number. Optional parameters that are not specified are taken from the current workflow. If there are none, an error is thrown, requiring a value for the parameter.</p>
@@ -250,4 +250,4 @@
 <h5>Raw Output</h5>
 <pre>Update status: Updated successfully</pre>
 <h5>War Room Output</h5>
-<p><img src="https://user-images.githubusercontent.com/33279417/34202921-ec3b607c-e581-11e7-8e61-363534a12eae.png" width="334" height="66"></p>
+<p><img src="../../doc_files/34202921-ec3b607c-e581-11e7-8e61-363534a12eae.png" width="334" height="66"></p>

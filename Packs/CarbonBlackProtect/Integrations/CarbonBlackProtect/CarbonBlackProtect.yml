@@ -76,21 +76,21 @@ name: CarbonBlackProtectionV2
 script:
   commands:
   - arguments:
-    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field. Example: group=osShortName'
+    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field. Example: group=osShortName.'
       name: group
     - description: '(Int) Is maximum number of results to retrieve. If not specified: First 1000 results will be returned. If set to -1: Only result count will be returned, without actual results. Offset parameter is ignored in this case. If set to 0: All results will be returned. Offset parameter is ignored in this case. Note that some result sets could be very large, resulting in query timeout. Therefore, unless you know that query will not return more than 1000 results, it is recommended to retrieve data in chunks using offset and limit.'
       name: limit
-    - description: (Int) Offset in data set
+    - description: (Int) Offset in data set.
       name: offset
     - description: 'A condition contains three parts: name, operator, and value. Name is any valid field in the object that is being queried. Operator (: LIKE, ! NOT LIKE, < Less than, > Greater than, + logical AND, - logical OR, | separating values) is any of valid operators (see below). All operators consist of a single character. Value is compared with operator and depends on field type. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#searching'
       name: query
     - description: 'Sorting is optional and can be defined with a single attribute: &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order (if omitted) is ASC. xyz is field name from the result set.'
       name: sort
-    - description: Name of the file under which this unique hash was first seen
+    - description: Name of the file under which this unique hash was first seen.
       name: fileName
-    - description: Type of the file
+    - description: Type of the file.
       name: fileType
-    - description: Id of computer where this file was first seen. You can get this by executing cbp-computer-search command
+    - description: Id of computer where this file was first seen. You can get this by executing cbp-computer-search command.
       name: computerId
     - auto: PREDEFINED
       description: |-
@@ -98,7 +98,7 @@ script:
         -1=Unknown
         0=Clean
         50=Potential risk
-        100=Malicious
+        100=Malicious.
       name: threat
       predefined:
       - Unknown
@@ -112,7 +112,7 @@ script:
         2=Approved
         3=Banned
         4=Approved by Policy
-        5=Banned by Policy
+        5=Banned by Policy.
       name: fileState
       predefined:
       - Unapproved
@@ -120,7 +120,7 @@ script:
       - Banned
       - Approved by Policy
       - Banned by Polic
-    - description: Hash of the file
+    - description: Hash of the file.
       name: hash
     description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filecatalog'
     name: cbp-fileCatalog-search
@@ -157,17 +157,17 @@ script:
       name: query
     - description: (Int) Offset in data set.
       name: offset
-    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field, for example: group=osShortName'
+    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute: &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order (if omitted) is ascending (ASC). xyz is field name from the result set.'
       name: sort
     - description: Maximum number of results to retrieve (Int). If not specified, the first 1000 results will be returned. If set to "-1", only the result count will be returned, without actual results, and the Offset parameter is ignored. If set to "0", all results will be returned, and the Offset parameter is ignored. Some result sets might be very large, resulting in query timeout. Therefore, unless you know that query will not return more than 1000 results, it is recommended to retrieve data in chunks using offset and limit.
       name: limit
-    - description: Computer name
+    - description: Computer name.
       name: name
-    - description: Last known IP address of this computer
+    - description: Last known IP address of this computer.
       name: ipAddress
-    - description: MAC address of adapter used to connect to the CB Protection Server
+    - description: MAC address of adapter used to connect to the CB Protection Server.
       name: macAddress
     - description: CSV list of fields to limit the fields returned from the console.
       name: fields
@@ -185,7 +185,7 @@ script:
       description: (Int) Unique computer ID.
       name: id
       required: true
-    - description: (String) Computer name can be changed only if computer is a template
+    - description: (String) Computer name can be changed only if computer is a template.
       name: name
     - description: (String) Custom computer tag.
       name: computerTag
@@ -309,13 +309,13 @@ script:
       name: limit
     - description: (Int) Offset in the data set.
       name: offset
-    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field, for example: group=osShortName'
+    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute, where xyz is the field name from the result set: &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order is ascending (ASC). '
       name: sort
-    - description: Id of computer associated with this fileInstance
+    - description: Id of computer associated with this fileInstance.
       name: computerId
-    - description: Name of the file on the agent
+    - description: Name of the file on the agent.
       name: fileName
     description: 'Search for file instances. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
     name: cbp-fileInstance-search
@@ -342,7 +342,7 @@ script:
       name: limit
     - description: (Int) Offset in the data set.
       name: offset
-    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field, for example: group=osShortName'
+    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field, for example: group=osShortName.'
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute, where xyz is field name from the result set: &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order is ascending (ASC). '
       name: sort
@@ -356,7 +356,7 @@ script:
         4 = Policy Enforcement
         5 = Discovery
         6 = General Management
-        8 = Internal Events
+        8 = Internal Events.
       name: type
       predefined:
       - Server Management
@@ -367,11 +367,11 @@ script:
       - Discovery
       - General Management
       - Internal Events
-    - description: Id of computer associated with this event. You can get this by executing cbp-computer-search command
+    - description: Id of computer associated with this event. You can get this by executing cbp-computer-search command.
       name: computerId
-    - description: IP address associated with this event
+    - description: IP address associated with this event.
       name: ipAddress
-    - description: Name of the file associated with this event
+    - description: Name of the file associated with this event.
       name: fileName
     - auto: PREDEFINED
       description: |-
@@ -381,7 +381,7 @@ script:
         4 = Warning
         5 = Notice
         6 = Info
-        7 = Debug
+        7 = Debug.
       name: severity
       predefined:
       - Critical
@@ -390,9 +390,9 @@ script:
       - Notice
       - Info
       - Debug
-    - description: User name associated with this event
+    - description: User name associated with this event.
       name: userName
-    - description: Id of fileCatalog entry associated with this fileRule. Can be null if file hasn’t been seen on any endpoints yet. You can get this by executing cbp-fileCatalog-search
+    - description: Id of fileCatalog entry associated with this fileRule. Can be null if file hasn’t been seen on any endpoints yet. You can get this by executing cbp-fileCatalog-search.
       name: fileCatalogId
     description: 'Search for events. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
     name: cbp-event-search
@@ -482,7 +482,7 @@ script:
       name: limit
     - description: (Int) Offset in the data set.
       name: offset
-    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field. Example: group=osShortName'
+    - description: 'Grouping is optional and can be defined with a single attribute: &group=xyz. There can be only one grouping field. Example: group=osShortName.'
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute, where xyz is field name from the result set: &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order is ascending (ASC). '
       name: sort
@@ -548,23 +548,23 @@ script:
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute where xyz is field name from the result set: &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order is ascending (ASC). '
       name: sort
-    - description: Id of fileCatalog entry associated with this fileRule. Can be null if file hasn’t been seen on any endpoints yet. You can get this by executing cbp-fileCatalog-search
+    - description: Id of fileCatalog entry associated with this fileRule. Can be null if file hasn’t been seen on any endpoints yet. You can get this by executing cbp-fileCatalog-search.
       name: fileCatalogId
-    - description: Name of this rule
+    - description: Name of this rule.
       name: name
     - auto: PREDEFINED
       description: |-
         File state for this rule. Can be one of:
         1=Unapproved
         2=Approved
-        3=Banned
+        3=Banned.
       name: fileState
       predefined:
       - Unapproved
       - Approved
       - Banned
     - auto: PREDEFINED
-      description: "Mechanism that created this rule. Can be one of: \n1 = Manual\n2 = Trusted Directory\n3 = Reputation\n4 = Imported\n5 = External (API)\n6 = Event Rule\n7 = Application Template\n8 = Unified Management"
+      description: "Mechanism that created this rule. Can be one of: \n1 = Manual\n2 = Trusted Directory\n3 = Reputation\n4 = Imported\n5 = External (API)\n6 = Event Rule\n7 = Application Template\n8 = Unified Management."
       name: sourceType
       predefined:
       - Manual
@@ -575,9 +575,9 @@ script:
       - Event Rule
       - Application Template
       - Unified Management
-    - description: Hash associated with this rule. Note that hash will be available only if rule was created through md5 or sha-1 hash. If rule was created through fileCatalogId or sha-256 hash that exists in the catalog, this field will be empty
+    - description: Hash associated with this rule. Note that hash will be available only if rule was created through md5 or sha-1 hash. If rule was created through fileCatalogId or sha-256 hash that exists in the catalog, this field will be empty.
       name: hash
-    - description: File name associated with this rule. Note that file name will be available only if rule was created through file name. If rule was created through fileCatalogId or hash, this field will be empty
+    - description: File name associated with this rule. Note that file name will be available only if rule was created through file name. If rule was created through fileCatalogId or hash, this field will be empty.
       name: fileName
     description: 'Search for file rules. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
     name: cbp-fileRule-search
@@ -640,7 +640,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: (Int) Unique id of this fileRule
+      description: (Int) Unique id of this fileRule.
       name: id
       required: true
     description: 'Deletes the file rule. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filerule'
@@ -663,7 +663,7 @@ script:
         30=Medium (Prompt Unapproved)
         40=Low (Monitor Unapproved)
         60=None (Visibility)
-        80=None (Disabled)
+        80=None (Disabled).
       name: enforcementLevel
       predefined:
       - High (Block Unapproved)
@@ -678,7 +678,7 @@ script:
         30=Medium (Prompt Unapproved)
         40=Low (Monitor Unapproved)
         60=None (Visibility)
-        80=None (Disabled)
+        80=None (Disabled).
       name: disconnectedEnforcementLevel
       predefined:
       - High (Block Unapproved)
@@ -771,7 +771,7 @@ script:
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute where xyz is field name from the result set: &sort=xyz [ASC|DESC]. There can be only one sorting field. Default sort order is ascending (ASC). '
       name: sort
-    - description: Subject name of leaf certificate for this publisher
+    - description: Subject name of leaf certificate for this publisher.
       name: name
     - auto: PREDEFINED
       description: |-
@@ -779,7 +779,7 @@ script:
         0=Not trusted (Unknown)
         1=Low
         2=Medium
-        3=High
+        3=High.
       name: publisherReputation
       predefined:
       - Not trusted (Unknown)
@@ -793,7 +793,7 @@ script:
         2=Approved
         3=Banned
         4=Approved By Policy
-        5=Banned By Policy
+        5=Banned By Policy.
       name: publisherState
       predefined:
       - Unapproved
@@ -891,7 +891,7 @@ script:
       description: The DBot score vendor.
       type: string
     - contextPath: DBotScore.Score
-      description: The DBot score
+      description: The DBot score.
       type: number
   - arguments:
     - description: (Int) ID of the fileCatalog entry for which analysis is requested. This value can be fetched via cbp-fileCatalog-search command.
@@ -957,12 +957,12 @@ script:
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute: &sort=xyz [ASC|DESC], where xyz is the field name from the result set. There can be only one sorting field. Default sort order is ascending (ASC). '
       name: sort
-    - description: Id of fileCatalog entry associated with this analysis. You can get this by executing cbp-fileCatalog-search
+    - description: Id of fileCatalog entry associated with this analysis. You can get this by executing cbp-fileCatalog-search.
       name: fileCatalogId
-    - description: Id of connector associated with this analysis. You can get this by executing cbp-connector-search
+    - description: Id of connector associated with this analysis. You can get this by executing cbp-connector-search.
       name: connectorId
-    - description: |
-        Name of the file where file exists on the endpoint
+    - description: |-
+        Name of the file where file exists on the endpoint.
       name: fileName
     - auto: PREDEFINED
       description: |-
@@ -972,7 +972,7 @@ script:
         2 = processed (file is processed but results are not available yet)
         3 = analyzed (file is processed and results are available)
         4 = error
-        5 = cancelled
+        5 = cancelled.
       name: analysisStatus
       predefined:
       - scheduled
@@ -987,7 +987,7 @@ script:
         0 = Not yet available
         1 = File is clean
         2 = File is a potential threat
-        3 = File is malicious
+        3 = File is malicious.
       name: analysisResult
       predefined:
       - Not yet available
@@ -1142,11 +1142,11 @@ script:
       name: group
     - description: 'Sorting is optional and can be defined with a single attribute: &sort=xyz [ASC|DESC], where xyz is the field name from the result set. There can be only one sorting field. Default sort order is ascending (ASC).'
       name: sort
-    - description: Id of computer entry associated with this analysis. This can be fetched via cbp-computer-search
+    - description: Id of computer entry associated with this analysis. This can be fetched via cbp-computer-search.
       name: computerId
-    - description: Id of fileCatalog entry associated with this upload. This can be fetched via cbp-fileCatalog-search
+    - description: Id of fileCatalog entry associated with this upload. This can be fetched via cbp-fileCatalog-search.
       name: fileCatalogId
-    - description: Name of the file where file exists on the endpoint
+    - description: Name of the file where file exists on the endpoint.
       name: fileName
     - auto: PREDEFINED
       description: |-
@@ -1157,7 +1157,7 @@ script:
         3 = Completed
         4 = Error
         5 = Cancelled
-        6 = Deleted
+        6 = Deleted.
       name: uploadStatus
       predefined:
       - Queued
@@ -1272,7 +1272,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: ID of the approval request to update
+      description: ID of the approval request to update.
       name: id
       required: true
     - auto: PREDEFINED
@@ -1285,7 +1285,7 @@ script:
         3=Resolved - Rule Change4=Resolved - Installer
         5=Resolved - Updater
         6=Resolved - Publisher
-        7=Resolved - Other
+        7=Resolved - Other.
       name: resolution
       predefined:
       - Rejected
@@ -1317,23 +1317,23 @@ script:
       description: Comments added by the user that resolved the request.
       type: String
     - contextPath: CBP.ApprovalRequest.Resolution
-      description: 'Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected, 2=Resolved - Approved, 3=Resolved - Rule Change, 4=Resolved - Installer, 5=Resolved - Updater, 6=Resolved - Publisher, 7=Resolved - Other'
+      description: 'Resolution of request. Can be one of: 0=Not Resolved, 1=Rejected, 2=Resolved - Approved, 3=Resolved - Rule Change, 4=Resolved - Installer, 5=Resolved - Updater, 6=Resolved - Publisher, 7=Resolved - Other.'
       type: Number
     - contextPath: CBP.ApprovalRequest.Status
-      description: 'Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated'
+      description: 'Request status. Can be one of: 1=New, 2=Open, 3=Closed, 4=Escalated.'
       type: Number
   - arguments:
     - description: (String) Hash associated with this rule. This parameter is not required if fileCatalogId is supplied.
       name: hash
     - auto: PREDEFINED
-      description: '(Int) File state for this rule. Can be one of: 1=Unapproved 2=Approved 3=Banned'
+      description: '(Int) File state for this rule. Can be one of: 1=Unapproved 2=Approved 3=Banned.'
       name: fileState
       predefined:
       - '1'
       - '2'
       - '3'
       required: true
-    - description: (Int) Unique id of this fileRule
+    - description: (Int) Unique id of this fileRule.
       name: id
     - description: (Int) ID of the fileCatalog entry associated with this fileRule. Can be "0" if creating or modifying the rule based on the hash or file name.
       name: fileCatalogId
@@ -1475,7 +1475,7 @@ script:
     - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.115186
   subtype: python3
   isfetch: true
   script: ''

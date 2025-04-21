@@ -12,7 +12,7 @@
     "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
-    "useAsKpi": false,
+    "useAsKpi": true,
     "locked": false,
     "system": false,
     "content": true,

@@ -1,0 +1,153 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Xpanse Feed
+  version: -1
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
+  display: API Key ID
+  displaypassword: API Key
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  section: Collect
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+  display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Good
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  defaultvalue: CLEAR
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER+STRICT
+  - AMBER
+  - GREEN
+  - CLEAR
+  type: 15
+  section: Collect
+  required: false
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'false'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- name: feedExpirationPolicy
+  defaultvalue: suddenDeath
+  display: ''
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+  required: false
+- defaultvalue: '1440'
+  name: feedFetchInterval
+  display: Feed Fetch Interval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: Use this feed to retrieve the discovered IPs/Domains/Certificates from Cortex Xpanse asset database.
+display: 'Xpanse Feed'
+name: Xpanse Feed
+script:
+  commands:
+  - arguments:
+    - description: The maximum number of indicators to return.
+      name: limit
+      required: true
+    - defaultValue: yes
+      description: Retrieve discovered IPs.
+      name: ip
+    - defaultValue: yes
+      description: Retrieve discovered domains.
+      name: domain
+    - defaultValue: yes
+      description: Retrieve discovered certificates.
+      name: certificate
+    description: Retrieves a limited number of indicators.
+    name: xpanse-get-indicators
+    outputs:
+    - contextPath: ASM.Indicators.Name
+      description: The name of the indicator.
+      type: String
+    - contextPath: ASM.Indicators.Description
+      description: The description of the indicator.
+      type: String
+    - contextPath: ASM.Indicators.Type
+      description: The type of the indicator.
+      type: String
+  feed: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

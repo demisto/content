@@ -8,6 +8,6 @@ The Cortex XSOAR content pack includes a functionality that helps integrate the 
 
 For more information, visit [Cyble Inc.](https://cyble.com/)
 
-[![Cyble Overview](https://raw.githubusercontent.com/demisto/content/master/Packs/CybleEventsV2/Author_image.png)](https://cyble.com)
+[![Cyble Overview](doc_files/Author_image.png)](https://cyble.com)
 
 

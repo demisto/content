@@ -1,22 +1,18 @@
 Query Threat Crowd for reports.
 This integration was integrated and tested with version v2 of ThreatCrowd
-## Configure ThreatCrowd v2 on Cortex XSOAR
+## Configure ThreatCrowd v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ThreatCrowd v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Max Number of Entries | How many entries to fetch. For full data use -1. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Max Number of Entries | How many entries to fetch. For full data use -1. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

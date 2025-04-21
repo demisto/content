@@ -1,5 +1,5 @@
 ## Microsoft Intune Domains web scraper:
-https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
+https://learn.microsoft.com/en-us/mem/intune/fundamentals/intune-endpoints
 
 Most IT services are moving from on-premise solutions to cloud-based solutions. The public IP addresses, domains, and URLs that function as the endpoints for these solutions are very often not fixed, and the providers of the service publish their details on their websites in a less than ideal format (i.e.: HTML) rather than through a proper REST API (i.e.: JSON).
 

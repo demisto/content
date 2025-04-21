@@ -3,11 +3,13 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Extract and Enrich Expanse Indicators
+deprecated: true
 description: |2-
+    Deprecated. No available replacement.
     Subplaybook for Handle Expanse Incident playbooks.
     Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.
     Enrichment is performed via enrichIndicators command and generic playbooks.
-    Returns the enriched indicators.
+    Returns the enriched indicators. 
 starttaskid: "0"
 tasks:
   "0":

@@ -1,0 +1,39 @@
+{
+    "name": "Stellar Cyber",
+    "description": "Integration to retrieve and update cases from the Stellar Cyber platform.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Stellar Cyber",
+    "url": "https://success.stellarcyber.ai/",
+    "email": "support@stellarcyber.ai",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "certification": "certified",
+    "tags": [
+        "Alerts",
+        "Incident Handling",
+        "Security",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Case Management"
+    ],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": [
+        "wfales"
+    ],
+    "dependencies": {
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    }
+}

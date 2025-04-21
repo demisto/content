@@ -112,7 +112,7 @@
                         "VarCharValue": "{uid=vpce-59a25a30, ip=null, domain=s3.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-40-08-CD1B1BC0934C71D4, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-40-08-CD1B1BC0934C71D4, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -153,13 +153,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=CSwJV1zFxiBSHjrTGaIUH5FMMVcgl05W, additionalEventData.x-amz-id-2=71IAMvFJ3O5bJRBlpJCB3l0B8CzNy5sG7BECw2I1R4oHyvkV2FKixZqmYAir4Y5h5ldtxWA+xlk=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=6ffdc2dd-05ca-483e-8baa-842949fddced, requestParameters.key=2023-11-07-07-40-08-CD1B1BC0934C71D4, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=480}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=CSwJV1zFxiBSHjrTGaIUH5FMMVcgl05W, additionalEventData.x-amz-id-2=71IAMvFJ3O5bJRBlpJCB3l0B8CzNy5sG7BECw2I1R4oHyvkV2FKixZqmYAir4Y5h5ldtxWA+xlk=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=6ffdc2dd-05ca-483e-8baa-842949fddced, requestParameters.key=2023-11-07-07-40-08-CD1B1BC0934C71D4, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=480}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231107"
@@ -191,7 +191,7 @@
                         "VarCharValue": "{uid=null, ip=null, domain=cloudtrail.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake/AWSLogs/o-re4vuxlksb/654338056632/CloudTrail/eu-central-1/2023/11/07/654338056632_CloudTrail_eu-central-1_20231107T0740Z_dimNGWjAynOPPS1e.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake/AWSLogs/o-re4vuxlksb/123456789012/CloudTrail/eu-central-1/2023/11/07/123456789012_CloudTrail_eu-central-1_20231107T0740Z_dimNGWjAynOPPS1e.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -232,13 +232,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=CKIV9mfKLdZHOitE2UvDr21Km4whgr92dar3i5Ew4/upKPfXc97MP45lpxnGo1mhPW7RQgvuQEs=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-654338056632-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=cd4f5d26-4491-40fc-a7d9-cb10f3e99ed3, requestParameters.key=AWSLogs/o-re4vuxlksb/654338056632/CloudTrail/eu-central-1/2023/11/07/654338056632_CloudTrail_eu-central-1_20231107T0740Z_dimNGWjAynOPPS1e.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-654338056632-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=2347}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=CKIV9mfKLdZHOitE2UvDr21Km4whgr92dar3i5Ew4/upKPfXc97MP45lpxnGo1mhPW7RQgvuQEs=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-123456789012-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=cd4f5d26-4491-40fc-a7d9-cb10f3e99ed3, requestParameters.key=AWSLogs/o-re4vuxlksb/123456789012/CloudTrail/eu-central-1/2023/11/07/123456789012_CloudTrail_eu-central-1_20231107T0740Z_dimNGWjAynOPPS1e.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-123456789012-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=2347}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231107"
@@ -270,7 +270,7 @@
                         "VarCharValue": "{uid=vpce-59a25a30, ip=null, domain=s3.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-39-32-43DC7FEEAE7DFCA6, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-39-32-43DC7FEEAE7DFCA6, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -311,13 +311,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=LXBDlV4KJJB56OUOvwPNlb1v4Re5gpKH, additionalEventData.x-amz-id-2=0/+WsTcJgOlNKdHK/L2FmlK7IyBHUCeZDaXhRKtYAlWrPy0oTMVVtX41yxCh3HE5s2YMLFpwyGc=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=ae9c5147-998a-4a83-ae76-dd1916795763, requestParameters.key=2023-11-07-07-39-32-43DC7FEEAE7DFCA6, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=480}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=LXBDlV4KJJB56OUOvwPNlb1v4Re5gpKH, additionalEventData.x-amz-id-2=0/+WsTcJgOlNKdHK/L2FmlK7IyBHUCeZDaXhRKtYAlWrPy0oTMVVtX41yxCh3HE5s2YMLFpwyGc=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=ae9c5147-998a-4a83-ae76-dd1916795763, requestParameters.key=2023-11-07-07-39-32-43DC7FEEAE7DFCA6, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=480}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231107"
@@ -349,7 +349,7 @@
                         "VarCharValue": "{uid=null, ip=null, domain=cloudtrail.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake/AWSLogs/o-re4vuxlksb/654338056632/CloudTrail/eu-central-1/2023/11/04/654338056632_CloudTrail_eu-central-1_20231104T2230Z_Ei3HUNUHdxFCuo9l.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake/AWSLogs/o-re4vuxlksb/123456789012/CloudTrail/eu-central-1/2023/11/04/123456789012_CloudTrail_eu-central-1_20231104T2230Z_Ei3HUNUHdxFCuo9l.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -390,13 +390,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=RITtRiXX1DGn4aCJ1AguFwc0Ux/HS6LSgIjiGlJBFdeFWMwmqQk1TlibDKq5kIA2xrSZc/qyl8w=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-654338056632-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=150e3c90-ce64-4311-b9de-67ef7077751a, requestParameters.key=AWSLogs/o-re4vuxlksb/654338056632/CloudTrail/eu-central-1/2023/11/04/654338056632_CloudTrail_eu-central-1_20231104T2230Z_Ei3HUNUHdxFCuo9l.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-654338056632-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=1317}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=RITtRiXX1DGn4aCJ1AguFwc0Ux/HS6LSgIjiGlJBFdeFWMwmqQk1TlibDKq5kIA2xrSZc/qyl8w=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-123456789012-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=150e3c90-ce64-4311-b9de-67ef7077751a, requestParameters.key=AWSLogs/o-re4vuxlksb/123456789012/CloudTrail/eu-central-1/2023/11/04/123456789012_CloudTrail_eu-central-1_20231104T2230Z_Ei3HUNUHdxFCuo9l.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-123456789012-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=1317}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231104"
@@ -428,7 +428,7 @@
                         "VarCharValue": "{uid=null, ip=null, domain=cloudtrail.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake/AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/04/668688824393_CloudTrail_eu-central-1_20231104T2230Z_cvjIkDeGdNDHOgZs.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake/AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/04/668688824393_CloudTrail_eu-central-1_20231104T2230Z_cvjIkDeGdNDHOgZs.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -469,13 +469,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=p+d+4x2c5Cq78w5YiikRKYtXsRxTFKFiklo3uPsWV9VkYTbLqxQxlKSOvJ/3pyFMV0ghlX4jSiw=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-654338056632-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=f7f916ab-0dd4-4e99-b522-b415b9c80458, requestParameters.key=AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/04/668688824393_CloudTrail_eu-central-1_20231104T2230Z_cvjIkDeGdNDHOgZs.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-654338056632-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=1199}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=p+d+4x2c5Cq78w5YiikRKYtXsRxTFKFiklo3uPsWV9VkYTbLqxQxlKSOvJ/3pyFMV0ghlX4jSiw=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-123456789012-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=f7f916ab-0dd4-4e99-b522-b415b9c80458, requestParameters.key=AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/04/668688824393_CloudTrail_eu-central-1_20231104T2230Z_cvjIkDeGdNDHOgZs.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-123456789012-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=1199}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231104"
@@ -507,7 +507,7 @@
                         "VarCharValue": "{uid=null, ip=null, domain=cloudtrail.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake/AWSLogs/o-re4vuxlksb/654338056632/CloudTrail/eu-central-1/2023/11/04/654338056632_CloudTrail_eu-central-1_20231104T2235Z_yvpVSHH3613gs2AK.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake/AWSLogs/o-re4vuxlksb/123456789012/CloudTrail/eu-central-1/2023/11/04/123456789012_CloudTrail_eu-central-1_20231104T2235Z_yvpVSHH3613gs2AK.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -548,13 +548,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=xm6fkjpc6B9awVdyl1jxnkfp+1boyZ3slsj3MtybxFfeJ+fhC84Il8k2jKEVlK91DdoRzM+RVIw=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-654338056632-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=083a753d-7aae-4dcb-b5d9-703cfab873b4, requestParameters.key=AWSLogs/o-re4vuxlksb/654338056632/CloudTrail/eu-central-1/2023/11/04/654338056632_CloudTrail_eu-central-1_20231104T2235Z_yvpVSHH3613gs2AK.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-654338056632-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=1556}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=xm6fkjpc6B9awVdyl1jxnkfp+1boyZ3slsj3MtybxFfeJ+fhC84Il8k2jKEVlK91DdoRzM+RVIw=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-123456789012-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=083a753d-7aae-4dcb-b5d9-703cfab873b4, requestParameters.key=AWSLogs/o-re4vuxlksb/123456789012/CloudTrail/eu-central-1/2023/11/04/123456789012_CloudTrail_eu-central-1_20231104T2235Z_yvpVSHH3613gs2AK.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-123456789012-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=1556}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231104"
@@ -586,7 +586,7 @@
                         "VarCharValue": "{uid=null, ip=null, domain=cloudtrail.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake/AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_jtWHnUtmZvFb95ZI.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake/AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_jtWHnUtmZvFb95ZI.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -627,13 +627,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=o5fB4Haj65lh3PSSxZ3GImGDkSUUQ2Vy0qEH2kifNcpzIn9KWAL4VECS2HMMq8abRt7X9q1X3W9r0tioo1ytzQ==, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-654338056632-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=b1991000-4fff-4444-a70e-c615aae8db9e, requestParameters.key=AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_jtWHnUtmZvFb95ZI.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-654338056632-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=1580}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=o5fB4Haj65lh3PSSxZ3GImGDkSUUQ2Vy0qEH2kifNcpzIn9KWAL4VECS2HMMq8abRt7X9q1X3W9r0tioo1ytzQ==, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-123456789012-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=b1991000-4fff-4444-a70e-c615aae8db9e, requestParameters.key=AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_jtWHnUtmZvFb95ZI.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-123456789012-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=1580}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231107"
@@ -665,7 +665,7 @@
                         "VarCharValue": "{uid=null, ip=null, domain=cloudtrail.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake/AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_xvmpLIGhOzmt4n3B.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-654338056632-cloudlake, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake/AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_xvmpLIGhOzmt4n3B.json.gz, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::aws-cloudtrail-logs-123456789012-cloudlake, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -706,13 +706,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=iypPsK3E1swmRKTBokcowNGxPCNWvgnjXmMyOOvajrl8bGqbQVTmPUbXGLOYR2z553KaKn/HZF0=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-654338056632-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=d0089b3a-0175-4732-8726-aa8b83557c19, requestParameters.key=AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_xvmpLIGhOzmt4n3B.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-654338056632-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=2276}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=SSE_S3, requestParameters.x-amz-acl=bucket-owner-full-control, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, additionalEventData.x-amz-id-2=iypPsK3E1swmRKTBokcowNGxPCNWvgnjXmMyOOvajrl8bGqbQVTmPUbXGLOYR2z553KaKn/HZF0=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=aws-cloudtrail-logs-123456789012-cloudlake.s3.eu-central-1.amazonaws.com, requestParameters.x-amz-server-side-encryption=AES256, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=d0089b3a-0175-4732-8726-aa8b83557c19, requestParameters.key=AWSLogs/o-re4vuxlksb/668688824393/CloudTrail/eu-central-1/2023/11/07/668688824393_CloudTrail_eu-central-1_20231107T0740Z_xvmpLIGhOzmt4n3B.json.gz, requestParameters.bucketName=aws-cloudtrail-logs-123456789012-cloudlake, responseElements.x-amz-server-side-encryption=AES256, recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=2276}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231107"
@@ -744,7 +744,7 @@
                         "VarCharValue": "{uid=vpce-59a25a30, ip=null, domain=s3.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-41-57-110CCCE05A2BEE37, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-41-57-110CCCE05A2BEE37, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -785,13 +785,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=193ieSvoNFv1o.tUJKgchRloNHbERbcu, additionalEventData.x-amz-id-2=jIV/CP92IrpLpnNRe2zwJj9+c9Rg3EsUyM2AIRSYR19hm8Umi4gnDdP9NrDJszZO4EkOgWiJQz8=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=80ec7a41-6396-453a-8ec9-993c46b371be, requestParameters.key=2023-11-07-07-41-57-110CCCE05A2BEE37, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=480}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=193ieSvoNFv1o.tUJKgchRloNHbERbcu, additionalEventData.x-amz-id-2=jIV/CP92IrpLpnNRe2zwJj9+c9Rg3EsUyM2AIRSYR19hm8Umi4gnDdP9NrDJszZO4EkOgWiJQz8=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=80ec7a41-6396-453a-8ec9-993c46b371be, requestParameters.key=2023-11-07-07-41-57-110CCCE05A2BEE37, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=480}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231107"
@@ -823,7 +823,7 @@
                         "VarCharValue": "{uid=vpce-59a25a30, ip=null, domain=s3.amazonaws.com}"
                     },
                     {
-                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-42-28-FC0CDE158967D4CF, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=654338056632, type=AWS::S3::Bucket}]"
+                        "VarCharValue": "[{uid=arn:aws:s3:::test-log-collector/2023-11-07-07-42-28-FC0CDE158967D4CF, account_uid=null, type=AWS::S3::Object}, {uid=arn:aws:s3:::test-log-collector, account_uid=123456789012, type=AWS::S3::Bucket}]"
                     },
                     {
                         "VarCharValue": "API Activity"
@@ -864,13 +864,13 @@
                     },
                     {},
                     {
-                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=IBZgLYMsVU50YUHYOt9rQ1R28oTy_rHd, additionalEventData.x-amz-id-2=TCnuNhf35xx4buXCo34P8TdlAV4hkDit07I8iUuqpjcyvWOXRGuPAuFGd+5tbmPRXN5+MbY57zU=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=93494c71-ec89-4b9a-8607-6f8ff7460ff9, requestParameters.key=2023-11-07-07-42-28-FC0CDE158967D4CF, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=654338056632, managementEvent=false, additionalEventData.bytesTransferredIn=960}"
+                        "VarCharValue": "{additionalEventData.SSEApplied=Default_SSE_S3, additionalEventData.SignatureVersion=SigV4, additionalEventData.CipherSuite=ECDHE-RSA-AES128-GCM-SHA256, additionalEventData.bytesTransferredOut=0, responseElements.x-amz-version-id=IBZgLYMsVU50YUHYOt9rQ1R28oTy_rHd, additionalEventData.x-amz-id-2=TCnuNhf35xx4buXCo34P8TdlAV4hkDit07I8iUuqpjcyvWOXRGuPAuFGd+5tbmPRXN5+MbY57zU=, readOnly=false, eventType=AwsApiCall, requestParameters.Host=s3.eu-central-1.amazonaws.com, additionalEventData.AuthenticationMethod=AuthHeader, sharedEventID=93494c71-ec89-4b9a-8607-6f8ff7460ff9, requestParameters.key=2023-11-07-07-42-28-FC0CDE158967D4CF, requestParameters.bucketName=test-log-collector, responseElements.x-amz-server-side-encryption=AES256, responseElements.x-amz-expiration=expiry-date=\"Wed, 15 Nov 2023 00:00:00 GMT\", rule-id=\"Delete-older-the-7-days\", recipientAccountId=123456789012, managementEvent=false, additionalEventData.bytesTransferredIn=960}"
                     },
                     {
                         "VarCharValue": "eu-central-1"
                     },
                     {
-                        "VarCharValue": "654338056632"
+                        "VarCharValue": "123456789012"
                     },
                     {
                         "VarCharValue": "20231107"

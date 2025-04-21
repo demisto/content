@@ -1,4 +1,4 @@
-exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
+exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|docs
 files: ''
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -15,30 +15,26 @@ repos:
   - id: name-tests-test
     min_py_version: '3.7'
     files: .+_test.py$
+  - id: check-added-large-files
+    args: ['--maxkb=5120', --enforce-all]
+    skip:nightly: true
+  - id: check-case-conflict
 - repo: https://github.com/python-poetry/poetry
-  rev: 1.6.1
+  rev: 1.8.2
   hooks:
   - id: poetry-check
-  - id: poetry-lock
     args:
-    - --check
+    - --lock
     files: ^pyproject.toml$
-  - id: poetry-export
-    args:
-    - --with
-    - dev,typing
-    - --without-hashes
-    - -o
-    - requirements.txt
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.1.2
+  rev: v2.5.0
   hooks:
   - id: pycln
     min_py_version: '3.7'
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.272
+  rev: v0.8.0
   hooks:
   - id: ruff
     parallel: false
@@ -49,14 +45,8 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.4
-  hooks:
-  - id: autopep8
-    exclude_support_level:ci:
-    - community
-    exclude_support_level:nightly:
-    - community
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
@@ -68,7 +58,7 @@ repos:
     - --show-error-codes
     - --follow-imports=silent
     - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     language: system
     entry: mypy
 
@@ -84,13 +74,13 @@ repos:
     language: system
     # skip nightly since we don't care about warnings in nightly
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: pylint
     files: Packs\/.*\.py$
@@ -108,13 +98,34 @@ repos:
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-    
+
+  - id: mypy-in-docker
+    name: mypy-in-docker
+    copy_files:
+    - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
+    - Tests/demistomock/demistomock.py
+    description: Run mypy on the code in content packs
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
+    docker_image: from-yml
+    entry: mypy
+    files: Packs\/.*\.py$
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
+    min_py_version: '3.7'
+    args:
+    - --check-untyped-defs
+    - --show-error-codes
+    - --allow-redefinition
+    - --cache-dir=/tmp/.mypy_cache
+    - --implicit-optional
+    pass_docker_extra_args:ci: --rm=false
+    pass_docker_extra_args:nightly: --rm=false
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: python
     language: docker
@@ -134,7 +145,16 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
+    - --color=yes
+    - --files
+    args:docker_autoupdate:
+    - /src/Tests/scripts/script_runner.py
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     - --files
     copy_files:
@@ -147,9 +167,8 @@ repos:
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:nightly: from-yml
+    docker_image:ci: from-yml
     docker_image: from-yml
     entry: coverage
     language: docker
@@ -165,7 +184,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/src/.pre-commit/pytest-junit/report_pytest.xml
     - --color=yes
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
@@ -185,6 +204,7 @@ repos:
     - Packs
     - Tests
     - Utils
+
   - id: validate-content-paths
     name: validate-content-paths
     entry: validate-content-path
@@ -192,11 +212,16 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-file
-    -  --skip-depth-one-folder
-    -  --skip-integration-script-file-name
-    -  --skip-markdown
-    -  --skip-suffix
+    
+  - id: validate-conf-json
+    name: validate-conf-json
+    description: validate conf.json
+    files: Tests/conf.json
+    skip:commit: true
+    skip:nightly: true
+    entry: validate-conf-json
+    pass_filenames: false
+    language: system
 
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
@@ -241,35 +266,24 @@ repos:
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
 
-  - id: is-circle-changed
-    name: is-circle-changed
-    description: Checks if circle files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
-    language: script
-    skip:nightly: true
-    pass_filenames: false
-    skip:commit: true
-
-  - id: is-gitlab-changed
-    name: is-gitlab-changed
-    description: Checks if gitlab files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
-    language: script
-    pass_filenames: false
-    skip:commit: true
-    skip:nightly: true
-
   - id: validate
     name: validate
     description: validate content
     entry: demisto-sdk validate
     args:
     - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    args:packwise:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    - --ignore=DO106
+    - --ignore=CJ105
     pass_filenames: false
     language: system
     require_serial: true
     skip:commit: true
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: format
     name: format
@@ -282,6 +296,16 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
+    skip:docker_autoupdate: true
+
+  - id: validate-validation-config-file
+    name: Validation for validate_config file
+    description: Validate the validation config file
+    entry: validate-validation-config-file
+    language: python
+    pass_filenames: false
+    args:
+    - --config-path=validation_config.toml
 
   - id: secrets
     name: secrets
@@ -291,7 +315,6 @@ repos:
     - --ignore-entropy
     pass_filenames: false
     language: system
-    skip:ci: true
     skip:nightly: true
 
   - id: merge-pytest-reports
@@ -329,6 +352,7 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:

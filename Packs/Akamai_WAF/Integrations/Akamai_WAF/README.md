@@ -2,29 +2,26 @@ Use the Akamai WAF integration to manage common sets of lists used by various Ak
 
 This is the modified version where a new command "akamai-update-network-list-elements" was added by the SA.
 
-## Configure Akamai WAF on Cortex XSOAR
+## Configure Akamai WAF in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Akamai WAF.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g., https://example.net) | True |
-    | Client token | False |
-    | Access token | False |
-    | Client secret | False |
-    | Client token | False |
-    | Access token | False |
-    | Client secret | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g., https://example.net) | True |
+| Client token | False |
+| Access token | False |
+| Client secret | False |
+| Client token | False |
+| Access token | False |
+| Client secret | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### akamai-get-network-lists
@@ -1075,10 +1072,12 @@ Acknowledge the warning message for uploading the certs and trust chains of enro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | change_path | The path of the changed certificate. | Required | 
+| allowed_input_type_param | Enum found as the last part of Change.allowedInput[].update hypermedia URL. Possible values are: change-management-ack, lets-encrypt-challenges-completed, post-verification-warnings-ack, pre-verification-warnings-ack. Default is post-verification-warnings-ack. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-modify-appsec-config-selected-hosts
 
 ***
@@ -1681,3 +1680,125 @@ Gets the status of a pending change.
               }
 }}}}
 ```
+### akamai-get-cps-enrollment-by-id
+
+***
+Get an enrollment in CPS by enrollment id
+
+#### Base Command
+
+`akamai-get-cps-enrollment-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enrollment_id | Enrollment on which to perform the desired operation. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-cancel-cps-change
+
+***
+Cancels a pending change on CPS.
+
+#### Base Command
+
+`akamai-cancel-cps-change`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| change_id | The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required | 
+| enrollment_id | Enrollment on which to perform the desired operation. Default is 0. "change_path" is used. Default is 0. | Required | 
+| change_path | Change path on which to perform the desired operation. Sample: /cps/v2/enrollments/100000/changes/88888888. Note: change_path is not listed in the reference as a parameter. However it can be extracted directly from "list_enrollments_command". This should be the most common useage when generate RestAPI's URL. | Optional | 
+| account_switch_key | For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### akamai-list-dns-zone-recordsets
+
+***
+Lists all record sets for this zone. It works only for PRIMARY and SECONDARY zones.
+
+#### Base Command
+
+`akamai-list-dns-zone-recordsets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| zone | The name of the zone. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.EdgeDns.ZoneRecordSets | Dictionary | Dictionary of Edge DNS zone's recordsets | 
+
+### akamai-list-dns-zones
+
+***
+List all zones that the current user has access to manage.
+
+#### Base Command
+
+`akamai-list-dns-zones`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.EdgeDns.Zones | Dictionary | Dictionary of Edge DNS zones. | 
+
+### akamai-list-appsec-config
+
+***
+Lists available security configurations. Products: All
+
+#### Base Command
+
+`akamai-list-appsec-config`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.AppSecConfigAll | List | A list of dictionaries of all Application Security Configurations. | 
+
+### akamai-list-cps-active-certificates
+
+***
+Lists enrollments with active certificates. Note that the rate limit for this operation is 10 requests per minute per account. 
+
+#### Base Command
+
+`akamai-list-cps-active-certificates`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Specify the contract on which to operate or view. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Cps.Active.Certificates.Enrollments | unknown |  | 
+

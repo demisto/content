@@ -1,0 +1,164 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: ThreatFox Feed
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- defaultvalue: https://threatfox-api.abuse.ch/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Bad
+  type: 18
+  required: false
+  section: Collect
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: feedReliability
+  type: 15
+  section: Collect
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+- display: Confidence Threshold
+  name: confidence_threshold
+  required: false
+  defaultvalue: '75'
+  section: Collect
+  type: 0
+  advanced: true
+  additionalinfo: If the indicator's confidence is below this number, it will be dropped.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  defaultvalue: WHITE
+  required: false
+  section: Collect
+  advanced: true
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  section: Collect
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  defaultvalue: 1440
+  section: Collect
+  advanced: true
+  type: 19
+  additionalinfo: Must be whole day. Min is 1. Max is 7.
+- display: Return IOCs with Ports
+  name: with_ports
+  required: false
+  defaultvalue: 'false'
+  section: Collect
+  advanced: true
+  type: 8
+  additionalinfo: If selected, IP indicators will include a tag with the port value.
+- display: Create relationship
+  name: create_relationship
+  required: false
+  defaultvalue: 'false'
+  section: Collect
+  advanced: true
+  type: 8
+  additionalinfo: If selected, indicators will be created with relationships.
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  section: Collect
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+description: ThreatFox is a free platform from abuse.ch with the goal of sharing indicators of compromise (IOCs) associated with malware. Use the ThreatFox Feed integration to fetch indicators from the feed.
+display: ThreatFox Feed
+name: ThreatFox Feed
+script:
+  commands:
+  - arguments:
+    - description: Indicator value to search by.
+      name: search_term
+      required: false
+    - description: Indicator ID to search by.
+      name: id
+      required: false
+    - description: Hash to search by.
+      name: hash
+      required: false
+    - description: Tag to search by. For available tag options, please refer to the API documentation- https://threatfox.abuse.ch/api/.
+      name: tag
+      required: false
+    - description: Malware to search by. For available malware options, please refer to the API documentation- https://threatfox.abuse.ch/api/.
+      name: malware
+      required: false
+    - description: Maximum indicators to search for. Available only when searching by 'malware' or 'tag'. Max is 1000.
+      name: limit
+      required: false
+      defaultValue: '50'
+    description: Retrieves indicators from the ThreatFox API. Choose one field to search by.
+    name: threatfox-get-indicators
+  feed: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.116949
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -5,14 +5,14 @@ args:
 - description: Version number to compare against left side
   name: right
   required: true
-comment: |-
-  Tests whether left side version number is less than right side version number.
+comment: 'Tests whether left side version number is less than right side version number.
 
-  Version numbers need to have at least a major and minor version component to be considered valid. E.g. 1.0
+
+  Version numbers need to have at least a major and minor version component to be considered valid. E.g. 1.0'
 commonfields:
   id: VersionLessThan
   version: -1
-dockerimage: demisto/powershell:7.2.1.26295
+dockerimage: demisto/powershell:7.4.6.117357
 enabled: true
 name: VersionLessThan
 runas: DBotWeakRole

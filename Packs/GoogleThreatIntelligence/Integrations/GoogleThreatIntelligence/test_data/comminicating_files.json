@@ -1,0 +1,193 @@
+{
+  "data": [
+    {
+      "attributes": {
+        "authentihash": ":hash:",
+        "creation_date": 1488326400,
+        "downloadable": true,
+        "exiftool": {
+          "CharacterSet": "Windows, Latin1",
+          "CodeSize": "7248896",
+          "CompanyName": "Bitcoin",
+          "EntryPoint": "0x14d0",
+          "FileDescription": "bitcoind (Bitcoin node with a JSON-RPC server)",
+          "FileFlagsMask": "0x0000",
+          "FileOS": "Windows NT 32-bit",
+          "FileSubtype": "0",
+          "FileType": "Win64 EXE",
+          "FileTypeExtension": "exe",
+          "FileVersion": ":version:",
+          "FileVersionNumber": ":version:",
+          "ImageFileCharacteristics": "Executable, No line numbers, No symbols, Large address aware, No debug",
+          "ImageVersion": "0.0",
+          "InitializedDataSize": "8889344",
+          "InternalName": "bitcoind",
+          "LanguageCode": "English (U.S.)",
+          "LegalCopyright": "",
+          "LegalTrademarks1": "",
+          "LinkerVersion": "2.23",
+          "MIMEType": "application/octet-stream",
+          "MachineType": "AMD AMD64",
+          "OSVersion": "4.0",
+          "ObjectFileType": "Executable application",
+          "OriginalFileName": "bitcoind.exe",
+          "PEType": "PE32+",
+          "ProductName": "bitcoind",
+          "ProductVersion": ":version:",
+          "ProductVersionNumber": ":version:",
+          "Subsystem": "Windows command line",
+          "SubsystemVersion": "5.2",
+          "TimeStamp": "2017:03:01 00:00:00+00:00",
+          "UninitializedDataSize": "366592"
+        },
+        "first_submission_date": 1492547503,
+        "last_analysis_date": 1612764864,
+        "last_analysis_results": {
+          "ALYac": {
+            "category": "undetected",
+            "engine_name": "ALYac",
+            "engine_update": "20210208",
+            "engine_version": ":version:",
+            "method": "blacklist",
+            "result": null
+          },
+          "APEX": {
+            "category": "undetected",
+            "engine_name": "APEX",
+            "engine_update": "20210207",
+            "engine_version": "6.129",
+            "method": "blacklist",
+            "result": null
+          },
+          "AVG": {
+            "category": "malicious",
+            "engine_name": "AVG",
+            "engine_update": "20210208",
+            "engine_version": "21.1.5827.0",
+            "method": "blacklist",
+            "result": "FileRepMalware [PUP]"
+          }
+        }
+      },
+      "last_analysis_stats": {
+        "confirmed-timeout": 0,
+        "failure": 0,
+        "harmless": 0,
+        "malicious": 6,
+        "suspicious": 0,
+        "timeout": 0,
+        "type-unsupported": 5,
+        "undetected": 64
+      },
+      "last_modification_date": 1612855184,
+      "last_submission_date": 1492547503,
+      "magic": "PE32+ executable for MS Windows (console) Mono/.Net assembly",
+      "md5": ":md5:",
+      "meaningful_name": "bitcoind.exe",
+      "names": [
+        "bitcoind",
+        "bitcoind.exe",
+        ":md5:.virus"
+      ],
+      "pe_info": {
+        "entry_point": 5328,
+        "exports": [
+          "secp256k1_nonce_function_default",
+          "secp256k1_nonce_function_rfc6979"
+        ],
+        "imphash": ":imphash:",
+        "import_list": [
+          {
+            "imported_functions": [
+              "GetDeviceCaps",
+              "DeleteDC",
+              "GetBitmapBits",
+              "BitBlt",
+              "SelectObject",
+              "GetObjectW",
+              "CreateDCW",
+              "CreateCompatibleDC",
+              "DeleteObject",
+              "CreateCompatibleBitmap"
+            ],
+            "library_name": "GDI32.dll"
+          }
+        ],
+        "machine_type": 34404,
+        "resource_details": [
+          {
+            "chi2": 83899.2734375,
+            "entropy": 3.453192949295044,
+            "filetype": "Data",
+            "lang": "ENGLISH US",
+            "sha256": ":sha256:",
+            "type": "RT_VERSION"
+          }
+        ],
+        "resource_langs": {
+          "ENGLISH US": 1
+        },
+        "resource_types": {
+          "RT_VERSION": 1
+        },
+        "sections": [
+          {
+            "chi2": 82273200.0,
+            "entropy": 5.97,
+            "flags": "rx",
+            "md5": ":md5:",
+            "name": ".text",
+            "raw_size": 7248896,
+            "virtual_address": 4096,
+            "virtual_size": 7248680
+          }
+        ],
+        "timestamp": 1488326400
+      },
+      "reputation": 0,
+      "sandbox_verdicts": {
+        "C2AE": {
+          "category": "undetected",
+          "malware_classification": [
+            "UNKNOWN_VERDICT"
+          ],
+          "sandbox_name": "C2AE"
+        }
+      },
+      "sha1": ":sha1:",
+      "sha256": ":sha256:",
+      "signature_info": {
+        "copyright": "2009-2017 The Bitcoin Core Developers",
+        "description": "bitcoind (Bitcoin node with a JSON-RPC server)",
+        "file version": ":version:",
+        "internal name": "bitcoind",
+        "original name": "bitcoind.exe",
+        "product": "bitcoind"
+      },
+      "size": 8890368,
+      "ssdeep": ":ssdeep:",
+      "tags": [
+        "64bits",
+        "peexe",
+        "assembly"
+      ],
+      "times_submitted": 1,
+      "tlsh": ":tlsh:",
+      "total_votes": {
+        "harmless": 0,
+        "malicious": 0
+      },
+      "trid": [
+        {
+          "file_type": "Microsoft Visual C++ compiled executable (generic)",
+          "probability": 41.1
+        }
+      ],
+      "type_description": "Win32 EXE",
+      "type_extension": "exe",
+      "type_tag": "peexe",
+      "unique_sources": 1,
+      "vhash": ":vhash:"
+    }
+  ]
+}

@@ -1,29 +1,29 @@
 id: HttpV2-test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: HttpV2-test
 description: Test playbook for HttpV2 script.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5aafd664-6a5c-47e7-873a-148f26bf3a66
+    taskid: d28cd856-4513-4801-8d1b-ebc8ff3a2440
     type: start
     task:
-      id: 5aafd664-6a5c-47e7-873a-148f26bf3a66
+      id: d28cd856-4513-4801-8d1b-ebc8ff3a2440
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -36,12 +36,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0d291b16-44f3-414c-8cb7-5e1a209de353
+    taskid: 6b7a5d1e-ca69-4abf-8d43-b4b62f95973e
     type: regular
     task:
-      id: 0d291b16-44f3-414c-8cb7-5e1a209de353
+      id: 6b7a5d1e-ca69-4abf-8d43-b4b62f95973e
       version: -1
-      name: Test Get request
+      name: GET
       description: Sends http request
       scriptName: HttpV2
       type: regular
@@ -51,8 +51,6 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      auth_credentials:
-        simple: '{TOMMED}j2Itfo6MBOf51amxJ3lzpvzpIR1nk5exU9+f8vAp3B8bWbjzUE7L93zLz/uIRc6ZUTlfbmPSgC+WfR++rMiqni8uaUixoDoB/Qc4oovucYmVPb2Tgo8AdrPUJJ1NtkT2'
       method:
         simple: GET
       parse_response_as:
@@ -61,70 +59,15 @@ tasks:
         simple: json
       response_content_type:
         simple: json
-      unsecure:
-        simple: "True"
       url:
-        simple: https://paloaltonfr3.jamfcloud.com/JSSResource/computers/id/1/subset/General
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 71af1c89-8a24-4ab5-8d9d-4066bece6855
-    type: regular
-    task:
-      id: 71af1c89-8a24-4ab5-8d9d-4066bece6855
-      version: -1
-      name: Test post XML body request
-      description: Sends http request
-      scriptName: HttpV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      auth_credentials:
-        simple: '{TOMMED}31q0XK2yezxbkvSH7BuD61zitBApz4wPKWW9+teSmU4nh7vbNRg9QE08t8p+dx6OJMc4yf0mpd8s3Y6HsedRt//eok0QoOiqIXO4K+eOPIYrd0ufMy6+zuI9la3N+aYv'
-      body:
-        simple: <?xml version="1.0" encoding="UTF-8"?><computer_command><general><passcode>123456</passcode><lock_message></lock_message></general><computers><computer><id>138</id></computer></computers></computer_command>
-      headers:
-        keyvalue:
-        - key: Content-Type
-          value:
-            simple: application/xml
-        - key: Accept
-          value:
-            simple: application/xml
-      method:
-        simple: POST
-      parse_response_as:
-        simple: xml
-      unsecure:
-        simple: "True"
-      url:
-        simple: https://paloaltonfr3.jamfcloud.com/JSSResource/computercommands/command/DeviceLock
+        simple: https://reqres.in/api/users/2
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 195
         }
       }
     note: false
@@ -136,12 +79,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 106dd435-4d20-411d-8678-6e72e5bc0eee
+    taskid: dc53d99d-12cd-49d4-86a1-9aedb9275607
     type: regular
     task:
-      id: 106dd435-4d20-411d-8678-6e72e5bc0eee
+      id: dc53d99d-12cd-49d4-86a1-9aedb9275607
       version: -1
-      name: Test Get request- Save to file
+      name: Test GET - Save to file
       description: Sends http request
       scriptName: HttpV2
       type: regular
@@ -149,10 +92,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "15"
     scriptarguments:
-      auth_credentials:
-        simple: '{TOMMED}fhSbZguI0bPFrCdoRev70KJMa8qXaFAPedj2VE08u3f5w2FT2xMMmC6hvHtI441SEMvOeJlu5XFn3KkCtfY4ZD6wJh0q+6WMwb66oO0HOen+fcnIvTaovEUeNViHVXKM'
       filename:
         simple: GetHttpFile
       method:
@@ -165,16 +106,14 @@ tasks:
         simple: json
       save_as_file:
         simple: "yes"
-      unsecure:
-        simple: "True"
       url:
-        simple: https://paloaltonfr3.jamfcloud.com/JSSResource/computers/id/1/subset/General
+        simple: https://reqres.in/api/users/2
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 720
         }
       }
@@ -187,120 +126,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 23acf0ba-8f6e-4bbc-8ade-1498f5017af7
+    taskid: bdcd39a9-fdf6-4afb-8d6e-9c2ee908e9ce
     type: title
     task:
-      id: 23acf0ba-8f6e-4bbc-8ade-1498f5017af7
+      id: bdcd39a9-fdf6-4afb-8d6e-9c2ee908e9ce
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: be99e227-c05c-4d4f-8a34-f60c0515e69b
-    type: regular
-    task:
-      id: be99e227-c05c-4d4f-8a34-f60c0515e69b
-      version: -1
-      name: Test post - Save to file
-      description: Sends http request
-      scriptName: HttpV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      auth_credentials:
-        simple: '{TOMMED}/GcCBEtsf13+e4wYDSs/gd9/6eMw6HJdfGf1s1ziB/SH/a5wfq3kRrhSzM0bKHEbKQEqqac7ZQGNVyyZ08E4HlafejTKqVR/N8nUMPtjZRaHmio3WI+aFt2Zx6Dt1pOv'
-      body:
-        simple: <?xml version="1.0" encoding="UTF-8"?><computer_command><general><passcode>123456</passcode><lock_message></lock_message></general><computers><computer><id>138</id></computer></computers></computer_command>
-      filename:
-        simple: PostHttpFile
-      headers:
-        keyvalue:
-        - key: Content-Type
-          value:
-            simple: application/xml
-        - key: Accept
-          value:
-            simple: application/xml
-      method:
-        simple: POST
-      parse_response_as:
-        simple: xml
-      save_as_file:
-        simple: "yes"
-      unsecure:
-        simple: "True"
-      url:
-        simple: https://paloaltonfr3.jamfcloud.com/JSSResource/computercommands/command/DeviceLock
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: ea8b832c-ef54-4568-8275-6f4ccc790fa6
-    type: regular
-    task:
-      id: ea8b832c-ef54-4568-8275-6f4ccc790fa6
-      version: -1
-      name: Delete context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
+          "y": 2295
         }
       }
     note: false
@@ -312,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6953ef2a-ac65-4143-8c4c-ca6767e29ced
+    taskid: 9da19814-556b-4a2b-83e8-6340c4f4226c
     type: regular
     task:
-      id: 6953ef2a-ac65-4143-8c4c-ca6767e29ced
+      id: 9da19814-556b-4a2b-83e8-6340c4f4226c
       version: -1
       name: Test redirect=False
       description: Sends http request
@@ -340,8 +182,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -353,10 +195,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 62888d12-9fa4-45bb-81af-3b706f851cb8
+    taskid: 8731ce03-4225-4172-860d-b5c2f4f64de7
     type: condition
     task:
-      id: 62888d12-9fa4-45bb-81af-3b706f851cb8
+      id: 8731ce03-4225-4172-860d-b5c2f4f64de7
       version: -1
       name: Verify Outputs
       type: condition
@@ -364,7 +206,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+      - "11"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -381,8 +223,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -394,10 +236,51 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2753f23c-0eb8-4494-8b01-f245b58d7e2f
+    taskid: ff38dbd3-0990-415b-8496-3f6a0e5eea76
     type: condition
     task:
-      id: 2753f23c-0eb8-4494-8b01-f245b58d7e2f
+      id: ff38dbd3-0990-415b-8496-3f6a0e5eea76
+      version: -1
+      name: Verify status code 301
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HttpRequest.Response.StatusCode
+            iscontext: true
+          right:
+            value:
+              simple: "301"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a833130a-b650-41d9-8e92-c347aec86a8a
+    type: condition
+    task:
+      id: a833130a-b650-41d9-8e92-c347aec86a8a
       version: -1
       name: Verify Outputs
       type: condition
@@ -417,13 +300,21 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "301"
+              simple: "200"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${HttpRequest.Response.ParsedBody.root.firstName}
+            iscontext: true
+          right:
+            value:
+              simple: John
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -433,20 +324,146 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: e7eaf722-9f59-4709-803b-e4bdcfe61bb5
+  "11":
+    id: "11"
+    taskid: 967d58f3-64a8-47c8-8211-3fcc16a80eee
+    type: regular
+    task:
+      id: 967d58f3-64a8-47c8-8211-3fcc16a80eee
+      version: -1
+      name: '--- Delete context ---'
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8af68004-75b9-4995-82b1-dd70a7524fef
+    type: regular
+    task:
+      id: 8af68004-75b9-4995-82b1-dd70a7524fef
+      version: -1
+      name: '--- Delete context ---'
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7a5e3eef-0b94-4174-82f4-40ccebc706ec
+    type: regular
+    task:
+      id: 7a5e3eef-0b94-4174-82f4-40ccebc706ec
+      version: -1
+      name: '--- Delete context ---'
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6ae49e17-e11b-4929-892e-e7da478e37e6
     type: condition
     task:
-      id: e7eaf722-9f59-4709-803b-e4bdcfe61bb5
+      id: 6ae49e17-e11b-4929-892e-e7da478e37e6
       version: -1
-      name: Verify Outputs
+      name: Check downloaded file name
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -454,11 +471,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: HttpRequest.Response.StatusCode
+              simple: ${File.Name}
             iscontext: true
           right:
             value:
-              simple: "201"
+              simple: GetHttpFile
     continueonerrortype: ""
     view: |-
       {
@@ -474,13 +491,93 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 633390b4-b095-4398-87a5-4501e25e24a9
+    type: condition
+    task:
+      id: 633390b4-b095-4398-87a5-4501e25e24a9
+      version: -1
+      name: Check downloaded file size
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: ${File.Size}
+            iscontext: true
+          right:
+            value:
+              simple: "338"   # Note: If this value is changed, it is recommended to set it to greater than 250 or something similar, rather than hardcoding it.
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: bf09a886-208d-47e9-8901-0cc122ed18f8
+    type: regular
+    task:
+      id: bf09a886-208d-47e9-8901-0cc122ed18f8
+      version: -1
+      name: GET xml
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      method:
+        simple: GET
+      parse_response_as:
+        simple: xml
+      url:
+        simple: https://mocktarget.apigee.net/xml
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 810,
+        "height": 2310,
+        "width": 380,
         "x": 50,
         "y": 50
       }

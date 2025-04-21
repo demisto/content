@@ -2,10 +2,11 @@ import json
 import time
 import copy
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, UTC
 import pytest
 import re
 from freezegun import freeze_time
+import pandas as pd
 
 from Devo_v2 import (
     alert_to_incident,
@@ -17,6 +18,7 @@ from Devo_v2 import (
     write_to_lookup_table_command,
     check_configuration,
     get_time_range,
+    _to_unix,
 )
 
 MOCK_READER_ENDPOINT = "https://fake.devo.com/query"
@@ -62,6 +64,31 @@ MOCK_HIGH_CPU_ALERT = {
     '"097",'
     '"eventdate":"2019-09-20+08%3A52%3A14.096","timestamp":"2019-09-20+08%3A52%3A14"}',
 }
+MOCK_HIGH_CPU_ALERT_1 = {
+    "eventdate": time.time() - 20,
+    "alertHost": "backoffice",
+    "domain": "dsteam",
+    "priority": 5.0,
+    "context": "CPU_Usage_Alert",
+    "category": "my.context",
+    "status": 4,
+    "alertId": "6294258",
+    "srcIp": 2130706433,
+    "srcPort": None,
+    "srcHost": None,
+    "dstIp": 2130706234,
+    "dstPort": None,
+    "dstHost": None,
+    "protocol": None,
+    "username": None,
+    "application": None,
+    "engine": "CPU_Usage_Alert",
+    "extraData": '{"cluster":"-","anomaly_score":"100","indices":'
+    '"0%2","_message":"CPU+Usage+Anomaly","instance":"-","payload":'
+    '"2019-09-20+08997","pred":"52.52","message":'
+    '"097",'
+    '"eventdate":"2019-09-20+08%3A52%3A14.096","timestamp":"2019-09-20+08%3A52%3A14"}',
+}
 MOCK_SIMULTANEOUS_LOGIN_ALERT = {
     "eventdate": time.time() - 45,
     "alertHost": "backoffice",
@@ -95,21 +122,66 @@ MOCK_SIMULTANEOUS_LOGIN_ALERT = {
     '"facility":"user","username":"test%40test.com","geolocation":"421%'
     'C2W","timestamp":"2019-09-20+20%3A41%3A37.395"}',
 }
-MOCK_QUERY_RESULTS = [MOCK_HIGH_CPU_ALERT, MOCK_SIMULTANEOUS_LOGIN_ALERT]
+MOCK_SIMULTANEOUS_LOGIN_ALERT_1 = {
+    "eventdate": time.time() - 45,
+    "alertHost": "backoffice",
+    "domain": "dsteam",
+    "priority": 5.0,
+    "context": "simultaneous_login",
+    "category": "my.context",
+    "status": 4,
+    "alertId": "6306076",
+    "srcIp": 2130706234,
+    "srcPort": None,
+    "srcHost": None,
+    "dstIp": 2130706456,
+    "dstPort": None,
+    "dstHost": None,
+    "protocol": None,
+    "username": None,
+    "application": None,
+    "bar": None,
+    "baz": None,
+    "engine": "simultaneous_login",
+    "extraData": '{"duration_seconds":"null","cluster":"-","prev_timestamp":"null","instance":'
+    '"-","distance":"null","level":"info","city":"Natick","srcHost":"blahip","prev_city":"None","format":'
+    '"output_aaa","prev_geolocation":"None","message":'
+    '"0%2ENEW+RECORD'
+    "test%40test.comNoneNone550.239."
+    '225.14NoneNoneNoneNone","eventdate":"2019-09-20+20%3A41%3A39.688","prev_srcHost":"None","duration":"None",'
+    '"indices":"0%2C1C133","payload":'
+    '"NEW+RECORDtest%40test.comNoneNoneNatic31.'
+    '335.14NoneNoneNoneNone","state":"NEW+RECORD","category":"modelserverdev",'
+    '"facility":"user","username":"test%40test.com","geolocation":"421%'
+    'C2W","timestamp":"2019-09-20+20%3A41%3A37.395"}',
+}
+# Create a dictionary containing the list of alerts
+mock_query_result = {"object": [MOCK_HIGH_CPU_ALERT, MOCK_SIMULTANEOUS_LOGIN_ALERT], "status": 0}
+
+# Convert the dictionary to a JSON string
+MOCK_QUERY_RESULTS = json.dumps(mock_query_result)
+MOCK_QUERY_RESULTS_1 = json.dumps({"object": [MOCK_HIGH_CPU_ALERT_1, MOCK_SIMULTANEOUS_LOGIN_ALERT_1], "status": 0})
 MOCK_LAST_RUN = {"from_time": time.time() - 60}
 MOCK_QUERY_ARGS = {
     "query": "from whatever",
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "filtered_columns": "alertId,extraData,context"
+    "filtered_columns": "alertId,extraData,context",
 }
 MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME = {
     "query": "from whatever",
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "filtered_columns": "eventdate,abcd"
+    "filtered_columns": "eventdate,abcd",
+}
+MOCK_QUERY_ARGS_FALSE_IP_AS_STRING = {
+    "query": "from whatever",
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "ip_as_string": "false",
 }
 MOCK_ALERT_ARGS_REPEATED_FIELDS = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
@@ -123,14 +195,14 @@ MOCK_ALERT_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "filtered_columns": "alertId,extraData,context"
+    "filtered_columns": "alertId,extraData,context",
 }
 MOCK_ALERT_ARGS_EMPTY_filtered_columns_PRAM = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "filtered_columns": ""
+    "filtered_columns": "",
 }
 MOCK_MULTI_ARGS = {
     "tables": ["app", "charlie", "test"],
@@ -138,7 +210,7 @@ MOCK_MULTI_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "filtered_columns": "alertId,extraData,context"
+    "filtered_columns": "alertId,extraData,context",
 }
 MOCK_MULTI_ARGUMENTS = {
     "tables": ["app", "charlie", "test"],
@@ -146,7 +218,7 @@ MOCK_MULTI_ARGUMENTS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "items": -10
+    "items": -10,
 }
 MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
@@ -158,7 +230,7 @@ MOCK_WRITER_ARGS_LIST = {
 }
 MOCK_WRITER_ARGS_EMPTY = {
     "tableName": "whatever.table",
-    "records": '[1234, true]',
+    "records": "[1234, true]",
 }
 MOCK_WRITER_ARGS_STR = {
     "tableName": "whatever.table",
@@ -171,27 +243,34 @@ MOCK_WRITE_TO_TABLE_RECORDS = {
 MOCK_LOOKUP_WRITER_ARGS = {
     "lookupTableName": "hello.world.lookup",
     "headers": '{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "FULL"}',
-    "records": ('[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
-                '{"fields": ["foo2", "bar2", "baz2"]}, '
-                '{"fields": ["foo3", "bar3", "baz3"]}]')
+    "records": (
+        '[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
+        '{"fields": ["foo2", "bar2", "baz2"]}, '
+        '{"fields": ["foo3", "bar3", "baz3"]}]'
+    ),
 }
 MOCK_LOOKUP_WRITER_ARGS_key = {
     "lookupTableName": "hello.world.lookup",
     "headers": '{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "FULL"}',
-    "records": ('[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
-                '{"fields": ["foo2", "bar2", "baz2"]}, '
-                '{"fields": ["foo3", "bar3", "baz3"]}]')
+    "records": (
+        '[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
+        '{"fields": ["foo2", "bar2", "baz2"]}, '
+        '{"fields": ["foo3", "bar3", "baz3"]}]'
+    ),
 }
 MOCK_LOOKUP_WRITER_ARGS_action = {
     "lookupTableName": "hello.world.lookup",
     "headers": '{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "INC"}',
-    "records": ('[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
-                '{"fields": ["foo2", "bar2", "baz2"]}, '
-                '{"fields": ["foo3", "bar3", "baz3"]}]')
+    "records": (
+        '[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
+        '{"fields": ["foo2", "bar2", "baz2"]}, '
+        '{"fields": ["foo3", "bar3", "baz3"]}]'
+    ),
 }
 MOCK_KEYS = {"foo": "bar", "baz": "bug"}
 OFFSET = 0
 ITEMS_PER_PAGE = 10
+IP_AS_STRING = True
 
 ALERT_WITH_MISSING_DATA = {
     "user_prefixcontext": "sample.context.value",
@@ -240,9 +319,9 @@ EXPECTED_LABELS = [
     {"type": "alertName", "value": "Sample Alert"},
     {"type": "alertDescription", "value": "This is a sample alert"},
 ]
-LAST_RUN_DATA = {"from_time": 1691307869.0, "last_fetch_events": [{'123': 1691307869.0}]}
+LAST_RUN_DATA = {"from_time": 1691307869.0, "last_fetch_events": [{"123": 1691307869.0}]}
 
-MOCK_EVENTS = [
+EVENTS = [
     {
         "alertId": "123",
         "extraData": {"key1": "value1", "key2": "value2"},
@@ -262,8 +341,9 @@ MOCK_EVENTS = [
         "context": "value3",
     },
 ]
+MOCK_EVENTS = json.dumps({"object": EVENTS, "status": 0})
 
-EXPECTED_LAST_RUN_DATA = {'from_time': 1691480669.0, 'last_fetch_events': [{'456': 1691394269.0}, {'789': 1691480669.0}]}
+EXPECTED_LAST_RUN_DATA = {"from_time": 1691480669.0, "last_fetch_events": [{"456": 1691394269.0}, {"789": 1691480669.0}]}
 
 
 class MOCK_LOOKUP:
@@ -316,7 +396,11 @@ def test_time_range():
     assert get_time_range(time_from_string, time_to_string)[1] - time_to_string_ts < abs(tolerance)
     # Test Python datetime object input
     dt_from = datetime.fromtimestamp(time_from)
-    assert abs(get_time_range(dt_from, None)[0] - time_from) < tolerance
+    datetime.fromtimestamp(time_to)
+    # Convert Python datetime object timestamps to milliseconds
+    result_timestamp_ms = get_time_range(dt_from, None)[0] * 1000
+    expected_from = round(dt_from.timestamp() * 1000)
+    assert abs(result_timestamp_ms - expected_from) < tolerance
     # Additional test for Python datetime object input
     dt_additional = datetime.now()
     assert get_time_range(dt_additional, None)[0] == dt_additional.timestamp()
@@ -325,7 +409,7 @@ def test_time_range():
         get_time_range(future_timestamp, None)[0]
     except ValueError as exc:
         error_msg = str(exc)
-        assert 'Date should not be greater than current time' in error_msg
+        assert "Date should not be greater than current time" in error_msg
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -334,8 +418,8 @@ def test_time_range():
 @patch("Devo_v2.WRITE_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_DEDUPE", MOCK_FETCH_INCIDENTS_DEDUPE, create=True)
-@patch("Devo_v2.ds.Reader.query")
 @patch("Devo_v2.Sender")
+@patch("Devo_v2.Client.query")
 def test_command(mock_query_results, mock_write_args):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_write_args.return_value = MOCK_WRITER_ARGS
@@ -344,38 +428,46 @@ def test_command(mock_query_results, mock_write_args):
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITE_CREDENTIALS", {"key": "fake", "chain": "fake"}, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.FETCH_INCIDENTS_DEDUPE", MOCK_FETCH_INCIDENTS_DEDUPE, create=True)
+@patch("Devo_v2.Sender")
+@patch("Devo_v2.Client.query")
+def test_command_new(mock_query_results, mock_write_args):
+    mock_query_results.return_value = json.dumps({"success": False})
+    mock_write_args.return_value = MOCK_WRITER_ARGS
+    assert check_configuration() is False
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
+@patch("Devo_v2.Client.query")
 def test_first_fetch_incidents(mock_query_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     incidents = fetch_incidents()
     assert len(incidents) == 2
-    assert (
-        json.loads(incidents[0]["rawJSON"])["devo.metadata.alert"]["context"]
-        == "CPU_Usage_Alert"
-    )
+    assert json.loads(incidents[0]["rawJSON"])["devo.metadata.alert"]["context"] == "CPU_Usage_Alert"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
 @patch("Devo_v2.demisto.getLastRun")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_next_fetch(mock_query_results, mock_last_run):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_last_run.return_value = MOCK_LAST_RUN
     incidents = fetch_incidents()
     assert len(incidents) == 2
-    assert (
-        json.loads(incidents[1]["rawJSON"])["devo.metadata.alert"]["context"]
-        == "simultaneous_login"
-    )
+    assert json.loads(incidents[1]["rawJSON"])["devo.metadata.alert"]["context"] == "simultaneous_login"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS
@@ -387,7 +479,7 @@ def test_get_alerts(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts_check_result_columns(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS
@@ -396,9 +488,9 @@ def test_get_alerts_check_result_columns(mock_query_results, mock_args_results):
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
     # Check if all expected columns are present in the dictionary
     # Convert filtered_columns from a list to a comma-separated string
-    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS['filtered_columns'].split(','))
+    expected_columns = ",".join(field.strip() for field in MOCK_ALERT_ARGS["filtered_columns"].split(","))
     result = results[0]["Contents"][0]
-    assert all(column in result for column in expected_columns.split(',')), (
+    assert all(column in result for column in expected_columns.split(",")), (
         f"Not all columns present in the dictionary. Missing columns: "
         f"{', '.join(column for column in expected_columns.split(',') if column not in result)}"
     )
@@ -407,7 +499,7 @@ def test_get_alerts_check_result_columns(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS_REPEATED_FIELDS
@@ -418,19 +510,19 @@ def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
 
     # Check if all expected columns are present in the dictionary
-    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS_REPEATED_FIELDS['filtered_columns'].split(','))
+    expected_columns = ",".join(field.strip() for field in MOCK_ALERT_ARGS_REPEATED_FIELDS["filtered_columns"].split(","))
     result = results[0]["Contents"][0]
 
     # Assert that each field appears only once in the result
-    assert all(result[column] == result.get(column) for column in expected_columns.split(',')), (
-        f"Repeated fields not handled properly. Result: {result}"
-    )
+    assert all(
+        result[column] == result.get(column) for column in expected_columns.split(",")
+    ), f"Repeated fields not handled properly. Result: {result}"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts_with_empty_filtered_columns_param(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS_EMPTY_filtered_columns_PRAM
@@ -441,11 +533,11 @@ def test_get_alerts_with_empty_filtered_columns_param(mock_query_results, mock_a
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_run_query(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS
-    results = run_query_command(OFFSET, ITEMS_PER_PAGE)
+    results = run_query_command(OFFSET, ITEMS_PER_PAGE, IP_AS_STRING)
     assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
     assert len(results) == 2
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
@@ -454,12 +546,28 @@ def test_run_query(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_run_query_with_invalid_column_name(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME
     with pytest.raises(ValueError, match=re.escape("Fields ['abcd'] not found in query result")):
-        run_query_command(OFFSET, ITEMS_PER_PAGE)
+        run_query_command(OFFSET, ITEMS_PER_PAGE, IP_AS_STRING)
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Client.query")
+def test_run_query_with_ip_as_string_false(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS_1)
+    mock_args_results.return_value = MOCK_QUERY_ARGS_FALSE_IP_AS_STRING
+    IP_AS_STRING = False
+    results = run_query_command(OFFSET, ITEMS_PER_PAGE, IP_AS_STRING)
+    assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
+    assert len(results) == 2
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+    assert results[0]["Contents"][0]["srcIp"] == 2130706433
+    assert results[0]["Contents"][1]["srcIp"] == 2130706234
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -467,8 +575,8 @@ def test_run_query_with_invalid_column_name(mock_query_results, mock_args_result
 @patch("Devo_v2.concurrent.futures.wait")
 @patch("Devo_v2.concurrent.futures.ThreadPoolExecutor.submit")
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
-@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.Client.query")
+@patch("Devo_v2.Client")
 @patch("Devo_v2.get_types")
 def test_multi_query(
     mock_query_types,
@@ -493,8 +601,8 @@ def test_multi_query(
 @patch("Devo_v2.concurrent.futures.wait")
 @patch("Devo_v2.concurrent.futures.ThreadPoolExecutor.submit")
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
-@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.Client.query")
+@patch("Devo_v2.Client")
 @patch("Devo_v2.get_types")
 def test_multi_query_negative_items(
     mock_query_types,
@@ -540,7 +648,7 @@ def test_write_devo_str(mock_load_results, mock_write_args):
         write_to_table_command()
     except ValueError as exc:
         error_msg = str(exc)
-        assert 'Failed to execute command devo-write-to-table.' in error_msg
+        assert "Failed to execute command devo-write-to-table." in error_msg
 
 
 @patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
@@ -590,9 +698,7 @@ def test_write_devo_no_data(mock_load_results, mock_write_args):
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.Sender")
 @patch("Devo_v2.Lookup")
-def test_write_lookup_devo(
-    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
-):
+def test_write_lookup_devo(mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args):
     mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS
     mock_lookup_writer_sender.return_value = MOCK_SENDER()
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
@@ -608,9 +714,7 @@ def test_write_lookup_devo(
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.Sender")
 @patch("Devo_v2.Lookup")
-def test_write_lookup_devo_header(
-    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
-):
+def test_write_lookup_devo_header(mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args):
     mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS
     mock_lookup_writer_sender.return_value = MOCK_SENDER()
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
@@ -626,9 +730,7 @@ def test_write_lookup_devo_header(
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.Sender")
 @patch("Devo_v2.Lookup")
-def test_write_lookup_devo_invalid(
-    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
-):
+def test_write_lookup_devo_invalid(mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args):
     mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS_key
     mock_lookup_writer_sender.return_value = MOCK_SENDER()
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
@@ -644,9 +746,7 @@ def test_write_lookup_devo_invalid(
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.Sender")
 @patch("Devo_v2.Lookup")
-def test_write_lookup_devo_invalid_action(
-    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
-):
+def test_write_lookup_devo_invalid_action(mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args):
     mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS_action
     mock_lookup_writer_sender.return_value = MOCK_SENDER()
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
@@ -690,9 +790,7 @@ def test_write_devo_invalid_json(mock_load_results, mock_write_args):
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.Sender")
 @patch("Devo_v2.Lookup")
-def test_write_lookup_devo_invalid_headers_format(
-    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
-):
+def test_write_lookup_devo_invalid_headers_format(mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args):
     mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS
     mock_lookup_writer_sender.return_value = MOCK_SENDER()
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
@@ -721,14 +819,12 @@ def test_write_devo_empty_records_param(mock_load_results, mock_write_args):
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.Sender")
 @patch("Devo_v2.Lookup")
-def test_write_lookup_missing_args(
-    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
-):
+def test_write_lookup_missing_args(mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args):
     # Ensure that headers and records are properly formatted JSON strings
     mock_lookup_write_args.return_value = {
         "lookupTableName": "test_table",
         "headers": '["header1", "header2"]',
-        "records": '["record1", "record2"]'
+        "records": '["record1", "record2"]',
     }
     mock_lookup_writer_sender.return_value = MOCK_SENDER()
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
@@ -776,7 +872,7 @@ def test_alert_to_incident_missing_data(mock_demisto_ISO):
 
 
 @patch("Devo_v2.demisto.getLastRun")
-@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.Client")
 @patch("Devo_v2.demisto.setLastRun")
 @patch("Devo_v2.demisto.incidents")
 def test_fetch_incidents(
@@ -796,13 +892,72 @@ def test_fetch_incidents(
     mock_incidents.assert_called_once()
 
 
-@patch(
-    "Devo_v2.FETCH_INCIDENTS_LIMIT", MOCK_FETCH_INCIDENTS_LIMIT_INCORRECT, create=True
-)
+@patch("Devo_v2.FETCH_INCIDENTS_LIMIT", MOCK_FETCH_INCIDENTS_LIMIT_INCORRECT, create=True)
 def fetch_incidents_limit_out_of_range():
     with pytest.raises(ValueError) as e:
         fetch_incidents()
-    assert (
-        "Fetch incidents limit should be greater than or equal to 10 and smaller than or equal to 100"
-        in str(e.value)
-    )
+    assert "Fetch incidents limit should be greater than or equal to 10 and smaller than or equal to 100" in str(e.value)
+
+
+# Test case for converting current time to Unix timestamp
+def test_to_unix_current_time():
+    unix_timestamp = _to_unix("now")
+    assert isinstance(unix_timestamp, int)
+
+
+# Test case for converting datetime object to Unix timestamp
+
+
+def test_to_unix_datetime_object():
+    dt = datetime(2024, 3, 23, 12, 0, 0, tzinfo=UTC)  # Ensure timezone is UTC
+    unix_timestamp = _to_unix(dt)
+    assert unix_timestamp == 1711195200
+
+
+# Test case for converting pandas.Timestamp object to Unix timestamp
+
+
+def test_to_unix_pandas_timestamp():
+    ts = pd.Timestamp("2024-03-23 12:00:00", tz="UTC")  # Ensure timezone is UTC
+    unix_timestamp = _to_unix(ts)
+    assert unix_timestamp == 1711195200
+
+
+# Test case for converting string to Unix timestamp
+
+
+def test_to_unix_string():
+    unix_timestamp = _to_unix("2024-03-23 12:00:00")
+    assert unix_timestamp == 1711195200
+
+
+# Test case for converting integer timestamp to Unix timestamp
+
+
+def test_to_unix_integer():
+    unix_timestamp = _to_unix(1740604800)
+    assert unix_timestamp == 1740604800
+
+
+# Test case for converting float timestamp to Unix timestamp
+
+
+def test_to_unix_float():
+    unix_timestamp = _to_unix(1740604800.0)
+    assert unix_timestamp == 1740604800
+
+
+# Test case for converting None to Unix timestamp
+
+
+def test_to_unix_none():
+    unix_timestamp = _to_unix(None)
+    assert unix_timestamp is None
+
+
+# Test case for converting with milliseconds option set to True
+
+
+def test_to_unix_milliseconds():
+    unix_timestamp = _to_unix("2024-03-23 12:00:00", milliseconds=True)
+    assert unix_timestamp == 1711195200000

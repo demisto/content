@@ -1,0 +1,6 @@
+name: Microsoft Defender For Cloud Parsing Rule
+id: Microsoft_Defender_For_Cloud_ParsingRule
+fromversion: 8.3.0
+tags: []
+rules: ''
+samples: ''

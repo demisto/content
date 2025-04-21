@@ -2,7 +2,7 @@
     "name": "Automox",
     "description": "This pack empowers you with comprehensive solutions to manage your Automox device fleet with ease!",
     "support": "partner",
-    "currentVersion": "1.0.17",
+    "currentVersion": "1.0.20",
     "author": "Automox Inc.",
     "url": "https://www.automox.com/",
     "email": "support@automox.com",
@@ -20,7 +20,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "dependencies": {
         "CommonPlaybooks": {
@@ -30,5 +31,11 @@
     },
     "displayedImages": [
         "CommonPlaybooks"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

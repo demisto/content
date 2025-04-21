@@ -15,22 +15,18 @@ For more information, see the integrations description.
 This integration relies on Google's audit logs which are prone to some data delays. Some results may be partial if data had not arrived due to lag times. The lag time changes depending on the used audit log (from near real-time up to 3 days).
 For more information - https://support.google.com/a/answer/7061566?hl=en
 
-## Configure G Suite Auditor on Cortex XSOAR
+## Configure G Suite Auditor in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for G Suite Auditor.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Admin email | True |
-    | User's Service Account JSON | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Admin email | True |
+| User's Service Account JSON | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gsuite-activity-search
 ***

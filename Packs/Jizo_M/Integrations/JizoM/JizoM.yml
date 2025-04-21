@@ -1,0 +1,281 @@
+category: Network Security
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: JizoM
+  version: -1
+name: JizoM
+display: JizoM
+description: This integration ensures interaction with the JizoM API.
+configuration:
+- section: Collect
+  display: Username
+  displaypassword: Password
+  name: credentials
+  type: 9
+  required: true
+- section: Connect
+  display: Server URL. e.g., https://127.0.0.1:9001
+  name: url
+  type: 0
+  required: true
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- section: Connect
+  display: Incident type
+  name: incidentType
+  defaultvalue: Jizo Alert
+  type: 13
+  required: false
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 0
+  required: false
+- display: First fetch time (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Maximum number of alerts per fetch
+  name: max_fetch
+  defaultvalue: "10"
+  type: 0
+  required: false
+script:
+  type: python
+  commands:
+  - name: jizo-m-protocols-get
+    arguments:
+    - name: ip_src
+      description: Ipv4 or Ipv6 of the source.
+      type: textArea
+    - name: ip_dest
+      description: Ipv4 or Ipv6 of the destination.
+      type: textArea
+    - name: datetime_from
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
+      type: textArea
+    - name: datetime_to
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
+      type: textArea
+    - name: probe_name
+      description: The name of the jizo probe.
+      type: textArea
+    - name: page
+      description: A page number for pagination.
+      type: textArea
+    - name: limit
+      description: The maximum number of protocols to display per alert.
+      type: textArea
+    outputs:
+    - contextPath: JizoM.Protocols.alerts_flows.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.Protocols.alerts_flows.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.Protocols.alerts_flows.total
+      description: The total number of alerts.
+      type: Number
+    - contextPath: JizoM.Protocols.alerts_files.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.Protocols.alerts_files.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.Protocols.alerts_files.total
+      description: The total number of alerts.
+      type: Number
+    - contextPath: JizoM.Protocols.alerts_usecase.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.Protocols.alerts_usecase.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.Protocols.alerts_usecase.total
+      description: The total number of alerts.
+      type: Number
+    description: Get the list of alerts sorted by protocols.
+  - name: jizo-m-peers-get
+    arguments:
+    - name: ip_src
+      description: Ipv4 or Ipv6 of the source.
+      type: textArea
+    - name: ip_dest
+      description: Ipv4 or Ipv6 of the destination.
+      type: textArea
+    - name: datetime_from
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
+      type: textArea
+    - name: datetime_to
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
+      type: textArea
+    - name: probe_name
+      description: The name of the jizo probe.
+      type: textArea
+    - name: page
+      description: A page number for pagination.
+      type: textArea
+    - name: limit
+      description: The maximum number of samples to display per alert.
+      type: textArea
+    outputs:
+    - contextPath: JizoM.Peers.alerts_flows.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.Peers.alerts_flows.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.Peers.alerts_flows.total
+      description: The total number of alerts.
+      type: Number
+    - contextPath: JizoM.Peers.alerts_files.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.Peers.alerts_files.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.Peers.alerts_files.total
+      description: The total number of alerts.
+      type: Number
+    - contextPath: JizoM.Peers.alerts_usecase.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.Peers.alerts_usecase.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.Peers.alerts_usecase.total
+      description: The total number of alerts.
+      type: Number
+    description: Get the list of IP addresses connected to a specific one.
+  - name: jizo-m-query-records-get
+    arguments:
+    - name: ip_src
+      description: Ipv4 or Ipv6 of the source.
+      type: textArea
+    - name: ip_dest
+      description: Ipv4 or Ipv6 of the destination.
+      type: textArea
+    - name: proto
+      description: The protocol.
+      type: textArea
+      predefined:
+      - TCP
+      - UDP
+      - IP
+      - IPSEC
+      - ICMP
+      - ARP
+      auto: PREDEFINED
+    - name: app_proto
+      description: The application protocol.
+      type: textArea
+      predefined:
+      - HTTP
+      - HTTPS
+      - FTP
+      - DNS
+      - DHCP
+      - DCERPC
+      - SMB
+      - SMTP
+      - SNMP
+      - SSL
+      - SSH
+      - SIP
+      - RDP
+      - RFB
+      - NFS
+      - MQTT
+      - MSN
+      - MODBUS
+      - IMAP
+      - TFTP
+      - KRBS
+      auto: PREDEFINED
+    - name: port_src
+      description: The source port.
+      type: textArea
+    - name: port_dest
+      description: The destination port.
+      type: textArea
+    - name: flow_id
+      description: The id of the flow.
+      type: textArea
+    - name: sid
+      description: The id of the rule.
+      type: textArea
+    - name: probe_name
+      description: The name of the jizo probe.
+      type: textArea
+    - name: port
+      description: The alert port.
+      type: textArea
+    - name: datetime_from
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
+      type: textArea
+    - name: datetime_to
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
+      type: textArea
+    - name: page
+      description: A page number for pagination.
+      type: textArea
+    - name: limit
+      description: The maximum number of samples to display per alert.
+      type: textArea
+    outputs:
+    - contextPath: JizoM.QueryRecords.alerts_flows.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.QueryRecords.alerts_flows.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.QueryRecords.alerts_flows.total
+      description: The total number of alerts.
+      type: Number
+    - contextPath: JizoM.QueryRecords.alerts_files.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.QueryRecords.alerts_files.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.QueryRecords.alerts_files.total
+      description: The total number of alerts.
+      type: Number
+    - contextPath: JizoM.QueryRecords.alerts_usecase.count
+      description: The number of displayed alerts.
+      type: Number
+    - contextPath: JizoM.QueryRecords.alerts_usecase.data
+      description: The details of alerts.
+      type: String
+    - contextPath: JizoM.QueryRecords.alerts_usecase.total
+      description: The total number of alerts.
+      type: Number
+    description: Retrieve all information available on Jizo M, mainly alerts.
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  isFetchSamples: true
+defaultmapperin: "Jizo M - Incoming Mapper"
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

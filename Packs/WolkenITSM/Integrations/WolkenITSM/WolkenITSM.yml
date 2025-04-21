@@ -43,257 +43,257 @@ name: Wolken ITSM
 script:
   commands:
   - arguments:
-    - description: pass incidentId
+    - description: pass incidentId.
       name: incidentId
       required: true
-    - description: Pass Internal Notes
+    - description: Pass Internal Notes.
       name: Notes
       required: true
-    description: Used to add Internal Notes in the specified incident
+    description: Used to add Internal Notes in the specified incident.
     name: wolken-add-internal-notes
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: Pass Subject of the Incident
+    - description: Pass Subject of the Incident.
       name: Subject
       required: true
-    - description: Pass Description of the Incident
+    - description: Pass Description of the Incident.
       name: Description
       required: true
-    - description: Pass Sub-Category of the Incident
+    - description: Pass Sub-Category of the Incident.
       name: SubCategoryName
       required: true
-    - description: Pass Item Name of the Incident
+    - description: Pass Item Name of the Incident.
       name: ItemName
-    - description: Pass Priority Id of the Incident
+    - description: Pass Priority Id of the Incident.
       name: PriorityId
-    - description: Pass Requester Email Id of the Incident
+    - description: Pass Requester Email Id of the Incident.
       name: RequestorEmail
       required: true
-    - description: Pass Contact Number of the Requester
+    - description: Pass Contact Number of the Requester.
       name: PreferredContactModeNumber
-    - description: Pass Contact Type Id of the Incident
+    - description: Pass Contact Type Id of the Incident.
       name: ContactTypeId
-    - description: Pass Category of the incident
+    - description: Pass Category of the incident.
       name: Category
-    - description: Pass Sub Category of the Incident
+    - description: Pass Sub Category of the Incident.
       name: Sub_Category
-    - description: Pass required Team Id
+    - description: Pass required Team Id.
       name: TeamId
-    - description: Pass Reminder of the incident
+    - description: Pass Reminder of the incident.
       name: Reminder
-    - description: Pass Remider Notes of the Incident
+    - description: Pass Remider Notes of the Incident.
       name: Reminder_Notes
-    - description: Pass Impact Id of the Incident
+    - description: Pass Impact Id of the Incident.
       name: ImpactId
-    - description: Pass Urgency Id of the Incident
+    - description: Pass Urgency Id of the Incident.
       name: UrgencyId
-    - description: Pass Location
+    - description: Pass Location.
       name: Location
-    - description: Pass Configuration Item of the incident
+    - description: Pass Configuration Item of the incident.
       name: Configuration_Item
-    - description: Pass file name required to add in the incident
+    - description: Pass file name required to add in the incident.
       name: file_name
-    - description: Pass file type required to add in the incident
+    - description: Pass file type required to add in the incident.
       name: file_type
-    - description: Pass file entry Id required to add in the incident
+    - description: Pass file entry Id required to add in the incident.
       name: file_entryId
-    - description: Pass SourceId required to add in the incident
+    - description: Pass SourceId required to add in the incident.
       name: SourceId
-    description: Creates new Wolken ITSM incident
+    description: Creates new Wolken ITSM incident.
     name: wolken-create-incident-requestv1
     outputs:
     - contextPath: Wolken.CreateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.CreateIncidents.message
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.CreateIncidents.data.requestId
-      description: ""
+      description: ''
       type: String
   - arguments: []
     description: Use to get access token and save it in integration context . Refresh Token saved in integration context will be used to create new access token after expiration.
     name: wolken-get-access-token
     outputs:
     - contextPath: Wolken.Token.access_token
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.Token.token_type
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.Token.refresh_token
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.Token.expires_in
-      description: ""
+      description: ''
       type: Number
     - contextPath: Wolken.Token.scope
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: Pass Incident Id required for searching
+    - description: Pass Incident Id required for searching.
       name: incidentId
       required: true
-    description: Find incident using the specified incident id
+    description: Find incident using the specified incident id.
     name: wolken-get-incident-by-id
     outputs:
     - contextPath: Wolken.GetIncidents.status
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: Pass Incident Id
+    - description: Pass Incident Id.
       name: incidentId
       required: true
-    - description: Pass file name required to add in the incident
+    - description: Pass file name required to add in the incident.
       name: file_name
-    - description: Pass file type required to add in the incident
+    - description: Pass file type required to add in the incident.
       name: file_type
-    - description: Pass file entry Id required to add in the incident
+    - description: Pass file entry Id required to add in the incident.
       name: file_entryId
-    description: Add Attachment to the specified Incident Id using entry Id
+    description: Add Attachment to the specified Incident Id using entry Id.
     name: wolken-post-api-v1-incidents-add-attachments
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: pass incidentId
+    - description: pass incidentId.
       name: incidentId
       required: true
     - description: Pass Outbound Notes object.
       name: Notes
       required: true
-    description: Add Outbound Notes to the specified Incident Id
+    description: Add Outbound Notes to the specified Incident Id.
     name: wolken-post-api-v1-incidents-add-outbound-notes
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: Pass Incident Id
+    - description: Pass Incident Id.
       name: incidentId
       required: true
-    - description: Pass incident 2Update object
+    - description: Pass incident 2Update object.
       name: SourceId
       required: true
-    - description: Pass the subject of the incident
+    - description: Pass the subject of the incident.
       name: Subject
       required: true
-    - description: Pass the description of the incident
+    - description: Pass the description of the incident.
       name: Description
       required: true
-    description: Update an existing incident
+    description: Update an existing incident.
     name: wolken-post-api-v1-incidents-by-incident-id
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: Pass Incident Id
+    - description: Pass Incident Id.
       name: incidentId
       required: true
-    - description: Pass the required Resolution code
+    - description: Pass the required Resolution code.
       name: Resolution_Code
       required: true
-    - description: 'Pass Resolution Notes '
+    - description: 'Pass Resolution Notes.'
       name: Resolution_Notes
       required: true
-    - description: Pass Closure description while closing the incident
+    - description: Pass Closure description while closing the incident.
       name: Closure_Description
       required: true
-    - description: 'Pass Status Id of the incident '
+    - description: 'Pass Status Id of the incident.'
       name: StatusId
       required: true
-    - description: Pass Sub Status Id of the incident
+    - description: Pass Sub Status Id of the incident.
       name: SubStatusId
       required: true
-    - description: Pass Owner of the incident
+    - description: Pass Owner of the incident.
       name: Owner
       required: true
-    description: Close an Incident
+    description: Close an Incident.
     name: wolken-post-api-v1-incidents-close
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: Pass Incident Id
+    - description: Pass Incident Id.
       name: incidentId
       required: true
-    - description: Pass description for incident Cancellation
+    - description: Pass description for incident Cancellation.
       name: Description
       required: true
-    description: Cancel an Incident
+    description: Cancel an Incident.
     name: wolken-put-api-v1-incidents-cancel
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
-      description: ""
+      description: ''
       type: String
     - contextPath: Wolken.UpdateIncidents.message
-      description: ""
+      description: ''
       type: String
   - arguments:
-    - description: Pass limit
+    - description: Pass limit.
       name: limit
       required: true
-    - description: Pass offset
+    - description: Pass offset.
       name: offset
       required: true
-    - description: Login User Id
+    - description: Login User Id.
       name: userPsNo
-    - description: Status Id
+    - description: Status Id.
       name: statusId
-    - description: Sub Status Id
+    - description: Sub Status Id.
       name: subStatusId
-    - description: Team Id
+    - description: Team Id.
       name: teamId
-    - description: Unit Id
+    - description: Unit Id.
       name: unitId
-    - description: Creator Id
+    - description: Creator Id.
       name: creatorId
-    - description: Requester Id
+    - description: Requester Id.
       name: requesterId
-    - description: Item Id
+    - description: Item Id.
       name: itemId
-    - description: Priority Id
+    - description: Priority Id.
       name: priorityId
-    - description: Assigned User Id
+    - description: Assigned User Id.
       name: assignedUserId
-    - description: Created Time Greater Than Equals
+    - description: Created Time Greater Than Equals.
       name: createdTimeGTE
-    - description: Created Time Less then
+    - description: Created Time Less then.
       name: createdTimeLT
-    - description: Updated Time Greater Then Equals
+    - description: Updated Time Greater Then Equals.
       name: updatedTimeGTE
-    - description: Updated Time Less Then
+    - description: Updated Time Less Then.
       name: updatedTimeLT
-    - description: Updated By User Id
+    - description: Updated By User Id.
       name: updatedByUserId
-    description: Search in the list of incident using any parameters
+    description: Search in the list of incident using any parameters.
     name: wolken-search-incidents-by-params
     outputs:
     - contextPath: Wolken.GetIncidents.status
-      description: ""
+      description: ''
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: ''
   subtype: python3

@@ -1,13 +1,13 @@
 category: Vulnerability Management
 commonfields:
-  id: 'ThousandEyes'
+  id: ThousandEyes
   version: -1
 configuration:
 - display: Base API URL
   name: base_url
   required: true
   type: 0
-- display: "API Token"
+- display: API Token
   name: credentials
   required: true
   hiddenusername: true
@@ -16,7 +16,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- defaultvalue: "1"
+- defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
@@ -48,9 +48,9 @@ configuration:
   - CRITICAL
   type: 15
   required: false
-description: This Integration is used to to fetch-incidents via “Active alerts”, get alert details via “Alert details”, and get the “Agent list”.
-display: 'ThousandEyes'
-name: 'ThousandEyes'
+description: 'This Integration is used to to fetch-incidents via "Active alerts", get alert details via "Alert details", and get the "Agent list".'
+display: ThousandEyes
+name: ThousandEyes
 script:
   commands:
   - arguments:
@@ -149,7 +149,7 @@ script:
       required: true
     description: Fetches a given agent.
     name: thousandeyes-get-agent
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
   isFetchSamples: true
   isfetch: true
   script: ''

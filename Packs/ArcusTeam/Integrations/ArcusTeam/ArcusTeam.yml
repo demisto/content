@@ -38,62 +38,62 @@ script:
     arguments:
     - name: vendor
       required: true
-      description: Device vendor
+      description: Device vendor.
     - name: model
-      description: Device model
+      description: Device model.
     - name: series
-      description: ' Device series'
+      description: 'Device series.'
     - name: firmware_version
-      description: Firmware version
+      description: Firmware version.
     outputs:
     - contextPath: ArcusTeamDevices.devices.categories
-      description: ' Device categories'
+      description: 'Device categories.'
       type: Unknown
     - contextPath: ArcusTeamDevices.devices.device_key
-      description: ' Arcus Team Device ID'
+      description: 'Arcus Team Device ID.'
       type: string
     - contextPath: ArcusTeamDevices.devices.model
-      description: ' Device model'
+      description: 'Device model.'
       type: string
     - contextPath: ArcusTeamDevices.devices.series
-      description: ' Device series'
+      description: 'Device series.'
       type: string
     - contextPath: ArcusTeamDevices.devices.vendor
-      description: ' Device vendor'
+      description: 'Device vendor.'
       type: string
     - contextPath: ArcusTeamDevices.devices.score
-      description: The similarity score
+      description: The similarity score.
       type: number
     - contextPath: ArcusTeamDevices.devices.firmware.firmwareid
-      description: ' Firmware ID'
+      description: 'Firmware ID.'
       type: string
     - contextPath: ArcusTeamDevices.devices.firmware.name
-      description: ' Firmware name'
+      description: 'Firmware name.'
       type: string
     - contextPath: ArcusTeamDevices.devices.firmware.version
-      description: Firmware version
+      description: Firmware version.
       type: string
-    description: ' Find ArcusTeam Device'
+    description: 'Find ArcusTeam Device.'
   - name: arcusteam-get-vulnerabilities
     arguments:
     - name: firmware_id
       required: true
-      description: 'ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command)'
+      description: 'ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command).'
     - name: device_id
       required: true
-      description: 'ArcusTeam Device ID (as returned by the arcusteam-get-devices command)'
+      description: 'ArcusTeam Device ID (as returned by the arcusteam-get-devices command).'
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
       defaultValue: "10"
     - name: page_number
-      description: ' Page number'
+      description: 'Page number.'
       defaultValue: "1"
     - name: sort_order
       auto: PREDEFINED
       predefined:
       - desc
       - asc
-      description: ' Sorting order (“asc”,”desc”)'
+      description: 'Sorting order (“asc”,”desc”).'
       defaultValue: desc
     - name: sort_field
       auto: PREDEFINED
@@ -106,7 +106,7 @@ script:
       - exploit_published
       - exploit_used
       - modified_date
-      description: ' Sorting field'
+      description: 'Sorting field.'
       defaultValue: risk
     - name: return_fields
       auto: PREDEFINED
@@ -119,54 +119,54 @@ script:
       - exploit_published
       - exploit_used
       - modified_date
-      description: ' The fields to return'
+      description: 'The fields to return.'
       isArray: true
       defaultValue: cve,risk
     outputs:
     - contextPath: ArcusTeamVulnerabilities.max_items
-      description: Number of results
+      description: Number of results.
       type: number
     - contextPath: ArcusTeamVulnerabilities.has_next
-      description: If there is another page
+      description: If there is another page.
       type: boolean
     - contextPath: ArcusTeamVulnerabilities.results.cve
-      description: CVE name
+      description: CVE name.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.risk
-      description: CVE risk
+      description: CVE risk.
       type: number
     - contextPath: ArcusTeamVulnerabilities.results.description
-      description: CVE description
+      description: CVE description.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.codename
-      description: CVE codename
+      description: CVE codename.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.cwe
-      description: CVE cwe
+      description: CVE cwe.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.exploit_published
-      description: If exploit was published
+      description: If exploit was published.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.exploit_used
-      description: If exploit was used
+      description: If exploit was used.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.modified_date
-      description: If date was modified
+      description: If date was modified.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.ownership
-      description: CVE ownership
+      description: CVE ownership.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.published_date
-      description: 'The date the CVE was published '
+      description: 'The date the CVE was published.'
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.title
-      description: CVE title
+      description: CVE title.
       type: string
     - contextPath: ArcusTeamVulnerabilities.results.url
-      description: CVE url
+      description: CVE url.
       type: string
-    description: ' Retrieve CVEs for an ArcusTeam device'
-  dockerimage: demisto/python3:3.10.12.63474
+    description: 'Retrieve CVEs for an ArcusTeam device.'
+  dockerimage: demisto/python3:3.11.10.115186
   subtype: python3
 fromversion: 6.0.0
 tests:

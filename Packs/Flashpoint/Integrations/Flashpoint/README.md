@@ -1,8 +1,8 @@
-Use the Flashpoint integration to reduce business risk. Flashpoint allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
+Deprecated. Use Flashpoint Ignite instead.
 This integration was integrated and tested with API version 1.0.0 and 4.0.0 of Flashpoint.
 
 ### Auto Extract Indicator
-Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentials** support auto extraction feature by default that extract indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer [this](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) for more detail).
+Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentials** support auto extraction feature by default that extract indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer [Indicator extraction (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) or [Indicator extraction (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-extraction) or [Indicator extraction (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-extraction) for more detail).
 
 ## Configure Flashpoint on Cortex XSOAR
 

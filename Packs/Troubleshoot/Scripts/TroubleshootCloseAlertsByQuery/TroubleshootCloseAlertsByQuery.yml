@@ -1,0 +1,24 @@
+args:
+- name: alert_ids
+  description: A comma-separated list of alert IDs to close.
+  required: true
+comment: Closes alerts by receiving a list of alert IDs and executing the closure process for each.
+commonfields:
+  id: TroubleshootCloseAlertsByQuery
+  version: -1
+name: TroubleshootCloseAlertsByQuery
+dependson:
+  must:
+  - closeInvestigation
+script: '-'
+subtype: python3
+tags:
+- DemistoAPI
+- troubleshoot
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.11.10.116949
+fromversion: 5.0.0
+enabled: true
+tests:
+- No tests (auto formatted)

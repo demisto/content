@@ -1,21 +1,17 @@
 Scale IT automation, manage complex deployments, and speed productivity.
 This integration was integrated and tested with version v3.8.0 of Ansible Automation Platform and with API version v2.
-## Configure Ansible Automation Platform on Cortex XSOAR
+## Configure Ansible Automation Platform in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible Automation Platform.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL | True |
-    | credentials | Username | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Server URL | True |
+| credentials | Username | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ansible-tower-inventories-list
 ***

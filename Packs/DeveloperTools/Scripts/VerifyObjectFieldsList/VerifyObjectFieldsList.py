@@ -1,7 +1,7 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-from typing import Dict, Any, Tuple
 
 
 def check_components(components: list, context: Any):
@@ -21,7 +21,7 @@ def check_components(components: list, context: Any):
                 raise KeyError
 
 
-def check_fields(fields_to_search_array: list, context_json) -> Tuple[bool, Any]:
+def check_fields(fields_to_search_array: list, context_json) -> tuple[bool, Any]:
     """
     Args:
         fields_to_search_array(list): list of fields to search
@@ -32,7 +32,7 @@ def check_fields(fields_to_search_array: list, context_json) -> Tuple[bool, Any]
     non_found_field = None
     try:
         for fields in fields_to_search_array:
-            components = fields.split('.')
+            components = fields.split(".")
             new_context = context_json
             non_found_field = fields
             check_components(components, new_context)
@@ -42,26 +42,26 @@ def check_fields(fields_to_search_array: list, context_json) -> Tuple[bool, Any]
     return True, None
 
 
-def check_fields_command(args: Dict[str, Any]) -> CommandResults:
+def check_fields_command(args: dict[str, Any]) -> CommandResults:
     """
     Args:
         args(dict): args from demisto
 
     Returns: Command Results with context and human readable output
     """
-    fields_to_search = argToList(args.get('fields_to_search'))
-    context = args.get('object', '{}')
+    fields_to_search = argToList(args.get("fields_to_search"))
+    context = args.get("object", "{}")
 
     # Call the standalone function and get the raw response
     result, non_found_field = check_fields(fields_to_search, context)
-    readable_output = f'Fields {",".join(fields_to_search)} are in given context.' if result \
+    readable_output = (
+        f'Fields {",".join(fields_to_search)} are in given context.'
+        if result
         else f'Field "{non_found_field}" is not in context.'
+    )
 
     return CommandResults(
-        outputs_prefix='CheckIfFieldsExists.FieldsExists',
-        outputs_key_field='',
-        outputs=result,
-        readable_output=readable_output
+        outputs_prefix="CheckIfFieldsExists.FieldsExists", outputs_key_field="", outputs=result, readable_output=readable_output
     )
 
 
@@ -69,10 +69,10 @@ def main():
     try:
         return_results(check_fields_command(demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute VerifyObjectFieldsList. Error: {str(ex)}')
+        return_error(f"Failed to execute VerifyObjectFieldsList. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

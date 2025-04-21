@@ -1,11 +1,11 @@
-comment: |-
-  Dynamic display script to display a list of useful Analyst Tools on an Incident layout.
+comment: 'Dynamic display script to display a list of useful Analyst Tools on an Incident layout.
 
-  Create an XSOAR list called "Case Management Analyst Tools", and add a markdown table to provide your own list.
+
+  Create an XSOAR list called "Case Management Analyst Tools", and add a markdown table to provide your own list.'
 commonfields:
   id: CaseMgmtAnalystTools
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: CaseMgmtAnalystTools
 runas: DBotWeakRole

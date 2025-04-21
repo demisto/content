@@ -1,5 +1,5 @@
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM112
 
 [file:Anomali_ThreatStream_v2.yml]
 ignore=BA108,BA109

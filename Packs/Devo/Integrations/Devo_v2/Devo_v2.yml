@@ -107,17 +107,21 @@ script:
     - name: items_per_page
       description: Enter the per page value you want to set.
       defaultValue: "50"
-    - name: queryTimeout
-      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
-      defaultValue: "60"
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false".
       defaultValue: "true"
+    - name: queryTimeout
+      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
+      defaultValue: "60"
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
     - name: filtered_columns
       description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter.
       isArray: true
+    - name: ip_as_string
+      required: false
+      description: Flag to return IP as string.
+      defaultValue: true
     outputs:
     - contextPath: Devo.QueryResults
       description: List of dictionary alerts from the specified time range.
@@ -233,7 +237,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.89201
+  dockerimage: demisto/devo:1.0.0.117466
   isfetch: true
   subtype: python3
 tests:

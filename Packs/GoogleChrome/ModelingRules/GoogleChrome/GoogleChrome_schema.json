@@ -4,11 +4,11 @@
           "type": "string",
           "is_array": false
         },
-        "parameters": {
+        "event": {
           "type": "string",
           "is_array": false
         },
-        "parametersint": {
+        "parameters": {
           "type": "string",
           "is_array": false
         }

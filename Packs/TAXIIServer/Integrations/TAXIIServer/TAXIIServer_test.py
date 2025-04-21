@@ -1,10 +1,10 @@
 import demistomock as demisto
-from CommonServerPython import *
+import lxml
 import pytest
 import sdv
-import lxml
+from CommonServerPython import *
 
-CIDR_INDICATORS = '''
+CIDR_INDICATORS = """
 {
    "iocs":[
       {
@@ -52,10 +52,10 @@ CIDR_INDICATORS = '''
    ],
    "total":1
 }
-'''
+"""
 
 
-EMAIL_INDICATORS = '''
+EMAIL_INDICATORS = """
 {
    "iocs":[
       {
@@ -117,9 +117,9 @@ EMAIL_INDICATORS = '''
    ],
    "total":1
 }
-'''
+"""
 
-URL_INDICATORS = '''
+URL_INDICATORS = """
 {
    "iocs":[
       {
@@ -182,9 +182,9 @@ URL_INDICATORS = '''
    ],
    "total":1
 }
-'''
+"""
 
-IP_INDICATORS = '''
+IP_INDICATORS = """
 {
    "iocs":[
       {
@@ -238,9 +238,9 @@ IP_INDICATORS = '''
       ],
    "total":1
 }
-'''
+"""
 
-DOMAIN_INDICATORS = '''
+DOMAIN_INDICATORS = """
 {
    "iocs":[
       {
@@ -305,9 +305,9 @@ DOMAIN_INDICATORS = '''
    ],
    "total":1
 }
-'''
+"""
 
-FILE_INDICATORS = '''
+FILE_INDICATORS = """
 {
    "iocs":[
       {
@@ -360,26 +360,29 @@ FILE_INDICATORS = '''
    ],
    "total":1
 }
-'''
+"""
 
-INDICATOR_QUERY = 'type:IP and sourceBrands:"Bambenek Consulting Feed"' \
-                  ' and sourcetimestamp:>"2020-02-10T11:32:32 +0000" and' \
-                  ' sourcetimestamp:<="2020-02-20T11:32:32 +0000"'
+INDICATOR_QUERY = (
+    'type:IP and sourceBrands:"Bambenek Consulting Feed"'
+    ' and sourcetimestamp:>"2020-02-10T11:32:32 +0000" and'
+    ' sourcetimestamp:<="2020-02-20T11:32:32 +0000"'
+)
 
 
 def test_find_indicators_by_time_frame(mocker):
     import datetime
+
     import pytz
     from TAXIIServer import find_indicators_by_time_frame
 
     def find_indicators(indicator_query):
         if indicator_query == INDICATOR_QUERY:
-            return 'yep'
-        return 'nope'
+            return "yep"
+        return "nope"
 
     # Set
-    mocker.patch('TAXIIServer.find_indicators_loop', side_effect=find_indicators)
-    mocker.patch.object(demisto, 'info')
+    mocker.patch("TAXIIServer.find_indicators_loop", side_effect=find_indicators)
+    mocker.patch.object(demisto, "info")
 
     begin_date = datetime.datetime(2020, 2, 10, 11, 32, 32, 644224, tzinfo=pytz.utc)
     end_date = datetime.datetime(2020, 2, 20, 11, 32, 32, 644224, tzinfo=pytz.utc)
@@ -388,30 +391,36 @@ def test_find_indicators_by_time_frame(mocker):
     result = find_indicators_by_time_frame('type:IP and sourceBrands:"Bambenek Consulting Feed"', begin_date, end_date)
 
     # Assert
-    assert result == 'yep'
+    assert result == "yep"
 
 
 def test_find_indicators_loop(mocker):
     from TAXIIServer import find_indicators_loop
 
     # Set
-    mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(IP_INDICATORS))
+    mocker.patch.object(demisto, "searchIndicators", return_value=json.loads(IP_INDICATORS))
 
     # Arrange
-    indicators = find_indicators_loop('q')
+    indicators = find_indicators_loop("q")
 
     # Assert
     assert len(indicators) == 1
-    assert indicators[0]['value'] == '52.218.100.20'
+    assert indicators[0]["value"] == "52.218.100.20"
 
 
-@pytest.mark.parametrize('indicator',
-                         [json.loads(IP_INDICATORS)['iocs'][0], json.loads(URL_INDICATORS)['iocs'][0],
-                          json.loads(EMAIL_INDICATORS)['iocs'][0], json.loads(CIDR_INDICATORS)['iocs'][0],
-                          json.loads(DOMAIN_INDICATORS)['iocs'][0],
-                          json.loads(FILE_INDICATORS)['iocs'][0]])
+@pytest.mark.parametrize(
+    "indicator",
+    [
+        json.loads(IP_INDICATORS)["iocs"][0],
+        json.loads(URL_INDICATORS)["iocs"][0],
+        json.loads(EMAIL_INDICATORS)["iocs"][0],
+        json.loads(CIDR_INDICATORS)["iocs"][0],
+        json.loads(DOMAIN_INDICATORS)["iocs"][0],
+        json.loads(FILE_INDICATORS)["iocs"][0],
+    ],
+)
 def test_validate_indicators(indicator):
-    from TAXIIServer import get_stix_indicator, NAMESPACE_URI, NAMESPACE
+    from TAXIIServer import NAMESPACE, NAMESPACE_URI, get_stix_indicator
 
     # Arrange
     stix_indicator = get_stix_indicator(indicator)
@@ -423,13 +432,15 @@ def test_validate_indicators(indicator):
     assert sdv.validate_xml(tree)
 
 
-@pytest.mark.parametrize('request_headers, url_scheme, expected',
-                         [
-                             ({}, 'http', 'http://host:9000'),
-                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https', 'https://host/instance/execute/eyy')
-                         ]
-                         )
-def test_get_url(mocker, request_headers, url_scheme, expected):
+@pytest.mark.parametrize(
+    "request_headers, url_scheme, expected, is_xsiam",
+    [
+        ({}, "http", "http://host:9000", False),
+        ({"X-Request-URI": "http://host/instance/execute"}, "https", "https://host/instance/execute/eyy", False),
+        ({"X-Request-URI": "http://host/instance/execute"}, "https", "https://ext-host/xsoar/instance/execute/eyy", True),
+    ],
+)
+def test_get_url(mocker, request_headers, url_scheme, expected, is_xsiam):
     """
     Given:
         - Case 1: Empty requests headers and http URL scheme
@@ -443,11 +454,39 @@ def test_get_url(mocker, request_headers, url_scheme, expected):
         - Case 2: Ensure server URL address contain the /instance/execute endpoint and the https URL scheme
     """
     import TAXIIServer
+
     taxii_server = TAXIIServer.TAXIIServer(
-        url_scheme='http', host='host', port=9000, collections={},
-        certificate='', private_key='', http_server=False, credentials={}
+        url_scheme="http",
+        host="host",
+        port=9000,
+        collections={},
+        certificate="",
+        private_key="",
+        http_server=False,
+        credentials={},
     )
     TAXIIServer.SERVER = taxii_server
     if request_headers:
-        mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
+        mocker.patch("TAXIIServer.get_calling_context", return_value={"IntegrationInstance": "eyy"})
+        mocker.patch("TAXIIServer.is_xsiam_or_xsoar_saas", return_value=is_xsiam)
     assert taxii_server.get_url(request_headers) == expected
+
+
+def test_create_stix_hash_observable():
+    """
+    Given:
+        - namespace: The XML namespace, indicator: The Demisto File indicator.
+
+    When:
+        - Getting a File indicator
+
+    Then:
+        - Ensure the stix hash observable is created
+    """
+
+    from TAXIIServer import create_stix_hash_observable
+
+    namespace = "namespace"
+    indicator = {"indicator_type": "File", "value": "123456789"}
+    observable = create_stix_hash_observable(namespace, indicator)
+    assert observable

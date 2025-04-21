@@ -8,12 +8,12 @@ description: Aella Star Light Integration
 configuration:
 - display: Server URL (e.g. https://starlight.companyname.com:8889)
   name: url
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: User name
   name: credentials
-  defaultvalue: ""
+  defaultvalue: ''
   type: 9
   required: true
 - display: Fetch incidents
@@ -26,17 +26,17 @@ configuration:
   required: false
 - display: Fetching interval in minutes (default is 15, minimum is 15 )
   name: fetch_interval
-  defaultvalue: "15"
+  defaultvalue: '15'
   type: 0
   required: false
 - display: The specific security event to look for. Default is all events
   name: event_name
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
 - display: Security event severity threshold, between 0-100
   name: severity
-  defaultvalue: "50"
+  defaultvalue: '50'
   type: 0
   required: false
 - display: Trust any certificate (not secure)
@@ -45,7 +45,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 script:
@@ -87,7 +87,7 @@ script:
     description: Query the details for a specific Start Light event
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No test
 fromversion: 6.5.0

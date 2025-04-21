@@ -1,0 +1,21 @@
+{
+  "actorId": "e96364db-8557-4c82-a31b-eccc7c8e6754",
+  "name": "someactor@domain.com",
+  "active": false,
+  "startDate": null,
+  "endDate": null,
+  "notes": null,
+  "alternateNames": [],
+  "inScope": true,
+  "firstName": "actor",
+  "lastName": "name",
+  "title": null,
+  "division": null,
+  "department": null,
+  "employeeType": null,
+  "locality": null,
+  "region": null,
+  "country": null,
+  "managerActorId": null,
+  "parentActorId": null
+}

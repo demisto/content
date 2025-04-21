@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Logz.Io Handle Alert](https://raw.githubusercontent.com/demisto/content/3cf14921e3e322c96eaf85fa5b161a07616a32fe/Packs/Logzio/doc_imgs/Logz.Io_Handle_Alert.png)
+![Logz.Io Handle Alert](../doc_files/Logz_Io_Handle_Alert.png)

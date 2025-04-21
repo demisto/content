@@ -1,23 +1,20 @@
 [file:PAN-OS]
 ignore=PA116
 
-[file:Panorama.yml]
-ignore=IN136,IN124
+[file:playbook-PAN-OS_-_Block_IP_-_Static_Address_Group_README.md]
+ignore=RM106
 
 [file:README.md]
-ignore=RM102,RM106
-
-[file:playbook-PAN-OS_-_Block_IP_-_Static_Address_Group_README.md]
 ignore=RM106
 
 [file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category_README.md]
 ignore=RM106
 
 [file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category.yml]
-ignore=PB121
+ignore=PB121,GR107
 
 [file:playbook-PAN-OS_-_Block_IP_-_Static_Address_Group.yml]
-ignore=PB121
+ignore=PB121,GR107
 
 [known_words]
 pcaps
@@ -45,4 +42,29 @@ sourceuser
 
 [file:PanoramaCVECoverage.yml]
 ignore=BA124
+
+# GR103 is temporary, see CIAC-11705
+[file:classifier-Panorama_Classifier.json]
+ignore=GR103
+
+[file:playbook-PAN-OS_-_Add_Static_Routes.yml]
+ignore=GR107
+
+[file:playbook-PAN-OS_-_Block_IP_-_Custom_Block_Rule.yml]
+ignore=GR107
+
+[file:playbook-PAN-OS_-_Block_Destination_Service.yml]
+ignore=GR107
+
+[file:playbook-PAN-OS_-_Add_Domains_EDL_To_Anti-Spyware.yml]
+ignore=GR107
+
+[file:playbook-PAN-OS_-_Delete_Static_Routes.yml]
+ignore=GR107
+
+[file:playbook-PAN-OS_Log_Forwarding_Setup_And_Maintenance.yml]
+ignore=GR107
+
+[file:playbook-PAN-OS_DAG_Configuration.yml]
+ignore=GR107
 

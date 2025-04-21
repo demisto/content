@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 from enum import Enum
 from random import randrange
 
+import demistomock as demisto
 import yaml
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 
 class FeedName(str, Enum):
@@ -25,13 +25,13 @@ def create_random_hunt_incident(args):
     assignee = args.get("assignee")
 
     query_parts = [
-        "lastseenbysource:>=\"7 days ago\"",
+        'lastseenbysource:>="7 days ago"',
         "sourceBrands:CyrenThreatInDepth ",
-        "investigationIDs:\"\"",
+        'investigationIDs:""',
         "cyrensourcetags:primary",
         "-cyrensourcetags:related",
         "cyrenfeedaction:add",
-        "cyrenfeedrelationships.timestamp:>=\"2000-01-01T00:00:00 +0100\"",
+        'cyrenfeedrelationships.timestamp:>="2000-01-01T00:00:00 +0100"',
     ]
     if indicator_type == FeedName.IP_REPUTATION:
         query_parts.append("type:IP")
@@ -48,22 +48,20 @@ def create_random_hunt_incident(args):
     query = " ".join(query_parts)
 
     random_page = randrange(10) + 1
-    res = demisto.executeCommand("findIndicators", dict(query=query, size=1, page=random_page))
+    res = demisto.executeCommand("findIndicators", {"query": query, "size": 1, "page": random_page})
     if isError(res[0]):
         raise DemistoException(f"Could not find any indicators: {res}")
 
     indicators = res[0]["Contents"]
     if not any(indicators):
-        return simple_result(f"Could not find any indicators for \"{query}\"!")
+        return simple_result(f'Could not find any indicators for "{query}"!')
 
-    incident = dict(name="Cyren Threat InDepth Threat Hunt",
-                    type=incident_type,
-                    details=yaml.dump(indicators[0]))
+    incident = {"name": "Cyren Threat InDepth Threat Hunt", "type": incident_type, "details": yaml.dump(indicators[0])}
 
     if assignee:
         incident["owner"] = assignee
     else:
-        res = demisto.executeCommand("getUsers", dict(current=True))
+        res = demisto.executeCommand("getUsers", {"current": True})
         if not isError(res[0]):
             current_user = res[0]["Contents"][0]
             current_user_id = current_user.get("id")
@@ -74,10 +72,9 @@ def create_random_hunt_incident(args):
         raise DemistoException(f"Could not create new incident: {res}")
 
     created_incident = res[0]
-    id = created_incident.get("EntryContext", dict()).get("CreatedIncidentID")
-    data = f"Successfully created incident {incident['name']}.\n" \
-           f"Click here to investigate: [{id}](#/incident/{id})."
-    res = demisto.executeCommand("investigate", dict(id=id))
+    id = created_incident.get("EntryContext", {}).get("CreatedIncidentID")
+    data = f"Successfully created incident {incident['name']}.\nClick here to investigate: [{id}](#/incident/{id})."
+    res = demisto.executeCommand("investigate", {"id": id})
     if isError(res[0]):
         data = data + "\n(An investigation has not been started.)"
 
@@ -88,7 +85,7 @@ def main(args):
     try:
         return_results(create_random_hunt_incident(args))
     except Exception as e:
-        return_error(f"Failed to execute CyrenThreatInDepthRandomHunt. Error: {str(e)}")
+        return_error(f"Failed to execute CyrenThreatInDepthRandomHunt. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -1,10 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-import urllib3
-import requests
-from typing import Any
 import shutil
+from typing import Any
+
+import demistomock as demisto  # noqa: F401
+import requests
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -33,19 +33,26 @@ class Client(BaseClient):
         :return: dict containing the sample uuid as returned from the API
         :rtype: ``Dict[str, Any]``
         """
-        payload = []
+        payload = {}
         if param["scan_type"] == "sandbox":
-            payload = [
+            metafields = [
                 {"metafieldId": "environment", "value": param["environment"]},
-                {"metafieldId": "private", "value": param["private"]},
-                {"metafieldId": "timeout", "value": param["timeout"]},
+                {"metafieldId": "private", "value": argToBoolean(param["private"])},
+                {"metafieldId": "timeout", "value": int(param["timeout"])},
                 {"metafieldId": "work_path", "value": param["work_path"]},
-                {"metafieldId": "mouse_simulation", "value": param["mouse_simulation"]},
-                {"metafieldId": "https_inspection", "value": param["https_inspection"]},
-                {"metafieldId": "internet_connection", "value": param["internet_connection"]},
-                {"metafieldId": "raw_logs", "value": param["raw_logs"]},
-                {"metafieldId": "snapshot", "value": param["snapshot"]},
+                {"metafieldId": "mouse_simulation", "value": argToBoolean(param["mouse_simulation"])},
+                {"metafieldId": "https_inspection", "value": argToBoolean(param["https_inspection"])},
+                {"metafieldId": "internet_connection", "value": argToBoolean(param["internet_connection"])},
+                {"metafieldId": "raw_logs", "value": argToBoolean(param["raw_logs"])},
+                {"metafieldId": "snapshot", "value": argToBoolean(param["snapshot"])},
             ]
+            analyzeConfig = json.dumps(metafields)
+            payload = {"analyzeConfig": analyzeConfig}
+        else:
+            payload = {
+                "isPublic": param["isPublic"],
+                "extensionCheck": param["extension_check"],
+            }
         suffix = "/public-api/scan/" + param["scan_type"]
         return self._http_request(method="POST", url_suffix=suffix, data=payload, files=param["files"])
 
@@ -283,7 +290,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
     levels = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
 
     def create_res(readable_dict: dict, output: dict) -> list[CommandResults]:
-
         def extract_ioc(output: dict) -> dict:
             indicators: dict = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
             if output["REPORT"].get("ioc", {}):
@@ -319,6 +325,9 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
         return command_result_list
 
     try:
+        readable_dict = {}
+        output = {}
+        demisto.debug("Initializing readable_dict & output")
 
         report_type = ""
         if result.get("reports", {}).get("dynamic", {}).get("enabled"):
@@ -347,7 +356,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
                     f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
                 )
 
-            result_url = f"https://app.threat.zone/submission/{submission_uuid}"
             level = result["level"]
             readable_dict = {
                 "ANALYSIS TYPE": report_type,
@@ -358,7 +366,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
                 "THREAT_LEVEL": levels[level],
                 "FILE_NAME": result["fileInfo"]["name"],
                 "PRIVATE": result["private"],
-                "SCAN_URL": result_url,
                 "UUID": submission_uuid,
             }
 
@@ -370,7 +377,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
                 "SHA256": sha256,
                 "LEVEL": level,
                 "INFO": submission_info,
-                "URL": result_url,
                 "UUID": submission_uuid,
                 "REPORT": result["reports"][report_type],
             }
@@ -398,7 +404,7 @@ def threatzone_check_limits(client: Client) -> CommandResults:
     )
 
 
-def threatzone_return_results(scan_type, uuid, url, readable_output, availability) -> List[CommandResults]:
+def threatzone_return_results(scan_type, uuid, readable_output, availability) -> List[CommandResults]:
     """Helper function for returning results with limits."""
     scan_prefix = ""
     if scan_type == "static-scan":
@@ -412,7 +418,7 @@ def threatzone_return_results(scan_type, uuid, url, readable_output, availabilit
             outputs_prefix=f"ThreatZone.Submission.{scan_prefix}",
             readable_output=readable_output,
             outputs_key_field="UUID",
-            outputs={"UUID": uuid, "URL": url},
+            outputs={"UUID": uuid},
         ),
         CommandResults(outputs_prefix="ThreatZone.Limits", outputs_key_field="E_Mail", outputs=availability["Limits"]),
     ]
@@ -432,7 +438,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
             f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}"
         )
 
-    ispublic = args.get("private")
+    private = args.get("private")
     environment = args.get("environment")
     work_path = args.get("work_path")
     timeout = args.get("timeout")
@@ -451,7 +457,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
     param = {
         "scan_type": "sandbox",
         "environment": environment,
-        "private": ispublic,
+        "private": private,
         "timeout": timeout,
         "work_path": work_path,
         "mouse_simulation": mouse_simulation,
@@ -464,11 +470,14 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
     }
 
     result = client.threatzone_add(param=param)
-    readable_output = tableToMarkdown("SAMPLE UPLOADED", result)
+    custom_result = {
+        "Message": result["message"],
+        "UUID": result["uuid"],
+    }
+    readable_output = tableToMarkdown("SAMPLE UPLOADED", custom_result)
     uuid = result["uuid"]
-    url = f"https://app.threat.zone/submission/{uuid}"
     availability = client.threatzone_check_limits("sandbox")
-    return threatzone_return_results("sandbox", uuid, url, readable_output, availability)
+    return threatzone_return_results("sandbox", uuid, readable_output, availability)
 
 
 def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
@@ -482,16 +491,22 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
     file_obj = demisto.getFilePath(file_id)
     file_name = encode_file_name(file_obj["name"])
     file_path = file_obj["path"]
+    extension_check = args.get("extension_check", "false")
+    private = args.get("private", True)
     files = [("file", (file_name, open(file_path, "rb"), "application/octet-stream"))]
-    param = {"scan_type": scan_type, "files": files}
+    param = {
+        "scan_type": scan_type,
+        "files": files,
+        "extension_check": str(extension_check).lower(),
+        "isPublic": str(not argToBoolean(private)).lower(),
+    }
 
     result = client.threatzone_add(param=param)
     uuid = result["uuid"]
-    url = f"https://app.threat.zone/submission/{uuid}"
-    readable = {"Message": result["message"], "UUID": result["uuid"], "URL": url}
+    readable = {"Message": result["message"], "UUID": result["uuid"]}
     readable_output = tableToMarkdown("SAMPLE UPLOADED", readable)
     availability = client.threatzone_check_limits(scan_type)
-    return threatzone_return_results(scan_type, uuid, url, readable_output, availability)
+    return threatzone_return_results(scan_type, uuid, readable_output, availability)
 
 
 """ MAIN FUNCTION """
@@ -537,7 +552,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

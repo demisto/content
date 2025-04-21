@@ -1470,7 +1470,7 @@
 <h5>Context Example</h5>
 <pre>DBotScore<br>{<br>  "Indicator": "AutoitLocker.exe",<br>  "Score": 3,<br>  "Type": "file",<br>  "Vendor": "Cylance Protect"<br>}<br>File<br>{<br>  "DownloadURL":       "https://cylanceephemeralfilestore.s3.amazonaws.com/0F/42/7B/33/0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09.zip? Signature=98kI7a19I2q%2BeE7Ef1un4BjSolQ%3D&amp;Expires=1541875473&amp;AWSAccessKeyId=AKIAIAD6JC2YTYVBFRFA",<br>  "MD5": "2FC103D0D52466B63D44444CE12A5901",<br>  "Malicious": {<br>  "Description": "Score determined by get threat command",<br>  "Vendor": "Cylance Protect"<br>},<br>  "Name": "AutoitLocker.exe",<br>  "SHA256": "0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09",<br>  "Safelisted": false,<br>  "Size": 405345,<br>  "Timestamp": "0001-01-01T00:00:00"<br>}</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" alt="screen shot 2018-11-10 at 20 56 40" width="749" height="370"></a></p>
+<p><a href="../../doc_files/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png" alt="screen shot 2018-11-10 at 20 56 40" width="749" height="370"></a></p>
 <h3 id="h_1161821402141541937920711">17. Add a hash to a list</h3>
 <hr>
 <p>Adds an identified threat to either the Global Quarantine list or the Global Safe list for a particular Tenant.</p>
@@ -1540,7 +1540,7 @@
 <h5>Command Example</h5>
 <pre>!cylance-protect-add-hash-to-list sha256="9ACD45F5F3F2C7629E51FE3123D31296EF763F6ABC1F895CDD1BF1AFB9A7453B" listType="GlobalQuarantine"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" alt="screen shot 2018-11-10 at 20 58 58" width="749" height="103"></a></p>
+<p><a href="../../doc_files/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png" alt="screen shot 2018-11-10 at 20 58 58" width="749" height="103"></a></p>
 <h3 id="h_5039804193441541937926117">18. Remove a threat from a list</h3>
 <hr>
 <p>Removes an identified threat from either the Global Quarantine list or the Global Safe list for a particular Tenant.</p>
@@ -1595,7 +1595,7 @@
 <h5>Command Example</h5>
 <pre>!cylance-protect-delete-hash-from-lists sha256="9ACD45F5F3F2C7629E51FE3123D31296EF763F6ABC1F895CDD1BF1AFB9A7453B" listType="GlobalQuarantine"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" alt="screen shot 2018-11-10 at 21 01 23" width="748" height="111"></a></p>
+<p><a href="../../doc_files/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png" alt="screen shot 2018-11-10 at 21 01 23" width="748" height="111"></a></p>
 <h3 id="h_1587684564731541937931567">19. Get details for a policy</h3>
 <hr>
 <p>Gets details for a single policy.</p>
@@ -1709,7 +1709,7 @@
 <h5>Context Example</h5>
 <pre>Cylance<br>{<br>  "Policy": {<br>  "ID": "7bcb0817-e9c9-444d-96e2-be9b59f429cb",<br>  "Name": "Test_Policy",<br>  "Timestamp": "2018-03-05T12:29:03.000000+00:00"<br>               }<br>}</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" alt="screen shot 2018-11-10 at 21 02 56" width="595" height="685"></a></p>
+<p><a href="../../doc_files/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" alt="screen shot 2018-11-10 at 21 02 56" width="595" height="685"></a></p>
 
 ### cylance-protect-get-device-by-hostname
 ***

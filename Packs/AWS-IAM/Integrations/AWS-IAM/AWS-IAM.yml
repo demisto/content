@@ -1545,7 +1545,71 @@ script:
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.91694
+  - arguments:
+    - description: The name of the user whose MFA devices you want to list.
+      name: userName
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+      required: false
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+      required: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+      required: false
+    - description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
+      name: marker
+      required: false
+    name: aws-iam-list-mfa-devices
+    description: Lists the MFA devices for an IAM user.  
+    outputs:
+      - contextPath: AWS.IAM.MFADevices.Devices.UserName
+        description: The user with whom the MFA device is associated.
+        type: string
+      - contextPath: AWS.IAM.MFADevices.Devices.SerialNumber
+        description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
+        type: string
+      - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
+        description: The date when the MFA device was enabled for the user.
+        type: date
+      - contextPath: MFADevices.Devices.Marker
+        description: First element of next page of items.
+        type: string
+  - arguments:
+    - description: The name of the user whose MFA devices you want to list.
+      name: userName
+      required: true
+    - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
+      name: serialNumber
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+      required: false
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+      required: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+      required: false
+    description: Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
+    name: aws-iam-deactivate-mfa-devices
+  - arguments:
+    - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
+      name: serialNumber
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+      required: false
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+      required: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+      required: false
+    description: Deletes a virtual MFA device.
+    name: aws-iam-delete-mfa-devices
+  dockerimage: demisto/boto3py3:1.0.0.1894954
   runonce: false
   script: '-'
   subtype: python3

@@ -1,0 +1,389 @@
+id: DomainTools Iris Risk Score
+version: -1
+name: DomainTools Iris Risk Score
+description: This playbook retrieves the Domain Risk Score of the given domain and check if the risk score is over the threshold and throws an Alert for the Analyst to manually review the domain indicator.
+tags:
+- Domaintools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c2779e16-988b-4195-83ad-73b33c53c1a8
+    type: start
+    task:
+      id: c2779e16-988b-4195-83ad-73b33c53c1a8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 08b08446-929b-441c-81ea-bcf87d579a9e
+    type: regular
+    task:
+      id: 08b08446-929b-441c-81ea-bcf87d579a9e
+      version: -1
+      name: Lookup Domain
+      description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
+      script: DomainTools Iris|||domaintoolsiris-investigate
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domains}
+      include_context:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: be4768c6-16e0-4ff8-81da-f6049550209d
+    type: condition
+    task:
+      id: be4768c6-16e0-4ff8-81da-f6049550209d
+      version: -1
+      name: Is there any domain over the risk score threshold?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DomainTools.Analytics.OverallRiskScore
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.dt_min_riskscore_threshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1a415462-d6bd-4e24-8e2f-590ca8f4f124
+    type: regular
+    task:
+      id: 1a415462-d6bd-4e24-8e2f-590ca8f4f124
+      version: -1
+      name: Add High Risk Domain(s) to Indicators
+      description: Sets Data for a Domain in the Indicator Table.
+      scriptName: SetIndicatorTableData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domaintools_data:
+        complex:
+          root: DomainTools
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DomainTools.Analytics.OverallRiskScore
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.dt_min_riskscore_threshold
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 41bbfbb5-1c50-4a96-82f1-f13be8ae64cd
+    type: title
+    task:
+      id: 41bbfbb5-1c50-4a96-82f1-f13be8ae64cd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: aff9d379-4bea-4635-8f3b-34143a36b265
+    type: condition
+    task:
+      id: aff9d379-4bea-4635-8f3b-34143a36b265
+      version: -1
+      name: Should wait for an analyst review?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.should_wait_for_analyst_review
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5affb93c-4947-426b-8466-ee2f214fca1c
+    type: collection
+    task:
+      id: 5affb93c-4947-426b-8466-ee2f214fca1c
+      version: -1
+      name: Select Domains to Add as Indicator
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select a Domain(s)
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: DomainTools
+            filters:
+            - - operator: greaterThanOrEqual
+                left:
+                  value:
+                    simple: DomainTools.Analytics.OverallRiskScore
+                  iscontext: true
+                right:
+                  value:
+                    simple: inputs.dt_min_riskscore_threshold
+                  iscontext: true
+            accessor: Name
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Which Domains should be added as Indicators?
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 3394381d-83f4-435e-86db-0731d893b2c0
+    type: regular
+    task:
+      id: 3394381d-83f4-435e-86db-0731d893b2c0
+      version: -1
+      name: Add Selected High Risk Score Domain(s) to Indicators
+      description: Sets Data for a Domain in the Indicator Table.
+      scriptName: SetIndicatorTableData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domaintools_data:
+        complex:
+          root: DomainTools
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: DomainTools.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Which Domains should be added as Indicators?.Answers.0
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1165,
+        "width": 940,
+        "x": -80,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: domains
+  value: {}
+  required: true
+  description: "The domain(s) to query. Can lookup multiple domains using a comma-separated values. \n\ne.g mydomain1.com,mydomain2.com"
+  playbookInputQuery:
+- key: dt_min_riskscore_threshold
+  value:
+    simple: "70"
+  required: true
+  description: The minimum risk score threshold.
+  playbookInputQuery:
+- key: should_wait_for_analyst_review
+  value:
+    simple: "true"
+  required: true
+  description: Flags if users should wait for an analyst to review. Default is true. Value can be either true/false only.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)

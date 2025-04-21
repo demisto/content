@@ -1,0 +1,32 @@
+commonfields:
+  id: DSPMExtractUserResponseFromSlackBlockState
+  version: -1
+name: DSPMExtractUserResponseFromSlackBlockState
+script: ''
+type: python
+tags: []
+comment: This script processes user responses from a Slack block interaction, determining the appropriate action based on the selected option (either creating a Jira ticket or remediating a risk). It extracts relevant project details and ticket types from the user input, sets the necessary context in XSOAR, and handles errors gracefully.
+enabled: true
+args:
+- name: incident_data
+  required: true
+  description: Incident data of a specific asset.
+  isArray: true
+- name: SlackBlockState
+  description: The state of the response from the user will be stored under this context path.
+outputs:
+- contextPath: User.Action
+  description: ""
+- contextPath: User.JiraProjectName
+  description: ""
+- contextPath: User.JiraTicketType
+  description: ""
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

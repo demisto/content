@@ -20,7 +20,8 @@
     "hidden": false,
     "associatedTypes": [
         "Flashpoint Compromised Credentials",
-        "Flashpoint Alerts"
+        "Flashpoint Alerts",
+        "Ignite Alert"
     ],
     "associatedToAll": false,
     "unmapped": false,

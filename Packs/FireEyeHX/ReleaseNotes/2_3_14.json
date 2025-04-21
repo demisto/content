@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Changed the outputs path in fireeye-hx-search command from FireEyeHX.Search.results to FireEyeHX.Search.results.data"
+}

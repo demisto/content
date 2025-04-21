@@ -1,6 +1,7 @@
 """
 Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR
 """
+
 import json
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -24,17 +25,12 @@ INTEGRATION_CONTEXT_NAME = "SymantecEDR"
 DEFAULT_OFFSET = 0
 DEFAULT_PAGE_SIZE = 50
 PAGE_NUMBER_ERROR_MSG = (
-    "Invalid Input Error: page number should be greater than zero. "
-    "Note: Page must be used along with page_size"
+    "Invalid Input Error: page number should be greater than zero. Note: Page must be used along with page_size"
 )
-PAGE_SIZE_ERROR_MSG = (
-    "Invalid Input Error: page size should be greater than zero. "
-    "Note: Page must be used along with page_size"
-)
+PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than zero. Note: Page must be used along with page_size"
 
 INVALID_QUERY_ERROR_MSG = (
-    'Invalid query arguments. Either use any optional filter in lieu of "query" '
-    'or explicitly use only "query" argument'
+    'Invalid query arguments. Either use any optional filter in lieu of "query" or explicitly use only "query" argument'
 )
 
 INCIDENT_PATCH_ACTION = ["add_comment", "close_incident", "update_resolution"]
@@ -84,7 +80,7 @@ EVENT_SEVERITY_MAPPING = {
     "3": IncidentSeverity.MEDIUM,
     "4": IncidentSeverity.HIGH,
     "5": IncidentSeverity.CRITICAL,
-    "6": IncidentSeverity.CRITICAL
+    "6": IncidentSeverity.CRITICAL,
 }
 
 EVENT_TYPE: dict[str, str] = {
@@ -196,7 +192,6 @@ class Client(BaseClient):
         fetch_event_severity: list = None,
         fetch_query: str = None,
     ):
-
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
         self.client_key = client_id
@@ -392,9 +387,7 @@ class Client(BaseClient):
         Returns:
             return response json
         """
-        return self.http_request(
-            method="POST", endpoint="/atpapi/v2/events", params={}, json_data=payload
-        ).json()
+        return self.http_request(method="POST", endpoint="/atpapi/v2/events", params={}, json_data=payload).json()
 
     def get_system_activity(self, payload: dict) -> dict[str, Any]:
         """
@@ -434,9 +427,7 @@ class Client(BaseClient):
         Returns:
             return response json
         """
-        return self.http_request(
-            method="POST", endpoint="/atpapi/v2/incidents", params={}, json_data=payload
-        ).json()
+        return self.http_request(method="POST", endpoint="/atpapi/v2/incidents", params={}, json_data=payload).json()
 
     def get_incident_comment(self, payload: dict, uuid: str) -> dict[str, Any]:
         """
@@ -465,13 +456,9 @@ class Client(BaseClient):
             return response json
         """
         if len(value) > 512:
-            raise ValueError(
-                "The maximum allowed length of a comment is 512 characters"
-            )
+            raise ValueError("The maximum allowed length of a comment is 512 characters")
 
-        request_data: list[dict[str, Any]] = [
-            {"op": "add", "path": f"/{uuid}/comments", "value": value}
-        ]
+        request_data: list[dict[str, Any]] = [{"op": "add", "path": f"/{uuid}/comments", "value": value}]
         return self.http_request(
             method="PATCH",
             endpoint="/atpapi/v2/incidents",
@@ -490,9 +477,7 @@ class Client(BaseClient):
         Returns:
             return response json
         """
-        request_data: list[dict[str, Any]] = [
-            {"op": "replace", "path": f"/{uuid}/state", "value": value}
-        ]
+        request_data: list[dict[str, Any]] = [{"op": "replace", "path": f"/{uuid}/state", "value": value}]
         return self.http_request(
             method="PATCH",
             endpoint="/atpapi/v2/incidents",
@@ -511,9 +496,7 @@ class Client(BaseClient):
         Returns:
             return response json
         """
-        request_data: list[dict[str, Any]] = [
-            {"op": "replace", "path": f"/{uuid}/resolution", "value": value}
-        ]
+        request_data: list[dict[str, Any]] = [{"op": "replace", "path": f"/{uuid}/resolution", "value": value}]
         return self.http_request(
             method="PATCH",
             endpoint="/atpapi/v2/incidents",
@@ -531,15 +514,9 @@ class Client(BaseClient):
         Returns:
             return response json
         """
-        endpoint = (
-            f"/atpapi/v2/entities/files/{sha2}/instances"
-            if sha2
-            else "/atpapi/v2/entities/files/instances"
-        )
+        endpoint = f"/atpapi/v2/entities/files/{sha2}/instances" if sha2 else "/atpapi/v2/entities/files/instances"
 
-        return self.http_request(
-            method="POST", endpoint=endpoint, params={}, json_data=payload
-        ).json()
+        return self.http_request(method="POST", endpoint=endpoint, params={}, json_data=payload).json()
 
     def get_domain_instance(self, payload: dict) -> dict[str, Any]:
         """
@@ -610,9 +587,7 @@ class Client(BaseClient):
             return response json
         """
         payload = {"action": "cancel_command", "targets": argToList(command_id)}
-        return self.http_request(
-            method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload
-        ).json()
+        return self.http_request(method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload).json()
 
     def get_delete_endpoint(self, device_uid: str, file_sha2: str) -> dict[str, Any]:
         """
@@ -627,9 +602,7 @@ class Client(BaseClient):
             "action": "delete_endpoint_file",
             "targets": [{"device_uid": device_uid, "hash": file_sha2}],
         }
-        return self.http_request(
-            method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload
-        ).json()
+        return self.http_request(method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload).json()
 
     def get_isolate_endpoint(self, device_uid: str) -> dict[str, Any]:
         """
@@ -640,9 +613,7 @@ class Client(BaseClient):
             return response json
         """
         payload = {"action": "isolate_endpoint", "targets": argToList(device_uid)}
-        return self.http_request(
-            method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload
-        ).json()
+        return self.http_request(method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload).json()
 
     def get_rejoin_endpoint(self, device_uid: str) -> dict[str, Any]:
         """
@@ -653,9 +624,7 @@ class Client(BaseClient):
             return response json
         """
         payload = {"action": "rejoin_endpoint", "targets": argToList(device_uid)}
-        return self.http_request(
-            method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload
-        ).json()
+        return self.http_request(method="POST", endpoint="/atpapi/v2/commands", params={}, json_data=payload).json()
 
     def get_status_endpoint(self, command_id: str, payload: dict) -> dict[str, Any]:
         """
@@ -759,9 +728,7 @@ def convert_to_iso8601(timestamp: str) -> str:
 
     Returns: return timestamp in an iso 8601 format.
     """
-    if datetime_from_timestamp := dateparser.parse(
-        timestamp, settings={"TIMEZONE": "UTC"}
-    ):
+    if datetime_from_timestamp := dateparser.parse(timestamp, settings={"TIMEZONE": "UTC"}):
         return f"{datetime_from_timestamp.strftime(ISO8601_F_FORMAT)[:-3]}Z"
     else:
         raise ValueError(f"{timestamp=} could not be parsed")
@@ -785,9 +752,7 @@ def extract_headers_for_readable_output(summary_data: list[dict]) -> list:
     return [camelize_string(column) for column in headers]
 
 
-def get_data_of_current_page(
-    response_data: list[dict[str, Any]], offset: int = 0, limit: int = 0
-) -> list:
+def get_data_of_current_page(response_data: list[dict[str, Any]], offset: int = 0, limit: int = 0) -> list:
     """
     Retrieve a list element based on offset and limit
     Args:
@@ -801,7 +766,7 @@ def get_data_of_current_page(
     """
 
     if offset >= 0 and limit >= 0:
-        return response_data[offset:(offset + limit)]
+        return response_data[offset : (offset + limit)]
     return response_data[:limit]
 
 
@@ -832,10 +797,7 @@ def compile_command_title_string(context_name: str, args: dict, record: int) -> 
             page_size = record
 
     if (page and page_size) and (page > 0 and page_size > 0):
-        return (
-            f"{context_name} List\nShowing page {page}\n"
-            f"Showing {page_size} out of {record} Record(s) Found."
-        )
+        return f"{context_name} List\nShowing page {page}\nShowing {page_size} out of {record} Record(s) Found."
 
     return f"{context_name} List"
 
@@ -868,16 +830,12 @@ def parse_attacks_sub_object(data: list[dict]) -> dict:
         cnt = 0
         # tactic_ids
         if tactic_ids_list := attack.get("tactic_ids", []):
-            tactic_ids_dict = {
-                f"attacks_tactic_ids_{cnt}": convert_list_to_str(tactic_ids_list)
-            }
+            tactic_ids_dict = {f"attacks_tactic_ids_{cnt}": convert_list_to_str(tactic_ids_list)}
             attacks_dict |= tactic_ids_dict
 
         # tactic uids
         if tactic_uids_list := attack.get("tactic_uids", []):
-            tactic_uids_dict = {
-                f"attacks_tactic_uids_{cnt}": convert_list_to_str(tactic_uids_list)
-            }
+            tactic_uids_dict = {f"attacks_tactic_uids_{cnt}": convert_list_to_str(tactic_uids_list)}
             attacks_dict |= tactic_uids_dict
 
         cnt += 1
@@ -928,9 +886,7 @@ def parse_user_sub_object(data: dict[str, Any], obj_prefix: Optional[str]) -> di
     return extract_raw_data(data, [], prefix)
 
 
-def parse_xattributes_sub_object(
-    data: dict[str, Any], obj_prefix: Optional[str]
-) -> dict:
+def parse_xattributes_sub_object(data: dict[str, Any], obj_prefix: Optional[str]) -> dict:
     """
     Retrieve event xattributes sub object data
     Args:
@@ -1066,7 +1022,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         ("edr_data_protocols", convert_list_to_str),
     ):
         if values := data.get(key):
-            result |= func(values)  # type: ignore[operator]
+            result |= func(values)  # type: ignore[operator, arg-type]
 
     for item in ("edr_data_protocols", "edr_files", "source_port", "target_port"):
         if values := data.get(item):
@@ -1075,9 +1031,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
     return result
 
 
-def domain_instance_readable_output(
-    results: list[dict], title: str
-) -> tuple[str, list]:
+def domain_instance_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to XSOAR Readable output for entity Domains instance
     Args:
@@ -1100,15 +1054,11 @@ def domain_instance_readable_output(
         summary_data.append(domain_instance)
 
     headers = extract_headers_for_readable_output(summary_data)
-    markdown = tableToMarkdown(
-        title, camelize(summary_data, "_"), headers=headers, removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
-def system_activity_readable_output(
-    results: list[dict], title: str
-) -> tuple[str, list]:
+def system_activity_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to User-Readable output for System Activity resources
     Args:
@@ -1124,12 +1074,8 @@ def system_activity_readable_output(
 
     for data in results:
         event_data = parse_event_object_data(data)
-        event_data["severity_id"] = EVENT_SEVERITY.get(
-            str(event_data.get("severity_id"))
-        )
-        event_data["atp_node_role"] = EVENT_NODE_ROLE.get(
-            str(event_data.get("atp_node_role"))
-        )
+        event_data["severity_id"] = EVENT_SEVERITY.get(str(event_data.get("severity_id")))
+        event_data["atp_node_role"] = EVENT_NODE_ROLE.get(str(event_data.get("atp_node_role")))
         event_data["status_id"] = EVENT_STATUS.get(str(event_data.get("status_id")))
         # Symantec EDR Console logging System Activity
         system_activity = {
@@ -1145,15 +1091,11 @@ def system_activity_readable_output(
         context_data.append(event_data)
 
     headers = extract_headers_for_readable_output(summary_data)
-    markdown = tableToMarkdown(
-        title, camelize(summary_data, "_"), headers=headers, removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=headers, removeNull=True)
     return markdown, context_data
 
 
-def endpoint_instance_readable_output(
-    results: list[dict], title: str
-) -> tuple[str, list]:
+def endpoint_instance_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to XSOAR Readable output for entities endpoints instance
     Args:
@@ -1178,9 +1120,7 @@ def endpoint_instance_readable_output(
         summary_data.append(endpoint_instance)
 
     headers = extract_headers_for_readable_output(summary_data)
-    markdown = tableToMarkdown(
-        title, camelize(summary_data, "_"), headers=headers, removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
@@ -1217,14 +1157,10 @@ def incident_readable_output(results: list[dict], title: str) -> tuple[str, list
             "last_seen": data.get("last_event_seen"),
         }
         summary_data.append(incident)
-    summary_data_sorted = sorted(
-        summary_data, key=lambda d: d["incident_id"], reverse=True
-    )
+    summary_data_sorted = sorted(summary_data, key=lambda d: d["incident_id"], reverse=True)
 
     headers = extract_headers_for_readable_output(summary_data)
-    markdown = tableToMarkdown(
-        title, camelize(summary_data_sorted, "_"), headers=headers, removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data_sorted, "_"), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
@@ -1242,9 +1178,7 @@ def audit_event_readable_output(results: list[dict], title: str) -> tuple[str, l
     summary_data: list[dict[str, Any]] = []
     for data in results:
         event_dict = parse_event_object_data(data)
-        event_dict["severity_id"] = EVENT_SEVERITY.get(
-            str(event_dict.get("severity_id"))
-        )
+        event_dict["severity_id"] = EVENT_SEVERITY.get(str(event_dict.get("severity_id")))
         event_dict["status_id"] = EVENT_STATUS.get(str(event_dict.get("status_id")))
         # ---- Display Data ----
         event = {
@@ -1266,9 +1200,7 @@ def audit_event_readable_output(results: list[dict], title: str) -> tuple[str, l
     summary_data_sorted = sorted(summary_data, key=lambda d: d["time"], reverse=True)
 
     headers = extract_headers_for_readable_output(summary_data)
-    markdown = tableToMarkdown(
-        title, camelize(summary_data_sorted, "_"), headers=headers, removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data_sorted, "_"), headers=headers, removeNull=True)
     return markdown, context_data
 
 
@@ -1309,15 +1241,11 @@ def incident_event_readable_output(results: list[dict], title: str) -> tuple[str
     summary_data_sorted = sorted(summary_data, key=lambda d: d["time"], reverse=True)
 
     headers = extract_headers_for_readable_output(summary_data)
-    markdown = tableToMarkdown(
-        title, camelize(summary_data_sorted, "_"), headers=headers, removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data_sorted, "_"), headers=headers, removeNull=True)
     return markdown, context_data
 
 
-def incident_comment_readable_output(
-    results: list[dict], title: str, incident_id: str
-) -> tuple[str, list]:
+def incident_comment_readable_output(results: list[dict], title: str, incident_id: str) -> tuple[str, list]:
     """
     Convert to XSOAR Readable output for incident comment
     Args:
@@ -1341,9 +1269,7 @@ def incident_comment_readable_output(
         summary_data.append(incident_comment)
 
     headers = extract_headers_for_readable_output(summary_data)
-    markdown = tableToMarkdown(
-        title, camelize(summary_data, "_"), headers=headers, removeNull=True
-    )
+    markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
@@ -1362,9 +1288,7 @@ def generic_readable_output(results: list[dict], title: str) -> str:
         readable_output.append(row)
 
     headers = extract_headers_for_readable_output(readable_output)
-    return tableToMarkdown(
-        title, camelize(readable_output, "_"), headers=headers, removeNull=True
-    )
+    return tableToMarkdown(title, camelize(readable_output, "_"), headers=headers, removeNull=True)
 
 
 def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) -> dict:
@@ -1379,15 +1303,9 @@ def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) 
     """
     dataset: dict = {}
     if not isinstance(result, dict | list):
-        raise ValueError(
-            f"Unexpected data type {type(result)}:: must be either a list or dict.\ndata={result}"
-        )
+        raise ValueError(f"Unexpected data type {type(result)}:: must be either a list or dict.\ndata={result}")
 
-    raw_data = (
-        {k: v for attribute in result for (k, v) in attribute.items()}
-        if isinstance(result, list)
-        else result
-    )
+    raw_data = {k: v for attribute in result for (k, v) in attribute.items()} if isinstance(result, list) else result
 
     for key, value in raw_data.items():
         if key not in ignore_key:
@@ -1397,9 +1315,7 @@ def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) 
     return dataset
 
 
-def query_search_condition(
-    q_type: str, q_value: str, ignore_validation: bool = False
-) -> str:
+def query_search_condition(q_type: str, q_value: str, ignore_validation: bool = False) -> str:
     """
     This function makes a query condition based on single or multiple search values .
     Args:
@@ -1444,16 +1360,10 @@ def get_incident_filter_query(args: dict[str, Any]) -> str:
         condition = f"atp_incident_id: {ids}"
 
     if priority is not None:
-        condition = (
-            f"{condition} AND priority_level: {priority} "
-            if condition
-            else f"priority_level: {priority}"
-        )
+        condition = f"{condition} AND priority_level: {priority} " if condition else f"priority_level: {priority}"
 
     if status is not None:
-        condition = (
-            f"{condition} AND state: {status}" if condition else f"state: {status}"
-        )
+        condition = f"{condition} AND state: {status}" if condition else f"state: {status}"
 
     if query:
         condition = query
@@ -1482,18 +1392,10 @@ def get_event_filter_query(args: dict[str, Any]) -> str:
         condition = f"type_id: {event_type_id}"
 
     if severity:
-        condition = (
-            f"{condition} AND severity_id: {severity}"
-            if condition
-            else f"severity_id: {severity}"
-        )
+        condition = f"{condition} AND severity_id: {severity}" if condition else f"severity_id: {severity}"
 
     if status:
-        condition = (
-            f"{condition} AND status_id: {status}"
-            if condition
-            else f"status_id: {status}"
-        )
+        condition = f"{condition} AND status_id: {status}" if condition else f"status_id: {status}"
 
     if query:
         condition = query
@@ -1521,14 +1423,10 @@ def get_association_filter_query(args: dict) -> str:
         condition = query_search_condition("sha256", query_value)
         return f"sha2: ({condition})"
     elif query_type == "device_uid":
-        condition = query_search_condition(
-            "device_uid", query_value, ignore_validation=True
-        )
+        condition = query_search_condition("device_uid", query_value, ignore_validation=True)
         return f"device_uid: ({condition})"
     elif query_type == "domain":
-        condition = query_search_condition(
-            "domain", query_value, ignore_validation=True
-        )
+        condition = query_search_condition("domain", query_value, ignore_validation=True)
         return f"data_source_url_domain: ({condition})"
     else:
         return query
@@ -1546,14 +1444,10 @@ def create_content_query(args: dict) -> dict[str, Any]:
     limit, offset = get_query_limit(args)
     payload: dict[str, Any] = {"verb": "query", "limit": limit, "offset": offset}
 
-    if (raw_start_time := args.get("start_time")) and (
-        start_time := convert_to_iso8601(raw_start_time)
-    ):
+    if (raw_start_time := args.get("start_time")) and (start_time := convert_to_iso8601(raw_start_time)):
         payload["start_time"] = start_time
 
-    if (raw_end_time := args.get("end_time")) and (
-        end_time := convert_to_iso8601(raw_end_time)
-    ):
+    if (raw_end_time := args.get("end_time")) and (end_time := convert_to_iso8601(raw_end_time)):
         payload["end_time"] = end_time
 
     return payload
@@ -1703,9 +1597,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str | None:
     return result[0].get("uuid") if result else None
 
 
-def create_payload_for_query(
-    args: dict[str, Any], query_type: Optional[str] = None
-) -> dict:
+def create_payload_for_query(args: dict[str, Any], query_type: Optional[str] = None) -> dict:
     """
     Create payload for request the endpoints
     Args:
@@ -1744,9 +1636,7 @@ def create_payload_for_query(
     return payload
 
 
-def validate_command_argument(
-    args: dict[str, Any], cmd_type: str, expected_values: list
-) -> None:
+def validate_command_argument(args: dict[str, Any], cmd_type: str, expected_values: list) -> None:
     """
     Validate command arguments based on user input value and expected value.
 
@@ -1759,9 +1649,7 @@ def validate_command_argument(
     """
     arg_value = args.get(cmd_type)
     if arg_value and arg_value not in expected_values:
-        raise ValueError(
-            f"Invalid {cmd_type}! Only supported types are : {expected_values}"
-        )
+        raise ValueError(f"Invalid {cmd_type}! Only supported types are : {expected_values}")
 
 
 """ COMMAND FUNCTIONS """
@@ -1804,24 +1692,16 @@ def common_wrapper_command(
     else:
         raw_response = client_func(payload)
 
-    title = compile_command_title_string(
-        readable_title, cmd_args, int(raw_response.get("total", 0))
-    )
+    title = compile_command_title_string(readable_title, cmd_args, int(raw_response.get("total", 0)))
 
-    if printable_result := get_data_of_current_page(
-        raw_response.get("result", []), offset, limit
-    ):
+    if printable_result := get_data_of_current_page(raw_response.get("result", []), offset, limit):
         if func_readable_output is None:
             readable_output = generic_readable_output(printable_result, title)
             context_data = printable_result
         elif "incident_id" in kwargs:
-            readable_output, context_data = func_readable_output(
-                printable_result, title, kwargs["incident_id"]
-            )
+            readable_output, context_data = func_readable_output(printable_result, title, kwargs["incident_id"])
         else:
-            readable_output, context_data = func_readable_output(
-                printable_result, title
-            )
+            readable_output, context_data = func_readable_output(printable_result, title)
     else:
         readable_output = f"No {readable_title} data to present."
 
@@ -1835,9 +1715,7 @@ def common_wrapper_command(
     )
 
 
-def get_domain_file_association_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_domain_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List of Domain and File association
     Args:
@@ -1857,9 +1735,7 @@ def get_domain_file_association_list_command(
     )
 
 
-def get_endpoint_domain_association_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_endpoint_domain_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     endpoint_domain_association_command: List of endpoint domain association
     Args:
@@ -1880,9 +1756,7 @@ def get_endpoint_domain_association_list_command(
     )
 
 
-def get_endpoint_file_association_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_endpoint_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     endpoint_file_association_command: List of Endpoint File association
     Args:
@@ -1973,9 +1847,7 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def get_event_for_incident_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Event for Incident List
     Args:
@@ -2022,9 +1894,7 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
-def get_incident_comments_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_incident_comments_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get all comments based on Incident ID
     Args:
@@ -2039,8 +1909,7 @@ def get_incident_comments_command(
     incident_id = args.pop("incident_id", None)
     if uuid is None:
         raise ValueError(
-            f"Incident ID {incident_id} was not found. "
-            f"If it's older than 30 days, try increasing the time range arguments"
+            f"Incident ID {incident_id} was not found. If it's older than 30 days, try increasing the time range arguments"
         )
 
     return common_wrapper_command(
@@ -2057,9 +1926,7 @@ def get_incident_comments_command(
     )
 
 
-def patch_incident_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def patch_incident_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Incident Update command is used to Add, close or update incident resolution
     Args:
@@ -2074,9 +1941,7 @@ def patch_incident_update_command(
     update_value = args.get("value", "")
 
     if action not in INCIDENT_PATCH_ACTION:
-        raise ValueError(
-            f"Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}"
-        )
+        raise ValueError(f"Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}")
 
     # Get UUID based on incident_id
     if not (uuid := get_incident_uuid(client, args)):
@@ -2107,9 +1972,7 @@ def patch_incident_update_command(
         response = client.update_incident(uuid, int(args.get("value", 0)))
         status = response.status_code
     else:
-        raise DemistoException(
-            f"Operation {action} is not supported; it must be one of {INCIDENT_PATCH_ACTION}"
-        )
+        raise DemistoException(f"Operation {action} is not supported; it must be one of {INCIDENT_PATCH_ACTION}")
 
     if status != 204:
         raise DemistoException(f"Failure of incident {action} operation")
@@ -2119,9 +1982,7 @@ def patch_incident_update_command(
         "Message": "Finished updating",
     }
     headers = list(summary_data.keys())
-    readable_output = tableToMarkdown(
-        f"Incident {action_desc}", summary_data, headers=headers, removeNull=True
-    )
+    readable_output = tableToMarkdown(f"Incident {action_desc}", summary_data, headers=headers, removeNull=True)
 
     return CommandResults(readable_output=readable_output, ignore_auto_extract=True)
 
@@ -2170,9 +2031,7 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def get_endpoint_instance_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Endpoint Instance
     Args:
@@ -2233,9 +2092,7 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
     )
 
 
-def get_endpoint_command(
-    client: Client, args: dict[str, Any], command: str
-) -> CommandResults:
+def get_endpoint_command(client: Client, args: dict[str, Any], command: str) -> CommandResults:
     """
     Issue a Command Action to the SEDR On-Prem networks with the following action:
         isolate - Isolates endpoint by cutting connections that the endpoint(s) has to internal networks and external
@@ -2269,8 +2126,7 @@ def get_endpoint_command(
             action_type = "Delete Endpoint"
         else:
             raise DemistoException(
-                "Invalid Arguments. "
-                'Both "device_id" and "sha2" arguments are required for endpoint delete action'
+                'Invalid Arguments. Both "device_id" and "sha2" arguments are required for endpoint delete action'
             )
     elif command == "symantec-edr-endpoint-isolate":
         action_type = "Isolate Endpoint"
@@ -2293,9 +2149,7 @@ def get_endpoint_command(
         outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Command.{action_type}",
         outputs_key_field="command_id",
         outputs=raw_response,
-        readable_output=tableToMarkdown(
-            title, summary_data, headers=headers, removeNull=True
-        ),
+        readable_output=tableToMarkdown(title, summary_data, headers=headers, removeNull=True),
         raw_response=raw_response,
         ignore_auto_extract=True,
     )
@@ -2360,20 +2214,12 @@ def fetch_incidents(client: Client, query_start_time: str) -> list:
     """
     seperator = " OR "
     priority_list = [REVERSE_INCIDENT_PRIORITY.get(i) for i in client.fetch_priority]  # type: ignore[union-attr]
-    priority = (
-        priority_list[0]
-        if len(priority_list) == 1
-        else seperator.join(map(str, priority_list))
-    )
+    priority = priority_list[0] if len(priority_list) == 1 else seperator.join(map(str, priority_list))
 
     state_list = [REVERSE_INCIDENT_STATE.get(i) for i in client.fetch_status]  # type: ignore[union-attr]
-    state = (
-        state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
-    )
+    state = state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
 
-    fetch_query = (
-        client.fetch_query or f"priority_level: ({priority}) AND state: ({state})"
-    )
+    fetch_query = client.fetch_query or f"priority_level: ({priority}) AND state: ({state})"
     incident_payload = {
         "verb": "query",
         "limit": client.fetch_limit,
@@ -2394,9 +2240,7 @@ def fetch_incidents(client: Client, query_start_time: str) -> list:
             # Get Incident Comments if set as true
             if client.is_fetch_comment:
                 comment_payload = {"verb": "query", "start_time": query_start_time}
-                comments_result = client.get_incident_comment(
-                    comment_payload, incident_uuid
-                ).get("result", [])
+                comments_result = client.get_incident_comment(comment_payload, incident_uuid).get("result", [])
 
             # Fetch incident for event if set as true
             if client.is_incident_event:
@@ -2405,9 +2249,7 @@ def fetch_incidents(client: Client, query_start_time: str) -> list:
                     "query": f"incident: {incident_uuid}",
                     "start_time": query_start_time,
                 }
-                events_result = client.get_event_for_incident(event_payload).get(
-                    "result", []
-                )
+                events_result = client.get_event_for_incident(event_payload).get("result", [])
 
             # Incidents Data
             incidents.append(
@@ -2442,20 +2284,10 @@ def fetch_events(client: Client, query_start_time: str) -> list:
     seperator = "OR"
 
     severity_list = [REVERSE_EVENT_SEVERITY.get(i.lower()) for i in client.fetch_event_severity]  # type: ignore[union-attr]
-    severity = (
-        severity_list[0]
-        if len(severity_list) == 1
-        else seperator.join(map(str, severity_list))
-    )
+    severity = severity_list[0] if len(severity_list) == 1 else seperator.join(map(str, severity_list))
     status_list = [REVERSE_EVENT_STATUS.get(i) for i in client.fetch_event_status]  # type: ignore[union-attr]
-    status = (
-        status_list[0]
-        if len(status_list) == 1
-        else seperator.join(map(str, status_list))
-    )
-    fetch_query = (
-        client.fetch_query or f"severity_id: ({severity}) and status_id: ({status})"
-    )
+    status = status_list[0] if len(status_list) == 1 else seperator.join(map(str, status_list))
+    fetch_query = client.fetch_query or f"severity_id: ({severity}) and status_id: ({status})"
     event_payload = {
         "verb": "query",
         "limit": client.fetch_limit,
@@ -2498,14 +2330,10 @@ def fetch_xsaor_incidents(client: Client, fetch_incident_type: str) -> list:
     last_run = demisto.getLastRun()
     demisto.debug(f"Last Run Object : {last_run}")
     # set First Fetch starting time in case running first time or reset
-    previous_start_time, previous_end_time = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=client.first_fetch
-    )
+    previous_start_time, previous_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=client.first_fetch)
 
     query_start_time = (
-        convert_to_iso8601(last_run.get("time"))
-        if last_run and "time" in last_run
-        else convert_to_iso8601(previous_start_time)
+        convert_to_iso8601(last_run.get("time")) if last_run and "time" in last_run else convert_to_iso8601(previous_start_time)
     )
     fetch_function, id_field = function_mapping[fetch_incident_type]
     incidents = fetch_function(client, query_start_time)
@@ -2550,26 +2378,20 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     sha2 = args.get("file", "")
     reliability = args.get("integration_reliability", "B - Usually reliable")
-    response_verdict = client.get_sandbox_verdict_for_file(
-        sha2
-    ) | client.get_file_entity(sha2)
+    response_verdict = client.get_sandbox_verdict_for_file(sha2) | client.get_file_entity(sha2)
     # Sandbox verdict
     title = "Sandbox Verdict"
     indicator = None
     if response_verdict:
         readable_output = generic_readable_output([response_verdict], title)
-        score = VERDICT_TO_SCORE_DICT.get(
-            response_verdict.get("verdict", "").lower(), Common.DBotScore.NONE
-        )
+        score = VERDICT_TO_SCORE_DICT.get(response_verdict.get("verdict", "").lower(), Common.DBotScore.NONE)
         dbot_score = Common.DBotScore(
             indicator=sha2,
             indicator_type=DBotScoreType.FILE,
             integration_name=INTEGRATION_CONTEXT_NAME,
             score=score,
             malicious_description=response_verdict.get("verdict", ""),
-            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
-                reliability
-            ),
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability),
         )
         indicator = Common.File(sha256=sha2, dbot_score=dbot_score)
     else:
@@ -2659,17 +2481,13 @@ def issue_sandbox_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SandboxIssue",
         outputs_key_field="command_id",
         outputs=summary_data,
-        readable_output=tableToMarkdown(
-            title, camelize(summary_data, "_"), headers=column_order, removeNull=True
-        ),
+        readable_output=tableToMarkdown(title, camelize(summary_data, "_"), headers=column_order, removeNull=True),
         raw_response=response,
     )
 
 
 # ScheduledCommand
-def run_polling_command(
-    client: Client, args: dict, cmd: str, status_func: Callable, results_func: Callable
-):
+def run_polling_command(client: Client, args: dict, cmd: str, status_func: Callable, results_func: Callable):
     """
     This function can handle the polling flow.
     After the first run, progress will be shown through the status command.
@@ -2722,8 +2540,7 @@ def run_polling_command(
 
             return CommandResults(
                 scheduled_command=scheduled_command,
-                readable_output=f"Waiting for the polling execution.."
-                f"Command id {command_id}",
+                readable_output=f"Waiting for the polling execution..Command id {command_id}",
                 ignore_auto_extract=True,
             )
 
@@ -2758,9 +2575,7 @@ def run_polling_command(
         )
 
         # result with scheduled_command only - no update to the war room
-        return CommandResults(
-            scheduled_command=scheduled_command, ignore_auto_extract=True
-        )
+        return CommandResults(scheduled_command=scheduled_command, ignore_auto_extract=True)
 
 
 def file_scheduled_polling_command(client: Client, args: Dict[str, Any]):
@@ -2769,15 +2584,13 @@ def file_scheduled_polling_command(client: Client, args: Dict[str, Any]):
     Returns:
         return polling CommandResults
     """
-    return run_polling_command(
-        client, args, "file", check_sandbox_status, get_sandbox_verdict
-    )
+    return run_polling_command(client, args, "file", check_sandbox_status, get_sandbox_verdict)
 
 
 """ MAIN FUNCTION """
 
 
-def main() -> None:     # pragma: no cover
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """

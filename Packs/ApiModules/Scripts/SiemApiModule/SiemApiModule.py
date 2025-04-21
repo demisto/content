@@ -33,7 +33,7 @@ def load_json(v: Any) -> dict:
             raise ValueError('headers are not valid Json object') from exc
     if isinstance(v, dict):
         return v
-    return dict()
+    return {}
 
 
 class IntegrationHTTPRequest(BaseModel):
@@ -48,7 +48,7 @@ class IntegrationHTTPRequest(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    _normalize_headers = validator('headers', pre=True, allow_reuse=True)(
+    _normalize_headers = validator('headers', pre=True, allow_reuse=True)(  # type: ignore[type-var]
         load_json
     )
 
@@ -163,6 +163,6 @@ class IntegrationGetEvents(ABC):
         """
         return {'after': events[-1]['created']}
 
-    @abstractmethod
+    @abstractmethod  # noqa: B027
     def _iter_events(self):
         """Create iterators with Yield"""

@@ -256,13 +256,13 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The last time the event was modified, using ISO 8601 format in in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The last time the event was modified, using ISO 8601 format in in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 would be: '2014-01-01T00:00:00Z'"
+      description: "The date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 would be: '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
       description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
@@ -308,7 +308,7 @@ script:
     - name: original_end_time_zone
       description: The end time zone when the event was created.
     - name: original_start
-      description: "The original start time of the calendar item using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The original start time of the calendar item using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
     - name: start
       description: "The date and time the event starts at, for example '2017-05-28T12:00:00'. By default, the start time is in UTC."
     - name: time_zone
@@ -365,13 +365,13 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "Last modified time and date of the event using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "Last modified time and date of the event using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The time and date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The time and date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
       description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
@@ -422,7 +422,7 @@ script:
     - name: time_zone
       description: "Represents a time zone, for example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
     - name: original_start
-      description: "The original start time of the calendar item, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The original start time of the calendar item, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
     - name: original_start_time_zone
       description: The start time zone when the event was created.
     outputs:
@@ -475,13 +475,13 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The last time and date the event was modified using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The last time and date the event was modified using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone that was set when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The date and time the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The date and time the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
       description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows Exchange to apply changes to the correct version of the object."
@@ -565,7 +565,7 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The time and date the event was last modified using the ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The time and date the event was last modified using the ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone that was set when the event was created.
@@ -601,7 +601,7 @@ script:
     execution: false
     name: msgraph-calendar-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.114611
   runonce: false
   script: '-'
   type: python

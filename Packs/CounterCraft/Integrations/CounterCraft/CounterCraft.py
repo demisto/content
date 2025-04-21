@@ -1,20 +1,18 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-
 """ IMPORTS """
-import json
-import urllib.parse
-import requests
-import hmac
-from datetime import datetime
-import time
 import binascii
+import hmac
+import json
+import time
+import urllib.parse
 import uuid
-import urllib3
-
-from typing import Dict, List
+from datetime import datetime
 from hashlib import sha1
+
+import requests
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -26,16 +24,16 @@ SERVER = demisto.params().get("server").rstrip("/") + "/api"
 API_KEY = demisto.params().get("api_key")
 SECRET_KEY = demisto.params().get("secret_key")
 VERIFY_CERTIFICATE = not demisto.params().get("insecure", False)
-PROXY = demisto.params().get('proxy', False)
+PROXY = demisto.params().get("proxy", False)
 FETCH_DELTA = "24 hours"
 
 DEF_HEADERS = {"Accept": "application/json", "Content-Type": "application/json"}
 
 ERR_DICT = {
-    400: 'Bad request. Please check your arguments and Deception Director API manual',
-    401: 'User does not have the right permission',
-    404: 'Entity not found. Please make sure the entity does exist',
-    500: 'Bad request. Please check your arguments and Deception Director API manual',
+    400: "Bad request. Please check your arguments and Deception Director API manual",
+    401: "User does not have the right permission",
+    404: "Entity not found. Please make sure the entity does exist",
+    500: "Bad request. Please check your arguments and Deception Director API manual",
 }
 
 CAMPAIGN_FIELDS = {
@@ -130,9 +128,7 @@ def sign(secret_key, data):
 
     sha1_hash = hmac.new(secret_key.encode(), data.encode(), sha1)
 
-    return binascii.b2a_base64(sha1_hash.digest())[
-        :-1
-    ]  # strip \n from base64 string result
+    return binascii.b2a_base64(sha1_hash.digest())[:-1]  # strip \n from base64 string result
 
 
 def get_signature(request_method, request_headers, path, query_string, private_key):
@@ -144,22 +140,14 @@ def get_signature(request_method, request_headers, path, query_string, private_k
     @return array a map with the Authorization and Date headers needed to sign a Latch API request
     """
 
-    x_headers = {
-        k: v
-        for k, v in request_headers.items()
-        if k.lower().startswith(X_API_KEY_AUTHENTICATION_HEADER_PREFIX.lower())
-    }
+    x_headers = {k: v for k, v in request_headers.items() if k.lower().startswith(X_API_KEY_AUTHENTICATION_HEADER_PREFIX.lower())}
 
     string_to_sign = (
         request_method.upper().strip()
         + "\n"
         + get_serialized_headers(x_headers)
         + "\n"
-        + (
-            path
-            if query_string.strip() == b""
-            else "%s?%s" % (path, query_string.strip().decode("utf-8"))
-        )
+        + (path if query_string.strip() == b"" else f"{path}?{query_string.strip().decode('utf - 8')}")
     )
 
     return sign(private_key, string_to_sign).decode("utf-8")
@@ -175,17 +163,12 @@ def get_serialized_headers(x_headers):
     res = {}  # type: Dict[str, List]
 
     for k, v in x_headers.items():
-
-        if not k.strip().lower() in res:
-
+        if k.strip().lower() not in res:
             res[k.lower()] = []
 
         res[k.strip().lower()].append(v.strip())
 
-    return "\n".join(
-        "%s:%s" % (k, v)
-        for k, v in sorted({k: ",".join(v) for k, v in res.items()}.items())
-    )
+    return "\n".join(f"{k}:{v}" for k, v in sorted({k: ",".join(v) for k, v in res.items()}.items()))
 
 
 def http_request(request_method, path, data={}, params=""):
@@ -198,10 +181,7 @@ def http_request(request_method, path, data={}, params=""):
     @return string A dict containing the response in JSON format or an error
     """
 
-    headers = {
-        X_API_KEY_AUTHENTICATION_HEADER_PREFIX
-        + "Date": time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
-    }
+    headers = {X_API_KEY_AUTHENTICATION_HEADER_PREFIX + "Date": time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())}
     headers.update(DEF_HEADERS)
     signature = get_signature(
         request_method,
@@ -210,7 +190,7 @@ def http_request(request_method, path, data={}, params=""):
         urllib.parse.urlencode(params).encode("utf-8"),
         SECRET_KEY,
     )
-    headers["Authorization"] = "APIKey %s:%s" % (API_KEY, signature)
+    headers["Authorization"] = f"APIKey {API_KEY}:{signature}"
     url = SERVER + path
 
     proxies = None
@@ -218,17 +198,11 @@ def http_request(request_method, path, data={}, params=""):
         proxies = handle_proxy()
 
     res = requests.request(
-        request_method,
-        url,
-        data=json.dumps(data),
-        params=params,
-        headers=headers,
-        verify=VERIFY_CERTIFICATE,
-        proxies=proxies
+        request_method, url, data=json.dumps(data), params=params, headers=headers, verify=VERIFY_CERTIFICATE, proxies=proxies
     )
 
     if res.status_code not in [200, 201, 204]:
-        demisto.debug("Error doing the HTTP query. We got a %s: %s" % (res.status_code, res.text))
+        demisto.debug(f"Error doing the HTTP query. We got a {res.status_code}: {res.text}")
         return_error(ERR_DICT[res.status_code])
 
     try:
@@ -240,25 +214,22 @@ def http_request(request_method, path, data={}, params=""):
 
 
 def return_host_standard_context(host):
-
     host_standard_context = {}
 
-    if host['type_code'] == 'MACHINE':
+    if host["type_code"] == "MACHINE":
+        host_standard_context["ID"] = host["uuid"]
+        host_standard_context["IP"] = host["data"]["ip_address"]
 
-        host_standard_context["ID"] = host['uuid']
-        host_standard_context["IP"] = host['data']['ip_address']
-
-        if 'ansible_facts' in host['data']:
-
-            host_standard_context["Domain"] = host['data']['ansible_facts']['ansible_domain']
-            host_standard_context["Hostname"] = host['data']['ansible_facts']['ansible_hostname']
-            host_standard_context["BIOSVersion"] = host['data']['ansible_facts']['ansible_bios_version']
-            host_standard_context["Memory"] = host['data']['ansible_facts']['ansible_memtotal_mb']
-            host_standard_context["Model"] = host['data']['ansible_facts']['ansible_product_name']
-            host_standard_context["OS"] = host['data']['ansible_facts']['ansible_os_family']
-            host_standard_context["OSVersion"] = host['data']['ansible_facts']['ansible_distribution_version']
-            host_standard_context["Processor"] = ' '.join(host['data']['ansible_facts']['ansible_processor'])
-            host_standard_context["Processors"] = len(host['data']['ansible_facts']['ansible_processor'])
+        if "ansible_facts" in host["data"]:
+            host_standard_context["Domain"] = host["data"]["ansible_facts"]["ansible_domain"]
+            host_standard_context["Hostname"] = host["data"]["ansible_facts"]["ansible_hostname"]
+            host_standard_context["BIOSVersion"] = host["data"]["ansible_facts"]["ansible_bios_version"]
+            host_standard_context["Memory"] = host["data"]["ansible_facts"]["ansible_memtotal_mb"]
+            host_standard_context["Model"] = host["data"]["ansible_facts"]["ansible_product_name"]
+            host_standard_context["OS"] = host["data"]["ansible_facts"]["ansible_os_family"]
+            host_standard_context["OSVersion"] = host["data"]["ansible_facts"]["ansible_distribution_version"]
+            host_standard_context["Processor"] = " ".join(host["data"]["ansible_facts"]["ansible_processor"])
+            host_standard_context["Processors"] = len(host["data"]["ansible_facts"]["ansible_processor"])
 
     return host_standard_context
 
@@ -297,16 +268,13 @@ def return_entry_results(title, content, human_readable, context, headers):
         lambda h: h.title().replace("_", " ").replace(".", ":"),
     )
 
-    return_outputs(
-        readable_output=readable_output, outputs=context, raw_response=content
-    )
+    return_outputs(readable_output=readable_output, outputs=context, raw_response=content)
 
 
 """ COMMANDS """
 
 
 def test_module_command():
-
     http_request("GET", "/campaigns")
     demisto.results("ok")
 
@@ -320,12 +288,7 @@ def list_dsns_command():
 
     new_dsns = []
     for o in res["data"]:
-        new_dsns.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in DSN_FIELDS.items()
-            }
-        )
+        new_dsns.append({new_key: o.get(old_key, None) for old_key, new_key in DSN_FIELDS.items()})
     context = createContext(new_dsns, removeNull=True)
 
     return_entry_results(
@@ -346,12 +309,7 @@ def list_providers_command():
 
     new_providers = []
     for o in res["data"]:
-        new_providers.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in PROVIDER_FIELDS.items()
-            }
-        )
+        new_providers.append({new_key: o.get(old_key, None) for old_key, new_key in PROVIDER_FIELDS.items()})
     context = createContext(new_providers, removeNull=True)
 
     return_entry_results(
@@ -371,7 +329,7 @@ def list_campaigns_command():
     name = demisto.args().get("name")
 
     if name is not None:
-        criteria = {"criteria": f"name:\"{name}\""}
+        criteria = {"criteria": f'name:"{name}"'}
     else:
         criteria = {}
 
@@ -379,12 +337,7 @@ def list_campaigns_command():
 
     new_campaigns = []
     for o in res["data"]:
-        new_campaigns.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in CAMPAIGN_FIELDS.items()
-            }
-        )
+        new_campaigns.append({new_key: o.get(old_key, None) for old_key, new_key in CAMPAIGN_FIELDS.items()})
     context = createContext(new_campaigns, removeNull=True)
 
     return_entry_results(
@@ -412,12 +365,7 @@ def list_hosts_command():
 
     new_hosts = []
     for o in res["data"]:
-        new_hosts.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in HOST_FIELDS.items()
-            }
-        )
+        new_hosts.append({new_key: o.get(old_key, None) for old_key, new_key in HOST_FIELDS.items()})
 
     context = createContext(new_hosts, removeNull=True)
     contextHosts = createContext([return_host_standard_context(x) for x in res["data"]], removeNull=True)
@@ -447,12 +395,7 @@ def list_services_command():
 
     new_services = []
     for o in res["data"]:
-        new_services.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in SERVICE_FIELDS.items()
-            }
-        )
+        new_services.append({new_key: o.get(old_key, None) for old_key, new_key in SERVICE_FIELDS.items()})
     context = createContext(new_services, removeNull=True)
 
     return_entry_results(
@@ -480,12 +423,7 @@ def list_breadcrumbs_command():
 
     new_breadcrumbs = []
     for o in res["data"]:
-        new_breadcrumbs.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in BREADCRUMB_FIELDS.items()
-            }
-        )
+        new_breadcrumbs.append({new_key: o.get(old_key, None) for old_key, new_key in BREADCRUMB_FIELDS.items()})
     context = createContext(new_breadcrumbs, removeNull=True)
 
     return_entry_results(
@@ -513,12 +451,7 @@ def list_incidents_command():
 
     new_incidents = []
     for o in res["data"]:
-        new_incidents.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in INCIDENT_FIELDS.items()
-            }
-        )
+        new_incidents.append({new_key: o.get(old_key, None) for old_key, new_key in INCIDENT_FIELDS.items()})
     context = createContext(new_incidents, removeNull=True)
 
     return_entry_results(
@@ -550,12 +483,7 @@ def get_object_command():
 
     new_objects = []
     for o in res["data"]:
-        new_objects.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in OBJECT_FIELDS.items()
-            }
-        )
+        new_objects.append({new_key: o.get(old_key, None) for old_key, new_key in OBJECT_FIELDS.items()})
     context = createContext(new_objects, removeNull=True)
 
     return_entry_results(
@@ -599,12 +527,7 @@ def get_events_command():
 
     new_events = []
     for o in res["data"]:
-        new_events.append(
-            {
-                new_key: o[old_key] if old_key in o else None
-                for old_key, new_key in EVENT_FIELDS.items()
-            }
-        )
+        new_events.append({new_key: o.get(old_key, None) for old_key, new_key in EVENT_FIELDS.items()})
     context = createContext(new_events, removeNull=True)
 
     return_entry_results(
@@ -633,8 +556,7 @@ def list_notifications(last_fetched):
     """
 
     criteria = {
-        "criteria": 'plugin_code:CONSOLE AND notifications.ctime:["%s" TO *]'
-        % last_fetched,
+        "criteria": f'plugin_code:CONSOLE AND notifications.ctime:["{last_fetched}" TO *]',
         "order": "-ctime",
         "with_stats": True,
     }
@@ -655,10 +577,7 @@ def create_campaign_command():
 
     res = http_request("POST", "/campaigns", data=data)
 
-    campaign = {
-        new_key: res[old_key] if old_key in res else None
-        for old_key, new_key in CAMPAIGN_FIELDS.items()
-    }
+    campaign = {new_key: res.get(old_key, None) for old_key, new_key in CAMPAIGN_FIELDS.items()}
 
     context = createContext(campaign, removeNull=True)
 
@@ -735,10 +654,7 @@ def create_host_machine_command():
 
     res = http_request("POST", "/hosts", data=data)
 
-    host = {
-        new_key: res[old_key] if old_key in res else None
-        for old_key, new_key in HOST_FIELDS.items()
-    }
+    host = {new_key: res.get(old_key, None) for old_key, new_key in HOST_FIELDS.items()}
 
     context = createContext(host, removeNull=True)
 
@@ -850,9 +766,7 @@ def fetch_incidents_command():
             incidents.append(
                 {
                     "name": notification["data"]["subject"],
-                    "occurred": datetime.utcfromtimestamp(
-                        int(notification["ctime"])
-                    ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "occurred": datetime.utcfromtimestamp(int(notification["ctime"])).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "details": notification["data"]["html"],
                     "rawJSON": json.dumps(notification),
                 }
@@ -901,9 +815,7 @@ def main():
         elif demisto.command() == "fetch-incidents":
             fetch_incidents_command()
     except Exception as e:
-        return_error(
-            "Unable to perform command : {}, Reason: {}".format(demisto.command(), e)
-        )
+        return_error(f"Unable to perform command : {demisto.command()}, Reason: {e}")
 
 
 if __name__ in ("__main__", "builtin", "builtins"):

@@ -1,24 +1,24 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-import PyPDF2
-import subprocess
+import contextlib
 import glob
+import html
+import io
+import json
 import os
-import stat
 import re
 import shutil
-import json
-from pikepdf import Pdf, PasswordError
-import contextlib
-import io
-import html
+import stat
+import subprocess
+
+import demistomock as demisto
+import PyPDF2
+from CommonServerPython import *
+from pikepdf import PasswordError, Pdf
 
 URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
     r"[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?"
 )
-INTEGRATION_NAME = 'ReadPDFFileV2'
+INTEGRATION_NAME = "ReadPDFFileV2"
 DEFAULT_NUM_IMAGES = 20
 
 
@@ -85,7 +85,7 @@ def create_file_instance(entry_id: str, path: str, file_name: str, score: int | 
     dbot_score = Common.DBotScore(
         indicator=entry_id,
         indicator_type=DBotScoreType.FILE,
-        integration_name='PDFx',
+        integration_name="PDFx",
         score=score,
     )
     file = Common.File(
@@ -101,9 +101,7 @@ def create_file_instance(entry_id: str, path: str, file_name: str, score: int | 
 def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name: str) -> None:
     """Missing EOF, file may be corrupted or suspicious file"""
 
-    human_readable = (
-        f'{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}'
-    )
+    human_readable = f"{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}"
     file_instance = create_file_instance(
         entry_id=entry_id,
         path=path,
@@ -116,31 +114,23 @@ def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name:
 def run_shell_command(command: str, *args) -> bytes:
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
-    demisto.debug(f'Running the shell command {cmd=}')
+    demisto.debug(f"Running the shell command {cmd=}")
     completed_process = subprocess.run(  # noqa: UP022
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     exit_codes = completed_process.returncode
-    error_string = completed_process.stderr.decode('utf-8')
-    demisto.debug(f'Got the following error: {exit_codes=},  {error_string=}')
+    error_string = completed_process.stderr.decode("utf-8")
+    demisto.debug(f"Got the following error: {exit_codes=},  {error_string=}")
     if exit_codes != 0:
-        if 'PDF file is damaged' in error_string or 'Couldn\'t read xref table' in error_string:
-            raise ShellException('PDf file is damaged/corrupted.')
+        if "PDF file is damaged" in error_string or "Couldn't read xref table" in error_string:
+            raise ShellException("PDf file is damaged/corrupted.")
         elif "Incorrect password" in error_string:
-            raise PdfInvalidCredentialsException(
-                'Incorrect password. Please provide the correct password.')
-        elif 'Copying of text from this document is not allowed' in error_string:
-            raise PdfCopyingProtectedException(
-                'Copying is not permitted')
-        raise ShellException(
-            f'Failed with the following error code: {exit_codes}.\n'
-            f' Error: {error_string}'
-        )
+            raise PdfInvalidCredentialsException("Incorrect password. Please provide the correct password.")
+        elif "Copying of text from this document is not allowed" in error_string:
+            raise PdfCopyingProtectedException("Copying is not permitted")
+        raise ShellException(f"Failed with the following error code: {exit_codes}.\n Error: {error_string}")
     elif error_string:
-        demisto.debug(
-            f"ReadPDFFilev2: exec of [{cmd}] completed with warnings: "
-            f'{error_string}'
-        )
+        demisto.debug(f"ReadPDFFilev2: exec of [{cmd}] completed with warnings: {error_string}")
     return completed_process.stdout
 
 
@@ -169,16 +159,12 @@ def get_pdf_metadata(file_path: str, user_or_owner_password: str | None = None) 
     """Gets the metadata from the pdf as a dictionary"""
     if user_or_owner_password:
         try:
-            demisto.debug('Trying password as user password, using the [upw] flag')
-            metadata_txt = run_shell_command(
-                "pdfinfo", "-upw", user_or_owner_password, file_path
-            )
+            demisto.debug("Trying password as user password, using the [upw] flag")
+            metadata_txt = run_shell_command("pdfinfo", "-upw", user_or_owner_password, file_path)
         except PdfInvalidCredentialsException:
-            demisto.debug('Trying password as owner password, using the [opw] flag')
-            metadata_txt = run_shell_command(
-                "pdfinfo", "-opw", user_or_owner_password, file_path
-            )
-        demisto.debug('PDF file has been successfully opened. Metadata has been retrieved.')
+            demisto.debug("Trying password as owner password, using the [opw] flag")
+            metadata_txt = run_shell_command("pdfinfo", "-opw", user_or_owner_password, file_path)
+        demisto.debug("PDF file has been successfully opened. Metadata has been retrieved.")
     else:
         metadata_txt = run_shell_command("pdfinfo", "-enc", "UTF-8", file_path)
     metadata = {}
@@ -231,7 +217,7 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
 
 def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape_url: bool = True) -> str:
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
-    pdf_html_output_path = f'{output_folder}/PDF_html'
+    pdf_html_output_path = f"{output_folder}/PDF_html"
     try:
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
     except PdfCopyingProtectedException:
@@ -240,15 +226,22 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape_url: bool 
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
     for file_name in html_file_names:
-        with open(file_name) as f:
+        with open(file_name, "rb") as f:
             for line in f:
-                html_content += html.unescape(line) if unescape_url else line
+                html_content += html.unescape(str(line)) if unescape_url else str(line)
     return html_content
 
 
-def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: list, emails: list, images: list[str],
-                               max_images: int,
-                               hash_contexts: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+def build_readpdf_entry_object(
+    entry_id: str,
+    metadata: dict,
+    text: str,
+    urls: list,
+    emails: list,
+    images: list[str],
+    max_images: int,
+    hash_contexts: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     """Builds an entry object for the main script flow"""
     pdf_file = {"EntryID": entry_id}
     # Add Text to file entity
@@ -264,7 +257,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
 
     md += "\n### URLs\n"
     md += "* " if urls else ""
-    md += "\n* ".join([f'{str(k["Data"])}' for k in urls])
+    md += "\n* ".join([f'{k["Data"]!s}' for k in urls])
 
     md += "\n### Text"
     md += f"\n{text}"
@@ -287,7 +280,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
             results.append(file)
     all_pdf_data = ""
     if metadata:
-        for k, v in metadata.items():
+        for _, v in metadata.items():
             all_pdf_data += str(v)
     if text:
         all_pdf_data += text
@@ -298,14 +291,12 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
 
     # Extract indicators (omitting context output, letting auto-extract work)
     try:
-        indicators_map = demisto.executeCommand(
-            "extractIndicators", {"text": all_pdf_data}
-        )[0]["Contents"]
+        indicators_map = demisto.executeCommand("extractIndicators", {"text": all_pdf_data})[0]["Contents"]
         indicators_map = json.loads(indicators_map)
         if emails:
             indicators_map["Email"] = emails
         if hash_contexts:
-            indicators_map['Hashes'] = hash_contexts
+            indicators_map["Hashes"] = hash_contexts
     except json.JSONDecodeError:
         pass
     ec = build_readpdf_entry_context(indicators_map)
@@ -334,8 +325,8 @@ def build_readpdf_entry_context(indicators_map: Any) -> dict:
             for email in indicators_map["Email"]:
                 ec_email.append({"Email": email})
             ec["Account"] = ec_email
-        if 'Hashes' in indicators_map:
-            ec['Hashes'] = indicators_map['Hashes']
+        if "Hashes" in indicators_map:
+            ec["Hashes"] = indicators_map["Hashes"]
     return ec
 
 
@@ -353,8 +344,9 @@ def get_urls_from_binary_file(file_path: str) -> set:
     return binary_file_urls
 
 
-def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str,
-                                              unescape_url: bool = True) -> tuple[set, set]:
+def get_urls_and_emails_from_pdf_html_content(
+    cpy_file_path: str, output_folder: str, unescape_url: bool = True
+) -> tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
 
@@ -449,15 +441,17 @@ def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
             try:
                 annot_object = annot_object.get_object()
             except Exception as e:
-                if 'Could not find object' in str(e):
-                    demisto.error(f'annot.get_object() encountered an error: {e}.\n Skipping without failure.')
+                if "Could not find object" in str(e):
+                    demisto.error(f"annot.get_object() encountered an error: {e}.\n Skipping without failure.")
                     continue
                 else:
-                    demisto.error(f'annot.get_object() encountered an error: {e}.')
+                    demisto.error(f"annot.get_object() encountered an error: {e}.")
 
         extracted_object = extract_url_from_annot_object(annot_object)
         # Separates URLs and Emails:
         if extracted_object:
+            if isinstance(extracted_object, bytes):
+                extracted_object = extracted_object.decode()
             if url := extract_url(extracted_object):
                 urls.add(url)
             if email := extract_email(extracted_object):
@@ -477,7 +471,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
     all_urls: set[str] = set()
     all_emails: set[str] = set()
     output_capture = io.StringIO()
-    with open(file_path, 'rb') as pdf_file:
+    with open(file_path, "rb") as pdf_file:
         # The following context manager was added so we could redirect error messages to the server logs since
         # PyPDF2 would sometimes return warnings on some files (warnings and not errors because strict=False), and these warnings
         # would be flushed to stderr, and therefore they would be returned as an error message to the user instead of being
@@ -492,7 +486,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
                 page_object = page_sliced.get_object()
 
                 # Extracts the PDF's Annots (Annotations and Commenting):
-                if annots := page_object.get('/Annots'):
+                if annots := page_object.get("/Annots"):  # type: ignore[union-attr]
                     if not isinstance(annots, PyPDF2.generic.ArrayObject):
                         annots = [annots]
 
@@ -508,15 +502,14 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
         demisto.debug(output_capture.getvalue())
     # Logging:
     if len(all_urls) == 0:
-        demisto.debug('No URLs were extracted from the PDF.')
+        demisto.debug("No URLs were extracted from the PDF.")
     if len(all_emails) == 0:
-        demisto.debug('No Emails were extracted from the PDF.')
+        demisto.debug("No Emails were extracted from the PDF.")
 
     return all_urls, all_emails
 
 
-def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str,
-                                          unescape_url: bool = True) -> tuple[list, list]:
+def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str, unescape_url: bool = True) -> tuple[list, list]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -535,7 +528,7 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str,
     html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder, unescape_url)
 
     # This url might be generated with the pdf html file, if so, we remove it
-    html_urls.discard('http://www.w3.org/1999/xhtml')
+    html_urls.discard("http://www.w3.org/1999/xhtml")
 
     # Unify urls:
     urls_set = annots_urls.union(html_urls, binary_file_urls)
@@ -578,7 +571,7 @@ def convert_hash_to_context(hash_type: str, hashes: set[Any]) -> list[dict[str, 
     Returns:
         list[dict[str, Any]]: A list of hash contexts that have the same hash type.
     """
-    hash_context: list[dict[str, Any]] = [{'type': hash_type, 'value': hash} for hash in hashes]
+    hash_context: list[dict[str, Any]] = [{"type": hash_type, "value": hash} for hash in hashes]
     return hash_context
 
 
@@ -592,44 +585,46 @@ def get_hashes_from_file(file_text: str) -> dict[str, set[Any]]:
         dict[str, set[Any]]: A dictionary that holds the hash types as keys, and each key
         holds the set of hashes corresponding to that hash type.
     """
-    demisto.debug('Extracting hashes from file')
+    demisto.debug("Extracting hashes from file")
     hashes: dict[str, set[Any]] = {}
-    hashes['SHA1'] = set(re.findall(sha1Regex, file_text))
-    hashes['SHA256'] = set(re.findall(sha256Regex, file_text))
-    hashes['SHA512'] = set(re.findall(sha512Regex, file_text))
-    hashes['MD5'] = set(re.findall(md5Regex, file_text))
+    hashes["SHA1"] = set(re.findall(sha1Regex, file_text))
+    hashes["SHA256"] = set(re.findall(sha256Regex, file_text))
+    hashes["SHA512"] = set(re.findall(sha512Regex, file_text))
+    hashes["MD5"] = set(re.findall(md5Regex, file_text))
 
     return hashes
 
 
-def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str = '',
-                             user_password: str = '') -> str:
+def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str = "", user_password: str = "") -> str:
     """
     This function decrypts the pdf if needed.
     """
     try:
-        if user_password or 'yes' in encrypted:
+        if user_password or "yes" in encrypted:
             with Pdf.open(cpy_file_path, allow_overwriting_input=True, password=user_password) as pdf:
                 pdf.save(dec_file_path)
                 return dec_file_path
     except PasswordError:
-        raise PdfInvalidCredentialsException('Incorrect password. Please provide the correct password.')
+        raise PdfInvalidCredentialsException("Incorrect password. Please provide the correct password.")
     return cpy_file_path
 
 
-def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str,
-                          unescape_url: bool = True) -> None:
+def extract_data_from_pdf(
+    path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str, unescape_url: bool = True
+) -> None:
     max_images = max_images if max_images else DEFAULT_NUM_IMAGES
     if path:
-        cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
+        cpy_file_path = f"{working_dir}/WorkingReadPDF.pdf"
         shutil.copy(path, cpy_file_path)
         metadata = get_pdf_metadata(path, user_password)
-        encrypted = metadata.get('Encrypted', '')
+        encrypted = metadata.get("Encrypted", "")
 
-        cpy_file_path = handling_pdf_credentials(cpy_file_path=cpy_file_path,
-                                                 dec_file_path=f'{working_dir}/DecWorkingReadPDF.pdf',
-                                                 encrypted=encrypted,
-                                                 user_password=user_password)
+        cpy_file_path = handling_pdf_credentials(
+            cpy_file_path=cpy_file_path,
+            dec_file_path=f"{working_dir}/DecWorkingReadPDF.pdf",
+            encrypted=encrypted,
+            user_password=user_password,
+        )
 
         # Get text:
         pdf_text_output_path = f"{working_dir}/PDFText.txt"
@@ -643,14 +638,9 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 
         # Get images:
         images = get_images_paths_in_path(working_dir)
-        readpdf_entry_object = build_readpdf_entry_object(entry_id,
-                                                          metadata,
-                                                          text,
-                                                          urls_ec,
-                                                          emails_ec,
-                                                          images,
-                                                          max_images=max_images,
-                                                          hash_contexts=hash_contexts)
+        readpdf_entry_object = build_readpdf_entry_object(
+            entry_id, metadata, text, urls_ec, emails_ec, images, max_images=max_images, hash_contexts=hash_contexts
+        )
 
         return_results(readpdf_entry_object)
     else:
@@ -660,24 +650,30 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 def main():  # pragma: no cover
     args = demisto.args()
     unescape_url: bool = argToBoolean(args.get("unescape_url", "true"))
-    working_dir = 'ReadPDFTemp'
+    working_dir = "ReadPDFTemp"
     try:
         if not os.path.exists(working_dir):
             """ Check if the working directory does not exist and create it """
             os.makedirs(working_dir)
-        entry_id = args.get('entryID')
-        user_password = str(args.get('userPassword', ''))
-        max_images = arg_to_number(args.get('maxImages', None))
-        path = demisto.getFilePath(entry_id).get('path')
+        entry_id = args.get("entryID")
+        user_password = str(args.get("userPassword", ""))
+        max_images = arg_to_number(args.get("maxImages", None))
+        path = demisto.getFilePath(entry_id).get("path")
 
-        extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id, max_images=max_images,
-                              working_dir=working_dir, unescape_url=unescape_url)
+        extract_data_from_pdf(
+            path=path,
+            user_password=user_password,
+            entry_id=entry_id,
+            max_images=max_images,
+            working_dir=working_dir,
+            unescape_url=unescape_url,
+        )
     except PdfPermissionsException as e:
         return_warning(str(e))
     except ShellException as e:
-        file_name = demisto.getFilePath(entry_id).get('name')
+        file_name = demisto.getFilePath(entry_id).get("name")
         mark_suspicious(
-            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error\n{str(e)}',
+            suspicious_reason=f"The script {INTEGRATION_NAME} failed due to an error\n{e!s}",
             entry_id=entry_id,
             path=path,
             file_name=file_name,

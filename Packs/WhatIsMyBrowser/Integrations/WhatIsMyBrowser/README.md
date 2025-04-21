@@ -167,4 +167,4 @@
 <div class="cl-preview-section">
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/42912128/52565803-8e1b0280-2e10-11e9-9a79-d0172cde27d1.png" alt="screen shot 2019-02-11 at 15 19 29" width="1114"></div>
+<div class="cl-preview-section"><img src="../../doc_files/52565803-8e1b0280-2e10-11e9-9a79-d0172cde27d1.png" alt="screen shot 2019-02-11 at 15 19 29" width="1114"></div>

@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Reco
   version: -1
@@ -7,6 +10,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - section: Connect
   display: JWT app token
   displaypassword: API Token
@@ -18,43 +22,52 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '200'
   display: Max fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Incidents SaaS Source
   display: Source
   name: source
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Created At time before which incidents will be fetched
   display: Before
   name: before
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Created At time after which incidents will be fetched
   display: After
   name: after
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Risk level of the incidents to fetch
   display: Risk level
   name: risk_level
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -65,7 +78,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: "-"
@@ -193,15 +206,12 @@ script:
     - contextPath: Reco.Domains.last_activity
       description: The last interaction time with the 3rd party.
       type: String
-    - contextPath: Reco.Domains.num_files
+    - contextPath: Reco.Domains.files_num
       description: The number of files the 3rd party has access to.
       type: Number
-    - contextPath: Reco.Domains.num_users
+    - contextPath: Reco.Domains.users_with_access_num
       description: The number of users the 3rd party has access to.
       type: Number
-    - contextPath: Reco.Domains.data_category
-      description: The data category of the assets the 3rd party has access to.
-      type: String
   - arguments: []
     description: Get all sensitive assets with public link from Reco.
     name: reco-get-sensitive-assets-with-public-link
@@ -242,6 +252,9 @@ script:
       type: String
     - contextPath: Reco.Assets.location
       description: The location of the file.
+      type: String
+    - contextPath: Reco.Assets.file_owner
+      description: The owner of the file.
       type: String
     - contextPath: Reco.Assets.users
       description: Users the file is shared with.
@@ -300,6 +313,128 @@ script:
       type: Unknown
     description: Get user context by email address from Reco.
     name: reco-get-user-context-by-email-address
+  - arguments:
+    - description: user email address.
+      name: email_address
+      required: true
+    outputs:
+    - contextPath: Reco.Assets.asset_id
+      description: The asset id.
+      type: String
+    - contextPath: Reco.Assets.asset
+      description: Json string of the asset's url and the name.
+      type: Unknown
+    - contextPath: Reco.Assets.data_category
+      description: The data category of the asset.
+      type: String
+    - contextPath: Reco.Assets.data_categories
+      description: The data categories of the asset.
+      type: String
+    - contextPath: Reco.Assets.location
+      description: The path of the asset.
+      type: String
+    - contextPath: Reco.Assets.source
+      description: SaaS tool source of the asset.
+      type: String
+    - contextPath: Reco.Assets.last_access_date
+      description: The last access date of the asset.
+      type: String
+    - contextPath: Reco.Assets.email_account
+      description: Email account of the user.
+      type: String
+    - contextPath: Reco.Assets.file_owner
+      description: The owner of the asset.
+      type: String
+    description: Get files user has access to from Reco.
+    name: reco-get-files-exposed-to-email-address
+  - arguments:
+      - description: user email address.
+        name: email_address
+        required: true
+    outputs:
+      - contextPath: Reco.Assets.asset_id
+        description: The asset id.
+        type: String
+      - contextPath: Reco.Assets.asset
+        description: Json string of the asset's url and the name.
+        type: Unknown
+      - contextPath: Reco.Assets.data_category
+        description: The data category of the asset.
+        type: String
+      - contextPath: Reco.Assets.data_categories
+        description: The data categories of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.location
+        description: The path of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.source
+        description: SaaS tool source of the asset.
+        type: String
+      - contextPath: Reco.Assets.last_access_date
+        description: The last access date of the asset.
+        type: String
+      - contextPath: Reco.Assets.file_owner
+        description: The owner of the asset.
+        type: String
+    description: Get files user has access to from Reco.
+    name: reco-get-assets-shared-externally
+  - arguments: [ ]
+    description: Get Private emails with access
+    name: reco-get-private-email-list-with-access
+    outputs:
+      - contextPath: Reco.privateEmails.email_account
+        description: Private email account.
+        type: String
+      - contextPath: Reco.privateEmails.primary_email
+        description: Primary email account.
+        type: String
+      - contextPath: Reco.privateEmails.files_num
+        description: Number of files the private email account has access to.
+        type: Number
+      - contextPath: Reco.privateEmails.user_category
+        description: User category.
+        type: String
+  - arguments:
+      - description: Asset id to search for.
+        name: asset_id
+        required: true
+    description: Get all assets from Reco by id.
+    name: reco-get-assets-by-id
+    outputs:
+      - contextPath: Reco.SensitiveAssets.file_name
+        description: The name of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.file_owner
+        description: The owner of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.file_url
+        description: Json string of the asset's url and the name.
+        type: Unknown
+      - contextPath: Reco.SensitiveAssets.currently_permitted_users
+        description: List of currently permitted users.
+        type: String
+      - contextPath: Reco.SensitiveAssets.visibility
+        description: Visibility of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.location
+        description: The path of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.source
+        description: SaaS tool source of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.sensitivity_level
+        description: The sensitivity level of the asset.
+        type: Number
+  - arguments:
+      - description: Alert ID.
+        name: alert_id
+        required: true
+    description: Get alert ai summary from Reco.
+    name: reco-get-alert-ai-summary
+    outputs:
+      - contextPath: Reco.AlertSummary.markdown
+        description: The markdown of the alert summary.
+        type: String
 tests:
 - No tests
 fromversion: 6.5.0

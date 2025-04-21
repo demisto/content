@@ -9,7 +9,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/opencv:1.0.0.82635
+dockerimage: demisto/opencv:1.0.0.114711
 enabled: true
 name: qrcodereader
 outputs:

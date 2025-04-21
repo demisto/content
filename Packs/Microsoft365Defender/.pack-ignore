@@ -1,6 +1,3 @@
-[file:Microsoft365Defender.yml]
-ignore=IN124
-
 [known_words]
 safelinks
 
@@ -10,3 +7,9 @@ ignore=BA124
 [file:MS365DefenderCountIncidentCategories.yml]
 ignore=BA124
 
+[file:README.md]
+ignore=RM102
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-Microsoft_365_Defender_-_Layout.json]
+ignore=GR103

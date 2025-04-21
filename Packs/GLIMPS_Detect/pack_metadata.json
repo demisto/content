@@ -2,7 +2,7 @@
     "name": "GLIMPS Detect",
     "description": "This Content Pack is used to create an XSOAR integration for GDetect. Thanks to this integration, submit files to GLIMPS Malware and identify instantly malware and ransomware. Get detailed and contextualized threat information by switching to the GLIMPS Malware Expert interface easily",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "GLIMPS",
     "url": "https://www.glimps.fr/",
     "email": "contact@glimps.re",
@@ -21,12 +21,19 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "contact@glimps.re"
     ],
     "githubUser": [
         "tdidailler"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

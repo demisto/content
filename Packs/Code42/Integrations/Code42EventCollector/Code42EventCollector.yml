@@ -1,0 +1,75 @@
+category: Data Enrichment & Threat Intelligence
+supportlevelheader: xsoar
+commonfields:
+  id: Code42 Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://api.us.code42.com
+  display: Server URL (e.g., https://api.us.code42.com, see help section)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Client ID
+  displaypassword: API Client Secret
+  name: credentials
+  type: 9
+  required: true
+- display: Maximum number of file events per fetch
+  name: max_file_events_per_fetch
+  defaultvalue: "50000"
+  advanced: true
+  type: 0
+  required: true
+  section: Collect
+- display: Maximum number of audit events per fetch
+  name: max_audit_events_per_fetch
+  defaultvalue: "100000"
+  advanced: true
+  type: 0
+  required: true
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+description: 'Code42 Insider Risk software solutions provide the right balance of transparency, technology and training to detect and appropriately respond to data risk. Use the Code42EventCollector integration to fetch file events and audit logs.'
+display: Code42 Event Collector
+name: Code42 Event Collector
+script:
+  commands:
+  - arguments:
+    - description: 'Starting time from which to get events.'
+      name: start_date
+      required: true
+    - description: 'Time until when to get events.'
+      name: end_date
+      required: true
+    - description: 'The maximum number of events to return.'
+      name: limit
+      required: true
+      defaultValue: '100'
+    - description: 'The type of event to return.'
+      name: event_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "audit"
+      - "file"
+    description: 'Manual command to get events, used mainly for debugging'
+    name: code42-get-events
+    outputs: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/py42:1.0.0.117258
+  isfetchevents: true
+fromversion: 8.4.0
+marketplaces:
+- marketplacev2
+- platform
+tests:
+- No tests (auto formatted)

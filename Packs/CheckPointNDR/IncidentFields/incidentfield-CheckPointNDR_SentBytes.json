@@ -1,0 +1,32 @@
+{
+    "id": "incident_sentbytes",
+    "version": -1,
+    "modified": "2024-10-07T15:36:49.667762Z",
+    "name": "CheckPointNDR Sent Bytes",
+    "ownerOnly": false,
+    "description": "The total number of bytes sent in the event.",
+    "cliName": "sentbytes",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Check Point NDR Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.9.0"
+}

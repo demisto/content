@@ -1,0 +1,140 @@
+[
+    {
+        "value": "https://www.sans.org",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280375,
+            "url": "https://www.sans.org",
+            "host": "www.sans.org",
+            "is_domain": true,
+            "ip_addresses": [
+                "1.2.3.4",
+                "8.8.8.8"
+            ],
+            "country": null,
+            "created": "2024-11-21T07:14:10.125079Z"
+        },
+        "fields": {
+            "country": null,
+            "ip_addresses": [
+                "1.2.3.4",
+                "8.8.8.8"
+            ],
+            "host": "www.sans.org",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://www.sans.org",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280368,
+            "url": "https://www.sans.org",
+            "host": "www.sans.org",
+            "is_domain": true,
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "country": "T\\u00fcrkiye",
+            "created": "2024-11-21T07:07:52.813297Z"
+        },
+        "fields": {
+            "country": "T\\u00fcrkiye",
+            "ip_addresses": [
+                "1.2.3.4"
+            ],
+            "host": "www.sans.org",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://www.sans.org",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280366,
+            "url": "https://www.sans.org",
+            "host": "www.sans.org",
+            "is_domain": true,
+            "ip_addresses": [
+                "1.2.3.4",
+                "8.8.8.8"
+            ],
+            "country": "United States",
+            "created": "2024-11-21T06:57:57.716927Z"
+        },
+        "fields": {
+            "country": "United States",
+            "ip_addresses": [
+                "1.2.3.4",
+                "8.8.8.8"
+            ],
+            "host": "www.sans.org",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://www.sans.org",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280365,
+            "url": "https://www.sans.org",
+            "host": "www.sans.org",
+            "is_domain": true,
+            "ip_addresses": [
+                "1.2.3.4",
+                "8.8.8.8"
+            ],
+            "country": "United States",
+            "created": "2024-11-21T06:52:39.615442Z"
+        },
+        "fields": {
+            "country": "United States",
+            "ip_addresses": [
+                "1.2.3.4",
+                "8.8.8.8"
+            ],
+            "host": "www.sans.org",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    },
+    {
+        "value": "https://www.sans.org",
+        "type": "URL",
+        "rawJSON": {
+            "id": 280354,
+            "url": "https://www.sans.org",
+            "host": "www.sans.org",
+            "is_domain": true,
+            "ip_addresses": [
+                "1.2.3.4",
+                "8.8.8.8"
+            ],
+            "country": "United States",
+            "created": "2024-11-21T06:42:18.242043Z"
+        },
+        "fields": {
+            "country": "United States",
+            "ip_addresses": [
+                "76.76.21.93",
+                "76.76.21.98"
+            ],
+            "host": "www.sans.org",
+            "tags": [
+                "usta-phishing-sites"
+            ]
+        },
+        "service": "FeedUstaThreatStream"
+    }
+]

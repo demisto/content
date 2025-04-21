@@ -6,3 +6,18 @@ ignore=PB121
 
 [file:playbook-Recorded_Future_Playbook_Alert.yml]
 ignore=BA110
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Recorded_Future_Vulnerability_Layout.json]
+ignore=GR103
+[file:classifier-Recorded_Future_PA_mapper.json]
+ignore=GR103
+
+[file:playbook-Recorded_Future_Vulnerability.yml]
+ignore=GR107
+
+[file:playbook-Recorded_Future_Domain_Abuse.yml]
+ignore=GR107
+
+[file:RecordedFutureLists_description.md]
+ignore=DS107

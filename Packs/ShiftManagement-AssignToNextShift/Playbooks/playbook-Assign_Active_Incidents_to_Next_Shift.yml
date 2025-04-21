@@ -169,9 +169,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Randomly assigns the incidents to users on call (requires shift\
-        \ management) and users on call.  \n\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Shift-Management#idf554fd0f-f93b-40cd-9111-1393bf25ac6e\n\
-        \nIncident Ids should be passed in as a comma separated list."
+      description: "Randomly assigns the incidents to users on call (requires shift management) and users on call.
+      
+        See for more information:  
+        [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Shift-Management)  
+        [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Manage-roles-in-the-Cortex-XSOAR-tenant)
+        [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Manage-roles-in-the-Cortex-XSOAR-tenant)
+
+        Incident IDs should be passed as a comma-separated list."
       id: d9cfc9cb-513d-4f1b-803d-98f9e396d93a
       iscommand: false
       name: Assign Incidents to next shift

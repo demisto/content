@@ -1,5 +1,5 @@
 ## Overview
-Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists. Integration was built and tested with SNYPR Versions: 6.4 (Feb 2023 R3 release).
+Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists. Integration was built and tested with SNYPR Versions: 6.4 (Nov 2024 R2 release).
 
 This integration supports both cloud and on-prem instances of Securonix.
 To configure a cloud base instance use the *Tenant* parameter only.
@@ -152,7 +152,7 @@ To fetch Securonix Threat follow the next steps:
 ## Troubleshooting
 
 ### Receive Notification on an Incident Fetch Error
-The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) for more information.
+The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [Cortex XSOAR 6.13 documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) or [Cortex XSOAR 8 Cloud documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Receive-notifications-on-an-incident-fetch-error) or [Cortex XSOAR 8.7 On-prem documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Receive-notifications-on-an-incident-fetch-error) for more information.
 
 ### Input and output entries of the playbook are not visible in the war room.
 Follow the below steps and add a new server configuration:
@@ -170,6 +170,35 @@ The following are tips for handling issues with mirroring incidents between Secu
 | Required fields are not getting sent or not visible in UI. | This may be a mapping issue, specifically if you have used a custom mapper make sure you've covered all the out of box mapper fields. |
 | Comments from XSOAR have not been mirrored in Securonix | Tag is required for mirroring comments from Cortex XSOAR to Securonix. There might be a reason the comment is not tagged as tag needs to be added manually.<br/><br/>Click Actions > Tags and add the "comments" tag (OR the specific tag name which was set up on Instance Configuration). |
 | Viewing masked data on the XSOAR application | If you observe masked data, it is highly likely that 'Masking' is enabled on your Securonix tenant. Please check with your Securonix Administrator for further details. |
+
+
+### The `securonix-list-violation-data` command not returning the violations
+
+1. Check the `from` and `to` arguments provided to the command. It should be ranging in the violations' generation time.
+
+> Note: The following steps are compatible with the Securonix Build version 6.4_Apr2024_R1.
+
+2. If the `query` arguments contain the special characters, then check and follow the below steps:
+   1. Use the XSOAR automation browser to run the command.
+   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
+3. If the `Securonix Policy Type` incident field is one of these (Land Speed, DIRECTIVE, BEACONING, TIER2) then try to execute command again with the additional '`policy_type`' argument. The value for the `policy_type` argument should be the same as the value for the `Securonix Policy Type` incident field.
+
+
+### The `securonix-list-activity-data` command not returning the activity data
+
+1. Check the `from` and `to` arguments provided to the command. It should be ranging in the activity data generation time.
+
+> Note: The following steps are compatible with the Securonix Build version 6.4_Apr2024_R1.
+
+2. If the `query` arguments contain the special characters, then check and follow the below steps:
+   1. Use the XSOAR automation browser to run the command.
+   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
+
+
+### Command HR or War room entries are breaking in the table view
+
+1. There might be some special characters (restricted by Markdown viewer i.e, \\\*\_\{\}\[\]\(\)\#\+\-\!\`\|) in the value of field which is breaking the view.
+2. Impact is in only on the HR output, however user can get exact values from the command context for such fields if any.
 
 
 ## Commands
@@ -578,7 +607,7 @@ Gets a list of activity data for the specified resource group.
 | --- | --- | --- |
 | from | Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
 | to | End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
-| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation". | Optional | 
+| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".<br/>Note: Use the XSOAR automation browser to run the command if the "query" argument contains the special characters. | Optional | 
 
 
 ##### Context Output
@@ -586,78 +615,163 @@ Gets a list of activity data for the specified resource group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Securonix.ActivityData.Accountname | String | Account name. | 
+| Securonix.ActivityData.Accountresourcekey | String | Account source key. | 
 | Securonix.ActivityData.Agentfilename | String | Agent file name. | 
+| Securonix.ActivityData.Baseeventid | String | Base event ID. | 
+| Securonix.ActivityData.Categorizedtime | String | Categorized time. | 
 | Securonix.ActivityData.Categorybehavior | String | Category behavior. | 
 | Securonix.ActivityData.Categoryobject | String | Category object. | 
 | Securonix.ActivityData.Categoryseverity | String | Category severity. | 
 | Securonix.ActivityData.Collectionmethod | String | Collection method. | 
 | Securonix.ActivityData.Collectiontimestamp | String | Collection timestamp. | 
+| Securonix.ActivityData.Customnumber1 | Number | Custom number. | 
+| Securonix.ActivityData.Customstring13 | String | Custom string. | 
+| Securonix.ActivityData.Customstring17 | String | Custom string. | 
+| Securonix.ActivityData.Customtime1 | String | Custom time. | 
+| Securonix.ActivityData.Customtime2 | String | Custom time. | 
+| Securonix.ActivityData.Datetime | String | Date time. | 
+| Securonix.ActivityData.Dayofmonth | String | Day of month. | 
+| Securonix.ActivityData.Dayofweek | String | Day of week. | 
+| Securonix.ActivityData.Dayofyear | String | Day of year. | 
+| Securonix.ActivityData.Destinationntdomain | String | Destination NT domain. | 
 | Securonix.ActivityData.Destinationprocessname | String | Destination process name. | 
+| Securonix.ActivityData.Destinationservicename | String | Destination service name. | 
+| Securonix.ActivityData.Destinationuserid | String | Destination user ID. | 
 | Securonix.ActivityData.Destinationusername | String | Destination username. | 
 | Securonix.ActivityData.Deviceaddress | String | Device address. | 
+| Securonix.ActivityData.Destinationuserprivileges | String | Destination user privileges. | 
+| Securonix.ActivityData.Devicecustomstring4 | String | Device custom string. | 
+| Securonix.ActivityData.Deviceeventcategory | String | Device event category. | 
 | Securonix.ActivityData.Deviceexternalid | String | Device external ID. | 
 | Securonix.ActivityData.Devicehostname | String | Device hostname. | 
+| Securonix.ActivityData.Ehash | String | Event hash. | 
 | Securonix.ActivityData.EventID | String | Event ID. | 
 | Securonix.ActivityData.Eventoutcome | String | Event outcome. | 
 | Securonix.ActivityData.Eventtime | String | Time the event occurred. | 
 | Securonix.ActivityData.Filepath | String | File path. | 
+| Securonix.ActivityData.Filepermission | String | File permission. | 
+| Securonix.ActivityData.Hour | String | Date time hour. | 
+| Securonix.ActivityData.ID | String | Activity ID. | 
 | Securonix.ActivityData.Ingestionnodeid | String | Ingestion node ID. | 
-| Securonix.ActivityData.JobID | String | Job ID. | 
+| Securonix.ActivityData.Ipaddress | String | IP address. | 
+| Securonix.ActivityData.Ipaddress_Long | String | IP address long. | 
+| Securonix.ActivityData.JobID | String | Deprecated. Use the Securonix.ActivityData.Jobid field. | 
+| Securonix.ActivityData.Jobid | String | Job ID. | 
 | Securonix.ActivityData.Jobstarttime | String | Job start time. | 
 | Securonix.ActivityData.Message | String | Message. | 
+| Securonix.ActivityData.Minute | String | Date time minute. | 
+| Securonix.ActivityData.Month | String | Month. | 
+| Securonix.ActivityData.Oldfileid | String | Old file ID. | 
+| Securonix.ActivityData.Oldfilepath | String | Old file path. | 
+| Securonix.ActivityData.Others | String | Others. | 
+| Securonix.ActivityData.Poprocessedtime | String | PO processed time. | 
 | Securonix.ActivityData.Publishedtime | String | Published time. | 
+| Securonix.ActivityData.Rawevent | String | Raw event. | 
+| Securonix.ActivityData.Raweventsize | String | Raw event size. | 
 | Securonix.ActivityData.Receivedtime | String | Received time. | 
 | Securonix.ActivityData.Resourcename | String | Resource name. | 
 | Securonix.ActivityData.ResourceGroupCategory | String | Resource group category. | 
 | Securonix.ActivityData.ResourceGroupFunctionality | String | Resource group functionality. | 
 | Securonix.ActivityData.ResourceGroupID | String | Resource group ID. | 
 | Securonix.ActivityData.ResourceGroupName | String | Resource group name. | 
+| Securonix.ActivityData.ResourceGroupTimezoneoffset | String | Resource Group Timezone offset. | 
 | Securonix.ActivityData.ResourceGroupTypeID | String | Resource group resource type ID. | 
 | Securonix.ActivityData.ResourceGroupVendor | String | Resource group vendor. | 
+| Securonix.ActivityData.Resourcegroupid | String | Resource Group ID. | 
+| Securonix.ActivityData.Resourcegroupname | String | Resource Group Name. | 
+| Securonix.ActivityData.Resourcehostname | String | Resource host name. | 
+| Securonix.ActivityData.Resourcehostname_Long | String | Resource host name long. | 
+| Securonix.ActivityData.Resourcename | String | Resource name. | 
+| Securonix.ActivityData.Resourcetype | String | Resource type. | 
+| Securonix.ActivityData.Sessionid | String | Session ID. | 
+| Securonix.ActivityData.Sourceaddress | String | Source address. | 
+| Securonix.ActivityData.Sourceaddress_Long | String | Source address long. | 
 | Securonix.ActivityData.Sourcehostname | String | Source hostname. | 
+| Securonix.ActivityData.Sourcentdomain | String | Source domain. | 
+| Securonix.ActivityData.Sourceport | String | Source port. | 
+| Securonix.ActivityData.Sourceprocessname | String | Source process name. | 
+| Securonix.ActivityData.Sourceuserid | String | Source user ID. | 
 | Securonix.ActivityData.Sourceusername | String | Source username. | 
 | Securonix.ActivityData.TenantID | String | Tenant ID. | 
 | Securonix.ActivityData.Tenantname | String | Tenant name. | 
 | Securonix.ActivityData.Timeline | String | Time when the activity occurred, in Epoch time. | 
+| Securonix.ActivityData.Timeline_By_Hour | String | Timeline by hour. | 
+| Securonix.ActivityData.Timeline_By_Minute | String | Timeline by minute. | 
+| Securonix.ActivityData.Timeline_By_Month | String | Timeline by month. | 
+| Securonix.ActivityData.Timeline_By_Week | String | Timeline by week. | 
+| Securonix.ActivityData.Timestamp | String | Timestamp. | 
+| Securonix.ActivityData.Transactionstring1 | String | Transaction string 1. | 
+| Securonix.ActivityData.Userid | String | User ID. | 
+| Securonix.ActivityData.Week | String | Week. | 
+| Securonix.ActivityData.Year | String | Year. | 
+| Securonix.ActivityData._Indexed_At_Tdt | String | Indexed at TDT. | 
+| Securonix.ActivityData._Version_ | String | Activity version. | 
+| Securonix.Activity.totalDocuments | Number | Total number of events. | 
+| Securonix.Activity.message | String | Message from the API. | 
+| Securonix.Activity.queryId | String | Query Id for the pagination. | 
+| Securonix.Activity.command_name | String | The command name. | 
 
-
-##### Command Example
-```!securonix-list-activity-data from="03/08/2023 00:00:00" to="03/09/2023 00:00:00"```
-
+##### Command example
+```!securonix-list-activity-data from="01/12/2024 10:00:00" to="01/15/2024 12:01:00"```
 ##### Context Example
 ```json
 {
     "Securonix": {
+        "Activity": {
+            "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+            "totalDocuments": 1182,
+            "command_name": "securonix-list-activity-data"
+        },
         "ActivityData": [
             {
-                "Accountname": "ACCOUNT617",
+                "Accountname": "ACCOUNT_001",
+                "Accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-1",
                 "Agentfilename": "test.txt",
+                "Categorybehavior": "Account Create",
+                "Categoryobject": "Account Management",
                 "Categoryseverity": "0",
                 "Collectionmethod": "file",
-                "Collectiontimestamp": "1678435071000",
+                "Collectiontimestamp": "1690803374000",
+                "Destinationusername": "TEST134044",
+                "Devicehostname": "HOST.com",
+                "EventID": "00000000-0000-0000-0000-000000000001",
+                "Eventoutcome": "Success",
+                "Filepath": "N/A",
                 "Ingestionnodeid": "CONSOLE",
-                "Jobstarttime": "1678435071000",
-                "Publishedtime": "1678435071533",
-                "Receivedtime": "1678435081978",
-                "Resourcename": "test",
+                "Jobstarttime": "1690803374000",
+                "Message": "A user account was created.",
+                "Publishedtime": "1690803374572",
+                "Receivedtime": "1690803420706",
+                "Resourcename": "HOST.com",
+                "Sourceusername": "USER",
                 "TenantID": "2",
-                "Tenantname": "test_tenant",
-                "Timeline": "1678255200000"
+                "Tenantname": "Response-Automation",
+                "Timeline": "1670911200000"
             },
             {
-                "Accountname": "ACCOUNT618",
+                "Accountname": "ACCOUNT_002",
+                "Accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-2",
                 "Agentfilename": "test.txt",
+                "Categorybehavior": "Account Create",
+                "Categoryobject": "Account Management",
                 "Categoryseverity": "0",
                 "Collectionmethod": "file",
-                "Collectiontimestamp": "1678431865000",
+                "Collectiontimestamp": "1690803374000",
+                "Destinationusername": "TEST134044",
+                "Devicehostname": "HOST.com",
+                "EventID": "00000000-0000-0000-0000-000000000002",
+                "Eventoutcome": "Success",
+                "Filepath": "N/A",
                 "Ingestionnodeid": "CONSOLE",
-                "Jobstarttime": "1678431865000",
-                "Publishedtime": "1678431869722",
-                "Receivedtime": "1678431877794",
-                "Resourcename": "test",
+                "Jobstarttime": "1690803374000",
+                "Message": "A user account was created.",
+                "Publishedtime": "1690803374572",
+                "Receivedtime": "1690803420500",
+                "Resourcename": "HOST.com",
+                "Sourceusername": "USER",
                 "TenantID": "2",
-                "Tenantname": "test_tenant",
-                "Timeline": "1678255200000"
+                "Tenantname": "Response-Automation",
+                "Timeline": "1670911200000"
             }
         ]
     }
@@ -665,11 +779,13 @@ Gets a list of activity data for the specified resource group.
 ```
 
 ##### Human Readable Output
+
 >### Activity data:
->|Accountname|
->|---|
->| ACCOUNT617 |
->| ACCOUNT618 |
+>|EventID|Message|Accountname|Timeline|Devicehostname|Accountresourcekey|
+>|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001 | A user account was created. | ACCOUNT_001 | 2024-01-13T06:00:00.000Z | HOST.com | 00000000000~000000000.0000.com~pipe_line_test~0000~-1 |
+>| 00000000-0000-0000-0000-000000000002 | A user account was created. | ACCOUNT_002 | 2024-01-13T06:00:00.000Z | HOST.com | 00000000000~000000000.0000.com~pipe_line_test~0000~-2 |
+
 
 ### securonix-list-violation-data
 ***
@@ -685,8 +801,9 @@ Gets a list activity data for an account name.
 | --- | --- | --- |
 | from | Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
 | to | End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
-| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation"." | Optional | 
+| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".<br/>Note: Use the XSOAR automation browser to run the command if the "query" argument contains the special characters. | Optional | 
 | query_id | Paginate next set of results. | Optional | 
+| policy_type | Provide the policy type for retrying if the violations are not found in the initial attempt. The types of policies that can be retried are: "Land Speed", "TIER2", "DIRECTIVE", "BEACONING". | Optional | 
 
 
 ##### Context Output

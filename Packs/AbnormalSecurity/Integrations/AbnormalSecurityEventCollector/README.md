@@ -1,22 +1,20 @@
 Abnormal Security Event Collector integration for XSIAM.
 This integration was integrated and tested with version 01 of Abnormal Security Event Collector
 
-## Configure Abnormal Security Event Collector on Cortex XSIAM
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Abnormal Security Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Abnormal Security Event Collector in Cortex
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Token | True |
-    | First fetch time interval | False |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| Token | True |
+| First fetch time interval | False |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
+
 ## Commands
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### abnormal-security-event-collector-get-events
 ***

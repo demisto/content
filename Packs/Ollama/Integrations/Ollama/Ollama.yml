@@ -1,0 +1,139 @@
+category: Utilities
+commonfields:
+  id: Ollama
+  version: -1
+configuration:
+- additionalinfo: HTTP or HTTPS
+  defaultvalue: http
+  display: Protocol
+  name: protocol
+  options:
+  - http
+  - https
+  required: false
+  type: 15
+- additionalinfo: Enter the Ollama IP or hostname
+  defaultvalue: 192.168.1.1
+  display: Server hostname or IP
+  name: host
+  required: true
+  section: Connect
+  type: 0
+- additionalinfo: The port Ollama is running on
+  defaultvalue: '11434'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- additionalinfo: By default Ollama's API path is /api, but you may be running it behind a proxy with a different path.
+  defaultvalue: /api
+  display: Path
+  name: path
+  required: true
+  type: 0
+- additionalinfo: Trust any certificate (not secure)
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: Use system proxy settings
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access ID here.
+  display: Cloudflare Access Client Id
+  name: cf_id
+  required: false
+  type: 0
+- additionalinfo: If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access Secret here.
+  display: Cloudflare Access Client Secret
+  name: cf_secret
+  required: false
+  type: 4
+- additionalinfo: Some commands allow you to specify a model. If no model is provided, this value will be used.
+  defaultvalue: llama2:latest
+  display: Default Model
+  name: default_model
+  required: false
+  type: 0
+description: Integrate with open source LLMs using Ollama. With an instance of Ollama running locally you can use this integration to have a conversation in an Incident, download models, and create new models.
+display: Ollama
+name: Ollama
+script:
+  commands:
+  - arguments: []
+    description: Get a list of all available models.
+    name: ollama-list-models
+    outputs:
+    - contextPath: ollama.models
+      description: Output of the command.
+  - arguments:
+    - description: Name of model to pull. See https://ollama.com/library for a list of options.
+      name: model
+    description: Pull a model.
+    name: ollama-model-pull
+    outputs:
+    - contextPath: ollama.pull
+      description: Output of the command.
+  - arguments:
+    - description: The name of the model to delete.
+      name: model
+    description: Delete a model.
+    name: ollama-model-delete
+    outputs:
+    - contextPath: ollama.delete
+      description: Output of the command.
+  - arguments:
+    - description: The model name.
+      name: model
+    - description: The message to be sent.
+      name: message
+      required: true
+    description: General chat command that tracks the conversation history in the Incident.
+    name: ollama-conversation
+    outputs:
+    - contextPath: ollama.history
+      description: Output of the command.
+  - arguments:
+    - description: name of the model to show.
+      name: model
+    description: Show information for a specific model.
+    name: ollama-model-info
+    outputs:
+    - contextPath: ollama.show
+      description: Output of the command.
+  - arguments:
+    - description: name of the model to create.
+      name: model
+      required: true
+    - description: contents of the Modelfile.
+      name: model_file
+      required: true
+    description: Create a new model from a Modelfile.
+    name: ollama-model-create
+    outputs:
+    - contextPath: ollama.create
+      description: Output of the command.
+  - arguments:
+    - description: The model name.
+      name: model
+    - description: The message to be sent.
+      name: message
+    description: Generate a response for a given prompt with a provided model. Conversation history IS NOT tracked.
+    name: ollama-generate
+    outputs:
+    - contextPath: ollama.generate
+      description: Output of the command.
+  dockerimage: demisto/python3:3.11.10.115186
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

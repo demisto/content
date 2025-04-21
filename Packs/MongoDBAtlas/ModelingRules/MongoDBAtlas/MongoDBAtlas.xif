@@ -1,0 +1,39 @@
+[MODEL: dataset="mongodb_atlas_raw"]
+filter source_log_type = "alerts"
+| alter
+	xdm.event.type = source_log_type,
+	xdm.alert.description = acknowledgementComment,
+	xdm.alert.original_alert_id = coalesce(alertConfigId, id),
+	xdm.event.original_event_type = eventTypeName,
+	xdm.source.user.groups = arraycreate(groupId),
+	xdm.observer.unique_identifier = arraystring(arraydistinct(arraymap(links -> [], "@element" -> href)), "|");
+
+filter source_log_type = "events"
+| alter
+	get_linkToDetails = arraycreate(linkToDetails),
+	get_links_href = arraydistinct(arraymap(links -> [], "@element" -> href))
+| alter
+	check_remoteAddress_ipv4 = if(remoteAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remoteAddress),
+	check_remoteAddress_ipv6 = if(remoteAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", remoteAddress),
+	check_links = arraystring(arrayconcat(get_linkToDetails, get_links_href), "|")
+| alter
+	xdm.event.type = source_log_type,
+	xdm.alert.original_alert_id = coalesce(alertConfigId, id),
+	xdm.event.original_event_type = eventTypeName,
+	xdm.source.user.groups = arraycreate(groupId),
+	xdm.observer.unique_identifier = if(check_links ~= "^\s*\|\s*$", null, check_links ~= "^\|", ltrim(check_links, "|"), check_links ~= "\|$", rtrim(check_links, "|"), check_links),
+	xdm.source.user.username = username,
+	xdm.auth.privilege_level = if(to_boolean(isGlobalAdmin) = true, XDM_CONST.PRIVILEGE_LEVEL_ADMIN),
+	xdm.source.ipv4 = check_remoteAddress_ipv4,
+	xdm.source.ipv6 = check_remoteAddress_ipv6,
+	xdm.target.user.username = targetUsername,
+	xdm.source.user.identifier = userId,
+	xdm.database.name = database,
+	xdm.target.host.hostname = hostname,
+	xdm.target.port = to_integer(port),
+	xdm.target.application.name = applicationName,
+	xdm.observer.action = to_string(diffs),
+	xdm.target.resource.type = if(replicaSetName != null, "replicaSetName"),
+	xdm.target.resource.name = if(replicaSetName != null, replicaSetName),
+	xdm.database.operation = if(opType ~= "query", XDM_CONST.DB_OPERATION_QUERY, opType ~= "update", XDM_CONST.DB_OPERATION_UPDATE, opType ~= "create", XDM_CONST.DB_OPERATION_CREATE, opType ~= "delete", XDM_CONST.DB_OPERATION_DELETE, opType ~= "alter", XDM_CONST.DB_OPERATION_ALTER, opType = null, null, to_string(opType)),
+	xdm.alert.description = to_string(object_create("apiKeyId", apiKeyId, "publicKey", publicKey, "targetPublicKey", targetPublicKey, "collection", collection, "userAlias", userAlias, "clusterName", clusterName, "whitelistEntry", whitelistEntry, "dbUserUsername", dbUserUsername));

@@ -1,6 +1,13 @@
 Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
 This integration was integrated and tested with version 2021-11-01 of Azure SQL Management
 
+In order to connect to the AzureKubernetesServices using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
+
+- *Authorization Code Flow* (Recommended).
+- *Device Code Flow*.
+- *Azure Managed Identities*
+- *Client Credentials Flow*.
+
 # Self-Deployed Application
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
@@ -20,13 +27,6 @@ Follow these steps for a self-deployed configuration:
 8. Run the `!azure-sql-generate-login-url` command in the War Room and follow the instruction.
 9. Run the ***!azure-sql-auth-test*** command - a 'Success' message should be printed to the War Room.
 
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
-
-You only need to fill in your subscription ID and resource group name. You can find your resource group and 
-subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
-
 ### Authentication Using the Device Code Flow
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Azure SQL Management with Cortex XSOAR.
@@ -37,6 +37,29 @@ Follow these steps for a self-deployed configuration:
 3. Run the ***!azure-sql-auth-start*** command. 
 4. Follow the instructions that appear.
 5. Run the ***!azure-sql-auth-complete*** command.
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
+
+You only need to fill in your subscription ID and resource group name. You can find your resource group and 
+subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+
+## Client Credentials Flow Authentication
+
+Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+*Note:* In the *Select members* section, assign the application you created earlier.
+To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+   1. In the **Authentication Type** field, select the **Client Credentials** option.
+   2. In the **Application ID** field, enter your Client/Application ID.
+   3. In the **Tenant ID** field, enter your Tenant ID .
+   4. In the **Client Secret** field, enter your Client Secret.
+   5. Click **Test** to validate the URLs, token, and connection
+   6. Save the instance.
+
+### Testing authentication and connectivity
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure SQL Management service run the ***!azure-sql-auth-test*** command. 
+If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
 ## Configure Azure SQL Management on Cortex XSOAR
 
@@ -50,11 +73,11 @@ In order to connect to the Azure SQL Management using either Cortex XSOAR Azure 
     | Application ID |  | False |
     | Default Subscription ID | Test button won’t work if not populated. This value can be overridden on a command basis. | False |
     | Default Resource Group Name | Test button won’t work if not populated. This value can be overridden on a command basis. | False |
-    | Authentication Type | Type of authentication - can be Authorization Code Flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
-    | Tenant ID (for authorization code mode) |  | False |
-    | Client Secret (for authorization code mode) |  | False |
-    | Client Secret (for authorization code mode) |  | False |
-    | Application redirect URI (for authorization code mode) |  | False |
+    | Authentication Type | Type of authentication - can be Authorization Code Flow \(recommended\), Device Code Flow, Azure Managed Identities or Client Credentials Flow. | True |
+    | Tenant ID | For authorization code mode or client credentials. | False |
+    | Client Secret | For authorization code mode or client credentials. | False |
+    | Client Secret | For authorization code mode or client credentials. | False |
+    | Application redirect URI | For authorization code mode. | False |
     | Authorization code | for user-auth mode - received from the authorization step.| False |
     | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |

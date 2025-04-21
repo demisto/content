@@ -1,0 +1,80 @@
+[
+    {
+        "loginEvents": {
+            "count": 3,
+            "pageNumber": 1,
+            "pageSize": 3,
+            "loginEvent": [
+                {
+                    "username": "test@mail.com",
+                    "loginAttemptTime": 1730208920691,
+                    "logoutTime": 1730208928000,
+                    "duration": 0.1,
+                    "operatingSystem": "MacOS 10.15.7",
+                    "browserVersion": "Chrome 130.0.0.0",
+                    "ipAddress": "1.1.1.1",
+                    "authStatus": "Successful"
+                },
+                {
+                    "username": "test@mail.com",
+                    "loginAttemptTime": 1730205657306,
+                    "logoutTime": 1730206416000,
+                    "duration": 12.6,
+                    "operatingSystem": "MacOS 10.15.7",
+                    "browserVersion": "Chrome 130.0.0.0",
+                    "ipAddress": "1.1.1.1",
+                    "authStatus": "Successful"
+                },
+                {
+                    "username": "test@mail.com",
+                    "loginAttemptTime": 1730114907566,
+                    "logoutTime": 1730116751000,
+                    "duration": 30.7,
+                    "operatingSystem": "MacOS 10.15.7",
+                    "browserVersion": "Chrome 130.0.0.0",
+                    "ipAddress": "1.1.1.1",
+                    "authStatus": "Successful"
+                }
+            ]
+        }
+    },
+    {
+        "loginEvents": {
+            "count": 3,
+            "pageNumber": 2,
+            "pageSize": 3,
+            "loginEvent": [
+                {
+                    "username": "",
+                    "loginAttemptTime": 1730108298522,
+                    "logoutTime": "",
+                    "duration": "",
+                    "operatingSystem": "",
+                    "browserVersion": "",
+                    "ipAddress": "1.1.1.1",
+                    "authStatus": ""
+                },
+                {
+                    "username": "test@mail.com",
+                    "loginAttemptTime": 1730108298822,
+                    "logoutTime": "",
+                    "duration": "",
+                    "operatingSystem": "",
+                    "browserVersion": "",
+                    "ipAddress": "1.1.1.1",
+                    "authStatus": ""
+                },
+                {
+                    "username": "test@mail.com",
+                    "loginAttemptTime": 1730108048440,
+                    "logoutTime": 1730109513000,
+                    "duration": 24.4,
+                    "operatingSystem": "MacOS 10.15.7",
+                    "browserVersion": "Chrome 130.0.0.0",
+                    "ipAddress": "1.1.1.1",
+                    "authStatus": "Successful"
+                }
+            ]
+        }
+    }
+]

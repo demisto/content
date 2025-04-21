@@ -6,12 +6,12 @@ Loads and parses a YAML string and outputs to context
 """
 
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
 
-def load_yaml(stream: str) -> Dict:
+def load_yaml(stream: str) -> dict:
     """Simple YAML Loader function
 
     Args:
@@ -23,7 +23,7 @@ def load_yaml(stream: str) -> Dict:
     return yaml.safe_load(stream)
 
 
-def load_and_parse_yaml_command(args: Dict[str, Any]) -> CommandResults:
+def load_and_parse_yaml_command(args: dict[str, Any]) -> CommandResults:
     """XSOAR command function
 
     Args:
@@ -54,7 +54,7 @@ def main():
         return_results(load_and_parse_yaml_command(demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute ParseYAML script. Error: {str(e)}")
+        return_error(f"Failed to execute ParseYAML script. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

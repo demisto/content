@@ -47,4 +47,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1199 - Trusted Relationship](../doc_files/MITRE_ATT&CK_CoA_-_T1199_-_Trusted_Relationship.png)
+![MITRE ATT&CK CoA - T1199 - Trusted Relationship](../doc_files/MITRE_ATTandCK_CoA_-_T1199_-_Trusted_Relationship.png)

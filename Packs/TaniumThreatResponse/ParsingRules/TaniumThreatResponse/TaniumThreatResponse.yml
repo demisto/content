@@ -1,6 +1,6 @@
-name: Tanium Threat Response
-id: Tanium_Threat_Response
-fromversion: 8.2.0
+name: Tanium Threat Response Parsing Rule
+id: Tanium_Threat_Response_ParsingRule
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''

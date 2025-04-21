@@ -374,7 +374,7 @@ script:
     - contextPath: Varonis.Pagination.PageSize
       description: Number of records on the page.
       type: Number
-  dockerimage: demisto/ntlm:1.0.0.75539
+  dockerimage: demisto/ntlm:1.0.0.2034747
   isfetch: true
   runonce: false
   script: '-'

@@ -48,6 +48,11 @@ dependson:
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 skipprepare:
 - script-name-incident-to-alert
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

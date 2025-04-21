@@ -1,0 +1,32 @@
+{
+    "id": "HackerView Incident",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "HackerView Incident",
+    "prevName": "HackerView Incident",
+    "color": "#9A1C90",
+    "playbookId": "HackerView Incident Management",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "preProcessingScript": "",
+    "closureScript": "",
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    }
+}

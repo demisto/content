@@ -12,7 +12,7 @@ configuration:
   name: Api-Token
   required: true
   type: 4
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
@@ -39,7 +39,7 @@ script:
       required: true
     description: Updating the alert
     name: cyberx-update-alert
-  dockerimage: demisto/python3-deb:3.9.1.15758
+  dockerimage: demisto/python3-deb:3.11.10.114849
   script: ''
   subtype: python3
   type: python

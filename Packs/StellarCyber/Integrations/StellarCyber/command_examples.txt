@@ -1,0 +1,2 @@
+!stellar-get-alert alert_id="1710883791406342b1f41b2247774d60bf035a6f98e5ff21"
+!stellar-update-case stellar_case_id="65f340d9b190d36b26ad2bdc" stellar_case_status="New"

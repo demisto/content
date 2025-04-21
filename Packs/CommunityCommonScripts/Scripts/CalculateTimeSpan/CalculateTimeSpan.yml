@@ -22,7 +22,7 @@ comment: |-
 commonfields:
   id: CalculateTimeSpan
   version: -1
-dockerimage: demisto/powershell:7.2.1.26295
+dockerimage: demisto/powershell:7.4.6.117357
 enabled: true
 name: CalculateTimeSpan
 outputs:

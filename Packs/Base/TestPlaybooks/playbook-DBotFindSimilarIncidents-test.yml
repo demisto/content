@@ -1,0 +1,342 @@
+id: DBotFindSimilarIncidents-test
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: DBotFindSimilarIncidents-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 53859bf6-0ad5-48e8-83ea-e56e86b07a82
+    type: start
+    task:
+      id: 53859bf6-0ad5-48e8-83ea-e56e86b07a82
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ab3d08f1-8bc2-4c87-857b-2e29bb3f5f38
+    type: regular
+    task:
+      id: ab3d08f1-8bc2-4c87-857b-2e29bb3f5f38
+      version: -1
+      name: DBotFindSimilarIncidents
+      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fieldExactMatch:
+        simple: accountname
+      fromDate:
+        simple: 1 hour
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      similarTextField:
+        simple: details
+      toDate:
+        simple: tomorrow
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bdd0da3d-8aad-4682-8aff-d2c6a3321690
+    type: condition
+    task:
+      id: bdd0da3d-8aad-4682-8aff-d2c6a3321690
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: DBotFindSimilarIncidents.isSimilarIncidentFound
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotFindSimilarIncidents.similarIncident.id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CreatedIncidentID
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bd930f7e-c2f1-4b46-8efa-6562c60105fe
+    type: title
+    task:
+      id: bd930f7e-c2f1-4b46-8efa-6562c60105fe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c2bb7962-e995-45e1-8636-0ecf2b3ff45c
+    type: regular
+    task:
+      id: c2bb7962-e995-45e1-8636-0ecf2b3ff45c
+      version: -1
+      name: Clear context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 58890a1b-198a-4f21-87d6-a73d27b24075
+    type: regular
+    task:
+      id: 58890a1b-198a-4f21-87d6-a73d27b24075
+      version: -1
+      name: Create incident 1
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      accountname:
+        simple: SimilarAccountName
+      details:
+        simple: this is a test incident and should match up with TestIncident_2
+      name:
+        simple: TestIncident_1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 89bf5bb4-77e5-4462-819e-656511050e55
+    type: regular
+    task:
+      id: 89bf5bb4-77e5-4462-819e-656511050e55
+      version: -1
+      name: Create incident 2
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      accountname:
+        simple: SimilarAccountName
+      details:
+        simple: this is a test incident and should match up with TestIncident_1
+      name:
+        simple: TestIncident_2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e4380779-44e3-4395-8e2d-51e6e44ce672
+    type: regular
+    task:
+      id: e4380779-44e3-4395-8e2d-51e6e44ce672
+      version: -1
+      name: Sleep for ten seconds to let the incidents load
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0
+description: ''

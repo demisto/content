@@ -1,0 +1,62 @@
+category: Utilities
+commonfields:
+  id: FTP
+  version: -1
+configuration:
+- display: 'Host'
+  name: host
+  required: true
+  section: Connect
+  type: 0
+- display: 'Port'
+  name: port
+  defaultvalue: "21"
+  required: false
+  section: Connect
+  type: 0
+- display: Username
+  name: credentials
+  type: 9
+  required: false
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: 'FTP integration to download or upload files to a remote FTP server. Please note that FTP transfer is insecure. Please use it with care.'
+display: FTP
+name: FTP
+script:
+  commands:
+  - arguments:
+    - description: The path to list.
+      name: path
+    description: List all the files under the current folder.
+    name: ftp-ls
+  - arguments:
+    - name: entry_id
+      required: true
+      description: The Entry ID of the file to upload.
+    - name: target
+      required: true
+      description: The target FTP server to upload the file to.
+    description: Upload file to FTP server.
+    name: ftp-put
+  - arguments:
+    - name: file_path
+      required: true
+      description: The path to the file to download from the FTP server.
+    - name: file_name
+      required: true
+      description: The file name to download from the FTP server.
+    description: Download file from FTP server.
+    name: ftp-get
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

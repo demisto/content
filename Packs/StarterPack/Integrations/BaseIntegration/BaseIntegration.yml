@@ -22,26 +22,26 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: 'Starter Base Integration - Name the integration as it will appear in the XSOAR UI'
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.].'
+display: Starter Base Integration - Name the integration as it will appear in the XSOAR UI
 name: BaseIntegration
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.].'
       name: dummy
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.].'
     name: baseintegration-dummy
     outputs:
     - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+      description: '[Enter a description of the data returned in this output.].'
       type: String
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.11.10.116949
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

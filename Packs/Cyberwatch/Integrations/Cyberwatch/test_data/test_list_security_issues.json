@@ -1,0 +1,42 @@
+[
+    {
+      "id": 42,
+      "sid": "Pentest-2020-01",
+      "level": "level_critical",
+      "title": "Capacité à faire une injection SQL",
+      "description": "",
+      "editable": true
+    },
+    {
+      "id": 44,
+      "sid": "PENTEST-2021-REF-1",
+      "level": "level_critical",
+      "title": "Résultat d'un test d'intrusion",
+      "description": "Description technique du résultat de test d'intrusion",
+      "editable": true
+    },
+    {
+      "id": 45,
+      "sid": "WSTG-INPV-01",
+      "level": "level_medium",
+      "title": "Reflected Cross Site Scripting",
+      "description": "Reflected Cross-site Scripting (XSS) occur when an attacker injects browser executable code within a single HTTP response.\nThe injected attack is not stored within the application itself; it is non-persistent and only impacts users who open a maliciously crafted link or third-party web page.\nThe attack string is included as part of the crafted URI or HTTP parameters, improperly processed by the application, and returned to the victim.\n\nMost of the time, a Reflected XSS injection will allow malicious users to create malicious links that will run untrusted code on the victim.\n\nHere, the vulnerable application is subjected to a Reflected XSS Injection.\n\n<h4>Remediation</h4>\n\nTo solve this issue, sanitize the injected parameter so that it does not interpret HTML / JS / CSS data from a malicious user.\n\nPlease note that most modern web frameworks can block both Stored and Reflected XSS injections by default.\n\n<h4>References</h4>\n<a href=\"https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/07-Input_Validation_Testing/01-Testing_for_Reflected_Cross_Site_Scripting\">https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/07-Input_Validation_Testing/01-Testing_for_Reflected_Cross_Site_Scripting</a>\n",
+      "editable": false
+    },
+    {
+      "id": 46,
+      "sid": "WSTG-INPV-02",
+      "level": "level_high",
+      "title": "Stored Cross Site Scripting",
+      "description": "Stored XSS occurs when a web application gathers input from a user which might be malicious, and then stores that input in a data store for later use.\nThe input that is stored is not correctly filtered.\nAs a consequence, the malicious data will appear to be part of the web site and run within the user’s browser under the privileges of the web application.\n\nMost of the time, a Stored XSS injection will allow malicious users to inject malicious code in a web page, that will then run untrusted code on the victim when browsing the application.\n\nHere, the vulnerable application is subjected to a Stored XSS Injection.\n\n<h4>Remediation</h4>\n\nTo solve this issue, sanitize the injected parameter so that it does not interpret HTML / JS / CSS data from a malicious user.\n\nPlease note that most modern web frameworks can block both Stored and Reflected XSS injections by default.\n\n<h4>References</h4>\n<a href=\"https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/07-Input_Validation_Testing/02-Testing_for_Stored_Cross_Site_Scripting\">https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/07-Input_Validation_Testing/02-Testing_for_Stored_Cross_Site_Scripting</a>\n",
+      "editable": false
+    },
+    {
+      "id": 47,
+      "sid": "WSTG-INPV-05",
+      "level": "level_critical",
+      "title": "SQL Injection",
+      "description": "An SQL injection attack consists of insertion or “injection” of either a partial or complete SQL query via the data input or transmitted from the client (browser) to the web application.\nA successful SQL injection attack can read sensitive data from the database, modify database data (insert/update/delete), execute administration operations on the database (such as shutdown the DBMS), recover the content of a given file existing on the DBMS file system or write files into the file system, and, in some cases, issue commands to the operating system.\nSQL injection attacks are a type of injection attack, in which SQL commands are injected into data-plane input in order to affect the execution of predefined SQL commands.\n\nHere, the vulnerable application is subjected to an SQL Injection.\n\n<h4>Remediation</h4>\n\nTo solve this issue, sanitize the injected parameter so that it does not perform untrusted SQL calls from a malicious user.\n\nPlease note that most modern web frameworks can block SQL injections by default.\n\n<h4>References</h4>\n<a href=\"https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05-Testing_for_SQL_Injection\">https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05-Testing_for_SQL_Injection</a>\n",
+      "editable": false
+    }
+  ]

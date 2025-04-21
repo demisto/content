@@ -1,33 +1,29 @@
 ReversingLabs A1000 advanced Malware Analysis Platform.
 
 
-## Configure ReversingLabs A1000 v2 on Cortex XSOAR
+## Configure ReversingLabs A1000 v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ReversingLabs A1000 v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | ReversingLabs A1000 instance URL | True |
-    | API Token | True |
-    | Verify host certificates | False |
-    | Reliability | False |
-    | Wait time between report fetching retries (seconds). Deafult is 2 seconds. | False |
-    | Number of report fetching retries. Default is 30. | False |
-    | HTTP proxy address with the protocol and port number. | False |
-    | HTTP proxy username | False |
-    | HTTP proxy password | False |
-    | HTTPS proxy address with the protocol and port number. | False |
-    | HTTPS proxy username | False |
-    | HTTPS proxy password | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| ReversingLabs A1000 instance URL | True |
+| API Token | True |
+| Verify host certificates | False |
+| Reliability | False |
+| Wait time between report fetching retries (seconds). Deafult is 2 seconds. | False |
+| Number of report fetching retries. Default is 30. | False |
+| HTTP proxy address with the protocol and port number. | False |
+| HTTP proxy username | False |
+| HTTP proxy password | False |
+| HTTPS proxy address with the protocol and port number. | False |
+| HTTPS proxy username | False |
+| HTTPS proxy password | False |
     
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### reversinglabs-a1000-get-results
@@ -5744,6 +5740,7 @@ Retrieve classification report for a sample
 | --- | --- | --- |
 | hash | The hash of a desired sample. | Required | 
 | localOnly | Return only local classification data for the sample, without falling back to querying TitaniumCloud. Default is False. | Optional | 
+| avScanners | Return AV scanner data from TitaniumCloud. | Optional | 
 
 #### Context Output
 
@@ -6212,7 +6209,7 @@ Get a report for the submitted domain.
                     {
                         "detection": "undetected",
                         "source": "botvrij",
-                        "update_time": "2023-06-06T01:26:07"
+                        "update_time": "2023-06reversinglabs-a1000-static-analysis-report-06T01:26:07"
                     },
                     {
                         "detection": "undetected",
@@ -6689,5 +6686,4285 @@ Get a list of URLs hosted on the requested IP address.
 >|---|
 >| https:<span>//</span>vam.simpleintactloop.com/?kw=25&s1=dfadc40091de4d20b5ae5178a3ed04cf&s2=25&s3=1812092 |
 >| https:<span>//</span>consent.youtube.com/m?continue=https:<span>//</span>www.youtube.com/playlist?list=PLUdyEkajrVvQgvw3E7Ms4YAvqa8yze0mk&bsft_aaid=d3faaff4-8ea9-405d-9544-4da5a26dc24a&bsft_eid=9ee948cc-69cb-27ef-383f-8b42608edab0&bsft_clkid=a51526e6-0d0d-42ba-a5b2-4ffe739b39b3&bsft_uid=13d7aa07-4c09-453f-85ae-fbd4e975b709&bsft_mid=5b0f75fb-615d-401c-b15c-8e301bce51a0&bsft_txnid=a887540d-743a-4d12-ab6a-9e9a09073a67&bsft_mime_type=html&bsft_ek=2022-03-20T12%253A10%253A17Z&bsft_lx=7&bsft_tv=25&amp&list_code=MONMARW&email_id=000139679745&cbrd=1&gl=DE&hl=de&m=0&pc=yt&src=1&uxe=23983171 |
+
+
+
+### reversinglabs-a1000-user-tags
+
+***
+Perform user tag actions for a sample - Get existing tags, create new tags or delete existing tags.
+
+#### Base Command
+
+`reversinglabs-a1000-user-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Which tag action to perform - GET, CREATE or DELETE. Possible values are: GET, CREATE, DELETE. | Required | 
+| hash | Hash of the desired sample. | Required | 
+| tags | Comma-separated list of tags. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.a1000_user_tags | Unknown | Actions for managing user tags on samples. | 
+
+#### Command example
+```!reversinglabs-a1000-user-tags hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" tags="tag3,tag4" action="CREATE"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_user_tags": [
+            "tag3",
+            "tag4"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 user tags - CREATE tags
+> **Tag list**: ["tag3","tag4"]
+
+### reversinglabs-a1000-file-analysis-status
+
+***
+Check the analysis status of submitted files.
+
+#### Base Command
+
+`reversinglabs-a1000-file-analysis-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hashes | Comma-separated list of file hashes. Should be written without spaces and all hashes should be of the same type. | Required | 
+| analysis_status | Check only files with this analysis status. Available values are 'processed' and 'not_found'. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.a1000_file_analysis_status | Unknown | Analysis status of requested files. | 
+
+#### Command example
+```!reversinglabs-a1000-file-analysis-status hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" analysis_status="processed"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_file_analysis_status": {
+            "hash_type": "sha1",
+            "results": [
+                {
+                    "hash_value": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06",
+                    "status": "processed"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 file analysis status
+> **Hash type**: sha1
+>**Only status**: processed
+>### Analysis status
+>|hash_value|status|
+>|---|---|
+>| 0000a0a381d31e0dafcaa22343d2d7e40ff76e06 | processed |
+
+
+### reversinglabs-a1000-pdf-report
+
+***
+Perform PDF report actions for a sample - create a report, check the status of a report and download a report.
+
+#### Base Command
+
+`reversinglabs-a1000-pdf-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | Sample hash. | Required | 
+| action | Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT. Possible values are: CREATE REPORT, CHECK STATUS, DOWNLOAD REPORT. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.a1000_pdf_report | Unknown | Actions for creating and downloading PDF reports. | 
+
+#### Command example
+```!reversinglabs-a1000-pdf-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_pdf_report": {
+            "download_endpoint": "/api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/download",
+            "status_endpoint": "/api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/status"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 PDF report - CREATE REPORT
+>**Status endpoint**: /api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/status
+> **Download endpoint**: /api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/download
+
+### reversinglabs-a1000-static-analysis-report
+
+***
+Retrieve the static analysis report for a local sample.
+
+#### Base Command
+
+`reversinglabs-a1000-static-analysis-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | Sample hash. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| ReversingLabs.a1000_static_analysis_report | Unknown | The static analysis report. | 
+
+#### Command example
+```!reversinglabs-a1000-static-analysis-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06"```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "ReversingLabs A1000 v2"
+    },
+    "File": {
+        "Hashes": [
+            {
+                "type": "MD5",
+                "value": "a984de0ce47a8d5337ef569c812b57d0"
+            },
+            {
+                "type": "SHA1",
+                "value": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06"
+            },
+            {
+                "type": "SHA256",
+                "value": "b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3"
+            }
+        ],
+        "MD5": "a984de0ce47a8d5337ef569c812b57d0",
+        "Malicious": {
+            "Description": "Win32.Downloader.Unruy",
+            "Vendor": "ReversingLabs A1000 v2"
+        },
+        "SHA1": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06",
+        "SHA256": "b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3"
+    },
+    "ReversingLabs": {
+        "a1000_static_analysis_report": {
+            "application": {
+                "capabilities": [
+                    [
+                        "clipboard",
+                        false
+                    ],
+                    [
+                        "ipc",
+                        false
+                    ],
+                    [
+                        "threads",
+                        true
+                    ],
+                    [
+                        "processes",
+                        true
+                    ],
+                    [
+                        "storage",
+                        false
+                    ],
+                    [
+                        "filesystem",
+                        false
+                    ],
+                    [
+                        "peripherals",
+                        false
+                    ],
+                    [
+                        "user_input",
+                        false
+                    ],
+                    [
+                        "hardware_interfaces",
+                        false
+                    ],
+                    [
+                        "networking",
+                        false
+                    ],
+                    [
+                        "cryptography",
+                        false
+                    ],
+                    [
+                        "security",
+                        false
+                    ],
+                    [
+                        "system",
+                        true
+                    ],
+                    [
+                        "modules",
+                        true
+                    ],
+                    [
+                        "memory_management",
+                        true
+                    ],
+                    [
+                        "user_interface",
+                        true
+                    ],
+                    [
+                        "command_line",
+                        false
+                    ],
+                    [
+                        "time_and_date",
+                        false
+                    ],
+                    [
+                        "identity",
+                        false
+                    ],
+                    [
+                        "monitoring",
+                        false
+                    ],
+                    [
+                        "configuration",
+                        false
+                    ],
+                    [
+                        "compression",
+                        false
+                    ],
+                    [
+                        "multimedia",
+                        true
+                    ],
+                    [
+                        "deprecated",
+                        false
+                    ],
+                    [
+                        "undocumented",
+                        false
+                    ],
+                    [
+                        "application_management",
+                        false
+                    ],
+                    [
+                        "service_management",
+                        false
+                    ],
+                    [
+                        "messaging",
+                        false
+                    ],
+                    [
+                        "protection",
+                        false
+                    ],
+                    [
+                        "drivers",
+                        false
+                    ]
+                ],
+                "libraries": [
+                    {
+                        "community": 0,
+                        "description": "Windows NT BASE API Client Library",
+                        "license": "Proprietary (Microsoft Windows Operating System License)",
+                        "linking": 2,
+                        "name": "kernel32",
+                        "publisher": "Microsoft Corporation",
+                        "type": 3,
+                        "verified": 0,
+                        "version": "Generic"
+                    },
+                    {
+                        "community": 0,
+                        "description": "Multi-User Windows USER API Client Library",
+                        "license": "Proprietary (Microsoft Windows Operating System License)",
+                        "linking": 2,
+                        "name": "user32",
+                        "publisher": "Microsoft Corporation",
+                        "type": 3,
+                        "verified": 0,
+                        "version": "Generic"
+                    }
+                ],
+                "pe": {
+                    "analysis": {
+                        "analysis_state": 0,
+                        "issues": [
+                            {
+                                "code": 24014,
+                                "count": 4,
+                                "description": "Section virtual size will be automatically rounded up by section alignment value.",
+                                "name": "WC24014",
+                                "relevance": 0
+                            },
+                            {
+                                "code": 28286,
+                                "count": 1,
+                                "description": "Detected the presence a resource node that has no data entries.",
+                                "name": "WC28286",
+                                "relevance": 0
+                            },
+                            {
+                                "code": 31501,
+                                "count": 1,
+                                "description": "Detected that image_rich_header_t::product list includes a reference to an older toolchain version. This outdated compiler version lacks built-in protection from integer based overflow attacks while dynamically allocation memory buffers. Lowers grade to D.",
+                                "name": "SC31501",
+                                "relevance": 0
+                            },
+                            {
+                                "code": 32004,
+                                "count": 1,
+                                "description": "Non-optimal file_header_t::characteristics value. File has relocations stripped, which eliminates the possibility of ASLR being used. Lowers grade to C.",
+                                "name": "SC32004",
+                                "relevance": 0
+                            },
+                            {
+                                "code": 33012,
+                                "count": 1,
+                                "description": "Detected security mitigation policy issue in optional_header_t::dll_characteristics. Data execution prevention feature flag is not set. Lowers grade to D.",
+                                "name": "SC33012",
+                                "relevance": 1
+                            },
+                            {
+                                "code": 33013,
+                                "count": 1,
+                                "description": "Detected security mitigation policy issue in optional_header_t::dll_characteristics. Control flow guard feature flag is not set. Lowers grade to B.",
+                                "name": "SC33013",
+                                "relevance": 1
+                            },
+                            {
+                                "code": 33014,
+                                "count": 1,
+                                "description": "Detected security mitigation policy issue in optional_header_t::dll_characteristics. Address space layout randomization feature flag is not set. Lowers grade to C.",
+                                "name": "SC33014",
+                                "relevance": 0
+                            },
+                            {
+                                "code": 38610,
+                                "count": 1,
+                                "description": "Detected security mitigation policy issue in dll_extended_data_t::flags. The image is not compatible with Intel Control Flow Enforcement Technology. No impact to the final grade at this time.",
+                                "name": "SC38610",
+                                "relevance": 1
+                            },
+                            {
+                                "code": 39196,
+                                "count": 1,
+                                "description": "Detected the use of SDLC banned function kernel32.lstrcatA. Use of this function is considered unsafe because it's an unbound string operation. Lowers grade to D.",
+                                "name": "SC39196",
+                                "relevance": 0
+                            }
+                        ],
+                        "security_grade": 3
+                    },
+                    "dos_header": {
+                        "e_cblp": 144,
+                        "e_cp": 3,
+                        "e_cparhdr": 4,
+                        "e_crlc": 0,
+                        "e_cs": 0,
+                        "e_csum": 0,
+                        "e_ip": 0,
+                        "e_lfanew": 208,
+                        "e_lfarlc": 64,
+                        "e_maxalloc": 65535,
+                        "e_minalloc": 0,
+                        "e_oemid": 0,
+                        "e_oeminfo": 0,
+                        "e_ovno": 0,
+                        "e_res": "0000000000000000",
+                        "e_res2": "0000000000000000000000000000000000000000",
+                        "e_sp": 184,
+                        "e_ss": 0
+                    },
+                    "file_header": {
+                        "characteristics": 271,
+                        "machine": 332,
+                        "number_of_sections": 4,
+                        "number_of_symbols": 0,
+                        "pointer_to_symbol_table": 0,
+                        "size_of_optional_headers": 224,
+                        "time_date_stamp": 1290670165,
+                        "time_date_stamp_decoded": "2010-11-25T07:29:25Z"
+                    },
+                    "imports": [
+                        {
+                            "apis": [
+                                "HeapAlloc",
+                                "GetProcessHeap",
+                                "GetProcAddress",
+                                "LoadLibraryA",
+                                "lstrcatA"
+                            ],
+                            "name": "KERNEL32.dll"
+                        },
+                        {
+                            "apis": [
+                                "SetWindowPos",
+                                "AttachThreadInput",
+                                "SetForegroundWindow"
+                            ],
+                            "name": "USER32.dll"
+                        }
+                    ],
+                    "optional_header": {
+                        "address_of_entry_point": 14976,
+                        "base_of_code": 4096,
+                        "base_of_data": 20480,
+                        "checksum": 0,
+                        "data_directories": [
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 20520,
+                                "size": 60
+                            },
+                            {
+                                "address": 53248,
+                                "size": 16
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 20480,
+                                "size": 40
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            },
+                            {
+                                "address": 0,
+                                "size": 0
+                            }
+                        ],
+                        "dll_characteristics": 0,
+                        "file_alignment": 512,
+                        "image_base": 4194304,
+                        "is_checksum_valid": true,
+                        "loader_flags": 0,
+                        "major_image_version": 0,
+                        "major_linker_version": 6,
+                        "major_os_version": 4,
+                        "major_subsystem_version": 4,
+                        "minor_image_version": 0,
+                        "minor_linker_version": 0,
+                        "minor_os_version": 0,
+                        "minor_subsystem_version": 0,
+                        "number_of_rva_and_sizes": 16,
+                        "section_alignment": 4096,
+                        "size_of_code": 13824,
+                        "size_of_headers": 4096,
+                        "size_of_heap_commit": 4096,
+                        "size_of_heap_reserve": 1048576,
+                        "size_of_image": 57344,
+                        "size_of_initialized_data": 27648,
+                        "size_of_stack_commit": 4096,
+                        "size_of_stack_reserve": 1048576,
+                        "size_of_uninitialized_data": 0,
+                        "subsystem": 2,
+                        "win32_version_value": 0
+                    },
+                    "rich_header": {
+                        "checksum": 2475530069,
+                        "entries": [
+                            {
+                                "counter": 11,
+                                "product": 1,
+                                "tooling": 7,
+                                "version": 0
+                            },
+                            {
+                                "counter": 5,
+                                "product": 19,
+                                "tooling": 6,
+                                "version": 8034
+                            },
+                            {
+                                "counter": 1,
+                                "product": 14,
+                                "tooling": 5,
+                                "version": 7299
+                            },
+                            {
+                                "counter": 4,
+                                "product": 11,
+                                "tooling": 2,
+                                "version": 8966
+                            },
+                            {
+                                "counter": 1,
+                                "product": 6,
+                                "tooling": 10,
+                                "version": 1735
+                            }
+                        ],
+                        "offset": 128,
+                        "size": 80
+                    },
+                    "sections": [
+                        {
+                            "entropy": 6.065153483391547,
+                            "flags": 1610612768,
+                            "hashes": [
+                                {
+                                    "name": "md5",
+                                    "value": "d12a64610c6295a375e8cbf3fabf111e"
+                                },
+                                {
+                                    "name": "sha1",
+                                    "value": "834d581edfd155bf0fe638bc91a779cfd56c373f"
+                                },
+                                {
+                                    "name": "sha256",
+                                    "value": "0a618f93e0810c85ee993ef5bcb1450317c0e744bce1b47a4da1a05371a152a6"
+                                }
+                            ],
+                            "name": ".text",
+                            "physical_base": 1024,
+                            "physical_size": 13824,
+                            "relative_base": 4096,
+                            "relative_size": 16384
+                        },
+                        {
+                            "entropy": 2.8575599963638005,
+                            "flags": 1073741888,
+                            "hashes": [
+                                {
+                                    "name": "md5",
+                                    "value": "ec1240c941749e4bdd90f90d2bdba34f"
+                                },
+                                {
+                                    "name": "sha1",
+                                    "value": "3fb3458d1cee383c732457afd35d75612ee0db88"
+                                },
+                                {
+                                    "name": "sha256",
+                                    "value": "3f1bdeb0017ef544a6cffacdf9f6fd89e03bfbabdb889eb0ad089710c3d9a380"
+                                }
+                            ],
+                            "name": ".rdata",
+                            "physical_base": 14848,
+                            "physical_size": 512,
+                            "relative_base": 20480,
+                            "relative_size": 4096
+                        },
+                        {
+                            "entropy": 7.714661527808296,
+                            "flags": 3221225536,
+                            "hashes": [
+                                {
+                                    "name": "md5",
+                                    "value": "39187b844a3ffa357b1726f8d4ace948"
+                                },
+                                {
+                                    "name": "sha1",
+                                    "value": "55bfd9fa4d3ea132935988eb068dd5f4ac4c2db6"
+                                },
+                                {
+                                    "name": "sha256",
+                                    "value": "e1bc4715e1e1a34da4c16df2bc283f60456c8fa22f9b8d29e61335416fbe0bd0"
+                                }
+                            ],
+                            "name": ".data",
+                            "physical_base": 15360,
+                            "physical_size": 26624,
+                            "relative_base": 24576,
+                            "relative_size": 28672
+                        },
+                        {
+                            "entropy": 0,
+                            "flags": 1073741888,
+                            "hashes": [
+                                {
+                                    "name": "md5",
+                                    "value": "bf619eac0cdf3f68d496ea9344137e8b"
+                                },
+                                {
+                                    "name": "sha1",
+                                    "value": "5c3eb80066420002bc3dcc7ca4ab6efad7ed4ae5"
+                                },
+                                {
+                                    "name": "sha256",
+                                    "value": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+                                }
+                            ],
+                            "name": ".rsrc",
+                            "physical_base": 41984,
+                            "physical_size": 512,
+                            "relative_base": 53248,
+                            "relative_size": 4096
+                        }
+                    ]
+                }
+            },
+            "attack": [
+                {
+                    "matrix": "Enterprise",
+                    "tactics": [
+                        {
+                            "description": "The adversary is trying to run malicious code.",
+                            "id": "TA0002",
+                            "name": "Execution",
+                            "techniques": [
+                                {
+                                    "description": "Adversaries may interact with the native OS application programming interface (API) to execute behaviors. Native APIs provide a controlled means of calling low-level OS services within the kernel, such as those involving hardware/devices, memory, and processes. These native APIs are leveraged by the OS during system boot (when other system components are not yet initialized) as well as carrying out tasks and requests during routine operations.",
+                                    "id": "T1106",
+                                    "indicators": [
+                                        {
+                                            "category": 10,
+                                            "description": "Loads additional APIs.",
+                                            "id": 70,
+                                            "priority": 2,
+                                            "relevance": 0
+                                        }
+                                    ],
+                                    "name": "Native API"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "behaviour": {},
+            "certificate": {},
+            "classification": {
+                "classification": 3,
+                "factor": 8,
+                "propagated": false,
+                "result": "Win32.Downloader.Unruy",
+                "scan_results": [
+                    {
+                        "classification": 3,
+                        "factor": 8,
+                        "ignored": false,
+                        "name": "Antivirus (based on the RCA Classify)",
+                        "result": "Win32.Downloader.Unruy",
+                        "type": 1,
+                        "version": "2.89"
+                    },
+                    {
+                        "classification": 3,
+                        "factor": 8,
+                        "ignored": false,
+                        "name": "TitaniumCore RHA1",
+                        "result": "Win32.Downloader.Unruy",
+                        "type": 5,
+                        "version": "5.0.0.24"
+                    },
+                    {
+                        "classification": 3,
+                        "factor": 6,
+                        "ignored": false,
+                        "name": "TitaniumCore Machine Learning",
+                        "result": "Win32.Malware.Heuristic",
+                        "type": 5,
+                        "version": "5.0.0.24"
+                    }
+                ]
+            },
+            "document": {},
+            "email": {},
+            "imphash": "054e4e5c28d6533b44ae24cbf3e08a15",
+            "indicators": [
+                {
+                    "category": 4,
+                    "description": "Allocates additional memory in the calling process.",
+                    "id": 17985,
+                    "priority": 3,
+                    "reasons": [
+                        {
+                            "category": "Imported API Name",
+                            "description": "Imports the following function: HeapAlloc",
+                            "propagated": false
+                        }
+                    ],
+                    "relevance": 0
+                },
+                {
+                    "category": 10,
+                    "description": "Loads additional libraries.",
+                    "id": 69,
+                    "priority": 2,
+                    "reasons": [
+                        {
+                            "category": "Imported API Name",
+                            "description": "Imports the following function: LoadLibraryA",
+                            "propagated": false
+                        }
+                    ],
+                    "relevance": 1
+                },
+                {
+                    "category": 10,
+                    "description": "Loads additional APIs.",
+                    "id": 70,
+                    "priority": 2,
+                    "reasons": [
+                        {
+                            "category": "Imported API Name",
+                            "description": "Imports the following function: GetProcAddress",
+                            "propagated": false
+                        },
+                        {
+                            "category": "Indicator Match",
+                            "description": "Matched another indicator that describes the following: Loads additional libraries.",
+                            "propagated": false
+                        }
+                    ],
+                    "relevance": 0
+                },
+                {
+                    "category": 16,
+                    "description": "Uses string related methods.",
+                    "id": 18050,
+                    "priority": 1,
+                    "reasons": [
+                        {
+                            "category": "Imported API Name",
+                            "description": "Imports the following function: lstrcatA",
+                            "propagated": false
+                        }
+                    ],
+                    "relevance": 0
+                }
+            ],
+            "info": {
+                "file": {
+                    "entropy": 7.222407502197507,
+                    "file_subtype": "Exe",
+                    "file_type": "PE",
+                    "hashes": [
+                        {
+                            "name": "imphash",
+                            "value": "054e4e5c28d6533b44ae24cbf3e08a15"
+                        },
+                        {
+                            "name": "md5",
+                            "value": "a984de0ce47a8d5337ef569c812b57d0"
+                        },
+                        {
+                            "name": "rha0",
+                            "value": "6e60e6783d0e5104dab2311c93d6f9b42cebbf03"
+                        },
+                        {
+                            "name": "sha1",
+                            "value": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06"
+                        },
+                        {
+                            "name": "sha256",
+                            "value": "b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3"
+                        },
+                        {
+                            "name": "sha512",
+                            "value": "9357144084c64531dec928de2a85c924d8079b50b5e98ab2c61ae59b97992a39b833f618341e91b071ec94e65bd901ebdf892851e5a4247e1557a55c14923da5"
+                        },
+                        {
+                            "name": "ssdeep",
+                            "value": "768:JbTqavYjTvEBTfVDAyNX8PFOJ40feIaFzSUqSH3Uxr:JbTqBjT8fhAyF8NKeIaJExr"
+                        }
+                    ],
+                    "proposed_filename": null,
+                    "size": 42544
+                },
+                "overlays": [
+                    {
+                        "entropy": 0,
+                        "from": 0,
+                        "hashes": [
+                            {
+                                "name": "md5",
+                                "value": "e932766776e6ec8c734075b277a9dabe"
+                            },
+                            {
+                                "name": "sha1",
+                                "value": "7062d43e1185995b5b7bba93e5d22e607df49245"
+                            },
+                            {
+                                "name": "sha256",
+                                "value": "addc3bfa329b888c3430d549b9b6c9f57dca041007d84e013b6a503096a14e92"
+                            }
+                        ],
+                        "offset": 42496,
+                        "size": 48
+                    }
+                ],
+                "statistics": {
+                    "file_stats": [
+                        {
+                            "count": 1,
+                            "identifications": [
+                                {
+                                    "count": 1,
+                                    "name": "Unknown"
+                                }
+                            ],
+                            "subtype": "Exe",
+                            "type": "PE"
+                        }
+                    ]
+                },
+                "validation": {
+                    "scan_results": [
+                        {
+                            "name": "TitaniumCore PE Rich Header Validator",
+                            "type": 5,
+                            "valid": true,
+                            "version": "5.0.0.24"
+                        },
+                        {
+                            "name": "TitaniumCore PE Checksum Validator",
+                            "type": 5,
+                            "valid": true,
+                            "version": "5.0.0.24"
+                        },
+                        {
+                            "name": "TitaniumCore PECOFF Validator",
+                            "type": 3,
+                            "valid": true,
+                            "version": "5.0.6"
+                        }
+                    ],
+                    "valid": true
+                }
+            },
+            "interesting_strings": [],
+            "md5": "a984de0ce47a8d5337ef569c812b57d0",
+            "media": {},
+            "mobile": {},
+            "protection": {},
+            "security": {},
+            "sha1": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06",
+            "sha256": "b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3",
+            "sha512": "9357144084c64531dec928de2a85c924d8079b50b5e98ab2c61ae59b97992a39b833f618341e91b071ec94e65bd901ebdf892851e5a4247e1557a55c14923da5",
+            "story": "This file (SHA1: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06) is a 32-bit portable executable application. The application uses the Windows graphical user interface (GUI) subsystem. Appended data was detected at the file&#x27;s end. Its length is smaller than the size of the image. This application has access to running processes. Libraries kernel32 Generic and user32 Generic were detected in the file. There are no extracted files.",
+            "strings": [
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1078,
+                    "v": "\rDa@"
+                },
+                {
+                    "c": 5,
+                    "f": 2,
+                    "o": 1171,
+                    "v": "\fj\tj"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1266,
+                    "v": "\fj\\h"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1303,
+                    "v": "\rlf@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 1309,
+                    "v": "- P@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1348,
+                    "v": "\rxb@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 1488,
+                    "v": "\rD`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1554,
+                    "v": "hln@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1607,
+                    "v": "\r`n@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1626,
+                    "v": "\rhn@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1720,
+                    "v": "\r4b@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 1733,
+                    "v": "\rhf@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1763,
+                    "v": "hPn@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1787,
+                    "v": "\r@n@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1809,
+                    "v": "\rHn@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 1868,
+                    "v": "\rLf@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1875,
+                    "v": "\fj;h\"P"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 1991,
+                    "v": "h(n@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 2099,
+                    "v": "\r@b@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 2303,
+                    "v": "\r8g@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 2537,
+                    "v": "\r8f@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 2820,
+                    "v": "\r\\b@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 2836,
+                    "v": "\rtf@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 2916,
+                    "v": "\rxf@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 2950,
+                    "v": "\r\f`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3024,
+                    "v": "\rpm@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3046,
+                    "v": "\rxm@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3127,
+                    "v": "\r\fa@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3181,
+                    "v": "hXm@"
+                },
+                {
+                    "c": 6,
+                    "f": 2,
+                    "o": 3204,
+                    "v": "\fj\rj"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3228,
+                    "v": "\rLm@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3308,
+                    "v": "h4m@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3332,
+                    "v": "\r$m@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3354,
+                    "v": "\r,m@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3380,
+                    "v": "\r@a@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3472,
+                    "v": "\rta@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3521,
+                    "v": "\r`c@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3608,
+                    "v": "\r\fm@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 3675,
+                    "v": "\r$`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 3900,
+                    "v": "j\rh<L"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4031,
+                    "v": "\fj'h2%"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4063,
+                    "v": "\rlc@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 4069,
+                    "v": "yxxx"
+                },
+                {
+                    "c": 5,
+                    "f": 2,
+                    "o": 4086,
+                    "v": "\r<a@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4250,
+                    "v": "\r\fb@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4364,
+                    "v": "P\fh\t`"
+                },
+                {
+                    "c": 3,
+                    "f": 2,
+                    "o": 4486,
+                    "v": "\fj\nj"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4576,
+                    "v": "\rXa@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4654,
+                    "v": "h|l@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4678,
+                    "v": "\rtl@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4705,
+                    "v": "\rxe@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4802,
+                    "v": "h\\l@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4839,
+                    "v": "\rLl@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4857,
+                    "v": "\rTl@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 4935,
+                    "v": "\r<`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4969,
+                    "v": "h0l@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 4986,
+                    "v": "T$$R"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 5008,
+                    "v": "\r$l@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 5030,
+                    "v": "\r,l@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 5594,
+                    "v": "\r(c@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 5605,
+                    "v": "\rHf@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 5686,
+                    "v": "gfff"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 5924,
+                    "v": "\rTf@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6040,
+                    "v": "\r`b@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6106,
+                    "v": "\rXg@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6139,
+                    "v": "\r$b@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6287,
+                    "v": "\rdb@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6460,
+                    "v": "\rtk@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6479,
+                    "v": "\r|k@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6484,
+                    "v": "jzhN("
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6549,
+                    "v": "\rLa@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6605,
+                    "v": "h`k@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 6699,
+                    "v": "\rPd@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6815,
+                    "v": "h8k@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6859,
+                    "v": "\r(k@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 6881,
+                    "v": "\r0k@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 7253,
+                    "v": "\r4f@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 7332,
+                    "v": "\rla@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 7440,
+                    "v": "\rx`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 7446,
+                    "v": "gfffj"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8133,
+                    "v": "\rxj@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8268,
+                    "v": "hhj@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8320,
+                    "v": "\rXj@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8342,
+                    "v": "\r`j@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8433,
+                    "v": "\rpf@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8456,
+                    "v": "\r<c@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8484,
+                    "v": "hHj@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8531,
+                    "v": "\r<j@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8646,
+                    "v": "h$j@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8724,
+                    "v": "\rLh@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8789,
+                    "v": "\r\\f@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8984,
+                    "v": "\r4g@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 8997,
+                    "v": "\fjth"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 9112,
+                    "v": "\r@f@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 9304,
+                    "v": "\fjch"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 9407,
+                    "v": "\r<d@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 9425,
+                    "v": "\r(d@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 9717,
+                    "v": "j\nhMw"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 9837,
+                    "v": "\rxd@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10076,
+                    "v": "hpi@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10125,
+                    "v": "\rni@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10148,
+                    "v": "\rXh@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10253,
+                    "v": "h\\i@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 10270,
+                    "v": "\r(`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10297,
+                    "v": "\rTi@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10408,
+                    "v": "hDi@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10448,
+                    "v": "\r<i@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10646,
+                    "v": "h,i@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10685,
+                    "v": "\r*i@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 10837,
+                    "v": "SUVWh"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11047,
+                    "v": "_^]3"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11061,
+                    "v": "SUVWP"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11087,
+                    "v": "\rpe@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11457,
+                    "v": "\rle@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11469,
+                    "v": "_^]["
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 11560,
+                    "v": "5D`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11660,
+                    "v": "^][Y"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11744,
+                    "v": "\f.FG"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11785,
+                    "v": "T$,QR"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11877,
+                    "v": ";|$ "
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 11889,
+                    "v": "^][_Y"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 11943,
+                    "v": "5\fP@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 12000,
+                    "v": "\r a@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 12215,
+                    "v": "\rxa@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 12489,
+                    "v": "\r``@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 13018,
+                    "v": "\r,a@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 13057,
+                    "v": "\rT`@"
+                },
+                {
+                    "c": 2,
+                    "f": 2,
+                    "o": 13083,
+                    "v": "\u000bfI9"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 13359,
+                    "v": "\rha@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 13885,
+                    "v": "\rH`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 13935,
+                    "v": "\rh`@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 14231,
+                    "v": "B4PQ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 14328,
+                    "v": "QVRP"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 17715,
+                    "v": ">|E1"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 17737,
+                    "v": "ik\nL"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 17786,
+                    "v": "M},x"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 17850,
+                    "v": "\\)VXo53"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 17901,
+                    "v": "h6pp&"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 17958,
+                    "v": "72Jh"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 17998,
+                    "v": "Wfj&%"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18103,
+                    "v": "_i=/."
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18142,
+                    "v": "]Q9["
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18252,
+                    "v": "i0>!"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18384,
+                    "v": "=8wo"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18416,
+                    "v": "G+~s"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18486,
+                    "v": "<\rt\\"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18623,
+                    "v": "7D\ra"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18638,
+                    "v": "OO\"#u"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18766,
+                    "v": "]=p)"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18829,
+                    "v": "e\f[m["
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 18934,
+                    "v": "!P7W"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19082,
+                    "v": "Ta<L"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19161,
+                    "v": "ZjDMa"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19354,
+                    "v": "yM.W"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19420,
+                    "v": "S`k!j \r\u000b1+"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19450,
+                    "v": "\nB}]"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19466,
+                    "v": " Sl-\r^"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19491,
+                    "v": "i*mO{P"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19508,
+                    "v": "{w>A"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19574,
+                    "v": "'=R4"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19607,
+                    "v": "-~\fM"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19714,
+                    "v": "sL?_"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19719,
+                    "v": "'4gk[l;"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19743,
+                    "v": "lgn!"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19748,
+                    "v": "3LeY["
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19754,
+                    "v": "z^aq"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19764,
+                    "v": "\rCt%"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 19898,
+                    "v": "3l\tk"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20235,
+                    "v": "C]3c7"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20244,
+                    "v": "w\"Sk"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20282,
+                    "v": "Nl(//6E"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 20379,
+                    "v": "iR1N"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20478,
+                    "v": ".(fB"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20545,
+                    "v": "*N:p"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20628,
+                    "v": "bMVU"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20685,
+                    "v": "G<~."
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20737,
+                    "v": "gSrt"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20795,
+                    "v": "-fFo"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20954,
+                    "v": "\u000bQoi"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 20966,
+                    "v": "Y|^j)"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21057,
+                    "v": "g1z>"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21193,
+                    "v": "j@fr"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21357,
+                    "v": "s3.'"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21425,
+                    "v": "?^>\""
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21437,
+                    "v": "\\^ZH~)4"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21467,
+                    "v": "k(NM"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21577,
+                    "v": "B;!d"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21592,
+                    "v": "M\"cn"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21622,
+                    "v": "+ `h"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21713,
+                    "v": "LoM0"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21726,
+                    "v": "3JS\""
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21829,
+                    "v": "Z,{oX`"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 21836,
+                    "v": "p5rjZ@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22043,
+                    "v": "BuA]_"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22070,
+                    "v": "\t }:R"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22125,
+                    "v": "MG+,"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22181,
+                    "v": "(Jz\n"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22319,
+                    "v": "0b]d"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22380,
+                    "v": "\",}je"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22468,
+                    "v": "zI\fC"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22516,
+                    "v": "^\u000bxU"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22662,
+                    "v": "w6!2"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22672,
+                    "v": "wKBT"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22788,
+                    "v": "j)d["
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22793,
+                    "v": "O^bF"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22895,
+                    "v": "B0Dv\\\r`"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 22968,
+                    "v": "}!'x"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23000,
+                    "v": "\"8nS"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23016,
+                    "v": "-S'Y"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23023,
+                    "v": "x1$v"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23032,
+                    "v": "!a\u000bR"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23038,
+                    "v": "\t;UA"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23073,
+                    "v": "zU8I"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23186,
+                    "v": "<).\tT"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23203,
+                    "v": "_de[-!"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23218,
+                    "v": ";Nlvj^"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23348,
+                    "v": "\f\f+xyL"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23361,
+                    "v": "nWO="
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23371,
+                    "v": "l'WL"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23446,
+                    "v": "Z}LEE"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23507,
+                    "v": "%\r%}"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23519,
+                    "v": "\t,P9"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23547,
+                    "v": "kc$,"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23561,
+                    "v": "a$\u000bR"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23617,
+                    "v": ")eTio{h"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23745,
+                    "v": "|SA'%2"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23858,
+                    "v": "WW/!"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23926,
+                    "v": "t0g'"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 23939,
+                    "v": "I.Dd"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 23965,
+                    "v": "I1PN"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 24110,
+                    "v": "AiN\nb"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24230,
+                    "v": "{hM:~"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24253,
+                    "v": "_?iH"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 24346,
+                    "v": "attO"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24430,
+                    "v": "Jr6)"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24474,
+                    "v": "]^;p"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24523,
+                    "v": "wRzS"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24675,
+                    "v": "b\n5e\\*"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24726,
+                    "v": ";,G["
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24733,
+                    "v": "M8ak"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 24840,
+                    "v": "^Jj-"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25013,
+                    "v": "Bs&?"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25037,
+                    "v": "r8^@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25065,
+                    "v": "SP/="
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25220,
+                    "v": "]\u000bTxf"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25325,
+                    "v": "\f1Bn"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25339,
+                    "v": "r`>N%"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25362,
+                    "v": "d)nM"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25526,
+                    "v": "D|G$"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25560,
+                    "v": "z<Wa"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25585,
+                    "v": "b@s?"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25722,
+                    "v": "Kyd\u000b4"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 25812,
+                    "v": "\t/vz"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26017,
+                    "v": "A;\f3"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26025,
+                    "v": "+tZA9y"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26048,
+                    "v": "nsqu"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26099,
+                    "v": "e\"<cf"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26203,
+                    "v": "#Eqd"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26449,
+                    "v": "\f7Y@x"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26675,
+                    "v": "|I)\\7"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26804,
+                    "v": "`Kf>"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26822,
+                    "v": "o\t*p,"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26836,
+                    "v": "W\rLmBBr;S"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26888,
+                    "v": "tg\u000b,"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26967,
+                    "v": "]{Q~R"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 26990,
+                    "v": "RTm\\"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27030,
+                    "v": "MF4L"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27047,
+                    "v": "dAUO"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27373,
+                    "v": "f*EX"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27420,
+                    "v": "%})z"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27524,
+                    "v": "\rs\t;{"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27663,
+                    "v": "IN|GE"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27733,
+                    "v": "U7kG"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27768,
+                    "v": "EP%o}"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 27880,
+                    "v": "Ru6Z/7"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28005,
+                    "v": "#A~1"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28094,
+                    "v": "Yw[\rX"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28296,
+                    "v": "uoTu"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28308,
+                    "v": "LS#U"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28314,
+                    "v": "y$^1"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28452,
+                    "v": "3akq"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28486,
+                    "v": "$mP1d="
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28521,
+                    "v": "uA\t\nq"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28551,
+                    "v": "0uq/36"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28564,
+                    "v": "osZQ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28638,
+                    "v": "\"*QK"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28656,
+                    "v": "L{&["
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28692,
+                    "v": "Mo$\rt?"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28702,
+                    "v": ".&Bv"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28710,
+                    "v": "EM\f&PN"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28717,
+                    "v": "Hk1O"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28921,
+                    "v": "o&| "
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28942,
+                    "v": "0Dco"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 28985,
+                    "v": "tBC,"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29005,
+                    "v": ">M5m"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29015,
+                    "v": "Jb$s"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29068,
+                    "v": "Fxsl"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29109,
+                    "v": "\fv l"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29161,
+                    "v": "(t_}"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29236,
+                    "v": "_a/T"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29254,
+                    "v": "&6ElU"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29278,
+                    "v": "e&64\fm"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29302,
+                    "v": "*'.%"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29397,
+                    "v": "gb,a"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29454,
+                    "v": "VD\t-"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29515,
+                    "v": " bvsZ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29587,
+                    "v": "F\tJP"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29779,
+                    "v": "$-\t'"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 29975,
+                    "v": "}&E."
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30051,
+                    "v": "t#&Q[@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30060,
+                    "v": "\r=r^"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30065,
+                    "v": "M1JL@"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 30270,
+                    "v": "mS\ta"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30302,
+                    "v": "|mW&"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30312,
+                    "v": "l6|}"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30324,
+                    "v": "`']a"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30333,
+                    "v": "tI\\i~"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30366,
+                    "v": "FH30"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30423,
+                    "v": "3QL8"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30459,
+                    "v": "eEUJ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30554,
+                    "v": "I`B^"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30572,
+                    "v": "+X&f"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30617,
+                    "v": "=r7#K#"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30717,
+                    "v": "8Jbt"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30798,
+                    "v": "0!4\tYB=x"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30917,
+                    "v": "'5vIm1Qo "
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 30954,
+                    "v": "$&*s"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31050,
+                    "v": "9K%C"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31125,
+                    "v": "%Z+P"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31193,
+                    "v": "\tFTGW\"h"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31342,
+                    "v": "Sh@G"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31367,
+                    "v": "a\rq("
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31380,
+                    "v": "Y\"h>"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31474,
+                    "v": "_u=k"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31479,
+                    "v": "#.>-"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31507,
+                    "v": "B5'\t"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31635,
+                    "v": "SmI`"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31746,
+                    "v": ")rfh"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31811,
+                    "v": "m4SM"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31870,
+                    "v": "N}2\r"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 31941,
+                    "v": ">No+"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32008,
+                    "v": "])&h\n"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32051,
+                    "v": "U\"k9"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32068,
+                    "v": "Rmqy"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32104,
+                    "v": "_BG(Rh\u000b"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32134,
+                    "v": "@RaHl|2l"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32274,
+                    "v": "t3=e`1"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32303,
+                    "v": "\tk\n^"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32445,
+                    "v": "J'uT/"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32519,
+                    "v": "Wp% v"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32561,
+                    "v": "kXME"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32626,
+                    "v": "Vk9B"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32659,
+                    "v": "$T7'"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32752,
+                    "v": "5nP "
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 32891,
+                    "v": "rH?G"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33057,
+                    "v": "o_WU/"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33144,
+                    "v": "fbiFL+"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33225,
+                    "v": "@c\u000b)\n"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33244,
+                    "v": "k8EJ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33325,
+                    "v": "8aM;"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33338,
+                    "v": "q78<\r"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33375,
+                    "v": "bZb4"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33433,
+                    "v": "wg#m"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33446,
+                    "v": "J&sHI["
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33514,
+                    "v": "eR \r|"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33530,
+                    "v": "W5FCZ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33582,
+                    "v": "\tCm&"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 33938,
+                    "v": "'cJ6q"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34014,
+                    "v": "OO&L"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34120,
+                    "v": "\t*hzM"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34141,
+                    "v": "Z<Kq"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34220,
+                    "v": "p'\u000bk"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34227,
+                    "v": "~rB_VZ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34237,
+                    "v": "7.Hl"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34273,
+                    "v": "'2'z^"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34370,
+                    "v": "[As|"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34402,
+                    "v": ">H6U"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34603,
+                    "v": ":R8P"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34728,
+                    "v": "1Jh("
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34800,
+                    "v": "r=A4"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34821,
+                    "v": " ru^oU"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34879,
+                    "v": "m/o>"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34920,
+                    "v": "],uE"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 34983,
+                    "v": "e\rK%!8"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 34992,
+                    "v": "Ln.I"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35019,
+                    "v": "bi\"d"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35041,
+                    "v": "Qd\t$"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35143,
+                    "v": "'[',"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35191,
+                    "v": "277Q"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35314,
+                    "v": ")HK&n"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35518,
+                    "v": "^w3 "
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35561,
+                    "v": "{2f9"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35682,
+                    "v": "%>vD"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35696,
+                    "v": "Do[f"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 35720,
+                    "v": "I. 7oP"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36008,
+                    "v": "\\yFb@"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36200,
+                    "v": "Yj'p)"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36320,
+                    "v": "}Ok`"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36357,
+                    "v": "J=(R"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36372,
+                    "v": ".ghp"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36383,
+                    "v": "f,&k>"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36536,
+                    "v": "Tua}Z"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36556,
+                    "v": "!Clb"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36569,
+                    "v": "S;\f4"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 36578,
+                    "v": "r-nl\fu"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36666,
+                    "v": "Oi\"B"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36693,
+                    "v": "4zF9"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 36740,
+                    "v": "|S43"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37051,
+                    "v": "SJ2\""
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37236,
+                    "v": "L\"c$"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37321,
+                    "v": "3~Pj8"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37369,
+                    "v": "}qP."
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37415,
+                    "v": "j1;?]Xn"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37440,
+                    "v": "r$RZ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37467,
+                    "v": "lif.B("
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 37495,
+                    "v": "n\reO"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37550,
+                    "v": "LU{<f"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37617,
+                    "v": "qc-\""
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37728,
+                    "v": "{uJ8+"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37794,
+                    "v": "%d)o\u000b"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 37883,
+                    "v": "Ck{:"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38033,
+                    "v": "|dMR"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 38206,
+                    "v": "Ro\ne"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38257,
+                    "v": "HDOq"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38273,
+                    "v": "]OJ2"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38283,
+                    "v": "P\t?o"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38460,
+                    "v": "7\rfo"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38496,
+                    "v": "3@A6"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38566,
+                    "v": "yT;zj"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38657,
+                    "v": ",w[p"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 38664,
+                    "v": "tgl;on"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38828,
+                    "v": "\"wt4u="
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 38943,
+                    "v": "`S\u000bHU\\%"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39027,
+                    "v": "|]vo"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39109,
+                    "v": "HH14"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39130,
+                    "v": "\rLpxq"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39152,
+                    "v": "K\tN'{m"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39225,
+                    "v": "s\nZ;nk"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39288,
+                    "v": "^lae"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39302,
+                    "v": "/sW("
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39422,
+                    "v": "X8J9"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39481,
+                    "v": "nA2i}l"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39552,
+                    "v": "M\fxH"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39650,
+                    "v": "\ndK(?"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39690,
+                    "v": "512s7,"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39699,
+                    "v": "x8n?"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39791,
+                    "v": "Tu(H"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39797,
+                    "v": "a@H."
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 39826,
+                    "v": "pNN$"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40015,
+                    "v": "h5xU"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40112,
+                    "v": "\\&5b"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40306,
+                    "v": "aN88"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40431,
+                    "v": "S|1dv"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40528,
+                    "v": "N\t(Z"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40534,
+                    "v": "&,/\""
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40685,
+                    "v": "e\t. b"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40738,
+                    "v": "ljhz"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40783,
+                    "v": "AS!\\"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40791,
+                    "v": "X0MW"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40872,
+                    "v": "ip.P"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40905,
+                    "v": "\r?4{"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40944,
+                    "v": "&tWk"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 40953,
+                    "v": "a;$^="
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41138,
+                    "v": "59P`+"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41144,
+                    "v": "\rEQ*"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41169,
+                    "v": ">4u*"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41182,
+                    "v": "[nhsO"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41248,
+                    "v": "]\tW]"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41267,
+                    "v": "$5Fi"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41298,
+                    "v": "N6UD"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41332,
+                    "v": "\r,mk"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41411,
+                    "v": "#Jk?8"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41483,
+                    "v": "\ffLZ"
+                },
+                {
+                    "c": 1,
+                    "f": 2,
+                    "o": 41500,
+                    "v": "q@P+"
+                },
+                {
+                    "c": 1,
+                    "f": 3,
+                    "o": 41516,
+                    "v": "Heap"
+                }
+            ],
+            "tags": {
+                "ticore": [
+                    "antivirus",
+                    "arch-x86",
+                    "capability-execution",
+                    "desktop",
+                    "entropy-high",
+                    "gui",
+                    "machine-learning",
+                    "overlay",
+                    "rich-header"
+                ],
+                "user": [
+                    "tag1",
+                    "tag2",
+                    "tag3",
+                    "tag4"
+                ]
+            },
+            "web": {}
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 static analysis report for 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+> **Classification**: 3
+>    **Factor**: 8
+>    **Result**: Win32.Downloader.Unruy
+>    **SHA-1**: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+>    **MD5**: a984de0ce47a8d5337ef569c812b57d0
+>    **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
+>    **SHA-512**: 9357144084c64531dec928de2a85c924d8079b50b5e98ab2c61ae59b97992a39b833f618341e91b071ec94e65bd901ebdf892851e5a4247e1557a55c14923da5
+>    **Story**: This file (SHA1: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06) is a 32-bit portable executable application. The application uses the Windows graphical user interface (GUI) subsystem. Appended data was detected at the file&#x27;s end. Its length is smaller than the size of the image. This application has access to running processes. Libraries kernel32 Generic and user32 Generic were detected in the file. There are no extracted files.
+> ### Indicators
+>|category|description|id|priority|reasons|relevance|
+>|---|---|---|---|---|---|
+>| 4 | Allocates additional memory in the calling process. | 17985 | 3 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: HeapAlloc'} | 0 |
+>| 10 | Loads additional libraries. | 69 | 2 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: LoadLibraryA'} | 1 |
+>| 10 | Loads additional APIs. | 70 | 2 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: GetProcAddress'},<br/>{'propagated': False, 'category': 'Indicator Match', 'description': 'Matched another indicator that describes the following: Loads additional libraries.'} | 0 |
+>| 16 | Uses string related methods. | 18050 | 1 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: lstrcatA'} | 0 |
+> ### Tags
+>|ticore|user|
+>|---|---|
+>| antivirus,<br/>arch-x86,<br/>capability-execution,<br/>desktop,<br/>entropy-high,<br/>gui,<br/>machine-learning,<br/>overlay,<br/>rich-header | tag1,<br/>tag2,<br/>tag3,<br/>tag4 |
+>
+>    
+
+### reversinglabs-a1000-dynamic-analysis-report
+
+***
+Perform dynamic analysis report actions for a sample - create a report, check the status of a report and download a report.
+
+#### Base Command
+
+`reversinglabs-a1000-dynamic-analysis-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | Sample hash. | Required | 
+| action | Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT. Possible values are: CREATE REPORT, CHECK STATUS, DOWNLOAD REPORT. | Required | 
+| report_format | Dynamic analysis report format. Possible values are: pdf, html. Default is pdf. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.a1000_dynamic_analysis_report | Unknown | Actions for creating and downloading dynamic analysis reports. | 
+
+#### Command example
+```!reversinglabs-a1000-dynamic-analysis-report report_format="pdf" hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_dynamic_analysis_report": {
+            "download_endpoint": "/api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/download/",
+            "status_endpoint": "/api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/status/"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 dynamic analysis report - CREATE REPORT
+>**Status endpoint**: /api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/status/
+> **Download endpoint**: /api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/download/
+
+### reversinglabs-a1000-sample-classification
+
+***
+Perform sample classification actions - get sample classification, set sample classification or delete sample classification.
+
+#### Base Command
+
+`reversinglabs-a1000-sample-classification`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | Sample hash. | Required | 
+| action | Which classification action to perform - GET CLASSIFICATION, SET CLASSIFICATION or DELETE CLASSIFICATION. Possible values are: GET CLASSIFICATION, SET CLASSIFICATION, DELETE CLASSIFICATION. | Required | 
+| system | Local or TitaniumCloud. Possible values are: local, ticloud. | Optional | 
+| local_only | Return only local samples without querying TitaniumCloud. Possible values are: true, false. | Optional | 
+| av_scanners | Return return AV scanner results. Possible values are: true, false. | Optional | 
+| classification | goodware, suspicious or malicious. Possible values are: goodware, suspicious, malicious. | Optional | 
+| risk_score | If specified, it must be within range for the specified classification. If not specified, a default value is used. Goodware - 0, Suspicious - 6, Malicious - 10. | Optional | 
+| threat_platform | If specified, it must be on the supported list (platforms and subplatforms - see official API docs). If not specified, the default value is 'Win32'. | Optional | 
+| threat_type | If specified, it must be on the supported list (malware types - see official API docs). If not specified, the default value is 'Malware'. | Optional | 
+| threat_name | If specified, must be an alphanumeric string not longer than 32 characters. If not specified, the default value is 'Generic'. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| ReversingLabs.a1000_sample_classification | Unknown | Sample classification actions. | 
+
+#### Command example
+```!reversinglabs-a1000-sample-classification hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="GET CLASSIFICATION" system="local" local_only="true" av_scanners="false" classification="malicious"```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "ReversingLabs A1000 v2"
+    },
+    "File": {
+        "Hashes": [
+            {
+                "type": "MD5",
+                "value": "a984de0ce47a8d5337ef569c812b57d0"
+            },
+            {
+                "type": "SHA1",
+                "value": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06"
+            },
+            {
+                "type": "SHA256",
+                "value": "b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3"
+            }
+        ],
+        "MD5": "a984de0ce47a8d5337ef569c812b57d0",
+        "Malicious": {
+            "Description": "Win32.Downloader.Unruy",
+            "Vendor": "ReversingLabs A1000 v2"
+        },
+        "SHA1": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06",
+        "SHA256": "b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3"
+    },
+    "ReversingLabs": {
+        "a1000_sample_classification": {
+            "classification": "malicious",
+            "classification_origin": null,
+            "classification_reason": "Antivirus",
+            "classification_result": "Win32.Downloader.Unruy",
+            "cloud_last_lookup": "2024-06-05T15:43:13Z",
+            "data_source": "LOCAL",
+            "first_seen": "2011-09-21T02:09:00Z",
+            "last_seen": "2024-06-05T15:10:39Z",
+            "md5": "a984de0ce47a8d5337ef569c812b57d0",
+            "riskscore": 8,
+            "sha1": "0000a0a381d31e0dafcaa22343d2d7e40ff76e06",
+            "sha256": "b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 sample classification - GET CLASSIFICATION
+>**Classification**: malicious
+>        **Risk score**: 8
+>        **First seen**: 2011-09-21T02:09:00Z
+>        **Last seen**: 2024-06-05T15:10:39Z
+>        **Classification result**: Win32.Downloader.Unruy
+>        **Classification reason**: Antivirus
+>        **SHA-1**: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+>        **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
+>        **MD5**: a984de0ce47a8d5337ef569c812b57d0
+>        
+
+### reversinglabs-a1000-yara
+
+***
+Perform A1000 YARA actions.
+
+#### Base Command
+
+`reversinglabs-a1000-yara`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Which YARA action to perform. Possible values are: GET RULESETS, GET CONTENTS, GET MATCHES, UPDATE RULESET, DELETE RULESET, ENABLE RULESET, DISABLE RULESET, GET SYNCHRONIZATION TIME, UPDATE SYNCHRONIZATION TIME. | Required | 
+| ruleset_name | Ruleset name. | Optional | 
+| ruleset_content | Ruleset content. | Optional | 
+| publish | Publish the ruleset. Possible values are: true, false. | Optional | 
+| sync_time | Desired ruleset synchronization time. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.a1000_yara | Unknown | YARA actions. | 
+
+#### Command example
+```!reversinglabs-a1000-yara action="GET RULESETS"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_yara": {
+            "count": 4,
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "cloud_synced": false,
+                    "goodware_match_count": 27,
+                    "last_matched": "2024-06-05T15:47:06.917422Z",
+                    "malicious_match_count": 1,
+                    "name": "get_money3",
+                    "owner": "admin",
+                    "status": "pending",
+                    "suspicious_match_count": 0,
+                    "system_ruleset": false,
+                    "unknown_match_count": 1
+                },
+                {
+                    "cloud_synced": false,
+                    "goodware_match_count": 2,
+                    "last_matched": "2024-05-24T16:00:19.220946Z",
+                    "malicious_match_count": 0,
+                    "name": "Rule_Find_PDF_with_URLs",
+                    "owner": "admin",
+                    "status": "pending",
+                    "suspicious_match_count": 0,
+                    "system_ruleset": false,
+                    "unknown_match_count": 0
+                },
+                {
+                    "cloud_synced": false,
+                    "goodware_match_count": 0,
+                    "last_matched": null,
+                    "malicious_match_count": 0,
+                    "name": "MislavTesting",
+                    "owner": "admin",
+                    "status": "pending",
+                    "suspicious_match_count": 0,
+                    "system_ruleset": false,
+                    "unknown_match_count": 0
+                },
+                {
+                    "cloud_synced": true,
+                    "goodware_match_count": 0,
+                    "last_matched": null,
+                    "malicious_match_count": 0,
+                    "name": "test_yara_rule",
+                    "owner": "admin",
+                    "status": "active",
+                    "suspicious_match_count": 0,
+                    "system_ruleset": false,
+                    "unknown_match_count": 0
+                }
+            ],
+            "source": "all",
+            "status": "all",
+            "type": "my"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 YARA - GET RULESETS
+>|count|next|previous|results|source|status|type|
+>|---|---|---|---|---|---|---|
+>| 4 |  |  | {'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 1, 'goodware_match_count': 27, 'unknown_match_count': 1, 'name': 'get_money3', 'owner': 'admin', 'last_matched': '2024-06-05T15:47:06.917422Z', 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 2, 'unknown_match_count': 0, 'name': 'Rule_Find_PDF_with_URLs', 'owner': 'admin', 'last_matched': '2024-05-24T16:00:19.220946Z', 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 0, 'unknown_match_count': 0, 'name': 'MislavTesting', 'owner': 'admin', 'last_matched': None, 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'active', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 0, 'unknown_match_count': 0, 'name': 'test_yara_rule', 'owner': 'admin', 'last_matched': None, 'system_ruleset': False, 'cloud_synced': True} | all | all | my |
+
+
+### reversinglabs-a1000-yara-retro
+
+***
+Perform A1000 YARA Retroactive Hunt actions.
+
+#### Base Command
+
+`reversinglabs-a1000-yara-retro`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Which YARA Retro action to perform. Possible values are: MANAGE LOCAL SCAN, LOCAL SCAN STATUS, MANAGE CLOUD SCAN, CLOUD SCAN STATUS. | Required | 
+| ruleset_name | Ruleset name. | Optional | 
+| operation | Select a ruleset operation. Possible values are: START, STOP, CLEAR. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.a1000_yara_retro | Unknown | YARA Retro actions. | 
+
+#### Command example
+```!reversinglabs-a1000-yara-retro action="LOCAL SCAN STATUS" ruleset_name="get_money3"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_yara_retro": {
+            "message": null,
+            "status": {
+                "history": [
+                    {
+                        "samples": 281,
+                        "started": "2024-05-24T15:58:55.075337+00:00",
+                        "started_username": "admin",
+                        "state": "COMPLETED",
+                        "stopped": "2024-05-24T16:28:13.110974+00:00",
+                        "stopped_username": null
+                    },
+                    {
+                        "samples": 11,
+                        "started": "2022-11-15T10:14:16.515681+00:00",
+                        "started_username": "admin",
+                        "state": "COMPLETED",
+                        "stopped": "2022-11-15T10:14:20.687855+00:00",
+                        "stopped_username": null
+                    },
+                    {
+                        "samples": 11,
+                        "started": "2022-11-11T15:02:00.683418+00:00",
+                        "started_username": "admin",
+                        "state": "COMPLETED",
+                        "stopped": "2022-11-11T15:02:07.011490+00:00",
+                        "stopped_username": null
+                    }
+                ],
+                "processed": 371,
+                "samples": 281,
+                "started": "2024-05-24T15:58:55.075337+00:00",
+                "state": "COMPLETED",
+                "stopped": "2024-05-24T16:28:13.110974+00:00"
+            },
+            "success": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 YARA Retroactive Hunt - LOCAL SCAN STATUS
+>|message|status|success|
+>|---|---|---|
+>|  | state: COMPLETED<br/>started: 2024-05-24T15:58:55.075337+00:00<br/>stopped: 2024-05-24T16:28:13.110974+00:00<br/>samples: 281<br/>processed: 371<br/>history: {'state': 'COMPLETED', 'started': '2024-05-24T15:58:55.075337+00:00', 'stopped': '2024-05-24T16:28:13.110974+00:00', 'samples': 281, 'started_username': 'admin', 'stopped_username': None},<br/>{'state': 'COMPLETED', 'started': '2022-11-15T10:14:16.515681+00:00', 'stopped': '2022-11-15T10:14:20.687855+00:00', 'samples': 11, 'started_username': 'admin', 'stopped_username': None},<br/>{'state': 'COMPLETED', 'started': '2022-11-11T15:02:00.683418+00:00', 'stopped': '2022-11-11T15:02:07.011490+00:00', 'samples': 11, 'started_username': 'admin', 'stopped_username': None} | true |
+
+
+### reversinglabs-a1000-list-containers
+
+***
+Get a list of all top-level containers from which the requested samples have been extracted during analysis.
+
+#### Base Command
+
+`reversinglabs-a1000-list-containers`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sample_hashes | Comma-separated list of sample hashes. No whitespaces are allowed. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.a1000_list_containers | Unknown | A10000 list top-level containers. | 
+
+#### Command example
+```!reversinglabs-a1000-list-containers sample_hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06,661566e9131c39a1b34cabde9a14877d9bcb3d90"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_list_containers": {
+            "count": 0,
+            "next": null,
+            "previous": null,
+            "results": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 List containers for hashes
+>|count|next|previous|results|
+>|---|---|---|---|
+>| 0 |  |  |  |
+
+
+### reversinglabs-a1000-upload-from-url-actions
+
+***
+Actions for uploading a sample from a URL and fetching the analysis results.
+
+#### Base Command
+
+`reversinglabs-a1000-upload-from-url-actions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Which action to perform. Upload a sample from URL, get the report for an sample or both actions combined. Possible values are: UPLOAD, GET REPORT, UPLOAD AND GET REPORT, CHECK ANALYSIS STATUS. | Required | 
+| file_url | URL to the file you want to submit for analysis. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional | 
+| crawler | Which crawler to use - local or cloud. Used in UPLOAD and UPLOAD AND GET REPORT. Possible values are: local, cloud. | Optional | 
+| archive_password | Required if the sample is an archive and it has a password. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional | 
+| sandbox_platform | Which sandbox platform to use. Check the A1000 documentation to see the current list of supported platforms. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional | 
+| task_id | ID of the URL processing task. Used in GET REPORT. | Optional | 
+| retry | Utilize the retry mechanism for fetching the report. Used in GET REPORT and UPLOAD AND GET REPORT. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| ReversingLabs.a1000_upload_from_url_actions | Unknown | Actions for uploading a sample from a URL and fetching the analysis results. | 
+
+#### Command example
+```!reversinglabs-a1000-upload-from-url-actions action="UPLOAD" file_url="https://download.sublimetext.com/sublime_text_build_4169_x64_setup.exe" crawler="local" sandbox_platform="windows10"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "a1000_upload_from_url_actions": {
+            "code": 201,
+            "detail": {
+                "created": "2024-06-05T15:50:40.409482Z",
+                "filename": "https://download.sublimetext.com/sublime_text_build_4169_x64_setup.exe",
+                "id": 419,
+                "user": 1
+            },
+            "message": "Done."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs A1000 URL sample actions - UPLOAD
+>### Upload results
+>|code|detail|message|
+>|---|---|---|
+>| 201 | id: 419<br/>user: 1<br/>created: 2024-06-05T15:50:40.409482Z<br/>filename: https:<span>//</span>download.sublimetext.com/sublime_text_build_4169_x64_setup.exe | Done. |
 
 

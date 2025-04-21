@@ -29,14 +29,14 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
+description: Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects.
 display: Trend Micro Apex One
 name: Trend Micro Apex
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: The suspicious object type to query
+      description: The suspicious object type to query.
       name: type
       predefined:
       - ip
@@ -44,7 +44,7 @@ script:
       - file_sha1
       - domain
       - file
-    - description: Filters the list to suspicious objects that match the specified string
+    - description: Filters the list to suspicious objects that match the specified string.
       name: content_filter
     deprecated: true
     description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
@@ -67,7 +67,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: The suspicious object type
+      description: The suspicious object type.
       name: type
       predefined:
       - ip
@@ -76,11 +76,11 @@ script:
       - domain
       - file
       required: true
-    - description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
+    - description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string).
       name: content
       required: true
     - auto: PREDEFINED
-      description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects)
+      description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects).
       name: scan_action
       predefined:
       - log
@@ -89,14 +89,14 @@ script:
       required: true
     - description: Description of the object.
       name: notes
-    - description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
+    - description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.'
       name: expiration
     deprecated: true
     description: Add suspicious file, file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
     name: trendmicro-apex-usdo-add
   - arguments:
     - auto: PREDEFINED
-      description: The suspicious object type
+      description: The suspicious object type.
       name: type
       predefined:
       - ip
@@ -104,7 +104,7 @@ script:
       - file_sha1
       - domain
       required: true
-    - description: The suspicious object content for the specified type
+    - description: The suspicious object content for the specified type.
       name: content
       required: true
     deprecated: true
@@ -112,7 +112,7 @@ script:
     name: trendmicro-apex-usdo-delete
   - arguments:
     - auto: PREDEFINED
-      description: The suspicious object type to query
+      description: The suspicious object type to query.
       name: type
       predefined:
       - ip
@@ -120,7 +120,7 @@ script:
       - file_sha1
       - domain
       - file
-    - description: Filters the list to suspicious objects that match the specified string
+    - description: Filters the list to suspicious objects that match the specified string.
       name: content_filter
     description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
     name: trendmicro-apex-udso-list
@@ -142,7 +142,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: The suspicious object type
+      description: The suspicious object type.
       name: type
       predefined:
       - ip
@@ -151,11 +151,11 @@ script:
       - domain
       - file
       required: true
-    - description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string)
+    - description: The suspicious object content for the specified type, for example 8.8.8.8 (for type "file", provide the binary content of the suspicious file as a base64 string).
       name: content
       required: true
     - auto: PREDEFINED
-      description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects)
+      description: The scan action to perform on the suspicious object (The "quarantine" scan action is only available for file type objects).
       name: scan_action
       predefined:
       - log
@@ -164,13 +164,13 @@ script:
       required: true
     - description: Description of the object.
       name: notes
-    - description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z'
+    - description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.'
       name: expiration
     description: Add suspicious file SHA-1, IP address, domain, or URL objects to the User-Defined Suspicious Object list.
     name: trendmicro-apex-udso-add
   - arguments:
     - auto: PREDEFINED
-      description: The suspicious object type
+      description: The suspicious object type.
       name: type
       predefined:
       - ip
@@ -178,7 +178,7 @@ script:
       - file_sha1
       - domain
       required: true
-    - description: The suspicious object content for the specified type
+    - description: The suspicious object content for the specified type.
       name: content
       required: true
     - description: 'Description of the object (maximum length: 256 characters).'
@@ -195,17 +195,17 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: The GUID of the managed product agent
+    - description: The GUID of the managed product agent.
       name: entity_id
-    - description: The IP address of the managed product agent
+    - description: The IP address of the managed product agent.
       name: ip_address
-    - description: The MAC address of the managed product agent
+    - description: The MAC address of the managed product agent.
       name: mac_address
-    - description: The endpoint name of the managed product agent
+    - description: The endpoint name of the managed product agent.
       name: host_name
-    - description: The Trend Micro product on the server instance
+    - description: The Trend Micro product on the server instance.
       name: product
-    description: Isolate an agent from the network
+    description: Isolate an agent from the network.
     name: trendmicro-apex-isolate
   - arguments:
     - auto: PREDEFINED
@@ -215,15 +215,15 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: The GUID of the managed product agent
+    - description: The GUID of the managed product agent.
       name: entity_id
-    - description: The IP address of the managed product agent
+    - description: The IP address of the managed product agent.
       name: ip_address
-    - description: The MAC address of the managed product agent
+    - description: The MAC address of the managed product agent.
       name: mac_address
-    - description: The endpoint name of the managed product agent
+    - description: The endpoint name of the managed product agent.
       name: host_name
-    - description: The Trend Micro product on the server instance
+    - description: The Trend Micro product on the server instance.
       name: product
     description: Restore an isolated agent connection to the network.
     name: trendmicro-apex-restore
@@ -392,7 +392,7 @@ script:
       predefined:
       - Desktop
       - Server
-    - description: 'Filter the agents by endpoint IP address range represented by comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address"'
+    - description: 'Filter the agents by endpoint IP address range represented by comma separated ranges list. Example: "Starting_IP_Address,Ending_IP_Address".'
       name: filter_by_ip_address
     - auto: PREDEFINED
       description: Filter the agents by operating system.
@@ -641,7 +641,7 @@ script:
     - contextPath: TrendMicroApex.InvestigationResult.errorServers
       description: Error response if server communication is unsuccessful.
       type: String
-  dockerimage: demisto/pycef:1.0.0.86416
+  dockerimage: demisto/pycef:1.0.0.117223
   runonce: false
   script: '-'
   subtype: python3

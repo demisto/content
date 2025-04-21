@@ -8,6 +8,10 @@ description: |-
   - A mail sender with sr-test02 is configured. That user will supposedly attack sr-test01.
   - sr-test01 has a rule which forwards the test email to Testbox(but does not forward the acknowledgement emails it receives from the phishing playbook!)
   - EWS O365 is configured as the mail listener with Testbox as the user.
+
+  Keep in mind when running Phishing tests:
+  - Never send an email from the phishing mailbox to the same phishing mailbox, as this can cause an infinite loop situation where an email is received, an acknowledgement email is sent to the sender, and then the acknowledgement email is received in the phishing mailbox, which causes a new incident to fetch, thus triggering another acknowledgement email, etc.
+  - It's important to ensure that acknowledgement emails are eventually deleted from the mailbox of the email that will be detected as the reporter of the email. In this case, the phishing playbook searches and deletes the email that gets sent.
 starttaskid: '0'
 tasks:
   '0':
@@ -594,7 +598,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -685,7 +691,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false

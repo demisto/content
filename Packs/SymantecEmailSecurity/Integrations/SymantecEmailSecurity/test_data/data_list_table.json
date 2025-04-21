@@ -1,0 +1,25 @@
+[
+    {
+        "Message Size": 10000,
+        "Subject": "New Email Quarantine Account",
+        "Envelope From": "bounce-newaccount-verp-00000000000000000000@eu.quarantine.symantec.com",
+        "Envelope To": [
+            "hello@world"
+        ],
+        "Sender IP": "0.0.0.0",
+        "Sender Mail Server": "0.0.0.0.googleusercontent.com",
+        "File/URLs With Risk": [
+            "Unknown00000000.data-None",
+            "https://www.example.com-1"
+        ],
+        "Incidents": [
+            {
+                "Severity": "LOW",
+                "Security Service": "Anti-Malware",
+                "Detection Method": "Skeptic Heuristics",
+                "Verdict": "Malware",
+                "Action": "Block"
+            }
+        ]
+    }
+]

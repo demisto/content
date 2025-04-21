@@ -568,7 +568,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -621,10 +623,6 @@ inputs:
   description: The start date (in YYYY-MM-DD format) provided in a stand-up ticket
     from Jira, Zendesk, etc.
   playbookInputQuery: null
-- key: ticket_key
-  value: {}
-  required: false
-  description: The unique identifier of a stand-up ticket from Jira, Zendesk, etc.
-    (optional).
-  playbookInputQuery: null
 outputs: []
+tests:
+- No tests

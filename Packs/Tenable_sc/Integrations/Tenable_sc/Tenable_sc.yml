@@ -56,6 +56,11 @@ configuration:
   section: Collect
   additionalinfo: The timestamp to start the fetch from.
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
@@ -100,7 +105,7 @@ script:
       name: diagnostic_password
     - description: Relevant only when polling is true. Default is 3 hours. The timeout in seconds until polling ends.
       name: timeout_in_seconds
-      defaultValue: 10800
+      defaultValue: '10800'
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Default is false. When set to true, will keep polling results until scan is done and return the formatted scan results.
@@ -490,6 +495,7 @@ script:
     - contextPath: TenableSC.ScanRepository.Description
       description: Scan Repository.
       type: string
+    arguments: []
   - description: Requires admin role. Get a list of Tenable.sc scan zones.
     name: tenable-sc-list-zones
     outputs:
@@ -520,6 +526,7 @@ script:
     - contextPath: TenableSC.ScanZone.Scanner.Status
       description: Scanner status.
       type: number
+    arguments: []
   - arguments:
     - description: Scan name.
       name: name
@@ -943,6 +950,7 @@ script:
     - contextPath: TenableSC.Status.License
       description: License status.
       type: Unknown
+    arguments: []
   - description: Get the system information and diagnostics from Tenable.sc. Requires admin role.
     name: tenable-sc-get-system-information
     outputs:
@@ -973,6 +981,7 @@ script:
     - contextPath: TenableSC.System.LastCheck
       description: System last check time.
       type: date
+    arguments: []
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -1146,17 +1155,17 @@ script:
       - 'false'
       - 'true'
     - description: Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups.
-      defaultValue: 0
+      defaultValue: '0'
       name: managed_users_groups
     - description: Comma-separated list of the session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups.
-      defaultValue: 0
+      defaultValue: '0'
       name: managed_objects_groups
     - description: Valid group ID whose users can be managed by the created user.
       name: group_id
-      defaultValue: 0
+      defaultValue: '0'
       required: true
     - description: Default is 0. ID of a valid, usable, accessible asset. Use tenable-sc-list-assets to get all available assets. -1 is not set, 0 is all assets, and other numbers are asset ID.
-      defaultValue: 0
+      defaultValue: '0'
       name: responsible_asset_id
       required: true
     description: Creates a new user. This command can be executed with both roles (admin or security manager) based on the role_id you choose.
@@ -1359,16 +1368,16 @@ script:
       - 'false'
       - 'true'
     - description: Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups.
-      defaultValue: 0
+      defaultValue: '0'
       name: managed_users_groups
     - description: Comma-separated list of session user's role that  can manage groups. Use tenable-sc-list-groups to get all available groups.
-      defaultValue: 0
+      defaultValue: '0'
       name: managed_objects_groups
     - description: Valid group ID whose users can be managed by the created user.
       name: group_id
-      defaultValue: 0
+      defaultValue: '0'
     - description: ID of a valid, usable, accessible asset. Use tenable-sc-list-assets to get all available assets. -1 is not set, 0 is all assets, and other numbers are asset ID.
-      defaultValue: 0
+      defaultValue: '0'
       name: responsible_asset_id
     - description: The new password to set. Must be given with current_password. Must be at least 3 characters.
       name: password
@@ -1538,7 +1547,6 @@ script:
       required: true
     description: Delete a user by given user_id. This command can be executed with both roles (admin or security manager).
     name: tenable-sc-delete-user
-    outputs: []
   - arguments:
     - description: The ID of the plugin to search. If given, other arguments will be ignored.
       name: plugin_id
@@ -1575,7 +1583,7 @@ script:
     - description: The description of the policy to create.
       name: policy_description
     - description: Policy template id. Default is 1.
-      defaultValue: 1
+      defaultValue: '1'
       name: policy_template_id
       required: true
     - description: 'Possible values: default, all or a comma-separated list of values - 21,23,25,80,110.'
@@ -2125,7 +2133,6 @@ script:
     polling: true
     description: Requires security manager role. Update an asset.
     name: tenable-sc-update-asset
-    outputs: []
   - arguments:
     - description: The name of the policy to create.
       name: policy_name
@@ -2196,18 +2203,16 @@ script:
     - description: 'A comma-separated list of days of the week to run the schedule. Possible values are: SU, MO, TU, WE, TH, FR, SA.'
       isArray: true
       name: repeat_rule_by_day
-    - auto: PREDEFINED
-      description: Either no assets or comma-separated list of asset IDs to scan. Can be retrieved from the list-assets command.
+    - description: Either no assets or comma-separated list of asset IDs to scan. Can be retrieved from the list-assets command.
       isArray: true
       name: asset_ids
-      predefined:
     - auto: PREDEFINED
       description: Default is false. Whether to include virtual hosts.
       name: scan_virtual_hosts
       predefined:
       - 'true'
       - 'false'
-      defaultValue: false
+      defaultValue: 'false'
     - description: Comma-separated IPs to scan, e.g., 10.0.0.1,10.0.0.2 .
       name: ip_list
     - description: Comma-separated list of report definition IDs to create post-scan. Can be retrieved from the list-report-definitions command.
@@ -2232,7 +2237,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: false
+      defaultValue: 'false'
     - auto: PREDEFINED
       description: Whether the schedule is enabled. The "enabled" field can only be set to "false" for schedules of type "ical". For all other schedules types, "enabled" is set to "true".
       name: enabled
@@ -2240,8 +2245,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    - auto: PREDEFINED
-      description: Create a rollover scan scheduled to launch the next day at the same start time as the just completed scan. template-Create a rollover scan as a template for users to launch manually This field is required if the timeout_action is set to rollover.
+    - description: Create a rollover scan scheduled to launch the next day at the same start time as the just completed scan. template-Create a rollover scan as a template for users to launch manually. This field is required if the timeout_action is set to rollover.
       name: rollover_type
       defaultValue: nextDay
     description: Creates a remediation scan. Requires security manager role. This command is a prerequisite for creating remediation scan.
@@ -2472,11 +2476,18 @@ script:
     - contextPath: TenableSC.Scan.Zone.Name
       description: Scan zone name.
       type: String
+  - arguments:
+    - description: 'Optional fields to return specific values, example: restrictedIPs.'
+      name: fields
+      isArray: true
+    description: Requires administrator role. Command to get a list of organizations' information, depending on the comma-separated list of fields provided.
+    name: tenable-sc-get-organization
   isfetch: true
-  script: '-'
+  script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.90168
+  dockerimage: demisto/python3:3.11.10.115186
+  runonce: false
 tests:
 - tenable-sc-test
 fromversion: 5.0.0

@@ -2,7 +2,7 @@
     "name": "Arduino",
     "description": "Communicate with an Arduino over a network. Sample code for the Arduino is provided to get up and running. There are functions in the Arduino code to handle setting and getting pin values as well as arbitrary data.",
     "support": "community",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.14",
     "author": "Adam Burt",
     "url": "",
     "email": "",
@@ -18,6 +18,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

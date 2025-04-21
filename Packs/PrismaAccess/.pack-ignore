@@ -5,11 +5,14 @@ ignore=PB114,PB115
 ignore=BA124
 
 [file:PrismaAccessEgressIPFeed.yml]
-ignore=IN124,BA124
+ignore=BA124
 
 [known_words]
 sase
 
 [file:playbook-Prisma_SASE_-_Quarantine_Host_With_Active_Threat.yml]
 ignore=BA101
+
+[file:playbook-Prisma_Access_-_Connection_Health_Check.yml]
+ignore=GR107
 

@@ -4,13 +4,12 @@
     "support": "partner",
     "author": "Nozomi Networks",
     "url": "https://www.nozominetworks.com",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.19",
     "email": "support@nozominetworks.com",
     "categories": [
         "Network Security"
     ],
-    "tags": [
-    ],
+    "tags": [],
     "created": "2020-07-07T07:35:05Z",
     "updated": "2020-07-74T07:35:05Z",
     "beta": false,
@@ -21,6 +20,13 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

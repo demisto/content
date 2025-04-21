@@ -43,6 +43,13 @@ configuration:
   advanced: true
   hidden: true
   required: false
+- display: The application ID from the Azure portal
+  name: credentials_app_id
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Password
+  hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -50,12 +57,36 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: App Secret
+  name: app_secret
+  type: 4
+  section: Connect
+  advanced: true
+  required: false
+  hidden: true
+- display: App Secret
+  name: credentials_app_secret
+  required: false
+  type: 9
+  displaypassword: App Secret
+  hiddenusername: true
+  section: Connect
+  advanced: true
 - display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
   required: false
+  hidden: true
+- display: Tenant ID
+  name: credentials_tenant_id
+  required: false
+  type: 9
+  displaypassword: Password
+  hiddenpassword: true
+  section: Connect
+  advanced: true
 - display: Connection URI
   name: connection_uri
   type: 0
@@ -79,10 +110,13 @@ script:
   commands:
   - description: OAuth2.0 - Start authorization.
     name: o365-sc-auth-start
+    arguments: []
   - description: OAuth2.0 - Complete authorization.
     name: o365-sc-auth-complete
+    arguments: []
   - description: OAuth2.0 - Test authorization.
     name: o365-sc-auth-test
+    arguments: []
   - description: Create compliance search in the Security & Compliance Center.
     name: o365-sc-new-search
     arguments:
@@ -107,8 +141,9 @@ script:
       isArray: true
       name: exchange_location
       defaultValue: 'All'
-    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. Deprecated since Microsoft is supporting it only on-premise.
       isArray: true
+      deprecated: true
       name: exchange_location_exclusion
     - description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
       isArray: true
@@ -355,13 +390,14 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
       description: Security and compliance search Tenant ID.
       type: String
+    arguments: []
   - arguments:
     - description: The name of the compliance search.
       name: search_name
       required: true
     - description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
       name: limit
-      defaultValue: 100
+      defaultValue: '100'
     - description: Whether to include mailboxes which have no results in results entry context.
       name: all_results
       auto: PREDEFINED
@@ -526,10 +562,7 @@ script:
       - 'IndividualMessage'
       - 'PerUserZip'
       - 'SingleZip'
-    - description: "The Format parameter specifies the format of the search results when you use the Export action. Valid values are:
-FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal.
-Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results.
-Msg: Export to .msg message files."
+    - description: "Specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files."
       name: format
       auto: PREDEFINED
       predefined:
@@ -544,10 +577,8 @@ Msg: Export to .msg message files."
       - 'false'
     - description: Specifies the email address target for the search results when you use the Export action.
       name: notify_email
-      required: false
     - description: Specifies the cc email address target for the search results when you use the Export action.
       name: notify_email_cc
-      required: false
     - description: Specifies the scenario type when you use the Export action.
       name: scenario
       auto: PREDEFINED
@@ -766,13 +797,14 @@ Msg: Export to .msg message files."
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
+    arguments: []
   - arguments:
     - description: The name of the compliance search action.
       name: search_action_name
       required: true
     - description: 'The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.'
       name: limit
-      defaultValue: 100
+      defaultValue: '100'
     - description: 'Whether to export search results as json file to war-room.'
       name: export
       auto: PREDEFINED
@@ -956,7 +988,7 @@ Msg: Export to .msg message files."
       description: Case created date time.
       type: String
   - name: o365-sc-compliance-case-list
-    description: List different types of compliance cases in the Microsoft Purview compliance portal
+    description: List different types of compliance cases in the Microsoft Purview compliance portal.
     arguments:
     - name: identity
       description: List cases by identity.
@@ -974,7 +1006,7 @@ Msg: Export to .msg message files."
       - SupervisionPolicy
     - name: limit
       description: Limit returned cases list size.
-      defaultValue: 50
+      defaultValue: '50'
     outputs:
     - contextPath: O365.SecurityAndCompliance.ComplianceCase.Name
       description: Case name.
@@ -1123,7 +1155,7 @@ Msg: Export to .msg message files."
       description: Get hold rule list by policy.
     - name: limit
       description: Limit the returned items list size.
-      defaultValue: 50
+      defaultValue: '50'
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
       description: Case hold policy name.
@@ -1149,10 +1181,44 @@ Msg: Export to .msg message files."
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
+  - arguments:
+    - description: Identity of the policy to update.
+      name: identity
+      required: true
+    - description: Exchange locations to add to the policy.
+      isArray: true
+      name: add_exchange_locations
+    - description: Sharepoint locations to add to the policy.
+      isArray: true
+      name: add_sharepoint_locations
+    - description: Public locations to add to the policy.
+      isArray: true
+      name: add_public_locations
+    - description: Exchange locations to remove from the policy.
+      isArray: true
+      name: remove_exchange_locations
+    - description: Sharepoint locations to remove from the policy.
+      isArray: true
+      name: remove_sharepoint_locations
+    - description: Public locations to remove from the policy.
+      isArray: true
+      name: remove_public_locations
+    - description: Add a comment to existing policy.
+      name: comment
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Enable or disable the policy.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    description: Update inputs for case hold policies.
+    name: o365-sc-case-hold-policy-set
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
   runonce: true
-  script: '-'
+  script: ''
   type: powershell
 fromversion: 5.5.0
 tests:
 - O365-SecurityAndComplianceV2-Test
+autoUpdateDockerImage: false

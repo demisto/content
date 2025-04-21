@@ -10,7 +10,7 @@
         "attributes": {
             "Source TCP/UDP Port": 62835,
             "Source Interface SNMP Index": 29034,
-            "Event Receive Time": 1646760881000,
+            "Event Receive Time": "0.00",
             "Reporting IP": "192.168.30.254",
             "IP Protocol": 17,
             "Destination Country Code": "US",

@@ -1,27 +1,40 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: cyberint
   version: -1
 configuration:
+- display: Company Name
+  additionalinfo: Company (client) name associated with Cyberint instance.
+  name: client_name
+  required: true
+  type: 0
+  section: Connect
 - display: Cyberint Access Token
   name: access_token
   type: 4
   required: true
   additionalinfo: Cyberint API access token.
-- additionalinfo: Cyberint environment on which the services run (i.e http://{environment}.cyberint.io/...)
-  display: Cyberint API Environment
+  section: Connect
+- display: Cyberint API URL
+  additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)
   name: environment
   required: true
   type: 0
-- additionalinfo: An incident will be created with the originated Alert details per CSV file record.
-  display: Create an incident per CSV record
+  section: Connect
+- display: Create an incident per CSV record
+  additionalinfo: An incident will be created with the originated Alert details per CSV file record.
   name: duplicate_alert
   required: false
   type: 8
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Fetch Severity
   name: fetch_severity
   type: 16
@@ -32,8 +45,9 @@ configuration:
   - medium
   - high
   - very_high
-- additionalinfo: Statuses to fetch. If none is chosen, all statuses will be returned.
-  display: Fetch Status
+  section: Collect
+- display: Fetch Status
+  additionalinfo: Statuses to fetch. If none is chosen, all statuses will be returned.
   name: fetch_status
   options:
   - open
@@ -41,13 +55,15 @@ configuration:
   - closed
   type: 16
   required: false
-- additionalinfo: Environments to fetch (comma separated). If empty, all available environments will be returned.
-  display: Fetch Environment
+  section: Collect
+- display: Fetch Environment
+  additionalinfo: Environments to fetch (comma separated). If empty, all available environments will be returned.
   name: fetch_environment
   type: 0
   required: false
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cyberint to Cortex XSOAR), Outgoing (from Cortex XSOAR to Cyberint), or Incoming and Outgoing (from/to Cortex XSOAR and Cyberint).'
-  display: Incident Mirroring Direction
+  section: Collect
+- display: Incident Mirroring Direction
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cyberint to Cortex XSOAR), Outgoing (from Cortex XSOAR to Cyberint), or Incoming and Outgoing (from/to Cortex XSOAR and Cyberint).'
   name: mirror_direction
   type: 15
   required: false
@@ -57,22 +73,26 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-- defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+  section: Collect
+- display: Close Mirrored XSOAR Incident
+  defaultvalue: 'false'
   name: close_incident
   type: 8
   additionalinfo: When selected, closing the Cyberint alert is mirrored in Cortex XSOAR.
   required: false
+  section: Collect
 - display: Close Mirrored Cyberint Alert
   name: close_alert
   type: 8
   defaultvalue: 'false'
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cyberint.
+  section: Collect
 - display: Fetch Types
   name: fetch_type
   type: 16
@@ -120,27 +140,32 @@ configuration:
   - email_security_issues
   - certificate_authority_issues
   - other
+  section: Collect
 - display: Fetch Limit
   name: max_fetch
   type: 0
   required: false
   additionalinfo: Max number of alerts per fetch. Defaults to the minimum 10, max is 100.
   defaultvalue: '10'
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  section: Collect
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 7 days
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 description: Cyberint provides intelligence-driven digital risk protection. This integration will help your enterprise effectively consume actionable cyber alerts to increase your security posture.
-display: Cyberint
+display: Cyberint Alerts
 name: cyberint
 script:
   commands:
@@ -163,9 +188,9 @@ script:
       name: updated_date_to
     - description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. updated_date_range will overwrite updated_date.
       name: updated_date_range
-    - description: ISO-Formatted modification date. Get alerts modified since this date (YYYY-MM-DDTHH:MM:SSZ).
+    - description: ISO-Formatted modification date. Get alerts content modified since this date (YYYY-MM-DDTHH:MM:SSZ).
       name: modification_date_from
-    - description: ISO-Formatted modification date. Get alerts modified before this date (YYYY-MM-DDTHH:MM:SSZ).
+    - description: ISO-Formatted modification date. Get alerts content modified before this date (YYYY-MM-DDTHH:MM:SSZ).
       name: modification_date_to
     - description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. modified_date_range will overwrite modified_date.
       name: modified_date_range
@@ -238,6 +263,9 @@ script:
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
+    - contextPath: Cyberint.Alert.id
+      description: URL ID of the alert.
+      type: Number
     - contextPath: Cyberint.Alert.ref_id
       description: Reference ID of the alert.
       type: String
@@ -553,7 +581,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.13.82076
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   runonce: false
   script: '-'

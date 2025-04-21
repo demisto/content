@@ -3,8 +3,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.63474
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
 comment: deletes expired indicators.
 enabled: true
 name: delete_expired_indicator_with_exlusion

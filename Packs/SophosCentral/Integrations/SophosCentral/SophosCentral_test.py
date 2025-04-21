@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 import pytest
 import requests
-from pytest import raises
 import demistomock as demisto
 from CommonServerPython import (
     DemistoException,
@@ -25,7 +24,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 @pytest.fixture
 def argtest():
     def _argtest(**_kwargs):
-        class TestArgs(object):
+        class TestArgs:
             def __call__(self, *args, **kwargs):
                 self.args = list(args)
                 self.kwargs = kwargs
@@ -57,7 +56,7 @@ def load_mock_response(file_name: str) -> dict:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f"test_data/{file_name}", mode="r", encoding="utf-8") as json_file:
+    with open(f"test_data/{file_name}", encoding="utf-8") as json_file:
         return json.loads(json_file.read())
 
 
@@ -148,22 +147,16 @@ def test_sophos_central_alert_action_command(requests_mock) -> None:
 
     mock_response = load_mock_response("alert_action.json")
     alert_id = "56931431-9faf-480c-ba1d-8d7541eae259"
-    requests_mock.post(
-        f"{BASE_URL}/common/v1/alerts/{alert_id}/actions", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}/common/v1/alerts/{alert_id}/actions", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_alert_action_command(
-        client, {"alert_id": alert_id, "action": "clearThreat", "message": "b"}
-    )
+    result = sophos_central_alert_action_command(client, {"alert_id": alert_id, "action": "clearThreat", "message": "b"})
     assert len(result.outputs) == 1
     assert result.outputs_prefix == "SophosCentral.AlertAction"
     assert result.outputs[0].get("alertId") == "25c7b132-56d8-4bce-9d1b-6c51a7eb3c78"
 
     alert_ids = ["56931431-9faf-480c-ba1d-8d7541eae259"] * 3
-    result = sophos_central_alert_action_command(
-        client, {"alert_id": alert_ids, "action": "clearThreat", "message": "b"}
-    )
+    result = sophos_central_alert_action_command(client, {"alert_id": alert_ids, "action": "clearThreat", "message": "b"})
     assert len(result.outputs) == 3
 
 
@@ -186,9 +179,7 @@ def test_sophos_central_alert_search_command(requests_mock) -> None:
     requests_mock.post(f"{BASE_URL}/common/v1/alerts/search", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_alert_search_command(
-        client, {"limit": "14", "date_range": "2 hours"}
-    )
+    result = sophos_central_alert_search_command(client, {"limit": "14", "date_range": "2 hours"})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == "SophosCentral.Alert"
     assert result.outputs[0].get("id") == "56931431-9faf-480c-ba1d-8d7541eae259"
@@ -236,9 +227,7 @@ def test_sophos_central_endpoint_scan_command(requests_mock) -> None:
 
     mock_response = load_mock_response("endpoint_scan.json")
     endpoint_id = "6e9567ea-bb50-40c5-9f12-42eb308e4c9b"
-    requests_mock.post(
-        f"{BASE_URL}/endpoint/v1/endpoints/{endpoint_id}/scans", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}/endpoint/v1/endpoints/{endpoint_id}/scans", json=mock_response)
     client = init_mock_client(requests_mock)
 
     result = sophos_central_endpoint_scan_command(client, {"endpoint_id": endpoint_id})
@@ -274,17 +263,13 @@ def test_sophos_central_endpoint_tamper_get_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_tamper_get_command(
-        client, {"endpoint_id": endpoint_id, "get_password": True}
-    )
+    result = sophos_central_endpoint_tamper_get_command(client, {"endpoint_id": endpoint_id, "get_password": True})
     assert len(result.outputs) == 1
     assert result.outputs_prefix == "SophosCentral.EndpointTamper"
     assert result.outputs[0].get("password") == "1234567890"
 
     endpoint_ids = ["6e9567ea-bb50-40c5-9f12-42eb308e4c9b"] * 3
-    result = sophos_central_endpoint_tamper_get_command(
-        client, {"endpoint_id": endpoint_ids, "get_password": True}
-    )
+    result = sophos_central_endpoint_tamper_get_command(client, {"endpoint_id": endpoint_ids, "get_password": True})
     assert len(result.outputs) == 3
 
 
@@ -311,17 +296,13 @@ def test_sophos_central_endpoint_tamper_update_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_tamper_update_command(
-        client, {"endpoint_id": endpoint_id, "get_password": True}
-    )
+    result = sophos_central_endpoint_tamper_update_command(client, {"endpoint_id": endpoint_id, "get_password": True})
     assert len(result.outputs) == 1
     assert result.outputs_prefix == "SophosCentral.EndpointTamper"
     assert result.outputs[0].get("password") == "1234567890"
 
     endpoint_ids = ["6e9567ea-bb50-40c5-9f12-42eb308e4c9b"] * 3
-    result = sophos_central_endpoint_tamper_update_command(
-        client, {"endpoint_id": endpoint_ids, "get_password": True}
-    )
+    result = sophos_central_endpoint_tamper_update_command(client, {"endpoint_id": endpoint_ids, "get_password": True})
     assert len(result.outputs) == 3
 
 
@@ -341,14 +322,10 @@ def test_sophos_central_allowed_item_list_command(requests_mock) -> None:
     from SophosCentral import sophos_central_allowed_item_list_command
 
     mock_response = load_mock_response("allowed_item_list.json")
-    requests_mock.get(
-        f"{BASE_URL}/endpoint/v1/settings/allowed-items", json=mock_response
-    )
+    requests_mock.get(f"{BASE_URL}/endpoint/v1/settings/allowed-items", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_allowed_item_list_command(
-        client, {"page_size": "30", "page": "1"}
-    )
+    result = sophos_central_allowed_item_list_command(client, {"page_size": "30", "page": "1"})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == "SophosCentral.AllowedItem"
     assert result.outputs[0].get("id") == "a28c7ee1-8ad9-4b5c-8f15-4d913436ce18"
@@ -376,9 +353,7 @@ def test_sophos_central_allowed_item_get_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_allowed_item_get_command(
-        client, {"allowed_item_id": allowed_item_id}
-    )
+    result = sophos_central_allowed_item_get_command(client, {"allowed_item_id": allowed_item_id})
     assert result.outputs_prefix == "SophosCentral.AllowedItem"
     assert result.outputs.get("id") == "811fa316-d485-4499-a979-3e1c0a89f1fd"
 
@@ -400,9 +375,7 @@ def test_sophos_central_allowed_item_get_command_exception() -> None:
     client = mock.Mock()
     client.get_allowed_item.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_allowed_item_get_command(
-        client, {"allowed_item_id": allowed_item_id}
-    )
+    result = sophos_central_allowed_item_get_command(client, {"allowed_item_id": allowed_item_id})
     assert result.readable_output == f"Unable to find item: {allowed_item_id}"
 
 
@@ -421,9 +394,7 @@ def test_sophos_central_allowed_item_add_command(requests_mock) -> None:
     from SophosCentral import sophos_central_allowed_item_add_command
 
     mock_response = load_mock_response("allowed_item_single.json")
-    requests_mock.post(
-        f"{BASE_URL}/endpoint/v1/settings/allowed-items", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}/endpoint/v1/settings/allowed-items", json=mock_response)
     client = init_mock_client(requests_mock)
 
     result = sophos_central_allowed_item_add_command(client, {})
@@ -453,9 +424,7 @@ def test_sophos_central_allowed_item_update_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_allowed_item_update_command(
-        client, {"allowed_item_id": allowed_item_id}
-    )
+    result = sophos_central_allowed_item_update_command(client, {"allowed_item_id": allowed_item_id})
     assert result.outputs_prefix == "SophosCentral.AllowedItem"
     assert result.outputs.get("id") == "811fa316-d485-4499-a979-3e1c0a89f1fd"
 
@@ -477,9 +446,7 @@ def test_sophos_central_allowed_item_update_command_exception() -> None:
     client = mock.Mock()
     client.update_allowed_item.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_allowed_item_update_command(
-        client, {"allowed_item_id": allowed_item_id}
-    )
+    result = sophos_central_allowed_item_update_command(client, {"allowed_item_id": allowed_item_id})
     assert result.readable_output == f"Unable to update item: {allowed_item_id}"
 
 
@@ -505,9 +472,7 @@ def test_sophos_central_allowed_item_delete_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_allowed_item_delete_command(
-        client, {"allowed_item_id": allowed_item_id}
-    )
+    result = sophos_central_allowed_item_delete_command(client, {"allowed_item_id": allowed_item_id})
     assert result.outputs == {"deletedItemId": allowed_item_id}
     assert result.outputs_prefix == "SophosCentral.DeletedAllowedItem"
 
@@ -528,14 +493,10 @@ def test_sophos_central_blocked_item_list_command(requests_mock) -> None:
     from SophosCentral import sophos_central_blocked_item_list_command
 
     mock_response = load_mock_response("blocked_item_list.json")
-    requests_mock.get(
-        f"{BASE_URL}/endpoint/v1/settings/blocked-items", json=mock_response
-    )
+    requests_mock.get(f"{BASE_URL}/endpoint/v1/settings/blocked-items", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_blocked_item_list_command(
-        client, {"page_size": "30", "page": "1"}
-    )
+    result = sophos_central_blocked_item_list_command(client, {"page_size": "30", "page": "1"})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == "SophosCentral.BlockedItem"
     assert result.outputs[0].get("id") == "6b0d0fb1-4254-45b0-896a-2eb36d0e2368"
@@ -563,9 +524,7 @@ def test_sophos_central_blocked_item_get_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_blocked_item_get_command(
-        client, {"blocked_item_id": blocked_item_id}
-    )
+    result = sophos_central_blocked_item_get_command(client, {"blocked_item_id": blocked_item_id})
     assert result.outputs_prefix == "SophosCentral.BlockedItem"
     assert result.outputs.get("id") == "998ffd3d-4a44-40da-8c1f-b18ace4ff735"
 
@@ -587,9 +546,7 @@ def test_sophos_central_blocked_item_get_command_exception() -> None:
     client = mock.Mock()
     client.get_blocked_item.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_blocked_item_get_command(
-        client, {"blocked_item_id": blocked_item_id}
-    )
+    result = sophos_central_blocked_item_get_command(client, {"blocked_item_id": blocked_item_id})
     assert result.readable_output == f"Unable to find item: {blocked_item_id}"
 
 
@@ -608,9 +565,7 @@ def test_sophos_central_blocked_item_add_command(requests_mock) -> None:
     from SophosCentral import sophos_central_blocked_item_add_command
 
     mock_response = load_mock_response("blocked_item_single.json")
-    requests_mock.post(
-        f"{BASE_URL}/endpoint/v1/settings/blocked-items", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}/endpoint/v1/settings/blocked-items", json=mock_response)
     client = init_mock_client(requests_mock)
 
     result = sophos_central_blocked_item_add_command(client, {})
@@ -640,9 +595,7 @@ def test_sophos_central_blocked_item_delete_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_blocked_item_delete_command(
-        client, {"blocked_item_id": blocked_item_id}
-    )
+    result = sophos_central_blocked_item_delete_command(client, {"blocked_item_id": blocked_item_id})
     assert result.outputs == {"deletedItemId": blocked_item_id}
     assert result.outputs_prefix == "SophosCentral.DeletedBlockedItem"
 
@@ -663,14 +616,10 @@ def test_sophos_central_scan_exclusion_list_command(requests_mock) -> None:
     from SophosCentral import sophos_central_scan_exclusion_list_command
 
     mock_response = load_mock_response("scan_exclusion_list.json")
-    requests_mock.get(
-        f"{BASE_URL}/endpoint/v1/settings/exclusions/scanning", json=mock_response
-    )
+    requests_mock.get(f"{BASE_URL}/endpoint/v1/settings/exclusions/scanning", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_scan_exclusion_list_command(
-        client, {"page_size": "30", "page": "1"}
-    )
+    result = sophos_central_scan_exclusion_list_command(client, {"page_size": "30", "page": "1"})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == "SophosCentral.ScanExclusion"
     assert result.outputs[0].get("id") == "369b0956-a7b6-44fc-b1cc-bd7b3279c663"
@@ -698,9 +647,7 @@ def test_sophos_central_scan_exclusion_get_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_scan_exclusion_get_command(
-        client, {"exclusion_id": scan_exclusion_id}
-    )
+    result = sophos_central_scan_exclusion_get_command(client, {"exclusion_id": scan_exclusion_id})
     assert result.outputs_prefix == "SophosCentral.ScanExclusion"
     assert result.outputs.get("id") == "16bac29f-17a4-4c3a-9370-8c5968c5ac7d"
 
@@ -722,9 +669,7 @@ def test_sophos_central_scan_exclusion_get_command_exception() -> None:
     client = mock.Mock()
     client.get_scan_exclusion.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_scan_exclusion_get_command(
-        client, {"exclusion_id": scan_exclusion_id}
-    )
+    result = sophos_central_scan_exclusion_get_command(client, {"exclusion_id": scan_exclusion_id})
     assert result.outputs_prefix == f"Unable to find exclusion: {scan_exclusion_id}"
 
 
@@ -743,9 +688,7 @@ def test_sophos_central_scan_exclusion_add_command(requests_mock) -> None:
     from SophosCentral import sophos_central_scan_exclusion_add_command
 
     mock_response = load_mock_response("scan_exclusion_single.json")
-    requests_mock.post(
-        f"{BASE_URL}/endpoint/v1/settings/exclusions/scanning", json=mock_response
-    )
+    requests_mock.post(f"{BASE_URL}/endpoint/v1/settings/exclusions/scanning", json=mock_response)
     client = init_mock_client(requests_mock)
 
     result = sophos_central_scan_exclusion_add_command(client, {})
@@ -775,9 +718,7 @@ def test_sophos_central_scan_exclusion_update_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_scan_exclusion_update_command(
-        client, {"exclusion_id": scan_exclusion_id}
-    )
+    result = sophos_central_scan_exclusion_update_command(client, {"exclusion_id": scan_exclusion_id})
     assert result.outputs_prefix == "SophosCentral.ScanExclusion"
     assert result.outputs.get("id") == "16bac29f-17a4-4c3a-9370-8c5968c5ac7d"
 
@@ -799,9 +740,7 @@ def test_sophos_central_scan_exclusion_update_command_exception() -> None:
     client = mock.Mock()
     client.update_scan_exclusion.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_scan_exclusion_update_command(
-        client, {"exclusion_id": scan_exclusion_id}
-    )
+    result = sophos_central_scan_exclusion_update_command(client, {"exclusion_id": scan_exclusion_id})
     assert result.outputs_prefix == f"Unable to update exclusion: {scan_exclusion_id}"
 
 
@@ -827,9 +766,7 @@ def test_sophos_central_scan_exclusion_delete_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_scan_exclusion_delete_command(
-        client, {"exclusion_id": scan_exclusion_id}
-    )
+    result = sophos_central_scan_exclusion_delete_command(client, {"exclusion_id": scan_exclusion_id})
     assert result.outputs == {"deletedExclusionId": scan_exclusion_id}
     assert result.outputs_prefix == "SophosCentral.DeletedScanExclusion"
 
@@ -856,9 +793,7 @@ def test_sophos_central_exploit_mitigation_list_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_exploit_mitigation_list_command(
-        client, {"page_size": "30", "page": "1"}
-    )
+    result = sophos_central_exploit_mitigation_list_command(client, {"page_size": "30", "page": "1"})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == "SophosCentral.ExploitMitigation"
     assert result.outputs[0].get("id") == "30fbb4cf-2961-4ffc-937e-97c57f468838"
@@ -881,15 +816,12 @@ def test_sophos_central_exploit_mitigation_get_command(requests_mock) -> None:
     mock_response = load_mock_response("exploit_mitigation_single.json")
     exploit_id = "c2824651-26c1-4470-addf-7b6bb6ac90b4"
     requests_mock.get(
-        f"{BASE_URL}/endpoint/v1/settings/"
-        f"exploit-mitigation/applications/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_exploit_mitigation_get_command(
-        client, {"mitigation_id": exploit_id}
-    )
+    result = sophos_central_exploit_mitigation_get_command(client, {"mitigation_id": exploit_id})
     assert result.outputs_prefix == "SophosCentral.ExploitMitigation"
     assert result.outputs.get("id") == "c2824651-26c1-4470-addf-7b6bb6ac90b4"
 
@@ -911,9 +843,7 @@ def test_sophos_central_exploit_mitigation_get_command_exception() -> None:
     client = mock.Mock()
     client.get_exploit_mitigation.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_exploit_mitigation_get_command(
-        client, {"mitigation_id": exploit_id}
-    )
+    result = sophos_central_exploit_mitigation_get_command(client, {"mitigation_id": exploit_id})
     assert result.outputs_prefix == f"Unable to find mitigation: {exploit_id}"
 
 
@@ -939,9 +869,7 @@ def test_sophos_central_exploit_mitigation_add_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_exploit_mitigation_add_command(
-        client, {"mitigation_id": exploit_id}
-    )
+    result = sophos_central_exploit_mitigation_add_command(client, {"mitigation_id": exploit_id})
     assert result.outputs_prefix == "SophosCentral.ExploitMitigation"
     assert result.outputs.get("id") == "c2824651-26c1-4470-addf-7b6bb6ac90b4"
 
@@ -963,15 +891,12 @@ def test_sophos_central_exploit_mitigation_update_command(requests_mock) -> None
     mock_response = load_mock_response("exploit_mitigation_single.json")
     exploit_id = "c2824651-26c1-4470-addf-7b6bb6ac90b4"
     requests_mock.patch(
-        f"{BASE_URL}/endpoint/v1/settings/"
-        f"exploit-mitigation/applications/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_exploit_mitigation_update_command(
-        client, {"mitigation_id": exploit_id}
-    )
+    result = sophos_central_exploit_mitigation_update_command(client, {"mitigation_id": exploit_id})
     assert result.outputs_prefix == "SophosCentral.ExploitMitigation"
     assert result.outputs.get("id") == "c2824651-26c1-4470-addf-7b6bb6ac90b4"
 
@@ -993,9 +918,7 @@ def test_sophos_central_exploit_mitigation_update_command_exception() -> None:
     client = mock.Mock()
     client.update_exploit_mitigation.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_exploit_mitigation_update_command(
-        client, {"mitigation_id": exploit_id}
-    )
+    result = sophos_central_exploit_mitigation_update_command(client, {"mitigation_id": exploit_id})
     assert result.outputs_prefix == f"Unable to update mitigation: {exploit_id}"
 
 
@@ -1017,15 +940,12 @@ def test_sophos_central_exploit_mitigation_delete_command(requests_mock) -> None
     mock_response = load_mock_response("deleted.json")
     exploit_id = "c2824651-26c1-4470-addf-7b6bb6ac90b4"
     requests_mock.delete(
-        f"{BASE_URL}/endpoint/v1/settings/"
-        f"exploit-mitigation/applications/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/applications/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_exploit_mitigation_delete_command(
-        client, {"mitigation_id": exploit_id}
-    )
+    result = sophos_central_exploit_mitigation_delete_command(client, {"mitigation_id": exploit_id})
     assert result.outputs == {"deletedMitigationId": exploit_id}
     assert result.outputs_prefix == "SophosCentral.DeletedExploitMitigation"
 
@@ -1052,9 +972,7 @@ def test_sophos_central_detected_exploit_list_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_detected_exploit_list_command(
-        client, {"page_size": "30", "page": "1"}
-    )
+    result = sophos_central_detected_exploit_list_command(client, {"page_size": "30", "page": "1"})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == "SophosCentral.DetectedExploit"
     assert result.outputs[0].get("id") == "b81aac51-2fc0-ab6a-asdf-7b6bb6ac90b4"
@@ -1077,15 +995,12 @@ def test_sophos_central_detected_exploit_get_command(requests_mock) -> None:
     mock_response = load_mock_response("detected_exploit_single.json")
     exploit_id = "b81aac51-2fc0-ab6a-asdf-7b6bb6ac90b4"
     requests_mock.get(
-        f"{BASE_URL}/endpoint/v1/settings/"
-        f"exploit-mitigation/detected-exploits/{exploit_id}",
+        f"{BASE_URL}/endpoint/v1/settings/exploit-mitigation/detected-exploits/{exploit_id}",
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_detected_exploit_get_command(
-        client, {"detected_exploit_id": exploit_id}
-    )
+    result = sophos_central_detected_exploit_get_command(client, {"detected_exploit_id": exploit_id})
     assert result.outputs_prefix == "SophosCentral.DetectedExploit"
     assert result.outputs.get("id") == "b81aac51-2fc0-ab6a-asdf-7b6bb6ac90b4"
 
@@ -1107,9 +1022,7 @@ def test_sophos_central_detected_exploit_get_command_exception() -> None:
     client = mock.Mock()
     client.get_detected_exploit.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_detected_exploit_get_command(
-        client, {"detected_exploit_id": exploit_id}
-    )
+    result = sophos_central_detected_exploit_get_command(client, {"detected_exploit_id": exploit_id})
     assert result.outputs_prefix == f"Unable to find exploit: {exploit_id}"
 
 
@@ -1131,9 +1044,7 @@ def test_retrieve_jwt_token(requests_mock) -> None:
     result = retrieve_jwt_token("a", "b", {})
     assert result == "xxxxxxx"
 
-    result = retrieve_jwt_token(
-        "a", "b", {"bearer_token": "aaaa", "valid_until": 999999999999999}
-    )
+    result = retrieve_jwt_token("a", "b", {"bearer_token": "aaaa", "valid_until": 999999999999999})
     assert result == "aaaa"
 
 
@@ -1156,18 +1067,11 @@ class TestFetchIncidents:
         client = init_mock_client(requests_mock)
         mock_response = load_mock_response("alert_list.json")
         requests_mock.post(f"{BASE_URL}/common/v1/alerts/search", json=mock_response)
-        last_fetch, incidents = fetch_incidents(
-            client, {"last_fetch": 1}, "1 days", ["x"], ["x"], "50"
-        )
-        wanted_time = datetime.timestamp(
-            datetime.strptime("2020-11-04T09:31:19.895Z", DATE_FORMAT)
-        )
+        last_fetch, incidents = fetch_incidents(client, {"last_fetch": 1}, "1 days", ["x"], ["x"], "50")
+        wanted_time = datetime.timestamp(datetime.strptime("2020-11-04T09:31:19.895Z", DATE_FORMAT))
         assert last_fetch.get("last_fetch") == wanted_time * 1000
         assert len(incidents) == 3
-        assert (
-            incidents[0].get("name")
-            == "Sophos Central Alert 56931431-9faf-480c-ba1d-8d7541eae259"
-        )
+        assert incidents[0].get("name") == "Sophos Central Alert 56931431-9faf-480c-ba1d-8d7541eae259"
 
     @staticmethod
     def test_no_last_fetch(requests_mock):
@@ -1188,18 +1092,11 @@ class TestFetchIncidents:
         client = init_mock_client(requests_mock)
         mock_response = load_mock_response("alert_list.json")
         requests_mock.post(f"{BASE_URL}/common/v1/alerts/search", json=mock_response)
-        last_fetch, incidents = fetch_incidents(
-            client, {}, "12 years", ["x"], ["x"], "50"
-        )
-        wanted_time = datetime.timestamp(
-            datetime.strptime("2020-11-04T09:31:19.895Z", DATE_FORMAT)
-        )
+        last_fetch, incidents = fetch_incidents(client, {}, "12 years", ["x"], ["x"], "50")
+        wanted_time = datetime.timestamp(datetime.strptime("2020-11-04T09:31:19.895Z", DATE_FORMAT))
         assert last_fetch.get("last_fetch") == wanted_time * 1000
         assert len(incidents) == 3
-        assert (
-            incidents[0].get("name")
-            == "Sophos Central Alert 56931431-9faf-480c-ba1d-8d7541eae259"
-        )
+        assert incidents[0].get("name") == "Sophos Central Alert 56931431-9faf-480c-ba1d-8d7541eae259"
 
     @staticmethod
     def test_empty_response(requests_mock):
@@ -1220,9 +1117,7 @@ class TestFetchIncidents:
         client = init_mock_client(requests_mock)
         mock_response = load_mock_response("empty.json")
         requests_mock.post(f"{BASE_URL}/common/v1/alerts/search", json=mock_response)
-        last_fetch, incidents = fetch_incidents(
-            client, {"last_fetch": 100000000}, "3 days", ["x"], ["x"], "50"
-        )
+        last_fetch, incidents = fetch_incidents(client, {"last_fetch": 100000000}, "3 days", ["x"], ["x"], "50")
         assert last_fetch.get("last_fetch") == 100000001
         assert len(incidents) == 0
 
@@ -1232,9 +1127,7 @@ class TestMain:
     def init_mocks(mocker, requests_mock, command):
         init_mock_client(requests_mock)
         mock_response = load_mock_response("auth_token.json")
-        requests_mock.post(
-            "https://id.sophos.com/api/v2/oauth2/token", json=mock_response
-        )
+        requests_mock.post("https://id.sophos.com/api/v2/oauth2/token", json=mock_response)
 
         mocker.patch.object(demisto, "command", return_value=command)
 
@@ -1285,20 +1178,13 @@ class TestMain:
             else demisto_set_last_run_mock.call_args[0][0]
         )
 
-        wanted_time = datetime.timestamp(
-            datetime.strptime("2020-11-04T09:31:19.895Z", DATE_FORMAT)
-        )
+        wanted_time = datetime.timestamp(datetime.strptime("2020-11-04T09:31:19.895Z", DATE_FORMAT))
         assert last_fetch.get("last_fetch") == wanted_time * 1000
         assert len(incidents) == 3
-        assert (
-            incidents[0].get("name")
-            == "Sophos Central Alert 56931431-9faf-480c-ba1d-8d7541eae259"
-        )
+        assert incidents[0].get("name") == "Sophos Central Alert 56931431-9faf-480c-ba1d-8d7541eae259"
 
     @staticmethod
-    def test_sophos_central_detected_exploit_list_command(
-        mocker, requests_mock
-    ) -> None:
+    def test_sophos_central_detected_exploit_list_command(mocker, requests_mock) -> None:
         """
         Scenario: List all detected exploits from main
             (same scenario as test_sophos_central_detected_exploit_list_command).
@@ -1314,9 +1200,7 @@ class TestMain:
         """
         from SophosCentral import main
 
-        TestMain.init_mocks(
-            mocker, requests_mock, "sophos-central-detected-exploit-list"
-        )
+        TestMain.init_mocks(mocker, requests_mock, "sophos-central-detected-exploit-list")
 
         mock_response = load_mock_response("detected_exploit_list.json")
         requests_mock.get(
@@ -1361,10 +1245,7 @@ class TestMain:
             else demisto_results_mock.call_args[0][0]
         )
         assert error_entry["Type"] == EntryType.ERROR
-        assert (
-            'The "not-a-command" command was not implemented.'
-            in error_entry["Contents"]
-        )
+        assert 'The "not-a-command" command was not implemented.' in error_entry["Contents"]
 
 
 def test_validate_item_fields() -> None:
@@ -1386,7 +1267,7 @@ def test_validate_item_fields() -> None:
     args = {"item_type": "certificateSigner", "certificate_signer": "xxx"}
     validate_item_fields(args)
     args = {"item_type": "certificateSigner", "path": "xxx"}
-    with raises(DemistoException):
+    with pytest.raises(DemistoException):
         validate_item_fields(args)
 
 
@@ -1490,10 +1371,7 @@ class TestCreateAlertOutput:
         output = create_alert_output(client, alert, ["id", "name"])
 
         assert output["personName"] == r"Group\Cactus"
-        assert (
-            "5d407889-8659-46ab-86c5-4f227302df78"
-            in client.integration_context["person_mapping"]
-        )
+        assert "5d407889-8659-46ab-86c5-4f227302df78" in client.integration_context["person_mapping"]
 
     @staticmethod
     def test_with_managed_agent_cache(requests_mock):
@@ -1511,11 +1389,7 @@ class TestCreateAlertOutput:
 
         client = init_mock_client(
             requests_mock,
-            {
-                "managed_agent_mapping": {
-                    "6e9567ea-bb50-40c5-9f12-42eb308e4c9b": "MyComputer"
-                }
-            },
+            {"managed_agent_mapping": {"6e9567ea-bb50-40c5-9f12-42eb308e4c9b": "MyComputer"}},
         )
 
         alert = load_mock_response("alert_single.json")
@@ -1597,9 +1471,7 @@ def test_main_generic_exception(
     mock_retrieve_jwt_token.side_effect = Exception("main-exception")
     main()
     assert mock_return_error.called
-    mock_return_error.assert_called_with(
-        "Failed to execute dummy_command command. Error: main-exception"
-    )
+    mock_return_error.assert_called_with("Failed to execute dummy_command command. Error: main-exception")
 
 
 @patch("demistomock.params")
@@ -1629,9 +1501,7 @@ def test_main_content_parsing_exception(
     mock_demisto_info.return_value = {}
     mock_return_error.return_value = {}
     mock_demisto_command.return_value = "dummy_command"
-    mock_retrieve_jwt_token.side_effect = Exception(
-        "Error parsing the query params or request body"
-    )
+    mock_retrieve_jwt_token.side_effect = Exception("Error parsing the query params or request body")
     main()
     assert mock_return_error.called
     mock_return_error.assert_called_with(
@@ -1771,7 +1641,7 @@ def test_whoami_failure(requests_mock):
 
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", status_code=401)
 
-    with raises(
+    with pytest.raises(
         DemistoException,
         match="An HTTP error occurred while validating the given tenant ID: ",
     ):
@@ -1809,7 +1679,7 @@ def test_whoami_exceptions(requests_mock, exception, error):
 
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", exc=exception)
 
-    with raises(DemistoException, match=error):
+    with pytest.raises(DemistoException, match=error):
         Client._whoami(bearer_token="dummy_token")
 
 
@@ -1900,11 +1770,9 @@ def test_get_tenant_base_url_exceptions(requests_mock, exception, error):
     """
     from SophosCentral import Client, COMMON_BASE_URL
 
-    requests_mock.get(
-        f"{COMMON_BASE_URL}/partner/v1/tenants/dummy-tenant-id", exc=exception
-    )
+    requests_mock.get(f"{COMMON_BASE_URL}/partner/v1/tenants/dummy-tenant-id", exc=exception)
 
-    with raises(DemistoException, match=error):
+    with pytest.raises(DemistoException, match=error):
         Client._get_tenant_base_url(
             bearer_token="dummy-token",
             entity_id="dummy-entity-id",
@@ -1931,13 +1799,9 @@ def test_get_client_data_case1() -> None:
     from SophosCentral import Client
 
     # set the cache
-    set_integration_context(
-        {"base_url": "cached-base-url", "tenant_id": "cached-tenant-id"}
-    )
+    set_integration_context({"base_url": "cached-base-url", "tenant_id": "cached-tenant-id"})
 
-    headers, base_url = Client.get_client_data(
-        tenant_id="cached-tenant-id", bearer_token="dummy-bearer-token"
-    )
+    headers, base_url = Client.get_client_data(tenant_id="cached-tenant-id", bearer_token="dummy-bearer-token")
     assert base_url == "cached-base-url"
     assert headers == {
         "Authorization": "Bearer dummy-bearer-token",
@@ -1973,10 +1837,8 @@ def test_get_client_data_case2(requests_mock) -> None:
 
     error_msg = "Value provided in tenant ID field is not same as configured tenant whose credentials are entered."
 
-    with raises(DemistoException, match=error_msg):
-        Client.get_client_data(
-            tenant_id="dummy-tenant-id", bearer_token="dummy-bearer-token"
-        )
+    with pytest.raises(DemistoException, match=error_msg):
+        Client.get_client_data(tenant_id="dummy-tenant-id", bearer_token="dummy-bearer-token")
 
 
 @pytest.mark.parametrize("creds_type", ["partner", "organization"])
@@ -2006,13 +1868,9 @@ def test_get_client_data_case3(requests_mock, creds_type) -> None:
 
     # mock search tenant response
     mock_client_data = load_mock_response("tenant_search.json")
-    requests_mock.get(
-        f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", json=mock_client_data
-    )
+    requests_mock.get(f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", json=mock_client_data)
 
-    headers, base_url = Client.get_client_data(
-        tenant_id=tenant_id, bearer_token="dummy-bearer-token"
-    )
+    headers, base_url = Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     assert base_url == "dummy_url/"
     assert headers == {
@@ -2061,15 +1919,12 @@ def test_get_client_data_case4(requests_mock, creds_type) -> None:
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
     # mock search tenant response
-    requests_mock.get(
-        f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", status_code=404
-    )
+    requests_mock.get(f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", status_code=404)
 
     error_msg = (
-        f"Value provided in tenant ID is not from managed tenants of "
-        f"configured {creds_type} whose credentials are entered"
+        f"Value provided in tenant ID is not from managed tenants of configured {creds_type} whose credentials are entered"
     )
-    with raises(DemistoException, match=error_msg):
+    with pytest.raises(DemistoException, match=error_msg):
         Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     cache = get_integration_context()
@@ -2109,10 +1964,8 @@ def test_get_client_data_case5(requests_mock, creds_type) -> None:
     mock_client_data = load_mock_response(f"whoami_{creds_type}.json")
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
-    error_msg = (
-        f"Tenant ID field is mandatory to configure {creds_type} user's credential"
-    )
-    with raises(DemistoException, match=error_msg):
+    error_msg = f"Tenant ID field is mandatory to configure {creds_type} user's credential"
+    with pytest.raises(DemistoException, match=error_msg):
         Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     cache = get_integration_context()
@@ -2151,9 +2004,7 @@ def test_get_client_data_case6(requests_mock) -> None:
     mock_client_data = load_mock_response("whoami_tenant.json")
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
-    headers, base_url = Client.get_client_data(
-        tenant_id=tenant_id, bearer_token="dummy-bearer-token"
-    )
+    headers, base_url = Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     assert base_url == "https://api-eu02.central.sophos.com/"
     assert headers == {
@@ -2210,13 +2061,9 @@ def test_get_client_data_case7(requests_mock, creds_type) -> None:
 
     # mock search tenant response
     mock_client_data = load_mock_response("tenant_search.json")
-    requests_mock.get(
-        f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", json=mock_client_data
-    )
+    requests_mock.get(f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", json=mock_client_data)
 
-    headers, base_url = Client.get_client_data(
-        tenant_id=tenant_id, bearer_token="dummy-bearer-token"
-    )
+    headers, base_url = Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     assert base_url == "dummy_url/"
     assert headers == {
@@ -2271,9 +2118,7 @@ def test_get_client_data_case8(requests_mock) -> None:
     mock_client_data = load_mock_response("whoami_tenant.json")
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
-    headers, base_url = Client.get_client_data(
-        tenant_id=tenant_id, bearer_token="dummy-bearer-token"
-    )
+    headers, base_url = Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
     assert base_url == "https://api-eu02.central.sophos.com/"
     assert headers == {
@@ -2398,7 +2243,7 @@ def test_insecure_connection(requests_mock):
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", exc=requests.exceptions.SSLError)
 
     # assert that a valid exception is raised with proper error message
-    with raises(DemistoException, match="SSL Certificate Verification Failed.*"):
+    with pytest.raises(DemistoException, match="SSL Certificate Verification Failed.*"):
         Client._whoami(bearer_token="dummy_token")
 
 
@@ -2412,12 +2257,10 @@ def test_proxy_error(requests_mock):
     """
     from SophosCentral import Client, COMMON_BASE_URL
 
-    requests_mock.get(
-        f"{COMMON_BASE_URL}/whoami/v1", exc=requests.exceptions.ProxyError
-    )
+    requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", exc=requests.exceptions.ProxyError)
 
     # assert that a valid exception is raised with proper error message
-    with raises(DemistoException, match="Proxy Error.*"):
+    with pytest.raises(DemistoException, match="Proxy Error.*"):
         Client._whoami(bearer_token="dummy_token")
 
 
@@ -2436,9 +2279,7 @@ def test_cache_with_tenant_level_creds(requests_mock):
     from SophosCentral import Client, COMMON_BASE_URL
 
     # mock whoami response
-    requests_mock.get(
-        f"{COMMON_BASE_URL}/whoami/v1", json=load_mock_response("whoami_tenant.json")
-    )
+    requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=load_mock_response("whoami_tenant.json"))
 
     Client.get_client_data("", "dummy-token")
 
@@ -2486,9 +2327,7 @@ def test_isolate_endpoint_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_isolate_endpoint_command(
-        client, {"endpoint_id": endpoint_id}
-    )
+    result = sophos_central_isolate_endpoint_command(client, {"endpoint_id": endpoint_id})
     assert result.outputs_prefix == "SophosCentral.EndpointIsolation"
     assert result.outputs.get("items")[0].get("id") == endpoint_id
     assert result.readable_output == "Endpoint(s) isolated successfully."
@@ -2546,9 +2385,7 @@ def test_deisolate_endpoint_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_deisolate_endpoint_command(
-        client, {"endpoint_id": endpoint_id}
-    )
+    result = sophos_central_deisolate_endpoint_command(client, {"endpoint_id": endpoint_id})
     assert result.outputs_prefix == "SophosCentral.EndpointIsolation"
     assert result.outputs.get("items")[0].get("id") == endpoint_id
     assert result.readable_output == "Endpoint(s) de-isolated successfully."
@@ -2601,9 +2438,7 @@ def test_sophos_central_group_membership_get(requests_mock) -> None:
     requests_mock.get(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id/endpoints", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_membership_get(client, {
-        "groupId": "fake-id"
-    })
+    result = sophos_central_group_membership_get(client, {"groupId": "fake-id"})
 
     assert len(result.outputs) == 1
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
@@ -2626,8 +2461,7 @@ def test_sophos_central_group_membership_get_exception(requests_mock) -> None:
     client = mock.Mock()
     client.get_endpoints_group.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_group_membership_get(client, {
-        "groupId": "fake-id"})
+    result = sophos_central_group_membership_get(client, {"groupId": "fake-id"})
     assert result.readable_output == "Unable to find the following endpoint of group: fake-id."
 
 
@@ -2650,11 +2484,9 @@ def test_sophos_central_group_endpoints_add(requests_mock) -> None:
     requests_mock.post(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id/endpoints", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_endpoints_add(client, {
-        "groupId": "fake-id",
-        "ids": ["06f4c8b4-e369-4b4b-8266-5dd9235c59b7",
-                "147fd36c-afd4-4a29-bc29-b8f1207894ab"]
-    })
+    result = sophos_central_group_endpoints_add(
+        client, {"groupId": "fake-id", "ids": ["06f4c8b4-e369-4b4b-8266-5dd9235c59b7", "147fd36c-afd4-4a29-bc29-b8f1207894ab"]}
+    )
 
     assert len(result.outputs.get("endpoints")[0]) == 2
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
@@ -2678,8 +2510,7 @@ def test_sophos_central_group_endpoints_add_exception(requests_mock) -> None:
     client = mock.Mock()
     client.add_endpoints_group.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_group_endpoints_add(client, {
-        "groupId": "fake-id"})
+    result = sophos_central_group_endpoints_add(client, {"groupId": "fake-id"})
     assert result.readable_output == "Unable to add the endpoint to the following group: fake-id."
 
 
@@ -2702,11 +2533,9 @@ def test_sophos_central_group_endpoints_remove(requests_mock) -> None:
     requests_mock.delete(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id/endpoints", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_endpoints_remove(client, {
-        "groupId": "fake-id",
-        "ids": ["06f4c8b4-e369-4b4b-8266-5dd9235c59b7",
-                "147fd36c-afd4-4a29-bc29-b8f1207894ab"]
-    })
+    result = sophos_central_group_endpoints_remove(
+        client, {"groupId": "fake-id", "ids": ["06f4c8b4-e369-4b4b-8266-5dd9235c59b7", "147fd36c-afd4-4a29-bc29-b8f1207894ab"]}
+    )
 
     assert len(result.outputs.get("endpoints")[0]) == 2
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
@@ -2729,9 +2558,7 @@ def test_sophos_central_group_endpoints_remove_exception(requests_mock) -> None:
     client = mock.Mock()
     client.remove_endpoints.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_group_endpoints_remove(client, {
-        "groupId": "fake-id",
-        "endpointId": "ids"})
+    result = sophos_central_group_endpoints_remove(client, {"groupId": "fake-id", "endpointId": "ids"})
 
     assert result.readable_output == "Unable to remove endpoint(s) from the following group: fake-id."
 
@@ -2755,10 +2582,7 @@ def test_sophos_central_group_endpoint_remove(requests_mock) -> None:
     requests_mock.delete(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id/endpoints/endpoint-ids", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_endpoint_remove(client, {
-        "groupId": "fake-id",
-        "endpointId": "endpoint-ids"
-    })
+    result = sophos_central_group_endpoint_remove(client, {"groupId": "fake-id", "endpointId": "endpoint-ids"})
 
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
     assert result.readable_output == "Endpoint removed successfully."
@@ -2781,10 +2605,7 @@ def test_sophos_central_group_endpoint_remove_exception(requests_mock) -> None:
     client = mock.Mock()
     client.remove_endpoint.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_group_endpoint_remove(client, {
-        "groupId": "fake-id",
-        "endpointId": "endpoint-ids"
-    })
+    result = sophos_central_group_endpoint_remove(client, {"groupId": "fake-id", "endpointId": "endpoint-ids"})
     assert result.readable_output == "Unable to remove endpoint from the following group: fake-id."
 
 
@@ -2801,14 +2622,11 @@ def test_sophos_central_group_endpoint_remove_false(requests_mock) -> None:
     """
     from SophosCentral import sophos_central_group_endpoint_remove
 
-    mock_response = json.loads("{\"removed\": false}")
+    mock_response = json.loads('{"removed": false}')
     requests_mock.delete(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id/endpoints/endpoint-ids", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_endpoint_remove(client, {
-        "groupId": "fake-id",
-        "endpointId": "endpoint-ids"
-    })
+    result = sophos_central_group_endpoint_remove(client, {"groupId": "fake-id", "endpointId": "endpoint-ids"})
 
     assert result.readable_output == "Endpoint Deletion failed, Please Enter valid endpointId."
 
@@ -2840,15 +2658,15 @@ def test_sophos_central_group_list(requests_mock) -> None:
 
 def test_sophos_central_group_list_not_found(requests_mock) -> None:
     """
-        Scenario: List Endpoint Groups
-        Given:
-         - User has provided valid credentials.
-         - Headers and JWT token have been set.
-        When:
-         - sophos_central_group_list is called.
-        Then:
-         - Ensure that the valid result is returned when any exception is raised.
-        """
+    Scenario: List Endpoint Groups
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos_central_group_list is called.
+    Then:
+     - Ensure that the valid result is returned when any exception is raised.
+    """
     from SophosCentral import sophos_central_group_list
 
     mock_response = load_mock_response("endpoint_groups_list.json")
@@ -2879,7 +2697,7 @@ def test_sophos_central_group_list_exception(requests_mock) -> None:
     assert result.readable_output == "Unable to fetch the group list."
 
 
-@pytest.mark.parametrize(('page_size', 'page'), [["-1", "1"], ["1001", "1"], ["1000", "-1"]])
+@pytest.mark.parametrize(("page_size", "page"), [["-1", "1"], ["1001", "1"], ["1000", "-1"]])
 def test_sophos_central_group_list_validate_page_size_min(page_size, page, requests_mock) -> None:
     """
     Scenario: List Endpoint Groups
@@ -2892,13 +2710,11 @@ def test_sophos_central_group_list_validate_page_size_min(page_size, page, reque
     - Ensure that the valid result is returned when any exception is raised.
     """
     from SophosCentral import sophos_central_group_list
+
     client = init_mock_client(requests_mock)
 
-    with raises(ValueError):
-        sophos_central_group_list(client, {
-            "page_size": page_size,
-            "page": page
-        })
+    with pytest.raises(ValueError):
+        sophos_central_group_list(client, {"page_size": page_size, "page": page})
 
 
 def test_sophos_central_group_create(requests_mock) -> None:
@@ -2919,12 +2735,10 @@ def test_sophos_central_group_create(requests_mock) -> None:
     requests_mock.post(f"{BASE_URL}/endpoint/v1/endpoint-groups", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_create(client, {
-        "description": "User devices in Seattle office",
-        "type": "computer",
-        "name": "Seattle computers",
-        "endpointIds": []
-    })
+    result = sophos_central_group_create(
+        client,
+        {"description": "User devices in Seattle office", "type": "computer", "name": "Seattle computers", "endpointIds": []},
+    )
 
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
     assert result.outputs.get("name") == "Seattle computers"
@@ -2946,12 +2760,10 @@ def test_sophos_central_group_create_exception(requests_mock) -> None:
     client = mock.Mock()
     client.create_group.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_group_create(client, {
-        "description": "User devices in Seattle office",
-        "type": "computer",
-        "name": "Seattle computers",
-        "endpointIds": []
-    })
+    result = sophos_central_group_create(
+        client,
+        {"description": "User devices in Seattle office", "type": "computer", "name": "Seattle computers", "endpointIds": []},
+    )
     assert result.readable_output == "Unable to create the group."
 
 
@@ -2974,11 +2786,9 @@ def test_sophos_central_group_update(requests_mock) -> None:
     requests_mock.patch(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_update(client, {
-        "groupId": "fake-id",
-        "description": "User devices in Seattle office",
-        "name": "Sophos Central Cosmos"
-    })
+    result = sophos_central_group_update(
+        client, {"groupId": "fake-id", "description": "User devices in Seattle office", "name": "Sophos Central Cosmos"}
+    )
 
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
     assert result.outputs.get("name") == "Sophos Central Cosmos"
@@ -3000,10 +2810,9 @@ def test_sophos_central_group_update_exception(requests_mock) -> None:
     client = mock.Mock()
     client.update_group.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_group_update(client, {
-        "groupId": "fake-id",
-        "description": "User devices in Seattle office",
-        "name": "Sophos Central Cosmos"})
+    result = sophos_central_group_update(
+        client, {"groupId": "fake-id", "description": "User devices in Seattle office", "name": "Sophos Central Cosmos"}
+    )
     assert result.readable_output == "Unable to update the following group: fake-id."
 
 
@@ -3026,11 +2835,9 @@ def test_sophos_central_group_get(requests_mock) -> None:
     requests_mock.get(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_get(client, {
-        "groupId": "fake-id",
-        "description": "User devices in Seattle office",
-        "name": "Sophos Central Cosmos"
-    })
+    result = sophos_central_group_get(
+        client, {"groupId": "fake-id", "description": "User devices in Seattle office", "name": "Sophos Central Cosmos"}
+    )
 
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
     assert result.outputs.get("name") == "Sophos Central Cosmos"
@@ -3052,8 +2859,7 @@ def test_sophos_central_group_get_exception(requests_mock) -> None:
     client = mock.Mock()
     client.fetch_group.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_group_get(client, {
-        "groupId": "fake-id"})
+    result = sophos_central_group_get(client, {"groupId": "fake-id"})
     assert result.readable_output == "Unable to find the following group: fake-id."
 
 
@@ -3076,9 +2882,7 @@ def test_sophos_central_group_delete(requests_mock) -> None:
     requests_mock.delete(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_group_delete(client, {
-        "groupId": "fake-id"
-    })
+    result = sophos_central_group_delete(client, {"groupId": "fake-id"})
 
     assert result.outputs_prefix == "SophosCentral.EndpointGroups"
     assert result.readable_output == "EndpointGroup Deleted Successfully."
@@ -3097,14 +2901,12 @@ def test_sophos_central_group_delete_exception(requests_mock) -> None:
     """
     from SophosCentral import sophos_central_group_delete
 
-    mock_response = json.loads("{\"deleted\": false}")
+    mock_response = json.loads('{"deleted": false}')
     requests_mock.delete(f"{BASE_URL}/endpoint/v1/endpoint-groups/fake-id", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    with raises(DemistoException):
-        sophos_central_group_delete(client, {
-            "groupId": "fake-id"
-        })
+    with pytest.raises(DemistoException):
+        sophos_central_group_delete(client, {"groupId": "fake-id"})
 
 
 def test_sophos_central_endpoint_policy_search_command(requests_mock) -> None:
@@ -3129,9 +2931,7 @@ def test_sophos_central_endpoint_policy_search_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_policy_search_command(
-        client, {"page_size": "50", "page": "1", "policy_type": ""}
-    )
+    result = sophos_central_endpoint_policy_search_command(client, {"page_size": "50", "page": "1", "policy_type": ""})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == "SophosCentral.PolicyAndEnumeration"
     assert result.outputs[0].get("id") == "c4f066d4-9a6d-48c9-b72c-45c56d1c13ae"
@@ -3139,15 +2939,15 @@ def test_sophos_central_endpoint_policy_search_command(requests_mock) -> None:
 
 def test_sophos_central_endpoint_policy_search_list_not_found(requests_mock) -> None:
     """
-        Scenario: Page not found for endpoint policy
-        Given:
-         - User has provided valid credentials.
-         - Headers and JWT token have been set.
-        When:
-         - sophos_central_endpoint_policy_search_command is called.
-        Then:
-         - Ensure that the valid result is returned when any exception is raised.
-        """
+    Scenario: Page not found for endpoint policy
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos_central_endpoint_policy_search_command is called.
+    Then:
+     - Ensure that the valid result is returned when any exception is raised.
+    """
     from SophosCentral import sophos_central_endpoint_policy_search_command
 
     mock_response = load_mock_response("policy_list.json")
@@ -3158,28 +2958,24 @@ def test_sophos_central_endpoint_policy_search_list_not_found(requests_mock) -> 
     assert result.readable_output == "Page Not Found."
 
 
-@pytest.mark.parametrize(('page_size', 'page'), [["-1", "1"], ["201", "1"], ["200", "-1"]])
-def test_sophos_central_endpoint_policy_search_with_page_size_or_page_negative_value(page_size, page,
-                                                                                     requests_mock) -> None:
+@pytest.mark.parametrize(("page_size", "page"), [["-1", "1"], ["201", "1"], ["200", "-1"]])
+def test_sophos_central_endpoint_policy_search_with_page_size_or_page_negative_value(page_size, page, requests_mock) -> None:
     """
-        Scenario: Page not found for endpoint policy
-        Given:
-         - User has provided valid credentials.
-         - Headers and JWT token have been set.
-        When:
-         - sophos_central_endpoint_policy_search_command is called.
-        Then:
-         - Ensure that the valid result is returned when any exception is raised.
-        """
+    Scenario: Page not found for endpoint policy
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos_central_endpoint_policy_search_command is called.
+    Then:
+     - Ensure that the valid result is returned when any exception is raised.
+    """
     from SophosCentral import sophos_central_endpoint_policy_search_command
 
     client = init_mock_client(requests_mock)
 
-    with raises(ValueError):
-        sophos_central_endpoint_policy_search_command(client, {
-            "page_size": page_size,
-            "page": page
-        })
+    with pytest.raises(ValueError):
+        sophos_central_endpoint_policy_search_command(client, {"page_size": page_size, "page": page})
 
 
 def test_sophos_central_endpoint_policy_get_command(requests_mock) -> None:
@@ -3205,9 +3001,7 @@ def test_sophos_central_endpoint_policy_get_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_policy_get_command(
-        client, {"policy_id": policy_id}
-    )
+    result = sophos_central_endpoint_policy_get_command(client, {"policy_id": policy_id})
     assert result.outputs_prefix == "SophosCentral.PolicyAndEnumeration"
     assert result.outputs.get("id") == policy_id
 
@@ -3234,24 +3028,22 @@ def test_sophos_central_endpoint_policy_search_delete_command(requests_mock) -> 
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_policy_search_delete_command(
-        client, {"policy_id": policy_id}
-    )
+    result = sophos_central_endpoint_policy_search_delete_command(client, {"policy_id": policy_id})
     assert result.outputs == {"deletedPolicyId": policy_id}
     assert result.outputs_prefix == "SophosCentral.PolicyAndEnumeration"
 
 
 def test_sophos_central_endpoint_policy_delete_command_failed(requests_mock) -> None:
     """
-        Scenario: Failed to delete existing endpoint policy
-        Given:
-         - User has provided valid credentials.
-         - Headers and JWT token have been set.
-        When:
-         - sophos_central_endpoint_policy_search_delete_command is called.
-        Then:
-         - Ensure that the valid result is returned when any exception is raised.
-        """
+    Scenario: Failed to delete existing endpoint policy
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos_central_endpoint_policy_search_delete_command is called.
+    Then:
+     - Ensure that the valid result is returned when any exception is raised.
+    """
     from SophosCentral import sophos_central_endpoint_policy_search_delete_command
 
     policy_id = "ceb3bacb-6aa2-4d06-a7a8-c2hdh16210f2"
@@ -3261,9 +3053,7 @@ def test_sophos_central_endpoint_policy_delete_command_failed(requests_mock) -> 
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_policy_search_delete_command(
-        client, {"policy_id": policy_id}
-    )
+    result = sophos_central_endpoint_policy_search_delete_command(client, {"policy_id": policy_id})
     assert result.readable_output == f"Failed deleting endpoint policy: {policy_id}."
 
 
@@ -3290,9 +3080,7 @@ def test_sophos_central_endpoint_policy_clone_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_policy_clone_command(
-        client, {"policy_id": policy_id}
-    )
+    result = sophos_central_endpoint_policy_clone_command(client, {"policy_id": policy_id})
     assert result.outputs == {"clonedPolicyId": cloned_policy_id}
     assert result.outputs_prefix == "SophosCentral.PolicyAndEnumeration"
 
@@ -3318,9 +3106,7 @@ def test_sophos_central_endpoint_policy_clone_command_failed(requests_mock) -> N
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_endpoint_policy_clone_command(
-        client, {"policy_id": policy_id}
-    )
+    result = sophos_central_endpoint_policy_clone_command(client, {"policy_id": policy_id})
     assert result.readable_output == f"Failed cloning endpoint policy: {policy_id}."
 
 
@@ -3346,9 +3132,7 @@ def test_sophos_central_endpoint_policy_reorder_command(requests_mock) -> None:
         json=mock_response,
     )
     client = init_mock_client(requests_mock)
-    result = sophos_central_endpoint_policy_reorder_command(
-        client, {"policy_id": policy_id}
-    )
+    result = sophos_central_endpoint_policy_reorder_command(client, {"policy_id": policy_id})
     assert result.outputs == {"updatedPolicyId": updated_policy_id}
     assert result.outputs_prefix == "SophosCentral.PolicyAndEnumeration"
 
@@ -3373,9 +3157,7 @@ def test_sophos_central_endpoint_policy_reorder_command_failed(requests_mock) ->
         json={},
     )
     client = init_mock_client(requests_mock)
-    result = sophos_central_endpoint_policy_reorder_command(
-        client, {"policy_id": policy_id}
-    )
+    result = sophos_central_endpoint_policy_reorder_command(client, {"policy_id": policy_id})
     assert result.readable_output == f"Failed updating endpoint policy: {policy_id}."
 
 
@@ -3395,19 +3177,18 @@ def test_usergroups_list_command(requests_mock) -> None:
 
     group_ids = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c,04824701-52cc-4c1b-b7e2-445fad9bdd42"
     mock_response = load_mock_response("usergroups_list.json")
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/user-groups",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/user-groups", json=mock_response, status_code=200)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_list_command(client, {
-        "groupsIds": group_ids,
-        "searchFields": "name,description",
-        "sourceType": "custom",
-        "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc"
-    })
+    result = sophos_central_usergroups_list_command(
+        client,
+        {
+            "groupsIds": group_ids,
+            "searchFields": "name,description",
+            "sourceType": "custom",
+            "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
+        },
+    )
     assert len(result.outputs) == 2
     assert result.outputs_prefix == "SophosCentral.UserGroups"
     assert result.outputs[0].get("id") == "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
@@ -3433,14 +3214,10 @@ def test_usergroups_list_command_invalid_page_parameter(requests_mock) -> None:
         "sourceType": "custom",
         "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
         "page": "0",
-        "pageSize": "0"
+        "pageSize": "0",
     }
     mock_response = load_mock_response("usergroups_list_page_not_found.json")
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/user-groups",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/user-groups", json=mock_response, status_code=200)
     client = init_mock_client(requests_mock)
 
     # non-positive page index
@@ -3484,7 +3261,7 @@ def test_usergroups_list_command_invalid_search_fields(requests_mock) -> None:
         "sourceType": "custom",
         "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
         "page": "1",
-        "pageSize": "1"
+        "pageSize": "1",
     }
     client = init_mock_client(requests_mock)
 
@@ -3507,15 +3284,15 @@ def test_usergroups_list_command_exception(requests_mock) -> None:
     """
     from SophosCentral import sophos_central_usergroups_list_command
 
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/user-groups",
-        status_code=400
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/user-groups", status_code=400)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_list_command(client, {
-        "sourceType": "invalid-value",
-    })
+    result = sophos_central_usergroups_list_command(
+        client,
+        {
+            "sourceType": "invalid-value",
+        },
+    )
 
     assert result.readable_output == "Unable to list user groups."
 
@@ -3536,16 +3313,10 @@ def test_usergroups_get_command(requests_mock) -> None:
 
     group_id = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
     mock_response = load_mock_response("usergroup_single.json")
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/user-groups/{group_id}", json=mock_response, status_code=200)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_get_command(client, {
-        "groupId": group_id
-    })
+    result = sophos_central_usergroups_get_command(client, {"groupId": group_id})
 
     assert result.outputs_prefix == "SophosCentral.UserGroups"
     assert result.outputs.get("id") == group_id
@@ -3566,15 +3337,10 @@ def test_usergroups_get_command_exception(requests_mock) -> None:
     from SophosCentral import sophos_central_usergroups_get_command
 
     group_id = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}",
-        status_code=400
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/user-groups/{group_id}", status_code=400)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_get_command(client, {
-        "groupId": group_id
-    })
+    result = sophos_central_usergroups_get_command(client, {"groupId": group_id})
 
     assert result.readable_output == "Unable to fetch user group."
 
@@ -3594,20 +3360,21 @@ def test_usergroups_create_command(requests_mock) -> None:
     from SophosCentral import sophos_central_usergroups_create_command
 
     mock_response = load_mock_response("usergroup_single.json")
-    requests_mock.post(
-        f"{BASE_URL}/common/v1/directory/user-groups",
-        json=mock_response,
-        status_code=201
-    )
+    requests_mock.post(f"{BASE_URL}/common/v1/directory/user-groups", json=mock_response, status_code=201)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_create_command(client, {
-        "groupName": "test - name",
-        "description": "Security group for Sophos Central admins",
-        "userIds": ("4d3174a8-bad6-47d0-9662-d32255603169,"
-                    "f7972c84-aeeb-46c6-b896-cb87597ac5d9,"
-                    "55570a08-0a38-41e6-b075-e0a7eb96571d")
-    })
+    result = sophos_central_usergroups_create_command(
+        client,
+        {
+            "groupName": "test - name",
+            "description": "Security group for Sophos Central admins",
+            "userIds": (
+                "4d3174a8-bad6-47d0-9662-d32255603169,"
+                "f7972c84-aeeb-46c6-b896-cb87597ac5d9,"
+                "55570a08-0a38-41e6-b075-e0a7eb96571d"
+            ),
+        },
+    )
 
     assert result.outputs_prefix == "SophosCentral.UserGroups"
     assert result.readable_output == f"Successfully created a user group with ID: {mock_response.get('id')}."
@@ -3627,10 +3394,7 @@ def test_usergroups_create_command_exception(requests_mock) -> None:
     """
     from SophosCentral import sophos_central_usergroups_create_command
 
-    requests_mock.post(
-        f"{BASE_URL}/common/v1/directory/user-groups",
-        status_code=400
-    )
+    requests_mock.post(f"{BASE_URL}/common/v1/directory/user-groups", status_code=400)
 
     client = init_mock_client(requests_mock)
     result = sophos_central_usergroups_create_command(client, {})
@@ -3661,11 +3425,14 @@ def test_usergroups_update_command(requests_mock) -> None:
     )
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_update_command(client, {
-        "groupId": group_id,
-        "groupName": "test - name",
-        "description": "Security group for Sophos Central admins",
-    })
+    result = sophos_central_usergroups_update_command(
+        client,
+        {
+            "groupId": group_id,
+            "groupName": "test - name",
+            "description": "Security group for Sophos Central admins",
+        },
+    )
 
     assert result.outputs_prefix == "SophosCentral.UserGroups"
     assert result.readable_output == f"Successfully updated the user group with ID: {group_id}."
@@ -3686,15 +3453,10 @@ def test_usergroups_update_command_exception(requests_mock) -> None:
     from SophosCentral import sophos_central_usergroups_update_command
 
     group_id = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
-    requests_mock.patch(
-        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}",
-        status_code=400
-    )
+    requests_mock.patch(f"{BASE_URL}/common/v1/directory/user-groups/{group_id}", status_code=400)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_update_command(client, {
-        "groupId": group_id
-    })
+    result = sophos_central_usergroups_update_command(client, {"groupId": group_id})
 
     assert result.readable_output == f"Unable to update usergroup with ID: {group_id}."
 
@@ -3722,9 +3484,7 @@ def test_usergroups_delete_command(requests_mock) -> None:
     )
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_delete_command(client, {
-        "groupId": group_id
-    })
+    result = sophos_central_usergroups_delete_command(client, {"groupId": group_id})
 
     assert result.outputs_prefix == "SophosCentral.DeletedUserGroups"
     assert result.readable_output == f"Successfully deleted the user group with ID: {group_id}."
@@ -3745,15 +3505,10 @@ def test_usergroups_delete_command_exception(requests_mock) -> None:
     from SophosCentral import sophos_central_usergroups_delete_command
 
     group_id = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
-    requests_mock.delete(
-        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}",
-        status_code=400
-    )
+    requests_mock.delete(f"{BASE_URL}/common/v1/directory/user-groups/{group_id}", status_code=400)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_usergroups_delete_command(client, {
-        "groupId": group_id
-    })
+    result = sophos_central_usergroups_delete_command(client, {"groupId": group_id})
 
     assert result.readable_output == f"Unable to delete usergroup with ID: {group_id}."
 
@@ -3777,9 +3532,7 @@ def test_sophos_central_usergroups_membership_get(requests_mock) -> None:
     requests_mock.get(f"{BASE_URL}/common/v1/directory/user-groups/{group_id}/users", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_usergroups_membership_get(client, {
-        "groupId": group_id
-    })
+    result = sophos_central_usergroups_membership_get(client, {"groupId": group_id})
     assert result.outputs_prefix == "SophosCentral.UserGroups"
     assert result.outputs.get("users")[0].get("name") == "mock-first-name mock-last-name"
 
@@ -3801,9 +3554,7 @@ def test_sophos_central_usergroups_membership_get_exception() -> None:
     client = mock.Mock()
     client.get_users_in_usergroup.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_usergroups_membership_get(client, {
-        "groupId": group_id
-    })
+    result = sophos_central_usergroups_membership_get(client, {"groupId": group_id})
     assert result.readable_output == f"Unable to get users for the following group: {group_id}."
 
 
@@ -3821,16 +3572,11 @@ def test_sophos_central_usergroups_membership_get_invalid_page_parameter(request
     from SophosCentral import sophos_central_usergroups_membership_get
 
     group_id = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
-    args = {
-        "groupId": group_id,
-        "sourceType": "custom",
-        "page": "0",
-        "pageSize": "0"
-    }
+    args = {"groupId": group_id, "sourceType": "custom", "page": "0", "pageSize": "0"}
     mock_response = load_mock_response("get_users_from_usergroup_page_not_found.json")
     requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}/users?sourceType=custom&page=2&pageSize=50&"
-        f"pageTotal=True", json=mock_response
+        f"{BASE_URL}/common/v1/directory/user-groups/{group_id}/users?sourceType=custom&page=2&pageSize=50&pageTotal=True",
+        json=mock_response,
     )
     client = init_mock_client(requests_mock)
 
@@ -3868,20 +3614,16 @@ def test_sophos_central_usergroups_membership_get_invalid_search_fields(requests
     from SophosCentral import sophos_central_usergroups_membership_get
 
     group_id = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
-    args = {
-        "groupId": group_id,
-        "sourceType": "custom",
-        "page": "1",
-        "pageSize": "1",
-        "searchFields": "names"
-    }
+    args = {"groupId": group_id, "sourceType": "custom", "page": "1", "pageSize": "1", "searchFields": "names"}
     client = init_mock_client(requests_mock)
 
     # non-positive page index
     with pytest.raises(DemistoException) as e:
         sophos_central_usergroups_membership_get(client, args)
-    assert str(e.value) == "Invalid value for searchFields provided. Allowed values are name, firstName, lastName, " \
-                           "email, exchangeLogin."
+    assert (
+        str(e.value) == "Invalid value for searchFields provided. Allowed values are name, firstName, lastName, "
+        "email, exchangeLogin."
+    )
 
 
 def test_sophos_central_usergroups_users_add(requests_mock) -> None:
@@ -3903,10 +3645,7 @@ def test_sophos_central_usergroups_users_add(requests_mock) -> None:
     requests_mock.post(f"{BASE_URL}/common/v1/directory/user-groups/{group_id}/users", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_usergroups_users_add(client, {
-        "groupId": group_id,
-        "ids": "55570a08-0a38-41e6-b075-e0a7eb96571d"
-    })
+    result = sophos_central_usergroups_users_add(client, {"groupId": group_id, "ids": "55570a08-0a38-41e6-b075-e0a7eb96571d"})
     assert result.outputs_prefix == "SophosCentral.UserGroups"
     assert result.readable_output == "User(s) added to the specified group."
 
@@ -3928,10 +3667,7 @@ def test_sophos_central_usergroups_users_add_exception() -> None:
     client = mock.Mock()
     client.add_users_to_usergroup.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_usergroups_users_add(client, {
-        "groupId": group_id,
-        "ids": "55570a08-0a38-41e6-b075-e0a7eb96571d"
-    })
+    result = sophos_central_usergroups_users_add(client, {"groupId": group_id, "ids": "55570a08-0a38-41e6-b075-e0a7eb96571d"})
     assert result.readable_output == f"Unable to add user to the following group: {group_id}."
 
 
@@ -3955,10 +3691,7 @@ def test_sophos_central_usergroups_user_delete(requests_mock) -> None:
     requests_mock.delete(f"{BASE_URL}/common/v1/directory/user-groups/{group_id}/users/{user_id}", json=mock_response)
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_usergroups_user_delete(client, {
-        "groupId": group_id,
-        "userId": user_id
-    })
+    result = sophos_central_usergroups_user_delete(client, {"groupId": group_id, "userId": user_id})
     assert result.outputs_prefix == "SophosCentral.UserGroups"
     assert result.readable_output == "User removed from group."
 
@@ -3981,10 +3714,7 @@ def test_sophos_central_usergroups_user_delete_exception() -> None:
     client = mock.Mock()
     client.delete_user_from_usergroup.side_effect = DemistoException("Demisto Exception")
 
-    result = sophos_central_usergroups_user_delete(client, {
-        "groupId": group_id,
-        "userId": user_id
-    })
+    result = sophos_central_usergroups_user_delete(client, {"groupId": group_id, "userId": user_id})
     assert result.readable_output == f"Unable to remove user({user_id}) from the following group: {group_id}."
 
 
@@ -4003,17 +3733,16 @@ def test_users_list_command(requests_mock) -> None:
     from SophosCentral import sophos_central_users_list_command
 
     mock_response = load_mock_response("users_list.json")
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/users",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/users", json=mock_response, status_code=200)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_users_list_command(client, {
-        "searchFields": "name,email",
-        "sourceType": "custom",
-    })
+    result = sophos_central_users_list_command(
+        client,
+        {
+            "searchFields": "name,email",
+            "sourceType": "custom",
+        },
+    )
 
     assert len(result.outputs) == 2
     assert result.outputs_prefix == "SophosCentral.Users"
@@ -4041,14 +3770,10 @@ def test_users_list_command_invalid_page_parameter(requests_mock) -> None:
         "sourceType": "custom",
         "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
         "page": "0",
-        "pageSize": "0"
+        "pageSize": "0",
     }
     mock_response = load_mock_response("page_not_found.json")
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/users",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/users", json=mock_response, status_code=200)
     client = init_mock_client(requests_mock)
 
     # non-positive page index
@@ -4092,15 +3817,17 @@ def test_users_list_command_invalid_search_fields(requests_mock) -> None:
         "sourceType": "custom",
         "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
         "page": "0",
-        "pageSize": "0"
+        "pageSize": "0",
     }
     client = init_mock_client(requests_mock)
 
     # non-positive page index
     with pytest.raises(DemistoException) as e:
         sophos_central_users_list_command(client, args)
-    assert str(e.value) == "Invalid value for searchFields provided. Allowed values are name, firstName, lastName, " \
-                           "email, exchangeLogin."
+    assert (
+        str(e.value) == "Invalid value for searchFields provided. Allowed values are name, firstName, lastName, "
+        "email, exchangeLogin."
+    )
 
 
 def test_users_list_command_exception(requests_mock) -> None:
@@ -4141,17 +3868,10 @@ def test_users_get_command(requests_mock) -> None:
     user_id = "2ed7f9ee-3f6a-472a-95d7-f3ea0e72641a"
 
     mock_response = load_mock_response("users_single.json")
-    requests_mock.get(
-        f"{BASE_URL}/common/v1/directory/users/{user_id}",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.get(f"{BASE_URL}/common/v1/directory/users/{user_id}", json=mock_response, status_code=200)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_users_get_command(client, {
-        "userId": user_id
-    }
-    )
+    result = sophos_central_users_get_command(client, {"userId": user_id})
 
     assert result.outputs_prefix == "SophosCentral.Users"
     assert result.outputs[0].get("id") == "2ed7f9ee-3f6a-472a-95d7-f3ea0e72641a"
@@ -4174,10 +3894,7 @@ def test_users_get_command_exception(requests_mock) -> None:
     user_id = "f7972c84-aeeb-46c6-b896-cb87597ac599"
     client = mock.Mock()
     client.get_user.side_effect = DemistoException("Demisto Exception")
-    result = sophos_central_users_get_command(client, {
-        "userId": user_id
-    }
-    )
+    result = sophos_central_users_get_command(client, {"userId": user_id})
 
     assert result.readable_output == f"Unable to find the following user with userId:{user_id}."
 
@@ -4197,20 +3914,18 @@ def test_users_add_command(requests_mock) -> None:
     from SophosCentral import sophos_central_users_add_command
 
     mock_response = load_mock_response("users_single.json")
-    requests_mock.post(
-        f"{BASE_URL}/common/v1/directory/users",
-        json=mock_response,
-        status_code=201
-    )
+    requests_mock.post(f"{BASE_URL}/common/v1/directory/users", json=mock_response, status_code=201)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_users_add_command(client, {
-        "firstName": "Administrator",
-        "lastName": "lastname",
-        "email": "z7fgv3b2fayq1ntc7518@lightning.example.com",
-        "exchangeLogin": "",
-        "groupIds": "1cce37cb-99c0-4ab1-be75-60c4331ffb4c, 04824701-52cc-4c1b-b7e2-445fad9bdd42"
-    }
+    result = sophos_central_users_add_command(
+        client,
+        {
+            "firstName": "Administrator",
+            "lastName": "lastname",
+            "email": "z7fgv3b2fayq1ntc7518@lightning.example.com",
+            "exchangeLogin": "",
+            "groupIds": "1cce37cb-99c0-4ab1-be75-60c4331ffb4c, 04824701-52cc-4c1b-b7e2-445fad9bdd42",
+        },
     )
     assert result.outputs_prefix == "SophosCentral.Users"
     assert result.readable_output == "A new User was added to the Directory."
@@ -4232,17 +3947,15 @@ def test_users_update_command(requests_mock) -> None:
 
     user_id = "2ed7f9ee-3f6a-472a-95d7-f3ea0e72641a"
     mock_response = load_mock_response("users_single.json")
-    requests_mock.patch(
-        f"{BASE_URL}/common/v1/directory/users/{user_id}",
-        json=mock_response,
-        status_code=200
-    )
+    requests_mock.patch(f"{BASE_URL}/common/v1/directory/users/{user_id}", json=mock_response, status_code=200)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_users_update_command(client, {
-        "userId": user_id,
-        "name": "Sarkus",
-    }
+    result = sophos_central_users_update_command(
+        client,
+        {
+            "userId": user_id,
+            "name": "Sarkus",
+        },
     )
     assert result.outputs_prefix == "SophosCentral.Users"
     assert result.readable_output == "User updated."
@@ -4264,18 +3977,10 @@ def test_users_update_command_exception(requests_mock) -> None:
 
     user_id = "bshjasbjksnlsnlcd"
     mock_response = load_mock_response("users_single.json")
-    requests_mock.patch(
-        f"{BASE_URL}/common/v1/directory/users/{user_id}",
-        json=mock_response,
-        status_code=400
-    )
+    requests_mock.patch(f"{BASE_URL}/common/v1/directory/users/{user_id}", json=mock_response, status_code=400)
 
     client = init_mock_client(requests_mock)
-    result = sophos_central_users_update_command(client, {
-        "userId": user_id,
-        "name": "Sarkus"
-    }
-    )
+    result = sophos_central_users_update_command(client, {"userId": user_id, "name": "Sarkus"})
     assert result.readable_output == "Unable to update the user."
 
 
@@ -4301,9 +4006,7 @@ def test_users_delete_command(requests_mock) -> None:
     )
     client = init_mock_client(requests_mock)
 
-    result = sophos_central_users_delete_command(
-        client, {"userId": userId}
-    )
+    result = sophos_central_users_delete_command(client, {"userId": userId})
 
     assert result.outputs_prefix == "SophosCentral.DeletedUsers"
     assert result.readable_output == "User deleted."
@@ -4311,17 +4014,18 @@ def test_users_delete_command(requests_mock) -> None:
 
 def test_users_delete_command_exception(requests_mock) -> None:
     """
-        Scenario: Users delete Command throws exception.
-        Given:
-         - User has provided valid credentials.
-         - Headers and JWT token have been set.
-        When:
-         - sophos_central_users_delete_command is called.
-        Then:
-         - Ensure the request body is correct.
-         - Ensure the response is correct in case of failure.
-        """
+    Scenario: Users delete Command throws exception.
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos_central_users_delete_command is called.
+    Then:
+     - Ensure the request body is correct.
+     - Ensure the response is correct in case of failure.
+    """
     from SophosCentral import sophos_central_users_delete_command
+
     user_id = "fake-id"
     client = mock.Mock()
     client.delete_user.side_effect = DemistoException("Demisto Exception")

@@ -1,36 +1,84 @@
 {
-  "aws_guardduty_raw": {
-    "Resource": {
-      "type": "string",
-      "is_array": false
-    },
-    "Type": {
-      "type": "string",
-      "is_array": false
-    },
-    "Description": {
-      "type": "string",
-      "is_array": false
-    },
-    "Title": {
-      "type": "string",
-      "is_array": false
-    },
-    "Severity": {
-      "type": "int",
-      "is_array": false
-    },
-    "Service": {
-      "type": "string",
-      "is_array": false
-    },
-    "Region": {
-      "type": "string",
-      "is_array": false
-    },
-    "AccountId": {
-      "type": "string",
-      "is_array": false
-    }
-  }
+     "aws_guardduty_raw": {
+          "AccountId": {
+               "type": "string",
+               "is_array": false
+          },
+          "accountId": {
+               "type": "string",
+               "is_array": false
+          },
+          "arn": {
+               "type": "string",
+               "is_array": false
+          },
+          "Arn": {
+               "type": "string",
+               "is_array": false
+          },
+          "Description": {
+               "type": "string",
+               "is_array": false
+          },
+          "description": {
+               "type": "string",
+               "is_array": false
+          },
+          "Id": {
+               "type": "string",
+               "is_array": false
+          },
+          "id": {
+               "type": "string",
+               "is_array": false
+          },
+          "Region": {
+               "type": "string",
+               "is_array": false
+          },
+          "region": {
+               "type": "string",
+               "is_array": false
+          },
+          "Resource": {
+               "type": "string",
+               "is_array": false
+          },
+          "resource": {
+               "type": "string",
+               "is_array": false
+          },
+          "Service": {
+               "type": "string",
+               "is_array": false
+          },
+          "service": {
+               "type": "string",
+               "is_array": false
+          },
+          "Severity": {
+               "type": "float",
+               "is_array": false
+          },
+          "severity": {
+               "type": "float",
+               "is_array": false
+          },
+          "Title": {
+               "type": "string",
+               "is_array": false
+          },
+          "title": {
+               "type": "string",
+               "is_array": false
+          },
+          "Type": {
+               "type": "string",
+               "is_array": false
+          },
+          "type": {
+               "type": "string",
+               "is_array": false
+          }
+     }
 }

@@ -1,7 +1,8 @@
-from RemoveKeyFromList import remove_key_from_list_command
-import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-from typing import List, Dict, Any
 import json
+from typing import Any
+
+import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+from RemoveKeyFromList import remove_key_from_list_command
 
 MOCK_LIST_NAME = "TestList"
 MOCK_KEY_NAME = "TestKey"
@@ -17,26 +18,26 @@ def test_remove_nonexisting_key_in_nonempty_list(mocker):
     Then
         - a message saying the key was not found is returned
     """
-    MOCKED_START_LIST: Dict = {
-        "AnotherKey": "SomeValue"
-    }
+    MOCKED_START_LIST: dict = {"AnotherKey": "SomeValue"}
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
-        if name == 'getList':
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = remove_key_from_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-    })
+    result = remove_key_from_list_command(
+        {
+            "listName": MOCK_LIST_NAME,
+            "keyName": MOCK_KEY_NAME,
+        }
+    )
 
-    assert result.readable_output == f'Key {MOCK_KEY_NAME} not found in list {MOCK_LIST_NAME}, cannot remove.'
+    assert result.readable_output == f"Key {MOCK_KEY_NAME} not found in list {MOCK_LIST_NAME}, cannot remove."
     assert len(mocked_ec.call_args_list) == 1
 
 
@@ -50,24 +51,26 @@ def test_remove_nonexisting_key_in_empty_list(mocker):
     Then
         - a message saying the key was not found is returned
     """
-    MOCKED_START_LIST: Dict = {}
+    MOCKED_START_LIST: dict = {}
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
-        if name == 'getList':
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = remove_key_from_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-    })
+    result = remove_key_from_list_command(
+        {
+            "listName": MOCK_LIST_NAME,
+            "keyName": MOCK_KEY_NAME,
+        }
+    )
 
-    assert result.readable_output == f'Key {MOCK_KEY_NAME} not found in list {MOCK_LIST_NAME}, cannot remove.'
+    assert result.readable_output == f"Key {MOCK_KEY_NAME} not found in list {MOCK_LIST_NAME}, cannot remove."
     assert len(mocked_ec.call_args_list) == 1
 
 
@@ -82,33 +85,30 @@ def test_remove_existing_key(mocker):
         - requested key is removed from list
         - list is left with only one item
     """
-    MOCKED_START_LIST: Dict = {
-        MOCK_KEY_NAME: "Value",
-        "AnotherKey": "AnotherValue"
-    }
-    MOCKED_END_LIST: Dict = {
-        "AnotherKey": "AnotherValue"
-    }
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: "Value", "AnotherKey": "AnotherValue"}
+    MOCKED_END_LIST: dict = {"AnotherKey": "AnotherValue"}
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
-        if name == 'getList':
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = remove_key_from_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-    })
+    result = remove_key_from_list_command(
+        {
+            "listName": MOCK_LIST_NAME,
+            "keyName": MOCK_KEY_NAME,
+        }
+    )
 
-    assert result.readable_output == f'Successfully removed key {MOCK_KEY_NAME} from list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully removed key {MOCK_KEY_NAME} from list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST
 
 
 def test_remove_existing_last_key(mocker):
@@ -122,27 +122,27 @@ def test_remove_existing_last_key(mocker):
         - requested key is removed from list
         - list is empty
     """
-    MOCKED_START_LIST: Dict = {
-        MOCK_KEY_NAME: "Value"
-    }
-    MOCKED_END_LIST: Dict = {}
+    MOCKED_START_LIST: dict = {MOCK_KEY_NAME: "Value"}
+    MOCKED_END_LIST: dict = {}
 
-    def executeCommand(name: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
-        if name == 'getList':
+    def executeCommand(name: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if name == "getList":
             return [{"Contents": json.dumps(MOCKED_START_LIST)}]
-        elif name == 'setList':
+        elif name == "setList":
             return [{"Contents": f"Done: list {name} was updated"}]
 
         raise ValueError(f"Error: Unknown command or command/argument pair: {name} {args!r}")
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocked_ec = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
-    result = remove_key_from_list_command({
-        'listName': MOCK_LIST_NAME,
-        'keyName': MOCK_KEY_NAME,
-    })
+    result = remove_key_from_list_command(
+        {
+            "listName": MOCK_LIST_NAME,
+            "keyName": MOCK_KEY_NAME,
+        }
+    )
 
-    assert result.readable_output == f'Successfully removed key {MOCK_KEY_NAME} from list {MOCK_LIST_NAME}.'
+    assert result.readable_output == f"Successfully removed key {MOCK_KEY_NAME} from list {MOCK_LIST_NAME}."
     assert len(mocked_ec.call_args_list) == 2
-    assert mocked_ec.call_args_list[1][0][0] == 'setList'
-    assert json.loads(mocked_ec.call_args_list[1][0][1]['listData']) == MOCKED_END_LIST
+    assert mocked_ec.call_args_list[1][0][0] == "setList"
+    assert json.loads(mocked_ec.call_args_list[1][0][1]["listData"]) == MOCKED_END_LIST

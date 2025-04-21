@@ -1,0 +1,29 @@
+commonfields:
+  id: HtmlDifflabDynamic
+  version: -1
+name: HtmlDifflabDynamic
+comment: This dynamic automation parses the difflib results and presents it in the layout in color according to its score.
+script: ''
+type: python
+tags:
+- Utility
+- dynamic-section
+enabled: true
+args:
+- name: html1
+  description: First HTML to compare.
+- name: html2
+  description: Second HTML to compare.
+outputs:
+- contextPath: FuzzyHashSimilarity.SimilarityPercentage
+  description: How similar are the HTML pages in precentage.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/ssdeep:1.0.0.114703
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/ssdeep:1.0.0.23743
+fromversion: 6.10.0

@@ -1,0 +1,27 @@
+commonfields:
+  id: HtmlDifflibCheck
+  version: -1
+name: HtmlDifflibCheck
+comment: Compares two HTML source as strings and returns a similarity score using difflib.
+script: ''
+type: python
+tags:
+- basescript
+enabled: true
+args:
+- name: html1
+  description: First HTML to compare.
+- name: html2
+  description: Second HTML to compare.
+outputs:
+- contextPath: HTMLSimilarity.SimilarityPercentage
+  description: Similarity percentage between 2 html pages.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/ssdeep:1.0.0.114703
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -41,6 +41,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  defaultvalue: WHITE
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -61,12 +62,26 @@ configuration:
   name: feedFetchInterval
   type: 19
   required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+- display: Create relationships
+  name: create_relationships
+  type: 8
+  required: false
+  defaultvalue: 'true'
+- defaultvalue: 'false'
+  display: Save intrusion sets as threat actor indicator types
+  name: switch_intrusion_set_to_threat_actor
+  type: 8
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  defaultvalue: 'false'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
+  defaultvalue: 'false'
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -74,16 +89,6 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  type: 8
-  required: false
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  type: 0
-  required: false
-- defaultvalue: 'true'
-  display: Create relationships
-  name: create_relationships
   type: 8
   required: false
 description: Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) content. MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations. The ATT&CK knowledge base is used as a foundation for the development of specific threat models and methodologies in the private sector, in government, and in the cybersecurity product and service community.
@@ -113,7 +118,7 @@ script:
       isArray: true
       name: attack_pattern
       required: true
-    description: Looks up the reputation of the indicator.
+    description: Looks up the reputation of the indicator in the Enterprise collection only.
     name: attack-pattern
     outputs:
     - contextPath: DBotScore.Indicator
@@ -157,7 +162,7 @@ script:
       isArray: true
       name: attack_ids
       required: true
-    description: Gets the Attack Pattern value from the Attack Pattern ID.
+    description: Gets the Attack Pattern value from the Attack Pattern ID in the Enterprise collection only.
     name: mitre-get-indicator-name
     outputs:
     - contextPath: MITREATTACK.id
@@ -166,7 +171,7 @@ script:
     - contextPath: MITREATTACK.value
       description: MITRE ATTACK Attack Pattern value.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.90938
+  dockerimage: demisto/taxii2:1.0.0.117543
   feed: true
   runonce: false
   script: '-'

@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
@@ -10,23 +11,27 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 **Note:** The commands and fetch incidents mechanism will do up to 3 internal retries with a gap of 15, 30, and 60 seconds (exponentially) between the retries.
 
 #### Troubleshoot
+
 **Note:** If you are expecting a high volume of alerts from Chronicle, you can reduce the time required to fetch them by increasing the "How many incidents to fetch each time" parameter while decreasing the "Incidents Fetch Interval" parameter in the integration configuration.
 
 ##### Problem #1
+
 Duplication of rule detection incidents when fetched from Chronicle.
 
 ##### Solution #1
+
 - The incidents are re-fetched starting from first fetch time window when user resets the last run time stamp. 
 - To avoid duplication of incidents with duplicate detection ids and to drop them, XSOAR provides inbuilt features of Pre-process rules. 
 - This setting XSOAR platform end users have to set on their own as it's not part of the integration pack.
 - Pre-processing rules enable users to perform certain actions on incidents as they are ingested into XSOAR. 
 - Using these rules users can choose incoming events on which to perform actions for example drop all the incoming incidents, drop and update incoming incidents if certain conditions are met.
 - Please refer for information on Pre-Process rules:
-  https://xsoar.pan.dev/docs/incidents/incident-pre-processing#:~:text=Creating%20Rules&text=Navigate%20to%20Settings%20%3E%20Integrations%20%3E%20Pre,viewing%20the%20list%20of%20rules.
+  <https://xsoar.pan.dev/docs/incidents/incident-pre-processing#:~:text=Creating%20Rules&text=Navigate%20to%20Settings%20%3E%20Integrations%20%3E%20Pre,viewing%20the%20list%20of%20rules>.
 
 ## FAQ - Fetch Detections
 
 ##### Question #1
+
 If we have 3 rules added in the configuration (R1, R2, R3) and we are getting 429 or 500 errors in R2. Will my integration stop fetching the detections or will it fetch detections of rule R3?
 
 ###### Case #1: When HTTP 429 or 500 error resumes before 60 retry attempts:
@@ -40,71 +45,76 @@ If 429 or 500 error is recovered before 60 attempts, the system will fetch the d
 If 429 error does not recover for 60 attempts, the system will skip Rule R2 and then proceed ahead for rule R3 to fetch its detections by adding a log.
 
 ##### Question #2
+
 What if R1 is an invalid rule id? Would it be able to fetch R2 and R3 detections?
 
 - There will not be any retry attempts for invalid rule ids. The system will skip the invalid rule ids and move to the next rule id. So if R1 is invalid, the system will skip it without any retry attempts and move to R2.
 
 ##### Question #3
+
 What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
 
 - There will not be any retry attempts for deleted rule ids. The system will skip the deleted rule ids and move to the next rule id. So if R1 is deleted, the system will skip it without any retry attempts and move to R2.
 
 ## Configure Chronicle on Cortex XSOAR
+
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Chronicle.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __User's Service Account JSON__
-    * __Region__: Select the region based on the location of the chronicle backstory instance. If region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
-    * __Other Region__: Specify the region based on the location of the chronicle backstory instance. Only applicable if the "Other" option is selected in the Region dropdown.
-    * __Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.__
-    * __Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.__
-    * __Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
-    * __Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
-    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.__
-    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.__
-    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
-    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
-    * __Fetches incidents__
-    * __First fetch time__
-    * __How many incidents to fetch each time__
-    * __Chronicle Alert Type (Select the type of data to consider for fetch incidents)__
-    * __Time window (in minutes)__
-    * __Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts).__
-    * __Detections to fetch by Rule ID or Version ID__
-    * __Fetch all rules detections__
-    * __Filter detections by alert state__
-    * __List Basis__  
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+    - **Name**: a textual name for the integration instance.
+    - **User's Service Account JSON**
+    - **Region**: Select the region based on the location of the chronicle backstory instance. If region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
+    - **Other Region**: Specify the region based on the location of the chronicle backstory instance. Only applicable if the "Other" option is selected in the Region dropdown.
+    - **Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.**
+    - **Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.**
+    - **Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.**
+    - **Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.**
+    - **Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.**
+    - **Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.**
+    - **Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.**
+    - **Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.**
+    - **Fetches incidents**
+    - **First fetch time**
+    - **How many incidents to fetch each time**
+    - **Chronicle Alert Type (Select the type of data to consider for fetch incidents)**
+    - **Time window (in minutes)**
+    - **Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts).**
+    - **Detections to fetch by Rule ID or Version ID**
+    - **Fetch all rules detections**
+    - **Filter detections by alert state**
+    - **List Basis**  
+    - **Trust any certificate (not secure)**
+    - **Use system proxy settings**
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
+
 ---
 Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Cortex XSOAR calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
 
 #### Configuration Parameters for Fetch-incidents
- - First fetch time interval: **Default** 3 days
- - How many incidents to fetch each time: **Default** 100
- - Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts). **Only applicable for asset alerts**.
- - Chronicle Alert Type (Select the type of data to consider for fetch incidents):
-   - IOC Domain matches **Default**
-   - Assets with alerts
-   - Curated Rule Detection alerts
-   - Detection alerts
-   - User alerts
- - Time window (in minutes): **Not applicable for IOC Domain matches**
-    - 15 **Default**
-    - 30
-    - 45
-    - 60
- - Detections to fetch by Rule ID or Version ID **Only applicable for Detection alerts and Curated Rule Detection alerts**
- - Fetch all rules detections **Only applicable for Detection alerts**
- - Filter detections by alert state: **Only applicable for Detection alerts and Curated Rule Detection alerts**
-   - ALERTING
-   - NOT ALERTING
+
+- First fetch time interval: **Default** 3 days
+- How many incidents to fetch each time: **Default** 100
+- Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts). **Only applicable for asset alerts**.
+- Chronicle Alert Type (Select the type of data to consider for fetch incidents):
+  - IOC Domain matches **Default**
+  - Assets with alerts
+  - Curated Rule Detection alerts
+  - Detection alerts
+  - User alerts
+- Time window (in minutes): **Not applicable for IOC Domain matches**
+  - 15 **Default**
+  - 30
+  - 45
+  - 60
+- Detections to fetch by Rule ID or Version ID **Only applicable for Detection alerts and Curated Rule Detection alerts**
+- Fetch all rules detections **Only applicable for Detection alerts**
+- Filter detections by alert state: **Only applicable for Detection alerts and Curated Rule Detection alerts**
+  - ALERTING
+  - NOT ALERTING
  
 | **Name** | **Initial Value** |
 | --- | --- |
@@ -118,6 +128,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | Filter detections by alert state | Not selected |
 
 #### Incident field mapping - Asset Alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;AlertName&gt; for &lt;Asset&gt; |
@@ -126,6 +137,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | severity | Severity of Alert |
 
 #### Incident field mapping - IOC Domain matches
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | IOC Domain Match: &lt;Artifact&gt; |
@@ -133,6 +145,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | details | Single Raw JSON |
 
 #### Incident field mapping - Detection Alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;RuleName&gt; |
@@ -140,6 +153,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | details | Single Raw JSON |
 
 #### Incident field mapping - Curated Rule Detection alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;RuleName&gt; |
@@ -152,6 +166,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | Tags | tags |
 
 #### Incident field mapping - User Alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;AlertName&gt; for &lt;User&gt; |
@@ -159,9 +174,11 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | details | Single Raw JSON |
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. gcb-list-iocs
 2. gcb-assets
 3. ip
@@ -185,20 +202,26 @@ After you successfully execute a command, a DBot message appears in the War Room
 21. gcb-get-reference-list
 22. gcb-create-reference-list
 23. gcb-update-reference-list
-24. gcb-test-rule-stream
-25. gcb-list-useraliases
-26. gcb-list-assetaliases
-27. gcb-list-curatedrules
-28. gcb-list-curatedrule-detections
-29. gcb-udm-search
+24. gcb-verify-reference-list
+25. gcb-test-rule-stream
+26. gcb-list-useraliases
+27. gcb-list-assetaliases
+28. gcb-list-curatedrules
+29. gcb-list-curatedrule-detections
+30. gcb-udm-search
+31. gcb-verify-value-in-reference-list
+32. gcb-verify-rule
+33. gcb-get-event
 
 ### 1. gcb-list-iocs
+
 ---
 Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
 
 ##### Base Command
 
 `gcb-list-iocs`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -225,9 +248,11 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 
 ##### Command Example
+
 ```!gcb-list-iocs page_size=1 preset_time_range="Last 1 day"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Iocs": [
@@ -273,6 +298,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ##### Human Readable Output
 
 >### IOC Domain Matches
+
 >|Artifact|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 >|---|---|---|---|---|---|---|---|
 >| anx.tb.ask.com | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
@@ -280,12 +306,14 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 
 ### 2. gcb-assets
+
 ---
 Returns a list of the assets that accessed the input artifact (IP, domain, MD5, SHA1 and SHA256) during the specified time.
 
 ##### Base Command
 
 `gcb-assets`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -319,9 +347,11 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 
 
 ##### Command Example
+
 ```!gcb-assets artifact_value=bing.com preset_time_range="Last 1 day"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Asset": [
@@ -352,6 +382,7 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 ##### Human Readable Output
 
 >### Assets related to artifact - bing.com
+
 >|Host Name|Host IP|Host MAC|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|
 >| james-anderson-laptop | - | - | 2018-10-18T04:38:44Z | 2020-02-14T07:13:33Z |
@@ -361,12 +392,14 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 
 
 ### 3. ip
+
 ---
 Checks the reputation of an IP address.
 
 ##### Base Command
 
 `ip`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -381,7 +414,7 @@ Checks the reputation of an IP address.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
+| DBotScore.Score | Number | The actual score. | 
 | IP.Address | String | The IP address of the artifact. | 
 | IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision. | 
 | IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. | 
@@ -397,9 +430,11 @@ Checks the reputation of an IP address.
 
 
 ##### Command Example
+
 ```!ip ip=23.20.239.12```
 
 ##### Context Example
+
 ```
 {
     "IP": {
@@ -454,7 +489,9 @@ Checks the reputation of an IP address.
 ##### Human Readable Output
 
 >IP: 23.20.239.12 found with Reputation: Unknown
+
 >### Reputation Parameters
+
 >|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|---|---|
 >| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
@@ -464,12 +501,14 @@ Checks the reputation of an IP address.
 
 
 ### 4. domain
+
 ---
 Checks the reputation of a domain.
 
 ##### Base Command
 
 `domain`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,7 +523,7 @@ Checks the reputation of a domain.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
+| DBotScore.Score | Number | The actual score. | 
 | Domain.Name | String | The domain name of the artifact. | 
 | Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
@@ -500,9 +539,11 @@ Checks the reputation of a domain.
 
 
 ##### Command Example
+
 ```!domain domain=bing.com```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Domain": {
@@ -540,7 +581,9 @@ Checks the reputation of a domain.
 ##### Human Readable Output
 
 >Domain: bing.com found with Reputation: Unknown
+
 >### Reputation Parameters
+
 >|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|---|---|
 >| bing.com | - | Observed serving executables | 67 | Low | 2013-08-06T00:00:00Z | 2020-01-14T00:00:00Z |
@@ -549,12 +592,14 @@ Checks the reputation of a domain.
 
 
 ### 5. gcb-ioc-details
+
 ---
 Accepts an artifact indicator and returns any threat intelligence associated with the artifact. The threat intelligence information is drawn from your enterprise security systems and from Chronicle's IoC partners (for example, the DHS threat feed).
 
 ##### Base Command
 
 `gcb-ioc-details`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -580,8 +625,11 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 
 
 ##### Command Example
+
 ```!gcb-ioc-details artifact_value=23.20.239.12```
+
 ##### Context Example
+
 ```
 {
     "IP": {
@@ -630,6 +678,7 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 ##### Human Readable Output
 
 >### IoC Details
+
 >|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|---|---|
 >| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
@@ -639,12 +688,14 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 
 
 ### 6. gcb-list-alerts
+
 ---
 List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
 
 ##### Base Command
 
 `gcb-list-alerts`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -676,9 +727,11 @@ List all the alerts tracked within your enterprise for the specified time range.
 
 
 ##### Command Example
+
 ```!gcb-list-alerts page_size=1 preset_time_range="Last 1 day"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Alert": [
@@ -701,18 +754,21 @@ List all the alerts tracked within your enterprise for the specified time range.
 ##### Human Readable Output
 
 >### Security Alert(s)
+
 >|Alerts|Asset|Alert Names|First Seen|Last Seen|Severities|Sources|
 >|---|---|---|---|---|---|---|
 >| 1 | rosie-hayes-pc | Authentication failure [32038] | 6 hours ago | 6 hours ago | Medium | Internal Alert |
 
 
 ### 7. gcb-list-events
+
 ---
 List all of the events discovered within your enterprise on a particular device within the specified time range. If you receive the maximum number of events you specified using the page_size parameter (or 100, the default), there might still be more events within your Chronicle account. You can narrow the time range and issue the call again to ensure you have visibility into all possible events. This command returns more than 60 different types of events. Any event would have only specific output context set. Refer the UDM documentation to figure out the output properties specific to the event types.
 
 ##### Base Command
 
 `gcb-list-events`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1093,9 +1149,11 @@ List all of the events discovered within your enterprise on a particular device 
 
 
 ##### Command Example
+
 ```!gcb-list-events asset_identifier_type="Host Name" asset_identifier="ray-xxx-laptop" start_time="2020-01-01T00:00:00Z" page_size="1"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Events": [
@@ -1148,6 +1206,7 @@ List all of the events discovered within your enterprise on a particular device 
 ##### Human Readable Output
 
 >### Event(s) Details
+
 >|Event Timestamp|Event Type|Principal Asset Identifier|Target Asset Identifier|Queried Domain|
 >|---|---|---|---|---|
 >| 2020-01-01T23:59:38Z | NETWORK_DNS | ray-xxx-laptop | 8.8.8.8 | ninthdecimal.com |
@@ -1158,6 +1217,7 @@ List all of the events discovered within your enterprise on a particular device 
 
 
 ### 8. gcb-list-detections
+
 ---
 Return the detections for the specified version of a rule, the latest version of a rule, all versions of a rule, or all versions of all rules.
 
@@ -1165,6 +1225,7 @@ Return the detections for the specified version of a rule, the latest version of
 ##### Base Command
 
 `gcb-list-detections`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1568,9 +1629,11 @@ Return the detections for the specified version of a rule, the latest version of
 
 
 ##### Command Example
+
 ```!gcb-list-detections id=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71 page_size=2```
 
 ##### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -1819,6 +1882,7 @@ Return the detections for the specified version of a rule, the latest version of
 ##### Human Readable Output
 
 >### Detection(s) Details For Rule: [SampleRule](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71)
+
 >|Detection ID|Detection Type|Detection Time|Events|Alert State|
 >|---|---|---|---|---|
 >| [de_bea17243-d3b3-14bf-6b57-74e1a2422c68](https://dummy-chronicle/alert?alertId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:02.559Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:00:40.566Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
@@ -1831,6 +1895,7 @@ Return the detections for the specified version of a rule, the latest version of
 
 
 ### 9. gcb-list-rules
+
 ---
 List the latest versions of all Rules.
 
@@ -1838,6 +1903,7 @@ List the latest versions of all Rules.
 ##### Base Command
 
 `gcb-list-rules`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1872,9 +1938,11 @@ List the latest versions of all Rules.
 
 
 ##### Command Example
+
 ```!gcb-list-rules page_size=2```
 
 ##### Context Example
+
 ```json
 
 {
@@ -1921,6 +1989,7 @@ List the latest versions of all Rules.
 ##### Human Readable Output
 
 >### Rule(s) Details
+
 >| Rule ID | Rule Name | Compilation State |
 >| --- | --- | --- |
 >| ru_42f02f52-544c-4b6e-933c-df17648d5831 | email_execution | SUCCEEDED |
@@ -1930,6 +1999,7 @@ List the latest versions of all Rules.
 
 
 ### 10. gcb-create-rule
+
 ---
 Creates a new rule. By default the live rule status will be set to disabled.
 
@@ -1937,6 +2007,7 @@ Creates a new rule. By default the live rule status will be set to disabled.
 #### Base Command
 
 `gcb-create-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1966,8 +2037,11 @@ Creates a new rule. By default the live rule status will be set to disabled.
 | GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
 
 #### Command Example
+
 ```!gcb-create-rule rule_text="rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -1991,12 +2065,14 @@ Creates a new rule. By default the live rule status will be set to disabled.
 #### Human Readable Output
 
 >### Rule Detail
+
 >|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
 >|---|---|---|---|---|---|---|---|
 >| ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6 | ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6@v_1655965296_217135000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-23T06:21:36.217135Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
 
 
 ### 11. gcb-get-rule
+
 ---
 Retrieves the rule details of specified Rule ID or Version ID.
 
@@ -2004,6 +2080,7 @@ Retrieves the rule details of specified Rule ID or Version ID.
 #### Base Command
 
 `gcb-get-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2033,8 +2110,11 @@ Retrieves the rule details of specified Rule ID or Version ID.
 | GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
 
 #### Command Example
+
 ```!gcb-get-rule id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2058,12 +2138,14 @@ Retrieves the rule details of specified Rule ID or Version ID.
 #### Human Readable Output
 
 >### Rule Details
+
 >|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
 >|---|---|---|---|---|---|---|---|
 >| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655904500_905647000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-22T13:28:20.905647Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
 
 
 ### 12. gcb-delete-rule
+
 ---
 Deletes the rule specified by Rule ID.
 
@@ -2071,6 +2153,7 @@ Deletes the rule specified by Rule ID.
 #### Base Command
 
 `gcb-delete-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2086,8 +2169,11 @@ Deletes the rule specified by Rule ID.
 | GoogleChronicleBackstory.DeleteRule.actionStatus | String | Whether the rule is successfully deleted or not. | 
 
 #### Command Example
+
 ```!gcb-delete-rule rule_id=ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2102,12 +2188,14 @@ Deletes the rule specified by Rule ID.
 #### Human Readable Output
 
 >### Rule with ID ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b deleted successfully.
+
 >|Rule ID|Action Status|
 >|---|---|
 >| ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b | SUCCESS |
 
 
 ### 13. gcb-create-rule-version
+
 ---
 Creates a new version of an existing rule.
 
@@ -2115,6 +2203,7 @@ Creates a new version of an existing rule.
 #### Base Command
 
 `gcb-create-rule-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2145,8 +2234,11 @@ Creates a new version of an existing rule.
 | GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
 
 #### Command Example
+
 ```!gcb-create-rule-version rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 rule_text="rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2170,12 +2262,14 @@ Creates a new version of an existing rule.
 #### Human Readable Output
 
 >### New Rule Version Details
+
 >|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
 >|---|---|---|---|---|---|---|---|
 >| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655965335_343423000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-23T06:22:15.343423Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
 
 
 ### 14. gcb-change-rule-alerting-status
+
 ---
 Updates the alerting status for a rule specified by Rule ID.
 
@@ -2183,6 +2277,7 @@ Updates the alerting status for a rule specified by Rule ID.
 #### Base Command
 
 `gcb-change-rule-alerting-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2200,8 +2295,11 @@ Updates the alerting status for a rule specified by Rule ID.
 | GoogleChronicleBackstory.RuleAlertingChange.alertingStatus | String | New alerting status for the rule. | 
 
 #### Command Example
+
 ```!gcb-change-rule-alerting-status alerting_status=enable rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2217,6 +2315,7 @@ Updates the alerting status for a rule specified by Rule ID.
 #### Human Readable Output
 
 >### Alerting Status
+
 >Alerting status for the rule with ID ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 has been successfully enabled.
 > 
 >|Rule ID|Action Status|
@@ -2225,6 +2324,7 @@ Updates the alerting status for a rule specified by Rule ID.
 
 
 ### 15. gcb-change-live-rule-status
+
 ---
 Updates the live rule status for a rule specified by Rule ID.
 
@@ -2232,6 +2332,7 @@ Updates the live rule status for a rule specified by Rule ID.
 #### Base Command
 
 `gcb-change-live-rule-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2249,8 +2350,11 @@ Updates the live rule status for a rule specified by Rule ID.
 | GoogleChronicleBackstory.LiveRuleStatusChange.liveRuleStatus | String | New live rule status for the rule. | 
 
 #### Command Example
+
 ```!gcb-change-live-rule-status live_rule_status=enable rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2266,6 +2370,7 @@ Updates the live rule status for a rule specified by Rule ID.
 #### Human Readable Output
 
 >### Live Rule Status
+
 >Live rule status for the rule with ID ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 has been successfully enabled.
 > 
 >|Rule ID|Action Status|
@@ -2274,6 +2379,7 @@ Updates the live rule status for a rule specified by Rule ID.
 
 
 ### 16. gcb-start-retrohunt
+
 ---
 Initiate a retrohunt for the specified rule.
 
@@ -2281,6 +2387,7 @@ Initiate a retrohunt for the specified rule.
 #### Base Command
 
 `gcb-start-retrohunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2303,8 +2410,11 @@ Initiate a retrohunt for the specified rule.
 | GoogleChronicleBackstory.RetroHunt.state | String | Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE, or CANCELLED. | 
 
 #### Command Example
+
 ```!gcb-start-retrohunt rule_id=ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 start_time="52 weeks"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2324,12 +2434,14 @@ Initiate a retrohunt for the specified rule.
 #### Human Readable Output
 
 >### Retrohunt Details
+
 >|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|State|
 >|---|---|---|---|---|---|---|
 >| oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2021-06-17T07:08:19.991404Z | 2022-06-16T06:58:19.994598Z | 2022-06-16T07:08:21.958022Z | RUNNING |
 
 
 ### 17. gcb-get-retrohunt
+
 ---
 Get retrohunt for a specific version of rule.
 
@@ -2337,6 +2449,7 @@ Get retrohunt for a specific version of rule.
 #### Base Command
 
 `gcb-get-retrohunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2360,8 +2473,11 @@ Get retrohunt for a specific version of rule.
 | GoogleChronicleBackstory.RetroHunt.progressPercentage | Number | Percentage progress towards retrohunt completion \(0.00 to 100.00\). |
 
 #### Command Example
+
 ```!gcb-get-retrohunt id=ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818 retrohunt_id=oh_cbb6b859-5c9d-4af9-8d74-1a58321078ad```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2383,12 +2499,14 @@ Get retrohunt for a specific version of rule.
 #### Human Readable Output
 
 >### Retrohunt Details
+
 >|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|Retrohunt End Time|State|Progress Percentage|
 >|---|---|---|---|---|---|---|---|---|
 >| oh_cbb6b859-5c9d-4af9-8d74-1a58321078ad | ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818 | ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818@v_1655291303_302767000 | 2022-06-08T13:03:04.793333Z | 2022-06-15T13:03:06.834384Z | 2022-06-15T13:05:12.774180Z | 2022-06-15T13:05:46.894926Z | DONE | 100 |
 
 
 ### 18. gcb-list-retrohunts
+
 ---
 List retrohunts for a rule.
 
@@ -2396,6 +2514,7 @@ List retrohunts for a rule.
 #### Base Command
 
 `gcb-list-retrohunts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2422,8 +2541,11 @@ List retrohunts for a rule.
 | GoogleChronicleBackstory.RetroHunt.progressPercentage | Number | Percentage progress towards retrohunt completion \(0.00 to 100.00\). | 
 
 #### Command Example
+
 ```!gcb-list-retrohunts page_size=3```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2468,6 +2590,7 @@ List retrohunts for a rule.
 #### Human Readable Output
 
 >### Retrohunt Details
+
 >|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|Retrohunt End Time|State|Progress Percentage|
 >|---|---|---|---|---|---|---|---|---|
 >| oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2021-06-17T07:08:19.991404Z | 2022-06-16T06:58:19.994598Z | 2022-06-16T07:08:21.958022Z |  | RUNNING | 6.59 |
@@ -2478,6 +2601,7 @@ List retrohunts for a rule.
 
 
 ### 19. gcb-cancel-retrohunt
+
 ---
 Cancel a retrohunt for a specified rule.
 
@@ -2485,6 +2609,7 @@ Cancel a retrohunt for a specified rule.
 #### Base Command
 
 `gcb-cancel-retrohunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2502,8 +2627,11 @@ Cancel a retrohunt for a specified rule.
 | GoogleChronicleBackstory.RetroHunt.cancelled | Boolean | Whether the retrohunt is cancelled or not. | 
 
 #### Command Example
+
 ```!gcb-cancel-retrohunt id=ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 retrohunt_id=oh_5fd39b3d-5814-4ce3-ad4f-244aa943d020```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2519,6 +2647,7 @@ Cancel a retrohunt for a specified rule.
 #### Human Readable Output
 
 >### Cancelled Retrohunt
+
 >Retrohunt for the rule with ID ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 has been successfully cancelled.
 >
 >|ID|Retrohunt ID|Action Status|
@@ -2527,6 +2656,7 @@ Cancel a retrohunt for a specified rule.
 
 
 ### 20. gcb-list-reference-list
+
 ---
 Retrieve all the reference lists.
 
@@ -2534,6 +2664,7 @@ Retrieve all the reference lists.
 #### Base Command
 
 `gcb-list-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2551,10 +2682,14 @@ Retrieve all the reference lists.
 | GoogleChronicleBackstory.ReferenceLists.description | String | Description of the list. | 
 | GoogleChronicleBackstory.ReferenceLists.createTime | Date | Time when the list was created. | 
 | GoogleChronicleBackstory.ReferenceLists.lines | String | List of line items. | 
+| GoogleChronicleBackstory.ReferenceLists.contentType | String | Content type of the reference list. | 
 
 #### Command Example
+
 ```!gcb-list-reference-list page_size=3```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2562,16 +2697,19 @@ Retrieve all the reference lists.
             {
                 "createTime": "2022-06-14T06:06:35.787791Z",
                 "description": "sample list",
+                "contentType": "PLAIN_TEXT",
                 "name": "test_1"
             },
             {
                 "createTime": "2022-06-15T06:43:45.685951Z",
                 "description": "sample list",
+                "contentType": "PLAIN_TEXT",
                 "name": "Builtin"
             },
             {
                 "createTime": "2022-06-14T10:01:23.994415Z",
                 "description": "sample",
+                "contentType": "PLAIN_TEXT",
                 "name": "Certificate_Asset"
             }
         ],
@@ -2583,16 +2721,18 @@ Retrieve all the reference lists.
 #### Human Readable Output
 
 >### Reference List Details
->|Name|Creation Time|Description|
->|---|---|---|
->| test_1 | 2022-06-14T06:06:35.787791Z | sample list |
->| Builtin | 2022-06-15T06:43:45.685951Z | sample list |
->| Certificate_Asset | 2022-06-14T10:01:23.994415Z | sample |
+
+>|Name|Content Type|Creation Time|Description|
+>|---|---|---|---|
+>| test_1 | PLAIN_TEXT |2022-06-14T06:06:35.787791Z | sample list |
+>| Builtin | PLAIN_TEXT |2022-06-15T06:43:45.685951Z | sample list |
+>| Certificate_Asset | PLAIN_TEXT |2022-06-14T10:01:23.994415Z | sample |
 >
 >Maximum number of reference lists specified in page_size has been returned. To fetch the next set of lists, execute the command with the page token as dummy-token
 
 
 ### 21. gcb-get-reference-list
+
 ---
 Returns the specified list.
 
@@ -2600,6 +2740,7 @@ Returns the specified list.
 #### Base Command
 
 `gcb-get-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2616,16 +2757,21 @@ Returns the specified list.
 | GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. | 
 | GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
 | GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. | 
+| GoogleChronicleBackstory.ReferenceList.contentType | String | Content type of the reference list. | 
 
 #### Command Example
+
 ```!gcb-get-reference-list name=test1```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
         "ReferenceList": {
             "createTime": "2022-06-10T08:59:34.885679Z",
             "description": "update",
+            "contentType": "PLAIN_TEXT",
             "lines": [
                 "line_item_1",
                 "// comment",
@@ -2640,12 +2786,14 @@ Returns the specified list.
 #### Human Readable Output
 
 >### Reference List Details
->|Name|Description|Creation Time|Content|
->|---|---|---|---|
->| test1 | update | 2022-06-10T08:59:34.885679Z | line_item_1,<br/>// comment,<br/>line_item_2 |
+
+>|Name|Content Type|Description|Creation Time|Content|
+>|---|---|---|---|---|
+>| test1 | PLAIN_TEXT | update | 2022-06-10T08:59:34.885679Z | line_item_1,<br/>// comment,<br/>line_item_2 |
 
 
 ### 22. gcb-create-reference-list
+
 ---
 Create a new reference list.
 
@@ -2653,6 +2801,7 @@ Create a new reference list.
 #### Base Command
 
 `gcb-create-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2660,7 +2809,8 @@ Create a new reference list.
 | name | Provide a unique name of the list to create a reference list. | Required | 
 | description | Description of the list. | Required | 
 | lines | Enter the content to be added into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3". | Required | 
-| delimiter | Delimiter by which the content of the list is seperated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+| delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+| content_type | Select the content type for reference list. Possible values are: PLAIN_TEXT, CIDR, REGEX. Default is PLAIN_TEXT. | Optional | 
 
 
 #### Context Output
@@ -2671,16 +2821,21 @@ Create a new reference list.
 | GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. | 
 | GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. | 
 | GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
+| GoogleChronicleBackstory.ReferenceList.contentType | String | Content type of the reference list. | 
 
 #### Command Example
+
 ```!gcb-create-reference-list description="List created for readme" lines=L1,L2,L3 name=XSOAR_GoogleChronicle_Backstory_README_List_```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
         "ReferenceList": {
             "createTime": "2022-06-16T07:45:37.285791Z",
             "description": "List created for readme",
+            "contentType": "PLAIN_TEXT",
             "lines": [
                 "L1",
                 "L2",
@@ -2695,12 +2850,14 @@ Create a new reference list.
 #### Human Readable Output
 
 >### Reference List Details
->|Name|Description|Creation Time|Content|
->|---|---|---|---|
->| XSOAR_GoogleChronicle_Backstory_README_List_ | List created for readme | 2022-06-16T07:45:37.285791Z | L1,<br/>L2,<br/>L3 |
+
+>|Name|Content Type|Description|Creation Time|Content|
+>|---|---|---|---|---|
+>| XSOAR_GoogleChronicle_Backstory_README_List_ | PLAIN_TEXT |List created for readme | 2022-06-16T07:45:37.285791Z | L1,<br/>L2,<br/>L3 | PLAIN_TEXT |
 
 
 ### 23. gcb-update-reference-list
+
 ---
 Updates an existing reference list.
 
@@ -2708,6 +2865,7 @@ Updates an existing reference list.
 #### Base Command
 
 `gcb-update-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2715,7 +2873,8 @@ Updates an existing reference list.
 | name | Provide a unique name of the list to update. | Required | 
 | lines | Enter the content to be updated into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use gcb-get-reference-list to retrieve the content and description of the list. | Required | 
 | description | Description to be updated of the list. | Optional | 
-| delimiter | Delimiter by which the content of the list is seperated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+| delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+| content_type | Select the content type for reference list. Possible values are: PLAIN_TEXT, CIDR, REGEX. | Optional | 
 
 
 #### Context Output
@@ -2726,16 +2885,21 @@ Updates an existing reference list.
 | GoogleChronicleBackstory.ReferenceList.description | String | Description of the list. | 
 | GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. | 
 | GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
+| GoogleChronicleBackstory.ReferenceList.contentType | String | Content type of the reference list. | 
 
 #### Command Example
+
 ```!gcb-update-reference-list lines=Line1,Line2,Line3 name=XSOAR_GoogleChronicle_Backstory_README_List```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
         "ReferenceList": {
             "createTime": "2022-06-16T07:11:11.380991Z",
             "description": "list created for readme",
+            "contentType": "PLAIN_TEXT",
             "lines": [
                 "Line1",
                 "Line2",
@@ -2750,12 +2914,67 @@ Updates an existing reference list.
 #### Human Readable Output
 
 >### Updated Reference List Details
->|Name|Description|Creation Time|Content|
->|---|---|---|---|
->| XSOAR_GoogleChronicle_Backstory_README_List | list created for readme | 2022-06-16T07:11:11.380991Z | Line1,<br/>Line2,<br/>Line3 |
+
+>|Name|Content Type|Description|Creation Time|Content|
+>|---|---|---|---|---|
+>| XSOAR_GoogleChronicle_Backstory_README_List | PLAIN_TEXT | list created for readme | 2022-06-16T07:11:11.380991Z | Line1,<br/>Line2,<br/>Line3 | 
+
+### 24. gcb-verify-reference-list
+
+***
+Validates list content and returns any errors found for each line.
+
+#### Base Command
+
+`gcb-verify-reference-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lines | Enter the content to be validated in the reference list.<br/>Format accepted is: 'Line 1, Line 2, Line 3'. | Required | 
+| content_type | Select the content type for reference list. Possible values are: PLAIN_TEXT, CIDR, REGEX. Default is PLAIN_TEXT. | Optional | 
+| delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.VerifyReferenceList.success | Boolean | Whether lines content are valid or not. | 
+| GoogleChronicleBackstory.VerifyReferenceList.errors.linenumber | Number | The line number where the error occurred. | 
+| GoogleChronicleBackstory.VerifyReferenceList.errors.errorMessage | String | The error message describing the invalid pattern. | 
+| GoogleChronicleBackstory.VerifyReferenceList.command_name | String | The name of the command. | 
+
+#### Command example
+```!gcb-verify-reference-list lines="1.2.3.4" content_type=CIDR```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "VerifyReferenceList": {
+            "command_name": "gcb-verify-reference-list",
+            "errors": [
+                {
+                    "errorMessage": "invalid cidr pattern 1.2.3.4",
+                    "lineNumber": 1
+                }
+            ],
+            "success": false
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### The following lines contain invalid CIDR pattern.
+>|Line Number|Message|
+>|---|---|
+>| 1 | invalid cidr pattern 1.2.3.4 |
 
 
-### 24. gcb-test-rule-stream
+### 25. gcb-test-rule-stream
+
 ---
 Test a rule over a specified time range. Return any errors and any detections up to the specified maximum.
 
@@ -2763,6 +2982,7 @@ Test a rule over a specified time range. Return any errors and any detections up
 #### Base Command
 
 `gcb-test-rule-stream`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                           | **Required** |
@@ -2822,8 +3042,11 @@ Test a rule over a specified time range. Return any errors and any detections up
 | GoogleChronicleBackstory.StreamRules.list.detection.detectionTime | Date | The time period the detection was found in. | 
 
 #### Command example
+
 ```!gcb-test-rule-stream rule_text="rule demoRuleCreatedFromAPIVersion2 {meta:author = \"securityuser2\" description = \"double event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition:$e}" start_time="2022-11-24T00:00:00Z" end_time="2022-12-08T00:00:00Z" max_results=1```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2935,12 +3158,13 @@ Test a rule over a specified time range. Return any errors and any detections up
 #### Human Readable Output
 
 >### Detection(s)
+
 >|Detection ID|Detection Type|Detection Time|Events|
 >|---|---|---|---|
 >| de_681b4417-27dc-ba3a-7db9-0388a7954c07 | RULE_DETECTION | 2022-11-24T06:56:59.165381Z | **Event Timestamp:** 2022-11-24T06:56:59.165381Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** activedir.stackedpads.local<br/>**Queried Domain:** 7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local |
 
 
-### 25. gcb-list-useraliases
+### 26. gcb-list-useraliases
 
 ***
 Lists all the aliases of a user in an enterprise for a specified user identifier and time period.
@@ -3003,8 +3227,11 @@ Lists all the aliases of a user in an enterprise for a specified user identifier
 | GoogleChronicleBackstory.UserAliases.user.aliases.relations.relationship | String | Relationship between entities in the relations. | 
 
 #### Command example
+
 ```!gcb-list-useraliases user_identifier_type="Product object ID" user_identifier="test_product_entity_id"```
+
 #### Context Example
+
 ```json
 {
   "GoogleChronicleBackstory.UserAliases(val.user.email == obj.user.email && val.user.username == obj.user.username && val.user.windows_sid == obj.user.windows_sid && val.user.employee_id == obj.user.employee_id && val.user.product_object_id == obj.user.product_object_id ) ": {
@@ -3082,13 +3309,14 @@ Lists all the aliases of a user in an enterprise for a specified user identifier
 #### Human Readable Output
 
 >### User Aliases:
+
 >|User ID|Product Object ID|Product Name|Vendor Name|Start Time|End Time|
 >|---|---|---|---|---|---|
 >| admin | test_product_entity_id | test_product_name | test_vendor_name | 2023-04-26T00:00:00Z | 2023-01-08T06:47:56.197021Z |
 >| admin | test_product_entity_id_1 | Configuration Management Database (CMDB) | vendor_name | 2023-01-08T06:47:56.197021Z | 2023-06-12T00:00:00Z |
 
 
-### 26. gcb-list-assetaliases
+### 27. gcb-list-assetaliases
 
 ***
 Lists all the aliases of an asset in an enterprise for the specified asset identifier and time period.
@@ -3139,8 +3367,11 @@ Lists all the aliases of an asset in an enterprise for the specified asset ident
 | GoogleChronicleBackstory.AssetAliases.asset.aliases.entity.asset.attribute.labels.value | String | The value of an attribute label associated with the asset. | 
 
 #### Command example
+
 ```!gcb-list-assetaliases asset_identifier_type="Host Name" asset_identifier="windows-endpoint"```
+
 #### Context Example
+
 ```json
 {
   "GoogleChronicleBackstory.AssetAliases(val.asset.asset_ip_address == obj.asset.asset_ip_address && val.asset.product_id == obj.asset.product_id && val.asset.mac == obj.asset.mac && val.asset.hostname == obj.asset.hostname)": {
@@ -3183,13 +3414,14 @@ Lists all the aliases of an asset in an enterprise for the specified asset ident
 #### Human Readable Output
 
 >### Asset Aliases:
+
 >|Asset ID|Host Name|Start Time|End Time|
 >|---|---|---|---|
 >|  | windows-endpoint | 2023-01-01T00:00:00Z | 2023-01-01T00:00:01Z |
 >| test_asset_id | windows-endpoint | 2023-01-01T00:00:00Z | 2023-01-01T00:00:01Z |
 
 
-### 27. gcb-list-curatedrules
+### 28. gcb-list-curatedrules
 
 ***
 List curated rules.
@@ -3225,8 +3457,11 @@ List curated rules.
 | GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of Rules. Absent if this is the last page. |
 
 #### Command example
+
 ```!gcb-list-curatedrules page_size="2"```
+
 #### Context Example
+
 ```json
 {
   "GoogleChronicleBackstory": {
@@ -3275,6 +3510,7 @@ List curated rules.
 #### Human Readable Output
 
 >### Curated Rules:
+
 >|Rule ID|Rule Name|Severity|Rule Type|Rule Set|Description|
 >|---|---|---|---|---|---|
 >| ur_ttp_GCP__Global | GCE SSH Keys | Low | SINGLE_EVENT| 00000000-0000-0000-0000-000000000000 | Identifies the addition of project-wide SSH keys where there were previously none. |
@@ -3283,7 +3519,7 @@ List curated rules.
 >Maximum number of curated rules specified in page_size has been returned. To fetch the next set of curated rules, execute the command with the page token as next_page_token.
 
 
-### 28. gcb-list-curatedrule-detections
+### 29. gcb-list-curatedrule-detections
 
 ***
 Return the detections for the specified curated rule identifier.
@@ -3763,8 +3999,11 @@ Return the detections for the specified curated rule identifier.
 | GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of detections. Absent if this is the last page. | 
 
 #### Command example
+
 ```!gcb-list-curatedrule-detections page_size="2"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -4192,7 +4431,8 @@ Return the detections for the specified curated rule identifier.
 
 #### Human Readable Output
 
->### Curated Detection(s) Details For Rule: [GCP Secret Manager Mass Deletion](https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion
+>### Curated Detection(s) Details For Rule: [GCP Secret Manager Mass Deletion](<https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion>
+
 >|Detection ID|Description|Detection Type|Detection Time|Events|Alert State|Detection Severity|Detection Risk-Score|
 >|---|---|---|---|---|---|---|---|
 >| [de_50fd0957-0959-0000-d556-c6f8000016b1](https://dummy-chronicle/alert?alertId=de_50fd0957-0959-0000-d556-c6f8000016b1) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
@@ -4202,10 +4442,11 @@ Return the detections for the specified curated rule identifier.
 >Maximum number of detections specified in page_size has been returned. To fetch the next set of detections, execute the command with the page token as next_page_token.
 
 
-### 29. gcb-udm-search
+### 30. gcb-udm-search
 
 ***
 Lists the events for the specified UDM Search query.
+Note: The underlying API has the rate limit of 120 queries per hour.
 
 #### Base Command
 
@@ -4647,8 +4888,11 @@ Lists the events for the specified UDM Search query.
 | GoogleChronicleBackstory.Events.securityResult.urlBackToProduct | String | URL to direct you to the source product console for this security event. | 
 
 #### Command example
+
 ```!gcb-udm-search query="ip=\"0.0.0.1\"" limit="2"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -4836,6 +5080,7 @@ Lists the events for the specified UDM Search query.
 #### Human Readable Output
 
 >### Event(s) Details
+
 >|Event ID|Event Timestamp|Event Type|Security Results|Principal Asset Identifier|Target Asset Identifier|Product Name|Vendor Name|Queried Domain|
 >|---|---|---|---|---|---|---|---|---|
 >| 010000= | 2023-01-14T00:59:52.110Z | REGISTRY_MODIFICATION | **Severity:** INFORMATIONAL<br>**Summary:** Registry value set<br>**Rule Name:** technique_id=T0000,technique_name=Service Creation<br><br>**Actions:** ALLOW<br>**Rule Name:** EventID: 10 | active.stack.local | 0.0.0.1 | Microsoft-Windows-Sysmon | Microsoft |  |
@@ -4843,3 +5088,653 @@ Lists the events for the specified UDM Search query.
 
 
 >Maximum number of events specified in limit has been returned. There might still be more events in your Chronicle account. To fetch the next set of events, execute the command with the end time as 2023-01-14T00:56:57.372Z.
+
+
+### 31. gcb-verify-value-in-reference-list
+
+***
+Check if provided values are found in the reference lists in Google Chronicle.
+
+#### Base Command
+
+`gcb-verify-value-in-reference-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| values | Specify the values to search in reference lists.<br/>Format accepted is: "value 1, value 2, value 3". | Required | 
+| reference_list_names | Specify the reference list names to search through. Supports comma separated values. | Required | 
+| case_insensitive_search | If set to true, the command performs case insensitive matching. Possible values are: True, False. Default is False. | Optional | 
+| delimiter | Delimiter by which the content of the values list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ",". | Optional | 
+| add_not_found_reference_lists | If set to true, the command will add the not found reference list names to the HR and the context. Possible values are: True, False. Default is False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.VerifyValueInReferenceList.value | String | The item value to search in the reference list. | 
+| GoogleChronicleBackstory.VerifyValueInReferenceList.found_in_lists | String | List of Reference list names, where item was found. | 
+| GoogleChronicleBackstory.VerifyValueInReferenceList.not_found_in_lists | String | List of Reference list names, where item not was found. | 
+| GoogleChronicleBackstory.VerifyValueInReferenceList.overall_status | String | Whether value found in any reference list. | 
+
+#### Command example
+```!gcb-verify-value-in-reference-list reference_list_names="list1,list2" values="value1;value2;value4" delimiter=; case_insensitive_search=True add_not_found_reference_lists=True```
+
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "VerifyValueInReferenceList": [
+            {
+                "case_insensitive": true,
+                "value": "value1",
+                "found_in_lists": [
+                    "list1"
+                ],
+                "not_found_in_lists": [
+                    "list2"
+                ],
+                "overall_status": "Found"
+            },
+            {
+                "case_insensitive": true,
+                "value": "value2",
+                "found_in_lists": [
+                    "list1"
+                ],
+                "not_found_in_lists": [
+                    "list2"
+                ],
+                "overall_status": "Found"
+            },
+            {
+                "case_insensitive": true,
+                "value": "value4",
+                "found_in_lists": [],
+                "not_found_in_lists": [
+                    "list1",
+                    "list2"
+                ],
+                "overall_status": "Not Found"
+            }
+        ]
+    }
+}
+```
+
+
+#### Human Readable Output
+
+>### Successfully searched provided values in the reference lists in Google Chronicle.
+>|Value|Found In Lists|Not Found In Lists|Overall Status|
+>|---|---|---|---|
+>| value1 | list1 | list2 | Found |
+>| value2 | list1 | list2 | Found |
+>| value4 |  | list1, list2 | Not Found |
+
+
+
+### 32. gcb-verify-rule
+
+***
+Verifies that a rule is a valid YARA-L 2.0 rule without creating a new rule or evaluating it over data.
+
+#### Base Command
+
+`gcb-verify-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_text | Specify the Rule text in YARA-L 2.0 format to verify. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.VerifyRule.success | Boolean | Whether rule_text has a valid YARA-L 2.0 format. | 
+| GoogleChronicleBackstory.VerifyRule.context | String | Contains the success message or the compilation error if the verification fails. | 
+| GoogleChronicleBackstory.VerifyRule.command_name | String | The command name. | 
+
+#### Command example
+```!gcb-verify-rule rule_text="rule singleEventRule2 { meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e }"```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "VerifyRule": {
+            "command_name": "gcb-verify-rule",
+            "context": "identified no known errors",
+            "success": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Identified no known errors
+
+### 33. gcb-get-event
+
+***
+Get the specific event with the given ID from Chronicle. <br/><br/>Note: This command returns more than 60 different types of events. Any event would have only specific output context set. Refer the UDM documentation to figure out the output properties specific to the event types.
+
+#### Base Command
+
+`gcb-get-event`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | Specify the ID of the event. <br/><br/>Note: The event_id can be retrieved from the output context path (<span>GoogleChronicleBackstory.Events.id</span>) of the gcb-list-events command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.Events.eventType | String | Specifies the type of the event. | 
+| GoogleChronicleBackstory.Events.eventTimestamp | Date | The GMT timestamp when the event was generated. | 
+| GoogleChronicleBackstory.Events.collectedTimestamp | Date | The GMT timestamp when the event was collected by the vendor's local collection infrastructure. | 
+| GoogleChronicleBackstory.Events.description | String | Human-readable description of the event. | 
+| GoogleChronicleBackstory.Events.productEventType | String | Short, descriptive, human-readable, and product-specific event name or type. | 
+| GoogleChronicleBackstory.Events.productLogId | String | A vendor-specific event identifier to uniquely identify the event \(a GUID\). Users might use this identifier to search the vendor's proprietary console for the event in question. | 
+| GoogleChronicleBackstory.Events.productName | String | Specifies the name of the product. | 
+| GoogleChronicleBackstory.Events.productVersion | String | Specifies the version of the product. | 
+| GoogleChronicleBackstory.Events.urlBackToProduct | String | URL linking to a relevant website where you can view more information about this specific event or the general event category. | 
+| GoogleChronicleBackstory.Events.vendorName | String | Specifies the product vendor's name. | 
+| GoogleChronicleBackstory.Events.principal.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Events.principal.email | String | Email address. | 
+| GoogleChronicleBackstory.Events.principal.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Events.principal.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Events.principal.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Events.principal.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Events.principal.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Events.principal.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Events.principal.mac | String | MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Events.principal.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Events.principal.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Events.principal.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.principal.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.principal.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.principal.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.principal.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.principal.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.principal.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.principal.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Events.principal.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Events.principal.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.principal.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Events.principal.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.principal.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.principal.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.principal.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.principal.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.principal.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.principal.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.principal.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.principal.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Events.principal.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.principal.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.principal.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Events.principal.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Events.principal.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Events.principal.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Events.principal.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Events.target.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Events.target.email | String | Email address. | 
+| GoogleChronicleBackstory.Events.target.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Events.target.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Events.target.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Events.target.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Events.target.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Events.target.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Events.target.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Events.target.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Events.target.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Events.target.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.target.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.target.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.target.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.target.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.target.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.target.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.target.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Events.target.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Events.target.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.target.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Events.target.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.target.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.target.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.target.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.target.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.target.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.target.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.target.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.target.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Events.target.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.target.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.target.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Events.target.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Events.target.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Events.target.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Events.target.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Events.target.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Events.target.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Events.target.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Events.target.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Events.target.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Events.target.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Events.target.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Events.intermediary.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Events.intermediary.email | String | Email address. | 
+| GoogleChronicleBackstory.Events.intermediary.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Events.intermediary.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Events.intermediary.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Events.intermediary.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Events.intermediary.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Events.intermediary.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Events.intermediary.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Events.intermediary.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Events.intermediary.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Events.intermediary.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.intermediary.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.intermediary.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Events.intermediary.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Events.intermediary.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.intermediary.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.intermediary.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Events.intermediary.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.intermediary.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.intermediary.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Events.intermediary.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Events.intermediary.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Events.intermediary.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Events.src.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Events.src.email | String | Email address. | 
+| GoogleChronicleBackstory.Events.src.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Events.src.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Events.src.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Events.src.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Events.src.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Events.src.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Events.src.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Events.src.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Events.src.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Events.src.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.src.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.src.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.src.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.src.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.src.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.src.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.src.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Events.src.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Events.src.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.src.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Events.src.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.src.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.src.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.src.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.src.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.src.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.src.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.src.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.src.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Events.src.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.src.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.src.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Events.src.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Events.src.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Events.src.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Events.src.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Events.src.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Events.src.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Events.src.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Events.src.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Events.src.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Events.src.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Events.src.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Events.observer.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Events.observer.email | String | Email address. | 
+| GoogleChronicleBackstory.Events.observer.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Events.observer.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Events.observer.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Events.observer.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Events.observer.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Events.observer.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Events.observer.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Events.observer.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Events.observer.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Events.observer.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.observer.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.observer.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.observer.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.observer.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.observer.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.observer.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.observer.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Events.observer.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Events.observer.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.observer.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Events.observer.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.observer.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.observer.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.observer.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.observer.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.observer.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.observer.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.observer.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.observer.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Events.observer.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.observer.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.observer.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Events.observer.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Events.observer.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Events.observer.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Events.observer.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Events.about.assetId | String | Vendor-specific unique device identifier. | 
+| GoogleChronicleBackstory.Events.about.email | String | Email address. | 
+| GoogleChronicleBackstory.Events.about.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.Events.about.platform | String | Platform operating system. | 
+| GoogleChronicleBackstory.Events.about.platformPatchLevel | String | Platform operating system patch level. | 
+| GoogleChronicleBackstory.Events.about.platformVersion | String | Platform operating system version. | 
+| GoogleChronicleBackstory.Events.about.ip | String | IP address associated with a network connection. | 
+| GoogleChronicleBackstory.Events.about.port | String | Source or destination network port number when a specific network connection is described within an event. | 
+| GoogleChronicleBackstory.Events.about.mac | String | One or more MAC addresses associated with a device. | 
+| GoogleChronicleBackstory.Events.about.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.Events.about.url | String | Standard URL. | 
+| GoogleChronicleBackstory.Events.about.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.about.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.about.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.about.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.about.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.about.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.about.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.about.process.commandLine | String | Stores the command line string for the process. | 
+| GoogleChronicleBackstory.Events.about.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.Events.about.process.productSpecificParentProcessId | String | Stores the product specific process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.about.process.file | String | Stores the file name of the file in use by the process. | 
+| GoogleChronicleBackstory.Events.about.process.file.fileMetadata | String | Metadata associated with the file. | 
+| GoogleChronicleBackstory.Events.about.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.Events.about.process.file.md5 | String | MD5 hash value of the file. | 
+| GoogleChronicleBackstory.Events.about.process.file.mimeType | String | Multipurpose Internet Mail Extensions \(MIME\) type of the file. | 
+| GoogleChronicleBackstory.Events.about.process.file.sha1 | String | SHA-1 hash value of the file. | 
+| GoogleChronicleBackstory.Events.about.process.file.sha256 | String | SHA-256 hash value of the file. | 
+| GoogleChronicleBackstory.Events.about.process.file.size | String | Size of the file. | 
+| GoogleChronicleBackstory.Events.about.process.parentPid | String | Stores the process ID for the parent process. | 
+| GoogleChronicleBackstory.Events.about.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.Events.about.registry.registryKey | String | Stores the registry key associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.about.registry.registryValueName | String | Stores the name of the registry value associated with an application or system component. | 
+| GoogleChronicleBackstory.Events.about.registry.registryValueData | String | Stores the data associated with a registry value. | 
+| GoogleChronicleBackstory.Events.about.user.emailAddresses | String | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.Events.about.user.employeeId | String | Stores the human resources employee ID for the user. | 
+| GoogleChronicleBackstory.Events.about.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.Events.about.user.middleName | String | Stores the middle name for the user. | 
+| GoogleChronicleBackstory.Events.about.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.Events.about.user.groupid | String | Stores the group ID associated with a user. | 
+| GoogleChronicleBackstory.Events.about.user.phoneNumbers | String | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.Events.about.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.Events.about.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.Events.about.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.Events.about.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.Events.network.applicationProtocol | String | Indicates the network application protocol. | 
+| GoogleChronicleBackstory.Events.network.direction | String | Indicates the direction of network traffic. | 
+| GoogleChronicleBackstory.Events.network.email | String | Specifies the email address for the sender/recipient. | 
+| GoogleChronicleBackstory.Events.network.ipProtocol | String | Indicates the IP protocol. | 
+| GoogleChronicleBackstory.Events.network.receivedBytes | String | Specifies the number of bytes received. | 
+| GoogleChronicleBackstory.Events.network.sentBytes | String | Specifies the number of bytes sent. | 
+| GoogleChronicleBackstory.Events.network.dhcp.clientHostname | String | Hostname for the client. | 
+| GoogleChronicleBackstory.Events.network.dhcp.clientIdentifier | String | Client identifier. | 
+| GoogleChronicleBackstory.Events.network.dhcp.file | String | Filename for the boot image. | 
+| GoogleChronicleBackstory.Events.network.dhcp.flags | String | Value for the DHCP flags field. | 
+| GoogleChronicleBackstory.Events.network.dhcp.hlen | String | Hardware address length. | 
+| GoogleChronicleBackstory.Events.network.dhcp.hops | String | DHCP hop count. | 
+| GoogleChronicleBackstory.Events.network.dhcp.htype | String | Hardware address type. | 
+| GoogleChronicleBackstory.Events.network.dhcp.leaseTimeSeconds | String | Client-requested lease time for an IP address in seconds. | 
+| GoogleChronicleBackstory.Events.network.dhcp.opcode | String | BOOTP op code. | 
+| GoogleChronicleBackstory.Events.network.dhcp.requestedAddress | String | Client identifier. | 
+| GoogleChronicleBackstory.Events.network.dhcp.seconds | String | Seconds elapsed since the client began the address acquisition/renewal process. | 
+| GoogleChronicleBackstory.Events.network.dhcp.sname | String | Name of the server which the client has requested to boot from. | 
+| GoogleChronicleBackstory.Events.network.dhcp.transactionId | String | Client transaction ID. | 
+| GoogleChronicleBackstory.Events.network.dhcp.type | String | DHCP message type. | 
+| GoogleChronicleBackstory.Events.network.dhcp.chaddr | String | IP address for the client hardware. | 
+| GoogleChronicleBackstory.Events.network.dhcp.ciaddr | String | IP address for the client. | 
+| GoogleChronicleBackstory.Events.network.dhcp.giaddr | String | IP address for the relay agent. | 
+| GoogleChronicleBackstory.Events.network.dhcp.siaddr | String | IP address for the next bootstrap server. | 
+| GoogleChronicleBackstory.Events.network.dhcp.yiaddr | String | Your IP address. | 
+| GoogleChronicleBackstory.Events.network.dns.authoritative | String | Set to true for authoritative DNS servers. | 
+| GoogleChronicleBackstory.Events.network.dns.id | String | Stores the DNS query identifier. | 
+| GoogleChronicleBackstory.Events.network.dns.response | String | Set to true if the event is a DNS response. | 
+| GoogleChronicleBackstory.Events.network.dns.opcode | String | Stores the DNS OpCode used to specify the type of DNS query \(standard, inverse, server status, etc.\). | 
+| GoogleChronicleBackstory.Events.network.dns.recursionAvailable | String | Set to true if a recursive DNS lookup is available. | 
+| GoogleChronicleBackstory.Events.network.dns.recursionDesired | String | Set to true if a recursive DNS lookup is requested. | 
+| GoogleChronicleBackstory.Events.network.dns.responseCode | String | Stores the DNS response code as defined by RFC 1035, Domain Names - Implementation and Specification. | 
+| GoogleChronicleBackstory.Events.network.dns.truncated | String | Set to true if this is a truncated DNS response. | 
+| GoogleChronicleBackstory.Events.network.dns.questions.name | String | Stores the domain name. | 
+| GoogleChronicleBackstory.Events.network.dns.questions.class | String | Stores the code specifying the class of the query. | 
+| GoogleChronicleBackstory.Events.network.dns.questions.type | String | Stores the code specifying the type of the query. | 
+| GoogleChronicleBackstory.Events.network.dns.answers.binaryData | String | Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response. | 
+| GoogleChronicleBackstory.Events.network.dns.answers.class | String | Stores the code specifying the class of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.answers.data | String | Stores the payload or response to the DNS question for all responses encoded in UTF-8 format. | 
+| GoogleChronicleBackstory.Events.network.dns.answers.name | String | Stores the name of the owner of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.answers.ttl | String | Stores the time interval for which the resource record can be cached before the source of the information should again be queried. | 
+| GoogleChronicleBackstory.Events.network.dns.answers.type | String | Stores the code specifying the type of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.authority.binaryData | String | Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response. | 
+| GoogleChronicleBackstory.Events.network.dns.authority.class | String | Stores the code specifying the class of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.authority.data | String | Stores the payload or response to the DNS question for all responses encoded in UTF-8 format. | 
+| GoogleChronicleBackstory.Events.network.dns.authority.name | String | Stores the name of the owner of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.authority.ttl | String | Stores the time interval for which the resource record can be cached before the source of the information should again be queried. | 
+| GoogleChronicleBackstory.Events.network.dns.authority.type | String | Stores the code specifying the type of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.additional.binaryData | String | Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response. | 
+| GoogleChronicleBackstory.Events.network.dns.additional.class | String | Stores the code specifying the class of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.additional.data | String | Stores the payload or response to the DNS question for all responses encoded in UTF-8 format. | 
+| GoogleChronicleBackstory.Events.network.dns.additional.name | String | Stores the name of the owner of the resource record. | 
+| GoogleChronicleBackstory.Events.network.dns.additional.ttl | String | Stores the time interval for which the resource record can be cached before the source of the information should again be queried. | 
+| GoogleChronicleBackstory.Events.network.dns.additional.type | String | Stores the code specifying the type of the resource record. | 
+| GoogleChronicleBackstory.Events.network.email.from | String | Stores the from email address. | 
+| GoogleChronicleBackstory.Events.network.email.replyTo | String | Stores the reply_to email address. | 
+| GoogleChronicleBackstory.Events.network.email.to | String | Stores the to email addresses. | 
+| GoogleChronicleBackstory.Events.network.email.cc | String | Stores the cc email addresses. | 
+| GoogleChronicleBackstory.Events.network.email.bcc | String | Stores the bcc email addresses. | 
+| GoogleChronicleBackstory.Events.network.email.mailId | String | Stores the mail \(or message\) ID. | 
+| GoogleChronicleBackstory.Events.network.email.subject | String | Stores the email subject line. | 
+| GoogleChronicleBackstory.Events.network.ftp.command | String | Stores the FTP command. | 
+| GoogleChronicleBackstory.Events.network.http.method | String | Stores the HTTP request method. | 
+| GoogleChronicleBackstory.Events.network.http.referralUrl | String | Stores the URL for the HTTP referer. | 
+| GoogleChronicleBackstory.Events.network.http.responseCode | String | Stores the HTTP response status code, which indicates whether a specific HTTP request has been successfully completed. | 
+| GoogleChronicleBackstory.Events.network.http.useragent | String | Stores the User-Agent request header which includes the application type, operating system, software vendor or software version of the requesting software user agent. | 
+| GoogleChronicleBackstory.Events.authentication.authType | String | Type of system an authentication event is associated with \(Chronicle UDM\). | 
+| GoogleChronicleBackstory.Events.authentication.mechanism | String | Mechanism\(s\) used for authentication. | 
+| GoogleChronicleBackstory.Events.securityResult.about | String | Provide a description of the security result. | 
+| GoogleChronicleBackstory.Events.securityResult.action | String | Specify a security action. | 
+| GoogleChronicleBackstory.Events.securityResult.category | String | Specify a security category. | 
+| GoogleChronicleBackstory.Events.securityResult.confidence | String | Specify a confidence with regards to a security event as estimated by the product. | 
+| GoogleChronicleBackstory.Events.securityResult.confidenceDetails | String | Additional detail with regards to the confidence of a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.Events.securityResult.priority | String | Specify a priority with regards to a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.Events.securityResult.priorityDetails | String | Vendor-specific information about the security result priority. | 
+| GoogleChronicleBackstory.Events.securityResult.ruleId | String | Identifier for the security rule. | 
+| GoogleChronicleBackstory.Events.securityResult.ruleName | String | Name of the security rule. | 
+| GoogleChronicleBackstory.Events.securityResult.severity | String | Severity of a security event as estimated by the product vendor using values defined by the Chronicle UDM. | 
+| GoogleChronicleBackstory.Events.securityResult.severityDetails | String | Severity for a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.Events.securityResult.threatName | String | Name of the security threat. | 
+| GoogleChronicleBackstory.Events.securityResult.urlBackToProduct | String | URL to direct you to the source product console for this security event. | 
+
+#### Command Example
+
+```!gcb-get-event event_id="dummy_id"```
+
+#### Context Example
+
+```json
+{
+    "GoogleChronicleBackstory.Events(val.id == obj.id)": [
+      {
+        "eventTimestamp": "2024-11-12T12:19:59Z",
+        "eventType": "GENERIC_EVENT",
+        "vendorName": "NewClient",
+        "productName": "Private Access",
+        "productEventType": "APP_NOT_REACHABLE",
+        "description": "0",
+        "ingestedTimestamp": "2024-11-12T12:20:03.217859Z",
+        "id": "dummy_id",
+        "logType": "NEW_XYZ",
+        "baseLabels": {
+          "logTypes": [
+            "NEW_XYZ"
+          ],
+          "allowScopedAccess": true
+        },
+        "additional": {
+          "policy_processing_time": "0",
+          "idp": "0",
+          "server_setup_time": "0",
+          "connector": "0",
+          "client_to_client": "0",
+          "app_micro_tenant_id": "0",
+          "micro_tenant_id": "0",
+          "pra_capability_policy_id": "0",
+          "client_zen": "EU-DE-9490",
+          "customer": "New Demo Center",
+          "pra_credential_policy_id": "0",
+          "connector_zen": "0",
+          "pra_approval_id": "0",
+          "double_encryption": "Off",
+          "timestamp_connection_end": "2024-11-12T12:19:59.961Z",
+          "connection_id": "dummy_connection_id"
+        },
+        "principal": {
+          "user": {
+            "userDisplayName": "New LSS Client"
+          },
+          "port": 11522,
+          "location": {
+            "city": "New City",
+            "countryOrRegion": "US",
+            "regionCoordinates": {
+              "latitude": 0,
+              "longitude": 0
+            }
+          },
+          "natIp": [
+            "0.0.0.0"
+          ]
+        },
+        "target": {
+          "hostname": "0.0.0.0",
+          "user": {
+            "groupIdentifiers": [
+              "New Enterprise Server - User Status"
+            ]
+          },
+          "port": 11522,
+          "application": "New Enterprise Server - User Status"
+        },
+        "intermediary": [
+          {
+            "application": "0",
+            "resource": {
+              "attribute": {
+                "labels": [
+                  {
+                    "key": "new_total_bytes_tx_connector",
+                    "value": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "securityResult": [
+          {
+            "about": {
+              "labels": [
+                {
+                  "key": "connection_status",
+                  "value": "close"
+                }
+              ]
+            },
+            "ruleName": "0",
+            "description": "None of the App Connectors configured.",
+            "detectionFields": [
+              {
+                "key": "server",
+                "value": "0"
+              }
+            ]
+          }
+        ],
+        "network": {
+          "ipProtocol": "TCP",
+          "sessionId": "dummy"
+        }
+      }
+    ]
+  }
+```
+
+#### Human Readable Output
+
+>### General Information for the given event with ID: dummy_id
+>|Base Labels|Description|Event Timestamp|Event Type|Id|Ingested Timestamp|Log Type|Product Event Type|Product Name|Vendor Name|
+>|---|---|---|---|---|---|---|---|---|---|
+>| **logTypes**:<br>	***values***: NEW_XYZ<br>***allowScopedAccess***: True | 0 | 2024-11-12T12:19:59Z | GENERIC_EVENT | dummy_id | 2024-11-12T12:20:03.217859Z | NEW_XYZ | APP_NOT_REACHABLE | Private Access | NewClient |
+>
+>### Principal Information
+>|Location|Nat Ip|Port|User|
+>|---|---|---|---|
+>| ***city***: New City<br>***countryOrRegion***: US<br>**regionCoordinates**:<br>	***latitude***: 0.0<br>	***longitude***: 0.0 | ***values***: 0.0.0.0 | 11522 | ***userDisplayName***: New LSS Client |
+>
+>### Target Information
+>|Application|Hostname|Port|User|
+>|---|---|---|---|
+>| New Enterprise Server - User Status | 0.0.0.0 | 11522 | **groupIdentifiers**:<br>	***values***: New Enterprise Server - User Status |
+>
+>### Security Result Information
+>|About|Description|Detection Fields|Rule Name|
+>|---|---|---|---|
+>| **labels**:<br>	**-**	***key***: connection_status<br>		***value***: close | None of the App Connectors configured. | **-**	***key***: server<br>	***value***: 0 | 0 |
+>
+>### Network Information
+>|Ip Protocol|Session Id|
+>|---|---|
+>| TCP | dummy |

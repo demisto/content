@@ -8,11 +8,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS Query Logs For Indicators
-* Convert File Hash to Corresponding Hashes
 * Autofocus Query Samples, Sessions and Tags
-* PAN-OS Query Logs For Indicators
 * Convert file hash to corresponding hashes
+* PAN-OS Query Logs For Indicators
 
 ### Integrations
 
@@ -20,17 +18,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsInternalHostName
 * IsIPInRanges
 * IsIntegrationAvailable
+* IsInternalHostName
 * SetAndHandleEmpty
 
 ### Commands
 
-* prisma-cloud-network-search
+* cdl-query-threat-logs
 * cdl-query-traffic-logs
 * cdl-query-url-logs
-* cdl-query-threat-logs
+* prisma-cloud-network-search
 * xdr-get-alerts
 
 ## Playbook Inputs
@@ -44,9 +42,9 @@ This playbook does not use any integrations.
 | SHA1 | SHA1 hash of the indicator to hunt. |  | Optional |
 | IPAddresses | List of IP addresses. |  | Optional |
 | URLDomain | List of domains or urls. |  | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). |  | Optional |
-| InternalDomainName | The organization's internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the \| character to separate values such as \(demisto.com\|test.com\) |  | Optional |
-| InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. Checks if the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
+| InternalDomainName | The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the \| character to separate values such as \(demisto.com\|test.com\) |  | Optional |
+| InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. Checks if the hosts match the organization's naming convention. For example, the host testpc1 has the following regex \\w\{6\}\\d\{1\} |  | Optional |
 
 ## Playbook Outputs
 

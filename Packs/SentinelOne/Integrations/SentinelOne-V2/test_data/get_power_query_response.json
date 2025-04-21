@@ -1,0 +1,37 @@
+{
+    "data": {
+        "columns": [
+            {
+                "name": "eventTime",
+                "type": "INTEGER"
+            },
+            {
+                "name": "agentUuid",
+                "type": "STRING"
+            },
+            {
+                "name": "siteId",
+                "type": "STRING"
+            }
+        ],
+        "data": [
+            [
+                1724151854609,
+                "ed8f14f1-f35b-0eca-1c1e-e31e97aefc71",
+                "123456789"
+            ],
+            [
+                1724151823332,
+                "ed8f14f1-f35b-0eca-1c1e-e31e97aefc71",
+                "123456789"
+            ]
+        ],
+        "progress": 100,
+        "queryId": "pqe5a4cbb0a0f0981f4125976b49fb0ebb",
+        "recommendations": [
+            "Result set limited to 1000 rows by default. To display more rows, add a command like \"| limit 10000\"."
+        ],
+        "status": "FINISHED"
+    }
+    }
+    

@@ -4,28 +4,24 @@ FireEye Endpoint Security is an integrated solution that detects what others mis
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fireeye-endpoint-security-(hx)-v2).
 
-## Configure FireEye Endpoint Security (HX) v2 on Cortex XSOAR
+## Configure FireEye Endpoint Security (HX) v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEye Endpoint Security (HX) v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1:3000) | True |
-    | User Name | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Fetch limit | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 3 days) | False |
-    | Incidents Fetch Interval | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://192.168.0.1:3000) | True |
+| User Name | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| Fetch limit | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 3 days) | False |
+| Incidents Fetch Interval | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fireeye-hx-get-host-information
 ***
@@ -949,9 +945,9 @@ Fetches the results for a specific enterprise search.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| searchId | The Unique search ID. | Required | 
-
+|-------------------| --- |--------------|
+| searchId          | The Unique search ID. | Required     | 
+| limit             | Limit the number of results to return per search. | Optional     | 
 
 #### Context Output
 
@@ -1192,34 +1188,34 @@ Searches endpoints to check all hosts or a subset of hosts for a specific file o
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.Search.results.Timestamp - Modified | string | The time when the entry was last modified. | 
-| FireEyeHX.Search.results.File Text Written | string | The file text content. | 
-| FireEyeHX.Search.results.File Name | string | The name of the file. | 
-| FireEyeHX.Search.results.File Full Path | string | The full path of the file. | 
-| FireEyeHX.Search.results.File Bytes Written | string | The number of bytes written to the file. | 
-| FireEyeHX.Search.results.Size in bytes | string | The size of the file in bytes. | 
-| FireEyeHX.Search.results.Browser Version | string | The version of the browser. | 
-| FireEyeHX.Search.results.Browser Name | string | The name of the browser. | 
-| FireEyeHX.Search.results.Cookie Name | string | The name of the cookie. | 
-| FireEyeHX.Search.results.DNS Hostname | string | The name of the DNS host. | 
-| FireEyeHX.Search.results.URL | string | The event URL. | 
-| FireEyeHX.Search.results.Username | string | The event username. | 
-| FireEyeHX.Search.results.File MD5 Hash | string | The MD5 hash of the file. | 
+| FireEyeHX.Search.results.data.Timestamp - Modified | string | The time when the entry was last modified. | 
+| FireEyeHX.Search.results.data.File Text Written | string | The file text content. | 
+| FireEyeHX.Search.results.data.File Name | string | The name of the file. | 
+| FireEyeHX.Search.results.data.File Full Path | string | The full path of the file. | 
+| FireEyeHX.Search.results.data.File Bytes Written | string | The number of bytes written to the file. | 
+| FireEyeHX.Search.results.data.Size in bytes | string | The size of the file in bytes. | 
+| FireEyeHX.Search.results.data.Browser Version | string | The version of the browser. | 
+| FireEyeHX.Search.results.data.Browser Name | string | The name of the browser. | 
+| FireEyeHX.Search.results.data.Cookie Name | string | The name of the cookie. | 
+| FireEyeHX.Search.results.data.DNS Hostname | string | The name of the DNS host. | 
+| FireEyeHX.Search.results.data.URL | string | The event URL. | 
+| FireEyeHX.Search.results.data.Username | string | The event username. | 
+| FireEyeHX.Search.results.data.File MD5 Hash | string | The MD5 hash of the file. | 
 | FireEyeHX.Search.host._id | string | The ID of the host. | 
 | FireEyeHX.Search.host.hostname | string | The name of host. | 
 | FireEyeHX.Search.host.url | string | The Inner FireEye host URL. | 
 | FireEyeHX.Search.results.data | string | The ID of the performed search. | 
-| FireEyeHX.Search.results.Timestamp - Accessed | string | The last accessed time. | 
-| FireEyeHX.Search.results.Port | number | The Port. | 
-| FireEyeHX.Search.results.Process ID | string | The ID of the process. | 
-| FireEyeHX.Search.results.Local IP Address | string | The local IP Address. | 
-| FireEyeHX.Search.results.Local IP Address | string | The local IP Address. | 
-| FireEyeHX.Search.results.Local Port | number | The local Port. | 
-| FireEyeHX.Search.results.Username | string | The username. | 
-| FireEyeHX.Search.results.Remote Port | number | The remote port. | 
-| FireEyeHX.Search.results.IP Address | string | The IP address. | 
-| FireEyeHX.Search.results.Process Name | string | The process name. | 
-| FireEyeHX.Search.results.Timestamp - Event | string | The timestamp of the event. | 
+| FireEyeHX.Search.results.data.Timestamp - Accessed | string | The last accessed time. | 
+| FireEyeHX.Search.results.data.Port | number | The Port. | 
+| FireEyeHX.Search.results.data.Process ID | string | The ID of the process. | 
+| FireEyeHX.Search.results.data.Local IP Address | string | The local IP Address. | 
+| FireEyeHX.Search.results.data.Local IP Address | string | The local IP Address. | 
+| FireEyeHX.Search.results.data.Local Port | number | The local Port. | 
+| FireEyeHX.Search.results.data.Username | string | The username. | 
+| FireEyeHX.Search.results.data.Remote Port | number | The remote port. | 
+| FireEyeHX.Search.results.data.IP Address | string | The IP address. | 
+| FireEyeHX.Search.results.data.Process Name | string | The process name. | 
+| FireEyeHX.Search.results.data.Timestamp - Event | string | The timestamp of the event. | 
 | FireEyeHX.Search.results.type | string | The type of the event. | 
 | FireEyeHX.Search.results.id | string | The ID of the result. | 
 

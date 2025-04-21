@@ -1,0 +1,33 @@
+[
+    {
+        "calculated_severity": 0,
+        "_vectra_specific": {
+            "UI_URL": "https://vectra.test/hosts/1?pivot=Vectra_AI-XSOAR-2.0.0",
+            "entity_type": "host"
+        },
+        "assignment_details": [
+            {
+                "assigned_by": {
+                    "username": ""
+                },
+                "assigned_to": {
+                    "username": ""
+                },
+                "date_assigned": "",
+                "date_resolved": "",
+                "id": "",
+                "outcome": {
+                    "title": ""
+                },
+                "resolved_by": {
+                    "username": ""
+                }
+            }
+        ],
+        "certainty": 90,
+        "detection_details": [],
+        "id": 1,
+        "last_modified": "2023-09-20T19:00:00+00:00",
+        "notes": []
+    }
+]

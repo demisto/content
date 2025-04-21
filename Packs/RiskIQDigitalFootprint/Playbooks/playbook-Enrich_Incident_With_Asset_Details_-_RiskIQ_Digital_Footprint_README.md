@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Enrich Incident With Asset Details - RiskIQ Digital Footprint](https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/Enrich_Incident_With_Asset_Details_-_RiskIQ_Digital_Footprint.png)
+![Enrich Incident With Asset Details - RiskIQ Digital Footprint](../doc_files/Enrich_Incident_With_Asset_Details_-_RiskIQ_Digital_Footprint.png)

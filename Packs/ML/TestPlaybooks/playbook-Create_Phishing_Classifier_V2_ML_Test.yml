@@ -1,28 +1,28 @@
-elasticcommonfields: {}
 id: Create Phishing Classifier V2 ML Test
 version: -1
 name: Create Phishing Classifier V2 ML Test
-description: Test CreatePhishingClassifierML playbook
+description: Test CreatePhishingClassifierML playbook.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4aeda861-fb7f-490a-89ce-397ea2c1fbca
+    taskid: fbadefab-5b4a-4360-853c-81893d0cb492
     type: start
     task:
-      id: 4aeda861-fb7f-490a-89ce-397ea2c1fbca
+      id: fbadefab-5b4a-4360-853c-81893d0cb492
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "30"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 50
         }
       }
@@ -31,12 +31,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8bbf2fce-f2f1-49fc-8230-fe5b64b5a3c2
+    taskid: 0a894a8b-7b17-4ab4-8f79-643b3191165d
     type: regular
     task:
-      id: 8bbf2fce-f2f1-49fc-8230-fe5b64b5a3c2
+      id: 0a894a8b-7b17-4ab4-8f79-643b3191165d
       version: -1
       name: Create incidents
       scriptName: TestCreateIncidentsForPhishingClassifier
@@ -55,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1010
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -64,16 +67,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 29dd84d6-efb8-4487-8003-141b98934662
+    taskid: baf8693e-4995-47f9-805f-3cbfe79f8ebc
     type: regular
     task:
-      id: 29dd84d6-efb8-4487-8003-141b98934662
+      id: baf8693e-4995-47f9-805f-3cbfe79f8ebc
       version: -1
       name: Predict Tag1
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -83,9 +88,7 @@ tasks:
       - "15"
     scriptarguments:
       emailSubject:
-        simple: closed church squeamish squeamish moaning closed closed closed church
-          squeamish squeamish moaning closed closed closed church squeamish squeamish
-          moaning closed closed
+        simple: closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -98,8 +101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1535
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -107,23 +110,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f7a44f7e-0b35-4447-8424-b1d49db3235b
+    taskid: 5a71b8d6-cf64-494d-8889-46f70cc67c13
     type: title
     task:
-      id: f7a44f7e-0b35-4447-8424-b1d49db3235b
+      id: 5a71b8d6-cf64-494d-8889-46f70cc67c13
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2935
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -131,12 +138,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 179f940e-7313-4fa5-8f5e-ba522c765669
+    taskid: 74a08b82-f3e3-40c5-8143-fa5c135e2ce9
     type: regular
     task:
-      id: 179f940e-7313-4fa5-8f5e-ba522c765669
+      id: 74a08b82-f3e3-40c5-8143-fa5c135e2ce9
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -153,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 835
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -162,12 +172,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 2d2c5687-3642-4fec-8a38-e0752ea4d398
+    taskid: 88ba54ff-84fd-4c91-8ae8-4f88a4a5cafd
     type: regular
     task:
-      id: 2d2c5687-3642-4fec-8a38-e0752ea4d398
+      id: 88ba54ff-84fd-4c91-8ae8-4f88a4a5cafd
       version: -1
       name: clear context
       scriptName: DeleteContext
@@ -184,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1885
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -193,16 +206,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 5d168b90-65c6-4f98-8759-3a9fcddf28b9
+    taskid: 67c5f1a7-4b58-4447-8cee-286f22b9139c
     type: playbook
     task:
-      id: 5d168b90-65c6-4f98-8759-3a9fcddf28b9
+      id: 67c5f1a7-4b58-4447-8cee-286f22b9139c
       version: -1
       name: DBot Create Phishing Classifier V2
-      description: Create a phishing classifier using machine learning technique,
-        based on email content
+      description: Create a phishing classifier using machine learning technique, based on email content
       playbookName: DBot Create Phishing Classifier V2
       type: playbook
       iscommand: false
@@ -244,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1185
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -253,12 +268,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c786f22a-ce44-4021-84f6-1c74a3157049
+    taskid: d0388493-758a-496d-8e20-0f4994316318
     type: condition
     task:
-      id: c786f22a-ce44-4021-84f6-1c74a3157049
+      id: d0388493-758a-496d-8e20-0f4994316318
       version: -1
       name: Model evaluation exist
       type: condition
@@ -279,8 +297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1360
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -288,12 +306,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c607874c-eac1-404d-8c31-620e541c5b7c
+    taskid: 87fcc375-89be-4f44-8123-9e995379a389
     type: condition
     task:
-      id: c607874c-eac1-404d-8c31-620e541c5b7c
+      id: 87fcc375-89be-4f44-8123-9e995379a389
       version: -1
       name: 'Check the prediction label: Tag1'
       type: condition
@@ -317,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1710
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -326,12 +347,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: e1de53ff-a890-4c38-863a-3171f8705bc8
+    taskid: a4973892-625f-4fcc-8a96-a270795d2751
     type: condition
     task:
-      id: e1de53ff-a890-4c38-863a-3171f8705bc8
+      id: a4973892-625f-4fcc-8a96-a270795d2751
       version: -1
       name: 'Check the prediction label: Tag2'
       type: condition
@@ -355,8 +379,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2235
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -364,16 +388,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b783dbbf-bcbf-47be-8a5d-22dcc526df0e
+    taskid: bc73dcb7-4720-4504-85e0-590b5fe8fe02
     type: regular
     task:
-      id: b783dbbf-bcbf-47be-8a5d-22dcc526df0e
+      id: bc73dcb7-4720-4504-85e0-590b5fe8fe02
       version: -1
       name: Predict Tag2
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -383,9 +409,7 @@ tasks:
       - "16"
     scriptarguments:
       emailSubject:
-        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
-          faulty waves type boat argument ntidy boy substance faulty waves type boat
-          argument
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -398,8 +422,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2060
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -407,16 +431,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: cb137c7c-1ba3-4fea-8356-f4ecd3bf6193
+    taskid: 3573406e-2b81-4d40-8661-2680791e46f8
     type: regular
     task:
-      id: cb137c7c-1ba3-4fea-8356-f4ecd3bf6193
+      id: 3573406e-2b81-4d40-8661-2680791e46f8
       version: -1
       name: Predict Tag3
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -426,9 +452,7 @@ tasks:
       - "20"
     scriptarguments:
       emailSubject:
-        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend
-          trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal
-          thread succeed gray last fall fall
+        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -441,8 +465,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2585
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -450,12 +474,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: ed783755-907d-4097-8974-96034ab3b233
+    taskid: d462dd42-6b56-49bf-8428-ae96e1f1be16
     type: regular
     task:
-      id: ed783755-907d-4097-8974-96034ab3b233
+      id: d462dd42-6b56-49bf-8428-ae96e1f1be16
       version: -1
       name: clear context
       scriptName: DeleteContext
@@ -472,8 +499,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2410
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -481,12 +508,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0e035d46-6829-41af-830c-6dfc7353dde1
+    taskid: 5cf7405e-c4c2-40a0-8e63-1913319a70f3
     type: condition
     task:
-      id: 0e035d46-6829-41af-830c-6dfc7353dde1
+      id: 5cf7405e-c4c2-40a0-8e63-1913319a70f3
       version: -1
       name: 'Check the prediction label: Tag3'
       type: condition
@@ -510,43 +540,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    
-  "24":
-    id: "24"
-    taskid: 69c9af85-903f-4d2a-8540-fd48adb0c89b
-    type: regular
-    task:
-      id: 69c9af85-903f-4d2a-8540-fd48adb0c89b
-      version: -1
-      name: Load prediction docker
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
-      scriptName: DBotPredictPhishingWords
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      modelName:
-        simple: dummy
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
           "x": 50,
-          "y": 340
+          "y": 2120
         }
       }
     note: false
@@ -554,208 +549,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    
-  "25":
-    id: "25"
-    taskid: ebf1c9ed-92a7-4633-8b37-42fb8570269f
-    type: regular
-    task:
-      id: ebf1c9ed-92a7-4633-8b37-42fb8570269f
-      version: -1
-      name: Load evaluation docker
-      description: Finds a threshold for ML model, and performs an evaluation based
-        on it
-      scriptName: GetMLModelEvaluation
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      yPred:
-        simple: dummy
-      yTrue:
-        simple: dummy
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: bb61e790-fd72-49e8-842b-98933451305c
-    type: regular
-    task:
-      id: bb61e790-fd72-49e8-842b-98933451305c
-      version: -1
-      name: Load training docker
-      description: Train a machine learning text classifier.
-      scriptName: DBotTrainTextClassifierV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      input:
-        simple: dummy_input
-      tagField:
-        simple: dummy
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    
-  "27":
-    id: "27"
-    taskid: 8e33ab3c-0c36-494a-8b2d-02a838b437a8
-    type: regular
-    task:
-      id: 8e33ab3c-0c36-494a-8b2d-02a838b437a8
-      version: -1
-      name: Load Preprocessing Docker
-      description: Pre-process text data for the machine learning text classifier.
-      scriptName: DBotPreProcessTextData
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      input:
-        simple: dummy input
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: 285056a4-c36d-4fe3-836a-0635bbcb2902
-    type: regular
-    task:
-      id: 285056a4-c36d-4fe3-836a-0635bbcb2902
-      version: -1
-      name: Wait for docker download
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      seconds:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: 36d855bc-d9a5-47f7-8f3e-5b72ab8fe194
-    type: title
-    task:
-      id: 36d855bc-d9a5-47f7-8f3e-5b72ab8fe194
-      version: -1
-      name: Begin tests
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "30":
-    id: "30"
-    taskid: 26c99254-1dd9-4faa-8c80-0762360a7221
-    type: title
-    task:
-      id: 26c99254-1dd9-4faa-8c80-0762360a7221
-      version: -1
-      name: Load all dockers
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-      - "26"
-      - "25"
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2950,
-        "width": 1670,
+        "height": 2310,
+        "width": 380,
         "x": 50,
         "y": 50
       }

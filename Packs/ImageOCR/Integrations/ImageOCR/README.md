@@ -4,23 +4,19 @@ Use the Image OCR integration to extract text from images. The integration utili
 * Extract text from images included in emails during a phishing investigation.
 * Extract text from images included in an html page.
 
-## Configure Image OCR on Cortex XSOAR
+## Configure Image OCR in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Image OCR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | A CSV of language codes of the language to use for OCR (leave empty to use defaults). | The default language used for OCR is English. Use this parameter to specify a list of additional languages. For example, `eng,fra`. To see all supported language codes, use the ***image-ocr-list-languages*** command. | False |
-    | Skip on corrupted images | If true, will not raise an error if the image is corrupted and could not be processed. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| A CSV of language codes of the language to use for OCR (leave empty to use defaults). | The default language used for OCR is English. Use this parameter to specify a list of additional languages. For example, `eng,fra`. To see all supported language codes, use the ***image-ocr-list-languages*** command. | False |
+| Skip on corrupted images | If true, will not raise an error if the image is corrupted and could not be processed. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### image-ocr-list-languages
@@ -77,6 +73,7 @@ Extracts text from an image.
 | --- | --- | --- |
 | entryid | A comma-separated list of Entry IDs of image files to process. | Required | 
 | langs | A CSV of language codes of the language to use for OCR. Overrides the default configured language list. | Optional | 
+| verbose | Turn on verbose flag to display tesseract and other used libraries versions. | Optional | 
 
 #### Context Output
 

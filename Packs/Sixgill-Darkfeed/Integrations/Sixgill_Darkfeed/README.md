@@ -3,9 +3,6 @@ This integration was integrated and tested with Sixgill clients.
 
 ## Configure Sixgill_Darkfeed on XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sixgill DarkFeed Threat Intelligence.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -21,11 +18,10 @@ This integration was integrated and tested with Sixgill clients.
 | feedBypassExclusionList | Bypass exclusion list | False |
 | maxIndicators | The maximum number of indicators to fetch. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Fetch indicators
@@ -125,4 +121,3 @@ There is no context output for this command.
 
 ## Additional Information
 Contact us: sales@cybersixgill.com
-

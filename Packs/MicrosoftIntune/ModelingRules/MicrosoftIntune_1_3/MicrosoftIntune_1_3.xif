@@ -1,4 +1,4 @@
-[MODEL: dataset="msft_azure_raw"]
+[MODEL: dataset="msft_intune_raw"]
 filter category contains "DeviceComplianceOrg"
 |alter xdm.event.type=category,
 xdm.observer.unique_identifier=tenantId,

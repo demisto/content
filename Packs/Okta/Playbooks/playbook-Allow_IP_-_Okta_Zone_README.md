@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Allow IP - Okta Zone](https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/Okta/doc_files/Allow_IP_-_Okta_Zone.png)
+![Allow IP - Okta Zone](../doc_files/Allow_IP_-_Okta_Zone.png)

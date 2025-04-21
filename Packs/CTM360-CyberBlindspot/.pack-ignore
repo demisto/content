@@ -1,5 +1,18 @@
 [file:incidentfields-Course_Of_Action.json]
 ignore=IF115
+[file:incidentfields-Potential_Impact.json]
+ignore=IF115
+[file:incidentfields-Technologies.json]
+ignore=IF115
+[file:incidentfields-Asset_Type.json]
+ignore=IF115
+[file:incidentfields-Potential_Attack.json]
+ignore=IF115
+[file:incidentfields-Module.json]
+ignore=IF115
+
+[file:playbook-CyberBlindspot_Incident_Management_V2.yml]
+ignore=PB106
 
 [known_words]
 D
@@ -11,3 +24,4 @@ pytest
 plugin
 mappers
 CyberBlindspot
+HackerView

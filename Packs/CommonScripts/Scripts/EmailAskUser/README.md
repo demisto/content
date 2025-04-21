@@ -12,7 +12,9 @@ This is a two-step task. The first, is to send an email asking the user for info
 The outgoing email contains a token that will be used when the user responds to the email. According to the token, the response will be directed to the relevant incident.
 
 ### Step 1 - Sending an email
+
 Add the EmailAskUser script and set as follows:
+
 * Email – the email address the message is sent to.
 * Message – The email message.
 * Option 1 – The first option to choose from.
@@ -22,35 +24,39 @@ Add the EmailAskUser script and set as follows:
 * attachCIDs - A comma-separated list of CIDs to embed attachments within the actual email.
 
 ### Step 2 - A conditional task
+
 Add a conditional task to receive the reply from the email. This task is triggered when a reply from the email is received according to its task ID that is set as the Task parameter in the EmailAskUser script (see above).
 
 Add condition options, such as:
+
 * Condition 1 – Yes
 * Condition 2 – No
 
 Then add Case Yes and set the input as Option 1 and Case No and set the input as Option 2.
 
 ## Example
+
 An example arrangement for EmailAskUser task is as below:
 
-![image](https://user-images.githubusercontent.com/54623333/99517136-efc5b480-2986-11eb-879c-a0a88923c4b9.png)
+![image](../../doc_files/99517136-efc5b480-2986-11eb-879c-a0a88923c4b9.png)
 
 
 There needs to be a manual conditional task *after* the EmailAskUser Task - It is this task that is referenced as "task" in the EmailAskUser parameters.
 
 It is good practice to tag the wait task as shown:
 
-![image](https://user-images.githubusercontent.com/54623333/99517219-0409b180-2987-11eb-9aa4-7e96b2a12238.png)
+![image](../../doc_files/99517219-0409b180-2987-11eb-9aa4-7e96b2a12238.png)
 
 
 The tag you choose (in this case "Await") can be used in lieu of the task id in the task field of the EmailAskUser Task:
 
 
-![image](https://user-images.githubusercontent.com/54623333/99517256-0f5cdd00-2987-11eb-8a1f-1dc41d166b42.png)
+![image](../../doc_files/99517256-0f5cdd00-2987-11eb-8a1f-1dc41d166b42.png)
 
 
 
 ## Script Data
+
 ---
 
 | **Name**             | **Description** |
@@ -60,6 +66,7 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | Cortex XSOAR Version | 4.0.0+          |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description**                                                                                                        |
@@ -83,15 +90,18 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | playbookTaskID    | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all plabooks. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 
 ## Prerequisites
+
 ---
 Requires an instance of one of the available email integrations, set to fetch incidents.
 
 
 ## Troubleshooting
+
 ---
 In case that the incident in which the automation script is running, has limited permissions to (e.g. has a certain role assigned to it), then the responder to the email need to have the relevant permissions assigned to its user in Cortex XSOAR.

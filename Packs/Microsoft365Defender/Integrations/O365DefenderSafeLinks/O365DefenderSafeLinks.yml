@@ -265,13 +265,13 @@ script:
       description: "The date and time the Safe Links policy was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00."
       type: Date
     - contextPath: O365Defender.SafeLinks.Policy.WhenChangedUTC
-      description: "The date and time (in UTC) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ"
+      description: "The date and time (in UTC) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ."
       type: Date
     - contextPath: O365Defender.SafeLinks.Policy.WhenCreated
       description: "The date and time the Safe Links policy was created. Time format: YYYY-MM-DDThh:mm:ss+00:00."
       type: Date
     - contextPath: O365Defender.SafeLinks.Policy.WhenCreatedUTC
-      description: "The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ"
+      description: "The date and time (in UTC) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ."
       type: Date
     description: Create a new Safe Links policy.
   - name: o365-defender-safelinks-policy-update
@@ -819,10 +819,10 @@ script:
       description: ""
       type: Unknown
     - contextPath: O365Defender.SafeLinks.DetailedReport.Data.Flags
-      description: "0: Allowed 1: Blocked 2: ClickedEvenBlocked 3: ClickedDuringScan"
+      description: "0: Allowed 1: Blocked 2: ClickedEvenBlocked 3: ClickedDuringScan."
       type: Number
     - contextPath: O365Defender.SafeLinks.DetailedReport.ReportId
-      description: "The report id, unique for every run"
+      description: "The report id, unique for every run."
       type: Number
   - name: o365-defender-safelinks-aggregate-report-get
     description: general information about Safe Links results for the last 90 days. Yesterday is the most recent date that you can specify.
@@ -883,10 +883,10 @@ script:
       description: Number of recipients of the link.
       type: Number
     - contextPath: O365Defender.SafeLinks.AggregateReport.ReportId
-      description: "The report id, unique for every run"
+      description: "The report id, unique for every run."
       type: Number
   - name: o365-defender-safelinks-atp-policy-get
-    description: Get APT policy. In order to manage BlockURLs, use the o365-defender-safelinks-global-url-blocklist command.
+    description: Get Advanced Threat Protection policies.
     outputs:
     - contextPath: O365Defender.SafeLinks.AtpPolicy.Name
       description: ATP policy name.
@@ -916,7 +916,7 @@ script:
       description: When the ATP policy was changed in UTC format.
       type: String
   - name: o365-defender-safelinks-atp-policy-set
-    description: Set the ATP policy.
+    description: Set Advanced Threat Protection policy.
     arguments:
     - name: allow_safe_docs_open
       description: Whether users can click through and bypass the Protected View container even when Safe Documents identifies a file as malicious.
@@ -925,7 +925,7 @@ script:
       - "true"
       - "false"
     - name: enable_atp_spo_teams_odb
-      description: Enable or disable O365 Defender for SharePoint, OneDrive, and Microsoft Teams
+      description: Enable or disable O365 Defender for SharePoint, OneDrive, and Microsoft Teams.
       auto: PREDEFINED
       predefined:
       - "true"
@@ -939,7 +939,7 @@ script:
   runonce: false
   script: "-"
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.80547
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
 fromversion: 6.0.0
 tests:
 - No Test

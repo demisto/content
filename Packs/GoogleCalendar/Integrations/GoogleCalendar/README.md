@@ -55,19 +55,14 @@ Google Calendar is a time-management and scheduling calendar service developed b
 
 
 
-## Configure Google Calendar on Cortex XSOAR
+## Configure Google Calendar in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Calendar.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | user_service_account_json | User's Service Account JSON | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| user_service_account_json | User's Service Account JSON | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
 
 ### google-calendar-acl-add

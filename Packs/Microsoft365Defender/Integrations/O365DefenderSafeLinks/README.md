@@ -8,27 +8,23 @@ ___
 * In the Azure Application, give the following application permission:
     * Office 365 Exchange Online -> Exchange.ManageAsApp - Application
 * To create, modify, and delete Safe Links policies, or use any of the report commands (detailed or aggregate report), you need to be a member of the `Organization Management` or `Security Administrator` role groups.
-* To manage permissions in the Microsoft 365 Defender portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft 365 Defender portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft 365 Defender portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft 365 Defender portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
+* To manage permissions in the Microsoft Defender XDR portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft Defender XDR portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft Defender XDR portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft Defender XDR portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
 
 
-## Configure O365 Defender SafeLinks on Cortex XSOAR
+## Configure O365 Defender SafeLinks in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for O365 Defender SafeLinks.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Certificate | A pfx certificate encoded in Base64. | True |
-    | Password - Used to generate the certificate |  | True |
-    | Organization | The organization used in app-only authentication. | True |
-    | The application ID from the Azure portal |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Certificate | A pfx certificate encoded in Base64. | True |
+| Password - Used to generate the certificate |  | True |
+| Organization | The organization used in app-only authentication. | True |
+| The application ID from the Azure portal |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Important Notes
 ---
-* It is strongly recommended to follow the [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
+* It is strongly recommended to follow the [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide), to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
 * If your instance does experience memory management issues, please configure your playbooks to use *Retry on error*.
 
 ### Safe Links Rule and Policy
@@ -37,7 +33,7 @@ The basic elements of a Safe Links policy are:
 
 **The safe links policy**: Turn on Safe Links protection, turn on real-time URL scanning, specify whether to wait for real-time scanning to complete before delivering the message, turn on scanning for internal messages, specify whether to track user clicks on URLs, and specify whether to allow users to click trough to the original URL.
 **The safe links rule**: Specifies the priority and recipient filters (who the policy applies to).
-The difference between these two elements isn't obvious when you manage Safe Links policies in the Microsoft 365 Defender portal:
+The difference between these two elements isn't obvious when you manage Safe Links policies in the Microsoft Defender XDR portal:
 
 When you create a Safe Links policy, you're actually creating a safe links rule and the associated safe links policy at the same time using the same name for both.
 When you modify a Safe Links policy, settings related to the name, priority, enabled or disabled, and recipient filters modify the safe links rule. All other settings modify the associated safe links policy.
@@ -45,7 +41,7 @@ When you remove a Safe Links policy, the safe links rule and the associated safe
 In Exchange Online PowerShell or standalone EOP PowerShell, you manage the policy and the rule separately.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### o365-defender-safelinks-policy-list

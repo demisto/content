@@ -13,3 +13,19 @@ ignore=BA124
 [file:HealthCheckOutdatedPacks.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11656
+[file:incidentfield-XSOAR_Dev-Prod.json]
+ignore=GR103
+[file:incidentfield-Health_Check_Installed_Packs.json]
+ignore=GR103
+[file:incidentfield-XSOAR_Architecture.json]
+ignore=GR103
+[file:incidentfield-XSOAR_DR.json]
+ignore=GR103
+[file:incidentfield-Health_Check_Total_Packs_Installed.json]
+ignore=GR103
+[file:HealthCheckGetLargestInputsAndOutputsInIncidents.yml]
+ignore=GR103
+
+[file:HealthCheck.yml]
+ignore=GR107

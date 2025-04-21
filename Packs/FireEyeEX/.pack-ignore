@@ -5,3 +5,7 @@ ignore=BA101
 utc
 blockedlist
 fireeye
+
+# GR103 is temporary, see CIAC-11705
+[file:incidenttype-FireEye_EX_Alert.json]
+ignore=GR103

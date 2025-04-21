@@ -17,9 +17,16 @@ from Reco import (
     add_risky_user_label,
     get_assets_user_has_access,
     get_sensitive_assets_by_name,
-    get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link,
-    get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score,
-    get_user_context_by_email_address
+    get_sensitive_assets_by_id,
+    get_link_to_user_overview_page,
+    get_sensitive_assets_shared_with_public_link,
+    get_3rd_parties_list,
+    get_files_shared_with_3rd_parties,
+    map_reco_alert_score_to_demisto_score,
+    get_user_context_by_email_address,
+    get_assets_shared_externally_command,
+    get_files_exposed_to_email_command,
+    get_private_email_list_with_access,
 )
 
 from test_data.structs import (
@@ -30,7 +37,6 @@ from test_data.structs import (
     GetTableResponse,
     GetIncidentTableResponse,
 )
-
 
 DUMMY_RECO_API_DNS_NAME = "https://dummy.reco.ai/api"
 INCIDET_ID_UUID = "87799f2f-c012-43b6-ace2-78ec984427f3"
@@ -50,43 +56,31 @@ def get_random_table_response() -> GetIncidentTableResponse:
                         cells=[
                             KeyValuePair(
                                 key="incident_id",
-                                value=base64.b64encode(
-                                    INCIDET_ID_UUID.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(INCIDET_ID_UUID.encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="incident_description",
-                                value=base64.b64encode(
-                                    INCIDENT_DESCRIPTION.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(INCIDENT_DESCRIPTION.encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="risk_level",
-                                value=base64.b64encode(
-                                    str(RiskLevel.HIGH.value).encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(str(RiskLevel.HIGH.value).encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="event_time",
-                                value=base64.b64encode(
-                                    datetime.datetime.now()
-                                    .strftime(TIME_FORMAT)
-                                    .encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(datetime.datetime.now().strftime(TIME_FORMAT).encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
                             ),
                             KeyValuePair(
                                 key="updated_at",
-                                value=base64.b64encode(
-                                    datetime.datetime.now()
-                                    .strftime(TIME_FORMAT)
-                                    .encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(datetime.datetime.now().strftime(TIME_FORMAT).encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
                             ),
                             KeyValuePair(
                                 key="status",
-                                value=base64.b64encode(
-                                    INCIDENT_STATUS.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(INCIDENT_STATUS.encode(ENCODING)).decode(ENCODING),
                             ),
                         ]
                     )
@@ -110,9 +104,7 @@ def get_alerts_and_table_response() -> tuple[GetIncidentTableResponse, dict[str,
             "aggregationRulesToKeys": {
                 "aggregationRuleToKey": [
                     {
-                        "aggregationRule": {
-                            "aggregationKeyJsonataQuery": "enriched.actor.email_account"
-                        },
+                        "aggregationRule": {"aggregationKeyJsonataQuery": "enriched.actor.email_account"},
                         "aggregationKey": {"stringKey": '"t@acme.ai"'},
                     },
                     {
@@ -151,37 +143,27 @@ def get_alerts_and_table_response() -> tuple[GetIncidentTableResponse, dict[str,
                             ),
                             KeyValuePair(
                                 key="description",
-                                value=base64.b64encode(
-                                    INCIDENT_DESCRIPTION.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(INCIDENT_DESCRIPTION.encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="risk_level",
-                                value=base64.b64encode(
-                                    "HIGH".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("HIGH".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="created_at",
-                                value=base64.b64encode(
-                                    datetime.datetime.now()
-                                    .strftime(TIME_FORMAT)
-                                    .encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(datetime.datetime.now().strftime(TIME_FORMAT).encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
                             ),
                             KeyValuePair(
                                 key="updated_at",
-                                value=base64.b64encode(
-                                    datetime.datetime.now()
-                                    .strftime(TIME_FORMAT)
-                                    .encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(datetime.datetime.now().strftime(TIME_FORMAT).encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
                             ),
                             KeyValuePair(
                                 key="status",
-                                value=base64.b64encode(
-                                    INCIDENT_STATUS.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(INCIDENT_STATUS.encode(ENCODING)).decode(ENCODING),
                             ),
                         ]
                     )
@@ -205,67 +187,43 @@ def get_random_assets_user_has_access_to_response() -> GetIncidentTableResponse:
                         cells=[
                             KeyValuePair(
                                 key="source",
-                                value=base64.b64encode(
-                                    "GDRIVE_ACCESS_LOG_AP".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("GDRIVE_ACCESS_LOG_AP".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="file_type",
-                                value=base64.b64encode(
-                                    "document".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("document".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="currently_permitted_users",
-                                value=base64.b64encode(
-                                    json.dumps(["a", "b", "c", "d", "e"]).encode(
-                                        ENCODING
-                                    )
-                                ).decode(ENCODING),
+                                value=base64.b64encode(json.dumps(["a", "b", "c", "d", "e"]).encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="labels",
-                                value=base64.b64encode(
-                                    json.dumps(["a", "b", "c", "d", "e"]).encode(
-                                        ENCODING
-                                    )
-                                ).decode(ENCODING),
+                                value=base64.b64encode(json.dumps(["a", "b", "c", "d", "e"]).encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="delete_state",
-                                value=base64.b64encode(
-                                    "active".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("active".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="file_size",
-                                value=base64.b64encode("0".encode(ENCODING)).decode(
-                                    ENCODING
-                                ),
+                                value=base64.b64encode("0".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="file_name",
-                                value=base64.b64encode(
-                                    "User Activity Report".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("User Activity Report".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="visibility",
-                                value=base64.b64encode(
-                                    "shared_internally".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("shared_internally".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="asset_id",
-                                value=base64.b64encode("1".encode(ENCODING)).decode(
-                                    ENCODING
-                                ),
+                                value=base64.b64encode("1".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="file_owner",
-                                value=base64.b64encode("a".encode(ENCODING)).decode(
-                                    ENCODING
-                                ),
+                                value=base64.b64encode("a".encode(ENCODING)).decode(ENCODING),
                             ),
                         ],
                     )
@@ -288,35 +246,29 @@ def get_random_risky_users_response() -> GetIncidentTableResponse:
                         cells=[
                             KeyValuePair(
                                 key="full_name",
-                                value=base64.b64encode(
-                                    "John Doe".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("John Doe".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="identity_id",
+                                value=base64.b64encode(f"{uuid.uuid4()}".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="email_account",
-                                value=base64.b64encode(
-                                    f"{uuid.uuid4()}@acme.com".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(f"{uuid.uuid4()}@acme.com".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="risk_level",
-                                value=base64.b64encode(
-                                    str(RiskLevel.HIGH.value).encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(str(RiskLevel.HIGH.value).encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="added_by",
-                                value=base64.b64encode(
-                                    "system".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("system".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="created_at",
-                                value=base64.b64encode(
-                                    datetime.datetime.now()
-                                    .strftime(TIME_FORMAT)
-                                    .encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode(datetime.datetime.now().strftime(TIME_FORMAT).encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
                             ),
                         ]
                     )
@@ -339,56 +291,46 @@ def get_random_user_context_response() -> GetIncidentTableResponse:
                         cells=[
                             KeyValuePair(
                                 key="email_account",
-                                value=base64.b64encode(
-                                    "charles@corp.com".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("charles@corp.com".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="departments",
-                                value=base64.b64encode(
-                                    '["Pro"]'.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode('["Pro"]'.encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="job_titles",
-                                value=base64.b64encode(
-                                    '["VP Product"]'.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode('["VP Product"]'.encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="category",
-                                value=base64.b64encode(
-                                    "external".encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("external".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="groups",
-                                value=base64.b64encode(
-                                    '["Product"]'.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode('["Product"]'.encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="full_name",
-                                value=base64.b64encode(
-                                    'Yossi'.encode(ENCODING)
-                                ).decode(ENCODING),
+                                value=base64.b64encode("Yossi".encode(ENCODING)).decode(ENCODING),
                             ),
                             KeyValuePair(
                                 key="labels",
-                                value=base64.b64encode('["{\\"label\\": {\\"name\\": \\"VIP User\\",'
-                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
-                                                       ' \\"tooltip\\": \\"VIP User\\", \\"created_by\\": 10,'
-                                                       ' \\"risk_level\\": 0, \\"description\\": \\"VIP User\\"}}",'
-                                                       '"{\\"label\\": {\\"name\\": \\"GSuite Admin\\",'
-                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
-                                                       ' \\"tooltip\\": \\"GSuite Admin\\", \\"created_by\\": 10,'
-                                                       ' \\"risk_level\\": 0, \\"description\\": \\"GSuite Admin\\"}}",'
-                                                       '"{\\"label\\": {\\"name\\": \\"Okta Admin\\",'
-                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
-                                                       ' \\"tooltip\\": \\"Okta Admin\\", '
-                                                       '\\"created_by\\": 10, \\"risk_level\\": 0,'
-                                                       '\\"description\\": \\"Okta Admin\\"}}"]'.
-                                                       encode(ENCODING)).decode(ENCODING)),
+                                value=base64.b64encode(
+                                    '["{\\"label\\": {\\"name\\": \\"VIP User\\",'
+                                    ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                    ' \\"tooltip\\": \\"VIP User\\", \\"created_by\\": 10,'
+                                    ' \\"risk_level\\": 0, \\"description\\": \\"VIP User\\"}}",'
+                                    '"{\\"label\\": {\\"name\\": \\"GSuite Admin\\",'
+                                    ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                    ' \\"tooltip\\": \\"GSuite Admin\\", \\"created_by\\": 10,'
+                                    ' \\"risk_level\\": 0, \\"description\\": \\"GSuite Admin\\"}}",'
+                                    '"{\\"label\\": {\\"name\\": \\"Okta Admin\\",'
+                                    ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                    ' \\"tooltip\\": \\"Okta Admin\\", '
+                                    '\\"created_by\\": 10, \\"risk_level\\": 0,'
+                                    '\\"description\\": \\"Okta Admin\\"}}"]'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
                         ]
                     )
                 ]
@@ -419,9 +361,7 @@ def get_mock_assets() -> list[dict[str, Any]]:
 
 def test_test_module_success(requests_mock, reco_client: RecoClient) -> None:
     mock_response = {"alerts": {"tablesMetadata": [{"name": "table1"}]}}
-    requests_mock.get(
-        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox?limit=1", json=mock_response
-    )
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox?limit=1", json=mock_response)
 
     res = reco_client.validate_api_key()
     assert res == "ok"
@@ -430,23 +370,17 @@ def test_test_module_success(requests_mock, reco_client: RecoClient) -> None:
 @pytest.fixture
 def reco_client() -> RecoClient:
     api_token = "dummy api key"
-    return RecoClient(
-        api_token=api_token, base_url=DUMMY_RECO_API_DNS_NAME, verify=True, proxy=True
-    )
+    return RecoClient(api_token=api_token, base_url=DUMMY_RECO_API_DNS_NAME, verify=True, proxy=True)
 
 
 def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) -> None:
     random_incidents = get_random_table_response()
     assets = get_mock_assets()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
-    requests_mock.get(
-        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
-    )
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets)
     random_alerts_response, alert = get_alerts_and_table_response()
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
         risk_level=40,
@@ -455,10 +389,12 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
         last_run={},
         max_fetch=1,
     )
-    expected_count = (random_incidents.getTableResponse.total_number_of_results
-                      + random_alerts_response.getTableResponse.total_number_of_results)
+    expected_count = (
+        random_incidents.getTableResponse.total_number_of_results
+        + random_alerts_response.getTableResponse.total_number_of_results
+    )
 
-    assert (len(fetched_incidents) == expected_count)
+    assert len(fetched_incidents) == expected_count
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
     res_json = json.loads(fetched_incidents[0].get("rawJSON"))
@@ -469,14 +405,10 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
     random_incidents = get_random_table_response()
     assets = get_mock_assets()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
-    requests_mock.get(
-        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
-    )
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets)
     random_alerts_response, alert = get_alerts_and_table_response()
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
         risk_level=40,
@@ -484,10 +416,12 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
         last_run={},
         max_fetch=1,
     )
-    expected_count = (random_incidents.getTableResponse.total_number_of_results
-                      + random_alerts_response.getTableResponse.total_number_of_results)
+    expected_count = (
+        random_incidents.getTableResponse.total_number_of_results
+        + random_alerts_response.getTableResponse.total_number_of_results
+    )
 
-    assert (len(fetched_incidents) == expected_count)
+    assert len(fetched_incidents) == expected_count
     last_run, incidents = fetch_incidents(
         reco_client=reco_client,
         risk_level=40,
@@ -498,38 +432,30 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
     assert len(incidents) == 0
 
 
-def test_fetch_incidents_without_assets_info(
-    requests_mock, reco_client: RecoClient
-) -> None:
+def test_fetch_incidents_without_assets_info(requests_mock, reco_client: RecoClient) -> None:
     random_incidents = get_random_table_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
-    requests_mock.get(
-        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json={}
-    )
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json={})
     random_alerts_response, alert = get_alerts_and_table_response()
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
-    last_run, fetched_incidents = fetch_incidents(
-        reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1
+    last_run, fetched_incidents = fetch_incidents(reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1)
+
+    expected_count = (
+        random_incidents.getTableResponse.total_number_of_results
+        + random_alerts_response.getTableResponse.total_number_of_results
     )
 
-    expected_count = (random_incidents.getTableResponse.total_number_of_results
-                      + random_alerts_response.getTableResponse.total_number_of_results)
-
-    assert (len(fetched_incidents) == expected_count)
+    assert len(fetched_incidents) == expected_count
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
     res_json = json.loads(fetched_incidents[0].get("rawJSON"))
     assert res_json.get("assets", {}) == []
 
 
-def test_fetch_assets_with_empty_response(
-    requests_mock, reco_client: RecoClient
-) -> None:
+def test_fetch_assets_with_empty_response(requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.get(
-        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{incident_id}", json={}
-    )
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{incident_id}", json={})
     assets = reco_client.get_incidents_assets(incident_id=incident_id)
     assert assets == []
 
@@ -549,9 +475,7 @@ def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
         json=table_empty,
     )
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
-    last_run, fetched_incidents = fetch_incidents(
-        reco_client=reco_client, last_run={}, max_fetch=1
-    )
+    last_run, fetched_incidents = fetch_incidents(reco_client=reco_client, last_run={}, max_fetch=1)
 
     assert len(fetched_incidents) == 0
     assert last_run is not None
@@ -572,9 +496,7 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
         json=table_empty,
     )
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
-    last_run, fetched_incidents = fetch_incidents(
-        reco_client=reco_client, last_run={}, max_fetch=1
-    )
+    last_run, fetched_incidents = fetch_incidents(reco_client=reco_client, last_run={}, max_fetch=1)
 
     assert len(fetched_incidents) == 0
     assert last_run is not None
@@ -582,9 +504,7 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
 
 def test_invalid_response(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json={"getTableResponse": {}})
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json={
-        "getTableResponse": {}
-    })
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json={"getTableResponse": {}})
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
         last_run={},
@@ -625,15 +545,11 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
         json={},
         status_code=200,
     )
-    res = reco_client.update_reco_incident_timeline(
-        incident_id=str(incident_id), comment="test"
-    )
+    res = reco_client.update_reco_incident_timeline(incident_id=str(incident_id), comment="test")
     assert res == {}
 
 
-def test_update_reco_incident_timeline_error(
-    capfd, requests_mock, reco_client: RecoClient
-) -> None:
+def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}",
@@ -641,33 +557,21 @@ def test_update_reco_incident_timeline_error(
         status_code=404,
     )
     with capfd.disabled(), pytest.raises(Exception):
-        reco_client.update_reco_incident_timeline(
-            incident_id=str(incident_id), comment="test"
-        )
+        reco_client.update_reco_incident_timeline(incident_id=str(incident_id), comment="test")
 
 
 def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> None:
     entry_id = uuid.uuid1()
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=200
-    )
-    res = reco_client.resolve_visibility_event(
-        entity_id=str(entry_id), label_name="Accessible by all"
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=200)
+    res = reco_client.resolve_visibility_event(entity_id=str(entry_id), label_name="Accessible by all")
     assert res == {}
 
 
-def test_resolve_visibility_event_error(
-    capfd, requests_mock, reco_client: RecoClient
-) -> None:
+def test_resolve_visibility_event_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     entry_id = uuid.uuid1()
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=404
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=404)
     with capfd.disabled(), pytest.raises(Exception):
-        reco_client.resolve_visibility_event(
-            entity_id=str(entry_id), label_name="Accessible by all"
-        )
+        reco_client.resolve_visibility_event(entity_id=str(entry_id), label_name="Accessible by all")
 
 
 def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
@@ -682,9 +586,7 @@ def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
     assert "@" in actual_result.outputs[0].get("email_account")
 
 
-def test_get_risky_users_bad_response(
-    capfd, requests_mock, reco_client: RecoClient
-) -> None:
+def test_get_risky_users_bad_response(capfd, requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
         json={},
@@ -696,8 +598,12 @@ def test_get_risky_users_bad_response(
 
 def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
     label_id = f"{uuid.uuid1()}@gmail.com"
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations", json={}, status_code=200)
+    raw_result = get_random_risky_users_response()
     requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations", json={}, status_code=200
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json=raw_result,
+        status_code=200,
     )
     res = add_risky_user_label(reco_client=reco_client, email_address=label_id)
     assert "labeled as risky" in res.readable_output
@@ -705,9 +611,7 @@ def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
 
 def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
     actual_result = get_assets_user_has_access(
         reco_client=reco_client,
         email_address=f"{uuid.uuid1()}@gmail.com",
@@ -717,38 +621,24 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
     assert actual_result.outputs[0].get("source") is not None
 
 
-def test_get_assets_user_bad_response(
-    capfd, requests_mock, reco_client: RecoClient
-) -> None:
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
-    )
+def test_get_assets_user_bad_response(capfd, requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json={}, status_code=200)
     with capfd.disabled(), pytest.raises(Exception):
-        get_assets_user_has_access(
-            reco_client=reco_client, email_address="test", only_sensitive=False
-        )
+        get_assets_user_has_access(reco_client=reco_client, email_address="test", only_sensitive=False)
 
 
 def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
-    )
-    actual_result = get_sensitive_assets_by_name(
-        reco_client=reco_client, asset_name="test", regex_search=True
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
+    actual_result = get_sensitive_assets_by_name(reco_client=reco_client, asset_name="test", regex_search=True)
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert actual_result.outputs[0].get("source") is not None
 
 
 def test_get_sensitive_assets_by_id(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
-    )
-    actual_result = get_sensitive_assets_by_id(
-        reco_client=reco_client, asset_id="asset-id"
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
+    actual_result = get_sensitive_assets_by_id(reco_client=reco_client, asset_id="asset-id")
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert actual_result.outputs[0].get("source") is not None
 
@@ -759,11 +649,10 @@ def test_get_link_to_user_overview_page(requests_mock, reco_client: RecoClient) 
     link_res = str(uuid.uuid1())
     requests_mock.get(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/risk-management/link?link_type={link_type}&param={entity_id}",
-        json={"link": link_res}, status_code=200
+        json={"link": link_res},
+        status_code=200,
     )
-    actual_result = get_link_to_user_overview_page(
-        reco_client=reco_client, entity=entity_id, link_type=link_type
-    )
+    actual_result = get_link_to_user_overview_page(reco_client=reco_client, entity=entity_id, link_type=link_type)
     assert actual_result.outputs_prefix == "Reco.Link"
     assert actual_result.outputs.get("link") == link_res
 
@@ -773,7 +662,8 @@ def test_get_link_to_user_overview_page_error(capfd, requests_mock, reco_client:
     link_type = "RM_LINK_TYPE_USER"
     requests_mock.get(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/risk-management/link?link_type={link_type}&param={entity_id}",
-        json={}, status_code=200
+        json={},
+        status_code=200,
     )
     with capfd.disabled(), pytest.raises(Exception):
         get_link_to_user_overview_page(reco_client=reco_client, entity=entity_id, link_type=link_type)
@@ -784,25 +674,46 @@ def test_get_exposed_publicly(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json=raw_result, status_code=200
     )
-    actual_result = get_sensitive_assets_shared_with_public_link(
-        reco_client=reco_client
+    actual_result = get_sensitive_assets_shared_with_public_link(reco_client=reco_client)
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+    assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_private_email_list_with_access(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table",
+        json={"getTableResponse": {}},
+        status_code=200,
     )
+    actual_result = get_private_email_list_with_access(reco_client=reco_client)
+    assert len(actual_result.outputs) == 0
+
+
+def test_get_assets_shared_externally_command(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
+    actual_result = get_assets_shared_externally_command(reco_client=reco_client, email_address="g@example.com")
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+
+
+def test_get_files_exposed_to_email_command(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json=raw_result, status_code=200
+    )
+    actual_result = get_files_exposed_to_email_command(reco_client=reco_client, email_account="g@example.com")
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert actual_result.outputs[0].get("source") is not None
 
 
 def test_get_exposed_publicly_page_error(capfd, requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
     with capfd.disabled(), pytest.raises(Exception):
-        get_sensitive_assets_shared_with_public_link(
-            reco_client=reco_client
-        )
+        get_sensitive_assets_shared_with_public_link(reco_client=reco_client)
 
 
 def test_get_3rd_parties_list_error(capfd, requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
     with capfd.disabled(), pytest.raises(Exception):
         get_3rd_parties_list(
             reco_client=reco_client,
@@ -841,29 +752,53 @@ def test_date_formatting(reco_client: RecoClient) -> None:
 
 
 def test_add_exclusion_filter(requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/algo/add_values_to_data_type_exclude_analyzer", json={}, status_code=200
-    )
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/algo/add_values_to_data_type_exclude_analyzer", json={}, status_code=200)
     reco_client.add_exclusion_filter("key", ["val1", "val2"])
 
 
 def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
     alert_id = uuid.uuid1()
-    status = 'ALERT_STATUS_CLOSED'
+    status = "ALERT_STATUS_CLOSED"
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{str(alert_id)}/status/{status}",
         json={},
         status_code=200,
     )
-    res = reco_client.change_alert_status(alert_id=str(alert_id),
-                                          status=status)
+    res = reco_client.change_alert_status(alert_id=str(alert_id), status=status)
     assert res == {}
+
+
+def test_get_alert_summary(requests_mock, reco_client: RecoClient) -> None:
+    alert_id = uuid.uuid1()
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/alert/summarize/{alert_id}",
+        json={
+            "content": "test"
+        },
+        status_code=200,
+    )
+    res = reco_client.get_alert_ai_summary(alert_id=str(alert_id))
+    assert res.get("content") == "test"
+
+
+def test_get_alert_summary_error(
+    capfd, requests_mock, reco_client: RecoClient
+) -> None:
+    alert_id = uuid.uuid1()
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/alert/summarize/{alert_id}", json={}, status_code=404
+    )
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.get_alert_ai_summary(str(alert_id))
 
 
 def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_user_context_response()
-    requests_mock.post(
-        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200)
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json=raw_result,
+        status_code=200,
     )
     res = get_user_context_by_email_address(reco_client, "charles@corp.com")
     assert res.outputs_prefix == "Reco.User"

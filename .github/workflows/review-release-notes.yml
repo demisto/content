@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 2
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v41.0.1
+        uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
         with:
           separator: ${{ env.CHANGED_FILES_DELIMITER }}
           files: |
@@ -25,14 +25,14 @@ jobs:
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
       - name: Setup Poetry
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         uses: Gr1N/setup-poetry@v9
       - name: Install python dependencies
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: Set Python Path
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |

@@ -102,7 +102,7 @@ script:
   commands:
   - name: iot-security-get-device
     arguments:
-    - description: The device uid (mac address)
+    - description: The device uid (mac address).
       name: id
       required: true
     description: IoT get device command - get a single device's details.
@@ -123,7 +123,7 @@ script:
       description: The device profile vertical.
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.category
-      description: The device category
+      description: The device category.
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.profile
       description: The device profile.
@@ -144,7 +144,7 @@ script:
       description: The device risk score.
       type: Number
     - contextPath: PaloAltoNetworksIoT.Device.risk_level
-      description: "The device risk level: Low, Medium, High, Critical"
+      description: "The device risk level: Low, Medium, High, Critical."
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.subnet
       description: The device subnet.
@@ -219,7 +219,7 @@ script:
     arguments:
     - name: ip
       required: true
-      description: The device ip (ip address)
+      description: The device ip (ip address).
     outputs:
     - contextPath: PaloAltoNetworksIoT.Device
       description: Device details.
@@ -237,7 +237,7 @@ script:
       description: The device profile vertical.
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.category
-      description: The device category
+      description: The device category.
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.profile
       description: The device profile.
@@ -258,7 +258,7 @@ script:
       description: The device risk score.
       type: Number
     - contextPath: PaloAltoNetworksIoT.Device.risk_level
-      description: 'The device risk level: Low, Medium, High, Critical'
+      description: 'The device risk level: Low, Medium, High, Critical.'
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.subnet
       description: The device subnet.
@@ -336,7 +336,7 @@ script:
       name: offset
     - description: The maximum size of the list of the devices.
       name: limit
-    description: IoT list devices command
+    description: IoT list devices command.
     outputs:
     - contextPath: PaloAltoNetworksIoT.DeviceList
       description: List of devices.
@@ -369,7 +369,7 @@ script:
       type: unknown
   - name: iot-security-resolve-alert
     arguments:
-    - description: The alert ID
+    - description: The alert ID.
       name: id
       required: true
     - description: The alert resolution reason.
@@ -395,7 +395,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.116439
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- PaloAltoNetworks_IoT-Test

@@ -1,27 +1,23 @@
 The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
 This integration was integrated and tested with version 1.29 of AWS-EKS.
 
-## Configure AWS-EKS on Cortex XSOAR
+## Configure AWS-EKS in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS-EKS.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | AWS Default Region | AWS Default Region | True |
-    | Access Key |  | True |
-    | Secret Key |  | True |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
-    | Use system proxy settings | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AWS Default Region | AWS Default Region | True |
+| Access Key |  | True |
+| Secret Key |  | True |
+| Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
+| Use system proxy settings | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-eks-list-clusters
@@ -476,4 +472,3 @@ Updates an access entry.
 >|Cluster Name|Principal Arn|Username|Type|Modified At|
 >|---|---|---|---|---|
 >| CLUSTER_NAME | principal_arn | username | STANDARD | 2024-02-26 09:38:11.578000+00:00 |
-

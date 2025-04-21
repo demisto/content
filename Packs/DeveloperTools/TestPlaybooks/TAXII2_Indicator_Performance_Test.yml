@@ -57,7 +57,7 @@ tasks:
       execution-timeout:
         simple: "600"
       headers:
-        simple: Accept=application/taxii+json
+        simple: Accept=application/taxii+json,Authorization=Basic dGVzdDE6dGVzdDE=
       "n":
         simple: ${inputs.n}
       o:
@@ -122,7 +122,7 @@ tasks:
       execution-timeout:
         simple: "600"
       headers:
-        simple: Accept=application/taxii+json
+        simple: Accept=application/taxii+json,Authorization=Basic dGVzdDE6dGVzdDE=
       "n":
         simple: ${inputs.n}
       o:
@@ -187,7 +187,7 @@ tasks:
       execution-timeout:
         simple: "1000"
       headers:
-        simple: Accept=application/taxii+json
+        simple: Accept=application/taxii+json,Authorization=Basic dGVzdDE6dGVzdDE=
       "n":
         simple: ${inputs.n}
       o:

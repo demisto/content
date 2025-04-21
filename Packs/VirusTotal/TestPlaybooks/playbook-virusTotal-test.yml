@@ -8,7 +8,7 @@ description: |
 
   Sleep for 60 seconds.
 
-  https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+  https://docs.virustotal.com/reference/public-vs-premium-api
 starttaskid: "0"
 tasks:
   "0":

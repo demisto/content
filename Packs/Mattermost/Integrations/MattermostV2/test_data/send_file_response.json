@@ -1,0 +1,19 @@
+{
+    "file_infos": [
+        {
+            "id": "id",
+            "user_id": "user_id",
+            "channel_id": "",
+            "create_at": 1697024555904,
+            "update_at": 1697024555904,
+            "delete_at": 0,
+            "name": "name",
+            "extension": "",
+            "size": 2271,
+            "mime_type": "",
+            "remote_id": "",
+            "archived": false
+        }
+    ],
+    "client_ids": []
+}

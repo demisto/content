@@ -1,0 +1,6 @@
+[INGEST:vendor = barracuda, product = email_protection, target_dataset = barracuda_email_protection_raw, no_hit = keep]
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}" // e.g. 2024-06-25T19:49:46+0000
+| alter tmp_json_payload = to_json_string(arrayindex(regextract(_raw_log, "\[\d+\]: (\{.*?$)"), 0))
+| alter tmp_get_timestamp = tmp_json_payload -> timestamp
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%S%z", tmp_get_timestamp)
+| fields - tmp_json_payload, tmp_get_timestamp;

@@ -7,7 +7,27 @@
     "detached": false,
     "disabled": false,
     "extractSettings": {
-        "fieldCliNameToExtractSettings": {},
+        "fieldCliNameToExtractSettings": {
+            "xpansedescription": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "cveRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "xpansehostname": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "xpanseip": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [
+                    "ipRep"
+                ],
+                "isExtractingAllIndicatorTypes": false
+            }
+        },
         "mode": "Specific"
     },
     "hours": 0,
@@ -16,7 +36,7 @@
     "layout": "Xpanse Alert Layout",
     "locked": false,
     "name": "Xpanse Alert",
-    "onChangeRepAlg": 0,
+    "onChangeRepAlg": 1,
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

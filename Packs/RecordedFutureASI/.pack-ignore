@@ -1,2 +1,6 @@
 [known_words]
 RecordedFutureASILayout
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-RecordedFutureASILayout.json]
+ignore=GR103

@@ -18,7 +18,21 @@ metadata:
 EOF
 ```
 
-2. Grant the service account an appropriate role. Refer to [Kubernetes RBAC docs](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) if granting more fine grain or scoped access.
+2. Create secret for the above service account.
+```
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/service-account-token
+metadata:
+  name: xsoar-secret
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: xsoar
+EOF
+```
+
+3. Grant the service account an appropriate role. Refer to [Kubernetes RBAC docs](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) if granting finer grain or scoped access.
 ```
 kubectl apply -f - <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
@@ -35,14 +49,13 @@ subjects:
   namespace: kube-system
 EOF
 ```
-3. Retrieve the token object name created into a env var called TOKEN
+
+4. Generate the service account token.
 ```
-TOKENNAME=`kubectl -n kube-system get serviceaccount/xsoar -o jsonpath='{.secrets[0].name}'`
+kubectl create token xsoar -n kube-system
 ```
-4. Output the API token value
-```
-kubectl -n kube-system get secret $TOKENNAME -o jsonpath='{.data.token}' | base64 -d
-```
+
+5. Copy the output token and paste it into the API field.
 
 ## Testing
 

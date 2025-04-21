@@ -17,14 +17,10 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 6. Click **Save** to save the alert profile.
 7. Make sure you configure the user role to be at least `auditor`, otherwise you will not be able to fetch the alerts.
 
-## Configure Prisma Cloud Compute on Cortex XSOAR
+## Configure Prisma Cloud Compute in Cortex
 
-1. Navigate to **Settings > Integrations > Servers & Services**.
-2. Search for **Prisma Cloud Compute**.
-3. Click **Add instance** to create and configure a new integration.
-   
-   | Parameter                                             | Description | Example |
--------------------------------------------------------| -------------- | ----------- | ------- |
+   | Parameter | Description | Example |
+   | --- | --- | --- |
    | **Name**                                              | A meaningful name for the integration instance. | Prisma Cloud Compute_&lt;alertProfileName&gt; |
    | **Fetches incidents**                                 | Configures this integration instance to fetch alerts from Prisma Cloud Compute. | N/A |
    | **Prisma Cloud Compute Console URL**                  | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span></span>/proxyserver.com |
@@ -34,8 +30,6 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
    | **Username**                                          | Prisma Cloud Compute login credentials. | N/A |
    | **Prisma Cloud Compute CA Certificate**               | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
    | **Source Reliability**                                   | Reliability of the source providing the intelligence data. | False |
-4. Click **Test** to validate the integration.
-5. Click **Done** to save the integration.
 
 ## Configure Prisma Cloud Compute User Roles 
 
@@ -50,7 +44,7 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 
 3) Press on `Edit` -> Choose a Role in the `Role` section.
 
-![User Roles Configuration](doc_images/user-roles-configuration.png)
+![User Roles Configuration](../../doc_files/user-roles-configuration.png)
 
 ## Required User Roles
 In order to use the entire integration commands a user must have the permissions of the following user roles:
@@ -65,12 +59,12 @@ In order to use the entire integration commands a user must have the permissions
 The administrator user role can use the entire integration commands.
 
 See user roles descriptions in Prisma Cloud Compute:
-![Available User Roles](doc_images/available-user-roles.png)
+![Available User Roles](../../doc_files/available-user-roles.png)
 
 Commands
 --------
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### prisma-cloud-compute-profile-host-list
 ***
@@ -933,6 +927,31 @@ There is no context output for this command.
 
 #### Human Readable Output
 >Successfully updated the custom IP feeds
+
+### prisma-cloud-compute-custom-feeds-ip-remove
+
+***
+Remove a list of IPs from the system's block list.
+
+#### Base Command
+
+`prisma-cloud-compute-custom-feeds-ip-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | A comma-separated list of custom IP addresses to remove from the banned IPs list. For example ip=1.1.1.1,2.2.2.2. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!prisma-cloud-compute-custom-feeds-ip-remove ip=2.2.2.2,5.6.7.8```
+#### Human Readable Output
+
+>Successfully removed {'2.2.2.2'} from the custom IP feeds.
+>        Could not find {'5.6.7.8'} in the custom IP feeds.
 
 ### prisma-cloud-compute-custom-feeds-malware-list
 ***

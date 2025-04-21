@@ -1,247 +1,284 @@
 {
-    "zscaler_nssweblog_raw": {
-        "externalId": {
-          "type": "string",
-          "is_array": false
-        },
-        "act": {
-          "type": "string",
-          "is_array": false
-        },
-        "reason": {
-          "type": "string",
-          "is_array": false
-        },
-        "requestMethod": {
-          "type": "string",
-          "is_array": false
-        },
-        "request": {
-          "type": "string",
-          "is_array": false
-        },
-        "devicehostname": {
-          "type": "string",
-          "is_array": false
-        },
-        "src": {
-          "type": "string",
-          "is_array": false
-        },
-        "dst": {
-          "type": "string",
-          "is_array": false
-        },
-        "cat": {
-          "type": "string",
-          "is_array": false
-        },
-        "app": {
-          "type": "string",
-          "is_array": false
-        },
-        "suser": {
-          "type": "string",
-          "is_array": false
-        },
-        "spriv": {
-          "type": "string",
-          "is_array": false
-        },
-        "dhost": {
-          "type": "string",
-          "is_array": false
-        },
-        "outcome": {
-          "type": "string",
-          "is_array": false
-        },
-        "out": {
-          "type": "string",
-          "is_array": false
-        },
-        "cs2": {
-          "type": "string",
-          "is_array": false
-        },
-        "contenttype": {
-          "type": "string",
-          "is_array": false
-        },
-        "cs4": {
-          "type": "string",
-          "is_array": false
-        },
-        "cs5": {
-          "type": "string",
-          "is_array": false
-        },
-        "cn1": {
-          "type": "string",
-          "is_array": false
-        },
-        "_reporting_device_name": {
-          "type": "string",
-          "is_array": false
-        },
-        "requestClientApplication": {
-          "type": "string",
-          "is_array": false
-        },
-        "destinationServiceName": {
-          "type": "string",
-          "is_array": false
-        },
-        "sourceTranslatedAddress": {
-          "type": "string",
-          "is_array": false
-        },
-        "ZscalerNSSWeblogURLClass": {
-          "type": "string",
-          "is_array": false
-        },
-        "fileType": {
-          "type": "string",
-          "is_array": false
-        },
-        "cefName": {
-          "type": "string",
-          "is_array": false
-        },
-        "cefVersion": {
-          "type": "string",
-          "is_array": false
-        },
-        "cefSeverity": {
-          "type": "string",
-          "is_array": false
-        },
-        "spt": {
-          "type": "string",
-          "is_array": false
-        },
-        "dpt": {
-          "type": "string",
-          "is_array": false
-        },
-        "destinationTranslatedAddress": {
-          "type": "string",
-          "is_array": false
-        },
-        "proto": {
-          "type": "string",
-          "is_array": false
-        },
-        "in": {
-          "type": "string",
-          "is_array": false
-        },
-        "cs3": {
-          "type": "string",
-          "is_array": false
-        },
-        "destCountry": {
-          "type": "string",
-          "is_array": false
-        },
-        "cs6": {
-          "type": "string",
-          "is_array": false
-        }
+  "zscaler_nssweblog_raw": {
+    "act": {
+      "type": "string",
+      "is_array": false
     },
-    "zscaler_nssfwlog_raw": {
-      "suser": {
-        "type": "string",
-        "is_array": false
-      },
-      "act": {
-        "type": "string",
-        "is_array": false
-      },
-      "reason": {
-        "type": "string",
-        "is_array": false
-      },
-      "src": {
-        "type": "string",
-        "is_array": false
-      },
-      "spt": {
-        "type": "int",
-        "is_array": false
-      },
-      "dst": {
-        "type": "string",
-        "is_array": false
-      },
-      "dpt": {
-        "type": "int",
-        "is_array": false
-      },
-      "destinationTranslatedAddress": {
-        "type": "string",
-        "is_array": false
-      },
-      "sourceTranslatedAddress": {
-        "type": "string",
-        "is_array": false
-      },
-      "proto": {
-        "type": "string",
-        "is_array": false
-      },
-      "spriv": {
-        "type": "string",
-        "is_array": false
-      },
-      "cs2": {
-        "type": "string",
-        "is_array": false
-      },
-      "cs3": {
-        "type": "string",
-        "is_array": false
-      },
-      "cs5": {
-        "type": "string",
-        "is_array": false
-      },
-      "in": {
-        "type": "int",
-        "is_array": false
-      },
-      "out": {
-        "type": "int",
-        "is_array": false
-      },
-      "cs6": {
-        "type": "string",
-        "is_array": false
-      },
-      "cn1": {
-        "type": "int",
-        "is_array": false
-      },
-      "destCountry": {
-        "type": "string",
-        "is_array": false
-      },
-      "cefName": {
-        "type": "string",
-        "is_array": false
-      },
-      "cefVersion": {
-        "type": "string",
-        "is_array": false
-      },
-      "cefSeverity": {
-        "type": "string",
-        "is_array": false
-      },
-      "cat": {
-        "type": "string",
-        "is_array": false
-      }
+    "app": {
+      "type": "string",
+      "is_array": false
+    },
+    "cat": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefName": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefSeverity": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefVersion": {
+      "type": "string",
+      "is_array": false
+    },
+    "cn1": {
+      "type": "string",
+      "is_array": false
+    },
+    "contenttype": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs2": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs3": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs4": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs5": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs6": {
+      "type": "string",
+      "is_array": false
+    },
+    "destCountry": {
+      "type": "string",
+      "is_array": false
+    },
+    "destinationServiceName": {
+      "type": "string",
+      "is_array": false
+    },
+    "destinationTranslatedAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "devicehostname": {
+      "type": "string",
+      "is_array": false
+    },
+    "dhost": {
+      "type": "string",
+      "is_array": false
+    },
+    "dpt": {
+      "type": "string",
+      "is_array": false
+    },
+    "dst": {
+      "type": "string",
+      "is_array": false
+    },
+    "externalId": {
+      "type": "string",
+      "is_array": false
+    },
+    "fileType": {
+      "type": "string",
+      "is_array": false
+    },
+    "in": {
+      "type": "string",
+      "is_array": false
+    },
+    "outcome": {
+      "type": "string",
+      "is_array": false
+    },
+    "out": {
+      "type": "string",
+      "is_array": false
+    },
+    "proto": {
+      "type": "string",
+      "is_array": false
+    },
+    "reason": {
+      "type": "string",
+      "is_array": false
+    },
+    "request": {
+      "type": "string",
+      "is_array": false
+    },
+    "requestClientApplication": {
+      "type": "string",
+      "is_array": false
+    },
+    "requestMethod": {
+      "type": "string",
+      "is_array": false
+    },
+    "sourceTranslatedAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "spriv": {
+      "type": "string",
+      "is_array": false
+    },
+    "src": {
+      "type": "string",
+      "is_array": false
+    },
+    "spt": {
+      "type": "string",
+      "is_array": false
+    },
+    "suser": {
+      "type": "string",
+      "is_array": false
+    },
+    "ZscalerNSSWeblogURLClass": {
+      "type": "string",
+      "is_array": false
+    }
+  },
+  "zscaler_nssfwlog_raw": {
+    "act": {
+      "type": "string",
+      "is_array": false
+    },
+    "cat": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefName": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefSeverity": {
+      "type": "string",
+      "is_array": false
+    },
+    "cefVersion": {
+      "type": "string",
+      "is_array": false
+    },
+    "cn1": {
+      "type": "int",
+      "is_array": false
+    },
+    "cs2": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs3": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs5": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs6": {
+      "type": "string",
+      "is_array": false
+    },
+    "destCountry": {
+      "type": "string",
+      "is_array": false
+    },
+    "destinationTranslatedAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "dpt": {
+      "type": "int",
+      "is_array": false
+    },
+    "dst": {
+      "type": "string",
+      "is_array": false
+    },
+    "in": {
+      "type": "int",
+      "is_array": false
+    },
+    "out": {
+      "type": "int",
+      "is_array": false
+    },
+    "proto": {
+      "type": "string",
+      "is_array": false
+    },
+    "reason": {
+      "type": "string",
+      "is_array": false
+    },
+    "sourceTranslatedAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "spriv": {
+      "type": "string",
+      "is_array": false
+    },
+    "spt": {
+      "type": "int",
+      "is_array": false
+    },
+    "src": {
+      "type": "string",
+      "is_array": false
+    },
+    "suser": {
+      "type": "string",
+      "is_array": false
+    }
+  },
+  "zscaler_cloudnss_raw": {
+    "_raw_log": {
+      "type": "string",
+      "is_array": false
+    },
+    "sourcetype": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_ipv4": {
+      "type": "string",
+      "is_array": false
+    },
+    "dest_ipv4": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_ipv6": {
+      "type": "string",
+      "is_array": false
+    },
+    "dest_ipv6": {
+      "type": "string",
+      "is_array": false
+    },
+    "proto": {
+      "type": "string",
+      "is_array": false
+    },
+    "url_category": {
+      "type": "string",
+      "is_array": false
+    },
+    "os": {
+      "type": "string",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    }
   }
 }
- 

@@ -2,26 +2,22 @@
 Create and Manage Azure Storage Queues and Messages.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage Queue
 
-## Configure Azure Storage Queue on Cortex XSOAR
+## Configure Azure Storage Queue in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Storage Queue.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Storage account name |  | True |
-    | Account SAS Token |  | False |
-    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Maximum incidents for one fetch. | Default is 10. Maximum is 32 \(due to an API limit\). | False |
-    | Queue name | The name of the queue from which the messages will be retrieved. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Storage account name |  | True |
+| Account SAS Token |  | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Maximum incidents for one fetch. | Default is 10. Maximum is 32 \(due to an API limit\). | False |
+| Queue name | The name of the queue from which the messages will be retrieved. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Shared Access Signatures (SAS) Permissions
 In order to use the integration use-cases, 
@@ -31,7 +27,7 @@ please make sure your SAS token contains the following permissions:
   3. 'Read', 'Write', 'Delete', 'List', 'Create', 'Add', 'Update', 'Process' and 'Immutable storage' permissions.
   
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-storage-queue-list
 ***

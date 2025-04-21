@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the default value of the *Number of alerts for each fetch* parameter of the ***Microsoft Defender for Cloud Apps Event Collector*** to 100 due to API limitations. **Instances configured with values higher than 100 will encounter errors.**"
+}

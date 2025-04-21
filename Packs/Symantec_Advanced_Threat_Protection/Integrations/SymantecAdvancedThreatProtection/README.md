@@ -1,29 +1,25 @@
 Advanced protection capabilities from Symantec
 This integration was integrated and tested with Symantec Advanced Threat Protection v3.0.
 
-## Configure Symantec Advanced Threat Protection on Cortex XSOAR
+## Configure Symantec Advanced Threat Protection in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Symantec Advanced Threat Protection.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (i.e. https://host:port) |  | True |
-    | Client ID as generated in the ATP console |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
-    | Incident data source |  | False |
-    | Maximum number of events per fetch. |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Maximum is 30 days. |  | False |
-    | Query string for fetch incidents. For example - "updated&gt;='2020-06-06T15:39:55.616Z' and updated&lt;'2020-08-07T00:00:00.000Z' " |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (i.e. https://host:port) |  | True |
+| Client ID as generated in the ATP console |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
+| Incident data source |  | False |
+| Maximum number of events per fetch. |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Maximum is 30 days. |  | False |
+| Query string for fetch incidents. For example - "updated&gt;='2020-06-06T15:39:55.616Z' and updated&lt;'2020-08-07T00:00:00.000Z' " |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### satp-appliances
 ***
@@ -471,6 +467,5 @@ Query incidents from ATP
 
 #### Command Example
 ``` !satp-incidents ```
-
 
 

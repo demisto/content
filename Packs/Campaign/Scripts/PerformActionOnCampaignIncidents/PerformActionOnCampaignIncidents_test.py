@@ -1,29 +1,32 @@
 from collections.abc import Callable
-import pytest
-from pytest_mock import MockerFixture
+
 import demistomock as demisto
+import pytest
 from PerformActionOnCampaignIncidents import (
     ACTION_ON_CAMPAIGN_FIELD_NAME,
+    ACTIONS,
     FIELDS_TO_DISPLAY,
+    NO_CAMPAIGN_INCIDENTS_MSG,
     SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME,
     SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME,
-    NO_CAMPAIGN_INCIDENTS_MSG,
-    main,
+    _extract_incident_fields,
+    _get_context,
+    _get_email_fields,
+    _get_incident,
+    _get_recipients,
+    _link_or_unlink_between_incidents,
+    _parse_incident_context_to_valid_incident_campaign_context,
+    _set_incidents_to_campaign,
     _set_involved_incidents_count,
     _set_part_of_campaign_field,
-    _link_or_unlink_between_incidents,
-    _set_incidents_to_campaign,
-    _get_context,
-    _get_incident,
+    _set_removed_from_campaigns_field,
     extract_domain,
     extract_single_or_list,
-    _get_email_fields,
-    _get_recipients,
-    _extract_incident_fields,
-    _parse_incident_context_to_valid_incident_campaign_context,
+    main,
     perform_add_to_campaign,
     perform_remove_from_campaign,
 )
+from pytest_mock import MockerFixture
 
 NUM_OF_INCIDENTS = 5
 INCIDENT_IDS = [str(i) for i in range(NUM_OF_INCIDENTS)]
@@ -150,9 +153,7 @@ def test_no_incidents_in_context(mocker: MockerFixture) -> None:
         ),
     ],
 )
-def test_error_in_execute_command(
-    mocker: MockerFixture, execute_command: Callable, args: dict, error_message: str
-) -> None:
+def test_error_in_execute_command(mocker: MockerFixture, execute_command: Callable, args: dict, error_message: str) -> None:
     """
     Given -
         isError is return true to indicate there is error
@@ -165,9 +166,7 @@ def test_error_in_execute_command(
     """
     prepare(mocker)
     mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=True)
-    mocker.patch(
-        "PerformActionOnCampaignIncidents.get_error", return_value="Error message"
-    )
+    mocker.patch("PerformActionOnCampaignIncidents.get_error", return_value="Error message")
 
     # run
     try:
@@ -187,9 +186,7 @@ def test_error_in_execute_command(
         pytest.param("test", None, id="invalid email"),
     ],
 )
-def test_extract_domain_with_email(
-    email: str | None, expected_domain: str | None
-) -> None:
+def test_extract_domain_with_email(email: str | None, expected_domain: str | None) -> None:
     """Test extracting domain from email address.
 
     Given:
@@ -216,9 +213,7 @@ def test_extract_domain_with_email(
         pytest.param({"test": "test"}, {"test": "test"}, id="dict"),
     ],
 )
-def test_extract_single_or_list_single_item(
-    input: list | None, expected_output: str | list | None
-) -> None:
+def test_extract_single_or_list_single_item(input: list | None, expected_output: str | list | None) -> None:
     """Test extracting a single item from input list or keeping input as is if not list.
 
     Given:
@@ -270,9 +265,7 @@ def test_extract_single_or_list_single_item(
         ),
     ],
 )
-def test_get_email_fields_with_data(
-    mocker: MockerFixture, incident_context, return_value
-) -> None:
+def test_get_email_fields_with_data(mocker: MockerFixture, incident_context, return_value) -> None:
     """Tests getting email fields from incident context.
 
     Given:
@@ -508,9 +501,7 @@ def test_parse_incident_context_to_valid_incident_campaign_context(
     mocker.patch.object(demisto, "executeCommand", return_value=[{}])
     mocker.patch.object(demisto, "dt", side_effect=return_value)
 
-    result = _parse_incident_context_to_valid_incident_campaign_context(
-        "1", field_to_display
-    )
+    result = _parse_incident_context_to_valid_incident_campaign_context("1", field_to_display)
     assert result == expected
 
 
@@ -531,9 +522,7 @@ def test_parse_incident_context_to_valid_incident_campaign_context(
         ),
     ],
 )
-def test_perform_add_to_campaign(
-    mocker: MockerFixture, ids_to_add: list, incident_ids: dict, expected: set
-) -> None:
+def test_perform_add_to_campaign(mocker: MockerFixture, ids_to_add: list, incident_ids: dict, expected: set) -> None:
     """Tests adding incidents to an email campaign.
 
     Given:
@@ -549,6 +538,7 @@ def test_perform_add_to_campaign(
     """
     involved_incidents_count = [1]
     mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
+    mocker.patch("PerformActionOnCampaignIncidents._set_removed_from_campaigns_field")
     mocker.patch.object(demisto, "incidents", return_value=[MOCKED_INCIDENT])
     mocker.patch.object(demisto, "executeCommand", return_value=[{}])
     mocker.patch.object(
@@ -626,9 +616,7 @@ def test_perform_add_to_campaign_no_incidents_to_add(
         ),
     ],
 )
-def test_perform_remove_from_campaign(
-    mocker: MockerFixture, ids_to_remove: list, incident_ids: dict, expected: set
-) -> None:
+def test_perform_remove_from_campaign(mocker: MockerFixture, ids_to_remove: list, incident_ids: dict, expected: set) -> None:
     """Tests removing incidents from an email campaign.
 
     Given:
@@ -644,11 +632,10 @@ def test_perform_remove_from_campaign(
     """
     involved_incidents_count = [1]
     mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
+    mocker.patch("PerformActionOnCampaignIncidents._set_removed_from_campaigns_field")
     mocker.patch.object(demisto, "incidents", return_value=[MOCKED_INCIDENT])
     mocker.patch.object(demisto, "executeCommand", return_value=[{}])
-    mocker.patch.object(
-        demisto, "dt", side_effect=[incident_ids, involved_incidents_count]
-    )
+    mocker.patch.object(demisto, "dt", side_effect=[incident_ids, involved_incidents_count])
     res = perform_remove_from_campaign(ids_to_remove, "add to campaign")
     for i in expected:
         assert i in res
@@ -684,8 +671,32 @@ def test_perform_remove_from_campaign_no_incidents_to_remove(
     mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
     mocker.patch.object(demisto, "incidents", return_value=[MOCKED_INCIDENT])
     mocker.patch.object(demisto, "executeCommand", return_value=[{}])
-    mocker.patch.object(
-        demisto, "dt", side_effect=[incident_ids, involved_incidents_count]
-    )
+    mocker.patch.object(demisto, "dt", side_effect=[incident_ids, involved_incidents_count])
     res = perform_remove_from_campaign(ids_to_remove, "add to campaign")
     assert expected == res
+
+
+@pytest.mark.parametrize(
+    "campaign_ids_removed, action, expected_campaign_ids_removed",
+    [
+        (["campaign1", "campaign2"], ACTIONS.ADD, ["campaign1", "campaign2", "campaign_id"]),
+        (None, ACTIONS.ADD, ["campaign_id"]),
+        ([], ACTIONS.ADD, ["campaign_id"]),
+        (None, ACTIONS.REMOVE, []),
+        ([], ACTIONS.REMOVE, []),
+        (["campaign1", "campaign_id"], ACTIONS.REMOVE, ["campaign1"]),
+        (["campaign1", "campaign2", "campaign_id"], ACTIONS.ADD, ["campaign1", "campaign2", "campaign_id"]),
+        (["campaign1"], ACTIONS.REMOVE, ["campaign1"]),
+    ],
+)
+def test_set_removed_from_campaigns_field(mocker, campaign_ids_removed, action, expected_campaign_ids_removed):
+    mocker.patch("PerformActionOnCampaignIncidents._get_incident", return_value={})
+    mocker.patch("PerformActionOnCampaignIncidents._get_data_from_incident", return_value=campaign_ids_removed)
+    mock_execute_command = mocker.patch("PerformActionOnCampaignIncidents.demisto.executeCommand")
+    mocker.patch("PerformActionOnCampaignIncidents.isError", return_value=False)
+
+    _set_removed_from_campaigns_field("incident_id", "campaign_id", action)
+
+    mock_execute_command.assert_called_once_with(
+        "setIncident", {"id": "incident_id", "removedfromcampaigns": expected_campaign_ids_removed}
+    )

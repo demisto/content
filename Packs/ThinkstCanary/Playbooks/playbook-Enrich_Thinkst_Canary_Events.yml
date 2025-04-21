@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e874e103-0b1f-42c3-824a-cb851c49b8a2
+    taskid: 88c31182-bc10-41f3-8a66-88be355428ef
     type: regular
     task:
-      id: e874e103-0b1f-42c3-824a-cb851c49b8a2
+      id: 88c31182-bc10-41f3-8a66-88be355428ef
       version: -1
       name: Enrich Thinkst Canary Events
       description: Set a value in context under the key you entered.
@@ -51,8 +51,8 @@ tasks:
         simple: CanaryTools.Events
       value:
         complex:
-          root: incident
-          accessor: thinkstcanaryevents
+          root: incident.labels
+          accessor: description
           transformers:
           - operator: ParseJSON
     separatecontext: false

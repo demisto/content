@@ -1,0 +1,197 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"mapping": {
+		"Darktrace ASM Risk": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"DarktraceASM Asset Brand": {
+					"complex": {
+						"accessor": "brand",
+						"filters": [],
+						"root": "asset",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Asset Creation Time": {
+					"complex": {
+						"filters": [],
+						"root": "asset.createdAt",
+						"transformers": [
+							{
+								"args": {
+									"format": {
+										"value": {
+											"simple": "02 Jan 2006 15:04 MST"
+										}
+									}
+								},
+								"operator": "toString"
+							}
+						]
+					}
+				},
+				"DarktraceASM Asset ID": {
+					"complex": {
+						"accessor": "id",
+						"filters": [],
+						"root": "asset",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Asset Security Rating": {
+					"complex": {
+						"accessor": "securityrating",
+						"filters": [],
+						"root": "asset",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Asset State": {
+					"complex": {
+						"accessor": "state",
+						"filters": [],
+						"root": "asset",
+						"transformers": []
+					}
+				},
+                "DarktraceASM Asset URL": {
+					"complex": {
+						"accessor": "asset_url",
+						"filters": [],
+						"root": "asset",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Asset Updated Time": {
+					"complex": {
+						"filters": [],
+						"root": "asset.updatedAt",
+						"transformers": [
+							{
+								"args": {
+									"format": {
+										"value": {
+											"simple": "02 Jan 2006 15:04 MST"
+										}
+									}
+								},
+								"operator": "toString"
+							}
+						]
+					}
+				},
+				"DarktraceASM Asset is Malicious": {
+					"complex": {
+						"filters": [],
+						"root": "asset.isMalicious",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Risk Description": {
+					"complex": {
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Risk End Time": {
+					"complex": {
+						"filters": [],
+						"root": "endedAt",
+						"transformers": [
+							{
+								"args": {
+									"format": {
+										"value": {
+											"simple": "02 Jan 2006 15:04 MST"
+										}
+									}
+								},
+								"operator": "toString"
+							}
+						]
+					}
+				},
+				"DarktraceASM Risk Evidence": {
+					"complex": {
+						"filters": [],
+						"root": "evidence",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Risk ID": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Risk Proposed Action": {
+					"complex": {
+						"filters": [],
+						"root": "proposedAction",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Risk Security Rating": {
+					"complex": {
+						"filters": [],
+						"root": "securityRating",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Risk Start Time": {
+					"complex": {
+						"filters": [],
+						"root": "startedAt",
+						"transformers": [
+							{
+								"args": {
+									"format": {
+										"value": {
+											"simple": "02 Jan 2006 15:04 MST"
+										}
+									}
+								},
+								"operator": "toString"
+							}
+						]
+					}
+				},
+				"DarktraceASM Risk Title": {
+					"complex": {
+						"filters": [],
+						"root": "title",
+						"transformers": []
+					}
+				},
+				"DarktraceASM Risk Type": {
+					"complex": {
+						"filters": [],
+						"root": "type",
+						"transformers": []
+					}
+				},
+                "DarktraceASM Risk URL": {
+					"complex": {
+						"filters": [],
+						"root": "risk_url",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		}
+	},
+	"name": "Darktrace ASM Risk Mapper",
+    "id": "Darktrace ASM Risk Mapper",
+    "type": "mapping-incoming",
+    "fromVersion": "6.6.0",
+	"version": -1
+}

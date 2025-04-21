@@ -1,0 +1,143 @@
+{
+    "raw_response": {
+      "siteShieldMaps": [
+        {
+          "acknowledgeRequiredBy": 1679661685000,
+          "acknowledged": true,
+          "acknowledgedBy": "jsmith",
+          "acknowledgedOn": 1649661984000,
+          "contacts": [
+            "jsmith@example.com"
+          ],
+          "currentCidrs": [
+            "1.1.1.1/1"
+          ],
+          "id": 123456789,
+          "latestTicketId": 2456,
+          "mapAlias": "ABC Company",
+          "mcmMapRuleId": 12345,
+          "proposedCidrs": [
+            "2.2.2.2/2"
+          ],
+          "ruleName": "ss.​akamai.​net",
+          "service": "S",
+          "shared": false,
+          "sureRouteName": "route.name.example.com",
+          "type": "Production"
+        },
+        {
+          "acknowledgeRequiredBy": 1569661685000,
+          "acknowledged": true,
+          "acknowledgedBy": "bmack",
+          "acknowledgedOn": 1569661984000,
+          "contacts": [
+            "new@email.com"
+          ],
+          "currentCidrs": [
+            "1.1.1.1/1"
+          ],
+          "id": 7964,
+          "latestTicketId": 5884,
+          "mapAlias": "Capybara Corp",
+          "mcmMapRuleId": 957,
+          "proposedCidrs": [],
+          "ruleName": "e;s9.akamaiedge.net",
+          "service": "S",
+          "shared": false,
+          "type": "Production"
+        },
+        {
+          "acknowledgeRequiredBy": 1684661685000,
+          "acknowledged": true,
+          "acknowledgedBy": "sclaus",
+          "acknowledgedOn": 1647261984000,
+          "contacts": [
+            "test@test.com"
+          ],
+          "currentCidrs": [],
+          "id": 65,
+          "latestTicketId": 883,
+          "mapAlias": "Kookaburra Inc secure",
+          "mcmMapRuleId": 4255,
+          "proposedCidrs": [
+            "1.1.1.1/1"
+          ],
+          "ruleName": "e;s1.akamaiedge.net",
+          "service": "S",
+          "shared": false,
+          "sureRouteName": "route.name.example.com",
+          "type": "Production"
+        }
+      ]
+    },
+    "human_readable": "### Akamai WAF - list siteshield map command\n|acknowledgeRequiredBy|acknowledged|acknowledgedBy|acknowledgedOn|contacts|currentCidrs|id|latestTicketId|mapAlias|mcmMapRuleId|proposedCidrs|ruleName|service|shared|sureRouteName|type|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1679661685000 | true | jsmith | 1649661984000 | jsmith@example.com | 1.1.1.1/1 | 123456789 | 2456 | ABC Company | 12345 | 2.2.2.2/2 | ss.\u200bakamai.\u200bnet | S | false | route.name.example.com | Production |\n| 1569661685000 | true | bmack | 1569661984000 | new@email.com | 1.1.1.1/1 | 7964 | 5884 | Capybara Corp | 957 |  | e;s9.akamaiedge.net | S | false |  | Production |\n| 1684661685000 | true | sclaus | 1647261984000 | test@test.com |  | 65 | 883 | Kookaburra Inc secure | 4255 | 1.1.1.1/1 | e;s1.akamaiedge.net | S | false | route.name.example.com | Production |\n",
+    "context_entry": {
+        "Akamai.SiteShieldMaps":
+        [{
+            "acknowledgeRequiredBy": 1679661685000,
+            "acknowledged": true,
+            "acknowledgedBy": "jsmith",
+            "acknowledgedOn": 1649661984000,
+            "contacts": [
+                "jsmith@example.com"
+            ],
+            "currentCidrs": [
+                "1.1.1.1/1"
+            ],
+            "id": 123456789,
+            "latestTicketId": 2456,
+            "mapAlias": "ABC Company",
+            "mcmMapRuleId": 12345,
+            "proposedCidrs": [
+                "2.2.2.2/2"
+            ],
+            "ruleName": "ss.\u200bakamai.\u200bnet",
+            "service": "S",
+            "shared": false,
+            "sureRouteName": "route.name.example.com",
+            "type": "Production"
+        },
+            {
+                "acknowledgeRequiredBy": 1569661685000,
+                "acknowledged": true,
+                "acknowledgedBy": "bmack",
+                "acknowledgedOn": 1569661984000,
+                "contacts": [
+                    "new@email.com"
+                ],
+                "currentCidrs": [
+                    "1.1.1.1/1"
+                ],
+                "id": 7964,
+                "latestTicketId": 5884,
+                "mapAlias": "Capybara Corp",
+                "mcmMapRuleId": 957,
+                "proposedCidrs": [],
+                "ruleName": "e;s9.akamaiedge.net",
+                "service": "S",
+                "shared": false,
+                "type": "Production"
+            },
+            {
+                "acknowledgeRequiredBy": 1684661685000,
+                "acknowledged": true,
+                "acknowledgedBy": "sclaus",
+                "acknowledgedOn": 1647261984000,
+                "contacts": [
+                    "test@test.com"
+                ],
+                "currentCidrs": [],
+                "id": 65,
+                "latestTicketId": 883,
+                "mapAlias": "Kookaburra Inc secure",
+                "mcmMapRuleId": 4255,
+                "proposedCidrs": [
+                    "1.1.1.1/1"
+                ],
+                "ruleName": "e;s1.akamaiedge.net",
+                "service": "S",
+                "shared": false,
+                "sureRouteName": "route.name.example.com",
+                "type": "Production"
+            }]}
+}

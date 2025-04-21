@@ -789,7 +789,7 @@ script:
       hidden: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      description: Set this argument to True in order to create vulnerabilities, otherwise the command will only display the vulnerabilities.
       name: should_push_events
       predefined:
       - 'true'
@@ -1348,7 +1348,7 @@ script:
   isfetchassets: true
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.90168
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - Tenable.io test
 fromversion: 5.0.0

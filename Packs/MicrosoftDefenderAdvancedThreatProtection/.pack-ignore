@@ -1,5 +1,5 @@
 [file:MicrosoftDefenderAdvancedThreatProtection.yml]
-ignore=IN126,IN136,DS107,IN124,PR101
+ignore=IN126,IN136,DS107,PR101
 
 [file:README.md]
 ignore=RM102,RM104,RM106
@@ -68,3 +68,19 @@ ignore=MR108
 
 [file:Microsoft365DefenderEventCollector.yml]
 ignore=MR108
+
+# Temporary ignore GR-107 until CIAC-12403 is resolved
+[file:playbook-MDE_-_Search_And_Block_Software.yml]
+ignore=GR107
+[file:playbook-MDE_-_Search_and_Compare_Process_Executions.yml]
+ignore=GR107
+[file:playbook-MDE_-_Host_Advanced_Hunting.yml]
+ignore=GR107
+[file:playbook-MDE_-_False_Positive_Incident_Handling.yml]
+ignore=GR107
+[file:playbook-MDE_-_True_Positive_Incident_Handling.yml]
+ignore=GR107
+[file:playbook-MDE_SIEM_ingestion_-_Get_Incident_Data.yml]
+ignore=GR107
+[file:playbook-MDE_Malware_-_Incident_Enrichment.yml]
+ignore=GR107

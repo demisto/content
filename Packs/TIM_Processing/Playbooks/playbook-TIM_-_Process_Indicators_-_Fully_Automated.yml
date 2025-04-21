@@ -5,8 +5,8 @@ marketplaces:
 - xsoar
 name: TIM - Process Indicators - Fully Automated
 description: This playbook tags indicators ingested from high reliability feeds. The
-  playbook is triggered due to a Cortex XSOAR job. The indicators are tagged as approved_white,
-  approved_black, approved_watchlist. The tagged indicators will be ready for consumption
+  playbook is triggered due to a Cortex XSOAR job. The indicators are tagged as approved_allow,
+  approved_block, approved_watchlist. The tagged indicators will be ready for consumption
   for 3rd party systems such as SIEM, EDR etc.
 starttaskid: "0"
 tasks:
@@ -44,8 +44,8 @@ tasks:
     task:
       id: 9121339f-db6a-4838-841f-d104b50556c6
       version: -1
-      name: Append approved black tag
-      description: Adds the 'approved_black' tag to the relevant indicators.
+      name: Append approved block tag
+      description: Adds the 'approved_block' tag to the relevant indicators.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -57,7 +57,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: approved_black
+        simple: approved_block
       indicatorsValues:
         complex:
           root: ${playbookQuery
@@ -156,8 +156,8 @@ tasks:
     task:
       id: 91ecd937-cdf1-4076-8245-09bb02f15826
       version: -1
-      name: Append approved white tag
-      description: Adds the 'approved_white' tag to the relevant indicators.
+      name: Append approved allow tag
+      description: Adds the 'approved_allow' tag to the relevant indicators.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -169,7 +169,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: approved_white
+        simple: approved_allow
       indicatorsValues:
         complex:
           root: ${playbookQuery

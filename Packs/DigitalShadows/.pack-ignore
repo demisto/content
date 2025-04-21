@@ -11,3 +11,5 @@ ignore=IM111
 subdomain
 ds
 
+[file:layoutscontainer-Reliaquest_GreyMatter_DRP_Incident_Layout.json]
+ignore=LO107

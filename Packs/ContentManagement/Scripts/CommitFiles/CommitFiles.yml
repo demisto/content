@@ -1,4 +1,8 @@
 args:
+- description: Set to true if the files should be committed while preserving ${} placeholders instead of replacing them with context data.
+  isArray: false
+  name: cicd_keep_placeholders_in_files
+  defaultValue: true
 - description: The files to commit.
   isArray: true
   name: files
@@ -31,7 +35,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/xsoar-tools:1.0.0.69232
+dockerimage: demisto/xsoar-tools:1.0.0.1902141
 enabled: true
 name: CommitFiles
 outputs:

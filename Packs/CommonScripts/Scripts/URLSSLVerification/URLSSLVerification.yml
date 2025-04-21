@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - url
 - Enrichment
-comment: Verify URL SSL certificate
+comment: Verify URL SSL certificate.
 system: true
 args:
 - name: url
@@ -25,28 +25,28 @@ args:
   - 'true'
 outputs:
 - contextPath: URL
-  description: The URL object
+  description: The URL object.
 - contextPath: URL.Data
-  description: The URL address
+  description: The URL address.
   type: string
 - contextPath: URL.Malicious
-  description: The malicious description
+  description: The malicious description.
 - contextPath: DBotScore
-  description: The DBotScore object
+  description: The DBotScore object.
 - contextPath: DBotScore.Indicator
-  description: The indicator
+  description: The indicator.
   type: string
 - contextPath: DBotScore.Type
-  description: The indicator's type
+  description: The indicator's type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: The reputation vendor
+  description: The reputation vendor.
   type: string
 - contextPath: DBotScore.Score
-  description: The reputation score
+  description: The reputation score.
   type: number
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests (auto formatted)

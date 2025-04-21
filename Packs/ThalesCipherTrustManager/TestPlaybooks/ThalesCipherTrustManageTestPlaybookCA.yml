@@ -1,0 +1,1031 @@
+id: Thales CipherTrust Test Playbook - CA
+version: -1
+name: Thales CipherTrust Test Playbook - CA
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ade8d074-1d64-4d86-8a02-7fb0bfc11e6b
+    type: start
+    task:
+      id: ade8d074-1d64-4d86-8a02-7fb0bfc11e6b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 613a215c-bced-4c13-8d02-78e5be907b47
+    type: regular
+    task:
+      id: 613a215c-bced-4c13-8d02-78e5be907b47
+      version: -1
+      name: ciphertrust-local-ca-create
+      description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling the ciphertrust-local-ca-self-sign command or signed by another CA and installed by calling the ciphertrust-local-ca-install command. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
+      script: CipherTrust|||ciphertrust-local-ca-create
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cn:
+        simple: test_playbook_local_ca
+      name:
+        simple: test_playbook_local_ca_to_self_sign
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9bc0ff81-c93d-4b3f-869a-f9b471e3daea
+    type: regular
+    task:
+      id: 9bc0ff81-c93d-4b3f-869a-f9b471e3daea
+      version: -1
+      name: ciphertrust-local-ca-update
+      description: Update a local CA.
+      script: CipherTrust|||ciphertrust-local-ca-update
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      allow_client_authentication:
+        simple: "true"
+      allow_user_authentication:
+        simple: "true"
+      local_ca_id:
+        complex:
+          root: CipherTrust.LocalCA
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CipherTrust.LocalCA.name
+                iscontext: true
+              right:
+                value:
+                  simple: test_playbook_local_ca_to_self_sign
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 09b20e3f-0453-4f83-8f66-957406e4c97c
+    type: regular
+    task:
+      id: 09b20e3f-0453-4f83-8f66-957406e4c97c
+      version: -1
+      name: ciphertrust-local-ca-self-sign
+      description: Self-sign a local CA certificate. This is used to create a root CA. Either duration or notAfter date must be specified. If both notAfter and duration are given, then notAfter date takes precedence over duration. If duration is given without notBefore date, certificate is issued starting from server's current time for the specified duration.
+      script: CipherTrust|||ciphertrust-local-ca-self-sign
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      local_ca_id:
+        simple: test_playbook_local_ca_to_self_sign
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ad3acc22-63d2-4098-81c1-5c08ca86c2f4
+    type: regular
+    task:
+      id: ad3acc22-63d2-4098-81c1-5c08ca86c2f4
+      version: -1
+      name: ciphertrust-local-ca-list
+      description: Returns a list of local CA certificates. The results can be filtered, using the command arguments. If local_ca_id is provided, a single local CA certificate is returned and the rest of the filters are ignored. Chained parameter is used to return the full CA chain with the certificate and can be used only if local_ca_id is provided.
+      script: CipherTrust|||ciphertrust-local-ca-list
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8379653d-c9e6-49fd-86af-e953adef3dbd
+    type: regular
+    task:
+      id: 8379653d-c9e6-49fd-86af-e953adef3dbd
+      version: -1
+      name: ciphertrust-local-ca-delete
+      description: Deletes a local CA certificate.
+      script: CipherTrust|||ciphertrust-local-ca-delete
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      local_ca_id:
+        simple: ${CipherTrust.CASelfSign.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9f62aa76-bbd2-4afa-856e-1cc49cb8518e
+    type: regular
+    task:
+      id: 9f62aa76-bbd2-4afa-856e-1cc49cb8518e
+      version: -1
+      name: ciphertrust-csr-generate
+      description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned back in the result. This means that both the CSR and the private key must be stored securely on the client side.The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
+      script: CipherTrust|||ciphertrust-csr-generate
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      cn:
+        simple: test_playbook_generic_csr
+      encryption_password:
+        simple: Bro1861999!
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1f86ca99-cd6f-4443-8f21-df4642a510e5
+    type: regular
+    task:
+      id: 1f86ca99-cd6f-4443-8f21-df4642a510e5
+      version: -1
+      name: ciphertrust-certificate-issue
+      description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
+      script: CipherTrust|||ciphertrust-certificate-issue
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ca_id:
+        simple: ${CipherTrust.CASelfSign.id}
+      csr_entry_id:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+              right:
+                value:
+                  simple: CSR.pem
+          accessor: EntryID
+      purpose:
+        simple: server
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6c774383-f2c6-41f4-83c3-3efe6d3c3510
+    type: regular
+    task:
+      id: 6c774383-f2c6-41f4-83c3-3efe6d3c3510
+      version: -1
+      name: ciphertrust-certificate-list
+      description: Returns a list of certificates issued by the specified CA. The results can be filtered, using the command arguments.
+      script: CipherTrust|||ciphertrust-certificate-list
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      ca_id:
+        simple: ${CipherTrust.CASelfSign.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b3cabc5e-a6cf-4569-8388-df0de92ca0b9
+    type: regular
+    task:
+      id: b3cabc5e-a6cf-4569-8388-df0de92ca0b9
+      version: -1
+      name: ciphertrust-certificate-revoke
+      description: Revoke certificate with a given specific reason.
+      script: CipherTrust|||ciphertrust-certificate-revoke
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ca_id:
+        simple: ${CipherTrust.CASelfSign.id}
+      cert_id:
+        simple: ${CipherTrust.CACertificate.[0].id}
+      reason:
+        simple: certificateHold
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b90c10ac-6636-4d72-84b9-eac8edb7b069
+    type: regular
+    task:
+      id: b90c10ac-6636-4d72-84b9-eac8edb7b069
+      version: -1
+      name: ciphertrust-certificate-resume
+      description: Certificate can be resumed only if it is revoked with reason certificateHold.
+      script: CipherTrust|||ciphertrust-certificate-resume
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ca_id:
+        simple: ${CipherTrust.CASelfSign.id}
+      cert_id:
+        simple: ${CipherTrust.CACertificate.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: fe4d156c-c628-4176-8a74-691bb2f152d7
+    type: regular
+    task:
+      id: fe4d156c-c628-4176-8a74-691bb2f152d7
+      version: -1
+      name: ciphertrust-local-certificate-delete
+      description: Deletes a local certificate.
+      script: CipherTrust|||ciphertrust-local-certificate-delete
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ca_id:
+        simple: ${CipherTrust.CASelfSign.id}
+      local_ca_id:
+        simple: ${CipherTrust.CACertificate.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 53301b89-192b-47f2-8325-ef368ee7bd37
+    type: regular
+    task:
+      id: 53301b89-192b-47f2-8325-ef368ee7bd37
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 964efe66-d05d-45d5-8be5-55f5365c5838
+    type: regular
+    task:
+      id: 964efe66-d05d-45d5-8be5-55f5365c5838
+      version: -1
+      name: ciphertrust-local-ca-install
+      description: Installs a certificate signed by other CA to act as a local CA. Issuer can be both local or external CA. Typically used for intermediate CAs. The CA certificate must match the earlier created CA CSR, have "CA:TRUE" as part of the "X509v3 Basic Constraints", and have "Certificate Signing" as part of "X509v3 Key Usage" in order to be accepted.
+      script: CipherTrust|||ciphertrust-local-ca-install
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      cert_entry_id:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Certificate.pem
+          accessor: EntryID
+      local_ca_id:
+        simple: test_playbook_local_ca_to_install
+      parent_id:
+        simple: ${CipherTrust.CASelfSign.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e9da750c-21f5-45a0-8db6-55999a81ec17
+    type: regular
+    task:
+      id: e9da750c-21f5-45a0-8db6-55999a81ec17
+      version: -1
+      name: ciphertrust-local-ca-create
+      description: Creates a pending local CA. This operation returns a CSR that either can be self-signed by calling the ciphertrust-local-ca-self-sign command or signed by another CA and installed by calling the ciphertrust-local-ca-install command. A local CA keeps the corresponding private key inside the system and can issue certificates for clients, servers or intermediate CAs. The local CA can also be trusted by services inside the system for verification of client certificates.
+      script: CipherTrust|||ciphertrust-local-ca-create
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      cn:
+        simple: test_playbook_local_ca
+      name:
+        simple: test_playbook_local_ca_to_install
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b97c0baf-5abf-4c25-8913-572a5c890c95
+    type: regular
+    task:
+      id: b97c0baf-5abf-4c25-8913-572a5c890c95
+      version: -1
+      name: issue ca csr
+      description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
+      script: '|||ciphertrust-certificate-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ca_id:
+        simple: test_playbook_local_ca_to_self_sign
+      csr_entry_id:
+        simple: ${InfoFile.EntryID}
+      purpose:
+        simple: ca
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d5c24707-391e-4c64-82d8-e3fecddbe122
+    type: regular
+    task:
+      id: d5c24707-391e-4c64-82d8-e3fecddbe122
+      version: -1
+      name: delete files
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: InfoFile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e6d65fb8-fdf2-468d-80b8-fea6d900831a
+    type: regular
+    task:
+      id: e6d65fb8-fdf2-468d-80b8-fea6d900831a
+      version: -1
+      name: delete files
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: InfoFile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c67213e2-fbcd-4f7b-8b6f-af8b51f4f431
+    type: regular
+    task:
+      id: c67213e2-fbcd-4f7b-8b6f-af8b51f4f431
+      version: -1
+      name: ciphertrust-local-ca-delete
+      description: Deletes a local CA certificate.
+      script: CipherTrust|||ciphertrust-local-ca-delete
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      local_ca_id:
+        simple: ${CipherTrust.CAInstall.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 568caaca-11e7-4801-8ba8-6963b12b689c
+    type: regular
+    task:
+      id: 568caaca-11e7-4801-8ba8-6963b12b689c
+      version: -1
+      name: External ca cert file upload
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      data:
+        simple: '-----BEGIN CERTIFICATE-----\nMIIDnTCCAoWgAwIBAgIBADANBgkqhkiG9w0BAQsFADBpMQswCQYDVQQGEwJVUzEL\nMAkGA1UECAwCVFgxDzANBgNVBAcMBkF1c3RpbjEQMA4GA1UECgwHR2VtYWx0bzEM\nMAoGA1UECwwDUm5EMRwwGgYDVQQDDBNjYS5reWxvLmdlbWFsdG8uY29tMB4XDTE3\nMDgwMjIyNDIyM1oXDTQ3MDcyNjIyNDIyM1owaTELMAkGA1UEBhMCVVMxCzAJBgNV\nBAgMAlRYMQ8wDQYDVQQHDAZBdXN0aW4xEDAOBgNVBAoMB0dlbWFsdG8xDDAKBgNV\nBAsMA1JuRDEcMBoGA1UEAwwTY2Eua3lsby5nZW1hbHRvLmNvbTCCASIwDQYJKoZI\nhvcNAQEBBQADggEPADCCAQoCggEBAO+M3/EdapR+e6jbl8c08w1ynboOIX0/T0E7\nHBj0iAsSJOQJTwLcfkG4vU2AeRLca8dNJfx+qF1y9LSMeRNJhrxpEZR+L2PHl2Ti\niHxkS09UwwOSIN6SGSEX847ZiVA8DWNuHDtqtruWYH/oAa3go2V2qw21vzZ6UUjo\nTDViZegUEDIeRkp/hgl5hx2JKrtA1HhpHe18PedHwq8b/QbLfke9K89Psxd5+Vof\ndT63UUArzRJcB37XgjiTlOOVG9MYEn59ouTnzQkAzM640O3w16l9WX0v98/auKdq\nQzu3RBSaQUgoJf8v5C4p3Edgk1Uq7EOgbrJW6sS4F9k2JgdruasCAwEAAaNQME4w\nHQYDVR0OBBYEFK5n3Eevh2xLROIoYM4VsnCZfpHwMB8GA1UdIwQYMBaAFK5n3Eev\nh2xLROIoYM4VsnCZfpHwMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEB\nAFy0LkGHFGZaEf4bIWMB5B7u/CMGjejw64fojIjGYQtB4WQehl3wqOxX1MvlXm0B\nxXDvgALq+BXw6NEwOT7nlx4uRspHA0cER0qmvTpH/uePnidvBzxDFCHpJM0eoZae\n9f7EPL0XNxvV8FdhtQ1p133DtzTWfxygpcG+E+ES2m2wzwwEGTShAST4SJOlCKVX\nzPZ+2NFEepxkfiikqSl6QPLGz+TEUZZ4vrshFiBxUI5zzDNcONtd14Nh/XjUWWrd\n2MXk37ASKPZgdJQzx8U8AsITdtuaYF/d/OCIuNASbQs07nuk1dE7RS6em/d6GB33\nlfuDSu3uKT9h6JmcCy7BzJY=\n-----END CERTIFICATE-----'
+      filename:
+        simple: external_ca_cert
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d29d7e50-d920-4a6b-8867-40d79e62fcbd
+    type: regular
+    task:
+      id: d29d7e50-d920-4a6b-8867-40d79e62fcbd
+      version: -1
+      name: delete files
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: InfoFile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d7680b34-fedd-4032-87e6-0b9bd2ed2331
+    type: regular
+    task:
+      id: d7680b34-fedd-4032-87e6-0b9bd2ed2331
+      version: -1
+      name: ciphertrust-external-ca-upload
+      description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.
+      script: CipherTrust|||ciphertrust-external-ca-upload
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      cert_entry_id:
+        simple: ${File.EntryID}
+      name:
+        simple: test_playbook_external_ca
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: baef91ee-4be4-4841-855a-883251a18088
+    type: regular
+    task:
+      id: baef91ee-4be4-4841-855a-883251a18088
+      version: -1
+      name: ciphertrust-external-ca-update
+      description: Update an external CA.
+      script: CipherTrust|||ciphertrust-external-ca-update
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      allow_client_authentication:
+        simple: "false"
+      allow_user_authentication:
+        simple: "false"
+      external_ca_id:
+        simple: ${CipherTrust.ExternalCA.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c36945ab-340e-4a88-8d7e-50c32ef71c1d
+    type: regular
+    task:
+      id: c36945ab-340e-4a88-8d7e-50c32ef71c1d
+      version: -1
+      name: ciphertrust-external-ca-delete
+      description: Deletes an external CA certificate.
+      script: CipherTrust|||ciphertrust-external-ca-delete
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      external_ca_id:
+        simple: ${CipherTrust.ExternalCA.[0].id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: bb346fd9-ea9f-4acd-8419-3e4c57051844
+    type: regular
+    task:
+      id: bb346fd9-ea9f-4acd-8419-3e4c57051844
+      version: -1
+      name: ciphertrust-external-ca-list
+      description: Returns a list of external CA certificates. The results can be filtered, using the command arguments.
+      script: CipherTrust|||ciphertrust-external-ca-list
+      type: regular
+      iscommand: true
+      brand: CipherTrust
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a192e393-4475-4d64-81b1-df2fde13117e
+    type: regular
+    task:
+      id: a192e393-4475-4d64-81b1-df2fde13117e
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4440,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: ''

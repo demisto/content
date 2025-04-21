@@ -4,8 +4,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.10.48392
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.115186
 enabled: true
 name: SimpleDebugger
 runas: DBotWeakRole

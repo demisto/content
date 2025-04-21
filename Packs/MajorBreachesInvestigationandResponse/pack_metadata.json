@@ -2,7 +2,7 @@
     "name": "Rapid Breach Response",
     "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.6.38",
+    "currentVersion": "1.6.41",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -113,10 +113,21 @@
         "IvantiCriticalVulnerabilities": {
             "mandatory": false,
             "display_name": "Ivanti Critical Vulnerabilities"
+        },
+        "CVE_2024_47575": {
+            "mandatory": false,
+            "display_name": "CVE-2024-47575 - FortiManager Authentication Bypass"
         }
     },
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

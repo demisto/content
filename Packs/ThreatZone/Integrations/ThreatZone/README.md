@@ -1,24 +1,21 @@
-*Threat.Zone* is a hypervisor-based, automated and interactive tool for analyzing malware , you can fight new generation malwares.
+ThreatZone malware analysis sandboxing.
+This integration was integrated and tested with ThreatZone
 
-## Configure ThreatZone on Cortex XSOAR
+## Configure ThreatZone in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ThreatZone.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. <https://app.threat.zone>) |  | True |
-    | ThreatZone API Key |  | True |
-    | Source Reliability | Reliability of the source. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. <https://app.threat.zone>) |  | True |
+| ThreatZone API Key |  | True |
+| Source Reliability | Reliability of the source. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### tz-sandbox-upload-sample
@@ -50,7 +47,6 @@ Submits a sample to ThreatZone for sandbox analysis.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatZone.Submission.Sandbox.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.Sandbox.URL | String | URL of analysis of sample. | 
 | ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
@@ -70,13 +66,14 @@ Submits a sample to ThreatZone for static analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required | 
+| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional | 
+| extension_check | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatZone.Submission.Static.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.Static.URL | String | URL of analysis of sample. | 
 | ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
@@ -96,13 +93,14 @@ Submits a sample to ThreatZone for CDR.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required | 
+| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional | 
+| extension_check | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatZone.Submission.CDR.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.CDR.URL | String | URL of analysis of sample. | 
 | ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
@@ -129,7 +127,6 @@ Retrive the analysis result from ThreatZone.
 | --- | --- | --- |
 | ThreatZone.Analysis.STATUS | String | The status of the submission scanning process. | 
 | ThreatZone.Analysis.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\). | 
-| ThreatZone.Analysis.URL | String | The result page url of the submission. | 
 | ThreatZone.Analysis.INFO | String | Contains the file name, scan process status and public status. | 
 | ThreatZone.Analysis.REPORT | String | The analysis report of the submission. | 
 | ThreatZone.Analysis.MD5 | String | The md5 hash of the submission. | 
@@ -145,7 +142,6 @@ Retrive the analysis result from ThreatZone.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
-
 
 ### tz-get-sanitized
 
@@ -176,7 +172,6 @@ Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Da
 | InfoFile.SHA256 | String | SHA256 hash of the file sanitized by CDR. | 
 | InfoFile.SHA512 | String | SHA512 hash of the file sanitized by CDR. | 
 | InfoFile.SSDeep | String | SSDeep hash of the file sanitized by CDR. | 
-
 
 ### tz-check-limits
 
@@ -478,7 +473,6 @@ Note: Long output parts are truncated
             "SHA256": "80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108",
             "STATUS": 5,
             "TYPE": "dynamic",
-            "URL": "https://app.threat.zone/submission/95b6bc52-d040-4d82-a98b-af6fd5f6feea",
             "UUID": "95b6bc52-d040-4d82-a98b-af6fd5f6feea"
         },
         "IOC": {
@@ -606,7 +600,6 @@ Note: Long output parts are truncated
             "SHA256": "a480da20defb3ed0982abd90589aa23ddef915bf92bc41f0186e56bd7a728f2b",
             "STATUS": 5,
             "TYPE": "static",
-            "URL": "https://app.threat.zone/submission/ffd80363-005f-484d-af96-534c4c40d902",
             "UUID": "ffd80363-005f-484d-af96-534c4c40d902"
         },
         "IOC": {
@@ -676,7 +669,6 @@ Note: Long output parts are truncated
             "SHA256": "945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca",
             "STATUS": 5,
             "TYPE": "cdr",
-            "URL": "https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af",
             "UUID": "1170250a-40ac-4b73-84f7-3c0b6026d8af"
         },
         "IOC": {
@@ -691,20 +683,20 @@ Note: Long output parts are truncated
 
 #### Human Readable Output Example For Sandbox
 
+|ANALYSIS TYPE|FILE_NAME|MD5|PRIVATE|SHA1|SHA256|STATUS|THREAT_LEVEL|UUID|
+|---|---|---|---|---|---|---|---|---|
+| dynamic | 4fa7ece6f7c3866eb2c2eeb56c0b97f1b231afaf89cc77a73fde654bf256ab82.exe | cbb2add696989c174fc38c3782796f9b | true | f9a9dc82a60b041457b5280fa09ef891a379e079 | 4fa7ece6f7c3866eb2c2eeb56c0b97f1b231afaf89cc77a73fde654bf256ab82 | Submission is finished | Suspicious | 98b56bcf-7564-48a7-88a7-c0803a8bb6c6 |
 
-| FILE_NAME                                                            | MD5                              | PRIVATE | SCAN_URL                                                                                                                                           | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
-| ---------------------------------------------------------------------- | ---------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
-| 80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108.exe | 30bdb7e22e022bcf00d157f4da0e098e | false   | [https://app.threat.zone/submission/95b6bc52-d040-4d82-a98b-af6fd5f6feea](https://app.threat.zone/submission/95b6bc52-d040-4d82-a98b-af6fd5f6feea) | 0cd47f6bb5bb8e8e9dc01286adcc493acf5dd649 | 80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108 | Submission is finished | Malicious    | 95b6bc52-d040-4d82-a98b-af6fd5f6feea |
 
 #### Human Readable Output For Static-Scan
 
+|ANALYSIS TYPE|FILE_NAME|MD5|PRIVATE|SHA1|SHA256|STATUS|THREAT_LEVEL|UUID|
+|---|---|---|---|---|---|---|---|---|
+| static | 75a8d3f14276963f76df3fe789f1d607d5d51dd63a86dde72cc38e9229d3ff4b | c1ee10ff2d67fbf0326b2c66a66a2f5e | false | b5ca1e30b68d158620c334c9489e36e188638c04 | 75a8d3f14276963f76df3fe789f1d607d5d51dd63a86dde72cc38e9229d3ff4b | Submission is finished | Malicious | 953cae36-e712-4bbd-b353-d3fa42b99dbd |
 
-| FILE_NAME              | MD5                              | PRIVATE | SCAN_URL                                                                                                                                           | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
-| ------------------------ | ---------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
-| 0_nUlF45uRfpbPIaqC.png | fbce2f43185104ae8bf4d32571b19203 | false   | [https://app.threat.zone/submission/7ddad84a-7f9b-4b56-b8f4-914287a0a1a3](https://app.threat.zone/submission/7ddad84a-7f9b-4b56-b8f4-914287a0a1a3) | e0ecee70f2704093a8fb620d61a995b561b65c20 | e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb | Submission is finished | Suspicious   | 7ddad84a-7f9b-4b56-b8f4-914287a0a1a3 |
 
 #### Human Readable Output For CDR
 
-| FILE_NAME                                 | MD5                              | PRIVATE                                                                                                                                                                     | SCAN_URL                                                                                                                                           | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
-| ------------------------------------------- | ---------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
-| fff2035c-def9-482c-9e1a-405c4d427833.docx | cf543c55343c6307349aafd098fb6958 | false   | [https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af](https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af) | 1bec0d7bfea812ca7aa1f5399bb7ff3671006331 | 945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca | Submission is finished | Not Measured | 1170250a-40ac-4b73-84f7-3c0b6026d8af |
+|ANALYSIS TYPE|FILE_NAME|MD5|PRIVATE|SHA1|SHA256|STATUS|THREAT_LEVEL|UUID|
+|---|---|---|---|---|---|---|---|---|
+| cdr | ef75466ef44f193e00c09e827937effd8f3114ef24d34e9b0972fa0fdd3805ba.doc | 269ca98fb9604d8cfe4298f2b966ff73 | false | b02833cd16afa4acd869ad48e00ebcc4211e40d9 | ef75466ef44f193e00c09e827937effd8f3114ef24d34e9b0972fa0fdd3805ba | Submission is finished | Not Measured | d3b1bea1-0b88-4676-a389-eb6eeae3c19c |

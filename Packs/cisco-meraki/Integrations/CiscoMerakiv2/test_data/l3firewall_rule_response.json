@@ -1,0 +1,14 @@
+{
+    "rules": [
+        {
+            "comment": "Allow TCP traffic to subnet with HTTP servers.",
+            "policy": "allow",
+            "protocol": "tcp",
+            "destPort": "443",
+            "destCidr": "0.0.0.0/24",
+            "srcPort": "Any",
+            "srcCidr": "Any",
+            "syslogEnabled": false
+        }
+    ]
+}

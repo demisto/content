@@ -1,5 +1,5 @@
 [file:AWS_SecurityHub.yml]
-ignore=IN126,IN136,BA108,BA109,IN124
+ignore=IN126,IN136,BA108,BA109
 
 [known_words]
 datetime
@@ -8,3 +8,5 @@ securityhub
 [file:AWSSecurityHubModelingRules.yml]
 ignore=MR108
 
+[file:README.md]
+ignore=RM106

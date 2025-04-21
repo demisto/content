@@ -3,28 +3,24 @@ Amazon Web Services Identity and Access Management (IAM)
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 
-## Configure AWS - IAM on Cortex XSOAR
+## Configure AWS - IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | roleArn | Role Arn | False |
-    | roleSessionName | Role Session Name | False |
-    | defaultRegion | AWS Default Region | False |
-    | sessionDuration | Role Session Duration | False |
-    | access_key | Access Key | False |
-    | secret_key | Secret Key | False |
-    | timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
-    | retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | insecure | Trust any certificate (not secure) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| roleArn | Role Arn | False |
+| roleSessionName | Role Session Name | False |
+| defaultRegion | AWS Default Region | False |
+| sessionDuration | Role Session Duration | False |
+| access_key | Access Key | False |
+| secret_key | Secret Key | False |
+| timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+| retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| insecure | Trust any certificate (not secure) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-iam-create-user
 ***
@@ -1975,3 +1971,75 @@ List all managed policies that are attached to the specified IAM role.
 
 
 Listed 2 attached policies for role test-role
+
+### aws-iam-list-mfa-devices
+
+***
+Lists the MFA devices for an IAM user.
+
+#### Base Command
+
+`aws-iam-list-mfa-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the user whose MFA devices you want to list. | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| marker | Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.MFADevices.Devices.UserName | string | The user with whom the MFA device is associated. | 
+| AWS.IAM.MFADevices.Devices.SerialNumber | string | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | 
+| AWS.IAM.MFADevices.Devices.EnableDate | date | The date when the MFA device was enabled for the user. | 
+| MFADevices.Devices.Marker | string | First element of next page of items. | 
+
+### aws-iam-delete-mfa-devices
+
+***
+Deletes a virtual MFA device.
+
+#### Base Command
+
+`aws-iam-delete-mfa-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN. | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-iam-deactivate-mfa-devices
+
+***
+Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
+
+#### Base Command
+
+`aws-iam-deactivate-mfa-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the user whose MFA devices you want to list. | Required | 
+| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN. | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

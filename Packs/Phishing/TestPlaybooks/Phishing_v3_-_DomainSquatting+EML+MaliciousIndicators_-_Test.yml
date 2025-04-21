@@ -3,7 +3,12 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
-description: Checks the domain-squatting flow, with an attached EML file. The EML file should contain some indicators. some of which should be detected as at least suspicious. The email authenticity should get a score of "Fail". Those results together with the domain-squatting, should eventually cause the incident to get a severity of 3.
+description: |-
+  Checks the domain-squatting flow, with an attached EML file. The EML file should contain some indicators. some of which should be detected as at least suspicious. The email authenticity should get a score of "Fail". Those results together with the domain-squatting, should eventually cause the incident to get a severity of 3.
+
+  Keep in mind when running Phishing tests:
+  - Never send an email from the phishing mailbox to the same phishing mailbox, as this can cause an infinite loop situation where an email is received, an acknowledgement email is sent to the sender, and then the acknowledgement email is received in the phishing mailbox, which causes a new incident to fetch, thus triggering another acknowledgement email, etc.
+  - It's important to ensure that acknowledgement emails are eventually deleted from the mailbox of the email that will be detected as the reporter of the email.
 starttaskid: "0"
 tasks:
   "0":
@@ -1016,7 +1021,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false

@@ -4,7 +4,7 @@ commonfields:
 name: Vertica
 display: Vertica
 category: Database
-description: Analytic database management software
+description: Analytic database management software.
 configuration:
 - display: Host (myhost.example.com)
   name: url
@@ -36,7 +36,7 @@ script:
       required: true
       description: A SQL query to perform on the Vertica database.
     - name: limit
-      description: The maximum number of results to be returned from the query. (Use 0 for all results)
+      description: The maximum number of results to be returned from the query. (Use 0 for all results).
       defaultValue: "50"
     outputs:
     - contextPath: Vertica.Query
@@ -46,7 +46,7 @@ script:
       description: The content of rows.
       type: string
     description: Executes a query on the Vertica database.
-  dockerimage: demisto/py3-tools:1.0.0.91504
+  dockerimage: demisto/py3-tools:1.0.0.114656
   subtype: python3
 tests:
 - Vertica Test

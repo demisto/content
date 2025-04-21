@@ -3,11 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Search And Delete Emails - Generic v2
-description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations:
-    * EWS
-    * Office 365
-    * Gmail
-    * Agari Phishing Defense'
+description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense.'
 starttaskid: "0"
 tasks:
   "0":
@@ -28,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1135,
           "y": 50
         }
       }
@@ -39,6 +35,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 0a7ca589-107b-48e4-8705-2becca697165
@@ -80,8 +77,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1230
+          "x": 1710,
+          "y": 1740
         }
       }
     note: false
@@ -91,6 +88,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
@@ -107,8 +105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1510
+          "x": 1135,
+          "y": 1910
         }
       }
     note: false
@@ -118,12 +116,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: b17bdcb8-c603-448c-8fd6-77bca91e7e2f
+    taskid: 86fc3213-5a75-41dc-8c9b-b924335c28a1
     type: playbook
     task:
-      id: b17bdcb8-c603-448c-8fd6-77bca91e7e2f
+      id: 86fc3213-5a75-41dc-8c9b-b924335c28a1
       version: -1
       name: O365 - Security And Compliance - Search And Delete
       description: |-
@@ -134,10 +133,10 @@ tasks:
         4. Gets the results of the compliance search.
         5. Gets the preview results, if specified.
         6. Deletes the search results (Hard/Soft).
-      playbookName: O365 - Security And Compliance - Search And Delete
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: O365 - Security And Compliance - Search And Delete
     nexttasks:
       '#none#':
       - "2"
@@ -157,10 +156,13 @@ tasks:
       force:
         simple: "false"
       kql:
-        complex:
-          root: inputs.O365KQL
+        simple: ${KQLQuery}
       preview:
         simple: "true"
+      search_action_polling_interval:
+        simple: "3"
+      search_action_polling_timeout:
+        simple: "45"
     separatecontext: false
     loop:
       iscommand: false
@@ -170,8 +172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -380,
-          "y": 1325
+          "x": 490,
+          "y": 1740
         }
       }
     note: false
@@ -181,6 +183,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 421d875d-ff1a-4808-8451-228e23cd6605
@@ -573,8 +576,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 180
+          "x": 1135,
+          "y": 195
         }
       }
     note: false
@@ -635,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -770,
-          "y": 700
+          "x": 500,
+          "y": 510
         }
       }
     note: false
@@ -646,6 +649,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 25801150-ef91-4ccc-8275-5ca5225fc857
@@ -667,8 +671,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -770,
-          "y": 910
+          "x": 500,
+          "y": 710
         }
       }
     note: false
@@ -678,6 +682,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: d4e2df0d-57ad-45e8-8def-023393fdc1b3
@@ -687,13 +692,13 @@ tasks:
       version: -1
       name: Set all mailboxes to be searched
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       key:
         simple: ExchangeLocation
@@ -703,8 +708,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1090,
-          "y": 1110
+          "x": 180,
+          "y": 880
         }
       }
     note: false
@@ -714,6 +719,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: b1056daa-1e07-41e9-883b-19aa4fc847fa
@@ -723,13 +729,13 @@ tasks:
       version: -1
       name: Set the "email to" as the mailbox to search
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       key:
         simple: ExchangeLocation
@@ -748,8 +754,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
-          "y": 1110
+          "x": 820,
+          "y": 880
         }
       }
     note: false
@@ -759,6 +765,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: eca8ae30-ebfa-4f62-82c9-5586e000e431
@@ -778,8 +785,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 440
+          "x": 1955,
+          "y": 370
         }
       }
     note: false
@@ -789,6 +796,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 43de9303-2031-43bc-8c5c-0f88a25a78f4
@@ -808,8 +816,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 440
+          "x": 1460,
+          "y": 370
         }
       }
     note: false
@@ -819,6 +827,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: afe381a2-655b-4dd3-8b22-2561451fcee2
@@ -838,8 +847,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -490,
-          "y": 435
+          "x": 820,
+          "y": 370
         }
       }
     note: false
@@ -849,6 +858,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: 60128cf4-a622-4411-87b3-1bb25b0b14d2
@@ -868,8 +878,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1080,
-          "y": 435
+          "x": 210,
+          "y": 370
         }
       }
     note: false
@@ -879,6 +889,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 86139d40-fef3-485f-86e9-fc99d4203c7b
@@ -898,8 +909,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1620,
-          "y": 435
+          "x": -275,
+          "y": 370
         }
       }
     note: false
@@ -909,6 +920,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
     taskid: d46dc80f-b44e-4a16-8c42-0e0645017299
@@ -917,11 +929,11 @@ tasks:
       id: d46dc80f-b44e-4a16-8c42-0e0645017299
       version: -1
       name: Search And Delete Emails - Gmail
-      playbookName: Search And Delete Emails - Gmail
       type: playbook
       iscommand: false
       brand: ""
       description: ''
+      playbookId: Search And Delete Emails - Gmail
     nexttasks:
       '#none#':
       - "2"
@@ -951,8 +963,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1620,
-          "y": 1320
+          "x": -275,
+          "y": 1740
         }
       }
     note: false
@@ -962,6 +974,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
     taskid: bfa45743-9c08-4aba-8df6-cbff71d46bed
@@ -981,8 +994,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1530,
-          "y": 440
+          "x": 2445,
+          "y": 370
         }
       }
     note: false
@@ -992,6 +1005,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: b622809c-289a-413c-8019-3d5bafda95cc
@@ -1019,8 +1033,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1530,
-          "y": 1230
+          "x": 2445,
+          "y": 1740
         }
       }
     note: false
@@ -1030,19 +1044,270 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+    continueonerrortype: ""
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "7"
+      extend-context:
+        simple: Time7DaysAgo=.
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 0cf3ef64-05e3-4b66-8fab-3cb76afff41b
+      iscommand: false
+      name: Get time 7 days ago
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 0cf3ef64-05e3-4b66-8fab-3cb76afff41b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1230
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: KQLQuery
+      value:
+        simple: (${inputs.O365KQL}) AND LastModifiedTime>=${Time7DaysAgo}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 868ccba1-d67f-4118-8f01-1f8cedc910ee
+      iscommand: false
+      name: Create KQL query - provided query + search last 7 days
+      script: Set
+      type: regular
+      version: -1
+    taskid: 868ccba1-d67f-4118-8f01-1f8cedc910ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1570
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SearchThisWeek
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.O365KQL
+          operator: notContainsString
+          right:
+            value:
+              simple: LastModifiedTime
+      label: "yes"
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether to modify KQL to search this week (the last 7 days) only. Only modify the KQL if the SearchThisWeek input is set to true AND the provided KQL query is not already time-bounded (it does not already contain LastModifiedTime).
+      id: 027d5ff5-7e8e-41c0-8184-b33789251d51
+      iscommand: false
+      name: Search this week only and query not already time-bounded?
+      type: condition
+      version: -1
+    taskid: 027d5ff5-7e8e-41c0-8184-b33789251d51
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1050
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: KQLQuery
+      value:
+        simple: ${inputs.O365KQL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 5cbef4d7-8839-469e-8021-6e1d73ffa07e
+      iscommand: false
+      name: Set the non-modified KQL query
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5cbef4d7-8839-469e-8021-6e1d73ffa07e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1220
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.O365KQL
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab3b6a6c-20f1-47c4-8bfd-68fa86a7c5a2
+      iscommand: false
+      description: Checks whether a KQL query is provided or not.
+      name: KQL query provided?
+      type: condition
+      version: -1
+    taskid: ab3b6a6c-20f1-47c4-8bfd-68fa86a7c5a2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1385
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: KQLQuery
+      value:
+        simple: LastModifiedTime>=${Time7DaysAgo}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b631cc61-9aae-45ae-8e63-1fc6cba0af2a
+      iscommand: false
+      name: Create KQL query - search last 7 days
+      script: Set
+      type: regular
+      version: -1
+    taskid: b631cc61-9aae-45ae-8e63-1fc6cba0af2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1555
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
+      "21_22_#default#": 0.41,
       "4_13_Gmail": 0.81,
       "4_15_Agari Phishing Defense": 0.86,
-      "4_2_#default#": 0.9
+      "4_2_#default#": 0.9,
+      "5_7_All Mailboxes": 0.71,
+      "5_8_Recipient's Mailbox": 0.73,
+      "6_7_All Mailboxes": 0.37,
+      "6_8_Recipients Mailbox": 0.63
     },
     "paper": {
       "dimensions": {
-        "height": 1525,
-        "width": 3530,
-        "x": -1620,
+        "height": 1925,
+        "width": 3100,
+        "x": -275,
         "y": 50
       }
     }
@@ -1088,7 +1353,7 @@ inputs:
 - key: O365KQL
   value: {}
   required: false
-  description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL).
+  description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL). Note that if you are using the LastModifiedTime filter in your KQL query, the SearchThisWeek input will not be taken into consideration.
   playbookInputQuery:
 - key: O365AllowNotFoundExchangeLocations
   value:
@@ -1114,8 +1379,23 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- No tests
 fromversion: 6.1.0
-marketplaces:
-  - xsoar
-  - marketplacev2
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - From
+  - Subject
+  - AttachmentName
+  - SearchAndDeleteIntegration
+  - O365ExchangeLocation
+  - O365KQL
+  - O365AllowNotFoundExchangeLocations
+  - O365DeleteType
+  - O365ExchangeLocationExclusion
+  - SearchThisWeek
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []

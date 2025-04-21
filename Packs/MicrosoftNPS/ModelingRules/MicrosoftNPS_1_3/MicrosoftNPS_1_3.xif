@@ -1,4 +1,4 @@
-[MODEL: dataset=msft_radius_raw]
+[MODEL: dataset=msft_nps_raw]
 alter packet_type = regextract(_raw_log,"\<Packet\-Type\sdata_type\=\"\d+\"\>([^\<]+)\<")
 | alter extract_timestamp = arrayindex(regextract(_raw_log,"\<Timestamp\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)
 | alter change_format_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%E3S", extract_timestamp)

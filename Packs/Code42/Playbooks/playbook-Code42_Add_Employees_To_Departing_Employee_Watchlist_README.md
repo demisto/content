@@ -31,7 +31,6 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | ticket_username | The username \(in email format\) provided in a stand-down ticket from Jira, Zendesk, etc. |  | Required |
 | ticket_departure_date | The departure date \(in YYYY-MM-DD format\) provided in a stand-down ticket from Jira, Zendesk, etc. |  | Required |
-| ticket_key | The unique identifier of a stand-down ticket from Jira, Zendesk, etc. \(optional\). |  | Optional |
 
 ## Playbook Outputs
 

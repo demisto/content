@@ -1,22 +1,25 @@
 import json
 from collections.abc import Callable
-import pytest
 from pathlib import Path
-from pytest_mock import MockerFixture
-from requests_mock import MockerCore
-from CommonServerPython import CommandResults, ScheduledCommand, DemistoException
+
+import pytest
 from AzureLogAnalytics import (
     Client,
-    execute_query_command,
-    list_saved_searches_command,
-    tags_arg_to_request_format,
-    get_saved_search_by_id_command,
     create_or_update_saved_search_command,
     delete_saved_search_command,
-    run_search_job_command,
+    delete_search_job_command,
+    execute_query_command,
+    get_saved_search_by_id_command,
     get_search_job_command,
-    delete_search_job_command
+    list_saved_searches_command,
+    run_search_job_command,
+    tags_arg_to_request_format,
 )
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
+
+from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
+from MicrosoftApiModule import *  # noqa: E402
 
 
 def util_load_json(path: str) -> dict:
@@ -70,14 +73,14 @@ MOCKED_EXECUTE_QUERY_OUTPUT = {
     ]
 }
 
-BASE_URL = 'https://management.azure.com/subscriptions'
-SUBSCRIPTION_ID = 'subscriptionID'
-RESOURCE_GROUP_NAME = 'resourceGroupName'
+BASE_URL = "https://management.azure.com/subscriptions"
+SUBSCRIPTION_ID = "subscriptionID"
+RESOURCE_GROUP_NAME = "resourceGroupName"
 WORKSPACE_NAME = "workspaceName"
 TABLE_NAME = "test_SRCH"
 BASE_URL_SEARCH_JOB = (
-    f'{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups/{RESOURCE_GROUP_NAME}'
-    f'/providers/microsoft.operationalinsights/workspaces/{WORKSPACE_NAME}/tables/{TABLE_NAME}'
+    f"{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups/{RESOURCE_GROUP_NAME}"
+    f"/providers/microsoft.operationalinsights/workspaces/{WORKSPACE_NAME}/tables/{TABLE_NAME}"
 )
 
 
@@ -89,9 +92,9 @@ def get_azure_access_token_mock() -> dict:
         dict: Azure access token mock.
     """
     return {
-        'access_token': 'my-access-token',
-        'expires_in': 3595,
-        'refresh_token': 'my-refresh-token',
+        "access_token": "my-access-token",
+        "expires_in": 3595,
+        "refresh_token": "my-refresh-token",
     }
 
 
@@ -100,7 +103,7 @@ def authorization_mock(requests_mock: MockerCore) -> None:
     Azure authorization API request mock.
 
     """
-    authorization_url = 'https://login.microsoftonline.com/refresh_token/oauth2/token'
+    authorization_url = "https://login.microsoftonline.com/refresh_token/oauth2/token"
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
 
 
@@ -118,6 +121,7 @@ CLIENT = Client(
     proxy=False,
     certificate_thumbprint=None,
     private_key=None,
+    azure_cloud=AZURE_WORLDWIDE_CLOUD,
     client_credentials=False,
 )
 
@@ -130,7 +134,7 @@ def load_mock_response(file_path: str) -> dict:
     Returns:
         str: Mock file content.
     """
-    with open(file_path, encoding='utf-8') as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -146,9 +150,7 @@ def test_execute_query_command(mocker: MockerFixture) -> None:
     """
 
     args: dict = {"query": "dummy"}
-    mocker.patch.object(
-        CLIENT, "http_request", return_value=MOCKED_EXECUTE_QUERY_OUTPUT
-    )
+    mocker.patch.object(CLIENT, "http_request", return_value=MOCKED_EXECUTE_QUERY_OUTPUT)
 
     command_result = execute_query_command(CLIENT, args=args)
 
@@ -172,9 +174,7 @@ def test_list_saved_searches_command(mocker: MockerFixture) -> None:
         - Ensure the output's structure is as expected
     """
     args = {"limit": "1", "page": "0"}
-    mocker.patch.object(
-        CLIENT, "http_request", return_value=MOCKED_SAVED_SEARCHES_OUTPUT
-    )
+    mocker.patch.object(CLIENT, "http_request", return_value=MOCKED_SAVED_SEARCHES_OUTPUT)
 
     command_result = list_saved_searches_command(CLIENT, args=args)
 
@@ -259,8 +259,9 @@ def test_test_module_command_with_managed_identities(
     Then:
      - Ensure the output are as expected
     """
-    from AzureLogAnalytics import main, MANAGED_IDENTITIES_TOKEN_URL
     import AzureLogAnalytics
+    from AzureLogAnalytics import MANAGED_IDENTITIES_TOKEN_URL, main
+
     import demistomock as demisto
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
@@ -275,7 +276,7 @@ def test_test_module_command_with_managed_identities(
         "subscriptionID": "subscriptionID",
         "resourceGroupName": "resourceGroupName",
         "workspaceName": "workspaceName",
-        "client_credentials": True
+        "client_credentials": True,
     }
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="test-module")
@@ -297,9 +298,10 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         - Ensure the generated url are as expected.
     """
     # prepare
-    import demistomock as demisto
-    from AzureLogAnalytics import main
     import AzureLogAnalytics
+    from AzureLogAnalytics import main
+
+    import demistomock as demisto
 
     redirect_uri = "redirect_uri"
     tenant_id = "tenant_id"
@@ -311,12 +313,11 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         "credentials": {"identifier": client_id, "password": "client_secret"},
         "subscriptionID": "subscriptionID",
         "resourceGroupName": "resourceGroupName",
-        "workspaceName": "workspaceName"
+        "workspaceName": "workspaceName",
+        "server_url": None,
     }
     mocker.patch.object(demisto, "params", return_value=mocked_params)
-    mocker.patch.object(
-        demisto, "command", return_value="azure-log-analytics-generate-login-url"
-    )
+    mocker.patch.object(demisto, "command", return_value="azure-log-analytics-generate-login-url")
     mocker.patch.object(AzureLogAnalytics, "return_results")
 
     # call
@@ -327,7 +328,7 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         f"[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?"
         "response_type=code&scope=offline_access%20https://api.loganalytics.io/Data.Read"
         "%20https://management.azure.com/user_impersonation"
-        f"&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)"
+        f"&client_id={client_id}&redirect_uri={redirect_uri})"
     )
     res = AzureLogAnalytics.return_results.call_args[0][0].readable_output
     assert expected_url in res
@@ -373,7 +374,7 @@ def test_run_search_job_command(mocker: MockerFixture, requests_mock: MockerCore
         "query": "test",
         "limit": 50,
         "first_run": False,
-        "hide_polling_output": True
+        "hide_polling_output": True,
     }
     response: CommandResults = run_search_job_command(args_to_next_run, CLIENT)
     assert response.readable_output == (
@@ -387,11 +388,11 @@ def test_run_search_job_command(mocker: MockerFixture, requests_mock: MockerCore
     "index",
     [
         pytest.param("case schema", id="searchResults key under schema key"),
-        pytest.param("case properties", id="searchResults key under properties key")
-    ]
+        pytest.param("case properties", id="searchResults key under properties key"),
+    ],
 )
 def test_get_search_job_command(requests_mock: MockerCore, index: str) -> None:
-    """ The searchResults key could be under schema or properties key, this test checks both cases
+    """The searchResults key could be under schema or properties key, this test checks both cases
     Given:
     ----
         a mocked CLIENT, a specific test data index, and an existing search job with the table name "test",
@@ -447,14 +448,14 @@ def test_subscriptions_list_command(requests_mock: MockerCore) -> None:
 
     authorization_mock(requests_mock)
 
-    mock_response = load_mock_response('test_data/subscriptions_list.json')
+    mock_response = load_mock_response("test_data/subscriptions_list.json")
     requests_mock.get(BASE_URL, json=mock_response)
 
     command_result = subscriptions_list_command(CLIENT)
 
     assert len(command_result.outputs) == 2
-    assert command_result.outputs_prefix == 'AzureLogAnalytics.Subscription'
-    assert command_result.outputs[0].get('id') == '/subscriptions/1234'
+    assert command_result.outputs_prefix == "AzureLogAnalytics.Subscription"
+    assert command_result.outputs[0].get("id") == "/subscriptions/1234"
 
 
 def test_workspace_list_command(requests_mock: MockerCore) -> None:
@@ -469,15 +470,15 @@ def test_workspace_list_command(requests_mock: MockerCore) -> None:
     from AzureLogAnalytics import workspace_list_command
 
     authorization_mock(requests_mock)
-    mock_response = load_mock_response('test_data/workspace_list.json')
-    url = f'{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces'
+    mock_response = load_mock_response("test_data/workspace_list.json")
+    url = f"{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces"
     requests_mock.get(url, json=mock_response)
 
     command_result = workspace_list_command(CLIENT)
 
     assert len(command_result.outputs) == 1
-    assert command_result.outputs_prefix == 'AzureLogAnalytics.workspace'
-    assert command_result.outputs[0].get('name') == 'Test2170'
+    assert command_result.outputs_prefix == "AzureLogAnalytics.workspace"
+    assert command_result.outputs[0].get("name") == "Test2170"
 
 
 def test_resource_group_list_command(requests_mock: MockerCore) -> None:
@@ -494,26 +495,58 @@ def test_resource_group_list_command(requests_mock: MockerCore) -> None:
 
     authorization_mock(requests_mock)
 
-    url = f'{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups'
-    mock_response = load_mock_response('test_data/resource_group_list.json')
+    url = f"{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups"
+    mock_response = load_mock_response("test_data/resource_group_list.json")
     requests_mock.get(url, json=mock_response)
 
-    command_result = resource_group_list_command(CLIENT, {'limit': 50})
+    command_result = resource_group_list_command(CLIENT, {"limit": 50})
 
     assert len(command_result.outputs) == 1
-    assert command_result.outputs_prefix == 'AzureLogAnalytics.ResourceGroup'
-    assert command_result.outputs[0].get('id') == 'id'
+    assert command_result.outputs_prefix == "AzureLogAnalytics.ResourceGroup"
+    assert command_result.outputs[0].get("id") == "id"
 
 
 @pytest.mark.parametrize(
     "function, message",
     [
         (delete_search_job_command, "Deleting tables without '_SRCH' suffix is not allowed."),
-        (run_search_job_command, "The table_name should end with '_SRCH' suffix.")
-    ]
+        (run_search_job_command, "The table_name should end with '_SRCH' suffix."),
+    ],
 )
 def test_table_with_invalid_name(function: Callable, message: str) -> None:
-
     with pytest.raises(DemistoException, match=message):
         # in the run_search_job_command the args is the first argument instead of the second because it use the polling decorator
-        function({'table_name': 'invalid'}, {'table_name': 'invalid'})
+        function({"table_name": "invalid"}, {"table_name": "invalid"})
+
+
+@pytest.mark.parametrize("azure_cloud", [(AZURE_WORLDWIDE_CLOUD), (AZURE_US_GCC_CLOUD), (AZURE_US_GCC_HIGH_CLOUD)])
+def test_client_endpoints(azure_cloud) -> None:
+    """
+    Given:
+        - The instance is configured with the Azure Cloud parameter.
+    When:
+        - The client object is set.
+    Then:
+        - Validate the ms_client object (created in the scope of the
+          client object) is set with the correct set of  endpoints.
+    """
+    client = Client(
+        self_deployed=True,
+        refresh_token="refresh_token",
+        auth_and_token_url="auth_id",
+        redirect_uri="redirect_uri",
+        enc_key="enc_key",
+        auth_code="auth_code",
+        subscription_id=SUBSCRIPTION_ID,
+        resource_group_name=RESOURCE_GROUP_NAME,
+        workspace_name=WORKSPACE_NAME,
+        verify=False,
+        proxy=False,
+        certificate_thumbprint=None,
+        private_key=None,
+        azure_cloud=azure_cloud,
+        client_credentials=False,
+    )
+    assert client.ms_client.managed_identities_resource_uri == azure_cloud.endpoints.resource_manager
+    assert client.ms_client.azure_ad_endpoint == azure_cloud.endpoints.active_directory
+    assert client.azure_cloud.name == azure_cloud.name

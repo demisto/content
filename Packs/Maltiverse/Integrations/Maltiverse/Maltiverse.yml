@@ -47,7 +47,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: IP address to check
+      description: IP address to check.
       isArray: true
       name: ip
       required: true
@@ -70,10 +70,10 @@ script:
       description: The number of sources that positively reported the indicator as block list.
       type: Number
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -130,16 +130,16 @@ script:
       description: Date when the IoC was last updated.
       type: Date
     - contextPath: Domain.TLD
-      description: Top Level Domain of the hostname
+      description: Top Level Domain of the hostname.
       type: Number
     - contextPath: Domain.ASName
       description: Autonomous system name of the domain.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -208,10 +208,10 @@ script:
       description: The number of sources that positively reported the indicator as block list.
       type: Number
     - contextPath: DBotScore.Score
-      description: The DBot score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -250,7 +250,7 @@ script:
       description: Stores the hostname to which the URL belongs.
       type: String
     - contextPath: Maltiverse.URL.Domain
-      description: Stores the domain to which the hostname belongs. Hostname and domain can match on level 2 hostnames
+      description: Stores the domain to which the hostname belongs. Hostname and domain can match on level 2 hostnames.
       type: String
     - contextPath: Maltiverse.URL.TLD
       description: Top-level domain of the hostname.
@@ -298,10 +298,10 @@ script:
       description: The path of the file.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -366,7 +366,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

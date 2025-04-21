@@ -15,4 +15,4 @@ The playbooks included in this pack guides you manually through the necessary ta
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/playbook8)_
 
-![lost_stolen_device](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Lost_Stolen_Device_Playbook.png)
+![lost_stolen_device](doc_files/lost_stolen_device.png)

@@ -1,0 +1,13 @@
+{
+    "DBotScore": {
+        "Indicator": "dummy2.log",
+        "Type": "filename",
+        "Vendor": "Ignite",
+        "Score": 0,
+        "Reliability": "B - Usually reliable"
+    },
+    "Filename(val.Name == obj.Name)": {
+        "Name": "dummy2.log",
+        "Description": "Reputation of this Indicator is Unknown"
+    }
+}

@@ -1,7 +1,7 @@
 id: OpenCTI Test
 version: -1
 name: OpenCTI Test
-description: test playbook
+description: test playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -69,8 +69,8 @@ tasks:
     task:
       id: 02f9dd89-9194-4825-8caf-9527de731ba9
       version: -1
-      name: opencti-get-indicators
-      script: '|||opencti-get-indicators'
+      name: opencti-get-observables
+      script: '|||opencti-get-observables'
       type: regular
       iscommand: true
       brand: ""
@@ -78,7 +78,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      indicator_types:
+      observable_types:
         simple: ALL
       last_id: {}
       limit:
@@ -117,17 +117,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicators.IndicatorsList.type
+              simple: OpenCTI.Observables.ObservablesList.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicators.IndicatorsList.value
+              simple: OpenCTI.Observables.ObservablesList.value
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicators.IndicatorsList.id
+              simple: OpenCTI.Observables.ObservablesList.id
             iscontext: true
     view: |-
       {
@@ -148,8 +148,8 @@ tasks:
     task:
       id: 248a0aba-7a19-4ab0-8c5b-af4fa3217e20
       version: -1
-      name: opencti-indicator-delete
-      script: '|||opencti-indicator-delete'
+      name: opencti-observable-delete
+      script: '|||opencti-observable-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -158,7 +158,7 @@ tasks:
       - "30"
     scriptarguments:
       id:
-        simple: ${OpenCTI.Indicator.id}
+        simple: ${OpenCTI.Observable.id}
     separatecontext: false
     view: |-
       {
@@ -179,8 +179,8 @@ tasks:
     task:
       id: f7c3bfe5-9cf9-46ea-880a-f166e9c7b561
       version: -1
-      name: opencti-indicator-field-update
-      script: '|||opencti-indicator-field-update'
+      name: opencti-observable-field-update
+      script: '|||opencti-observable-field-update'
       type: regular
       iscommand: true
       brand: ""
@@ -191,7 +191,7 @@ tasks:
       field:
         simple: score
       id:
-        simple: ${OpenCTI.Indicator.id}
+        simple: ${OpenCTI.Observable.id}
       value:
         simple: "10"
     separatecontext: false
@@ -228,7 +228,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicator.id
+              simple: OpenCTI.Observable.id
             iscontext: true
     view: |-
       {
@@ -249,9 +249,9 @@ tasks:
     task:
       id: 7c46339a-2b25-435b-891b-bc80de02fea4
       version: -1
-      name: opencti-indicator-create
-      description: Create new indicator.
-      script: '|||opencti-indicator-create'
+      name: opencti-observable-create
+      description: Create new observable.
+      script: '|||opencti-observable-create'
       type: regular
       iscommand: true
       brand: ""
@@ -264,7 +264,7 @@ tasks:
       data:
         simple: '{"value": "BadHost-TestPlaybook"}'
       description:
-        simple: Test playbook bad hostname indicator
+        simple: Test playbook bad hostname observable
       external_references_id:
         simple: ${OpenCTI.externalReference.id}
       label:
@@ -313,17 +313,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicator.id
+              simple: OpenCTI.Observable.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicator.value
+              simple: OpenCTI.Observable.value
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpenCTI.Indicator.type
+              simple: OpenCTI.Observable.type
             iscontext: true
     view: |-
       {
@@ -369,10 +369,9 @@ tasks:
     task:
       id: 35b1d239-88c8-473c-814a-565158a1283f
       version: -1
-      name: opencti-indicator-field-remove
-      description: Remove field from indicator. Avalible fields to remove - marking
-        defenition, label.
-      script: '|||opencti-indicator-field-remove'
+      name: opencti-observable-field-remove
+      description: Remove field from observable. Avalible fields to remove - marking defenition, label.
+      script: '|||opencti-observable-field-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -383,7 +382,7 @@ tasks:
       field:
         simple: label
       id:
-        simple: ${OpenCTI.Indicator.id}
+        simple: ${OpenCTI.Observable.id}
       value:
         simple: ${OpenCTI.Labels.LabelsList.id}
     separatecontext: false
@@ -406,10 +405,9 @@ tasks:
     task:
       id: d605456e-ce31-4f76-8383-52a134992c9e
       version: -1
-      name: opencti-indicator-field-add
-      description: Add field to indicator. Avalible fields to add - marking defenition,
-        label.
-      script: '|||opencti-indicator-field-add'
+      name: opencti-observable-field-add
+      description: Add field to observable. Avalible fields to add - marking defenition, label.
+      script: '|||opencti-observable-field-add'
       type: regular
       iscommand: true
       brand: ""
@@ -420,7 +418,7 @@ tasks:
       field:
         simple: label
       id:
-        simple: ${OpenCTI.Indicator.id}
+        simple: ${OpenCTI.Observable.id}
       value:
         simple: ${OpenCTI.Labels.LabelsList.id}
     separatecontext: false
@@ -877,6 +875,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -925,8 +924,8 @@ tasks:
     task:
       id: c58d486a-e491-4b0f-83da-ebce062b9509
       version: -1
-      name: opencti-indicator-delete
-      script: '|||opencti-indicator-delete'
+      name: opencti-observable-delete
+      script: '|||opencti-observable-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -935,7 +934,7 @@ tasks:
       - "10"
     scriptarguments:
       id:
-        simple: ${OpenCTI.Indicator.id}
+        simple: ${OpenCTI.Observable.id}
     separatecontext: false
     view: |-
       {

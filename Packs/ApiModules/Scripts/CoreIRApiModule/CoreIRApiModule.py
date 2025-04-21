@@ -4,8 +4,9 @@ import urllib3
 import copy
 import re
 from operator import itemgetter
-
+import json
 from typing import Tuple, Callable
+import base64
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,7 +14,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate_incident',
+    'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
     'Security Testing': 'resolved_security_testing',
@@ -22,11 +23,13 @@ XSOAR_RESOLVED_STATUS_TO_XDR = {
 XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate_incident': 'Duplicate',
+    'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Security Testing',
     'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
+    'resolved_auto': 'Resolved',
+    'resolved_auto_resolve': 'Resolved'
 }
 
 ALERT_GENERAL_FIELDS = {
@@ -142,17 +145,115 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
+RBAC_VALIDATIONS_VERSION = '8.6.0'
+RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
+FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
+                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
+
+ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
+ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
+ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
+                                                 build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM)
+
 
 class CoreClient(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+        # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
+
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,  # type: ignore[override]
+                      params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
+                      error_handler=None, with_metrics=False, resp_type='json'):
+        '''
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
+
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+
+            :type raise_on_status ``bool``
+                :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                    whether we should raise an exception, or return a response,
+                    if status falls in ``status_forcelist`` range and retries have
+                    been exhausted.
+
+
+            :type timeout: ``float`` or ``tuple``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+        '''
+        if not FORWARD_USER_RUN_RBAC:
+            return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
+                                            method=method,
+                                            url_suffix=url_suffix,
+                                            full_url=full_url,
+                                            headers=headers,
+                                            json_data=json_data, params=params, data=data,
+                                            timeout=timeout,
+                                            raise_on_status=raise_on_status,
+                                            ok_codes=ok_codes,
+                                            error_handler=error_handler,
+                                            with_metrics=with_metrics,
+                                            resp_type=resp_type)
+        headers = headers if headers else self._headers
+        data = json.dumps(json_data) if json_data else data
+        address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        response_data_type = "bin" if resp_type == 'content' and ALLOW_RESPONSE_AS_BINARY else None
+        if resp_type == 'content' and not ALLOW_RESPONSE_AS_BINARY:
+            allowed_version = f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}'
+            raise DemistoException('getting binary data from server is allowed from '
+                                   f'version: {allowed_version} and above')
+        params = assign_params(
+            method=method,
+            path=address,
+            data=data,
+            headers=headers,
+            timeout=timeout,
+            response_data_type=response_data_type
+        )
+        response = demisto._apiCall(**params)
+        if ok_codes and response.get('status') not in ok_codes:
+            self._handle_error(error_handler, response, with_metrics)
+        try:
+            decoder = base64.b64decode if response_data_type == "bin" else json.loads
+            demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
+            return decoder(response['data'])  # type: ignore[operator]
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response['data']
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
                       starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
-                      page_number=0, limit=100, gte_creation_time_milliseconds=0):
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0,
+                      gte_modification_time_milliseconds=None, lte_modification_time_milliseconds=None):
         """
         Filters and returns incidents
 
@@ -169,6 +270,8 @@ class CoreClient(BaseClient):
         :param page_number: page number
         :param limit: maximum number of incidents to return per page
         :param gte_creation_time_milliseconds: greater than time in milliseconds
+        :param gte_modification_time_milliseconds: greater than modification time in milliseconds
+        :param lte_modification_time_milliseconds: greater than modification time in milliseconds
         :return:
         """
         search_from = page_number * limit
@@ -208,7 +311,7 @@ class CoreClient(BaseClient):
                 'value': status
             })
 
-        if starred and starred_incidents_fetch_window:
+        if starred and starred_incidents_fetch_window and demisto.command() == 'fetch-incidents':
             filters.append({
                 'field': 'starred',
                 'operator': 'eq',
@@ -219,51 +322,85 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': starred_incidents_fetch_window
             })
-            if demisto.command() == 'fetch-incidents':
-                if len(filters) > 0:
-                    request_data['filters'] = filters
-                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
-                return incidents
 
-        else:
-            if lte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
-                })
+            if len(filters) > 0:
+                request_data['filters'] = filters
+            incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+            return incidents
 
-            if gte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
-                })
+        if starred is not None and demisto.command() != 'fetch-incidents':
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': starred
+            })
 
-            if lte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
-                })
+        if lte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+            })
 
-            if gte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
-                })
+        if gte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+            })
+        elif starred and starred_incidents_fetch_window and demisto.command() != 'fetch-incidents':
+            # backwards compatibility of starred_incidents_fetch_window
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
 
-            if gte_creation_time_milliseconds > 0:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': gte_creation_time_milliseconds
-                })
+        if lte_modification_time and lte_modification_time_milliseconds:
+            raise ValueError('Either lte_modification_time or '
+                             'lte_modification_time_milliseconds should be provided . Can\'t provide both')
+
+        if gte_modification_time and gte_modification_time_milliseconds:
+            raise ValueError('Either gte_modification_time or '
+                             'gte_modification_time_milliseconds should be provide. Can\'t provide both')
+
+        if lte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_creation_time_milliseconds:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_creation_time_milliseconds)
+            })
+
+        if gte_modification_time_milliseconds:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_modification_time_milliseconds)
+            })
+
+        if lte_modification_time_milliseconds:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_modification_time_milliseconds)
+            })
 
         if len(filters) > 0:
             request_data['filters'] = filters
-
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
@@ -335,15 +472,13 @@ class CoreClient(BaseClient):
 
         request_data['filters'] = filters
 
-        reply = self._http_request(
+        response = self._http_request(
             method='POST',
             url_suffix='/endpoints/get_endpoint/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
-        demisto.debug(f"get_endpoints response = {reply}")
-
-        endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = response.get('reply', {}).get('endpoints', [])
         return endpoints
 
     def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
@@ -456,7 +591,6 @@ class CoreClient(BaseClient):
             json_data={},
             timeout=self.timeout
         )
-
         return reply.get('reply')
 
     def create_distribution(self, name, platform, package_type, agent_version, description):
@@ -645,7 +779,7 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201, 500,),
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -662,9 +796,13 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/remove/',
             json_data={'request_data': request_data},
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
-        return reply.get('reply')
+        res = reply.get('reply')
+        if isinstance(res, dict) and res.get('err_code') == 500:
+            raise DemistoException(f"{res.get('err_msg')}\nThe requested hash might not be in the blocklist.")
+        return res
 
     def allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
@@ -1225,7 +1363,7 @@ class CoreClient(BaseClient):
             resp_type='response',
         )
 
-    def action_status_get(self, action_id) -> Dict[str, Any]:
+    def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
             'group_action_id': action_id,
         }
@@ -1238,7 +1376,7 @@ class CoreClient(BaseClient):
         )
         demisto.debug(f"action_status_get = {reply}")
 
-        return reply.get('reply').get('data')
+        return reply.get('reply')
 
     @logger
     def get_file(self, file_link):
@@ -1434,6 +1572,52 @@ class CoreClient(BaseClient):
             }},
         )
 
+    def terminate_on_agent(self,
+                           url_suffix_endpoint: str,
+                           id_key: str,
+                           id_value: str,
+                           agent_id: str,
+                           process_name: Optional[str],
+                           incident_id: Optional[str]) -> dict[str, dict[str, str]]:
+        """
+            Terminate a specific process or a the causality on an agent.
+
+            :type url_suffix_endpoint: ``str``
+            :param agent_id: The endpoint of the command(terminate_causality or terminate_process).
+
+            :type agent_id: ``str``
+            :param agent_id: The ID of the agent.
+
+            :type id_key: ``str``
+            :param id_key: The key name ID- causality_id or process_id.
+
+            :type id_key: ``str``
+            :param id_key: The ID data- causality_id or process_id.
+
+            :type process_name: ``Optional[str]``
+            :param process_name: The name of the process. Optional.
+
+            :type incident_id: ``Optional[str]``
+            :param incident_id: The ID of the incident. Optional.
+
+            :return: The response from the API.
+            :rtype: ``dict[str, dict[str, str]]``
+        """
+        request_data: Dict[str, Any] = {
+            "agent_id": agent_id,
+            id_key: id_value,
+        }
+        if process_name:
+            request_data["process_name"] = process_name
+        if incident_id:
+            request_data["incident_id"] = incident_id
+        response = self._http_request(
+            method='POST',
+            url_suffix=f'/endpoints/{url_suffix_endpoint}/',
+            json_data={"request_data": request_data},
+        )
+        return response.get('reply')
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -1513,7 +1697,8 @@ def run_polling_command(client: CoreClient,
                         results_function: Callable,
                         polling_field: str,
                         polling_value: List,
-                        stop_polling: bool = False) -> CommandResults:
+                        stop_polling: bool = False,
+                        values_raise_error: List = []) -> CommandResults:
     """
     Arguments:
     args: args
@@ -1526,6 +1711,7 @@ def run_polling_command(client: CoreClient,
     polling_value: list of values of the polling_field we want to check. The list can contain values to stop or
     continue polling on, not both.
     stop_polling: True - polling_value stops the polling. False - polling_value does not stop the polling.
+    values_raise_error: list of polling values that require raising an error.
 
     Return:
     command_results(CommandResults)
@@ -1570,6 +1756,9 @@ def run_polling_command(client: CoreClient,
     result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else \
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
+    if values_raise_error and result in values_raise_error:
+        return_results(command_results)
+        raise DemistoException(f"The command {cmd} failed. Received status {result}")
     if cond:
         # schedule next poll
         polling_args = {
@@ -1768,25 +1957,39 @@ def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
 def action_status_get_command(client: CoreClient, args) -> CommandResults:
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
-
+    demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
-        data = client.action_status_get(action_id)
+        reply = client.action_status_get(action_id)
+        data = reply.get('data') or {}
+        error_reasons = reply.get('errorReasons', {})
 
         for endpoint_id, status in data.items():
-            result.append({
+            action_result = {
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
-                'status': status
-            })
+                'status': status,
+            }
+            if error_reason := error_reasons.get(endpoint_id):
+                action_result['ErrorReasons'] = error_reason
+                action_result['error_description'] = (error_reason.get('errorDescription')
+                                                      or get_missing_files_description(error_reason.get('missing_files'))
+                                                      or 'An error occurred while processing the request.')
+            result.append(action_result)
 
     return CommandResults(
-        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True,
+                                        headers=['action_id', 'endpoint_id', 'status', 'error_description']),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
                        f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=result
     )
+
+
+def get_missing_files_description(missing_files):
+    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):
+        return missing_files[0].get('description')
 
 
 def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
@@ -1879,7 +2082,7 @@ def get_endpoint_properties(single_endpoint):
     is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
     hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
         'endpoint_name')
-    ip = single_endpoint.get('ip')
+    ip = single_endpoint.get('ip') or single_endpoint.get('public_ip') or ''
     return status, is_isolated, hostname, ip
 
 
@@ -1903,7 +2106,7 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
         status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
         # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
         # in the `endpoint` command we use the standard
-        if ip_as_string and isinstance(ip, list):
+        if ip_as_string and ip and isinstance(ip, list):
             ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
         endpoint = Common.Endpoint(
@@ -1921,20 +2124,73 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     return standard_endpoints
 
 
+def retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name, ip_list, public_ip_list,
+                           group_name, platform, alias_name, isolate, hostname, page_number,
+                           limit, first_seen_gte, first_seen_lte, last_seen_gte, last_seen_lte,
+                           sort_by_first_seen, sort_by_last_seen, status, username):
+    endpoints_page = endpoints
+    # Continue looping for as long as the latest page of endpoints retrieved is NOT empty
+    while endpoints_page:
+        page_number += 1
+        endpoints_page = client.get_endpoints(
+            endpoint_id_list=endpoint_id_list,
+            dist_name=dist_name,
+            ip_list=ip_list,
+            public_ip_list=public_ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias_name=alias_name,
+            isolate=isolate,
+            hostname=hostname,
+            page_number=page_number,
+            limit=limit,
+            first_seen_gte=first_seen_gte,
+            first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+            sort_by_first_seen=sort_by_first_seen,
+            sort_by_last_seen=sort_by_last_seen,
+            status=status,
+            username=username
+        )
+        endpoints += endpoints_page
+    return endpoints
+
+
+def convert_timestamps_to_datestring(endpoints):
+    for endpoint in endpoints:
+        if endpoint.get('content_release_timestamp'):
+            endpoint['content_release_timestamp'] = timestamp_to_datestring(endpoint.get('content_release_timestamp'))
+        if endpoint.get('first_seen'):
+            endpoint['first_seen'] = timestamp_to_datestring(endpoint.get('first_seen'))
+        if endpoint.get('install_date'):
+            endpoint['install_date'] = timestamp_to_datestring(endpoint.get('install_date'))
+        if endpoint.get('last_content_update_time'):
+            endpoint['last_content_update_time'] = timestamp_to_datestring(endpoint.get('last_content_update_time'))
+        if endpoint.get('last_seen'):
+            endpoint['last_seen'] = timestamp_to_datestring(endpoint.get('last_seen'))
+    return endpoints
+
+
 def get_endpoints_command(client, args):
     integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
     integration_name = args.pop("integration_name", "CoreApiModule")
-    page_number = arg_to_int(
-        arg=args.get('page', '0'),
-        arg_name='Failed to parse "page". Must be a number.',
-        required=True
-    )
-
-    limit = arg_to_int(
-        arg=args.get('limit', '30'),
-        arg_name='Failed to parse "limit". Must be a number.',
-        required=True
-    )
+    all_results = argToBoolean(args.get('all_results', False))
+    # When we want to get all endpoints, start at page 0 and use the max limit supported by the API (100)
+    if all_results:
+        page_number = 0
+        limit = 100
+    else:
+        page_number = arg_to_int(
+            arg=args.get('page', '0'),
+            arg_name='Failed to parse "page". Must be a number.',
+            required=True
+        )
+        limit = arg_to_int(
+            arg=args.get('limit', '30'),
+            arg_name='Failed to parse "limit". Must be a number.',
+            required=True
+        )
 
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
@@ -1946,6 +2202,7 @@ def get_endpoints_command(client, args):
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
     status = argToList(args.get('status'))
+    convert_timestamp_to_datestring = argToBoolean(args.get('convert_timestamp_to_datestring', False))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -1993,6 +2250,17 @@ def get_endpoints_command(client, args):
         status=status,
         username=username
     )
+
+    if all_results:
+        endpoints = retrieve_all_endpoints(client, endpoints, endpoint_id_list, dist_name,
+                                           ip_list, public_ip_list, group_name, platform,
+                                           alias_name, isolate, hostname, page_number,
+                                           limit, first_seen_gte, first_seen_lte,
+                                           last_seen_gte, last_seen_lte, sort_by_first_seen,
+                                           sort_by_last_seen, status, username)
+
+    if convert_timestamp_to_datestring:
+        endpoints = convert_timestamps_to_datestring(endpoints)
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
@@ -2163,11 +2431,50 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     )
 
 
+def form_powershell_command(unescaped_string: str) -> str:
+    """
+    Builds a Powershell command using prefix and a shell-escaped string.
+
+    Args:
+        unescaped_string (str): An unescaped command string.
+
+    Returns:
+        str: Prefixed and escaped command.
+    """
+    escaped_string = ''
+
+    for i, char in enumerate(unescaped_string):
+        if char == "'":
+            escaped_string += "''"
+
+        elif char == '"':
+            backslash_count = 0
+            for j in range(i - 1, -1, -1):
+                if unescaped_string[j] != '\\':
+                    break
+                backslash_count += 1
+
+            escaped_string += ('\\' * backslash_count) + '\\"'
+
+        else:
+            escaped_string += char
+
+    return f"powershell -Command \"{escaped_string}\""
+
+
 def run_script_execute_commands_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'commands_list': argToList(args.get('commands'))}
+
+    commands = args.get('commands')
+    is_raw_command = argToBoolean(args.get('is_raw_command', False))
+    commands_list = remove_empty_elements([commands]) if is_raw_command else argToList(commands)
+
+    if args.get('command_type') == 'powershell':
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    parameters = {'commands_list': commands_list}
+
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
     return CommandResults(
@@ -2298,16 +2605,29 @@ def restore_file_command(client, args):
     )
 
 
+def validate_sha256_hashes(hash_list):
+    for hash_value in hash_list:
+        if detect_file_indicator_type(hash_value) != 'sha256':
+            raise DemistoException(f'The provided hash {hash_value} is not a valid sha256.')
+
+
 def blocklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
-
-    res = client.blocklist_files(hash_list=hash_list,
-                                 comment=comment,
-                                 incident_id=incident_id,
-                                 detailed_response=detailed_response)
+    try:
+        res = client.blocklist_files(hash_list=hash_list,
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
+    except Exception as e:
+        if 'All hashes have already been added to the allow or block list' in str(e):
+            return CommandResults(
+                readable_output='All hashes have already been added to the block list.'
+            )
+        raise e
 
     if detailed_response:
         return CommandResults(
@@ -2332,6 +2652,7 @@ def blocklist_files_command(client, args):
 
 def remove_blocklist_files_command(client: CoreClient, args: Dict) -> CommandResults:
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
@@ -2354,11 +2675,18 @@ def allowlist_files_command(client, args):
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
+    try:
+        res = client.allowlist_files(hash_list=hash_list,
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
+    except Exception as e:
+        if 'All hashes have already been added to the allow or block list' in str(e):
+            return CommandResults(
+                readable_output='All hashes have already been added to the allow list.'
+            )
+        raise e
 
-    res = client.allowlist_files(hash_list=hash_list,
-                                 comment=comment,
-                                 incident_id=incident_id,
-                                 detailed_response=detailed_response)
     if detailed_response:
         return CommandResults(
             readable_output=tableToMarkdown('Allowlist Files', res),
@@ -2474,19 +2802,29 @@ def get_audit_agent_reports_command(client, args):
 def get_distribution_url_command(client, args):
     distribution_id = args.get('distribution_id')
     package_type = args.get('package_type')
+    download_package = argToBoolean(args.get('download_package', False))
 
     url = client.get_distribution_url(distribution_id, package_type)
 
-    return (
-        f'[Distribution URL]({url})',
-        {
-            f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution(val.id == obj.id)': {
+    if download_package and package_type not in ['x64', 'x86']:
+        raise DemistoException("`download_package` argument can be used only for package_type 'x64' or 'x86'.")
+
+    if not download_package:
+        return CommandResults(
+            outputs={
                 'id': distribution_id,
                 'url': url
-            }
-        },
-        url
-    )
+            },
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution',
+            outputs_key_field='id',
+            readable_output=f'[Distribution URL]({url})'
+        )
+
+    return download_installation_package(client,
+                                         url,
+                                         package_type,
+                                         distribution_id,
+                                         args.get("integration_context_brand", "CoreApiModule"))
 
 
 def get_distribution_status_command(client, args):
@@ -2508,6 +2846,32 @@ def get_distribution_status_command(client, args):
         },
         distribution_list
     )
+
+
+def download_installation_package(client, url: str, package_type: str, distribution_id: str, brand: str):
+    dist_file_contents = client._http_request(
+        method='GET',
+        full_url=url,
+        resp_type="content"
+    )
+    if package_type in ["x64", "x86"]:
+        file_ext = "msi"
+    else:
+        file_ext = "zip"
+    file_result = fileResult(
+        filename=f"xdr-agent-install-package.{file_ext}",
+        data=dist_file_contents
+    )
+    result = CommandResults(
+        outputs={
+            'id': distribution_id,
+            'url': url
+        },
+        outputs_prefix=f'{brand}.Distribution',
+        outputs_key_field='id',
+        readable_output="Installation package downloaded successfully."
+    )
+    return [file_result, result]
 
 
 def get_process_context(alert, process_type):
@@ -2863,6 +3227,7 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     """
     # Initially setting the close reason according to the default mapping.
     xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'resolved_other')
+
     # Reading custom XSOAR->XDR close-reason mapping.
     custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
         demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
@@ -2870,49 +3235,54 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 
     # Overriding default close-reason mapping if there exists a custom one.
     if xsoar_close_reason in custom_xsoar_to_xdr_close_reason_mapping:
-        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping[xsoar_close_reason]
+        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping.get(xsoar_close_reason)
         # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
-        demisto.debug(
-            f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
         xdr_close_reason_candidate = "resolved_" + "_".join(xdr_close_reason_candidate.lower().split(" "))
-
         if xdr_close_reason_candidate not in XDR_RESOLVED_STATUS_TO_XSOAR:
             demisto.debug("Warning: Provided XDR close-reason does not exist. Using default XDR close-reason mapping. ")
         else:
             xdr_close_reason = xdr_close_reason_candidate
+            demisto.debug(
+                f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
     else:
         demisto.debug(f"resolve_xdr_close_reason using default mapping {xsoar_close_reason}={xdr_close_reason}")
 
     return xdr_close_reason
 
 
-def handle_outgoing_issue_closure(remote_args):
-    incident_id = remote_args.remote_incident_id
-    demisto.debug(f"handle_outgoing_issue_closure {incident_id=}")
-    update_args = remote_args.delta
-    current_remote_status = remote_args.data.get('status') if remote_args.data else None
-    close_reason = update_args.get('close_reason') or update_args.get('closeReason')
-    demisto.debug(f'{current_remote_status=} {remote_args.data=} {remote_args.inc_status=} {close_reason=}')
-    # force closing remote incident only if:
-    #   The XSOAR incident is closed
-    #   and the remote incident isn't already closed
-    if remote_args.inc_status == 2 and current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR and close_reason:
-        if close_notes := update_args.get('closeNotes'):
-            demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
-            update_args['resolve_comment'] = close_notes
+def handle_outgoing_issue_closure(parsed_args: UpdateRemoteSystemArgs):
+    """
+    Handle closure of an outgoing issue by updating the delta field in the parsed_args object. The closed_reason will
+    be determined based on whether it exists in XSOAR or XDR. If the XSOAR incident is closed and the remote incident isn't
+    already closed, update the delta with resolve comment or xsoar close-reason.
 
-        xdr_close_reason = resolve_xdr_close_reason(close_reason)
-        update_args['status'] = xdr_close_reason
-        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
+    Args:
+        parsed_args (object): An object of type UpdateRemoteSystemArgs, containing the parsed arguments.
+    """
+
+    close_reason_fields = ['close_reason', 'closeReason', 'closeNotes', 'resolve_comment', 'closingUserId']
+    closed_reason = (next((parsed_args.delta.get(key) for key in close_reason_fields if parsed_args.delta.get(key)), None)
+                     or next((parsed_args.data.get(key) for key in close_reason_fields if parsed_args.data.get(key)), None))
+    demisto.debug(f"handle_outgoing_issue_closure: incident_id: {parsed_args.remote_incident_id} {closed_reason=}")
+    remote_xdr_status = parsed_args.data.get('status') if parsed_args.data else None
+    if parsed_args.inc_status == IncidentStatus.DONE and closed_reason and remote_xdr_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug("handle_outgoing_issue_closure: XSOAR is closed, xdr is open. updating delta")
+        if close_notes := parsed_args.delta.get('closeNotes'):
+            demisto.debug(f"handle_outgoing_issue_closure: adding resolve comment to the delta. {close_notes}")
+            parsed_args.delta['resolve_comment'] = close_notes
+
+        parsed_args.delta['status'] = resolve_xdr_close_reason(closed_reason)
+        demisto.debug(
+            f"handle_outgoing_issue_closure Closing Remote incident ID: {parsed_args.remote_incident_id}"
+            f" with status {parsed_args.delta['status']}")
 
 
-def get_update_args(remote_args):
+def get_update_args(parsed_args):
     """Change the updated field names to fit the update command"""
-
-    handle_outgoing_issue_closure(remote_args)
-    handle_outgoing_incident_owner_sync(remote_args.delta)
-    handle_user_unassignment(remote_args.delta)
-    return remote_args.delta
+    handle_outgoing_issue_closure(parsed_args)
+    handle_outgoing_incident_owner_sync(parsed_args.delta)
+    handle_user_unassignment(parsed_args.delta)
+    return parsed_args.delta
 
 
 def get_distribution_versions_command(client, args):
@@ -3184,7 +3554,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
 
         return PollResult(
             response=get_script_execution_results_command(
-                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+                client, {'action_id': action_id,
+                         'integration_context_brand': 'Core'
+                         if argToBoolean(args.get('is_core', False))
+                         else 'PaloAltoNetworksXDR'}
             ),
             continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
         )
@@ -3201,6 +3574,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
             response=None,  # since polling defaults to true, no need to deliver response here
             continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
             partial_result=CommandResults(
+                outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+                outputs_key_field='action_id',
+                outputs=reply,
+                raw_response=response,
                 readable_output=f'Waiting for the script to finish running '
                                 f'on the following endpoints: {endpoint_ids}...'
             ),
@@ -3384,12 +3761,13 @@ def decode_dict_values(dict_to_decode: dict):
                 continue
 
 
-def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
+def filter_general_fields(alert: dict, filter_fields: bool = True, events_from_decider_as_list: bool = False) -> dict:
     """filter only relevant general fields from a given alert.
 
     Args:
       alert (dict): The alert to filter
       filter_fields (bool): Whether to return a subset of the fields.
+      events_from_decider_as_list (bool): Whether to return events_from_decider context endpoint as a dictionary or as a list.
 
     Returns:
       dict: The filtered alert
@@ -3399,6 +3777,9 @@ def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
         result = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
         result = alert
+
+    if (events_from_decider := alert.get("stateful_raw_data", {}).get("events_from_decider", {})) and events_from_decider_as_list:
+        alert["stateful_raw_data"]["events_from_decider"] = list(events_from_decider.values())
 
     if not (event := alert.get('raw_abioc', {}).get('event', {})):
         return_warning('No XDR cloud analytics event.')
@@ -3439,6 +3820,14 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    for alert_id in alert_id_list:
+        if alert_id and re.match(r'^[a-fA-F0-9-]{32,36}\$&\$.+$', alert_id):
+            raise DemistoException(f"Error: Alert ID {alert_id} is invalid. This issue arises because the playbook is running in"
+                                   f" debug mode, which replaces the original alert ID with a debug alert ID, causing the task to"
+                                   f" fail. To run this playbook in debug mode, please update the 'alert_ids' value to the real "
+                                   f"alert ID in the relevant task. Alternatively, run the playbook on the actual alert "
+                                   f"(not in debug mode) to ensure task success.")
+    events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
@@ -3456,17 +3845,18 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             decode_dict_values(alert)
         except Exception as e:
             demisto.debug("encountered the following while decoding dictionary values, skipping")
-            demisto.debug(e)
+            demisto.debug(f'{e}')
             continue
 
         # Remove original_alert_json field and add its content to the alert body.
         alert.update(alert.pop('original_alert_json', {}))
 
         # Process the alert (with without filetring fields)
-        processed_alerts.append(filter_general_fields(alert, filter_fields=False))
+        processed_alerts.append(filter_general_fields(alert, filter_fields=False,
+                                                      events_from_decider_as_list=events_from_decider_as_list))
 
         # Create a filtered version (used either for output when filter_fields is False, or for readable output)
-        filtered_alert = filter_general_fields(alert, filter_fields=True)
+        filtered_alert = filter_general_fields(alert, filter_fields=True, events_from_decider_as_list=False)
         filter_vendor_fields(filtered_alert)  # changes in-place
 
         filtered_alerts.append(filtered_alert)
@@ -3871,7 +4261,8 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, custom_message: str | None) -> str | None:
+def enrich_error_message_id_group_role(e: DemistoException | Exception,
+                                       type_: str | None, custom_message: str | None) -> str | None:
     """
     Attempts to parse additional info from an exception and return it as string. Returns `None` if it can't do that.
 
@@ -3884,11 +4275,19 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
         ValueError: If the error message indicates that the resource was not found, a more detailed error message
             is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
     """
-    if (
-        e.res is not None
+    demisto_error_condition = (
+        isinstance(e, DemistoException)
+        and e.res is not None
         and e.res.status_code == 500
         and 'was not found' in str(e)
-    ):
+    )
+    exception_condition = (
+        isinstance(e, Exception)
+        and str(e) is not None
+        and '"err_code": 500' in str(e)
+        and 'was not found' in str(e)
+    )
+    if demisto_error_condition or exception_condition:
         error_message: str = ''
         pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
         if match := re.search(pattern, str(e)):
@@ -4074,14 +4473,21 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
 
     """
 
-    def _warn_if_module_is_disabled(e: DemistoException) -> None:
-        if (
-            e is not None
-            and e.res is not None
-            and e.res.status_code == 500
+    def _warn_if_module_is_disabled(e: DemistoException | Exception) -> None:
+        demisto_error_condition = (isinstance(e, DemistoException)
+                                   and e is not None
+                                   and e.res is not None
+                                   and e.res.status_code == 500
+                                   and 'No identity threat' in str(e)
+                                   and "An error occurred while processing XDR public API" in e.message)
+        exception_condition = (
+            isinstance(e, Exception)
+            and str(e) is not None
+            and '"err_code": 500' in str(e)
             and 'No identity threat' in str(e)
-            and "An error occurred while processing XDR public API" in e.message
-        ):
+            and "An error occurred while processing XDR public API" in str(e)
+        )
+        if demisto_error_condition or exception_condition:
             return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
     match command:
@@ -4102,7 +4508,7 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
     if id_ := args.get(id_key):
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
-        except DemistoException as e:
+        except Exception as e:
             _warn_if_module_is_disabled(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
                 not_found_message = 'was not found'
@@ -4116,11 +4522,11 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
-        list_limit = int(args.get('limit', 50))
+        list_limit = int(args.get('limit', 10))
 
         try:
             outputs = get_func().get('reply', [])[:list_limit]
-        except DemistoException as e:
+        except Exception as e:
             _warn_if_module_is_disabled(e)
             raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
@@ -4171,7 +4577,7 @@ def get_incidents_command(client, args):
 
     statuses = argToList(args.get('status', ''))
 
-    starred = args.get('starred')
+    starred = argToBoolean(args.get('starred')) if args.get('starred', None) not in ('', None) else None
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 
@@ -4230,4 +4636,85 @@ def get_incidents_command(client, args):
             f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents
         },
         raw_incidents
+    )
+
+
+def terminate_process_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the process command for a specific agent and instance IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
+    agent_id = args.get('agent_id')
+    instance_ids = argToList(args.get('instance_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies: List[Dict[str, Any]] = []
+    for instance_id in instance_ids:
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_process',
+            id_key='instance_id',
+            id_value=instance_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action terminate process created on instance ids: {", ".join(instance_ids)}', replies),
+        outputs={
+            f'{args.get("integration_context_brand", "CoreApiModule")}'
+            f'.TerminateProcess(val.actionId && val.actionId == obj.actionId)': replies},
+        raw_response=replies
+    )
+
+
+def terminate_causality_command(client, args) -> CommandResults:
+    """
+    AVAILABLE ONLY TO XDR3.12 / XSIAM2.4
+    Terminate the causality command for a specific agent and causality IDs.
+
+    :type client: ``Client``
+    :param client: The client to use for making API calls.
+
+    :type args: ``Dict[str, Any]``
+    :param args: The arguments for the command.
+
+    :return: The results of the command.
+    :rtype: ``CommandResults``
+    """
+    agent_id = args.get('agent_id')
+    causality_ids = argToList(args.get('causality_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies: List[Dict[str, Any]] = []
+    for causality_id in causality_ids:
+        reply_per_instance_id = client.terminate_on_agent(
+            url_suffix_endpoint='terminate_causality',
+            id_key='causality_id',
+            id_value=causality_id,
+            agent_id=agent_id,
+            process_name=process_name,
+            incident_id=incident_id
+        )
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)':
+                 replies},
+        raw_response=replies
     )

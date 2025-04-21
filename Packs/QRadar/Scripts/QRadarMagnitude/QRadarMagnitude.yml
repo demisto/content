@@ -2,7 +2,7 @@ comment: "This enables to color the field according to the magnitude. The scale 
 commonfields:
   id: QRadarMagnitude
   version: -1
-dockerimage: demisto/python3:3.10.13.89009
+dockerimage: demisto/python3:3.11.10.113941
 enabled: true
 name: QRadarMagnitude
 runas: DBotWeakRole
@@ -15,3 +15,8 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

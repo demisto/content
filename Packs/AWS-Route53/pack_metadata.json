@@ -2,13 +2,13 @@
     "name": "AWS - Route53",
     "description": "Amazon Web Services Managed Cloud DNS Service.",
     "support": "xsoar",
-    "currentVersion": "1.1.31",
+    "currentVersion": "1.1.40",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Service Provider"
     ],
     "tags": [],
     "useCases": [],
@@ -16,6 +16,13 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "xpanse"
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -47,4 +47,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tufin - Enrich Source & Destination IP Information](https://raw.githubusercontent.com/demisto/content/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Enrich%20Source%20%26%20Destination%20IP%20Information.png)
+![Tufin - Enrich Source & Destination IP Information](../doc_files/playbook-Tufin_-_Enrich_Source_and_Destination_IP_Information.png)

@@ -1,66 +1,110 @@
-[MODEL: dataset="juniper_srx_raw"]
-alter
-    event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
-| filter
-    event_type contains "["
-| alter timestamp = arrayindex(regextract(_raw_log,"(\d+\:\d+:\d+\.\d+)"), 0)
-| alter hostname = arrayindex(regextract(_raw_log,"([^\s]+)\s\w+\[\d+\]\:\s"),0)
-| alter process = arrayindex(regextract(_raw_log,"\s(\w+)\[\d+"),0)
-| alter processID = arrayindex(regextract(_raw_log,"\s\w+\[(\d+)\]\:\s"),0)
-| alter username = arrayindex(regextract(_raw_log,"ser\s\'([^\']+)"),0)
-| alter message = arrayindex(regextract(_raw_log,"\s\w+\[\d+\]\:\s[^\d]+:\s([^\\]+) "),0)
-| alter tag_name = arrayindex(regextract(_raw_log,"\:\s(\w+\_\w+)"),0)
-| alter
-    xdm.observer.name = hostname,
-    xdm.event.operation = process,
-    xdm.source.process.pid = to_number(processID),
-    xdm.source.user.username = username,
-    xdm.alert.description = message,
-    xdm.event.type = tag_name;
-
-alter start_raw_log = arrayindex(regextract(_raw_log , "^(\<\d+\>)"),0)
-| filter len(start_raw_log) >0
-| alter Timestamp = arrayindex(regextract(_raw_log,"(\d{4}\-\d{2}\-\d{2}T\d+\:\d+\:\d+.\d+)"), 0)
-| alter destination_address = arrayindex(regextract(_raw_log,"destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
-| alter file_name = arrayindex(regextract(_raw_log,"\sfilename\=\"([^\"]+)\""),0)
-// extract url
-| alter url1 = arrayindex(regextract(_raw_log,"url\=\"(\S+)."),0)
-| alter url2 = arrayindex(regextract(_raw_log,"URL\=(\S+)"),0)
-| alter url = coalesce(url1,url2)
-// end extract url
-| alter source_port = arrayindex(regextract(_raw_log,"source\-port\=\"(\d+)"),0)
-| alter destination_port = arrayindex(regextract(_raw_log,"destination\-port\=\"(\d+)"),0)
-| alter Reason = arrayindex(regextract(_raw_log,"REASON\=\"([^\"]+)\""),0)
-| alter Object = arrayindex(regextract(_raw_log,"OBJ\=.(\S+)"),0)
-| alter profile_name = arrayindex(regextract(_raw_log,"PROFILE\=\"([^\"]+)"),0)
-| alter source_zone = arrayindex(regextract(_raw_log,"source\-zone\-name\=\"([^\"]+)"),0)
-| alter Packet_Incoming_Interface = arrayindex(regextract(_raw_log,"packet\-incoming\-interface\=\"([^\"]+)"),0)
-| alter Roles = arrayindex(regextract(_raw_log,"roles=\"([^\"]+)"),0)
-| alter Username = arrayindex(regextract(_raw_log,"username\=\"([^\"]+)"),0)
-| alter Destination_Zone_Name = arrayindex(regextract(_raw_log,"destination\-zone\-name\=\"([^\"]+)"),0)
-| alter Policy_Name = arrayindex(regextract(_raw_log,"policy\-name\=\"([^\"]+)"),0)
-| alter Protocol_ID = arrayindex(regextract(_raw_log,"protocol\-id\=\"([^\"]+)"),0)
-| alter Destination_Nat_Rule_Name = arrayindex(regextract(_raw_log,"dst\-nat\-rule\-name\=\"([^\"]+)"),0)
-| alter Source_Nat_Rule_Name = arrayindex(regextract(_raw_log,"src\-nat\-rule\-name\=\"([^\"]+)"),0)
-| alter Nat_Destination_Port = arrayindex(regextract(_raw_log,"nat\-destination\-port\=\"([^\"]+)"),0)
-| alter Nat_Source_Port = arrayindex(regextract(_raw_log,"nat\-source\-port\=\"([^\"]+)"),0)
-| alter Nat_Source_Address = arrayindex(regextract(_raw_log,"nat\-source\-address\=\"([^\"]+)"),0)
-| alter Service_Name = arrayindex(regextract(_raw_log,"service\-name=\"([^\"]+)"),0)
-| alter Nat_Destination_IP = arrayindex(regextract(_raw_log,"nat\-destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
-// extract source_ip
-| alter source_address_ipv4 = arrayindex(regextract(_raw_log,"source\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
-| alter source_adderss_ipv6 = arrayindex(regextract(_raw_log,"source\-address\=\"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
-// end extract source_ip
-| alter
-    xdm.source.ipv4 = source_address_ipv4,
-    xdm.source.ipv6 = source_adderss_ipv6,
-    xdm.target.ipv4 = Destination_address,
-    xdm.target.port = to_integer(Destination_Port),
-    xdm.source.port=to_integer(source_port),
-    xdm.network.rule = Source_Nat_Rule_Name,
-    xdm.network.ip_protocol = if(Protocol_ID="0",XDM_CONST.IP_PROTOCOL_HOPOPT, Protocol_ID="1",XDM_CONST.IP_PROTOCOL_ICMP, Protocol_ID="2",XDM_CONST.IP_PROTOCOL_IGMP, Protocol_ID="3",XDM_CONST.IP_PROTOCOL_GGP, Protocol_ID="4",XDM_CONST.IP_PROTOCOL_IP, Protocol_ID="5",XDM_CONST.IP_PROTOCOL_ST, Protocol_ID="6",XDM_CONST.IP_PROTOCOL_TCP, Protocol_ID="7",XDM_CONST.IP_PROTOCOL_CBT, Protocol_ID="8",XDM_CONST.IP_PROTOCOL_EGP, Protocol_ID="9",XDM_CONST.IP_PROTOCOL_IGP, Protocol_ID="10",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, Protocol_ID="11",XDM_CONST.IP_PROTOCOL_NVP_II, Protocol_ID="12",XDM_CONST.IP_PROTOCOL_PUP, Protocol_ID="13",XDM_CONST.IP_PROTOCOL_ARGUS, Protocol_ID="14",XDM_CONST.IP_PROTOCOL_EMCON, Protocol_ID="15",XDM_CONST.IP_PROTOCOL_XNET, Protocol_ID="16",XDM_CONST.IP_PROTOCOL_CHAOS, Protocol_ID="17",XDM_CONST.IP_PROTOCOL_UDP, Protocol_ID="18",XDM_CONST.IP_PROTOCOL_MUX, Protocol_ID="19",XDM_CONST.IP_PROTOCOL_DCN_MEAS, Protocol_ID="20",XDM_CONST.IP_PROTOCOL_HMP, Protocol_ID="21",XDM_CONST.IP_PROTOCOL_PRM, Protocol_ID="22",XDM_CONST.IP_PROTOCOL_XNS_IDP, Protocol_ID="23",XDM_CONST.IP_PROTOCOL_TRUNK_1, Protocol_ID="24",XDM_CONST.IP_PROTOCOL_TRUNK_2, Protocol_ID="25",XDM_CONST.IP_PROTOCOL_LEAF_1, Protocol_ID="26",XDM_CONST.IP_PROTOCOL_LEAF_2, Protocol_ID="27",XDM_CONST.IP_PROTOCOL_RDP, Protocol_ID="28",XDM_CONST.IP_PROTOCOL_IRTP, Protocol_ID="29",XDM_CONST.IP_PROTOCOL_ISO_TP4, Protocol_ID="30",XDM_CONST.IP_PROTOCOL_NETBLT, Protocol_ID="31",XDM_CONST.IP_PROTOCOL_MFE_NSP, Protocol_ID="32",XDM_CONST.IP_PROTOCOL_MERIT_INP, Protocol_ID="33",XDM_CONST.IP_PROTOCOL_DCCP, Protocol_ID="34",XDM_CONST.IP_PROTOCOL_3PC, Protocol_ID="35",XDM_CONST.IP_PROTOCOL_IDPR, Protocol_ID="36",XDM_CONST.IP_PROTOCOL_XTP, Protocol_ID="37",XDM_CONST.IP_PROTOCOL_DDP, Protocol_ID="38",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, Protocol_ID="39",XDM_CONST.IP_PROTOCOL_TP, Protocol_ID="40",XDM_CONST.IP_PROTOCOL_IL, Protocol_ID="41",XDM_CONST.IP_PROTOCOL_IPV6, Protocol_ID="42",XDM_CONST.IP_PROTOCOL_SDRP, Protocol_ID="43",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, Protocol_ID="44",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, Protocol_ID="45",XDM_CONST.IP_PROTOCOL_IDRP, Protocol_ID="46",XDM_CONST.IP_PROTOCOL_RSVP, Protocol_ID="47",XDM_CONST.IP_PROTOCOL_GRE, Protocol_ID="48",XDM_CONST.IP_PROTOCOL_DSR, Protocol_ID="49",XDM_CONST.IP_PROTOCOL_BNA, Protocol_ID="50",XDM_CONST.IP_PROTOCOL_ESP, Protocol_ID="51",XDM_CONST.IP_PROTOCOL_AH, Protocol_ID="52",XDM_CONST.IP_PROTOCOL_I_NLSP, Protocol_ID="53",XDM_CONST.IP_PROTOCOL_SWIPE, Protocol_ID="54",XDM_CONST.IP_PROTOCOL_NARP, Protocol_ID="55",XDM_CONST.IP_PROTOCOL_MOBILE, Protocol_ID="56",XDM_CONST.IP_PROTOCOL_TLSP, Protocol_ID="57",XDM_CONST.IP_PROTOCOL_SKIP, Protocol_ID="58",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, Protocol_ID="59",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, Protocol_ID="60",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, Protocol_ID="62",XDM_CONST.IP_PROTOCOL_CFTP, Protocol_ID="64",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, Protocol_ID="65",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, Protocol_ID="66",XDM_CONST.IP_PROTOCOL_RVD, Protocol_ID="67",XDM_CONST.IP_PROTOCOL_IPPC, Protocol_ID="69",XDM_CONST.IP_PROTOCOL_SAT_MON, Protocol_ID="70",XDM_CONST.IP_PROTOCOL_VISA, Protocol_ID="71",XDM_CONST.IP_PROTOCOL_IPCV, Protocol_ID="72",XDM_CONST.IP_PROTOCOL_CPNX, Protocol_ID="73",XDM_CONST.IP_PROTOCOL_CPHB, Protocol_ID="74",XDM_CONST.IP_PROTOCOL_WSN, Protocol_ID="75",XDM_CONST.IP_PROTOCOL_PVP, Protocol_ID="76",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, Protocol_ID="77",XDM_CONST.IP_PROTOCOL_SUN_ND, Protocol_ID="78",XDM_CONST.IP_PROTOCOL_WB_MON, Protocol_ID="79",XDM_CONST.IP_PROTOCOL_WB_EXPAK, Protocol_ID="80",XDM_CONST.IP_PROTOCOL_ISO_IP, Protocol_ID="81",XDM_CONST.IP_PROTOCOL_VMTP, Protocol_ID="82",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, Protocol_ID="83",XDM_CONST.IP_PROTOCOL_VINES, Protocol_ID="84",XDM_CONST.IP_PROTOCOL_TTP, Protocol_ID="85",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, Protocol_ID="86",XDM_CONST.IP_PROTOCOL_DGP, Protocol_ID="87",XDM_CONST.IP_PROTOCOL_TCF, Protocol_ID="88",XDM_CONST.IP_PROTOCOL_EIGRP, Protocol_ID="89",XDM_CONST.IP_PROTOCOL_OSPFIGP, Protocol_ID="90",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, Protocol_ID="91",XDM_CONST.IP_PROTOCOL_LARP, Protocol_ID="92",XDM_CONST.IP_PROTOCOL_MTP, Protocol_ID="93",XDM_CONST.IP_PROTOCOL_AX25, Protocol_ID="94",XDM_CONST.IP_PROTOCOL_IPIP, Protocol_ID="95",XDM_CONST.IP_PROTOCOL_MICP, Protocol_ID="96",XDM_CONST.IP_PROTOCOL_SCC_SP, Protocol_ID="97",XDM_CONST.IP_PROTOCOL_ETHERIP, Protocol_ID="98",XDM_CONST.IP_PROTOCOL_ENCAP, Protocol_ID="100",XDM_CONST.IP_PROTOCOL_GMTP, Protocol_ID="101",XDM_CONST.IP_PROTOCOL_IFMP, Protocol_ID="102",XDM_CONST.IP_PROTOCOL_PNNI, Protocol_ID="103",XDM_CONST.IP_PROTOCOL_PIM, Protocol_ID="104",XDM_CONST.IP_PROTOCOL_ARIS, Protocol_ID="105",XDM_CONST.IP_PROTOCOL_SCPS, Protocol_ID="106",XDM_CONST.IP_PROTOCOL_QNX, Protocol_ID="107",XDM_CONST.IP_PROTOCOL_AN, Protocol_ID="108",XDM_CONST.IP_PROTOCOL_IPCOMP, Protocol_ID="110",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, Protocol_ID="111",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, Protocol_ID="112",XDM_CONST.IP_PROTOCOL_VRRP, Protocol_ID="113",XDM_CONST.IP_PROTOCOL_PGM, Protocol_ID="115",XDM_CONST.IP_PROTOCOL_L2TP, Protocol_ID="116",XDM_CONST.IP_PROTOCOL_DDX, Protocol_ID="117",XDM_CONST.IP_PROTOCOL_IATP, Protocol_ID="118",XDM_CONST.IP_PROTOCOL_STP, Protocol_ID="119",XDM_CONST.IP_PROTOCOL_SRP, Protocol_ID="120",XDM_CONST.IP_PROTOCOL_UTI, Protocol_ID="121",XDM_CONST.IP_PROTOCOL_SMP, Protocol_ID="122",XDM_CONST.IP_PROTOCOL_SM, Protocol_ID="123",XDM_CONST.IP_PROTOCOL_PTP, Protocol_ID="124",XDM_CONST.IP_PROTOCOL_ISIS, Protocol_ID="125",XDM_CONST.IP_PROTOCOL_FIRE, Protocol_ID="126",XDM_CONST.IP_PROTOCOL_CRTP, Protocol_ID="127",XDM_CONST.IP_PROTOCOL_CRUDP, Protocol_ID="128",XDM_CONST.IP_PROTOCOL_SSCOPMCE, Protocol_ID="129",XDM_CONST.IP_PROTOCOL_IPLT, Protocol_ID="130",XDM_CONST.IP_PROTOCOL_SPS, Protocol_ID="131",XDM_CONST.IP_PROTOCOL_PIPE, Protocol_ID="132",XDM_CONST.IP_PROTOCOL_SCTP, Protocol_ID="133",XDM_CONST.IP_PROTOCOL_FC, Protocol_ID="134",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, Protocol_ID="135",XDM_CONST.IP_PROTOCOL_MOBILITY, Protocol_ID="136",XDM_CONST.IP_PROTOCOL_UDPLITE, Protocol_ID="137",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(Protocol_ID)),
-    xdm.source.zone = Source_Zone,
-    xdm.target.zone = Destination_Zone_Name,
-    xdm.target.user.username = Username,
-    xdm.source.user.employee_id = Roles,
-    xdm.target.interface = Packet_Incoming_Interface;
+/*-----------------------------------------
+  ------------ MODELING RULES -------------
+  ----------------------------------------- */
+  [MODEL: dataset="juniper_srx_raw"]
+  //Extract all the fields using regex
+   alter 
+      hostname_temp1 = arrayindex(regextract(_raw_log,"([^\s]+)\s\w+\[\d+\]"),0),
+      hostname_temp2 = arrayindex(regextract(_raw_log,"\d+[Z]\s([^\s]+)\s"),0),
+      hostname_temp3 = arrayindex(regextract(_raw_log ,"host\=([^\s]+)\sagent"),0),
+      event_type_temp5 = arrayindex(regextract(_raw_log ,"\s([A-Z]\w+)\s\-\s"),0),
+      event_type_temp4 = arrayindex(regextract(_raw_log , "\s([A-Z]\w+)\:\s"),0),
+      event_type_temp3 = arrayindex(regextract(_raw_log ,"\w+\s\d+\s([^\s]+)\s\["),0),
+      event_type_temp2 = arrayindex(regextract(_raw_log ,"\s\-\s([A-Z]\w+)\s\["),0),
+      event_type = arrayindex(regextract(_raw_log,"\:\s(\w+\_\w+)"),0),
+      original_event_type = arrayindex(regextract(_raw_log ,"\:\sUser\s\'[^\']+\'\s(\w+)"),0),
+      application = arrayindex(regextract(_raw_log ,"application\=\"([^\"]+)"),0),
+      application_name = arrayindex(regextract(_raw_log,"application\-name\=\"([^\"]+)\""),0),
+      action_temp1 = arrayindex(regextract(_raw_log ,"action\=\"([^\"]+)"),0),
+      action_temp2 = arrayindex(regextract(_raw_log ,"action\=(\w+)\,\s"),0),
+      inbound_packets = arrayindex(regextract(_raw_log ,"inbound\-packets\=\"(\d+)\""),0),
+      outbound_packets = arrayindex(regextract(_raw_log ,"outbound\-packets\=\"(\d+)\""),0),
+      attack_name = arrayindex(regextract(_raw_log ,"attack\-name\=\"([^\"]+)\"\s"),0),
+      source_port = arrayindex(regextract(_raw_log,"source\-port\=\"(\d+)"),0),
+      destination_port = arrayindex(regextract(_raw_log,"destination\-port\=\"(\d+)"),0),
+      source_zone = arrayindex(regextract(_raw_log,"source\-zone\-name\=\"([^\"]+)"),0),
+      source_interface_name = arrayindex(regextract(_raw_log ,"source\-interface\-name\=\"([^\"]+)\"\s"),0),
+      destination_interface_name = arrayindex(regextract(_raw_log ,"destination\-interface\-name\=\"([^\"]+)\"\s"),0),
+      packet_incoming_interface = arrayindex(regextract(_raw_log,"packet\-incoming\-interface\=\"([^\"]+)"),0),
+      roles = arrayindex(regextract(_raw_log,"roles=\"([^\"]+)"),0),
+      target_username = arrayindex(regextract(_raw_log,"username\=\"([^\"]+)"),0),
+      source_username_temp = arrayindex(regextract(_raw_log,"ser\s\'([^\']+)"),0),
+      source_username_temp2 = arrayindex(regextract(_raw_log ,"[u][s][e][r]\=(.*?)\slogname"),0),
+      source_username_temp3 = arrayindex(regextract(_raw_log , "\:\sUser\s\'([^\']+)"),0),
+      source_username_temp4 = arrayindex(regextract(_raw_log ,"username\=\"([^\"]+)\""),0),
+      alert_severity = arrayindex(regextract(_raw_log ,"threat-severity\=\"([^\"]+)\"\s"),0),
+      destination_zone_name = arrayindex(regextract(_raw_log,"destination\-zone\-name\=\"([^\"]+)"),0),
+      rulebase_name = arrayindex(regextract(_raw_log ,"rulebase\-name\=\"([^\"]+)\"\s"),0),
+      protocol_id = arrayindex(regextract(_raw_log,"protocol\-id\=\"([^\"]+)"),0),
+      source_nat_rule_name = arrayindex(regextract(_raw_log,"src\-nat\-rule\-name\=\"([^\"]+)"),0),
+      source_address_ipv4 = arrayindex(regextract(_raw_log,"source\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+      source_adderss_ipv6 = arrayindex(regextract(_raw_log,"source\-address\=\"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0),
+      destination_address = arrayindex(regextract(_raw_log,"destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+      destination_adderss_ipv6 = arrayindex(regextract(_raw_log,"destination\-address\=\"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0),
+      process = arrayindex(regextract(_raw_log,"\s(\w+)\[\d+"),0),
+      process_id_temp = arrayindex(regextract(_raw_log,"\w+\[(\d+)\]\s"),0),
+      message_temp1 = arrayindex(regextract(_raw_log,"\w+\:\s(.*)"),0),
+      message_temp2 = arrayindex(regextract(_raw_log, "\w+\@[^\s]+\s(.*?)\]"),0),
+      source_ip_temp = arrayindex(regextract(_raw_log ,"\w+\-[a-z]+\s\'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+      source_port_temp = arrayindex(regextract(_raw_log ,"\'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s(\d+)"),0),
+      destination_ip_temp = arrayindex(regextract(_raw_log ,"\d+\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+      destination_port_temp = arrayindex(regextract(_raw_log, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s(\d+)\'\,"),0),
+      current_directory = arrayindex(regextract(_raw_log ,"current\-directory\=([^\s]+)"),0),
+      pid_temp = arrayindex(regextract(_raw_log ,"\spid\=(\d+)\s"),0),
+      ppid_temp = arrayindex(regextract(_raw_log ,"ppid\=(\d+)"),0),
+      ui_user_class = arrayindex(regextract(_raw_log , "\sclass\s\'([^\']+)"),0),
+      ui_commandline_temp = arrayindex(regextract(_raw_log ,"\,\scommand\s\'([^\']+)\'"),0),
+      ui_commandline_temp2 = arrayindex(regextract(_raw_log ,"command\=\"([^\"]+)\""),0),
+      ui_commandline_temp3 = arrayindex(regextract(_raw_log ,"run\scommand\s\'([^\']+)\'"),0),
+      inbound_bytes_temp = arrayindex(regextract(_raw_log, "inbound\-bytes\=\"(\d+)\""),0),
+      outbound_bytes_temp = arrayindex(regextract(_raw_log, "outbound\-bytes\=\"(\d+)\""),0)
+  // Export a field as an integer and filter additional fields.
+  | alter
+      source_username = if(source_username_temp = "(authentication in progress)",null,source_username_temp),
+      source_username2 = if(source_username_temp2 = "(authentication in progress)",null,source_username_temp2),
+      source_username3 = if(source_username_temp3 = "(authentication in progress)",null,source_username_temp3),
+      source_username4 = if(source_username_temp4 = "(authentication in progress)",null,source_username_temp4),
+      int_destination_port_temp1 = to_integer(destination_port),
+      int_destination_port_temp2 = to_integer(destination_port_temp),
+      int_source_port_temp1 = to_integer(source_port),
+      int_source_port_temp2 = to_integer(source_port_temp),
+      int_pid_temp = to_integer(pid_temp),
+      int_pid_temp2 = to_integer(process_id_temp),
+      inbound_bytes = to_integer(inbound_bytes_temp),
+      outbound_bytes = to_integer(outbound_bytes_temp)
+  //Mapping to xdm fields
+  | alter
+      xdm.observer.name = coalesce(hostname_temp1,hostname_temp2, hostname_temp3),
+      xdm.source.process.name = process,
+      xdm.source.process.pid = coalesce(int_pid_temp, int_pid_temp2),
+      xdm.source.user.username = coalesce(source_username, source_username2, source_username3, source_username4),
+      xdm.target.user.username = target_username,
+      xdm.event.description = coalesce(message_temp1, message_temp2),
+      xdm.event.type = coalesce(event_type, event_type_temp2, event_type_temp3, event_type_temp4, event_type_temp5),
+      xdm.event.original_event_type = original_event_type,
+      xdm.source.ipv4 = coalesce(source_address_ipv4, source_ip_temp),
+      xdm.source.ipv6 = source_adderss_ipv6,
+      xdm.target.ipv4 = coalesce(destination_address, destination_ip_temp),
+      xdm.target.ipv6 = destination_adderss_ipv6,
+      xdm.target.port = coalesce(int_destination_port_temp1, int_destination_port_temp2),
+      xdm.source.port = coalesce(int_source_port_temp1, int_source_port_temp2),
+      xdm.network.rule = source_nat_rule_name,
+      xdm.source.zone = source_zone,
+      xdm.target.zone = destination_zone_name,
+      xdm.source.sent_bytes = inbound_bytes,
+      xdm.target.sent_bytes = outbound_bytes,
+      xdm.source.user.employee_id = roles,
+      xdm.target.interface = coalesce(packet_incoming_interface, destination_interface_name),
+      xdm.source.interface = source_interface_name,
+      xdm.alert.original_threat_name = attack_name,
+      xdm.alert.severity = alert_severity,
+      xdm.observer.type = rulebase_name,
+      xdm.source.sent_packets = to_integer(inbound_packets),
+      xdm.target.sent_packets = to_integer(outbound_packets),
+      xdm.observer.action = coalesce(action_temp1 ,action_temp2),
+      xdm.auth.privilege_level = if(ui_user_class = "super-user",XDM_CONST.PRIVILEGE_LEVEL_SYSTEM, ui_user_class = "j-super-user-local",XDM_CONST.PRIVILEGE_LEVEL_ADMIN, ui_user_class = "j-super-user",XDM_CONST.PRIVILEGE_LEVEL_ADMIN, ui_user_class),
+      xdm.target.application.name = coalesce(application,application_name),
+      xdm.source.process.executable.directory = current_directory,
+      xdm.source.process.command_line = coalesce(ui_commandline_temp, ui_commandline_temp2,ui_commandline_temp3),
+      xdm.source.process.parent_id = ppid_temp,
+      xdm.network.ip_protocol = if(protocol_id="0",XDM_CONST.IP_PROTOCOL_HOPOPT, protocol_id="1",XDM_CONST.IP_PROTOCOL_ICMP, protocol_id="2",XDM_CONST.IP_PROTOCOL_IGMP, protocol_id="3",XDM_CONST.IP_PROTOCOL_GGP, protocol_id="4",XDM_CONST.IP_PROTOCOL_IP, protocol_id="5",XDM_CONST.IP_PROTOCOL_ST, protocol_id="6",XDM_CONST.IP_PROTOCOL_TCP, protocol_id="7",XDM_CONST.IP_PROTOCOL_CBT, protocol_id="8",XDM_CONST.IP_PROTOCOL_EGP, protocol_id="9",XDM_CONST.IP_PROTOCOL_IGP, protocol_id="10",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, protocol_id="11",XDM_CONST.IP_PROTOCOL_NVP_II, protocol_id="12",XDM_CONST.IP_PROTOCOL_PUP, protocol_id="13",XDM_CONST.IP_PROTOCOL_ARGUS, protocol_id="14",XDM_CONST.IP_PROTOCOL_EMCON, protocol_id="15",XDM_CONST.IP_PROTOCOL_XNET, protocol_id="16",XDM_CONST.IP_PROTOCOL_CHAOS, protocol_id="17",XDM_CONST.IP_PROTOCOL_UDP, protocol_id="18",XDM_CONST.IP_PROTOCOL_MUX, protocol_id="19",XDM_CONST.IP_PROTOCOL_DCN_MEAS, protocol_id="20",XDM_CONST.IP_PROTOCOL_HMP, protocol_id="21",XDM_CONST.IP_PROTOCOL_PRM, protocol_id="22",XDM_CONST.IP_PROTOCOL_XNS_IDP, protocol_id="23",XDM_CONST.IP_PROTOCOL_TRUNK_1, protocol_id="24",XDM_CONST.IP_PROTOCOL_TRUNK_2, protocol_id="25",XDM_CONST.IP_PROTOCOL_LEAF_1, protocol_id="26",XDM_CONST.IP_PROTOCOL_LEAF_2, protocol_id="27",XDM_CONST.IP_PROTOCOL_RDP, protocol_id="28",XDM_CONST.IP_PROTOCOL_IRTP, protocol_id="29",XDM_CONST.IP_PROTOCOL_ISO_TP4, protocol_id="30",XDM_CONST.IP_PROTOCOL_NETBLT, protocol_id="31",XDM_CONST.IP_PROTOCOL_MFE_NSP, protocol_id="32",XDM_CONST.IP_PROTOCOL_MERIT_INP, protocol_id="33",XDM_CONST.IP_PROTOCOL_DCCP, protocol_id="34",XDM_CONST.IP_PROTOCOL_3PC, protocol_id="35",XDM_CONST.IP_PROTOCOL_IDPR, protocol_id="36",XDM_CONST.IP_PROTOCOL_XTP, protocol_id="37",XDM_CONST.IP_PROTOCOL_DDP, protocol_id="38",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, protocol_id="39",XDM_CONST.IP_PROTOCOL_TP, protocol_id="40",XDM_CONST.IP_PROTOCOL_IL, protocol_id="41",XDM_CONST.IP_PROTOCOL_IPV6, protocol_id="42",XDM_CONST.IP_PROTOCOL_SDRP, protocol_id="43",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, protocol_id="44",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, protocol_id="45",XDM_CONST.IP_PROTOCOL_IDRP, protocol_id="46",XDM_CONST.IP_PROTOCOL_RSVP, protocol_id="47",XDM_CONST.IP_PROTOCOL_GRE, protocol_id="48",XDM_CONST.IP_PROTOCOL_DSR, protocol_id="49",XDM_CONST.IP_PROTOCOL_BNA, protocol_id="50",XDM_CONST.IP_PROTOCOL_ESP, protocol_id="51",XDM_CONST.IP_PROTOCOL_AH, protocol_id="52",XDM_CONST.IP_PROTOCOL_I_NLSP, protocol_id="53",XDM_CONST.IP_PROTOCOL_SWIPE, protocol_id="54",XDM_CONST.IP_PROTOCOL_NARP, protocol_id="55",XDM_CONST.IP_PROTOCOL_MOBILE, protocol_id="56",XDM_CONST.IP_PROTOCOL_TLSP, protocol_id="57",XDM_CONST.IP_PROTOCOL_SKIP, protocol_id="58",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, protocol_id="59",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, protocol_id="60",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, protocol_id="62",XDM_CONST.IP_PROTOCOL_CFTP, protocol_id="64",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, protocol_id="65",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, protocol_id="66",XDM_CONST.IP_PROTOCOL_RVD, protocol_id="67",XDM_CONST.IP_PROTOCOL_IPPC, protocol_id="69",XDM_CONST.IP_PROTOCOL_SAT_MON, protocol_id="70",XDM_CONST.IP_PROTOCOL_VISA, protocol_id="71",XDM_CONST.IP_PROTOCOL_IPCV, protocol_id="72",XDM_CONST.IP_PROTOCOL_CPNX, protocol_id="73",XDM_CONST.IP_PROTOCOL_CPHB, protocol_id="74",XDM_CONST.IP_PROTOCOL_WSN, protocol_id="75",XDM_CONST.IP_PROTOCOL_PVP, protocol_id="76",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, protocol_id="77",XDM_CONST.IP_PROTOCOL_SUN_ND, protocol_id="78",XDM_CONST.IP_PROTOCOL_WB_MON, protocol_id="79",XDM_CONST.IP_PROTOCOL_WB_EXPAK, protocol_id="80",XDM_CONST.IP_PROTOCOL_ISO_IP, protocol_id="81",XDM_CONST.IP_PROTOCOL_VMTP, protocol_id="82",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, protocol_id="83",XDM_CONST.IP_PROTOCOL_VINES, protocol_id="84",XDM_CONST.IP_PROTOCOL_TTP, protocol_id="85",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, protocol_id="86",XDM_CONST.IP_PROTOCOL_DGP, protocol_id="87",XDM_CONST.IP_PROTOCOL_TCF, protocol_id="88",XDM_CONST.IP_PROTOCOL_EIGRP, protocol_id="89",XDM_CONST.IP_PROTOCOL_OSPFIGP, protocol_id="90",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, protocol_id="91",XDM_CONST.IP_PROTOCOL_LARP, protocol_id="92",XDM_CONST.IP_PROTOCOL_MTP, protocol_id="93",XDM_CONST.IP_PROTOCOL_AX25, protocol_id="94",XDM_CONST.IP_PROTOCOL_IPIP, protocol_id="95",XDM_CONST.IP_PROTOCOL_MICP, protocol_id="96",XDM_CONST.IP_PROTOCOL_SCC_SP, protocol_id="97",XDM_CONST.IP_PROTOCOL_ETHERIP, protocol_id="98",XDM_CONST.IP_PROTOCOL_ENCAP, protocol_id="100",XDM_CONST.IP_PROTOCOL_GMTP, protocol_id="101",XDM_CONST.IP_PROTOCOL_IFMP, protocol_id="102",XDM_CONST.IP_PROTOCOL_PNNI, protocol_id="103",XDM_CONST.IP_PROTOCOL_PIM, protocol_id="104",XDM_CONST.IP_PROTOCOL_ARIS, protocol_id="105",XDM_CONST.IP_PROTOCOL_SCPS, protocol_id="106",XDM_CONST.IP_PROTOCOL_QNX, protocol_id="107",XDM_CONST.IP_PROTOCOL_AN, protocol_id="108",XDM_CONST.IP_PROTOCOL_IPCOMP, protocol_id="110",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, protocol_id="111",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, protocol_id="112",XDM_CONST.IP_PROTOCOL_VRRP, protocol_id="113",XDM_CONST.IP_PROTOCOL_PGM, protocol_id="115",XDM_CONST.IP_PROTOCOL_L2TP, protocol_id="116",XDM_CONST.IP_PROTOCOL_DDX, protocol_id="117",XDM_CONST.IP_PROTOCOL_IATP, protocol_id="118",XDM_CONST.IP_PROTOCOL_STP, protocol_id="119",XDM_CONST.IP_PROTOCOL_SRP, protocol_id="120",XDM_CONST.IP_PROTOCOL_UTI, protocol_id="121",XDM_CONST.IP_PROTOCOL_SMP, protocol_id="122",XDM_CONST.IP_PROTOCOL_SM, protocol_id="123",XDM_CONST.IP_PROTOCOL_PTP, protocol_id="124",XDM_CONST.IP_PROTOCOL_ISIS, protocol_id="125",XDM_CONST.IP_PROTOCOL_FIRE, protocol_id="126",XDM_CONST.IP_PROTOCOL_CRTP, protocol_id="127",XDM_CONST.IP_PROTOCOL_CRUDP, protocol_id="128",XDM_CONST.IP_PROTOCOL_SSCOPMCE, protocol_id="129",XDM_CONST.IP_PROTOCOL_IPLT, protocol_id="130",XDM_CONST.IP_PROTOCOL_SPS, protocol_id="131",XDM_CONST.IP_PROTOCOL_PIPE, protocol_id="132",XDM_CONST.IP_PROTOCOL_SCTP, protocol_id="133",XDM_CONST.IP_PROTOCOL_FC, protocol_id="134",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, protocol_id="135",XDM_CONST.IP_PROTOCOL_MOBILITY, protocol_id="136",XDM_CONST.IP_PROTOCOL_UDPLITE, protocol_id="137",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP,to_string(protocol_id));

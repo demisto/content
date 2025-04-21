@@ -1,0 +1,20 @@
+commonfields:
+  id: RubrikSonarFileHits
+  version: -1
+name: RubrikSonarFileHits
+script: ''
+type: python
+tags:
+- dynamic-section
+- field-change-triggered
+comment: Shows the Rubrik Polaris Sonar File Hits Count.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.10.115186
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

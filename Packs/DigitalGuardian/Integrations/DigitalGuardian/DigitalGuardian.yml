@@ -59,70 +59,72 @@ name: Digital Guardian
 script:
   commands:
   - arguments:
-    - description: Watchlist Name
+    - description: Watchlist Name.
       name: watchlist_name
       required: true
-    - description: Watchlist Entry
+    - description: Watchlist Entry.
       name: watchlist_entry
       required: true
-    description: Add Watchlist Entry
+    description: Add Watchlist Entry.
     name: digitalguardian-add-watchlist-entry
   - arguments:
-    - description: Watchlist Name
+    - description: Watchlist Name.
       name: watchlist_name
       required: true
-    - description: Watchlist Entry
+    - description: Watchlist Entry.
       name: watchlist_entry
       required: true
-    description: Check Watchlist Entry
+    description: Check Watchlist Entry.
     name: digitalguardian-check-watchlist-entry
     outputs:
     - contextPath: DigitalGuardian.Watchlist.Found
-      description: Watchlist Found
+      description: Watchlist Found.
       type: boolean
   - arguments:
-    - description: Watchlist Name
+    - description: Watchlist Name.
       name: watchlist_name
       required: true
-    - description: Watchlist Entry
+    - description: Watchlist Entry.
       name: watchlist_entry
-    description: Remove Watchlist Entry
+    description: Remove Watchlist Entry.
     name: digitalguardian-remove-watchlist-entry
   - arguments:
-    - description: Componentlist Name
+    - description: Componentlist Name.
       name: componentlist_name
       required: true
-    - description: Componentlist Entry
+    - description: Componentlist Entry.
       name: componentlist_entry
       required: true
-    description: Add Componentlist Entry
+    description: Add Componentlist Entry.
     name: digitalguardian-add-componentlist-entry
   - arguments:
-    - description: Componentlist Name
+    - description: Componentlist Name.
       name: componentlist_name
       required: true
-    - description: Componentlist Entry
+    - description: Componentlist Entry.
       name: componentlist_entry
       required: true
-    description: Check Componentlist Entry
+    description: Check Componentlist Entry.
     name: digitalguardian-check-componentlist-entry
     outputs:
     - contextPath: DigitalGuardian.Componentlist.Found
-      description: Componentlist Found
+      description: Componentlist Found.
       type: boolean
   - arguments:
-    - description: Componentlist Name
+    - description: Componentlist Name.
       name: componentlist_name
       required: true
-    - description: Componentlist Entry
+    - description: Componentlist Entry.
       name: componentlist_entry
       required: true
-    description: Remove Componentlist Entry
+    description: Remove Componentlist Entry.
     name: digitalguardian-remove-componentlist-entry
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

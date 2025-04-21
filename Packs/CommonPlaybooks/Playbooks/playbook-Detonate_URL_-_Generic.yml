@@ -853,12 +853,12 @@ tasks:
     task:
       id: 2fee63e9-6482-4101-8272-d42cf3a950aa
       version: -1
-      name: Detonate URL - OPSWAT
-      description: Detonates a URL using the OPSWAT-Filescan Integration. Returns relevant reports to the War Room and URL reputations to the context data.
-      script: OPSWAT Filescan|||opswat-filescan-scan-url
+      name: Detonate URL - MetaDefender Sandbox
+      description: Detonates a URL using the MetaDefender Sandbox Integration. Returns relevant reports to the War Room and URL reputations to the context data.
+      script: metadefender-sandbox-scan-url
       type: regular
       iscommand: true
-      brand: OPSWAT Filescan
+      brand: MetaDefender Sandbox
     nexttasks:
       '#none#':
       - "3"

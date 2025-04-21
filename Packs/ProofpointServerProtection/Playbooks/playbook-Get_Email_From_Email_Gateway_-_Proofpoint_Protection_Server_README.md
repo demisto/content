@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Get Email From Email Gateway - Proofpoint Protection Server](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/ProofpointServerProtection/doc_files/Get_Email_From_Email_Gateway_-_Proofpoint_Protection_Server.png)
+![Get Email From Email Gateway - Proofpoint Protection Server](../doc_files/Get_Email_From_Email_Gateway_-_Proofpoint_Protection_Server.png)

@@ -41,4 +41,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![ACTI Report Enrichment](https://user-images.githubusercontent.com/40510780/161069052-feb0b049-e189-42ea-bd3b-db96fdab09d8.png)
+![ACTI Report Enrichment](../doc_files/ACTI_Report_Enrichment.png)

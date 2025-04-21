@@ -496,7 +496,7 @@ script:
     - contextPath: MAR.HostInfo.Os
       description: Host operation system
     description: Gets host information from McAfee Active Response
-  dockerimage: demisto/dxl:1.0.0.86273
+  dockerimage: demisto/dxl:1.0.0.116949
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -9,3 +9,10 @@ ignore=RM106
 
 [file:playbook-CVE-2021-40444_-_MSHTML_RCE_6_5_README.md]
 ignore=RM106
+
+[file:playbook-CVE-2021-40444_-_MSHTML_RCE.yml]
+ignore=GR107
+
+[file:playbook-CVE-2021-40444_-_MSHTML_RCE_6_5.yml]
+ignore=GR107
+

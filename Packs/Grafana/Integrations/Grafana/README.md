@@ -1,31 +1,27 @@
 Grafana alerting service.
 This integration was integrated and tested with version 8.0.0 of Grafana
 
-## Configure Grafana on Cortex XSOAR
+## Configure Grafana in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Grafana.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Maximum number of incidents to fetch | Maximum is limited to 200. | False |
-    | Fetch incidents |  | False |
-    | First fetch time interval |  | False |
-    | Dashboard IDs to fetch | A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search" command. | False |
-    | Panel ID to fetch | See "help". | False |
-    | Alert name to fetch |  | False |
-    | States to fetch |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Username |  | True |
+| Password |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Maximum number of incidents to fetch | Maximum is limited to 200. | False |
+| Fetch incidents |  | False |
+| First fetch time interval |  | False |
+| Dashboard IDs to fetch | A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search" command. | False |
+| Panel ID to fetch | See "help". | False |
+| Alert name to fetch |  | False |
+| States to fetch |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### grafana-alerts-list
 ***
@@ -1368,4 +1364,3 @@ Gets an organization by ID.
 >|Id|Name|Address|
 >|---|---|---|
 >| 1 | Main Org. | address1: <br/>address2: <br/>city: <br/>zipCode: <br/>state: <br/>country:  |
-

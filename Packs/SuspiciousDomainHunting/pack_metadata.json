@@ -1,0 +1,104 @@
+{
+    "name": "Suspicious Domain Hunting",
+    "description": "This pack provides all the necessary tools for the Suspicious Domain Hunting use case. It uses the CertStream integration to ingest new SSL certificates and alert for type-squatting domains with SSL certificate, these alerts are then analyzed and mitigated.",
+    "support": "community",
+    "currentVersion": "1.0.12",
+    "author": "Cortex XSOAR",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Incident Response",
+        "Threat Intelligence",
+        "Use Case"
+    ],
+    "useCases": [
+        "Hunting"
+    ],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": [],
+    "dependencies": {
+        "AutoFocus": {
+            "mandatory": true,
+            "minVersion": "2.1.17",
+            "name": "AutoFocus by Palo Alto Networks",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "minVersion": "2.4.41",
+            "name": "Common Playbooks",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "minVersion": "1.13.7",
+            "name": "Common Scripts",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "minVersion": "3.3.95",
+            "name": "Common Types",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CortexXpanse": {
+            "mandatory": true,
+            "minVersion": "1.0.14",
+            "name": "Cortex Xpanse",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "EDL": {
+            "mandatory": true,
+            "minVersion": "3.2.13",
+            "name": "Generic Export Indicators Service",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "PAN-OS": {
+            "mandatory": true,
+            "minVersion": "2.1.15",
+            "name": "PAN-OS by Palo Alto Networks",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "VirusTotal": {
+            "mandatory": true,
+            "minVersion": "2.6.11",
+            "name": "VirusTotal",
+            "certification": "certified",
+            "author": "VirusTotal"
+        },
+        "Whois": {
+            "mandatory": true,
+            "minVersion": "1.5.6",
+            "name": "Whois",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "rasterize": {
+            "mandatory": true,
+            "minVersion": "1.2.28",
+            "name": "Rasterize",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CertStream": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "CertStream",
+            "certification": "",
+            "author": "Cortex XSOAR"
+        }
+    }
+}

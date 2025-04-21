@@ -8,6 +8,6 @@ The actions in this pack helps you to determine risks and help to remediate task
 
 ### Playbook
 **Compromised Credentials Match - Flashpoint:** It authenticates and expires the credentials and sends an email alert.
-![Compromised Credentials Match - Flashpoint](https://github.com/demisto/content/raw/f3d75c9da2e0e4d56ff087b86b941a21e0d63cb2/Packs/Flashpoint/doc_files/Compromised_Credentials_Match_-_Flashpoint.png)
+![Compromised Credentials Match - Flashpoint](doc_files/Compromised_Credentials_Match_-_Flashpoint.png)
 
 _For more information, visit our [Flashpoint Developer Documentation](https://docs.fp.tools/)_

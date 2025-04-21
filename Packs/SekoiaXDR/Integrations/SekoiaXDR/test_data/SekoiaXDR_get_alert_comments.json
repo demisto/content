@@ -1,0 +1,32 @@
+{
+    "items": [
+        {
+            "uuid": "40528f74-2523-428f",
+            "content": "Alert has been closed automatically because it is older than 2 weeks.",
+            "author": "apikey:f93a35e0-b9aa-4c95",
+            "date": 1686237010,
+            "created_by": "f93a35e0-b9aa-4c95",
+            "created_by_type": "apikey",
+            "unseen": false
+        },
+        {
+            "uuid": "29a36b54-8ad1-4211",
+            "content": "This alert is always on ongoing status",
+            "author": "user:7114c307-d86c-4c55",
+            "date": 1714653288,
+            "created_by": "7114c307-d86c-4c55",
+            "created_by_type": "user",
+            "unseen": false
+        },
+        {
+            "uuid": "0fad9131-7596-45be",
+            "content": "Alert is currently ongoing and will be analyzed by our team of security analysts. Update to come.",
+            "author": "Sekoia's security analysts",
+            "date": 1712073666,
+            "created_by": "f93a35e0-b9aa-4c95",
+            "created_by_type": "apikey",
+            "unseen": false
+        }
+    ],
+    "total": 3
+}

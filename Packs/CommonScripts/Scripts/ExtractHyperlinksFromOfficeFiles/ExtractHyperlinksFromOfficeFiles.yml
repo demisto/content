@@ -1,5 +1,5 @@
 args:
-- description: 'The entry id of the file to extract hyperlinks from.'
+- description: The entry id of the file to extract hyperlinks from.
   name: entry_id
   required: true
 comment: 'Extracts hyperlinks from office files. Supported file types are: xlsx, docx, pptx.'
@@ -18,5 +18,5 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/office-utils:2.0.0.88298
+dockerimage: demisto/office-utils:2.0.0.2020302
 fromversion: 5.5.0

@@ -2,7 +2,7 @@
     "name": "SailPoint IdentityNow",
     "description": "SailPoint IdentityNow content pack enables XSOAR customers to utilize the deep, enriched contextual data in the SailPoint IdentityNow platform to better drive identity-aware security practices.",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.11",
     "author": "SailPoint",
     "url": "https://support.sailpoint.com/hc/en-us/requests/new",
     "email": "support.idplusa@sailpoint.com",
@@ -38,6 +38,14 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

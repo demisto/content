@@ -63,6 +63,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "sha-1": FeedIndicatorType.File,
     "sha-256": FeedIndicatorType.File,
     "file:hashes": FeedIndicatorType.File,
+    "vulnerability": FeedIndicatorType.CVE,
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
@@ -176,6 +177,7 @@ class STIX2Parser:
         "windows-registry-key",
         "relationship",
         "extension-definition",
+        "vulnerability",
     ]
 
     def __init__(self):
@@ -246,14 +248,20 @@ class STIX2Parser:
 
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
-                    indicator_groups, indicator_obj, STIX_2_TYPES_TO_CORTEX_TYPES, field_map,
+                    indicator_groups,
+                    indicator_obj,
+                    STIX_2_TYPES_TO_CORTEX_TYPES,
+                    field_map,
                 )
             )
 
             cidr_groups = self.extract_indicator_groups_from_pattern(trimmed_pattern, self.cidr_regexes)
             indicators.extend(
                 self.get_indicators_from_indicator_groups(
-                    cidr_groups, indicator_obj, STIX_2_TYPES_TO_CORTEX_CIDR_TYPES, field_map,
+                    cidr_groups,
+                    indicator_obj,
+                    STIX_2_TYPES_TO_CORTEX_CIDR_TYPES,
+                    field_map,
                 )
             )
             self.change_ip_to_cidr(indicators)
@@ -540,6 +548,7 @@ class STIX2Parser:
             "primary_motivation": intrusion_set_obj.get("primary_motivation", ""),
             "secondary_motivations": intrusion_set_obj.get("secondary_motivations", []),
             "publications": publications,
+            "tags": list(set(intrusion_set_obj.get("labels", []))),
         }
         intrusion_set["customFields"] = fields
         return [intrusion_set]
@@ -573,9 +582,7 @@ class STIX2Parser:
         Args:
             autonomous_system_obj (dict): indicator as an observable object of type autonomous-system.
         """
-        autonomous_system_indicator = STIX2Parser.parse_general_sco_indicator(
-            autonomous_system_obj, value_mapping="number"
-        )
+        autonomous_system_indicator = STIX2Parser.parse_general_sco_indicator(autonomous_system_obj, value_mapping="number")
         autonomous_system_indicator[0]["customFields"]["name"] = autonomous_system_obj.get("name")
 
         return autonomous_system_indicator
@@ -651,6 +658,31 @@ class STIX2Parser:
         )
         return registry_key_indicator
 
+    @staticmethod
+    def parse_vulnerability(vulnerability_obj: dict[str, Any]) -> list[dict[str, Any]]:
+        """
+        Parses vulnerability indicator type to cortex format.
+
+        Args:
+            vulnerability_obj (dict): indicator as an observable object of vulnerability type.
+        """
+        vulnerability = {
+            "value": vulnerability_obj.get("name"),
+            "indicator_type": FeedIndicatorType.CVE,
+            "rawJSON": vulnerability_obj,
+        }
+        fields = {
+            "stixid": vulnerability_obj.get("id"),
+            "firstseenbysource": vulnerability_obj.get("created"),
+            "modified": vulnerability_obj.get("modified"),
+            "description": vulnerability_obj.get("description", ""),
+            "external_references": vulnerability_obj.get("external_references", []),
+            "tags": list(set(vulnerability_obj.get("labels", []))),
+        }
+
+        vulnerability["customFields"] = fields
+        return [vulnerability]
+
     def parse_relationships(self, relationships_lst: list[dict[str, Any]]) -> dict[str, Any]:
         """Parse the Relationships objects retrieved from the feed.
 
@@ -691,7 +723,7 @@ class STIX2Parser:
                         for ref in b_object["rawJSON"].get("external_references", [])
                         if ref.get("source_name") == "mitre-attack"
                     )
-                    a_object["customFields"]["tags"].append(mitre_id)
+                    a_object["customFields"].setdefault("tags", []).append(mitre_id)
 
             mapping_fields = {
                 "lastseenbysource": relationships_object.get("modified"),
@@ -746,6 +778,7 @@ class STIX2Parser:
             "mutex": self.parse_sco_mutex_indicator,
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
+            "vulnerability": self.parse_vulnerability,
         }
         indicators = self.parse_dict_envelope(envelopes, parse_stix_2_objects)
         return indicators
@@ -824,9 +857,7 @@ class STIX2Parser:
                         # support added for cases as 'value1','value2','value3' for 3 different indicators
                         for indicator_value in value.split(","):
                             indicator_value = indicator_value.strip("'")
-                            indicator = STIX2Parser.create_indicator(
-                                indicator_obj, type_, indicator_value.strip("'"), field_map
-                            )
+                            indicator = STIX2Parser.create_indicator(indicator_obj, type_, indicator_value.strip("'"), field_map)
                             indicators.append(indicator)
                         break
         return indicators
@@ -921,9 +952,7 @@ def test_module(client: Client, params: dict) -> str:  # pragma: no cover
         return str(e)
 
 
-def get_indicators_command(
-    client: Client, params: dict[str, str], args: dict[str, str]
-) -> CommandResults:  # pragma: no cover
+def get_indicators_command(client: Client, params: dict[str, str], args: dict[str, str]) -> CommandResults:  # pragma: no cover
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -935,7 +964,7 @@ def get_indicators_command(
     indicators = client.fetch_indicators_from_stream(
         params["feedly_stream_id"], newer_than=time.time() - 24 * 3600, limit=int(args.get("limit", "10"))
     )
-    demisto.createIndicators(indicators)
+    demisto.createIndicators(indicators)  # type: ignore
     return CommandResults(readable_output=f"Created {len(indicators)} indicators.")
 
 
@@ -949,7 +978,7 @@ def fetch_indicators_command(client: Client, params: dict[str, str], context: di
         Indicators.
     """
     return client.fetch_indicators_from_stream(
-        params["feedly_stream_id"], newer_than=float(context.get("last_successful_run", time.time() - 7 * 24 * 3600)),
+        params["feedly_stream_id"], newer_than=float(context.get("last_successful_run", time.time() - 7 * 24 * 3600))
     )
 
 
@@ -979,7 +1008,7 @@ def main():  # pragma: no cover
             now = time.time()
             indicators = fetch_indicators_command(client, params, demisto.getLastRun())
             for indicators_batch in batch(indicators, batch_size=2000):
-                demisto.createIndicators(indicators_batch)
+                demisto.createIndicators(indicators_batch)  # type: ignore
             demisto.setLastRun({"last_successful_run": str(now)})
 
         else:

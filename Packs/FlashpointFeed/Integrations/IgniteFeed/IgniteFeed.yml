@@ -1,0 +1,163 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: IgniteFeed
+  version: -1
+configuration:
+- additionalinfo: Server URL to connect to Ignite.
+  defaultvalue: https://api.flashpoint.io
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: API key used for secure communication with the Ignite platform.
+  name: credentials
+  hiddenusername: true
+  required: true
+  type: 9
+- additionalinfo: 'Supports multiple values such as url, domain. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
+  display: Types of the indicators to fetch
+  name: types
+  options:
+  - IP
+  - Domain
+  - URL
+  - Email
+  - File
+  type: 16
+  required: false
+- additionalinfo: 'Backfill indicators by providing date or relative timestamp. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
+  defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  required: false
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: ''
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  type: 17
+  required: false
+- display: ''
+  defaultvalue: '20160'
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+- additionalinfo: To indicate to the Cortex XSOAR server that a feed is incremental. Generally feeds that fetch based on a time range. For example, a daily feed which provides new indicators for the last day or a feed which is immutable and provides indicators from a search date onwards.
+  defaultvalue: 'true'
+  hidden: true
+  name: feedIncremental
+  type: 8
+  required: false
+- additionalinfo: Create relationships between indicators as part of Enrichment.
+  defaultvalue: 'false'
+  display: Create relationships
+  name: createRelationship
+  type: 8
+  required: false
+- additionalinfo: When selected, all the incoming indicators will map to the Flashpoint Indicator.
+  display: Default Indicator Mapping
+  name: defaultMap
+  type: 8
+  required: false
+- additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Flashpoint Ignite Feed Integration allows importing indicators of compromise that occur in the context of an event on the Flashpoint Ignite platform which contains finished intelligence reports data, data from illicit forums, marketplaces, chat services, blogs, paste sites, technical data, card shops, and vulnerabilities. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
+display: Flashpoint Ignite Feed
+name: IgniteFeed
+script:
+  commands:
+  - arguments:
+    - defaultValue: '10'
+      description: The maximum number of result objects to return. Maximum allowed limit is 1000.
+      name: limit
+    - defaultValue: 3 days
+      description: |-
+        Only retrieve values after the given timestamp. This parameter operates on the timestamp when an IOC was last updated, i.e. enriched with more metadata. When the user wants the most recent IOCs shared in the past week, the freshest data, we recommend using this parameter.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      name: updated_since
+    - auto: PREDEFINED
+      description: 'Search by Attribute types. Can have multiple terms. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
+      isArray: true
+      name: types
+      predefined:
+      - IP
+      - Domain
+      - URL
+      - Email
+      - File
+    description: Retrieves indicators from the Ignite API. It displays the content of the fetch-indicators command.
+    name: flashpoint-ignite-get-indicators
+  feed: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

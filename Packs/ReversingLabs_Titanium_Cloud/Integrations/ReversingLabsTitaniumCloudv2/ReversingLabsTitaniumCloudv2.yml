@@ -3,802 +3,841 @@ commonfields:
   id: ReversingLabs TitaniumCloud v2
   version: -1
 configuration:
-- defaultvalue: https://data.reversinglabs.com
-  display: ReversingLabs TitaniumCloud URL
-  name: base
-  required: true
-  type: 0
-- display: Credentials
-  name: credentials
-  required: true
-  type: 9
-- defaultvalue: C - Fairly reliable
-  display: Reliability
-  name: reliability
-  options:
-  - A+ - 3rd party enrichment
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  type: 15
-  required: false
-- defaultvalue: 'false'
-  display: Verify certificates
-  name: verify_certs
-  type: 8
-  required: false
-- display: HTTP proxy address with the protocol and port number
-  name: http_proxy
-  type: 0
-  required: false
-- display: HTTP proxy username
-  name: http_credentials
-  displaypassword: HTTP proxy password
-  required: false
-  type: 9
-- display: HTTPS proxy address with the protocol and port number
-  name: https_proxy
-  type: 0
-  required: false
-- display: HTTPS proxy username
-  name: https_credentials
-  displaypassword: HTTPS proxy password
-  required: false
-  type: 9
+  - defaultvalue: https://data.reversinglabs.com
+    display: ReversingLabs TitaniumCloud URL
+    name: base
+    required: true
+    type: 0
+  - display: Credentials
+    name: credentials
+    required: true
+    type: 9
+  - defaultvalue: C - Fairly reliable
+    display: Reliability
+    name: reliability
+    options:
+      - A+ - 3rd party enrichment
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+    type: 15
+    required: false
+  - defaultvalue: "false"
+    display: Verify certificates
+    name: verify_certs
+    type: 8
+    required: false
+  - display: HTTP proxy address with the protocol and port number
+    name: http_proxy
+    type: 0
+    required: false
+  - display: HTTP proxy username
+    name: http_credentials
+    displaypassword: HTTP proxy password
+    required: false
+    type: 9
+  - display: HTTPS proxy address with the protocol and port number
+    name: https_proxy
+    type: 0
+    required: false
+  - display: HTTPS proxy username
+    name: https_credentials
+    displaypassword: HTTPS proxy password
+    required: false
+    type: 9
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
 display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2
 script:
   commands:
-  - name: reversinglabs-titaniumcloud-file-reputation
-    description: Retrieve File Reputation data from TitaniumCloud.
-    arguments:
-    - name: hash
-      default: true
-      description: File hash.
-      required: true
-    outputs:
-    - contextPath: File.MD5
-      description: Bad hash found.
-      type: Unknown
-    - contextPath: File.SHA1
-      description: Bad hash SHA1.
-      type: Unknown
-    - contextPath: File.SHA256
-      description: Bad hash SHA256.
-      type: Unknown
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: ReversingLabs.file_reputation
-      description: The file reputation.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-av-scanners
-    description: Retrieve AV Scanner data from TitaniumCloud.
-    arguments:
-    - name: hash
-      description: File hash.
-      default: true
-      required: true
-    outputs:
-    - contextPath: File.MD5
-      description: Bad hash found.
-      type: Unknown
-    - contextPath: File.SHA1
-      description: Bad hash SHA1.
-      type: Unknown
-    - contextPath: File.SHA256
-      description: Bad hash SHA256.
-      type: Unknown
-    - contextPath: ReversingLabs.av_scanners
-      description: The AV scanners.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-file-analysis
-    description: Retrieve File Analysis by hash data from TitaniumCloud.
-    arguments:
-    - name: hash
-      description: File hash.
-      default: true
-      required: true
-    outputs:
-    - contextPath: File.MD5
-      description: Bad hash found.
-      type: Unknown
-    - contextPath: File.SHA1
-      description: Bad hash SHA1.
-      type: Unknown
-    - contextPath: File.SHA256
-      description: Bad hash SHA256.
-      type: Unknown
-    - contextPath: ReversingLabs.file_analysis
-      description: The file analysis.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-rha1-functional-similarity
-    description: Retrieve a list of functionally similar hashes to the provided one.
-    arguments:
-    - name: hash
-      description: File hash.
-      default: true
-      required: true
-    - name: result_limit
-      description: Maximum number of results to be returned. Default is 5000.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.functional_similarity
-      description: The functional similarity.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-rha1-analytics
-    description: Retrieve the number of hashes functionally similar to the provided one grouped by classification.
-    arguments:
-    - name: hash
-      description: File hash.
-      default: true
-      required: true
-    outputs:
-    - contextPath: File.SHA1
-      description: File SHA1.
-      type: Unknown
-    - contextPath: File.SHA256
-      description: File SHA256.
-      type: Unknown
-    - contextPath: File.MD5
-      description: File MD5.
-      type: Unknown
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: ReversingLabs.rha1_analytics
-      description: The RHA1 analytics.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-uri-statistics
-    description: Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a specific URI.
-    arguments:
-    - name: uri
-      description: URI string.
-      default: true
-      required: true
-    outputs:
-    - contextPath: IP.Address
-      description: IP address.
-      type: Unknown
-    - contextPath: Domain.Name
-      description: Domain name.
-      type: Unknown
-    - contextPath: URL.Data
-      description: The URL.
-      type: Unknown
-    - contextPath: Email.To
-      description: Destination email address.
-      type: Unknown
-    - contextPath: ReversingLabs.uri_statistics
-      description: The URI statistics.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-uri-index
-    description: Retrieve a list of all available file hashes associated with a given URI.
-    arguments:
-    - name: uri
-      description: URI string.
-      default: true
-      required: true
-    - name: result_limit
-      description: Maximum number of results to be returned. Default is 5000.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.uri_index
-      description: The URI index.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-advanced-search
-    description: Search for hashes using multi-part search criteria.
-    arguments:
-    - name: query
-      description: Query string.
-      default: true
-      required: true
-    - name: result_limit
-      description: Maximum number of results to be returned. Default is 5000.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.advanced_search
-      description: The advanced search.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-expression-search
-    description: Search provides samples first seen on a particular date, filtered by search criteria.
-    arguments:
-    - name: query
-      description: Query string.
-      default: true
-      required: true
-    - name: date
-      description: Search date.
-    - name: result_limit
-      description: Maximum number of results to be returned Default is 5000.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.expression_search
-      description: The expression search.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-file-download
-    description: Download files associated with a SHA1, MD5 or SHA256 hash.
-    arguments:
-    - name: hash
-      description: File hash.
-      default: true
-      required: true
-  - name: reversinglabs-titaniumcloud-file-upload
-    description: Upload a file using a byte stream with a SHA1 hash of the file provided in the request.
-    arguments:
-    - name: entryId
-      description: File entry ID.
-      default: true
-      required: true
-  - name: reversinglabs-titaniumcloud-url-report
-    description: Return a URL analysis report.
-    arguments:
-    - name: url
-      description: URL string.
-      default: true
-      required: true
-    outputs:
-    - contextPath: URL.Data
-      description: The URL.
-      type: Unknown
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: ReversingLabs.url_report
-      description: The URL report.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-analyze-url
-    description: Analyze a given URL.
-    arguments:
-    - name: url
-      description: URL string.
-      default: true
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.analyze_url
-      description: The URL analysis.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-submit-sample-for-dynamic-analysis
-    description: Submit an existing sample for dynamic analysis.
-    arguments:
-    - name: sha1
-      description: Sample SHA-1 hash.
-      default: true
-      required: true
-    - name: platform
-      description: Desired platform; See the API documentation for possible values.
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.detonate_sample_dynamic
-      description: The dynamic analysis.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-get-sample-dynamic-analysis-results
-    description: Retrieve dynamic analysis results for a sample.
-    arguments:
-    - name: sha1
-      description: Sample SHA-1 hash.
-      default: true
-      required: true
-    - name: analysis_id
-      description: ID of a specific analysis to fetch.
-      required: false
-    - name: latest_analysis
-      description: Fetch the latest analysis.
-      required: false
-      defaultValue: 'false'
-      auto: PREDEFINED
-      predefined:
-        - 'true'
-        - 'false'
-    outputs:
-    - contextPath: File.MD5
-      description: MD5 hash.
-      type: String
-    - contextPath: File.SHA1
-      description: SHA1 hash.
-      type: String
-    - contextPath: File.SHA256
-      description: SHA256 hash.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: ReversingLabs.sample_dynamic_analysis_results
-      description: The sample dynamic analysis results.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-submit-url-for-dynamic-analysis
-    description: Submit a URL for dynamic analysis.
-    arguments:
-      - name: url
-        description: URL string.
-        default: true
-        required: true
-      - name: platform
-        description: Desired platform; See the API documentation for possible values.
-        required: true
-    outputs:
-      - contextPath: ReversingLabs.detonate_url_dynamic
-        description: The dynamic analysis.
-        type: Unknown
-  - name: reversinglabs-titaniumcloud-get-url-dynamic-analysis-results
-    description: Retrieve dynamic analysis results for a URL.
-    arguments:
-      - name: sha1
-        description: URL SHA-1 hash. It can be found in the response while submitting the URL for analysis. Mutually exclusive with url.
-        default: false
-        required: false
-      - name: url
-        description: The requested URL- Mutually exclusive with sha1.
-        default: false
-        required: false
-      - name: analysis_id
-        description: ID of a specific analysis to fetch.
-        required: false
-      - name: latest_analysis
-        description: Fetch the latest analysis.
-        required: false
-        auto: PREDEFINED
-        defaultValue: 'false'
-        predefined:
-          - 'true'
-          - 'false'
-    outputs:
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: ReversingLabs.url_dynamic_analysis_results
-        description: The URL dynamic analysis results.
-        type: Unknown
-  - name: reversinglabs-titaniumcloud-certificate-analytics
-    description: Retrieve certificate analytics.
-    arguments:
-    - name: certificate_thumbprint
-      description: Hash string.
-      default: true
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.certificate_analytics
-      description: The certificate analytics.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-yara-ruleset-actions
-    description: Perform various YARA ruleset actions.
-    arguments:
-    - name: yara_action
-      description: YARA ruleset action.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - 'CREATE RULESET'
-      - 'DELETE RULESET'
-      - 'GET RULESET INFO'
-      - 'GET RULESET TEXT'
-    - name: ruleset_name
-      description: Name of the YARA ruleset.
-      required: true
-    - name: ruleset_text
-      description: Text of the YARA ruleset.
-    - name: sample_available
-      description: Return only samples that are available for download to the user. Must be boolean.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    outputs:
-    - contextPath: ReversingLabs.create_yara_ruleset
-      description: The YARA ruleset.
-      type: Unknown
-    - contextPath: ReversingLabs.delete_yara_ruleset
-      description: The YARA ruleset.
-      type: Unknown
-    - contextPath: ReversingLabs.get_yara_ruleset_info
-      description: The YARA ruleset.
-      type: Unknown
-    - contextPath: ReversingLabs.get_yara_ruleset_text
-      description: The YARA ruleset.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-yara-matches-feed
-    description: Returns a recordset of YARA ruleset matches in the specified time range.
-    arguments:
-    - name: time_format
-      description: Define the time format that is used.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - 'utc'
-      - 'timestamp'
-    - name: time_value
-      description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.yara_matches_feed
-      description: The YARA matches feed.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-yara-retro-hunt-actions
-    description: Perform various YARA retroactive hunting actions.
-    arguments:
-    - name: yara_retro_action
-      description: YARA retro hunt action.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - 'ENABLE RETRO HUNT'
-      - 'START RETRO HUNT'
-      - 'CHECK STATUS'
-      - 'CANCEL RETRO HUNT'
-    - name: ruleset_name
-      description: Name of the YARA ruleset.
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.enable_yara_retro
-      description: The YARA retro hunt.
-      type: Unknown
-    - contextPath: ReversingLabs.start_yara_retro
-      description: The YARA retro hunt.
-      type: Unknown
-    - contextPath: ReversingLabs.check_yara_retro_status
-      description: The YARA retro hunt.
-      type: Unknown
-    - contextPath: ReversingLabs.cancel_yara_retro
-      description: The YARA retro hunt.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-yara-retro-matches-feed
-    description: Returns a recordset of YARA ruleset matches in the specified time range.
-    arguments:
-    - name: time_format
-      description: Define the time format that is used.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - 'utc'
-      - 'timestamp'
-    - name: time_value
-      description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.yara_retro_matches_feed
-      description: The YARA retro matches feed.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-reanalyze-sample
-    description: Accepts a hash of a sample in the cloud that you want to reanalyze.
-    arguments:
-    - name: hash
-      description: Hash string.
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.reanalyze_sample
-      description: The reanalyze sample.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-imphash-similarity
-    description: Accepts an imphash and returns a list of SHA-1 hashes of files sharing that imphash.
-    arguments:
-    - name: imphash
-      description: Imphash string.
-      required: true
-    - name: max_results
-      description: Maximum number of returned results.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.imphash_similarity
-      description: The imphash similarity.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-url-downloaded-files
-    description: Returns a list of files downloaded from the provided URL.
-    arguments:
-    - name: url
-      description: URL string.
-      required: true
-    - name: extended_results
-      description: Return extended results.
-      defaultValue: true
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: classification
-      description: Return only results with this classification.
-      auto: PREDEFINED
-      predefined:
-      - 'MALICIOUS'
-      - 'SUSPICIOUS'
-      - 'KNOWN'
-      - 'UNKNOWN'
-    - name: last_analysis
-      description: Return results from the last analysis.
-      defaultValue: false
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: analysis_id
-      description: Return results from a specific analysis.
-    - name: results_per_page
-      description: Number of results per query.
-      defaultValue: 1000
-    - name: max_results
-      description: Maximum number of results.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.url_downloaded_files
-      description: The URL downloaded files.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-url-latest-analyses-feed
-    description: Returns the latest URL analysis reports.
-    arguments:
-    - name: results_per_page
-      description: Number of results per query.
-      defaultValue: 1000
-    - name: max_results
-      description: Maximum number of results.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.url_latest_analyses_feed
-      description: The URL latest analyses feed.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-url-analyses-feed-from-date
-    description: Returns URL analyses reports from the defined time onward.
-    arguments:
-    - name: time_format
-      description: Define the time format that is used.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - 'utc'
-      - 'timestamp'
-    - name: start_time
-      description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
-      required: true
-    - name: results_per_page
-      description: Number of results per query.
-      defaultValue: 1000
-    - name: max_results
-      description: Maximum number of results.
-      defaultValue: 5000
-    outputs:
-    - contextPath: ReversingLabs.url_analyses_feed_from_date
-      description: The URL analyses feed from date.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-domain-report
-    description: Returns a domain analysis report.
-    arguments:
-    - name: domain
-      description: Domain string.
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.domain_report
-      description: The domain analysis report.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-domain-downloaded-files
-    description: Returns a list of files downloaded from a domain.
-    arguments:
-    - name: domain
-      description: Domain string.
-      required: true
-      default: true
-    - name: classification
-      description: Return only files of this classification.
-      auto: PREDEFINED
-      predefined:
-        - 'MALICIOUS'
-        - 'SUSPICIOUS'
-        - 'KNOWN'
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-    - name: results_per_page
-      description: Number of results returned per request.
-      defaultValue: 1000
-    outputs:
-    - contextPath: ReversingLabs.domain_downloaded_files
-      description: The list of files downloaded from a domain.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-domain-urls
-    description: Returns a list of URL-s associated with the requested domain.
-    arguments:
-    - name: domain
-      description: Domain string.
-      required: true
-      default: true
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-    - name: results_per_page
-      description: Number of results returned per request.
-      defaultValue: 1000
-    outputs:
-    - contextPath: ReversingLabs.domain_urls
-      description: The list of URL-s associated with the requested domain.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-domain-to-ip
-    description: Returns a list of IP addresses resolved from a domain.
-    arguments:
-    - name: domain
-      description: Domain string.
-      required: true
-      default: true
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-    - name: results_per_page
-      description: Number of results returned per request.
-      defaultValue: 1000
-    outputs:
-    - contextPath: ReversingLabs.domain_to_ip
-      description: The list of IP addresses resolved from the domain.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-domain-related-domains
-    description: Returns a list of domains related to the submitted domain.
-    arguments:
-    - name: domain
-      description: Domain string.
-      required: true
-      default: true
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-    - name: results_per_page
-      description: Number of results returned per request.
-      defaultValue: 1000
-    outputs:
-    - contextPath: ReversingLabs.domain_related_domains
-      description: The list of domains related to the submitted domain.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-ip-report
-    description: Returns an IP address analysis report.
-    arguments:
-    - name: ip
-      description: IP address.
-      required: true
-    outputs:
-    - contextPath: ReversingLabs.ip_report
-      description: The IP address analysis report.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-ip-downloaded-files
-    description: Returns a list of files downloaded from an IP address.
-    arguments:
-    - name: ip
-      description: IP address.
-      required: true
-    - name: classification
-      description: Return only files of this classification.
-      auto: PREDEFINED
-      predefined:
-        - 'MALICIOUS'
-        - 'SUSPICIOUS'
-        - 'KNOWN'
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-    - name: results_per_page
-      description: Number of results returned per request.
-      defaultValue: 1000
-    outputs:
-    - contextPath: ReversingLabs.ip_downloaded_files
-      description: The list of files downloaded from an IP address.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-ip-urls
-    description: Returns a list of URL-s associated with an IP address.
-    arguments:
-    - name: ip
-      description: IP address.
-      required: true
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-    - name: results_per_page
-      description: Number of results returned per request.
-      defaultValue: 1000
-    outputs:
-    - contextPath: ReversingLabs.ip_urls
-      description: The list of URL-s associated with an IP address.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-ip-to-domain
-    description: Returns a list of IP to domain mappings.
-    arguments:
-    - name: ip
-      description: IP address.
-      required: true
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-    - name: results_per_page
-      description: Number of results returned per request.
-      defaultValue: 1000
-    outputs:
-    - contextPath: ReversingLabs.ip_to_domain
-      description: The list of IP to domain mappings.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-network-reputation
-    description: Returns network reputation for requested network locations.
-    arguments:
-    - name: network_locations
-      description: A comma-separated list of network locations. The list should have no spaces.
-      required: true
-      isArray: true
-    outputs:
-    - contextPath: ReversingLabs.network_reputation
-      description: Network reputation.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-network-reputation-override
-    description: Sets and removes user-requested network reputation overrides.
-    arguments:
-    - name: set_overrides_list
-      description: Network locations whose reputations should be overriden. The locations should be written as a string in the following format - 'network_location,location_type,new_classification|network_location,location_type,new_classification|network_location,location_type,new_classification'.
-      required: false
-    - name: remove_overrides_list
-      description: Network locations whose reputation overrides should be removed. The locations should be written as a string in the following format - 'network_location,location_type|network_location,location_type|network_location,location_type'.
-      required: false
-    outputs:
-    - contextPath: ReversingLabs.network_reputation_override
-      description: Network reputation user override.
-      type: Unknown
-  - name: reversinglabs-titaniumcloud-network-reputation-overrides-list
-    description: Lists the active network reputation overrides.
-    arguments:
-    - name: result_limit
-      description: Maximum number of returned results.
-      defaultValue: 50000
-      required: false
-    outputs:
-    - contextPath: ReversingLabs.network_reputation_overrides_list
-      description: Network reputation overrides list.
-      type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.86428
+    - name: reversinglabs-titaniumcloud-file-reputation
+      description: Retrieve File Reputation data from TitaniumCloud.
+      arguments:
+        - name: hash
+          default: true
+          description: File hash.
+          required: true
+      outputs:
+        - contextPath: File.MD5
+          description: Bad hash found.
+          type: Unknown
+        - contextPath: File.SHA1
+          description: Bad hash SHA1.
+          type: Unknown
+        - contextPath: File.SHA256
+          description: Bad hash SHA256.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.file_reputation
+          description: The file reputation.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-av-scanners
+      description: Retrieve AV Scanner data from TitaniumCloud.
+      arguments:
+        - name: hash
+          description: File hash.
+          default: true
+          required: true
+      outputs:
+        - contextPath: File.MD5
+          description: Bad hash found.
+          type: Unknown
+        - contextPath: File.SHA1
+          description: Bad hash SHA1.
+          type: Unknown
+        - contextPath: File.SHA256
+          description: Bad hash SHA256.
+          type: Unknown
+        - contextPath: ReversingLabs.av_scanners
+          description: The AV scanners.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-file-analysis
+      description: Retrieve File Analysis by hash data from TitaniumCloud.
+      arguments:
+        - name: hash
+          description: File hash.
+          default: true
+          required: true
+      outputs:
+        - contextPath: File.MD5
+          description: Bad hash found.
+          type: Unknown
+        - contextPath: File.SHA1
+          description: Bad hash SHA1.
+          type: Unknown
+        - contextPath: File.SHA256
+          description: Bad hash SHA256.
+          type: Unknown
+        - contextPath: ReversingLabs.file_analysis
+          description: The file analysis.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-rha1-functional-similarity
+      description: Retrieve a list of functionally similar hashes to the provided one.
+      arguments:
+        - name: hash
+          description: File hash.
+          default: true
+          required: true
+        - name: result_limit
+          description: Maximum number of results to be returned. Default is 5000.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.functional_similarity
+          description: The functional similarity.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-rha1-analytics
+      description: Retrieve the number of hashes functionally similar to the provided one grouped by classification.
+      arguments:
+        - name: hash
+          description: File hash.
+          default: true
+          required: true
+      outputs:
+        - contextPath: File.SHA1
+          description: File SHA1.
+          type: Unknown
+        - contextPath: File.SHA256
+          description: File SHA256.
+          type: Unknown
+        - contextPath: File.MD5
+          description: File MD5.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.rha1_analytics
+          description: The RHA1 analytics.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-uri-statistics
+      description: Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a specific URI.
+      arguments:
+        - name: uri
+          description: URI string.
+          default: true
+          required: true
+      outputs:
+        - contextPath: IP.Address
+          description: IP address.
+          type: Unknown
+        - contextPath: Domain.Name
+          description: Domain name.
+          type: Unknown
+        - contextPath: URL.Data
+          description: The URL.
+          type: Unknown
+        - contextPath: Email.To
+          description: Destination email address.
+          type: Unknown
+        - contextPath: ReversingLabs.uri_statistics
+          description: The URI statistics.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-uri-index
+      description: Retrieve a list of all available file hashes associated with a given URI.
+      arguments:
+        - name: uri
+          description: URI string.
+          default: true
+          required: true
+        - name: result_limit
+          description: Maximum number of results to be returned. Default is 5000.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.uri_index
+          description: The URI index.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-advanced-search
+      description: Search for hashes using multi-part search criteria.
+      arguments:
+        - name: query
+          description: Query string.
+          default: true
+          required: true
+        - name: result_limit
+          description: Maximum number of results to be returned. Default is 5000.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.advanced_search
+          description: The advanced search.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-expression-search
+      description: Search provides samples first seen on a particular date, filtered by search criteria.
+      arguments:
+        - name: query
+          description: Query string.
+          default: true
+          required: true
+        - name: date
+          description: Search date.
+        - name: result_limit
+          description: Maximum number of results to be returned Default is 5000.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.expression_search
+          description: The expression search.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-file-download
+      description: Download files associated with a SHA1, MD5 or SHA256 hash.
+      arguments:
+        - name: hash
+          description: File hash.
+          default: true
+          required: true
+    - name: reversinglabs-titaniumcloud-file-upload
+      description: Upload a file using a byte stream with a SHA1 hash of the file provided in the request.
+      arguments:
+        - name: entryId
+          description: File entry ID.
+          default: true
+          required: true
+    - name: reversinglabs-titaniumcloud-url-report
+      description: Return a URL analysis report.
+      arguments:
+        - name: url
+          description: URL string.
+          default: true
+          required: true
+      outputs:
+        - contextPath: URL.Data
+          description: The URL.
+          type: Unknown
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.url_report
+          description: The URL report.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-analyze-url
+      description: Analyze a given URL.
+      arguments:
+        - name: url
+          description: URL string.
+          default: true
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.analyze_url
+          description: The URL analysis.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-submit-sample-for-dynamic-analysis
+      description: Submit an existing sample for dynamic analysis.
+      arguments:
+        - name: sha1
+          description: Sample SHA-1 hash.
+          default: true
+          required: true
+        - name: platform
+          description: Desired platform; See the API documentation for possible values.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.detonate_sample_dynamic
+          description: The dynamic analysis.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-get-sample-dynamic-analysis-results
+      description: Retrieve dynamic analysis results for a sample.
+      arguments:
+        - name: sha1
+          description: Sample SHA-1 hash.
+          default: true
+          required: true
+        - name: analysis_id
+          description: ID of a specific analysis to fetch.
+          required: false
+        - name: latest_analysis
+          description: Fetch the latest analysis.
+          required: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+      outputs:
+        - contextPath: File.MD5
+          description: MD5 hash.
+          type: String
+        - contextPath: File.SHA1
+          description: SHA1 hash.
+          type: String
+        - contextPath: File.SHA256
+          description: SHA256 hash.
+          type: String
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.sample_dynamic_analysis_results
+          description: The sample dynamic analysis results.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-submit-url-for-dynamic-analysis
+      description: Submit a URL for dynamic analysis.
+      arguments:
+        - name: url
+          description: URL string.
+          default: true
+          required: true
+        - name: platform
+          description: Desired platform; See the API documentation for possible values.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.detonate_url_dynamic
+          description: The dynamic analysis.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-get-url-dynamic-analysis-results
+      description: Retrieve dynamic analysis results for a URL.
+      arguments:
+        - name: sha1
+          description: URL SHA-1 hash. It can be found in the response while submitting the URL for analysis. Mutually exclusive with url.
+          default: false
+          required: false
+        - name: url
+          description: The requested URL- Mutually exclusive with sha1.
+          default: false
+          required: false
+        - name: analysis_id
+          description: ID of a specific analysis to fetch.
+          required: false
+        - name: latest_analysis
+          description: Fetch the latest analysis.
+          required: false
+          auto: PREDEFINED
+          defaultValue: "false"
+          predefined:
+            - "true"
+            - "false"
+      outputs:
+        - contextPath: URL.Data
+          description: The URL.
+          type: String
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: ReversingLabs.url_dynamic_analysis_results
+          description: The URL dynamic analysis results.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-certificate-analytics
+      description: Retrieve certificate analytics.
+      arguments:
+        - name: certificate_thumbprint
+          description: Hash string.
+          default: true
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.certificate_analytics
+          description: The certificate analytics.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-yara-ruleset-actions
+      description: Perform various YARA ruleset actions.
+      arguments:
+        - name: yara_action
+          description: YARA ruleset action.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - "CREATE RULESET"
+            - "DELETE RULESET"
+            - "GET RULESET INFO"
+            - "GET RULESET TEXT"
+        - name: ruleset_name
+          description: Name of the YARA ruleset.
+          required: true
+        - name: ruleset_text
+          description: Text of the YARA ruleset.
+        - name: sample_available
+          description: Return only samples that are available for download to the user. Must be boolean.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+      outputs:
+        - contextPath: ReversingLabs.create_yara_ruleset
+          description: The YARA ruleset.
+          type: Unknown
+        - contextPath: ReversingLabs.delete_yara_ruleset
+          description: The YARA ruleset.
+          type: Unknown
+        - contextPath: ReversingLabs.get_yara_ruleset_info
+          description: The YARA ruleset.
+          type: Unknown
+        - contextPath: ReversingLabs.get_yara_ruleset_text
+          description: The YARA ruleset.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-yara-matches-feed
+      description: Returns a recordset of YARA ruleset matches in the specified time range.
+      arguments:
+        - name: time_format
+          description: Define the time format that is used.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - "utc"
+            - "timestamp"
+        - name: time_value
+          description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.yara_matches_feed
+          description: The YARA matches feed.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-yara-retro-hunt-actions
+      description: Perform various YARA retroactive hunting actions.
+      arguments:
+        - name: yara_retro_action
+          description: YARA retro hunt action.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - "ENABLE RETRO HUNT"
+            - "START RETRO HUNT"
+            - "CHECK STATUS"
+            - "CANCEL RETRO HUNT"
+        - name: ruleset_name
+          description: Name of the YARA ruleset.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.enable_yara_retro
+          description: The YARA retro hunt.
+          type: Unknown
+        - contextPath: ReversingLabs.start_yara_retro
+          description: The YARA retro hunt.
+          type: Unknown
+        - contextPath: ReversingLabs.check_yara_retro_status
+          description: The YARA retro hunt.
+          type: Unknown
+        - contextPath: ReversingLabs.cancel_yara_retro
+          description: The YARA retro hunt.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-yara-retro-matches-feed
+      description: Returns a recordset of YARA ruleset matches in the specified time range.
+      arguments:
+        - name: time_format
+          description: Define the time format that is used.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - "utc"
+            - "timestamp"
+        - name: time_value
+          description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.yara_retro_matches_feed
+          description: The YARA retro matches feed.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-reanalyze-sample
+      description: Accepts a hash of a sample in the cloud that you want to reanalyze.
+      arguments:
+        - name: hash
+          description: Hash string.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.reanalyze_sample
+          description: The reanalyze sample.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-imphash-similarity
+      description: Accepts an imphash and returns a list of SHA-1 hashes of files sharing that imphash.
+      arguments:
+        - name: imphash
+          description: Imphash string.
+          required: true
+        - name: max_results
+          description: Maximum number of returned results.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.imphash_similarity
+          description: The imphash similarity.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-url-downloaded-files
+      description: Returns a list of files downloaded from the provided URL.
+      arguments:
+        - name: url
+          description: URL string.
+          required: true
+        - name: extended_results
+          description: Return extended results.
+          defaultValue: true
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: classification
+          description: Return only results with this classification.
+          auto: PREDEFINED
+          predefined:
+            - "MALICIOUS"
+            - "SUSPICIOUS"
+            - "KNOWN"
+            - "UNKNOWN"
+        - name: last_analysis
+          description: Return results from the last analysis.
+          defaultValue: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: analysis_id
+          description: Return results from a specific analysis.
+        - name: results_per_page
+          description: Number of results per query.
+          defaultValue: 1000
+        - name: max_results
+          description: Maximum number of results.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.url_downloaded_files
+          description: The URL downloaded files.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-url-latest-analyses-feed
+      description: Returns the latest URL analysis reports.
+      arguments:
+        - name: results_per_page
+          description: Number of results per query.
+          defaultValue: 1000
+        - name: max_results
+          description: Maximum number of results.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.url_latest_analyses_feed
+          description: The URL latest analyses feed.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-url-analyses-feed-from-date
+      description: Returns URL analyses reports from the defined time onward.
+      arguments:
+        - name: time_format
+          description: Define the time format that is used.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - "utc"
+            - "timestamp"
+        - name: start_time
+          description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
+          required: true
+        - name: results_per_page
+          description: Number of results per query.
+          defaultValue: 1000
+        - name: max_results
+          description: Maximum number of results.
+          defaultValue: 5000
+      outputs:
+        - contextPath: ReversingLabs.url_analyses_feed_from_date
+          description: The URL analyses feed from date.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-domain-report
+      description: Returns a domain analysis report.
+      arguments:
+        - name: domain
+          description: Domain string.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.domain_report
+          description: The domain analysis report.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-domain-downloaded-files
+      description: Returns a list of files downloaded from a domain.
+      arguments:
+        - name: domain
+          description: Domain string.
+          required: true
+          default: true
+        - name: classification
+          description: Return only files of this classification.
+          auto: PREDEFINED
+          predefined:
+            - "MALICIOUS"
+            - "SUSPICIOUS"
+            - "KNOWN"
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+        - name: results_per_page
+          description: Number of results returned per request.
+          defaultValue: 1000
+      outputs:
+        - contextPath: ReversingLabs.domain_downloaded_files
+          description: The list of files downloaded from a domain.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-domain-urls
+      description: Returns a list of URL-s associated with the requested domain.
+      arguments:
+        - name: domain
+          description: Domain string.
+          required: true
+          default: true
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+        - name: results_per_page
+          description: Number of results returned per request.
+          defaultValue: 1000
+      outputs:
+        - contextPath: ReversingLabs.domain_urls
+          description: The list of URL-s associated with the requested domain.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-domain-to-ip
+      description: Returns a list of IP addresses resolved from a domain.
+      arguments:
+        - name: domain
+          description: Domain string.
+          required: true
+          default: true
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+        - name: results_per_page
+          description: Number of results returned per request.
+          defaultValue: 1000
+      outputs:
+        - contextPath: ReversingLabs.domain_to_ip
+          description: The list of IP addresses resolved from the domain.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-domain-related-domains
+      description: Returns a list of domains related to the submitted domain.
+      arguments:
+        - name: domain
+          description: Domain string.
+          required: true
+          default: true
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+        - name: results_per_page
+          description: Number of results returned per request.
+          defaultValue: 1000
+      outputs:
+        - contextPath: ReversingLabs.domain_related_domains
+          description: The list of domains related to the submitted domain.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-ip-report
+      description: Returns an IP address analysis report.
+      arguments:
+        - name: ip
+          description: IP address.
+          required: true
+      outputs:
+        - contextPath: ReversingLabs.ip_report
+          description: The IP address analysis report.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-ip-downloaded-files
+      description: Returns a list of files downloaded from an IP address.
+      arguments:
+        - name: ip
+          description: IP address.
+          required: true
+        - name: classification
+          description: Return only files of this classification.
+          auto: PREDEFINED
+          predefined:
+            - "MALICIOUS"
+            - "SUSPICIOUS"
+            - "KNOWN"
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+        - name: results_per_page
+          description: Number of results returned per request.
+          defaultValue: 1000
+      outputs:
+        - contextPath: ReversingLabs.ip_downloaded_files
+          description: The list of files downloaded from an IP address.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-ip-urls
+      description: Returns a list of URL-s associated with an IP address.
+      arguments:
+        - name: ip
+          description: IP address.
+          required: true
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+        - name: results_per_page
+          description: Number of results returned per request.
+          defaultValue: 1000
+      outputs:
+        - contextPath: ReversingLabs.ip_urls
+          description: The list of URL-s associated with an IP address.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-ip-to-domain
+      description: Returns a list of IP to domain mappings.
+      arguments:
+        - name: ip
+          description: IP address.
+          required: true
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+        - name: results_per_page
+          description: Number of results returned per request.
+          defaultValue: 1000
+      outputs:
+        - contextPath: ReversingLabs.ip_to_domain
+          description: The list of IP to domain mappings.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-network-reputation
+      description: Returns network reputation for requested network locations.
+      arguments:
+        - name: network_locations
+          description: A comma-separated list of network locations. The list should have no spaces.
+          required: true
+          isArray: true
+      outputs:
+        - contextPath: ReversingLabs.network_reputation
+          description: Network reputation.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-network-reputation-override
+      description: Sets and removes user-requested network reputation overrides.
+      arguments:
+        - name: set_overrides_list
+          description: Network locations whose reputations should be overriden. The locations should be written as a string in the following format - 'network_location,location_type,new_classification|network_location,location_type,new_classification|network_location,location_type,new_classification'.
+          required: false
+        - name: remove_overrides_list
+          description: Network locations whose reputation overrides should be removed. The locations should be written as a string in the following format - 'network_location,location_type|network_location,location_type|network_location,location_type'.
+          required: false
+      outputs:
+        - contextPath: ReversingLabs.network_reputation_override
+          description: Network reputation user override.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-network-reputation-overrides-list
+      description: Lists the active network reputation overrides.
+      arguments:
+        - name: result_limit
+          description: Maximum number of returned results.
+          defaultValue: 50000
+          required: false
+      outputs:
+        - contextPath: ReversingLabs.network_reputation_overrides_list
+          description: Network reputation overrides list.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-customer-usage-data
+      description: Check API usage data for a single user or the whole company.
+      arguments:
+        - name: data_type
+          description: Select the type of API usage data that will be returned. Options are DAILY USAGE, MONTHLY USAGE, DATE RANGE USAGE and QUOTA LIMITS.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - "DAILY USAGE"
+            - "MONTHLY USAGE"
+            - "DATE RANGE USAGE"
+            - "QUOTA LIMITS"
+        - name: whole_company
+          description: Return usage data for the whole company.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          defaultValue: false
+          required: false
+        - name: from
+          description: Starting day/month. Used only with DAILY USAGE and MONTHLY USAGE. In case of DAILY USAGE, the format is yyyy-MM-dd. In case of MONTHLY USAGE, the format is yyyy-MM. Mutually exclusive with single_time_unit.
+          required: false
+        - name: to
+          description: Ending day/month. Used only with DAILY USAGE and MONTHLY USAGE. In case of DAILY USAGE, the format is yyyy-MM-dd. In case of MONTHLY USAGE, the format is yyyy-MM. Mutually exclusive with single_time_unit.
+          required: false
+        - name: single_time_unit
+          description: Return usage data only for this day/month. Used only with DAILY USAGE and MONTHLY USAGE. In case of DAILY USAGE, the format is yyyy-MM-dd. In case of MONTHLY USAGE, the format is yyyy-MM. Mutually exclusive with from and to.
+          required: false
+      outputs:
+        - contextPath: ReversingLabs.customer_usage_data
+          description: API usage data.
+          type: Unknown
+    - name: reversinglabs-titaniumcloud-customer-usage-yara
+      description: Return the number of active YARA rulesets for the TitaniumCloud account.
+      outputs:
+        - contextPath: ReversingLabs.customer_usage_yara
+          description: Number of active YARA rulesets.
+          type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.1872154
   runonce: false
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 5.5.0

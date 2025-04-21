@@ -2,7 +2,7 @@
 ignore=PB105
 
 [file:CortexXDRIRCTF.py]
-ignore=IN136,IN124
+ignore=IN136
 
 [file:CortexXDRIRCTF.yml]
 ignore=IN126,IN136
@@ -18,3 +18,10 @@ ignore=IM111
 CTF
 
 [file:CortexXDRIR.yml]
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Cortex_XDR_Alerts_Handling_CTF.yml]
+ignore=GR103,GR107
+
+[file:README.md]
+ignore=RM108

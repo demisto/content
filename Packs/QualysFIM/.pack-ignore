@@ -18,3 +18,7 @@ ignore=IF100
 
 [file:classifier-QualysFim_Classifier.json]
 ignore=BA101
+
+# GR103 is temporary, see CIAC-11705
+[file:customIncidentTypes.json]
+ignore=GR103

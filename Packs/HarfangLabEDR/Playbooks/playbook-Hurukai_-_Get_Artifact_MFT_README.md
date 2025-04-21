@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Artifact MFT](./doc_files/Hurukai_-_Get_Artifact_MFT.png)
+![Hurukai - Get Artifact MFT](../doc_files/Hurukai_-_Get_Artifact_MFT.png)

@@ -63,7 +63,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
+          "x": 1410,
           "y": 130
         }
       }
@@ -174,7 +174,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "45"
     scriptarguments:
       hashes:
         complex:
@@ -187,7 +187,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
+          "x": 1410,
           "y": 350
         }
       }
@@ -299,8 +299,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 510
+          "x": 1620,
+          "y": 700
         }
       }
     note: false
@@ -355,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 685
+          "x": 1620,
+          "y": 860
         }
       }
     note: false
@@ -399,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1670,
-          "y": 870
+          "x": 1790,
+          "y": 1030
         }
       }
     note: false
@@ -540,7 +540,7 @@ tasks:
       {
         "position": {
           "x": 2140,
-          "y": 530
+          "y": 520
         }
       }
     note: false
@@ -659,7 +659,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 685
+          "y": 700
         }
       }
     note: false
@@ -707,7 +707,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 510
+          "y": 520
         }
       }
     note: false
@@ -747,8 +747,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 685
+          "x": 520,
+          "y": 700
         }
       }
     note: false
@@ -800,8 +800,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 870
+          "x": 520,
+          "y": 860
         }
       }
     note: false
@@ -854,7 +854,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 870
+          "y": 860
         }
       }
     note: false
@@ -899,7 +899,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 1210
+          "y": 1200
         }
       }
     note: false
@@ -980,7 +980,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 1040
+          "y": 1020
         }
       }
     note: false
@@ -1011,7 +1011,7 @@ tasks:
       {
         "position": {
           "x": 2140,
-          "y": 1550
+          "y": 1540
         }
       }
     note: false
@@ -1122,8 +1122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 1040
+          "x": 1410,
+          "y": 1200
         }
       }
     note: false
@@ -1176,7 +1176,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 1380
+          "y": 1370
         }
       }
     note: false
@@ -1242,6 +1242,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: f00bb93e-66f8-41da-86a8-8532905b405c
+    type: condition
+    task:
+      id: f00bb93e-66f8-41da-86a8-8532905b405c
+      version: -1
+      name: Any results from the Falcon Intelligence Sandbox search?
+      description: Any results from the Falcon Intelligence Sandbox search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource
+                accessor: resources
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1249,17 +1294,18 @@ view: |-
       "1_6_yes": 0.65,
       "26_27_yes": 0.6,
       "26_35_no": 0.12,
-      "30_43_#default#": 0.47,
+      "30_43_#default#": 0.16,
       "36_34_yes": 0.63,
-      "36_43_#default#": 0.5,
+      "36_43_#default#": 0.35,
       "3_35_no": 0.34,
-      "3_5_yes": 0.68
+      "3_5_yes": 0.68,
+      "45_40_#default#": 0.22
     },
     "paper": {
       "dimensions": {
         "height": 2085,
-        "width": 2630,
-        "x": 530,
+        "width": 2640,
+        "x": 520,
         "y": -170
       }
     }

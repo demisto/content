@@ -21,6 +21,7 @@ The Office 365 IP Address and URL web service is a read-only API provided by Mic
    | feedExpirationInterval |  |  |
    | Feed Fetch Interval | How often to fetch indicators from this integration instance. You can specify the interval in days, hours, or minutes. | 30 minutes |
    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed.  This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | N/A |
+    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
 4. Click __Test__ to validate the URLs and connection.

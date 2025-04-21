@@ -1,21 +1,17 @@
 Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter tool SpamAssassin.
 
 
-## Configure Postmark Spamcheck on Cortex XSOAR
+## Configure Postmark Spamcheck in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Postmark Spamcheck.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | URL | Postmark Spamcheck API URL | True |
-    | Trust any certificate (not secure) | When ‘trust any certificate’ is selected, the integration ignores TLS/SSL certificate validation errors. Used to test connection issues or connect to a server without a valid certificate. | False |
-    | Use system proxy settings | Runs the integration instance using the proxy server \(HTTP or HTTPS\) that you defined in the server configuration. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| URL | Postmark Spamcheck API URL | True |
+| Trust any certificate (not secure) | When ‘trust any certificate’ is selected, the integration ignores TLS/SSL certificate validation errors. Used to test connection issues or connect to a server without a valid certificate. | False |
+| Use system proxy settings | Runs the integration instance using the proxy server \(HTTP or HTTPS\) that you defined in the server configuration. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### postmark-spamcheck
 ***
@@ -121,4 +117,3 @@ Check the spamscore of your email message
 >|entryid|score|success|
 >|---|---|---|
 >| 654@731f1b54-bdea-4d4a-860f-328527df0cd7 | 2.3 | true |
-

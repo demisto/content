@@ -141,13 +141,15 @@ script:
       description: The maximum number of results to return.  By default all IPs are returned.
     outputs:
     - contextPath: PrismaAccess.Egress.IP.Address
-      description: Prisma Access Egress IP address
+      description: Prisma Access Egress IP address.
       type: string
     - contextPath: PrismaAccess.Egress.IP.Zone
-      description: Prisma Access Egress IP zone
+      description: Prisma Access Egress IP zone.
       type: string
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   subtype: python3
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

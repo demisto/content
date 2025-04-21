@@ -1,20 +1,21 @@
+from typing import Any
+
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Any, Optional
 from oci.regions import is_region
 from oci.signer import Signer
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
-VENDOR = 'oracle'
-PRODUCT = 'cloud_infrastructure'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format with UTC, default in XSOAR
+VENDOR = "oracle"
+PRODUCT = "cloud_infrastructure"
 MAX_EVENTS_TO_FETCH = 100
-FETCH_DEFAULT_TIME = '3 days'
+FETCH_DEFAULT_TIME = "3 days"
 PORT = 20190901
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -22,14 +23,26 @@ class Client(BaseClient):
     Will validate the fetching related parameters and create an OCI Singer object which will be used to fetch audit events.
     """
 
-    def __init__(self, verify_certificate: bool, proxy: bool, user_ocid: str, private_key: str, key_fingerprint: str,
-                 tenancy_ocid: str, region: str):
-        self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid)
+    def __init__(
+        self,
+        verify_certificate: bool,
+        proxy: bool,
+        user_ocid: str,
+        private_key: str,
+        key_fingerprint: str,
+        tenancy_ocid: str,
+        region: str,
+        compartment_id: str,
+        private_key_type: str,
+    ):
+        self.singer = self.build_singer_object(user_ocid, private_key, key_fingerprint, tenancy_ocid, private_key_type)
         self.base_url = self.build_audit_base_url(region)
-        self.compartment_id = tenancy_ocid
+        self.compartment_id = compartment_id if compartment_id else tenancy_ocid
         super().__init__(proxy=proxy, verify=verify_certificate, auth=self.singer, base_url=self.base_url)
 
-    def build_singer_object(self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str) -> dict[str, str]:
+    def build_singer_object(
+        self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str, private_key_type: str
+    ) -> dict[str, str]:
         """Build a singer object.
         The Signer used as part of making raw requests.
 
@@ -38,6 +51,7 @@ class Client(BaseClient):
             private_key (str): Private Key parameter.
             key_fingerprint (str): API Key Fingerprint parameter.
             tenancy_ocid (str): Tenancy OCID parameter.
+            private_key_type (str): The type of the private key.
 
         Raises:
             DemistoException: If the singer object is invalid.
@@ -46,7 +60,7 @@ class Client(BaseClient):
             (dict): A config dictionary that can be used to create Audit clients.
         """
         try:
-            validated_private_key = self.validate_private_key_syntax(private_key)
+            validated_private_key = self.validate_private_key_syntax(private_key, private_key_type)
 
             singer = Signer(
                 tenancy=tenancy_ocid,
@@ -57,8 +71,8 @@ class Client(BaseClient):
             )
         except Exception as e:
             raise DemistoException(
-                'Could not create a valid OCI singer object, Please check the instance configuration parameters.',
-                exception=e) from e
+                "Could not create a valid OCI singer object, Please check the instance configuration parameters.", exception=e
+            ) from e
 
         return singer
 
@@ -75,12 +89,14 @@ class Client(BaseClient):
             str: Base URL for the client.
         """
         if not is_region(region):
-            raise DemistoException('Could not create a valid OCI configuration dictionary due to invalid region parameter. \
-                Please check your OCI-related instance configuration parameters.')
+            raise DemistoException(
+                "Could not create a valid OCI configuration dictionary due to invalid region parameter. \
+                Please check your OCI-related instance configuration parameters."
+            )
 
-        return f'https://audit.{region}.oraclecloud.com/{PORT}/auditEvents'
+        return f"https://audit.{region}.oraclecloud.com/{PORT}/auditEvents"
 
-    def validate_private_key_syntax(self, private_key_parameter: str) -> str:
+    def validate_private_key_syntax(self, private_key_parameter: str, private_key_type: str) -> str:
         """Validate private key parameter syntax.
         The Private Key parameter needs to be provided to the OCI SDK singer object in a specific format.
         The most common way to obtain the private key is to download a .pem file from the OCI console.
@@ -98,27 +114,34 @@ class Client(BaseClient):
 
         Args:
             private_key_parameter (str): Private Key parameter.
+            private_key_type(str): The type of the private key PKCS#1 and PKCS#8.
+                More info about the types: https://stackoverflow.com/questions/48958304/pkcs1-and-pkcs8-format-for-rsa-private-key
 
         Returns:
             str: Private Key parameter unescaped and spaceless.
         """
         private_key = stringUnEscape(private_key_parameter)
-        private_key = private_key.replace('\n\n', '\n')
+        private_key = private_key.replace("\n\n", "\n")
 
-        if ' ' not in private_key:
+        if " " not in private_key:
             return private_key
 
-        prefix = '-----BEGIN PRIVATE KEY-----\n'
-        postfix = '\n-----END PRIVATE KEY-----'
+        demisto.debug(f"{private_key_type=}")
+        if private_key_type == "PKCS#8":
+            prefix = "-----BEGIN PRIVATE KEY-----\n"
+            postfix = "\n-----END PRIVATE KEY-----"
+        else:
+            prefix = "-----BEGIN RSA PRIVATE KEY-----\n"
+            postfix = "\n-----END RSA PRIVATE KEY-----"
 
-        private_key = private_key.replace(prefix, '').replace(postfix, '')
+        private_key = private_key.replace(prefix, "").replace(postfix, "")
 
-        private_key_sections = private_key.strip().split(' ')
-        striped_private_key = ''.join(private_key_sections)
+        private_key_sections = private_key.strip().split(" ")
+        striped_private_key = "".join(private_key_sections)
         return prefix + striped_private_key + postfix
 
 
-''' Event related functions '''
+""" Event related functions """
 
 
 def add_time_key_to_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -157,15 +180,18 @@ def get_last_event_time(events: list, first_fetch_time: datetime) -> str:
     if not events:
         return first_fetch_time.strftime(DATE_FORMAT)
 
-    last_event_time = events[-1].get('eventTime')
+    last_event_time = events[-1].get("eventTime")
     if not isinstance(last_event_time, datetime):
-        last_event_time = arg_to_datetime(arg=last_event_time, settings={'RETURN_AS_TIMEZONE_AWARE': False})
+        last_event_time = arg_to_datetime(arg=last_event_time, settings={"RETURN_AS_TIMEZONE_AWARE": False})
 
-    return (last_event_time + timedelta(milliseconds=1)).strftime(DATE_FORMAT) if last_event_time \
+    return (
+        (last_event_time + timedelta(milliseconds=1)).strftime(DATE_FORMAT)
+        if last_event_time
         else first_fetch_time.strftime(DATE_FORMAT)
+    )
 
 
-def get_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[datetime]:
+def get_fetch_time(last_run: str | None, first_fetch_param: str) -> datetime | None:
     """Calculates the time in which the current fetch should start from.
 
     Args:
@@ -181,7 +207,7 @@ def get_fetch_time(last_run: str | None, first_fetch_param: str) -> Optional[dat
     if not last_run:
         return first_fetch_param_datetime
     else:
-        last_run_datetime = arg_to_datetime(arg=last_run, settings={'RETURN_AS_TIMEZONE_AWARE': False})
+        last_run_datetime = arg_to_datetime(arg=last_run, settings={"RETURN_AS_TIMEZONE_AWARE": False})
 
     if last_run_datetime and first_fetch_param_datetime:
         return max(last_run_datetime, first_fetch_param_datetime)
@@ -200,9 +226,10 @@ def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
     """
     return CommandResults(
         readable_output=tableToMarkdown(
-            'Oracle Cloud Infrastructure Events', events, removeNull=True,
-            headerTransform=pascalToSpace),
-        raw_response=events)
+            "Oracle Cloud Infrastructure Events", events, removeNull=True, headerTransform=pascalToSpace
+        ),
+        raw_response=events,
+    )
 
 
 def audit_log_api_request(client: Client, start_time: str, next_page: str | None = None) -> requests.Response:
@@ -216,13 +243,10 @@ def audit_log_api_request(client: Client, start_time: str, next_page: str | None
     Returns:
         requests.Response: raw response from the API.
     """
-    params = {
-        'compartmentId': client.compartment_id,
-        'startTime': start_time,
-        'endTime': datetime.now().strftime(DATE_FORMAT)}
+    params = {"compartmentId": client.compartment_id, "startTime": start_time, "endTime": datetime.now().strftime(DATE_FORMAT)}
     if next_page:
-        params['opc-next-page'] = next_page
-    return client._http_request(method='GET', params=params, resp_type='response')
+        params["opc-next-page"] = next_page
+    return client._http_request(method="GET", params=params, resp_type="response")
 
 
 def add_millisecond_to_timestamp(timestamp: str) -> str:
@@ -238,19 +262,18 @@ def add_millisecond_to_timestamp(timestamp: str) -> str:
         str: Timestamp with 1 millisecond added.
     """
     try:
-        timestamp_datetime = arg_to_datetime(arg=timestamp, settings={'RETURN_AS_TIMEZONE_AWARE': False})
+        timestamp_datetime = arg_to_datetime(arg=timestamp, settings={"RETURN_AS_TIMEZONE_AWARE": False})
         if isinstance(timestamp_datetime, datetime):
             return (timestamp_datetime + timedelta(milliseconds=1)).strftime(DATE_FORMAT)
         else:
-            raise DemistoException('Datetime conversion failed.')
+            raise DemistoException("Datetime conversion failed.")
     except Exception as e:
         raise DemistoException(message=e) from e
 
 
 def get_events(
-        client: Client, first_fetch_time: datetime, max_fetch: int, push_events_on_error: bool) -> tuple[
-        list[dict[str, Any]],
-        str]:
+    client: Client, first_fetch_time: datetime, max_fetch: int, push_events_on_error: bool
+) -> tuple[list[dict[str, Any]], str]:
     """Get events from an oracle cloud infrastructure tenant.
     - The request returns a maximum of 100 events per call by default.
     - This function uses pagination, meaning it will make multiple request as needed to reach the desired amount of events.
@@ -278,8 +301,8 @@ def get_events(
             events = [events]
 
         # pagination handling
-        while len(events) < max_fetch and (next_page := response.headers._store.get('opc-next-page')):  # type: ignore
-            current_start_time = add_millisecond_to_timestamp(events[-1].get('eventTime'))
+        while len(events) < max_fetch and (next_page := response.headers._store.get("opc-next-page")):  # type: ignore
+            current_start_time = add_millisecond_to_timestamp(events[-1].get("eventTime"))
             response = audit_log_api_request(client=client, start_time=current_start_time, next_page=next_page[1])
             events.extend(json.loads(response.content))
 
@@ -293,9 +316,9 @@ def get_events(
             last_event_time = get_last_event_time(events, first_fetch_time)
             events = add_time_key_to_events(events)
             handle_fetched_events(events, last_event_time)
-            raise DemistoException(f'Error while fetching events: {e}') from e
+            raise DemistoException(f"Error while fetching events: {e}") from e
 
-    demisto.info(f'OCI: {len(events)} Events fetched from start time: {first_fetch_time}.')
+    demisto.info(f"OCI: {len(events)} Events fetched from start time: {first_fetch_time}.")
     return events, last_event_time
 
 
@@ -309,15 +332,15 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
         last_event_time (str): Last event time.
     """
     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-    demisto.info(f'OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.')
+    demisto.info(f"OCI: {len(events)} events were sent to XSIAM at {datetime.now()}.")
     if events:
         demisto.setLastRun({"lastRun": last_event_time})
-        demisto.info(f'OCI: Set last run to {last_event_time}')
+        demisto.info(f"OCI: Set last run to {last_event_time}")
     else:
-        demisto.info('OCI: No new events fetched, Last run was not updated.')
+        demisto.info("OCI: No new events fetched, Last run was not updated.")
 
 
-''' Test module '''
+""" Test module """
 
 
 def test_module(client: Client) -> str:
@@ -335,71 +358,70 @@ def test_module(client: Client) -> str:
 
     try:
         datetime_now = datetime.now().strftime(DATE_FORMAT)
-        params = {
-            'compartmentId': client.compartment_id,
-            'startTime': datetime_now,
-            'endTime': datetime_now
-        }
-        client._http_request(method='GET', params=params)
+        params = {"compartmentId": client.compartment_id, "startTime": datetime_now, "endTime": datetime_now}
+        client._http_request(method="GET", params=params)
 
     except Exception as e:
-        if 'failed' in str(e):
-            return 'Authorization Error: make sure OCI parameters are correctly set'
+        if "failed" in str(e):
+            return "Authorization Error: make sure OCI parameters are correctly set"
         else:
-            raise DemistoException(f'Error while testing: {e}') from e
+            raise DemistoException(f"Error while testing: {e}") from e
 
-    return 'ok'
+    return "ok"
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    last_run_time = demisto.getLastRun().get('lastRun')
-    demisto.info(f'OCI: last_run_time value {last_run_time}')
-    max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
-    first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
+    last_run_time = demisto.getLastRun().get("lastRun")
+    demisto.info(f"OCI: last_run_time value {last_run_time}")
+    max_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_TO_FETCH
+    first_fetch = params.get("first_fetch", FETCH_DEFAULT_TIME)
     first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
-    should_push_events = argToBoolean(args.get('should_push_events', False))
-    demisto.info(f'OCI: Command being called is {command}')
+    should_push_events = argToBoolean(args.get("should_push_events", False))
+    private_key_type = params.get("private_key_type") or "PKCS#8"
+    demisto.info(f"OCI: Command being called is {command}")
 
     try:
         if not isinstance(first_fetch_time, datetime):
-            raise DemistoException('Could not resolve First fetch time parameter.')
+            raise DemistoException("Could not resolve First fetch time parameter.")
 
         client = Client(
-            verify_certificate=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
-            user_ocid=params.get('user_ocid'),
-            private_key=params.get('credentials', {}).get('password'),
-            key_fingerprint=params.get('credentials', {}).get('identifier'),
-            tenancy_ocid=params.get('tenancy_ocid'),
-            region=params.get('region')
+            verify_certificate=not params.get("insecure", False),
+            proxy=params.get("proxy", False),
+            user_ocid=params.get("user_ocid"),
+            private_key=params.get("credentials", {}).get("password"),
+            key_fingerprint=params.get("credentials", {}).get("identifier"),
+            tenancy_ocid=params.get("tenancy_ocid"),
+            region=params.get("region"),
+            compartment_id=params.get("compartment_id"),
+            private_key_type=private_key_type,
         )
-        demisto.info('OCI: Client created successfully.')
+        demisto.info("OCI: Client created successfully.")
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
 
-        elif command in ('oracle-cloud-infrastructure-get-events', 'fetch-events'):
-            push_events = (command == 'fetch-events' or should_push_events)
+        elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
+            push_events = command == "fetch-events" or should_push_events
             events, last_event_time = get_events(client, first_fetch_time, max_fetch, push_events_on_error=push_events)
 
             if push_events:
                 handle_fetched_events(events, last_event_time)
 
-            elif command == 'oracle-cloud-infrastructure-get-events':
+            elif command == "oracle-cloud-infrastructure-get-events":
                 return_results(events_to_command_results(events))
         else:
-            return_error(f'Command {command} does not exist for this integration.')
+            return_error(f"Command {command} does not exist for this integration.")
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

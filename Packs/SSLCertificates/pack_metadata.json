@@ -2,20 +2,29 @@
     "name": "SSL Certificates",
     "description": "SSL Certificate Content Pack for performing SSL Certificate validation.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.7",
     "author": "Josh Levine",
     "url": "",
     "email": "",
     "created": "2023-02-01T17:39:08Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "TerminalFin"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -1,33 +1,34 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import csv
 import io
 import json
 from datetime import date, timedelta
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 def get_audit_logs(res: Dict):
-
     def get_xsoar6_audit_logs():
-        return res.get('audits') or []
+        return res.get("audits") or []
 
     def get_xsoar8_audit_logs():
-        return (res.get('reply') or {}).get('data') or []
+        return (res.get("reply") or {}).get("data") or []
 
     return get_xsoar6_audit_logs() or get_xsoar8_audit_logs()
 
 
 def get_audit_logs_count(res: Dict):
     def get_xsoar6_audit_logs_count():
-        return res.get('total') or 0
+        return res.get("total") or 0
 
     def get_xsoar8_audit_logs_count():
-        return res.get('total_count') or 0
+        reply = res.get("reply", {})
+        return reply.get('total_count') or 0
 
     return arg_to_number(get_xsoar6_audit_logs_count() or get_xsoar8_audit_logs_count())
 
 
-def main():   # pragma: no cover
+def main():  # pragma: no cover
     # get the file type
     file_type = demisto.args().get("output")
 
@@ -36,21 +37,16 @@ def main():   # pragma: no cover
     fetch_from = fetch_back_date.strftime("%Y-%m-%dT00:00:00Z")
 
     demisto_version: str = get_demisto_version().get("version")
-    demisto.debug(f'The version of XSOAR is: {demisto_version}')
+    demisto.debug(f"The version of XSOAR is: {demisto_version}")
     if not demisto_version:
-        raise ValueError('Could not get the version of XSOAR')
+        raise ValueError("Could not get the version of XSOAR")
 
     page_num = 0
     size = 100
 
     if demisto_version.startswith("6"):  # xsoar 6
         uri = "/settings/audits"
-        body = {
-            'fromDate': fetch_from,
-            'query': "",
-            'page': page_num,
-            'size': size
-        }
+        body = {"fromDate": fetch_from, "query": "", "page": page_num, "size": size}
     else:  # xsoar 8
         uri = "/public_api/v1/audits/management_logs"
         body = {
@@ -58,20 +54,16 @@ def main():   # pragma: no cover
                 "search_from": page_num,
                 "search_to": size,
                 "filters": [
-                    {
-                        'field': 'timestamp',
-                        'operator': 'gte',
-                        'value': date_to_timestamp(fetch_back_date)
-                    },
-                ]
+                    {"field": "timestamp", "operator": "gte", "value": date_to_timestamp(fetch_back_date)},
+                ],
             }
         }
 
     args = {"uri": uri, "body": body}
     res = demisto.executeCommand("core-api-post", args)
-    demisto.debug(f'core-api-post with {args} returned {res}')
+    demisto.debug(f"core-api-post with {args} returned {res}")
     if is_error(res):
-        raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
+        raise DemistoException(f"error occurred when trying to retrieve the audit logs using {args=}, error: {res}")
 
     response = res[0]["Contents"]["response"]
 
@@ -82,20 +74,25 @@ def main():   # pragma: no cover
 
     # if there are more events than the default size, page through and get them all
     while len(audits) < total:
-        if body.get("page"):  # pagination for xsoar-6
+        if demisto_version.startswith("6"):  # pagination for xsoar-6
             body["page"] = page_num
         else:  # pagination for xsoar-8
-            body["request_data"]["search_from"] = page_num  # type: ignore[index]
+            body["request_data"]["search_from"] = len(audits)  # type: ignore[index]
+            body["request_data"]["search_to"] = len(audits) + size  # type: ignore[index]
         args = {"uri": uri, "body": body}
         res = demisto.executeCommand("core-api-post", args)
-        demisto.debug(f'core-api-post with {args} returned {res}')
+        demisto.debug(f"core-api-post with {args} returned {res}")
         if is_error(res):
-            raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
+            raise DemistoException(f"error occurred when trying to retrieve the audit logs using {args=}, error: {res}")
         response = res[0]["Contents"]["response"]
-        audits.extend(get_audit_logs(response))
+        audit_logs = get_audit_logs(response)
+        if len(audit_logs) == 0:
+            break
+        audits.extend(audit_logs)
         page_num += 1
         # break if this goes crazy, if there are more than 100 pages of audit log entries.
         if page_num == 100:
+            demisto.debug("Reached page limit: 100. Stopping pagination.")
             break
 
     file_date = fetch_back_date.strftime("%Y-%m-%d")
@@ -110,11 +107,15 @@ def main():   # pragma: no cover
 
         # write the rows for each asset
         for audit in audits:
-            cw.writerow([audit, ])
+            cw.writerow(
+                [
+                    audit,
+                ]
+            )
 
         # return the file
-        data = si.getvalue().strip('\r\n')
-        demisto.results(fileResult(f"xsoar-audit-logs-{file_date}.csv", data.encode('utf-8')))
+        data = si.getvalue().strip("\r\n")
+        demisto.results(fileResult(f"xsoar-audit-logs-{file_date}.csv", data.encode("utf-8")))
     else:
         demisto.results(fileResult(f"xsoar-audit-logs-{file_date}.json", json.dumps(audits)))
 
@@ -122,5 +123,5 @@ def main():   # pragma: no cover
     demisto.results(f"Fetched {len(audits)} audit log events since {fetch_from}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

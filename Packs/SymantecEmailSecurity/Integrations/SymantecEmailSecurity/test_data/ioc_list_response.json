@@ -1,0 +1,22 @@
+[
+    {
+        "iocBlackListId": "00000000-0000-0000-0000-000000000000",
+        "iocType": "subject",
+        "iocValue": "Test",
+        "status": "Active",
+        "description": "Test",
+        "emailDirection": "I",
+        "remediationAction": "Q",
+        "expiryDate": "2024-01-01 00:00:00.0"
+    },
+    {
+        "iocBlackListId": "00000000-0000-0000-0000-000000000000",
+        "iocType": "url",
+        "iocValue": "https://www.example.com",
+        "status": "Active",
+        "description": "url to block",
+        "emailDirection": "O",
+        "remediationAction": "H",
+        "expiryDate": "2024-01-01 00:00:00.0"
+    }
+]

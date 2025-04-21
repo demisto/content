@@ -1,0 +1,44 @@
+name: Purge Branch Protection Rules 
+
+run-name: "Handle Deleted Branch '${{ github.event.ref }}'"
+
+on:
+  delete:
+    branches:
+      - '*'
+
+jobs:
+  purge_branch_protection_rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.7  # disable-secrets-detection
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.1.1  # disable-secrets-detection
+        with:
+          python-version: '3.10'
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+
+      - name: Install python dependencies
+        run: |
+          poetry install --with github-actions
+
+          # Override PyGithub version to include GraphQL support and bug fix
+          # TODO remove when https://github.com/PyGithub/PyGithub/issues/3001 is fixed
+          poetry run pip install "git+https://github.com/kgal-pan/PyGithub.git@fix-graphql-variables"
+
+      - name: Purge Protection Rules
+        env:
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+        run: |
+          echo Purging branch protection rules
+          poetry run python .github/github_workflow_scripts/purge_branch_protection_rules.py
+          
+      - name: Upload Log to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: purge_branch_protection_rules_${{ github.run_id }}
+          path: "${{ github.workspace }}/purge_branch_protection_rules.log"

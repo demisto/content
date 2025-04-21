@@ -401,7 +401,7 @@ script:
       type: textArea
       description: Server IP to search.
     description: Search for servers using IP address.
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.116949
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

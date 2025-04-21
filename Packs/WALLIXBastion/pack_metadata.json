@@ -1,13 +1,13 @@
 {
     "name": "WALLIX Bastion",
-    "description": "Integrations for WALLIX Bastion appliances",
+    "description": "Centralized Control and Monitoring of Privileged Access to Sensitive Assets.",
     "support": "partner",
-    "currentVersion": "2.0.2",
+    "currentVersion": "3.1.1",
     "author": "WALLIX",
     "url": "https://www.wallix.com/privileged-access-management/",
-    "email": "",
+    "email": "cs@wallix.com",
     "categories": [
-        "Authentication & Identity Management"
+        "Identity and Access Management"
     ],
     "tags": [
         "Compliance",
@@ -28,6 +28,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

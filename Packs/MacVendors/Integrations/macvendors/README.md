@@ -3,21 +3,17 @@ MAC Vendors maintains a list of vendors provided directly from the IEEE Standard
 
 This integration was integrated and tested with the latest verison of MAC Vendors API as of 31st January 2022.
 
-## Configure MAC Vendors on Cortex XSOAR
+## Configure MAC Vendors in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MAC Vendors.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | No API key is required for up to 1,000 requests per day at 1 request per second. For higher limits, please use an API key. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | No API key is required for up to 1,000 requests per day at 1 request per second. For higher limits, please use an API key. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### macvendors-lookup-mac
 ***

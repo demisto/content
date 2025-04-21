@@ -1,23 +1,23 @@
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import unquote
+
 import freezegun
 import pytest
-from datetime import datetime, timezone
-
 from PATHelpdeskAdvanced import (
     DATETIME_FORMAT,
+    Client,
     DemistoException,
-    Filter,
     Field,
+    Filter,
     PaginateArgs,
     convert_response_dates,
+    demisto,
+    json,
     list_groups_command,
     list_ticket_attachments_command,
     list_users_command,
     paginate,
-    json,
-    demisto,
-    Client,
     pat_table_to_markdown,
 )
 
@@ -60,12 +60,8 @@ def test_converts_date_fields():
     EPOCH_2023_INT = 1693573200000
     EPOCH_2022_INT = 1641042000000
 
-    STR_2023 = (
-        datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=timezone.utc)
-    ).strftime(DATETIME_FORMAT)
-    STR_2022 = (
-        datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=timezone.utc)
-    ).strftime(DATETIME_FORMAT)
+    STR_2023 = (datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=timezone.utc)).strftime(DATETIME_FORMAT)  # noqa: UP017
+    STR_2022 = (datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=timezone.utc)).strftime(DATETIME_FORMAT)  # noqa: UP017
 
     raw = {
         "Date1": f"/Date({EPOCH_2023_INT})/",
@@ -348,16 +344,19 @@ class TestCommands:
         assert result.outputs_prefix == "HelpdeskAdvanced.Ticket"
         assert result.outputs_key_field == "ID"
         assert result.raw_response == mocked_client.list_tickets.return_value
-        assert result.readable_output == "\n".join(
-            (
-                "### Tickets",
-                "|Ticket ID|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|",
-                "|---|---|---|---|---|---|---|---|---|",
-                "| 10000002C | Support Request | Solution text redacted | 2005-03-18T01:58:31Z | XXX |"  # continued next line
-                " Problem description redacted | XXX | AA | XXX |",
-                "| 10000003C | On-site Support | Ticket correctly created through template."  # continued next line
-                " | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |",
-                "",
+        assert (
+            result.readable_output
+            == "\n".join(
+                (
+                    "### Tickets",
+                    "|Ticket ID|Subject|Solution|Date|Service ID|Problem|Contact ID|Owner User ID|Account ID|",
+                    "|---|---|---|---|---|---|---|---|---|",
+                    "| 10000002C | Support Request | Solution text redacted | 2005-03-18T01:58:31Z | XXX |"  # continued next line
+                    " Problem description redacted | XXX | AA | XXX |",
+                    "| 10000003C | On-site Support | Ticket correctly created through template."  # continued next line
+                    " | 2005-03-18T01:58:31Z | XXX | Problem description redacted | XXX | XXX | XXX |",
+                    "",
+                )
             )
         )
 
@@ -562,18 +561,13 @@ class TestClient:
             return_value={"path": "test.txt", "name": "test.txt"},
         )
         mocker.patch.object(Path, "open", return_value="mock file contents")
-        mocked_request = requests_mock.post(
-            "https://example.com/Ticket/UploadNewAttachment", json={"success": True}
-        )
+        mocked_request = requests_mock.post("https://example.com/Ticket/UploadNewAttachment", json={"success": True})
         client.add_ticket_attachment(["1", "2"], ticket_id="ticket_id")
 
         assert mocked_request.called_once
         stringified_request = str(mocked_request.request_history[0]._request.body)
         for i in (1, 2):
-            assert (
-                f'name="TicketAttachment_{i}"; filename="test.txt"\\r\\n\\r\\nmock file contents'
-                in stringified_request
-            )
+            assert f'name="TicketAttachment_{i}"; filename="test.txt"\\r\\n\\r\\nmock file contents' in stringified_request
 
     @classmethod
     def test_list_groups(cls, requests_mock):
@@ -611,9 +605,7 @@ class TestClient:
             "### PAT HelpDeskAdvanced Groups\n|Group ID|Description|Object Type ID|"
             "\n|---|---|---|\n| G001 | dummy group 1 | 65 |\n"
         )
-        assert result.outputs == [
-            {"ID": "G001", "Description": "dummy group 1", "ObjectTypeID": "65"}
-        ]
+        assert result.outputs == [{"ID": "G001", "Description": "dummy group 1", "ObjectTypeID": "65"}]
 
     @classmethod
     def test_list_users(cls, requests_mock):
@@ -765,9 +757,7 @@ class TestClient:
             "%27%5D&columnNames=%5B%27ID%27%2C+%27Description%27%2C+%27ObjectTypeID%27%5D&start=0&limit=1",
             text="surprise",
         )
-        with pytest.raises(
-            ValueError, match="API returned non-JSON response: surprise"
-        ):
+        with pytest.raises(ValueError, match="API returned non-JSON response: surprise"):
             client.list_groups(limit=1)
 
     @classmethod
@@ -786,9 +776,7 @@ class TestClient:
             ),
         ),
     )
-    def test_error_response(
-        cls, requests_mock, response_file: str, expected_error_message: str
-    ):
+    def test_error_response(cls, requests_mock, response_file: str, expected_error_message: str):
         """
         Given   a client and an invalid response
         When    calling a method that simulates these responses
@@ -858,10 +846,7 @@ class TestPatToMarkdown:
         """
         title = "Test Title"
         output = {"key1": "value1", "key2": "value2"}
-        assert (
-            pat_table_to_markdown(title, output, None)
-            == "### Test Title\n|Key 1|Key 2|\n|---|---|\n| value1 | value2 |\n"
-        )
+        assert pat_table_to_markdown(title, output, None) == "### Test Title\n|Key 1|Key 2|\n|---|---|\n| value1 | value2 |\n"
 
     @staticmethod
     def test_pat_table_to_markdown_with_fields():
@@ -874,10 +859,7 @@ class TestPatToMarkdown:
         output = {"Field1": "1", "Field2": "2", "Field3": "3"}
         fields = (Field("field1"), Field("field2"))
 
-        assert (
-            pat_table_to_markdown(title, output, fields)
-            == "### Test Title\n|Field 1|Field 2|\n|---|---|\n| 1 | 2 |\n"
-        )
+        assert pat_table_to_markdown(title, output, fields) == "### Test Title\n|Field 1|Field 2|\n|---|---|\n| 1 | 2 |\n"
 
     @staticmethod
     def test_pat_table_to_markdown_with_field_replacements():
@@ -893,8 +875,6 @@ class TestPatToMarkdown:
         output = {replace_me.hda_name: "1", untouched.hda_name: "2"}
 
         assert (
-            pat_table_to_markdown(
-                title, output, fields=None, field_replacements={replace_me: replaced}
-            )
+            pat_table_to_markdown(title, output, fields=None, field_replacements={replace_me: replaced})
             == "### Test Title\n|Replaced|Untouched|\n|---|---|\n| 1 | 2 |\n"
         )

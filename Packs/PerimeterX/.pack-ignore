@@ -2,3 +2,7 @@
 
 [file:BotDefender_image.png]
 ignore=IM111
+
+# GR103 is temporary, see CIAC-11656
+[file:TestBotDefenderPlaybook.yml]
+ignore=GR103

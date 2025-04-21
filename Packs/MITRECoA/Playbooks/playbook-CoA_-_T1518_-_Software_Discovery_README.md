@@ -48,4 +48,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1518 - Software Discovery](../doc_files/MITRE_ATT&CK_CoA_-_T1518_-_Software_Discovery.png)
+![MITRE ATT&CK CoA - T1518 - Software Discovery](../doc_files/MITRE_ATTandCK_CoA_-_T1518_-_Software_Discovery.png)

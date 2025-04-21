@@ -1,0 +1,6 @@
+# GR103 is temporary, see CIAC-11656
+[file:classifier-CRYPTTECH_Generic.json]
+ignore=GR103
+
+[file:layoutscontainer-Correlation_Alerts.json]
+ignore=GR103

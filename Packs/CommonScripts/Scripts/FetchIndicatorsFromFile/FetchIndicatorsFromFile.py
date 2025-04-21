@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import re
-import xlrd
 import csv
-import tldextract
+import re
 import traceback
+
+import demistomock as demisto
+import tldextract
+import xlrd
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 
 def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col, limit, offset):
@@ -15,23 +16,21 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     # TODO: add run on all columns functionality
 
     line_index = 0
-    with open(file_path, 'r') as csv_file:
+    with open(file_path) as csv_file:
         # csv reader can fail when encountering a NULL byte (\0) - so we go through the file and take out the NUL bytes.
-        file_reader = csv.reader(line.replace('\0', '') for line in csv_file)
+        file_reader = csv.reader(line.replace("\0", "") for line in csv_file)
         for row in file_reader:
             if line_index >= starting_row + offset and len(row) != 0:
                 indicator = row[col_num]
 
-                indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='csv',
-                                                    type_col=type_col, csv_row=row)
+                indicator_type = get_indicator_type(
+                    indicator, auto_detect, default_type, file_type="csv", type_col=type_col, csv_row=row
+                )
 
                 if indicator_type is None:
                     continue
 
-                indicator_list.append({
-                    "type": indicator_type,
-                    "value": indicator
-                })
+                indicator_list.append({"type": indicator_type, "value": indicator})
 
             line_index = line_index + 1
 
@@ -41,8 +40,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     return indicator_list
 
 
-def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type,
-                               type_col, limit, offset):
+def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type, type_col, limit, offset):
     indicator_list = []
 
     # TODO: add run on all columns functionality
@@ -51,7 +49,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
     xlrd.xlsx.ensure_elementtree_imported(False, None)
     xlrd.xlsx.Element_has_iter = True
     xl_woorkbook = xlrd.open_workbook(file_path)
-    if sheet_name and sheet_name != 'None':
+    if sheet_name and sheet_name != "None":
         xl_sheet = xl_woorkbook.sheet_by_name(sheet_name)
 
     else:
@@ -60,16 +58,14 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
     for row_index in range(starting_row + offset, xl_sheet.nrows):
         indicator = xl_sheet.cell(row_index, col_num).value
 
-        indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='xls',
-                                            type_col=type_col, xl_sheet=xl_sheet, xl_row_index=row_index)
+        indicator_type = get_indicator_type(
+            indicator, auto_detect, default_type, file_type="xls", type_col=type_col, xl_sheet=xl_sheet, xl_row_index=row_index
+        )
 
         if indicator_type is None:
             continue
 
-        indicator_list.append({
-            'type': indicator_type,
-            'value': indicator
-        })
+        indicator_list.append({"type": indicator_type, "value": indicator})
 
         if limit and len(indicator_list) == int(str(limit)):
             break
@@ -78,7 +74,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
 
 
 def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offset):
-    with open(file_path, "r") as fp:
+    with open(file_path) as fp:
         file_data = fp.read()
 
     indicator_list = []
@@ -89,13 +85,13 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offs
     for indicator in raw_splitted_data:
         # drop punctuation
         if len(indicator) > 1:
-            while indicator[-1] in ".,?:;\\)}]/!\n\t\0\"" and len(indicator) > 1:
+            while indicator[-1] in '.,?:;\\)}]/!\n\t\0"' and len(indicator) > 1:
                 indicator = indicator[:-1]
 
-            while indicator[0] in ".,({[\n\t\"" and len(indicator) > 1:
+            while indicator[0] in '.,({[\n\t"' and len(indicator) > 1:
                 indicator = indicator[1:]
 
-            indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type='text')
+            indicator_type = get_indicator_type(indicator, auto_detect, default_type, file_type="text")
 
             # indicator not recognized skip the word
             if indicator_type is None:
@@ -105,10 +101,7 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offs
                 indicator_index = indicator_index + 1
                 continue
 
-            indicator_list.append({
-                'type': indicator_type,
-                'value': indicator
-            })
+            indicator_list.append({"type": indicator_type, "value": indicator})
 
         if limit and len(indicator_list) == int(str(limit)):
             break
@@ -116,8 +109,9 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offs
     return indicator_list
 
 
-def get_indicator_type(indicator_value, auto_detect, default_type, file_type, type_col=None, xl_sheet=None,
-                       xl_row_index=0, csv_row=None):
+def get_indicator_type(
+    indicator_value, auto_detect, default_type, file_type, type_col=None, xl_sheet=None, xl_row_index=0, csv_row=None
+):
     """Returns the indicator type for the given file type.
 
     Args:
@@ -138,17 +132,17 @@ def get_indicator_type(indicator_value, auto_detect, default_type, file_type, ty
     indicator_type = detect_type(indicator_value)
 
     # indicator not recognized skip the word in text file
-    if indicator_type is None and file_type == 'text':
+    if indicator_type is None and file_type == "text":
         return None
 
     if not auto_detect:
         indicator_type = default_type
 
-    if file_type != 'text':
-        if type_col is not None and file_type == 'xls':
+    if file_type != "text":
+        if type_col is not None and file_type == "xls":
             indicator_type = xl_sheet.cell(xl_row_index, int(type_col) - 1).value
 
-        elif type_col is not None and file_type == 'csv':
+        elif type_col is not None and file_type == "csv":
             indicator_type = csv_row[int(type_col) - 1]
 
         # indicator not recognized in non text file
@@ -195,10 +189,15 @@ def detect_type(indicator):
         # we use TLDExtract class to fetch all existing domain suffixes from the bellow mentioned file:
         # https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
         # the suffix_list_urls=None is used to not make http calls using the extraction - avoiding SSL errors
-        if tldextract.TLDExtract(cache_dir='https://raw.githubusercontent.com/publicsuffix'
-                                           '/list/master/public_suffix_list.dat',
-                                 suffix_list_urls=()).__call__(indicator).suffix:
-            if '*' in indicator:
+        if (
+            tldextract.TLDExtract(
+                cache_dir="https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat",
+                suffix_list_urls=(),
+            )
+            .__call__(indicator)
+            .suffix
+        ):
+            if "*" in indicator:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
     except Exception:
@@ -208,41 +207,56 @@ def detect_type(indicator):
 
 
 def fetch_indicators_from_file(args):
-    file = demisto.getFilePath(args.get('entry_id'))
-    file_path = file['path']
-    file_name = file['name']
-    auto_detect = True if args.get('auto_detect') == 'True' else False
-    default_type = args.get('default_type')
+    file = demisto.getFilePath(args.get("entry_id"))
+    file_path = file["path"]
+    file_name = file["name"]
+    auto_detect = args.get("auto_detect") == "True"
+    default_type = args.get("default_type")
     limit = args.get("limit")
 
     # offset - refers to the indicator list itself -
     # lets say you have a list of 500 and you put a limit of 100 on your output -
     # you can get the next 100 by putting an offset of 100.
-    offset = int(str(args.get("offset"))) if args.get('offset') else 0
+    offset = int(str(args.get("offset"))) if args.get("offset") else 0
 
     # the below params are for Excel type files only.
-    sheet_name = args.get('sheet_name')
-    indicator_col_num = args.get('indicator_column_number')
-    indicator_type_col_num = args.get('indicator_type_column_number')
+    sheet_name = args.get("sheet_name")
+    indicator_col_num = args.get("indicator_column_number")
+    indicator_type_col_num = args.get("indicator_type_column_number")
 
     # starting_row is for excel files -
     # from which row should I start reading the indicators, it is used to avoid table headers.
-    starting_row = args.get('starting_row')
+    starting_row = args.get("starting_row")
 
-    if file_name.endswith('xls') or file_name.endswith('xlsx'):
-        indicator_list = xls_file_to_indicator_list(file_path, sheet_name, int(indicator_col_num) - 1,
-                                                    int(starting_row) - 1, auto_detect, default_type,
-                                                    indicator_type_col_num, limit, offset)
+    if file_name.endswith(("xls", "xlsx")):
+        indicator_list = xls_file_to_indicator_list(
+            file_path,
+            sheet_name,
+            int(indicator_col_num) - 1,
+            int(starting_row) - 1,
+            auto_detect,
+            default_type,
+            indicator_type_col_num,
+            limit,
+            offset,
+        )
 
-    elif file_name.endswith('csv'):
-        indicator_list = csv_file_to_indicator_list(file_path, int(indicator_col_num) - 1, int(starting_row) - 1,
-                                                    auto_detect, default_type, indicator_type_col_num, limit, offset)
+    elif file_name.endswith("csv"):
+        indicator_list = csv_file_to_indicator_list(
+            file_path,
+            int(indicator_col_num) - 1,
+            int(starting_row) - 1,
+            auto_detect,
+            default_type,
+            indicator_type_col_num,
+            limit,
+            offset,
+        )
 
     else:
         indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type, limit, offset)
 
-    human_readable = tableToMarkdown(f"Indicators from {file_name}:", indicator_list,
-                                     headers=['value', 'type'], removeNull=True)
+    human_readable = tableToMarkdown(f"Indicators from {file_name}:", indicator_list, headers=["value", "type"], removeNull=True)
 
     # Create indicators in demisto
     errors = []
@@ -252,12 +266,12 @@ def fetch_indicators_from_file(args):
         if is_error(res[0]):
             errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
 
-        domain_obj = {'Name': indicator.get('value')}
-        if indicator.get('type') == FeedIndicatorType.Domain and domain_obj not in domains:
+        domain_obj = {"Name": indicator.get("value")}
+        if indicator.get("type") == FeedIndicatorType.Domain and domain_obj not in domains:
             domains.append(domain_obj)
     if errors:
         return_error(json.dumps(errors, indent=4))
-    domain_context = {outputPaths['domain']: domains} if domains else None
+    domain_context = {outputPaths["domain"]: domains} if domains else None
     return human_readable, domain_context, indicator_list
 
 
@@ -265,9 +279,8 @@ def main():
     try:
         return_outputs(*fetch_indicators_from_file(demisto.args()))
     except Exception as ex:
-        return_error('Failed to execute Fetch Indicators From File. Error: {}'.format(str(ex)),
-                     error=traceback.format_exc())
+        return_error(f"Failed to execute Fetch Indicators From File. Error: {ex!s}", error=traceback.format_exc())
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

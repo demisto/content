@@ -1,13 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-from datetime import timezone
-from typing import List, Dict, Any
-
 import json
+from datetime import UTC, datetime
+from typing import Any
+
+import demistomock as demisto
 
 # Disable insecure warnings
 import urllib3
+from CommonServerPython import *
+
 urllib3.disable_warnings()
 
 
@@ -34,11 +34,7 @@ class Client(BaseClient):
         """
         Initiates a HTTP Request to IllusionBLACK test endpoint /ping
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/ping",
-            ok_codes=(200,)
-        )
+        response = self._http_request(method="GET", url_suffix="/ping", ok_codes=(200,))
         return response.get("message", "error")
 
     def get_ad_decoys(self):
@@ -46,20 +42,14 @@ class Client(BaseClient):
         Gets a list of Active Directory (AD) user decoys from IllusionBLACK
         Returns: A tuple containing the response in human readable, context data and raw response formats
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/decoy/users",
-            ok_codes=(200,)
-        )
+        response = self._http_request(method="GET", url_suffix="/decoy/users", ok_codes=(200,))
         users = response["items"]
         return (
             tableToMarkdown(
-                "IllusionBLACK AD Decoys",
-                users,
-                headerTransform=lambda s: " ".join([w.capitalize() for w in s.split("_")])
+                "IllusionBLACK AD Decoys", users, headerTransform=lambda s: " ".join([w.capitalize() for w in s.split("_")])
             ),
             {"IllusionBlack.AdDecoy(val.user_name==obj.user_name)": users},
-            users
+            users,
         )
 
     def get_network_decoys(self):
@@ -67,18 +57,14 @@ class Client(BaseClient):
         Gets a list of network decoys from IllusionBLACK and enriches the data with the list of services enabled.
         Returns:A tuple containing the response in human readable, context data and raw response formats
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/decoy/hosts",
-            ok_codes=(200,)
-        )
-        hosts: List = response["items"]
+        response = self._http_request(method="GET", url_suffix="/decoy/hosts", ok_codes=(200,))
+        hosts: list = response["items"]
         for h in hosts:
             h["services"] = ", ".join(h["services"])
         return (
             tableToMarkdown("IllusionBLACK Network Decoys", hosts, headerTransform=lambda s: s.capitalize()),
             {"IllusionBlack.NetworkDecoy(val.name==obj.name)": hosts},
-            hosts
+            hosts,
         )
 
     def get_ti_decoys(self):
@@ -86,20 +72,16 @@ class Client(BaseClient):
         Gets a list of Threat Intelligence decoys from IllusionBLACK.
         Returns: A tuple containing the response in human readable, context data and raw response formats
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/decoy/recon",
-            ok_codes=(200,)
-        )
+        response = self._http_request(method="GET", url_suffix="/decoy/recon", ok_codes=(200,))
         recon_decoys = response["items"]
         return (
             tableToMarkdown(
                 "IllusionBLACK TI Decoys",
                 recon_decoys,
-                headerTransform=lambda s: " ".join([w.capitalize() for w in s.split("_")])
+                headerTransform=lambda s: " ".join([w.capitalize() for w in s.split("_")]),
             ),
             {"IllusionBlack.TIDecoy(val.name==obj.name)": recon_decoys},
-            recon_decoys
+            recon_decoys,
         )
 
     def is_host_decoy(self, host):
@@ -109,12 +91,8 @@ class Client(BaseClient):
             host: The name of the entity For example: SMB-12
         Returns: True if host is a decoy else False
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/decoy/hosts",
-            ok_codes=(200,)
-        )
-        hosts: List = response["items"]
+        response = self._http_request(method="GET", url_suffix="/decoy/hosts", ok_codes=(200,))
+        hosts: list = response["items"]
         for decoy_host in hosts:
             if host == decoy_host["name"]:
                 return "True", {"IllusionBlack.IsHostDecoy": {"Host": host, "Value": True}}
@@ -127,16 +105,13 @@ class Client(BaseClient):
             user: The user name of the AD user to check
         Returns: True if user is a decoy else False
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/decoy/users",
-            ok_codes=(200,)
-        )
-        users: List = response["items"]
+        response = self._http_request(method="GET", url_suffix="/decoy/users", ok_codes=(200,))
+        users: list = response["items"]
         for decoy_user in users:
             if user.lower() == decoy_user["user_name"]:
                 return "True", {"IllusionBlack.IsUserDecoy": {"User": user, "Value": True}}
             return "False", {"IllusionBlack.IsUserDecoy": {"User": user, "Value": False}}
+        return None
 
     def is_subdomain_decoy(self, subdomain):
         """
@@ -145,16 +120,13 @@ class Client(BaseClient):
             subdomain: The subdomain to check. For example: experience.illusionblack.com
         Returns: True if subdomain is a decoy else False
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/decoy/recon",
-            ok_codes=(200,)
-        )
-        ti_decoys: List = response["items"]
+        response = self._http_request(method="GET", url_suffix="/decoy/recon", ok_codes=(200,))
+        ti_decoys: list = response["items"]
         for ti_decoy in ti_decoys:
             if subdomain == ti_decoy["name"]:
                 return "True", {"IllusionBlack.IsSubdomainDecoy": {"Subdomain": subdomain, "Value": True}}
             return "False", {"IllusionBlack.IsSubdomainDecoy": {"Subdomain": subdomain, "Value": False}}
+        return None
 
     def get_events(self, limit=None, query=None, from_time=None, to_time=None):
         """
@@ -166,15 +138,15 @@ class Client(BaseClient):
             to_time: ISO-8601 formatted datetime string of the ending time in the filter
         Returns: A tuple with raw events and threat parse data corresponding to the events
         """
-        raw_events, raw_threat_parse, offset = [], {}, 0    # type: ignore
+        raw_events, raw_threat_parse, offset = [], {}, 0  # type: ignore
         while True:
             response = self._http_request(
                 method="GET",
                 url_suffix="/events",
                 params={"limit": limit, "expfilter": query, "from": from_time, "to": to_time, "offset": offset},
-                ok_codes=(200,)
+                ok_codes=(200,),
             )
-            meta: Dict = response["meta"]
+            meta: dict = response["meta"]
             amount = meta["paging"]["amount"]
 
             raw_events.extend(response["events"])
@@ -221,8 +193,8 @@ def convert_to_demisto_severity(ib_severity="medium", tp_score_based=False, scor
     severity = 1
     if tp_score_based:
         severity = score // 25
-        severity = 1 if severity < 1 else severity
-        severity = 4 if severity > 4 else severity
+        severity = max(severity, 1)
+        severity = min(severity, 4)
     else:
         if ib_severity == "low":
             severity = 2
@@ -241,7 +213,7 @@ def process_events(events, threat_parse):
         threat_parse: Raw Threat Parse from IllusionBLACK
     Returns: A list of raw incidents with data pertinent to demisto incident format.
     """
-    raw_incident_data: Dict[str, Any] = {}
+    raw_incident_data: dict[str, Any] = {}
 
     for event in events:
         attacker_id = event.get("attacker.id", "")
@@ -268,8 +240,8 @@ def process_events(events, threat_parse):
                 "attack_type": "illusionblack_event",
                 "attacker_id": "",
                 "decoy_id": "",
-                "source": "IllusionBLACK"
-            }
+                "source": "IllusionBLACK",
+            },
         )
         raw_incident["events"].append(event["id"])
         raw_incident["threat_parse_ids"].extend(tps)
@@ -291,11 +263,7 @@ def create_incident(raw_incident):
     Returns: Demisto incident dict
     """
     demisto.info(f"Severity is {raw_incident['severity']}")
-    return {
-        "name": raw_incident["title"],
-        "severity": raw_incident["severity"],
-        "rawJSON": json.dumps(raw_incident)
-    }
+    return {"name": raw_incident["title"], "severity": raw_incident["severity"], "rawJSON": json.dumps(raw_incident)}
 
 
 def fetch_incidents(first_fetch, client):
@@ -306,14 +274,14 @@ def fetch_incidents(first_fetch, client):
         client: IllusionBLACK client
     Returns: Demisto Incidents
     """
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
     demisto.info(f"IllusionBLACK: Fetching incidents at {now}")
     demisto_last_run = demisto.getLastRun()
     if "last_run" in demisto_last_run:
         last_run = datetime.fromisoformat(demisto_last_run["last_run"])
     else:
         last_run, _ = parse_date_range(first_fetch)
-        last_run = last_run.replace(tzinfo=timezone.utc)
+        last_run = last_run.replace(tzinfo=UTC)
     if now - last_run < timedelta(minutes=5):
         return []
     from_time = last_run.replace(microsecond=0).isoformat()
@@ -323,7 +291,7 @@ def fetch_incidents(first_fetch, client):
     raw_incidents = process_events(events, all_threat_parse)
     incidents = []
 
-    for incident_id, raw_incident in raw_incidents.items():
+    for _incident_id, raw_incident in raw_incidents.items():
         incidents.append(create_incident(raw_incident))
     demisto.setLastRun({"last_run": to_time})
     return incidents
@@ -338,13 +306,7 @@ def main():
 
     LOG(f"Command being called is {demisto.command()}")
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            client_id=client_id,
-            token=token,
-            proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, client_id=client_id, token=token, proxy=proxy)
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -366,9 +328,7 @@ def main():
             args = demisto.args()
             events, _ = client.get_events(args.get("limit"), args.get("query"), args.get("from"), args.get("to"))
             return_outputs(
-                tableToMarkdown("IllusionBLACK Events", events),
-                {"IllusionBlack.Event(val.id==obj.id)": events},
-                events
+                tableToMarkdown("IllusionBLACK Events", events), {"IllusionBlack.Event(val.id==obj.id)": events}, events
             )
         elif demisto.command() == "illusionblack-get-event-by-id":
             events, _ = client.get_events(query=f"id == \"{demisto.args()['id']}\"")
@@ -376,16 +336,14 @@ def main():
                 return_error("Invalid event ID")
             event = events[0]
             return_outputs(
-                tableToMarkdown("IllusionBLACK Single Event", event),
-                {"IllusionBlack.Event(val.id==obj.id)": event},
-                event
+                tableToMarkdown("IllusionBLACK Single Event", event), {"IllusionBlack.Event(val.id==obj.id)": event}, event
             )
         elif demisto.command() == "fetch-incidents":
             demisto.incidents(fetch_incidents(demisto.params().get("first_fetch", "2 days"), client=client))
 
     # Log exceptions
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "builtins"):

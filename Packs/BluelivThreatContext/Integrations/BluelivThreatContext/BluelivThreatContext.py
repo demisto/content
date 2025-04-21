@@ -1,122 +1,123 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-''' IMPORTS '''
+
+""" IMPORTS """
 from CommonServerUserPython import *
 import json
 import urllib3
 
-''' PARAM DEFINITION '''
-SEARCHABLE_BY_NAME = 'threat-actor,campaign,attack-pattern,tool,signature'
-SEARCHABLE_BY_HASH = 'sha256,sha1,md5'
+""" PARAM DEFINITION """
+SEARCHABLE_BY_NAME = "threat-actor,campaign,attack-pattern,tool,signature"
+SEARCHABLE_BY_HASH = "sha256,sha1,md5"
 
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
     def authenticate(self, username: str, password: str):
-        body = {
-            'username': username,
-            'password': password
-        }
-        res = self._http_request(method='POST', url_suffix='/auth', json_data=body)
-        self._headers = {"Content-Type": "application/json", "x-cookie": str(res.get('token'))}
-        return str(res.get('token'))
+        body = {"username": username, "password": password}
+        res = self._http_request(method="POST", url_suffix="/auth", json_data=body)
+        self._headers = {"Content-Type": "application/json", "x-cookie": str(res.get("token"))}
+        return str(res.get("token"))
 
     def _query_gateway(self, url):
         body = {"apiId": "THIAPP", "url": "/api/v1/" + url, "requestType": "GET"}
         demisto.debug("Gateway call to " + json.dumps(body))
-        res = self._http_request(method='POST', url_suffix='/gateway', json_data=body, headers=self._headers)
+        res = self._http_request(method="POST", url_suffix="/gateway", json_data=body, headers=self._headers)
         return res
 
     def get_threat_actor_info(self, threat_actor_id):
-        url = "threat-actor/{}".format(threat_actor_id)
+        url = f"threat-actor/{threat_actor_id}"
         result = self._query_gateway(url)
         return result
 
     def get_campaign_info(self, campaign_id: str):
-        url = "campaign/{}".format(campaign_id)
+        url = f"campaign/{campaign_id}"
         result = self._query_gateway(url)
         return result
 
     def get_malware_hash_info(self, file_hash, hash_type="md5"):
-        url = "malware/?dork={}%3A%22{}%22".format(hash_type, file_hash)
+        url = f"malware/?dork={hash_type}%3A%22{file_hash}%22"
         result = self._query_gateway(url)
         return result
 
     def get_malware_info(self, malware_id):
-        url = "malware/{}".format(malware_id)
+        url = f"malware/{malware_id}"
         result = self._query_gateway(url)
         return result
 
     def get_ip_info(self, ip_id):
-        url = "ip/{}".format(ip_id)
+        url = f"ip/{ip_id}"
         result = self._query_gateway(url)
         return result
 
     def get_fqdn_info(self, fqdn_id):
-        url = "fqdn/{}".format(fqdn_id)
+        url = f"fqdn/{fqdn_id}"
         result = self._query_gateway(url)
         return result
 
     def get_crime_server_info(self, cs_id):
-        url = "crime-server/{}".format(cs_id)
+        url = f"crime-server/{cs_id}"
         result = self._query_gateway(url)
         return result
 
     def get_attack_pattern_info(self, attack_pattern_id):
-        url = "attack-pattern/{}".format(attack_pattern_id)
+        url = f"attack-pattern/{attack_pattern_id}"
         result = self._query_gateway(url)
         return result
 
     def get_tool_info(self, tool_id):
-        url = "tool/{}".format(tool_id)
+        url = f"tool/{tool_id}"
         result = self._query_gateway(url)
         return result
 
     def get_signature_info(self, signature_id):
-        url = "signature/{}".format(signature_id)
+        url = f"signature/{signature_id}"
         result = self._query_gateway(url)
         return result
 
     def get_cve_info(self, cve_id):
-        url = "cve/{}".format(cve_id)
+        url = f"cve/{cve_id}"
         result = self._query_gateway(url)
         return result
 
     def search_by_name(self, key, value):
+        url = ""
         if value:
-            value = value.replace(' ', '+')
+            value = value.replace(" ", "+")
         else:
             value = ""
 
         if key in SEARCHABLE_BY_NAME:
-            url = "{}/?fuzzy_filter%5Bname%5D={}".format(key, value)
+            url = f"{key}/?fuzzy_filter%5Bname%5D={value}"
         if key in SEARCHABLE_BY_HASH:
-            url = "indicator/?fuzzy_filter%5Bvalue%5D={}".format(value)
-        if key == 'crime-server':
-            url = "crime-server/?fuzzy_filter%5Bcrime_server_url%5D={}".format(value)
-        if key == 'fqdn':
-            url = "fqdn/?fuzzy_filter%5Bdomain%5D={}".format(value)
-        if key == 'ip':
-            url = "ip/?fuzzy_filter%5Baddress%5D={}".format(value)
+            url = f"indicator/?fuzzy_filter%5Bvalue%5D={value}"
+        if key == "crime-server":
+            url = f"crime-server/?fuzzy_filter%5Bcrime_server_url%5D={value}"
+        if key == "fqdn":
+            url = f"fqdn/?fuzzy_filter%5Bdomain%5D={value}"
+        if key == "ip":
+            url = f"ip/?fuzzy_filter%5Baddress%5D={value}"
 
         result = self._query_gateway(url)
         return result.get("data", [])[0].get("id", "0")
 
     def get_relationships(self, object_name, value, of):
-        url = "{}/{}/relationships/{}/".format(object_name, value, of)
+        url = f"{object_name}/{value}/relationships/{of}/"
         result = self._query_gateway(url)
         ids = ""
         if result != "error":
-            ids = ','.join(str(item['id']) for item in result['data'])
+            ids = ",".join(str(item["id"]) for item in result["data"])
 
         return ids
 
 
 def getHuman(result):
-    human = {"id": result.get("data", {}).get("id"),
-             "links": result.get("data", {}).get("links"),
-             "type": result.get("data", {}).get("type")}
+    human = {
+        "id": result.get("data", {}).get("id"),
+        "links": result.get("data", {}).get("links"),
+        "type": result.get("data", {}).get("type"),
+    }
     human.update(result.get("data", {}).get("attributes"))
 
     return human
@@ -124,29 +125,29 @@ def getHuman(result):
 
 # This function return false when there are no results to display
 def notFound():
-    demisto.results({
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': "No results found.",
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': "No results found.",
-        'EntryContext': {
-            'BluelivThreatContext': {}
+    demisto.results(
+        {
+            "ContentsFormat": formats["json"],
+            "Type": entryTypes["note"],
+            "Contents": "No results found.",
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": "No results found.",
+            "EntryContext": {"BluelivThreatContext": {}},
         }
-    })
+    )
     sys.exit(0)
 
 
 # Get information about threat actors #
 def blueliv_threatActor(client: Client, args):
-    threatActorId = args.get('threatActor_id', '')
-    threatActorName = args.get('threatActor', '')
+    threatActorId = args.get("threatActor_id", "")
+    threatActorName = args.get("threatActor", "")
 
     if not threatActorId and not threatActorName:
         notFound()
 
     if not threatActorId:
-        threatActorId = client.search_by_name('threat-actor', threatActorName)
+        threatActorId = client.search_by_name("threat-actor", threatActorName)
 
     if not threatActorId:
         notFound()
@@ -217,57 +218,59 @@ def blueliv_threatActor(client: Client, args):
                 targetIds = client.get_relationships("threat-actor", threatActorId, "target")
 
             human = getHuman(result)
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': result,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown("Blueliv Threat Actor info", human),
-                'EntryContext': {
-                    'BluelivThreatContext.threatActor(val.name && val.id == obj.id)': {
-                        'id': threatActorId,
-                        'name': name,
-                        'description': description,
-                        'objective': objective,
-                        'sophistication': sophistication,
-                        'lastSeen': lastSeen,
-                        'active': active,
-                        'milestones': milestones,
-                        'milestoneIds': milestoneIds,
-                        'tools': tools,
-                        'toolIds': toolIds,
-                        'campaigns': campaigns,
-                        'campaignIds': campaignIds,
-                        'signatures': signatures,
-                        'signatureIds': signatureIds,
-                        'onlineServices': onlineServices,
-                        'onlineServiceIds': onlineServiceIds,
-                        'malware': malware,
-                        'malwareIds': malwareIds,
-                        'threatTypes': threatTypes,
-                        'threatTypeIds': threatTypeIds,
-                        'fqdns': fqdns,
-                        'fqdnIds': fqdnIds,
-                        'attackPatterns': attackPatterns,
-                        'attackPatternIds': attackPatternIds,
-                        'ips': ips,
-                        'ipIds': ipIds,
-                        'targets': targets,
-                        'targetIds': targetIds
-                    }
+            demisto.results(
+                {
+                    "ContentsFormat": formats["json"],
+                    "Type": entryTypes["note"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": tableToMarkdown("Blueliv Threat Actor info", human),
+                    "EntryContext": {
+                        "BluelivThreatContext.threatActor(val.name && val.id == obj.id)": {
+                            "id": threatActorId,
+                            "name": name,
+                            "description": description,
+                            "objective": objective,
+                            "sophistication": sophistication,
+                            "lastSeen": lastSeen,
+                            "active": active,
+                            "milestones": milestones,
+                            "milestoneIds": milestoneIds,
+                            "tools": tools,
+                            "toolIds": toolIds,
+                            "campaigns": campaigns,
+                            "campaignIds": campaignIds,
+                            "signatures": signatures,
+                            "signatureIds": signatureIds,
+                            "onlineServices": onlineServices,
+                            "onlineServiceIds": onlineServiceIds,
+                            "malware": malware,
+                            "malwareIds": malwareIds,
+                            "threatTypes": threatTypes,
+                            "threatTypeIds": threatTypeIds,
+                            "fqdns": fqdns,
+                            "fqdnIds": fqdnIds,
+                            "attackPatterns": attackPatterns,
+                            "attackPatternIds": attackPatternIds,
+                            "ips": ips,
+                            "ipIds": ipIds,
+                            "targets": targets,
+                            "targetIds": targetIds,
+                        }
+                    },
                 }
-            })
+            )
         else:
             notFound()
 
 
 # Get campaign information
 def blueliv_campaign(client: Client, args):
-    campaignName = args.get('campaign', '')
-    campaignId = args.get('campaign_id', '')
+    campaignName = args.get("campaign", "")
+    campaignId = args.get("campaign_id", "")
 
     if not campaignId:
-        campaignId = client.search_by_name('campaign', campaignName)
+        campaignId = client.search_by_name("campaign", campaignName)
     if not campaignId:
         notFound()
     else:
@@ -324,54 +327,60 @@ def blueliv_campaign(client: Client, args):
             threatActorId = demisto.get(result, "data.relationships.threat_actor.data.id")
 
             human = getHuman(result)
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': result,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown("Blueliv Campaign info", human),
-                'EntryContext': {
-                    'BluelivThreatContext.campaign(val.id && val.id == obj.id)': {
-                        'id': campaignId,
-                        'name': name,
-                        'description': description,
-                        'lastSeen': lastSeen,
-                        'botnets': botnets,
-                        'botnetIds': botnetIds,
-                        'signatures': signatures,
-                        'signatureIds': signatureIds,
-                        'ips': ips,
-                        'ipIds': ipIds,
-                        'malware': malware,
-                        'malwareIds': malwareIds,
-                        'attackPatterns': attackPatterns,
-                        'attackPatternIds': attackPatternIds,
-                        'tools': tools,
-                        'toolIds': toolIds,
-                        'fqdns': fqdns,
-                        'fqdnIds': fqdnIds,
-                        'threatActorId': threatActorId
-                    }
+            demisto.results(
+                {
+                    "ContentsFormat": formats["json"],
+                    "Type": entryTypes["note"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": tableToMarkdown("Blueliv Campaign info", human),
+                    "EntryContext": {
+                        "BluelivThreatContext.campaign(val.id && val.id == obj.id)": {
+                            "id": campaignId,
+                            "name": name,
+                            "description": description,
+                            "lastSeen": lastSeen,
+                            "botnets": botnets,
+                            "botnetIds": botnetIds,
+                            "signatures": signatures,
+                            "signatureIds": signatureIds,
+                            "ips": ips,
+                            "ipIds": ipIds,
+                            "malware": malware,
+                            "malwareIds": malwareIds,
+                            "attackPatterns": attackPatterns,
+                            "attackPatternIds": attackPatternIds,
+                            "tools": tools,
+                            "toolIds": toolIds,
+                            "fqdns": fqdns,
+                            "fqdnIds": fqdnIds,
+                            "threatActorId": threatActorId,
+                        }
+                    },
                 }
-            })
+            )
         else:
             notFound()
 
 
 # Get detailed malware information #
 def blueliv_malware(client: Client, args):
-    hashValue = args.get('hash', '')
-    malwareId = args.get('hash_id', '')
+    hashValue = args.get("hash", "")
+    malwareId = args.get("hash_id", "")
 
     if hashValue:
         if len(hashValue) == 40:
-            hash_type = 'sha1'
+            hash_type = "sha1"
         elif len(hashValue) == 64:
-            hash_type = 'sha256'
+            hash_type = "sha256"
         elif len(hashValue) == 32:
-            hash_type = 'md5'
+            hash_type = "md5"
         else:
+            hash_type = ""
             notFound()
+    else:
+        hash_type = ""
+        demisto.debug(f"No hashValue -> {hash_type=}")
 
     if not malwareId:
         result = client.get_malware_hash_info(hashValue, hash_type)
@@ -462,50 +471,52 @@ def blueliv_malware(client: Client, args):
                 ipIds = client.get_relationships("malware", sha256, "ip")
 
             human = getHuman(result)
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': result,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown("Blueliv Malware file info", human),
-                'EntryContext': {
-                    'BluelivThreatContext.malware(val.id && val.id == obj.id)': {
-                        'id': malwareId,
-                        'hash.sha256': sha256,
-                        'hash.sha1': sha1,
-                        'hash.md5': md5,
-                        'fileType': fileType,
-                        'hasCandC': hasCandC,
-                        'memory': memory,
-                        'procMemory': procMemory,
-                        'analysisStatus': analysisStatus,
-                        'dropped': dropped,
-                        'buffers': buffers,
-                        'hasNetwork': hasNetwork,
-                        'risk': risk,
-                        'campaigns': campaigns,
-                        'campaignIds': campaignIds,
-                        'signatures': signatures,
-                        'signatureIds': signatureIds,
-                        'threatActors': threatActors,
-                        'threatActorIds': threatActorIds,
-                        'sources': sources,
-                        'sourceIds': sourceIds,
-                        'tags': tags,
-                        'tagIds': tagIds,
-                        'crimeServers': crimeServers,
-                        'crimeserverIds': crimeServerIds,
-                        'fqdns': fqdns,
-                        'fqdnIds': fqdnIds,
-                        'types': types,
-                        'typeIds': typeIds,
-                        'sparks': sparks,
-                        'sparkIds': sparkIds,
-                        'ips': ips,
-                        'ipIds': ipIds
-                    }
+            demisto.results(
+                {
+                    "ContentsFormat": formats["json"],
+                    "Type": entryTypes["note"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": tableToMarkdown("Blueliv Malware file info", human),
+                    "EntryContext": {
+                        "BluelivThreatContext.malware(val.id && val.id == obj.id)": {
+                            "id": malwareId,
+                            "hash.sha256": sha256,
+                            "hash.sha1": sha1,
+                            "hash.md5": md5,
+                            "fileType": fileType,
+                            "hasCandC": hasCandC,
+                            "memory": memory,
+                            "procMemory": procMemory,
+                            "analysisStatus": analysisStatus,
+                            "dropped": dropped,
+                            "buffers": buffers,
+                            "hasNetwork": hasNetwork,
+                            "risk": risk,
+                            "campaigns": campaigns,
+                            "campaignIds": campaignIds,
+                            "signatures": signatures,
+                            "signatureIds": signatureIds,
+                            "threatActors": threatActors,
+                            "threatActorIds": threatActorIds,
+                            "sources": sources,
+                            "sourceIds": sourceIds,
+                            "tags": tags,
+                            "tagIds": tagIds,
+                            "crimeServers": crimeServers,
+                            "crimeserverIds": crimeServerIds,
+                            "fqdns": fqdns,
+                            "fqdnIds": fqdnIds,
+                            "types": types,
+                            "typeIds": typeIds,
+                            "sparks": sparks,
+                            "sparkIds": sparkIds,
+                            "ips": ips,
+                            "ipIds": ipIds,
+                        }
+                    },
                 }
-            })
+            )
         else:
             notFound()
     else:
@@ -513,8 +524,8 @@ def blueliv_malware(client: Client, args):
 
 
 def blueliv_indicatorIp(client: Client, args):
-    nameIP = args.get('IP', '')
-    valueIP = args.get('IP_id', '')
+    nameIP = args.get("IP", "")
+    valueIP = args.get("IP_id", "")
 
     if not valueIP and not nameIP:
         notFound()
@@ -577,49 +588,51 @@ def blueliv_indicatorIp(client: Client, args):
 
         human = getHuman(result)
         ipName = valueIP.replace(".", "")
-        demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Blueliv IP info", human),
-            'EntryContext': {
-                'BluelivThreatContext.indicator(val.ipName && val.ipName == obj.ipName)': {
-                    "ipName": ipName,
-                    'lastSeen': lastSeen,
-                    'risk': risk,
-                    'latitude': latitude,
-                    'longitude': longitude,
-                    'countryId': countryId,
-                    'campaigns': campaigns,
-                    'campaignIds': campaignIds,
-                    'signatures': signatures,
-                    'signatureIds': signatureIds,
-                    'threatActors': threatActors,
-                    'threatActorIds': threatActorIds,
-                    'tags': tags,
-                    'tagIds': tagIds,
-                    'fqdns': fqdns,
-                    'fqdnIds': fqdnIds,
-                    'sparks': sparks,
-                    'sparkIds': sparkIds,
-                    'bots': bots,
-                    'botIds': botIds
-                }
+        demisto.results(
+            {
+                "ContentsFormat": formats["json"],
+                "Type": entryTypes["note"],
+                "Contents": result,
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": tableToMarkdown("Blueliv IP info", human),
+                "EntryContext": {
+                    "BluelivThreatContext.indicator(val.ipName && val.ipName == obj.ipName)": {
+                        "ipName": ipName,
+                        "lastSeen": lastSeen,
+                        "risk": risk,
+                        "latitude": latitude,
+                        "longitude": longitude,
+                        "countryId": countryId,
+                        "campaigns": campaigns,
+                        "campaignIds": campaignIds,
+                        "signatures": signatures,
+                        "signatureIds": signatureIds,
+                        "threatActors": threatActors,
+                        "threatActorIds": threatActorIds,
+                        "tags": tags,
+                        "tagIds": tagIds,
+                        "fqdns": fqdns,
+                        "fqdnIds": fqdnIds,
+                        "sparks": sparks,
+                        "sparkIds": sparkIds,
+                        "bots": bots,
+                        "botIds": botIds,
+                    }
+                },
             }
-        })
+        )
     else:
         notFound()
 
 
 def blueliv_indicatorFqdn(client: Client, args):
-    nameFQDN = args.get('FQDN', '')
-    valueFQDN = args.get('FQDN_id', '')
+    nameFQDN = args.get("FQDN", "")
+    valueFQDN = args.get("FQDN_id", "")
 
     if not valueFQDN and not nameFQDN:
         notFound()
     if not valueFQDN and nameFQDN:
-        valueFQDN = client.search_by_name('fqdn', nameFQDN)
+        valueFQDN = client.search_by_name("fqdn", nameFQDN)
     if not valueFQDN:
         notFound()
         sys.exit()
@@ -673,47 +686,49 @@ def blueliv_indicatorFqdn(client: Client, args):
             ipIds = client.get_relationships("fqdn", valueFQDN, "ip")
 
         human = getHuman(result)
-        demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Blueliv FQDN info", human),
-            'EntryContext': {
-                'BluelivThreatContext.indicator(val.id && val.id == obj.id)': {
-                    'id': valueFQDN,
-                    'lastSeen': lastSeen,
-                    'risk': risk,
-                    'campaigns': campaigns,
-                    'campaignIds': campaignIds,
-                    'signatures': signatures,
-                    'signatureIds': signatureIds,
-                    'threatActors': threatActors,
-                    'threatActorIds': threatActorIds,
-                    'tags': tags,
-                    'tagids': tagIds,
-                    'crimeServers': crimeServers,
-                    'crimeServerIds': crimeServerIds,
-                    'sparks': sparks,
-                    'sparkIds': sparkIds,
-                    'ips': ips,
-                    'ipIds': ipIds
-                }
+        demisto.results(
+            {
+                "ContentsFormat": formats["json"],
+                "Type": entryTypes["note"],
+                "Contents": result,
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": tableToMarkdown("Blueliv FQDN info", human),
+                "EntryContext": {
+                    "BluelivThreatContext.indicator(val.id && val.id == obj.id)": {
+                        "id": valueFQDN,
+                        "lastSeen": lastSeen,
+                        "risk": risk,
+                        "campaigns": campaigns,
+                        "campaignIds": campaignIds,
+                        "signatures": signatures,
+                        "signatureIds": signatureIds,
+                        "threatActors": threatActors,
+                        "threatActorIds": threatActorIds,
+                        "tags": tags,
+                        "tagids": tagIds,
+                        "crimeServers": crimeServers,
+                        "crimeServerIds": crimeServerIds,
+                        "sparks": sparks,
+                        "sparkIds": sparkIds,
+                        "ips": ips,
+                        "ipIds": ipIds,
+                    }
+                },
             }
-        })
+        )
     else:
         notFound()
 
 
 # Get information about the crime server related with the provided URL
 def blueliv_indicatorCs(client: Client, args):
-    nameCS = args.get('CS', '')
-    valueCS = args.get('CS_id', '')
+    nameCS = args.get("CS", "")
+    valueCS = args.get("CS_id", "")
 
     if not valueCS and not nameCS:
         notFound()
     if not valueCS and nameCS:
-        valueCS = client.search_by_name('crime-server', nameCS)
+        valueCS = client.search_by_name("crime-server", nameCS)
     if not valueCS:
         notFound()
         sys.exit()
@@ -756,49 +771,51 @@ def blueliv_indicatorCs(client: Client, args):
             sparkIds = client.get_relationships("crime-server", valueCS, "spark")
 
         human = getHuman(result)
-        demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("Blueliv Crime Server info", human),
-            'EntryContext': {
-                'BluelivThreatContext.indicator(val.id && val.id == obj.id)': {
-                    'id': valueCS,
-                    'lastSeen': lastSeen,
-                    'status': status,
-                    'risk': risk,
-                    'isFalsePositive': isFalsePositive,
-                    'crimeServerUrl': crimeServerUrl,
-                    'creditCardsCount': creditCardsCount,
-                    'credentialsCount': credentialsCount,
-                    'botsCount': botsCount,
-                    'fqdnId': fqdnId,
-                    'malware': malware,
-                    'malwareIds': malwareIds,
-                    'tags': tags,
-                    'tagIds': tagIds,
-                    'sparks': sparks,
-                    'sparkIds': sparkIds,
-                    'sources': sources,
-                    'sourceIds': sourceIds
-                }
+        demisto.results(
+            {
+                "ContentsFormat": formats["json"],
+                "Type": entryTypes["note"],
+                "Contents": result,
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": tableToMarkdown("Blueliv Crime Server info", human),
+                "EntryContext": {
+                    "BluelivThreatContext.indicator(val.id && val.id == obj.id)": {
+                        "id": valueCS,
+                        "lastSeen": lastSeen,
+                        "status": status,
+                        "risk": risk,
+                        "isFalsePositive": isFalsePositive,
+                        "crimeServerUrl": crimeServerUrl,
+                        "creditCardsCount": creditCardsCount,
+                        "credentialsCount": credentialsCount,
+                        "botsCount": botsCount,
+                        "fqdnId": fqdnId,
+                        "malware": malware,
+                        "malwareIds": malwareIds,
+                        "tags": tags,
+                        "tagIds": tagIds,
+                        "sparks": sparks,
+                        "sparkIds": sparkIds,
+                        "sources": sources,
+                        "sourceIds": sourceIds,
+                    }
+                },
             }
-        })
+        )
     else:
         notFound()
 
 
 # Get information about attack patterns
 def blueliv_attackPattern(client: Client, args):
-    attackPatternName = args.get('attackPattern', '')
-    attackPatternId = args.get('attackPattern_id', '')
+    attackPatternName = args.get("attackPattern", "")
+    attackPatternId = args.get("attackPattern_id", "")
 
     if attackPatternId:
         attackPatternId = int(attackPatternId)
 
     if not attackPatternId:
-        attackPatternId = client.search_by_name('attack-pattern', attackPatternName)
+        attackPatternId = client.search_by_name("attack-pattern", attackPatternName)
 
     if attackPatternId:
         result = client.get_attack_pattern_info(attackPatternId)
@@ -834,30 +851,32 @@ def blueliv_attackPattern(client: Client, args):
                 cves = client.get_relationships("attack-pattern", str(attackPatternId), "cve")
 
             human = getHuman(result)
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': result,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown("Blueliv Attack Pattern info", human),
-                'EntryContext': {
-                    'BluelivThreatContext.attackPattern(val.id && val.id == obj.id)': {
-                        'id': attackPatternId,
-                        'name': name,
-                        'description': description,
-                        'updatedAt': updatedAt,
-                        'serverity': serverity,
-                        'signatures': signatures,
-                        'signatureIds': signatureIds,
-                        'campaigns': campaigns,
-                        'campaignIds': campaignIds,
-                        'threatActors': threatActors,
-                        'threatActorIds': threatActorIds,
-                        'cves': cves,
-                        'cveIds': cveIds
-                    }
+            demisto.results(
+                {
+                    "ContentsFormat": formats["json"],
+                    "Type": entryTypes["note"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": tableToMarkdown("Blueliv Attack Pattern info", human),
+                    "EntryContext": {
+                        "BluelivThreatContext.attackPattern(val.id && val.id == obj.id)": {
+                            "id": attackPatternId,
+                            "name": name,
+                            "description": description,
+                            "updatedAt": updatedAt,
+                            "serverity": serverity,
+                            "signatures": signatures,
+                            "signatureIds": signatureIds,
+                            "campaigns": campaigns,
+                            "campaignIds": campaignIds,
+                            "threatActors": threatActors,
+                            "threatActorIds": threatActorIds,
+                            "cves": cves,
+                            "cveIds": cveIds,
+                        }
+                    },
                 }
-            })
+            )
         else:
             notFound()
     else:
@@ -866,11 +885,11 @@ def blueliv_attackPattern(client: Client, args):
 
 # Get information about tools
 def blueliv_tool(client: Client, args):
-    toolName = args.get('tool', '')
-    toolId = args.get('tool_id', '')
+    toolName = args.get("tool", "")
+    toolId = args.get("tool_id", "")
 
     if not toolId:
-        toolId = client.search_by_name('tool', toolName)
+        toolId = client.search_by_name("tool", toolName)
 
     if toolId:
         result = client.get_tool_info(toolId)
@@ -899,27 +918,29 @@ def blueliv_tool(client: Client, args):
                 threatActorIds = client.get_relationships("tool", str(toolId), "threat-actor")
 
             human = getHuman(result)
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': result,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown("Blueliv Tool info", human),
-                'EntryContext': {
-                    'BluelivThreatContext.tool(val.id && val.id == obj.id)': {
-                        'id': toolId,
-                        'name': name,
-                        'description': description,
-                        'lastSeen': lastSeen,
-                        'campaigns': campaigns,
-                        'campaignIds': campaignIds,
-                        'signatures': signatures,
-                        'signatureIds': signatureIds,
-                        'threatActors': threatActors,
-                        'threatActorIds': threatActorIds
-                    }
+            demisto.results(
+                {
+                    "ContentsFormat": formats["json"],
+                    "Type": entryTypes["note"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": tableToMarkdown("Blueliv Tool info", human),
+                    "EntryContext": {
+                        "BluelivThreatContext.tool(val.id && val.id == obj.id)": {
+                            "id": toolId,
+                            "name": name,
+                            "description": description,
+                            "lastSeen": lastSeen,
+                            "campaigns": campaigns,
+                            "campaignIds": campaignIds,
+                            "signatures": signatures,
+                            "signatureIds": signatureIds,
+                            "threatActors": threatActors,
+                            "threatActorIds": threatActorIds,
+                        }
+                    },
                 }
-            })
+            )
         else:
             notFound()
     else:
@@ -927,11 +948,11 @@ def blueliv_tool(client: Client, args):
 
 
 def blueliv_signature(client: Client, args):
-    signatureName = args.get('signature', '')
-    signatureId = args.get('signature_id', '')
+    signatureName = args.get("signature", "")
+    signatureId = args.get("signature_id", "")
 
     if not signatureId:
-        signatureId = client.search_by_name('signature', signatureName)
+        signatureId = client.search_by_name("signature", signatureName)
 
     if signatureId:
         result = client.get_signature_info(signatureId)
@@ -948,23 +969,25 @@ def blueliv_signature(client: Client, args):
                 malwareIds = client.get_relationships("signature", str(signatureId), "malware")
 
             human = getHuman(result)
-            demisto.results({
-                "Type": entryTypes["note"],
-                'Contents': result,
-                "ContentsFormat": formats["json"],
-                'HumanReadable': tableToMarkdown("Blueliv Signature info", human),
-                'ReadableContentsFormat': formats['markdown'],
-                'EntryContext': {
-                    'BluelivThreatContext.signature(val.id && val.id == obj.id)': {
-                        'id': signatureId,
-                        'name': name,
-                        'type': signatureType,
-                        'updatedAt': updatedAt,
-                        'malware': malware,
-                        'malwareIds': malwareIds
-                    }
+            demisto.results(
+                {
+                    "Type": entryTypes["note"],
+                    "Contents": result,
+                    "ContentsFormat": formats["json"],
+                    "HumanReadable": tableToMarkdown("Blueliv Signature info", human),
+                    "ReadableContentsFormat": formats["markdown"],
+                    "EntryContext": {
+                        "BluelivThreatContext.signature(val.id && val.id == obj.id)": {
+                            "id": signatureId,
+                            "name": name,
+                            "type": signatureType,
+                            "updatedAt": updatedAt,
+                            "malware": malware,
+                            "malwareIds": malwareIds,
+                        }
+                    },
                 }
-            })
+            )
         else:
             notFound()
     else:
@@ -973,8 +996,8 @@ def blueliv_signature(client: Client, args):
 
 # Get inforamtion abouth the provided CVE code
 def blueliv_cve(client: Client, args):
-    cveCode = args.get('CVE', '')
-    vulnId = args.get('CVE_id', '')
+    cveCode = args.get("CVE", "")
+    vulnId = args.get("CVE_id", "")
 
     if not vulnId:
         vulnId = cveCode
@@ -1026,36 +1049,38 @@ def blueliv_cve(client: Client, args):
             malwareIds = client.get_relationships("cve", vulnId, "malware")
 
         human = getHuman(result)
-        demisto.results({
-            "Type": entryTypes["note"],
-            'Contents': result,
-            "ContentsFormat": formats["json"],
-            'HumanReadable': tableToMarkdown("Blueliv CVE info", human),
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {
-                'BluelivThreatContext.cve(val.id && val.id == obj.id)': {
-                    'id': vulnId,
-                    'name': name,
-                    'description': description,
-                    'updatedAt': updatedAt,
-                    'score': score,
-                    'attackPatterns': attackPatterns,
-                    'attackPatternIds': attackPatternIds,
-                    'signatures': signatures,
-                    'signatureIds': signatureIds,
-                    'tags': tags,
-                    'tagIds': tagIds,
-                    'crimeServers': crimeServers,
-                    'crimeServerIds,': crimeServerIds,
-                    'sparks': sparks,
-                    'sparkIds': sparkIds,
-                    'malware': malware,
-                    'malwareIds': malwareIds,
-                    'exploits': exploitsTableData,
-                    'platforms': platformsTableData
-                }
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "Contents": result,
+                "ContentsFormat": formats["json"],
+                "HumanReadable": tableToMarkdown("Blueliv CVE info", human),
+                "ReadableContentsFormat": formats["markdown"],
+                "EntryContext": {
+                    "BluelivThreatContext.cve(val.id && val.id == obj.id)": {
+                        "id": vulnId,
+                        "name": name,
+                        "description": description,
+                        "updatedAt": updatedAt,
+                        "score": score,
+                        "attackPatterns": attackPatterns,
+                        "attackPatternIds": attackPatternIds,
+                        "signatures": signatures,
+                        "signatureIds": signatureIds,
+                        "tags": tags,
+                        "tagIds": tagIds,
+                        "crimeServers": crimeServers,
+                        "crimeServerIds,": crimeServerIds,
+                        "sparks": sparks,
+                        "sparkIds": sparkIds,
+                        "malware": malware,
+                        "malwareIds": malwareIds,
+                        "exploits": exploitsTableData,
+                        "platforms": platformsTableData,
+                    }
+                },
             }
-        })
+        )
     else:
         notFound()
 
@@ -1063,58 +1088,60 @@ def blueliv_cve(client: Client, args):
 # DEMISTO command evaluation
 def main():
     params = demisto.params()
-    server_url = params.get('url')
-    verify_ssl = not params.get('unsecure', '')
-    proxy = params.get('proxy')
-    username = params['credentials']['identifier']
-    password = params['credentials']['password']
+    server_url = params.get("url")
+    verify_ssl = not params.get("unsecure", "")
+    proxy = params.get("proxy")
+    username = params["credentials"]["identifier"]
+    password = params["credentials"]["password"]
 
-    client = Client(server_url, verify_ssl, proxy, headers={'Accept': 'application/json'})
+    client = Client(server_url, verify_ssl, proxy, headers={"Accept": "application/json"})
     token = client.authenticate(username, password)
 
     args = demisto.args()
-    if demisto.command() == 'test-module':
+    if demisto.command() == "test-module":
         # Checks if the user is correctly authenticated. If the execution gets here all is correct.
         demisto.results("ok")
 
-    if demisto.command() == 'blueliv-authenticate':
-        demisto.results({
-            "Type": entryTypes["note"],
-            'Contents': token,
-            "ContentsFormat": formats["text"],
-            'EntryContext': {'BluelivThreatContext.token': token}
-        })
+    if demisto.command() == "blueliv-authenticate":
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "Contents": token,
+                "ContentsFormat": formats["text"],
+                "EntryContext": {"BluelivThreatContext.token": token},
+            }
+        )
 
-    elif demisto.command() == 'blueliv-tc-threat-actor':
+    elif demisto.command() == "blueliv-tc-threat-actor":
         blueliv_threatActor(client, args)
 
-    elif demisto.command() == 'blueliv-tc-campaign':
+    elif demisto.command() == "blueliv-tc-campaign":
         blueliv_campaign(client, args)
 
-    elif demisto.command() == 'blueliv-tc-malware':
+    elif demisto.command() == "blueliv-tc-malware":
         blueliv_malware(client, args)
 
-    elif demisto.command() == 'blueliv-tc-indicator-ip':
+    elif demisto.command() == "blueliv-tc-indicator-ip":
         blueliv_indicatorIp(client, args)
 
-    elif demisto.command() == 'blueliv-tc-indicator-fqdn':
+    elif demisto.command() == "blueliv-tc-indicator-fqdn":
         blueliv_indicatorFqdn(client, args)
 
-    elif demisto.command() == 'blueliv-tc-indicator-cs':
+    elif demisto.command() == "blueliv-tc-indicator-cs":
         blueliv_indicatorCs(client, args)
 
-    elif demisto.command() == 'blueliv-tc-attack-pattern':
+    elif demisto.command() == "blueliv-tc-attack-pattern":
         blueliv_attackPattern(client, args)
 
-    elif demisto.command() == 'blueliv-tc-tool':
+    elif demisto.command() == "blueliv-tc-tool":
         blueliv_tool(client, args)
 
-    elif demisto.command() == 'blueliv-tc-signature':
+    elif demisto.command() == "blueliv-tc-signature":
         blueliv_signature(client, args)
 
-    elif demisto.command() == 'blueliv-tc-cve':
+    elif demisto.command() == "blueliv-tc-cve":
         blueliv_cve(client, args)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

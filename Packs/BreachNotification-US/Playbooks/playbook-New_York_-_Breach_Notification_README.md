@@ -53,4 +53,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![NewYork-BreachNotification](https://raw.githubusercontent.com/demisto/content/ddf1dde33bee934554152c990a1b9fee54645142/Packs/BreachNotification-US/doc_files/New_York_-_Breach_Notification.png)
+![NewYork-BreachNotification](../doc_files/New_York_-_Breach_Notification.png)

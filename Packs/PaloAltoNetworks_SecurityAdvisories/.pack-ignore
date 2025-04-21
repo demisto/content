@@ -2,3 +2,7 @@
 cvssversion
 cvsstable
 cvssscore
+
+# GR103 is temporary, see CIAC-11705
+[file:PaloAltoNetworks_SecurityAdvisories.yml]
+ignore=GR103

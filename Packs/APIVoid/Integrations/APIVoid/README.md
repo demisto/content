@@ -1,24 +1,20 @@
 APIVoid wraps up a number of services such as ipvoid & urlvoid.
 
-## Configure APIVoid on Cortex XSOAR
+## Configure APIVoid in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for APIVoid.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API KEY |  | True |
-    | Benign Reputation (Percentage) | If the percentage of detections is BELOW this value, the indicator is considered Benign | True |
-    | Suspicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered Suspicious | True |
-    | Malicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered Malicious | True |
-    | Malicious | Consider the indicator malicious if either Suspicious or Malicious | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API KEY |  | True |
+| Benign Reputation (Percentage) | If the percentage of detections is BELOW this value, the indicator is considered Benign | True |
+| Suspicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered Suspicious | True |
+| Malicious Reputation (Percentage) | If the percentage of detections is ABOVE this value, the indicator is considered Malicious | True |
+| Malicious | Consider the indicator malicious if either Suspicious or Malicious | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### apivoid-ip
 ***

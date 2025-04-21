@@ -1,3 +1,11 @@
 [file:FlashpointFeed_image.png]
 ignore=IM111
 
+[known_words]
+keyerror
+tlp
+dropdown
+datasets
+workflows
+Pdb
+linting

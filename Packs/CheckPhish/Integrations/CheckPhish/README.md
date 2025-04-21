@@ -1,24 +1,20 @@
 Check any URL to detect supsicious behavior.
-## Configure CheckPhish on Cortex XSOAR
+## Configure CheckPhish in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CheckPhish.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | CheckPhish API URL |  | False |
-    | API Token |  | True |
-    | Good Dispositions (CheckPhish labels for non-phishing URLs. Default is "clean") |  | False |
-    | Suspicious dispositions (CheckPhish labels for suspicious phishing URLs). Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious" |  | False |
-    | Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking", "phish", "likely_phish", "scam". |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| CheckPhish API URL |  | False |
+| API Token |  | True |
+| Good Dispositions (CheckPhish labels for non-phishing URLs. Default is "clean") |  | False |
+| Suspicious dispositions (CheckPhish labels for suspicious phishing URLs). Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious" |  | False |
+| Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking", "phish", "likely_phish", "scam". |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### CheckPhish-check-urls
 ***
@@ -167,4 +163,3 @@ Notice: Submitting indicators using this command might make the indicator data p
 >|url|disposition|brand|status|jobID|
 >|---|---|---|---|---|
 >| http://test.com/ | clean | unknown | DONE | 6df1ebef-3be3-48a9-8970-c5afeda8d58d |
-

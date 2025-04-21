@@ -11,11 +11,10 @@ you are implementing with your integration
 """
 
 import json
-import io
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -30,13 +29,13 @@ def test_baseintegration_dummy():
     """
     from BaseIntegration import Client, baseintegration_dummy_command
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
+    client = Client(base_url="some_mock_url", verify=False)
+    args = {"dummy": "this is a dummy response"}
     response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    mock_response = util_load_json("test_data/baseintegration-dummy.json")
 
     assert response.outputs == mock_response
+
+
 # TODO: ADD HERE unit tests for every command

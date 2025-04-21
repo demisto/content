@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Exchange_2016_Search_and_Delete](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Exchange_2016_Search_and_Delete.png)
+![Exchange_2016_Search_and_Delete](../doc_files/Exchange_2016_Search_and_Delete.png)

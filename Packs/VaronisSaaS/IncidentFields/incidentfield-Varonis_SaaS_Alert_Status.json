@@ -22,7 +22,14 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "singleSelect",
+    "selectValues": [
+        "new",
+        "under investigation",
+        "closed",
+        "action required",
+        "auto-resolved"
+    ],
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false

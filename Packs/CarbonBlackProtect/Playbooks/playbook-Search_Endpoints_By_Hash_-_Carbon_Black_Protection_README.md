@@ -35,4 +35,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Search_Endpoints_By_Hash_Carbon_Black_Protection](https://raw.githubusercontent.com/demisto/content/f975de39b05cd3560b782f54d37637741d87ff65/docs/images/playbooks/Search_Endpoints_By_Hash_Carbon_Black_Protection.png)
+![Search_Endpoints_By_Hash_Carbon_Black_Protection](../doc_files/Search_Endpoints_By_Hash_-_Carbon_Black_Protection.png)

@@ -4,38 +4,34 @@ Use this version if your certificate supports TAXII 2 protocol.
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes).
 
-## Configure DHS Feed v2 on Cortex XSOAR
+## Configure DHS Feed v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DHS Feed v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch indicators |  | False |
-    | Discovery Service URL (e.g., https://ais2.cisa.dhs.gov/taxii2/) |  | True |
-    | Key File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
-    | Certificate File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
-    | Default API Root to use | The default API root to use \(e.g., default, public\). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. The user must be authorized to reach the selected API root. | False |
-    | Collection Name To Fetch Indicators From | Indicators will be fetched from this collection. Run the "dhs-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service. | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-    | Feed Fetch Interval |  | False |
-    | First Fetch Time | The time interval for the first fetch \(retroactive\) in the following format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt; of type minute/hour/day. For example, 1 minute, 12 hour. Limited to 48 hours. | False |
-    | STIX Objects To Fetch | The objects to fetch, most likely indicators. Might slow down fetch time. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Max Indicators Per Fetch | The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched. | False |
-    | Max STIX Objects Per Poll | Set the number of STIX objects that will be requested with each TAXII poll \(http request\). A single fetch is made of several TAXII polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the requested limit. | False |
-    | Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". For example, \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
-    | Tags | Supports CSV values. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch indicators |  | False |
+| Discovery Service URL (e.g., https://ais2.cisa.dhs.gov/taxii2/) |  | True |
+| Key File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
+| Certificate File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
+| Default API Root to use | The default API root to use \(e.g., default, public\). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. The user must be authorized to reach the selected API root. | False |
+| Collection Name To Fetch Indicators From | Indicators will be fetched from this collection. Run the "dhs-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service. | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+| Feed Fetch Interval |  | False |
+| First Fetch Time | The time interval for the first fetch \(retroactive\) in the following format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt; of type minute/hour/day. For example, 1 minute, 12 hour. Limited to 48 hours. | False |
+| STIX Objects To Fetch | The objects to fetch, most likely indicators. Might slow down fetch time. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Max Indicators Per Fetch | The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched. | False |
+| Max STIX Objects Per Poll | Set the number of STIX objects that will be requested with each TAXII poll \(http request\). A single fetch is made of several TAXII polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the requested limit. | False |
+| Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". For example, \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
+| Tags | Supports CSV values. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### dhs-get-indicators

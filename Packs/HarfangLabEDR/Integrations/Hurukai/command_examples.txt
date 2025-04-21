@@ -1,0 +1,88 @@
+harfanglab-add-ioc-to-source ioc_value=0004ffbd9a1a1acd44f4859c39a49639babe515434ca34bec603598b50211bab ioc_type=hash ioc_status=stable source_name="Industrial Spy"
+harfanglab-delete-ioc-from-source ioc_value=0004ffbd9a1a1acd44f4859c39a49639babe515434ca34bec603598b50211bab source_name="Industrial Spy"
+harfanglab-assign-policy-to-agent agentid=0fae71cf-ebde-4533-a50c-b3c0290378db policy="No psexec"
+harfanglab-change-security-event-status security_event_id="QCzd2IEB3S3Gj-GS6z9S" status=Investigating 
+harfanglab-isolate-endpoint agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-deisolate-endpoint agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-endpoint-search hostname="DC-01"
+harfanglab-get-endpoint-info agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-hunt-search-hash hash=2198a7b58bccb758036b969ddae6cc2ece07565e2659a7c541a313a0492231a3
+harfanglab-hunt-search-runned-process-hash hash=2198a7b58bccb758036b969ddae6cc2ece07565e2659a7c541a313a0492231a3
+harfanglab-hunt-search-running-process-hash hash=2198a7b58bccb758036b969ddae6cc2ece07565e2659a7c541a313a0492231a3
+harfanglab-job-artifact-all agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-artifact-downloadfile agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="C:\\Program Files\\HarfangLab\\agent.ini"
+harfanglab-job-artifact-evtx agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-artifact-filesystem agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-artifact-hives agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-artifact-logs agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-artifact-mft agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-artifact-ramdump agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-driverlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-info ids="ba28f05f-e3c8-4eec-ab6a-01d639c14f2e,70b2cd7b-8a57-4a6c-aa7e-e392676fa7ac"
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="agent.ini"
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="agent.ini" search_in_path="C:\\Program Files"
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filename="agent.ini" filesize=1688
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filepath="C:\\windows\\system32\\calc.exe"
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" filepath_regex="System32\\\\calc\\.exe"
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" hash=4208893c871d2499f184e3f0f2554da89f451fa9e98d95fc9516c5ae8f2b3bbd filesize=45056
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="DLLPath"	
+harfanglab-job-ioc agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db" registry="hmmapi"	
+
+harfanglab-job-networkconnectionlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-networksharelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-persistencelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-pipelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-prefetchlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-processlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-runkeylist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-scheduledtasklist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-servicelist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-sessionlist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-startuplist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+harfanglab-job-wmilist agent_id="0fae71cf-ebde-4533-a50c-b3c0290378db"
+
+harfanglab-result-artifact-all job_id="affe8871-c838-4c17-b5cb-fa30b6aeacfc"
+harfanglab-result-artifact-downloadfile job_id="aa83c9e9-91de-4f6f-b2f3-f01c936c4ee6"
+harfanglab-result-artifact-evtx job_id="43f4c7bf-ed15-4b1b-8b14-d71f48ad9077"
+harfanglab-result-artifact-filesystem job_id="210b72f7-7ee5-4e89-b3fb-8106e7a57bf7"
+harfanglab-result-artifact-hives job_id="8a0b77e2-6c55-4bfb-89c5-377c2a3b6bf4"
+harfanglab-result-artifact-logs job_id="eb957909-57cb-4f20-ad76-dc47aab5496f"
+harfanglab-result-artifact-mft job_id="10fae902-ddb0-48b8-bbd9-aa94e92f9222"
+harfanglab-result-artifact-ramdump job_id="539456d8-872c-4e60-a28b-210ffcd4c7c4"
+harfanglab-result-driverlist job_id="d93fdb8c-2877-4625-a6a4-7d8642f7a02b"
+harfanglab-result-ioc job_id="1680a62a-7a9c-456d-ae89-75788daa94e8"
+harfanglab-result-networkconnectionlist job_id="da31761f-003d-4abb-ab42-3d1737d75e7c"
+harfanglab-result-networksharelist job_id="3ec3821f-278b-4cf1-8fb8-11f4a1c431d5"
+harfanglab-result-persistencelist job_id="8ee99c61-9c0e-4cfb-89ea-4aba01cbf1ed"
+harfanglab-result-pipelist job_id="f6cba4b2-e4a1-41b7-bdc0-0dcb6815d3ad"
+harfanglab-result-prefetchlist job_id="16834054-574b-4dc4-8981-9e6bb93e4529"
+harfanglab-result-processlist job_id="db793a9d-6d86-4fbf-8ee5-8836f04e14ff"
+harfanglab-result-runkeylist job_id="704cac37-57df-4b70-8227-4a770b724108"
+harfanglab-result-scheduledtasklist job_id="f22b531a-b078-44fc-8d23-d06725548934"
+harfanglab-result-servicelist job_id="bde92340-27da-4009-b310-5b7fa6e4fcb9"
+harfanglab-result-sessionlist job_id="01819f9a-44f5-42b6-9e1a-4efc3fadd48d"
+harfanglab-result-startuplist job_id="f1fac880-ade0-44c3-837f-486517565909"
+harfanglab-result-wmilist job_id="5219bfca-4a8b-4913-813f-446d88e28d99"
+
+harfanglab-telemetry-binary hash=2577fb22e98a4585bedcccfe7fbb48a8b2e0b5ea4c41408247cba86e89ea2eb5
+harfanglab-telemetry-eventlog hostname="DC-01" limit=5
+harfanglab-telemetry-eventlog hostname="DC-01" event_id=4624 limit=5
+harfanglab-telemetry-eventlog event_id=4624 from_date="2022-07-21T21:25:34" to_date="2022-07-23T21:25:34" limit=5
+harfanglab-telemetry-network hostname="DC-01" limit=5
+harfanglab-telemetry-network destination_address="8.248.235.254" limit=5
+harfanglab-telemetry-network destination_address="8.248.235.254" from_date="2022-07-21T12:34:05" to_date="2022-07-21T12:34:15" limit=5
+harfanglab-telemetry-processes hostname="DC-01" hash=3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 limit=5
+harfanglab-telemetry-processes hostname="DC-01" limit=5
+harfanglab-telemetry-processes hash=3541d189d1bd3341a72769d43bf487eaa3b20e80aa04a54550bbfa9a04360db3 limit=5
+harfanglab-telemetry-processes hostname="DC-01" from_date="2022-07-22T20:26:10" to_date="2022-07-22T20:26:20" limit=5
+harfanglab-telemetry-dns requested_name=download.windowsupdate.com hostname=webserver
+harfanglab-telemetry-authentication-windows limit=5 target_username=vagrant
+harfanglab-telemetry-process-graph process_uuid=37d378de-b558-4597-e820-009fa44c4c03
+
+harfanglab-whitelist-add target=all field=process.hashes.sha256 operator=eq value=dcaabeb77b7e02eb31269f1ee0dcbb30e92233c2a26ba22a3be02fcf01bd2514 comment="Example of whitelist for all detection engines" case_insensitive=true
+harfanglab-whitelist-add-criterion id=2518 field=process.commandline operator=contains value=cmd.exe
+harfanglab-whitelist-search keyword=cmd.exe
+harfanglab-whitelist-delete id=2518
+
+harfanglab-api-call api_method=GET api_endpoint=/api/version
+!harfanglab-telemetry-authentication-users hostname=CL-Ep2-Win11 limit=4

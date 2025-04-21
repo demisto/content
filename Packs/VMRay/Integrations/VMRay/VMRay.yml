@@ -1162,7 +1162,7 @@ script:
       description: Percentages used.
       type: Number
     arguments: []
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

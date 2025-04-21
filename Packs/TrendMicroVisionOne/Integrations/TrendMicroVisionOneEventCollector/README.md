@@ -1,5 +1,8 @@
 Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
+
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Trend Micro Vision One Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
@@ -80,8 +83,8 @@ Returns a list of logs.
 | **Argument Name**  | **Description**                                                                                                                                                    | **Required** |
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | limit              | The maximum number of logs to retrieve. Default is 50.                                                                                                             | Optional    | 
-| from_time          | From which time to retrieve the log(s) (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days.                               | Optional    | 
-| to_time            | To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided.                                                              | Optional    | 
+| from_time          | From which time to retrieve the log(s) in ISO8601 format. For example yyyy-MM-ddThh:mm:ssZ in UTC.                                                                 | Required    | 
+| to_time            | To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided. For example yyyy-MM-ddThh:mm:ssZ in UTC.                                                             | Optional    | 
 | should_push_events | Whether to push the fetched events to Cortex XSIAM or not. Possible values are: false, true. Default is false.                                                     | Optional    | 
 | log_type           | Comma-separated list of log-types to retrieve, options are audit, observed_attack_techniques, search_detections and workbench. Default is to retrieve all of them. | Optional    | 
 

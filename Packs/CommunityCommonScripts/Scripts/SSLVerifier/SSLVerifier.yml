@@ -14,7 +14,7 @@ args:
 - name: Port
   default: true
   description: Port to check
-  defaultValue: "443"
+  defaultValue: '443'
 outputs:
 - contextPath: SSLVerifier.Certificate.Expiry
   description: Time of expiration
@@ -30,7 +30,7 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

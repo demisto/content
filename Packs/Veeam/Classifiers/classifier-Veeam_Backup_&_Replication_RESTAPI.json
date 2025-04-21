@@ -1,0 +1,25 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Veeam Backup \u0026 Replication Incidents Classifier",
+    "keyTypeMap": {
+        "AntivirusScan": "Malware Detection - Antivirus Scan",
+        "Configuration Backup": "Configuration Backup",
+        "DeletedUsefulFiles": "Malware Detection - Deleted Files",
+        "EncryptedData": "Malware Detection - Encrypted Files",
+        "Incident Fetch Error": "Incident Fetch Error",
+        "MalwareExtensions": "Malware Detection - Suspicious Files and Extensions",
+        "RansomwareNotes": "Malware Detection - Ransomware Notes",
+        "RenamedFiles": "Malware Detection - Renamed Files",
+        "Repository Capacity": "Repository Capacity",
+        "Unknown": "Malware Detection - Unknown",
+        "YaraScan": "Malware Detection - Yara Scan"
+    },
+    "name": "Veeam Backup \u0026 Replication Incidents Classifier",
+    "transformer": {
+        "simple": "incident_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

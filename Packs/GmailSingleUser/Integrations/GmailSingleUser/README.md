@@ -34,13 +34,13 @@ To use the GMail Single User integration, you will need to create your own OAuth
 1. Go to the [developers credentials page](https://console.developers.google.com/apis/credentials) (you may need to set up a [new project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) if you haven't already).
 2. If needed, configure the [Consent Screen](https://developers.google.com/workspace/guides/configure-oauth-consent). Fill in the Consent Screen information you want to display to your users.
 3. Make sure in the consent screen that you publish the app by clicking `Publish App` and confirming.
-  ![OAuth-Consent-Screen-Publication](doc_imgs/publish-OAuth-consent-screen.png)
+  ![OAuth-Consent-Screen-Publication](../../doc_files/publish-OAuth-consent-screen.png)
 4. In the credentials page choose: `Create Credentials` -> `OAuth client ID`.
-  ![Create Credentials](doc_imgs/create-credentials.png)
+  ![Create Credentials](../../doc_files/create-credentials.png)
 5. When creating the OAuth client ID, select **Web application** as the application type.
 6. Name the credential. For example: `Cortex XSOAR GMail Integration`.
 7. Add an **Authorized redirect URIs**: `https://oproxy.demisto.ninja/authcode`. The `oproxy` url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization respone to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the `oproxy` url, you may use a `localhost` url on a port which is not used locally on your machine. For example: `http://localhost:9004`. You will then need to copy the code from the url address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).  
-   ![Authorized URIs](doc_imgs/auth-uris.png)
+   ![Authorized URIs](../../doc_files/auth-uris.png)
 7. Make sure to [enable the Gmail API](https://console.developers.google.com/apis/api/gmail.googleapis.com/overview) if you haven't already.
 8. After you create the app, copy the *client id* and *client secret* of the app that you created to the integration configuration. If you want to use a `localhost` redirect URI, copy the chosen auth redirect URI to the integration configuration.
 9. Proceed to [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) to configure OAuth 2.0 authorization in Cortex XSOAR.
@@ -56,10 +56,10 @@ To configure the use of the Demisto App for GSuite Admins there is no need to cr
 GSuite Admins can choose to trust the Demisto App so users can configure the app:
 1. Go to [App Access Control](https://admin.google.com/ac/owl/list?tab=apps).
 2. Choose: `Configure new app` -> `OAuth App Name Or Client ID`. 
-  ![GSuite App Configurations](doc_imgs/gsuite-configure-app.png)
+  ![GSuite App Configurations](../../doc_files/gsuite-configure-app.png)
 3. Enter the following Client ID: `391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com`
    You see the `Demisto App` in the results page. 
-  ![Demisto App](doc_imgs/demisto-app-result.png)
+  ![Demisto App](../../doc_files/demisto-app-result.png)
 4. Select the app and grant the app access as `Trusted`.
 5. Add the Demisto app client ID `391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com` to the integration configuration.
 6. Proceed to 'Authorization Flow In Cortex XSOAR' to configure OAuth 2.0 authorization in Cortex XSOAR.
@@ -71,9 +71,9 @@ GSuite Admins can choose to trust the Demisto App so users can configure the app
 3. If you get a message from Google saying that it cannot verify the application, click **proceed** and click enter for the app name to give the app you created permissions to your Google account. Then click **proceed**.
 4. Complete the authentication process. 
 5. If using the `oproxy` redirect URI, you will be redirected to a page which will provide an option to copy the auth code. Note that this page processes the code fully in the browser (client side) and displays it to be copied. The code is not transmitted to the oproxy web server. Example screenshot:
-    ![Oproxy Auth Code](doc_imgs/oproxy-auth.png)
+    ![Oproxy Auth Code](../../doc_files/oproxy-auth.png)
     If you are using the `localhost` redirect URI, you will be redirected to an unavailable page. Copy the code, including the `code=` prefix up to the first `&` from the URL address bar. Example screenshot:
-    ![localhost Auth Code](doc_imgs/localhost-auth.png) 
+    ![localhost Auth Code](../../doc_files/localhost-auth.png) 
 6. Copy the received code to the **Auth Code** configuration parameter of the integration instance. 
 7. Save the instance.
 8. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.

@@ -98,6 +98,66 @@
                 "Microsoft Sentinel Classification Comment": {
                     "simple": "classificationComment"
                 },
+				"Microsoft Sentinel Classification Reason": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "classificationReason"
+										}
+									},
+									"operator": "inList",
+									"right": {
+										"isContext": false,
+										"value": {
+											"simple": "InaccurateData,IncorrectAlertLogic"
+										}
+									}
+								}
+							]
+						],
+						"root": "classificationReason",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"simple": "InaccurateData"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"simple": "Inaccurate Data"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							},
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"simple": "IncorrectAlertLogic"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"simple": "Incorrect Alert Logic"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				},
                 "Microsoft Sentinel Comments": {
                     "simple": "comments"
                 },

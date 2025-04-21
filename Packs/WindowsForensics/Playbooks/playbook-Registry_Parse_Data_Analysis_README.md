@@ -33,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Registry Data Analysis](https://raw.githubusercontent.com/demisto/content/f80f71e1e885d285d611b7e685443cc7896f6706/Packs/WindowsForensicsPack/doc_files/Registry_Data_Analysis.png)
+![Registry Data Analysis](../doc_files/Registry_Parse_Data_Analysis.png)

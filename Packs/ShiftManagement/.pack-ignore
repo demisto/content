@@ -1,3 +1,7 @@
+[known_words]
+outoffofthefice
+outofofthefice
+
 [file:incidentfield-Shift_open_incidents.json]
 ignore=IF100
 
@@ -19,3 +23,5 @@ ignore=BA124
 [file:CreateChannelWrapper.yml]
 ignore=BA124
 
+[file:playbook-ShiftManagment_Shift_handover.yml]
+ignore=GR107,PB119

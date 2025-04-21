@@ -1,30 +1,26 @@
 SysAid is a robust IT management system designed to meet all of the needs of an IT department.
 This integration was integrated and tested with version 21.4.44 of SysAid.
 
-## Configure SysAid on Cortex XSOAR
+## Configure SysAid in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SysAid.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Username |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Maximum number of incidents to fetch | Maximum is limited to 200. | False |
-    | Fetch incidents |  | False |
-    | First fetch time interval |  | False |
-    | Fetch types | Choose which service record type to fetch - incidents, requests, problems, changes, or all. | False |
-    | Included statuses | A comma separated list of statuses to return. Default value includes "open classes". You may add/remove statuses according to your needs. The list of status numbers and their values can be retrieved by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
-    | Include Archived |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Username |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Maximum number of incidents to fetch | Maximum is limited to 200. | False |
+| Fetch incidents |  | False |
+| First fetch time interval |  | False |
+| Fetch types | Choose which service record type to fetch - incidents, requests, problems, changes, or all. | False |
+| Included statuses | A comma separated list of statuses to return. Default value includes "open classes". You may add/remove statuses according to your needs. The list of status numbers and their values can be retrieved by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
+| Include Archived |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### sysaid-table-list
 ***
