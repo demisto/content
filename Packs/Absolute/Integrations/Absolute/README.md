@@ -1069,6 +1069,7 @@ The following sections list the changes in this version.
 #### The following arguments were removed in this version
 
 In the ***absolute-device-application-list*** command, the following argument was removed:
+
 - *account_uids*
 
 ### Outputs

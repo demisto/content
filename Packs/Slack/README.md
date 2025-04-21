@@ -3,6 +3,7 @@ Send messages and notifications to your Slack team and integrates with Slack's s
 ## What does this pack do?
 
 <~XSOAR>
+
 - Mirrors the investigation between Slack and the Cortex XSOAR War Room.
 </~XSOAR>
 - Sends a message to a user, group, or channel.

@@ -103,6 +103,7 @@ Below Parameters are required if this option is checked:
 12. Enter the relevant values for Securonix Retry parameters "Count", "Delay" & "Delay Type".
 
 **Notes for mirroring:**
+
 - This feature is compliant with XSOAR version 6.0 and above.
 - When mirroring incidents, you can make changes in Securonix that will be reflected in Cortex XSOAR, or vice versa. You can also attach files in Securonix Incident which will then be available in the XSOAR incident.
 - The mirroring settings apply only for incidents that are fetched after applying the settings. Pre-existing comments are not fetched/mirrored at the time of incident creation.

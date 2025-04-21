@@ -257,6 +257,7 @@ For additional information please visit: https://whatis.maltiverse.com/
 ## Known Limitations
 
 ---
+
 * When not creating an Maltiverse account there is a limit of 20 API calls per day.
   A free account grants 100 API calls per day.
   Please see https://maltiverse.com/plans for more information about the different plans.

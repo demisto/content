@@ -154,13 +154,16 @@ Verify your Slack blocks payload is valid. Try simplifying the payload. Test wit
 **Troubleshooting**: # Implementation Guide for Changes in SlackV3 for XSOAR (Version 3.3.0)
 
 ## 1. Review and Identify Affected Playbooks
+
 * Identify all playbooks currently utilizing the SlackBlockBuilder script or its derivatives.
 
 ## 2. Implement Conditional Tasks
+
 * Introduce a conditional task in your playbooks that waits for the expected response.
 * Configure the task to proceed once the response is received.
 
 ## 3. Integrate the `GetSlackBlockBuilderResponse` Script
+
 * After receiving the response and closing the conditional task, initiate a new task that runs the `ParseSlackResponse` script.
 
 ---

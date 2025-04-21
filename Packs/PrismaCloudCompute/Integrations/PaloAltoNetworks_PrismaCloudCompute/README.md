@@ -5197,5 +5197,6 @@ Retrieves the runtime policy for containers protected by Defender. A policy cons
 >| rke-monitor-rule | avega@paloaltonetworks.com | 2024-01-12T16:52:25.358Z |
 
 ## General Note
+
 * Do not use the reset last run button as it will cause incidents duplications to the instance.
 * In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.

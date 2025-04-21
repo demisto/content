@@ -6108,14 +6108,14 @@ Get a report for the submitted URL.
 >## ReversingLabs A1000 URL Report for http:<span>//</span>akiwinds.duckdns.org/chats/fre.php
 >
 > **Classification**: malicious
-> 
+>
 >## Third party reputation statistics
 >
 > **Total**: 20
 > **Malicious**: 1
 > **Clean**: 0
 > **Undetected**: 19
-> 
+>
 >## Analysis statistics
 >
 > **Unknown**: None
@@ -6123,10 +6123,10 @@ Get a report for the submitted URL.
 > **Malicious**: None
 > **Goodware**: None
 > **Total**: None
-> 
+>
 >**First analysis**: None
 > **Analysis count**: None
-> 
+>
 > ## Third party reputation sources
 >
 > ### Sources
@@ -6338,7 +6338,7 @@ Get a report for the submitted domain.
 > **Undetected**: 12
 > **Clean**: 0
 > **Total**: 13
-> 
+>
 > ### Downloaded files statistics
 >
 > **Unknown**: 0
@@ -6346,9 +6346,9 @@ Get a report for the submitted domain.
 > **Malicious**: 4
 > **Goodware**: 0
 > **Total**: 4
-> 
+>
 >**Last DNS records time**: 2023-05-11T17:46:01
-> 
+>
 > ### Last DNS records
 >
 >|provider|type|value|
@@ -6504,7 +6504,7 @@ Get a report for the submitted IP address.
 > **Undetected**: 5
 > **Clean**: 0
 > **Total**: 7
-> 
+>
 > ### Downloaded files statistics
 >
 > **Unknown**: 0
@@ -6512,7 +6512,7 @@ Get a report for the submitted IP address.
 > **Malicious**: 0
 > **Goodware**: 0
 > **Total**: 0
-> 
+>
 > ### Third party reputation sources
 >
 >|category|detect_time|detection|source|update_time|
@@ -10621,7 +10621,7 @@ Retrieve the static analysis report for a local sample.
 >|---|---|
 >| antivirus,<br/>arch-x86,<br/>capability-execution,<br/>desktop,<br/>entropy-high,<br/>gui,<br/>machine-learning,<br/>overlay,<br/>rich-header | tag1,<br/>tag2,<br/>tag3,<br/>tag4 |
 >
-> 
+>
 
 ### reversinglabs-a1000-dynamic-analysis-report
 
@@ -10778,7 +10778,7 @@ Perform sample classification actions - get sample classification, set sample cl
 > **SHA-1**: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
 > **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
 > **MD5**: a984de0ce47a8d5337ef569c812b57d0
-> 
+>
 
 ### reversinglabs-a1000-yara
 

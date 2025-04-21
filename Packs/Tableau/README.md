@@ -39,6 +39,7 @@ filebeat.inputs:
 ### Parsing Rules Supported Timestamp Formats
 
 The following are supported:
+
 - yyyy-mm-dd hh:mm:ss.ms(3) -zzzz
 - yyyy-mm-ddThh:mm:ss.ms(*) "-zzzz" (At the beginning of the code)
 - yyyy-mm-ddThh:mm:ss.ms(3)Z (Available for the **ts** field in the raw log)
