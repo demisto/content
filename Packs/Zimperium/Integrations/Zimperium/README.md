@@ -1,7 +1,7 @@
 Zimperium is a mobile security platform that generates alerts based on anomalous or unauthorized activities detected on a user's mobile device.
 This integration was integrated and tested with version 4.24 of Zimperium
-## Configure Zimperium in Cortex
 
+## Configure Zimperium in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -16,77 +16,80 @@ This integration was integrated and tested with version 4.24 of Zimperium
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### zimperium-events-search
+
 ***
 Search events.
-
 
 #### Base Command
 
 `zimperium-events-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search events query. | Optional | 
-| verbose | Retrieve event full details. | Optional | 
-| size | Maximum number of events to retrieve in each page. Default is 10. | Optional | 
-| page | Page number. | Optional | 
-
+| query | Search events query. | Optional |
+| verbose | Retrieve event full details. | Optional |
+| size | Maximum number of events to retrieve in each page. Default is 10. | Optional |
+| page | Page number. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Events.appName | String | Application name. | 
-| Zimperium.Events.bssid | String | Network BSSID. | 
-| Zimperium.Events.bundleId | String | Bundle ID. | 
-| Zimperium.Events.country | String | Event country. | 
-| Zimperium.Events.customerContactName | String | Customer contact name. | 
-| Zimperium.Events.customerContactPhone | String | Customer contact phone. | 
-| Zimperium.Events.customerId | String | Customer ID. | 
-| Zimperium.Events.deviceHash | String | Device hash. | 
-| Zimperium.Events.deviceId | string | Device ID. | 
-| Zimperium.Events.deviceModel | String | Device model. | 
-| Zimperium.Events.deviceTime | String | Device time. | 
-| Zimperium.Events.eventDetail | Unknown | Event additional details. | 
-| Zimperium.Events.eventFullName | String | Event full name. | 
-| Zimperium.Events.eventId | String | Event ID. | 
-| Zimperium.Events.eventName | String | Event name. | 
-| Zimperium.Events.eventState | String | Event state. | 
-| Zimperium.Events.eventStateCode | Number | Event status code. | 
-| Zimperium.Events.eventVector | String | Device or network attack vector. | 
-| Zimperium.Events.firstName | String | First name of the phone owner. | 
-| Zimperium.Events.lastName | String | Last name of the phone owner. | 
-| Zimperium.Events.middleName | String | Middle name of the phone owner. | 
-| Zimperium.Events.incidentSummary | String | Incident summary. | 
-| Zimperium.Events.lastSeenTime | Date | Event last seen time. | 
-| Zimperium.Events.locationDetail | String | Location details. | 
-| Zimperium.Events.latitude | String | Latitude of the phone. | 
-| Zimperium.Events.longitude | String | Longitude of the phone. | 
-| Zimperium.Events.mdmId | String | MD ID. | 
-| Zimperium.Events.mitigatedDate | Date | Mitigated date of the phone. | 
-| Zimperium.Events.osType | String | OS type of the phone. | 
-| Zimperium.Events.osVersion | String | OS version of the phone. | 
-| Zimperium.Events.persistedTime | Date | Persisted time of the event. | 
-| Zimperium.Events.queuedTime | Date | Queued time of the event. | 
-| Zimperium.Events.severity | String | Severity of the event. | 
-| Zimperium.Events.ssid | String | Network SSID. | 
-| Zimperium.Events.tag1 | String | User pre\-defined Zimperium tag. | 
-| Zimperium.Events.tag2 | String | User pre defined Zimperium tag. | 
-| Zimperium.Events.typeDesc | String | Event type description. | 
-| Zimperium.Events.userEmail | String | Email address of the phone user. | 
-| Zimperium.Events.userPhoneNumber | String | Phone number of the phone user. | 
-| Zimperium.Events.zdid | String | Zimperium device ID. | 
-| Zimperium.Events.zipsVersion | String | zIPS version where the event occurred. | 
-
+| Zimperium.Events.appName | String | Application name. |
+| Zimperium.Events.bssid | String | Network BSSID. |
+| Zimperium.Events.bundleId | String | Bundle ID. |
+| Zimperium.Events.country | String | Event country. |
+| Zimperium.Events.customerContactName | String | Customer contact name. |
+| Zimperium.Events.customerContactPhone | String | Customer contact phone. |
+| Zimperium.Events.customerId | String | Customer ID. |
+| Zimperium.Events.deviceHash | String | Device hash. |
+| Zimperium.Events.deviceId | string | Device ID. |
+| Zimperium.Events.deviceModel | String | Device model. |
+| Zimperium.Events.deviceTime | String | Device time. |
+| Zimperium.Events.eventDetail | Unknown | Event additional details. |
+| Zimperium.Events.eventFullName | String | Event full name. |
+| Zimperium.Events.eventId | String | Event ID. |
+| Zimperium.Events.eventName | String | Event name. |
+| Zimperium.Events.eventState | String | Event state. |
+| Zimperium.Events.eventStateCode | Number | Event status code. |
+| Zimperium.Events.eventVector | String | Device or network attack vector. |
+| Zimperium.Events.firstName | String | First name of the phone owner. |
+| Zimperium.Events.lastName | String | Last name of the phone owner. |
+| Zimperium.Events.middleName | String | Middle name of the phone owner. |
+| Zimperium.Events.incidentSummary | String | Incident summary. |
+| Zimperium.Events.lastSeenTime | Date | Event last seen time. |
+| Zimperium.Events.locationDetail | String | Location details. |
+| Zimperium.Events.latitude | String | Latitude of the phone. |
+| Zimperium.Events.longitude | String | Longitude of the phone. |
+| Zimperium.Events.mdmId | String | MD ID. |
+| Zimperium.Events.mitigatedDate | Date | Mitigated date of the phone. |
+| Zimperium.Events.osType | String | OS type of the phone. |
+| Zimperium.Events.osVersion | String | OS version of the phone. |
+| Zimperium.Events.persistedTime | Date | Persisted time of the event. |
+| Zimperium.Events.queuedTime | Date | Queued time of the event. |
+| Zimperium.Events.severity | String | Severity of the event. |
+| Zimperium.Events.ssid | String | Network SSID. |
+| Zimperium.Events.tag1 | String | User pre\-defined Zimperium tag. |
+| Zimperium.Events.tag2 | String | User pre defined Zimperium tag. |
+| Zimperium.Events.typeDesc | String | Event type description. |
+| Zimperium.Events.userEmail | String | Email address of the phone user. |
+| Zimperium.Events.userPhoneNumber | String | Phone number of the phone user. |
+| Zimperium.Events.zdid | String | Zimperium device ID. |
+| Zimperium.Events.zipsVersion | String | zIPS version where the event occurred. |
 
 #### Command Example
+
 ```!zimperium-events-search query="severity==LOW;eventName==THREAT_DETECTED;osType==Android"```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -138,66 +141,67 @@ Search events.
 
 #### Human Readable Output
 
->### Number of events found: 1. 
+>### Number of events found: 1
+>
 >|eventId|eventName|eventState|incidentSummary|severity|persistedTime|
 >|---|---|---|---|---|---|
 >| 7fb73a12-4be1-4b91-be33-60f3e580c689 | THREAT_DETECTED | Pending | Device is dormant. It is recommended to contact the user to reactivate the app. | LOW | 2020-06-06 02:05:57 +0000 |
 
-
 ### zimperium-users-search
+
 ***
 Search users.
-
 
 #### Base Command
 
 `zimperium-users-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query to search for users. | Optional | 
-| email | Search users by email address. | Optional | 
-| size | Maximum number of users to retrieve in each page. Default is 10. | Optional | 
-| page | Page number. | Optional | 
-
+| query | The query to search for users. | Optional |
+| email | Search users by email address. | Optional |
+| size | Maximum number of users to retrieve in each page. Default is 10. | Optional |
+| page | Page number. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Users.activationTokenUrl | String | Activation token that is used to activate zIPS. | 
-| Zimperium.Users.agreedToTerms | bool | Whether the user completed enrollment. | 
-| Zimperium.Users.alias | String | User alias. | 
-| Zimperium.Users.createdDate | Date | User created date. | 
-| Zimperium.Users.dateJoined | Date | User joined date. | 
-| Zimperium.Users.email | String | User email address. | 
-| Zimperium.Users.firstName | String | User first name. | 
-| Zimperium.Users.lastLogin | Date | User last login date. | 
-| Zimperium.Users.lastName | String | User last name. | 
-| Zimperium.Users.middleName | String | User middle name. | 
-| Zimperium.Users.lastSyncFromMdm | Date | Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc. | 
-| Zimperium.Users.lastZconsoleLogin | Date | User last login to the Zimperium console. | 
-| Zimperium.Users.modifiedDate | Date | User modified date. | 
-| Zimperium.Users.objectId | String | User object ID. | 
-| Zimperium.Users.passwordExpirationDate | Date | Use password expiration date. | 
-| Zimperium.Users.phoneNumber | String | User phone number. | 
-| Zimperium.Users.phoneNumberVerified | bool | Whether the user phone number is verified. | 
-| Zimperium.Users.pwdRecoveryRequest | bool | Whether the user requested password recovery. | 
-| Zimperium.Users.role | Number | User role. | 
-| Zimperium.Users.roles.roleId | Number | User role ID. | 
-| Zimperium.Users.signupSteps | Number | User sign\-up steps. | 
-| Zimperium.Users.staff | bool | Whether the user is a staff member. | 
-| Zimperium.Users.status | Number | User status. | 
-| Zimperium.Users.superuser | bool | Whether the user is a superuser. | 
-| Zimperium.Users.syncedFromMdm | bool | Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc. | 
-| Zimperium.Users.termsVersion | String | User terms version. | 
-
+| Zimperium.Users.activationTokenUrl | String | Activation token that is used to activate zIPS. |
+| Zimperium.Users.agreedToTerms | bool | Whether the user completed enrollment. |
+| Zimperium.Users.alias | String | User alias. |
+| Zimperium.Users.createdDate | Date | User created date. |
+| Zimperium.Users.dateJoined | Date | User joined date. |
+| Zimperium.Users.email | String | User email address. |
+| Zimperium.Users.firstName | String | User first name. |
+| Zimperium.Users.lastLogin | Date | User last login date. |
+| Zimperium.Users.lastName | String | User last name. |
+| Zimperium.Users.middleName | String | User middle name. |
+| Zimperium.Users.lastSyncFromMdm | Date | Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc. |
+| Zimperium.Users.lastZconsoleLogin | Date | User last login to the Zimperium console. |
+| Zimperium.Users.modifiedDate | Date | User modified date. |
+| Zimperium.Users.objectId | String | User object ID. |
+| Zimperium.Users.passwordExpirationDate | Date | Use password expiration date. |
+| Zimperium.Users.phoneNumber | String | User phone number. |
+| Zimperium.Users.phoneNumberVerified | bool | Whether the user phone number is verified. |
+| Zimperium.Users.pwdRecoveryRequest | bool | Whether the user requested password recovery. |
+| Zimperium.Users.role | Number | User role. |
+| Zimperium.Users.roles.roleId | Number | User role ID. |
+| Zimperium.Users.signupSteps | Number | User sign\-up steps. |
+| Zimperium.Users.staff | bool | Whether the user is a staff member. |
+| Zimperium.Users.status | Number | User status. |
+| Zimperium.Users.superuser | bool | Whether the user is a superuser. |
+| Zimperium.Users.syncedFromMdm | bool | Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc. |
+| Zimperium.Users.termsVersion | String | User terms version. |
 
 #### Command Example
+
 ```!zimperium-users-search size=3 page=0```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -305,65 +309,66 @@ Search users.
 
 #### Human Readable Output
 
->### Number of users found: 5.  More users are available in the next page.
+>### Number of users found: 5.  More users are available in the next page
+>
 >|objectId|alias|firstName|lastName|email|
 >|---|---|---|---|---|
 >| 3d588112-6467-4c2d-932a-b728f866163d | paxsoar-rbaqodbmqad6dr53qmx0jvl2ze5v02pw | Fname | Lname | test@gmail.com |
 >| 437c8d9f-e9c2-44a0-bd8d-5cebd5cd8162 | paxsoar-kz9qvdnvedqnkkkrgdvrobr3pkagmlovaoz3vo0dkp | Hema | Halliyal | hhalliyal@paloaltonetworks.com |
 >| 109e9873-29a4-49f3-bcf1-fd24ec634517 | paxsoar-9ok5bgx3o8ax6vd8xk9rrq6x25v5ml808djrvwb94e | A | Krupnik | akrupnik@paloaltonetworks.com |
 
-
 ### zimperium-user-get-by-id
+
 ***
 Retrieves details for a single user by object ID.
-
 
 #### Base Command
 
 `zimperium-user-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_id | Object ID. | Required | 
-
+| object_id | Object ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Users.activationTokenUrl | String | Activation token that is used to activate zIPS. | 
-| Zimperium.Users.agreedToTerms | Number | Whether the user completed enrollment. | 
-| Zimperium.Users.alias | String | User alias. | 
-| Zimperium.Users.createdDate | Date | User created date. | 
-| Zimperium.Users.dateJoined | Date | User joined date. | 
-| Zimperium.Users.email | String | User email address. | 
-| Zimperium.Users.firstName | String | User first name. | 
-| Zimperium.Users.lastName | String | User last name. | 
-| Zimperium.Users.middleName | String | User middle name. | 
-| Zimperium.Users.lastLogin | Date | User last login date. | 
-| Zimperium.Users.lastSyncFromMdm | Unknown | Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc. | 
-| Zimperium.Users.lastZconsoleLogin | Date | User last login to the Zimperium console. | 
-| Zimperium.Users.modifiedDate | Date | User last modified date. | 
-| Zimperium.Users.objectId | String | User object ID. | 
-| Zimperium.Users.passwordExpirationDate | Date | Use password expiration date. | 
-| Zimperium.Users.phoneNumber | String | User phone number. | 
-| Zimperium.Users.phoneNumberVerified | bool | Whether the user phone number is verified. | 
-| Zimperium.Users.pwdRecoveryRequest | bool | Whether the user requested password recovery. | 
-| Zimperium.Users.role | Number | User role. | 
-| Zimperium.Users.roles.roleId | Number | User role ID. | 
-| Zimperium.Users.signupSteps | Number | User sign\-up steps. | 
-| Zimperium.Users.staff | bool | Whether the user is a staff member. | 
-| Zimperium.Users.status | Number | User status. | 
-| Zimperium.Users.superuser | bool | Whether the user is a superuser. | 
-| Zimperium.Users.syncedFromMdm | bool | Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc. | 
-| Zimperium.Users.termsVersion | String | User terms version. | 
-
+| Zimperium.Users.activationTokenUrl | String | Activation token that is used to activate zIPS. |
+| Zimperium.Users.agreedToTerms | Number | Whether the user completed enrollment. |
+| Zimperium.Users.alias | String | User alias. |
+| Zimperium.Users.createdDate | Date | User created date. |
+| Zimperium.Users.dateJoined | Date | User joined date. |
+| Zimperium.Users.email | String | User email address. |
+| Zimperium.Users.firstName | String | User first name. |
+| Zimperium.Users.lastName | String | User last name. |
+| Zimperium.Users.middleName | String | User middle name. |
+| Zimperium.Users.lastLogin | Date | User last login date. |
+| Zimperium.Users.lastSyncFromMdm | Unknown | Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc. |
+| Zimperium.Users.lastZconsoleLogin | Date | User last login to the Zimperium console. |
+| Zimperium.Users.modifiedDate | Date | User last modified date. |
+| Zimperium.Users.objectId | String | User object ID. |
+| Zimperium.Users.passwordExpirationDate | Date | Use password expiration date. |
+| Zimperium.Users.phoneNumber | String | User phone number. |
+| Zimperium.Users.phoneNumberVerified | bool | Whether the user phone number is verified. |
+| Zimperium.Users.pwdRecoveryRequest | bool | Whether the user requested password recovery. |
+| Zimperium.Users.role | Number | User role. |
+| Zimperium.Users.roles.roleId | Number | User role ID. |
+| Zimperium.Users.signupSteps | Number | User sign\-up steps. |
+| Zimperium.Users.staff | bool | Whether the user is a staff member. |
+| Zimperium.Users.status | Number | User status. |
+| Zimperium.Users.superuser | bool | Whether the user is a superuser. |
+| Zimperium.Users.syncedFromMdm | bool | Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc. |
+| Zimperium.Users.termsVersion | String | User terms version. |
 
 #### Command Example
+
 ```!zimperium-user-get-by-id object_id=a045723f-5d3b-46f6-915a-fcbd42752aa0```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -405,78 +410,79 @@ Retrieves details for a single user by object ID.
 
 #### Human Readable Output
 
->### User:
+>### User
+>
 >|objectId|alias|firstName|lastName|email|
 >|---|---|---|---|---|
 >| a045723f-5d3b-46f6-915a-fcbd42752aa0 | paxsoar-mb11mz8o7mgne39eybezl8qngzen7bbg3ywld0lxqa | Z | Support | paxsoar.support@zimperium.com |
 
-
 ### zimperium-devices-search
+
 ***
 Search devices.
-
 
 #### Base Command
 
 `zimperium-devices-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search devices query. | Optional | 
-| size | Maximum number of users to retrieve in each page. Default is 10. | Optional | 
-| page | Page number. | Optional | 
-
+| query | Search devices query. | Optional |
+| size | Maximum number of users to retrieve in each page. Default is 10. | Optional |
+| page | Page number. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Devices.appName | String | Application name. | 
-| Zimperium.Devices.bundleId | String | Bundle ID. | 
-| Zimperium.Devices.country | String | Device country. | 
-| Zimperium.Devices.countryCode | String | Device country code. | 
-| Zimperium.Devices.createdAt | Date | Created time of the device. | 
-| Zimperium.Devices.deviceGroupName | String | Device group name. | 
-| Zimperium.Devices.deviceHash | String | Device hash. | 
-| Zimperium.Devices.deviceId | String | Device ID. | 
-| Zimperium.Devices.email | String | Email address associated to the device. | 
-| Zimperium.Devices.externalTrackingId1 | String | User pre\-defined Zimperium tag. | 
-| Zimperium.Devices.externalTrackingId2 | String | User pre\-defined Zimperium tag. | 
-| Zimperium.Devices.firstName | String | Device owner first name. | 
-| Zimperium.Devices.lastName | String | Device owner last name. | 
-| Zimperium.Devices.middleName | String | Device owner middle name. | 
-| Zimperium.Devices.lastSeen | Date | Device last seen. | 
-| Zimperium.Devices.mdmId | String | MDM ID, e.g., AirWatch, Mobile Iron. | 
-| Zimperium.Devices.model | String | Device model. | 
-| Zimperium.Devices.operatorAlpha | String | Name of the mobile operator. | 
-| Zimperium.Devices.osBuild | String | OS build. | 
-| Zimperium.Devices.osSecurityPatch | String | OS security patch. | 
-| Zimperium.Devices.osType | String | OS type of the phone. | 
-| Zimperium.Devices.osUpgradeable | bool | Whether the OS is upgradable. | 
-| Zimperium.Devices.osVersion | String | OS version. | 
-| Zimperium.Devices.osVulnerable | bool | Whether the OS is vulnerable. | 
-| Zimperium.Devices.phoneNumber | String | Device phone number. | 
-| Zimperium.Devices.processor | String | Device processor. | 
-| Zimperium.Devices.riskPosture | String | Device risk. | 
-| Zimperium.Devices.riskPostureCode | Number | Device risk code. | 
-| Zimperium.Devices.status | String | Device status. | 
-| Zimperium.Devices.statusCode | Number | Device status code. | 
-| Zimperium.Devices.systemToken | String | Device system token. | 
-| Zimperium.Devices.type | String | Device type. | 
-| Zimperium.Devices.updatedDate | Date | Device updated date. | 
-| Zimperium.Devices.userId | String | User ID of the device owner. | 
-| Zimperium.Devices.version | String | Device version. | 
-| Zimperium.Devices.vulnerabilities | String | Device vulnerabilities. | 
-| Zimperium.Devices.zdid | String | Device ZD ID. | 
-| Zimperium.Devices.zipsDistributionVersion | String | zIPS distribution version. | 
-| Zimperium.Devices.zipsVersion | String | zIPS version. | 
-
+| Zimperium.Devices.appName | String | Application name. |
+| Zimperium.Devices.bundleId | String | Bundle ID. |
+| Zimperium.Devices.country | String | Device country. |
+| Zimperium.Devices.countryCode | String | Device country code. |
+| Zimperium.Devices.createdAt | Date | Created time of the device. |
+| Zimperium.Devices.deviceGroupName | String | Device group name. |
+| Zimperium.Devices.deviceHash | String | Device hash. |
+| Zimperium.Devices.deviceId | String | Device ID. |
+| Zimperium.Devices.email | String | Email address associated to the device. |
+| Zimperium.Devices.externalTrackingId1 | String | User pre\-defined Zimperium tag. |
+| Zimperium.Devices.externalTrackingId2 | String | User pre\-defined Zimperium tag. |
+| Zimperium.Devices.firstName | String | Device owner first name. |
+| Zimperium.Devices.lastName | String | Device owner last name. |
+| Zimperium.Devices.middleName | String | Device owner middle name. |
+| Zimperium.Devices.lastSeen | Date | Device last seen. |
+| Zimperium.Devices.mdmId | String | MDM ID, e.g., AirWatch, Mobile Iron. |
+| Zimperium.Devices.model | String | Device model. |
+| Zimperium.Devices.operatorAlpha | String | Name of the mobile operator. |
+| Zimperium.Devices.osBuild | String | OS build. |
+| Zimperium.Devices.osSecurityPatch | String | OS security patch. |
+| Zimperium.Devices.osType | String | OS type of the phone. |
+| Zimperium.Devices.osUpgradeable | bool | Whether the OS is upgradable. |
+| Zimperium.Devices.osVersion | String | OS version. |
+| Zimperium.Devices.osVulnerable | bool | Whether the OS is vulnerable. |
+| Zimperium.Devices.phoneNumber | String | Device phone number. |
+| Zimperium.Devices.processor | String | Device processor. |
+| Zimperium.Devices.riskPosture | String | Device risk. |
+| Zimperium.Devices.riskPostureCode | Number | Device risk code. |
+| Zimperium.Devices.status | String | Device status. |
+| Zimperium.Devices.statusCode | Number | Device status code. |
+| Zimperium.Devices.systemToken | String | Device system token. |
+| Zimperium.Devices.type | String | Device type. |
+| Zimperium.Devices.updatedDate | Date | Device updated date. |
+| Zimperium.Devices.userId | String | User ID of the device owner. |
+| Zimperium.Devices.version | String | Device version. |
+| Zimperium.Devices.vulnerabilities | String | Device vulnerabilities. |
+| Zimperium.Devices.zdid | String | Device ZD ID. |
+| Zimperium.Devices.zipsDistributionVersion | String | zIPS distribution version. |
+| Zimperium.Devices.zipsVersion | String | zIPS version. |
 
 #### Command Example
+
 ```!zimperium-devices-search query="osType==Android"```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -535,77 +541,78 @@ Search devices.
 
 #### Human Readable Output
 
->### Number of devices found: 1. 
+>### Number of devices found: 1
+>
 >|deviceId|zdid|deviceHash|model|osType|osVersion|updatedDate|
 >|---|---|---|---|---|---|---|
 >| 198280699673142 | c728a9f1-dbcc-4b0f-84b2-5dc07e80b6e5 | d3a5f56726ea39341ca19a534b8d5bc0cac07484b3032148857118f31b72bf01 | SM-G900H | Android | 4.4.2 | 2020-07-07 02:28:47 UTC |
 
-
 ### zimperium-device-get-by-id
+
 ***
 Retrieves details for a single device.
-
 
 #### Base Command
 
 `zimperium-device-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | Device ID. | Optional | 
-| zdid | Zimperium ID. | Optional | 
-
+| device_id | Device ID. | Optional |
+| zdid | Zimperium ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Devices.appName | String | Application name. | 
-| Zimperium.Devices.bundleId | String | Bundle ID. | 
-| Zimperium.Devices.country | String | Device country. | 
-| Zimperium.Devices.countryCode | String | Device country code. | 
-| Zimperium.Devices.createdAt | Date | Created time of the device. | 
-| Zimperium.Devices.deviceGroupName | String | Device group name. | 
-| Zimperium.Devices.deviceHash | String | Device hash. | 
-| Zimperium.Devices.deviceId | String | Device ID. | 
-| Zimperium.Devices.email | String | Email address associated to the device. | 
-| Zimperium.Devices.externalTrackingId1 | String | User pre\-defined Zimperium tag. | 
-| Zimperium.Devices.externalTrackingId2 | String | User pre\-defined Zimperium tag. | 
-| Zimperium.Devices.firstName | String | Device owner first name. | 
-| Zimperium.Devices.lastName | String | Device owner last name. | 
-| Zimperium.Devices.middleName | String | Device owner middle name. | 
-| Zimperium.Devices.lastSeen | Date | Device last seen time. | 
-| Zimperium.Devices.mdmId | String | MDM ID. e.g: AirWatch, Iron Mobile. | 
-| Zimperium.Devices.model | String | Device model. | 
-| Zimperium.Devices.operatorAlpha | String | Name of the mobile operator. | 
-| Zimperium.Devices.osBuild | String | OS build. | 
-| Zimperium.Devices.osSecurityPatch | String | OS security patch. | 
-| Zimperium.Devices.osType | String | OS type of the phone. | 
-| Zimperium.Devices.osUpgradeable | bool | Whether the OS is upgradable. | 
-| Zimperium.Devices.osVersion | String | OS version. | 
-| Zimperium.Devices.osVulnerable | bool | Whether the OS is vulnerable. | 
-| Zimperium.Devices.phoneNumber | String | Phone number. | 
-| Zimperium.Devices.processor | String | Device processor. | 
-| Zimperium.Devices.riskPosture | String | Device risk. | 
-| Zimperium.Devices.riskPostureCode | Number | Device risk code. | 
-| Zimperium.Devices.status | String | Device status. | 
-| Zimperium.Devices.statusCode | Number | Device status code. | 
-| Zimperium.Devices.systemToken | String | Device system token. | 
-| Zimperium.Devices.type | String | Device type. | 
-| Zimperium.Devices.updatedDate | Date | Device updated date. | 
-| Zimperium.Devices.userId | String | Device owner user ID. | 
-| Zimperium.Devices.version | String | Device version. | 
-| Zimperium.Devices.vulnerabilities | String | Device vulnerabilities. | 
-| Zimperium.Devices.zdid | String | Device ZD ID. | 
-| Zimperium.Devices.zipsDistributionVersion | String | zIPS distribution version. | 
-| Zimperium.Devices.zipsVersion | String | zIPS version. | 
-
+| Zimperium.Devices.appName | String | Application name. |
+| Zimperium.Devices.bundleId | String | Bundle ID. |
+| Zimperium.Devices.country | String | Device country. |
+| Zimperium.Devices.countryCode | String | Device country code. |
+| Zimperium.Devices.createdAt | Date | Created time of the device. |
+| Zimperium.Devices.deviceGroupName | String | Device group name. |
+| Zimperium.Devices.deviceHash | String | Device hash. |
+| Zimperium.Devices.deviceId | String | Device ID. |
+| Zimperium.Devices.email | String | Email address associated to the device. |
+| Zimperium.Devices.externalTrackingId1 | String | User pre\-defined Zimperium tag. |
+| Zimperium.Devices.externalTrackingId2 | String | User pre\-defined Zimperium tag. |
+| Zimperium.Devices.firstName | String | Device owner first name. |
+| Zimperium.Devices.lastName | String | Device owner last name. |
+| Zimperium.Devices.middleName | String | Device owner middle name. |
+| Zimperium.Devices.lastSeen | Date | Device last seen time. |
+| Zimperium.Devices.mdmId | String | MDM ID. e.g: AirWatch, Iron Mobile. |
+| Zimperium.Devices.model | String | Device model. |
+| Zimperium.Devices.operatorAlpha | String | Name of the mobile operator. |
+| Zimperium.Devices.osBuild | String | OS build. |
+| Zimperium.Devices.osSecurityPatch | String | OS security patch. |
+| Zimperium.Devices.osType | String | OS type of the phone. |
+| Zimperium.Devices.osUpgradeable | bool | Whether the OS is upgradable. |
+| Zimperium.Devices.osVersion | String | OS version. |
+| Zimperium.Devices.osVulnerable | bool | Whether the OS is vulnerable. |
+| Zimperium.Devices.phoneNumber | String | Phone number. |
+| Zimperium.Devices.processor | String | Device processor. |
+| Zimperium.Devices.riskPosture | String | Device risk. |
+| Zimperium.Devices.riskPostureCode | Number | Device risk code. |
+| Zimperium.Devices.status | String | Device status. |
+| Zimperium.Devices.statusCode | Number | Device status code. |
+| Zimperium.Devices.systemToken | String | Device system token. |
+| Zimperium.Devices.type | String | Device type. |
+| Zimperium.Devices.updatedDate | Date | Device updated date. |
+| Zimperium.Devices.userId | String | Device owner user ID. |
+| Zimperium.Devices.version | String | Device version. |
+| Zimperium.Devices.vulnerabilities | String | Device vulnerabilities. |
+| Zimperium.Devices.zdid | String | Device ZD ID. |
+| Zimperium.Devices.zipsDistributionVersion | String | zIPS distribution version. |
+| Zimperium.Devices.zipsVersion | String | zIPS version. |
 
 #### Command Example
+
 ```!zimperium-device-get-by-id zdid=2a086e00-32f3-4c03-90b2-b9fd4ea836e5```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -660,79 +667,80 @@ Retrieves details for a single device.
 
 #### Human Readable Output
 
->### Device :
+>### Device
+>
 >|deviceId|zdid|updatedDate|deviceHash|
 >|---|---|---|---|
 >| c3e39cf6-97aa-38df-86eb-60a8a2cafbc1 | 2a086e00-32f3-4c03-90b2-b9fd4ea836e5 | 2020-07-13 12:20:52 UTC | f5b42533a5cd2e4452a954b62a5bbab7ac2147d5bf1ade726a48f1f1d111c9 |
 
-
 ### zimperium-devices-get-last-updated
+
 ***
 Retrieves devices from Greater than Last Updated.
-
 
 #### Base Command
 
 `zimperium-devices-get-last-updated`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_last_update | &lt;number&gt; &lt;time unit&gt;, e.g., 7 days, 3 months, 1 year | Optional | 
-| exclude_deleted | Whether to exclude deleted devices. Default is True. | Optional | 
-| size | Number of devices to retrieve in each page. | Optional | 
-| page | Page number. | Optional | 
-
+| from_last_update | &lt;number&gt; &lt;time unit&gt;, e.g., 7 days, 3 months, 1 year | Optional |
+| exclude_deleted | Whether to exclude deleted devices. Default is True. | Optional |
+| size | Number of devices to retrieve in each page. | Optional |
+| page | Page number. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Devices.appName | String | Application name. | 
-| Zimperium.Devices.bundleId | String | Bundle ID. | 
-| Zimperium.Devices.country | String | Device country. | 
-| Zimperium.Devices.countryCode | String | Device country code. | 
-| Zimperium.Devices.createdAt | Date | Created time of the device. | 
-| Zimperium.Devices.deviceGroupName | String | Device group name. | 
-| Zimperium.Devices.deviceHash | String | Device hash. | 
-| Zimperium.Devices.deviceId | String | Device ID. | 
-| Zimperium.Devices.email | String | Email associated to the device. | 
-| Zimperium.Devices.externalTrackingId1 | String | User pre defined Zimperium Tag. | 
-| Zimperium.Devices.externalTrackingId2 | String | User pre defined Zimperium Tag. | 
-| Zimperium.Devices.firstName | String | Device owner first name. | 
-| Zimperium.Devices.lastName | String | Device owner last name. | 
-| Zimperium.Devices.middleName | String | Device owner middle name. | 
-| Zimperium.Devices.lastSeen | Date | Device last seen time. | 
-| Zimperium.Devices.mdmId | String | MDM ID, e.g., AirWatch, Mobile Iron. | 
-| Zimperium.Devices.model | String | Device model. | 
-| Zimperium.Devices.operatorAlpha | String | Name of the mobile operator. | 
-| Zimperium.Devices.osBuild | String | OS build. | 
-| Zimperium.Devices.osSecurityPatch | String | OS security patch. | 
-| Zimperium.Devices.osType | String | OS type of the phone. | 
-| Zimperium.Devices.osUpgradeable | bool | Whether the OS is upgradable. | 
-| Zimperium.Devices.osVersion | String | OS version. | 
-| Zimperium.Devices.osVulnerable | bool | Whether the OS is vulnerable. | 
-| Zimperium.Devices.phoneNumber | String | Phone number. | 
-| Zimperium.Devices.processor | String | Device processor. | 
-| Zimperium.Devices.riskPosture | String | Device risk. | 
-| Zimperium.Devices.riskPostureCode | Number | Device risk code. | 
-| Zimperium.Devices.status | String | Device status. | 
-| Zimperium.Devices.statusCode | Number | Device status code. | 
-| Zimperium.Devices.systemToken | String | Device system token. | 
-| Zimperium.Devices.type | String | Device type. | 
-| Zimperium.Devices.updatedDate | Date | Device updated date. | 
-| Zimperium.Devices.userId | String | Device owner user ID. | 
-| Zimperium.Devices.version | String | Device version. | 
-| Zimperium.Devices.vulnerabilities | String | Device vulnerabilities. | 
-| Zimperium.Devices.zdid | String | Device ZD ID. | 
-| Zimperium.Devices.zipsDistributionVersion | String | zIPS distribution version. | 
-| Zimperium.Devices.zipsVersion | String | zIPS version. | 
-
+| Zimperium.Devices.appName | String | Application name. |
+| Zimperium.Devices.bundleId | String | Bundle ID. |
+| Zimperium.Devices.country | String | Device country. |
+| Zimperium.Devices.countryCode | String | Device country code. |
+| Zimperium.Devices.createdAt | Date | Created time of the device. |
+| Zimperium.Devices.deviceGroupName | String | Device group name. |
+| Zimperium.Devices.deviceHash | String | Device hash. |
+| Zimperium.Devices.deviceId | String | Device ID. |
+| Zimperium.Devices.email | String | Email associated to the device. |
+| Zimperium.Devices.externalTrackingId1 | String | User pre defined Zimperium Tag. |
+| Zimperium.Devices.externalTrackingId2 | String | User pre defined Zimperium Tag. |
+| Zimperium.Devices.firstName | String | Device owner first name. |
+| Zimperium.Devices.lastName | String | Device owner last name. |
+| Zimperium.Devices.middleName | String | Device owner middle name. |
+| Zimperium.Devices.lastSeen | Date | Device last seen time. |
+| Zimperium.Devices.mdmId | String | MDM ID, e.g., AirWatch, Mobile Iron. |
+| Zimperium.Devices.model | String | Device model. |
+| Zimperium.Devices.operatorAlpha | String | Name of the mobile operator. |
+| Zimperium.Devices.osBuild | String | OS build. |
+| Zimperium.Devices.osSecurityPatch | String | OS security patch. |
+| Zimperium.Devices.osType | String | OS type of the phone. |
+| Zimperium.Devices.osUpgradeable | bool | Whether the OS is upgradable. |
+| Zimperium.Devices.osVersion | String | OS version. |
+| Zimperium.Devices.osVulnerable | bool | Whether the OS is vulnerable. |
+| Zimperium.Devices.phoneNumber | String | Phone number. |
+| Zimperium.Devices.processor | String | Device processor. |
+| Zimperium.Devices.riskPosture | String | Device risk. |
+| Zimperium.Devices.riskPostureCode | Number | Device risk code. |
+| Zimperium.Devices.status | String | Device status. |
+| Zimperium.Devices.statusCode | Number | Device status code. |
+| Zimperium.Devices.systemToken | String | Device system token. |
+| Zimperium.Devices.type | String | Device type. |
+| Zimperium.Devices.updatedDate | Date | Device updated date. |
+| Zimperium.Devices.userId | String | Device owner user ID. |
+| Zimperium.Devices.version | String | Device version. |
+| Zimperium.Devices.vulnerabilities | String | Device vulnerabilities. |
+| Zimperium.Devices.zdid | String | Device ZD ID. |
+| Zimperium.Devices.zipsDistributionVersion | String | zIPS distribution version. |
+| Zimperium.Devices.zipsVersion | String | zIPS version. |
 
 #### Command Example
+
 ```!zimperium-devices-get-last-updated from_last_update="1 month"```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -838,56 +846,57 @@ Retrieves devices from Greater than Last Updated.
 
 #### Human Readable Output
 
->### Number of devices found: 2. 
+>### Number of devices found: 2
+>
 >|deviceId|zdid|model|osType|osVersion|updatedDate|deviceHash|
 >|---|---|---|---|---|---|---|
 >| 198280699673142 | c728a9f1-dbcc-4b0f-84b2-5dc07e80b6e5 | SM-G900H | Android | 4.4.2 | 2020-07-07 02:28:47 UTC | d3a5f56726ea39341ca19a534b8d5bc0cac07484b3032148857118f31b72bf01 |
 >| c3e39cf6-97aa-38df-86eb-60a8a2cafbc1 | 2a086e00-32f3-4c03-90b2-b9fd4ea836e5 |  |  |  | 2020-07-13 12:20:52 UTC | f5b42533a5cd2e4452a954b62a5bbab7ac2147d5bf1ade726a48f1f1d111c9 |
 
-
 ### zimperium-app-classification-get
+
 ***
 Retrieves application classification.
-
 
 #### Base Command
 
 `zimperium-app-classification-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | Application name. | Optional | 
-| app_hash | Application hash. | Optional | 
-
+| app_name | Application name. | Optional |
+| app_hash | Application hash. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Application.classification | String | Application classification. | 
-| Zimperium.Application.deviceCount | Number | Application device count. | 
-| Zimperium.Application.hash | String | Application hash. | 
-| Zimperium.Application.metadata | Unknown | Application metadata. | 
-| Zimperium.Application.modifiedDate | Date | Application modified date. | 
-| Zimperium.Application.name | String | Application name. | 
-| Zimperium.Application.namespace | String | Application name space. | 
-| Zimperium.Application.objectId | String | Application object ID. | 
-| Zimperium.Application.privacyEnum | Number | Application privacy enum. | 
-| Zimperium.Application.privacyRisk | String | Application privacy risk. | 
-| Zimperium.Application.processState | String | Application process state. | 
-| Zimperium.Application.score | Number | Application score \(0 to 100\). 0 is the best, 100 is the worst. | 
-| Zimperium.Application.securityEnum | Number | Application security enum. | 
-| Zimperium.Application.securityRisk | String | Application security risk. | 
-| Zimperium.Application.systemToken | String | System token. | 
-| Zimperium.Application.type | Number | Application type. | 
-| Zimperium.Application.version | String | Application version. | 
-
+| Zimperium.Application.classification | String | Application classification. |
+| Zimperium.Application.deviceCount | Number | Application device count. |
+| Zimperium.Application.hash | String | Application hash. |
+| Zimperium.Application.metadata | Unknown | Application metadata. |
+| Zimperium.Application.modifiedDate | Date | Application modified date. |
+| Zimperium.Application.name | String | Application name. |
+| Zimperium.Application.namespace | String | Application name space. |
+| Zimperium.Application.objectId | String | Application object ID. |
+| Zimperium.Application.privacyEnum | Number | Application privacy enum. |
+| Zimperium.Application.privacyRisk | String | Application privacy risk. |
+| Zimperium.Application.processState | String | Application process state. |
+| Zimperium.Application.score | Number | Application score \(0 to 100\). 0 is the best, 100 is the worst. |
+| Zimperium.Application.securityEnum | Number | Application security enum. |
+| Zimperium.Application.securityRisk | String | Application security risk. |
+| Zimperium.Application.systemToken | String | System token. |
+| Zimperium.Application.type | Number | Application type. |
+| Zimperium.Application.version | String | Application version. |
 
 #### Command Example
+
 ```!zimperium-app-classification-get app_name=Duo```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -1261,66 +1270,67 @@ Retrieves application classification.
 
 #### Human Readable Output
 
->### Application:
+>### Application
+>
 >|objectId|hash|name|version|classification|score|privacyEnum|securityEnum|
 >|---|---|---|---|---|---|---|---|
 >| ebdfed24-951e-45f5-845a-2c163c53fc47 | 85525e9c1fd30a20848812e417f3bb1a | Duo | 91.0.315322534.DR91_RC03 | Legitimate | 0.0 | 1 | 1 |
 >| 02a0ed2d-b22f-4b25-834f-232c7e1b4914 | f26cf1135f9d2ea60532a5a13c6fbed5 | Duo | 91.0.314224792.DR91_RC01 | Legitimate | 0.0 | 1 | 1 |
 
-
 ### zimperium-report-get
+
 ***
 Gets a report.
-
 
 #### Base Command
 
 `zimperium-report-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bundle_id | Bundle ID. | Optional | 
-| itunes_id | iTunes ID. | Optional | 
-| app_hash | Application hash. | Optional | 
-| platform | Application platform. | Optional | 
-
+| bundle_id | Bundle ID. | Optional |
+| itunes_id | iTunes ID. | Optional |
+| app_hash | Application hash. | Optional |
+| platform | Application platform. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.Reports.app_analysis.analysis | Unknown | Application analysis data. | 
-| Zimperium.Reports.behavior.count_sms | Number | The number of SMS messages. | 
-| Zimperium.Reports.behavior.network.http_requests | Unknown | Network related data. | 
-| Zimperium.Reports.behavior.telephony | Unknown | Standard permissions of the application. | 
-| Zimperium.Reports.certificate.app_signature | String | Application signature. | 
-| Zimperium.Reports.certificate.serial_number_app_instances | Number | Application serial number. | 
-| Zimperium.Reports.certificate.serial_number_risk_score | Number | Application risk score. | 
-| Zimperium.Reports.distribution | Unknown | Related distribution data. | 
-| Zimperium.Reports.md5 | String | Application md5 hash. | 
-| Zimperium.Reports.risk_profile.detection_rate | String | Detection rate of the application. | 
-| Zimperium.Reports.risk_profile.intell_privacy | String | Privacy intelligence. | 
-| Zimperium.Reports.risk_profile.intell_security | String | Security intelligence. | 
-| Zimperium.Reports.risk_profile.overall_risk | String | Overall  risk. | 
-| Zimperium.Reports.risk_profile.privacy.Category | String | Privacy category | 
-| Zimperium.Reports.risk_profile.privacy.Risk Level | String | Privacy risk level. | 
-| Zimperium.Reports.risk_profile.privacy.desc | String | Privacy description. | 
-| Zimperium.Reports.risk_profile.privacy_risk | Number | Privacy risk. | 
-| Zimperium.Reports.risk_profile.security.Category | String | Security category. | 
-| Zimperium.Reports.risk_profile.security.Risk Level | String | Security risk level. | 
-| Zimperium.Reports.risk_profile.security.desc | String | Security description. | 
-| Zimperium.Reports.risk_profile.security_risk | Number | Security risk. | 
-| Zimperium.Reports.threats.detected | Number | Threats detected. | 
-| Zimperium.Reports.threats.detected_skip | Number | Number of Skipped detected threats. | 
-| Zimperium.Reports.threats.status | String | Threats status. | 
-| Zimperium.Reports.threats.total | Number | Total threats. | 
-
+| Zimperium.Reports.app_analysis.analysis | Unknown | Application analysis data. |
+| Zimperium.Reports.behavior.count_sms | Number | The number of SMS messages. |
+| Zimperium.Reports.behavior.network.http_requests | Unknown | Network related data. |
+| Zimperium.Reports.behavior.telephony | Unknown | Standard permissions of the application. |
+| Zimperium.Reports.certificate.app_signature | String | Application signature. |
+| Zimperium.Reports.certificate.serial_number_app_instances | Number | Application serial number. |
+| Zimperium.Reports.certificate.serial_number_risk_score | Number | Application risk score. |
+| Zimperium.Reports.distribution | Unknown | Related distribution data. |
+| Zimperium.Reports.md5 | String | Application md5 hash. |
+| Zimperium.Reports.risk_profile.detection_rate | String | Detection rate of the application. |
+| Zimperium.Reports.risk_profile.intell_privacy | String | Privacy intelligence. |
+| Zimperium.Reports.risk_profile.intell_security | String | Security intelligence. |
+| Zimperium.Reports.risk_profile.overall_risk | String | Overall  risk. |
+| Zimperium.Reports.risk_profile.privacy.Category | String | Privacy category |
+| Zimperium.Reports.risk_profile.privacy.Risk Level | String | Privacy risk level. |
+| Zimperium.Reports.risk_profile.privacy.desc | String | Privacy description. |
+| Zimperium.Reports.risk_profile.privacy_risk | Number | Privacy risk. |
+| Zimperium.Reports.risk_profile.security.Category | String | Security category. |
+| Zimperium.Reports.risk_profile.security.Risk Level | String | Security risk level. |
+| Zimperium.Reports.risk_profile.security.desc | String | Security description. |
+| Zimperium.Reports.risk_profile.security_risk | Number | Security risk. |
+| Zimperium.Reports.threats.detected | Number | Threats detected. |
+| Zimperium.Reports.threats.detected_skip | Number | Number of Skipped detected threats. |
+| Zimperium.Reports.threats.status | String | Threats status. |
+| Zimperium.Reports.threats.total | Number | Total threats. |
 
 #### Command Example
+
 ```!zimperium-report-get app_hash=f26cf1135f9d2ea60532a5a13c6fbed5```
 
 #### Context Example
+
 ```
 {
     "Zimperium": {
@@ -8206,45 +8216,46 @@ Gets a report.
 
 #### Human Readable Output
 
->### Report:
+>### Report
+>
 >|behavior|md5|threats|
 >|---|---|---|
 >| sms: network: {"http_requests": null} count_sms: 0 telephony: null broadcast_receivers:  | f26cf1135f9d2ea60532a5a13c6fbed5 | total: null status: Waiting in the queue detected: null scan_details: detected_skip: 0 |
 
-
 ### file
+
 ***
 Checks the reputation of an app in Zimperium.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The MD5 hash of the file. | Optional | 
-
+| file | The MD5 hash of the file. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| File.SHA1 | String | SHA1 hash of the file. | 
-| File.SHA256 | String | SHA256 hash of the file. | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| File.MD5 | String | MD5 hash of the file. |
+| File.SHA1 | String | SHA1 hash of the file. |
+| File.SHA256 | String | SHA256 hash of the file. |
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
 
 #### Command Example
+
 ```!file file=85525e9c1fd30a20848812e417f3bb1a using-brand=Zimperium```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -8444,7 +8455,8 @@ Checks the reputation of an app in Zimperium.
 
 #### Human Readable Output
 
->### Hash 85525e9c1fd30a20848812e417f3bb1a reputation:
+>### Hash 85525e9c1fd30a20848812e417f3bb1a reputation
+>
 >|objectId|hash|name|version|classification|score|privacyEnum|securityEnum|
 >|---|---|---|---|---|---|---|---|
 >| ebdfed24-951e-45f5-845a-2c163c53fc47 | 85525e9c1fd30a20848812e417f3bb1a | Duo | 91.0.315322534.DR91_RC03 | Legitimate | 0.0 | 1 | 1 |
