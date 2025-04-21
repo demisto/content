@@ -54,7 +54,7 @@ script:
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.2072021
+  dockerimage: demisto/py3-tools:1.0.0.3086956
 marketplaces:
 - marketplacev2
 - platform
