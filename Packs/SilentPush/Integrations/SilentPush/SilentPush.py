@@ -1133,10 +1133,8 @@ class Client(BaseClient):
             verify (bool): Flag to determine whether to verify SSL certificates (default True).
             proxy (bool): Flag to determine whether to use a proxy (default False).
         """
-        self.base_url = base_url.rstrip('/') + '/api/v1/merge-api/'
-        self.api_key = api_key
-        self.verify = verify
-        self.proxy = proxy
+        super().__init__(base_url.rstrip('/') + '/api/v1/merge-api/', verify, proxy)
+
         self._headers = {
             'X-API-Key': api_key,
             'Content-Type': 'application/json'
@@ -1214,7 +1212,7 @@ class Client(BaseClient):
 
         url_suffix = f"{NAMESERVER_REPUTATION}/{nameserver}"
 
-        params = filter_none_values({'explain': explain, 'limit': limit})
+        params = remove_nulls_from_dictionary({'explain': explain, 'limit': limit})
 
         response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
@@ -1240,7 +1238,7 @@ class Client(BaseClient):
             "limit": limit
         }
 
-        params = filter_none_values(params)
+        params = remove_nulls_from_dictionary(params)
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
@@ -1273,7 +1271,7 @@ class Client(BaseClient):
         """
         url_suffix = f"{DENSITY_LOOKUP}/{qtype}/{query}"
 
-        params = filter_none_values(kwargs)
+        params = remove_nulls_from_dictionary(kwargs)
 
         return self._http_request(
             method="GET",
@@ -1313,8 +1311,8 @@ class Client(BaseClient):
         """
         url_suffix = SEARCH_DOMAIN
 
-        # Prepare parameters and filter out None values using filter_none_values helper function
-        params = filter_none_values({
+        # Prepare parameters and filter out None values using remove_nulls_from_dictionary function
+        params = remove_nulls_from_dictionary({
             'domain': query,
             'start_date': start_date,
             'end_date': end_date,
@@ -1369,7 +1367,7 @@ class Client(BaseClient):
             'origin_uid': origin_uid
         }
 
-        params = filter_none_values(params)
+        params = remove_nulls_from_dictionary(params)
 
         payload = {'domains': domains}
         return self._http_request(
@@ -1484,7 +1482,7 @@ class Client(BaseClient):
             Dict[str, Any]: SSL certificate details for the specified domain.
         """
         url_suffix = f"{DOMAIN_CERTIFICATE}/{domain}"
-        params = filter_none_values(kwargs)
+        params = remove_nulls_from_dictionary(kwargs)
         return self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -1671,7 +1669,7 @@ class Client(BaseClient):
         """
         url_suffix = f"{FORWARD_PADNS}/{qtype}/{qname}"
 
-        params = filter_none_values(kwargs)
+        params = remove_nulls_from_dictionary(kwargs)
 
         return self._http_request(
             method="GET",
@@ -1722,7 +1720,7 @@ class Client(BaseClient):
             'skip': params.get('skip'),
             'with_metadata': params.get('with_metadata')
         }
-        params = filter_none_values(query_params)
+        params = remove_nulls_from_dictionary(query_params)
         url_suffix = SEARCH_SCAN
 
         payload = {
@@ -1761,7 +1759,7 @@ class Client(BaseClient):
             'region': region
         }
 
-        filtered_params = filter_none_values(params)
+        filtered_params = remove_nulls_from_dictionary(params)
 
         return self._http_request(
             method='GET',
@@ -1783,7 +1781,7 @@ class Client(BaseClient):
         """
         url_suffix = FUTURE_ATTACK_INDICATOR
 
-        params = filter_none_values({
+        params = remove_nulls_from_dictionary({
             'page': page_no,
             'size': page_size,
             'source_uuids': feed_uuid
@@ -1806,7 +1804,7 @@ class Client(BaseClient):
             Dict[str, Any]: Response containing screenshot information and vault details
         """
         endpoint = SCREENSHOT_URL
-        params = filter_none_values({"url": url})
+        params = remove_nulls_from_dictionary({"url": url})
 
         response = self._http_request(
             method="GET",
@@ -1829,18 +1827,7 @@ class Client(BaseClient):
             "status_code": screenshot_data.get("response", 200),
             "screenshot_url": screenshot_url
         }
-
-
-''' HELPER FUNCTIONS '''
-def filter_none_values(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Removes None values from a dictionary."""
-    return {k: v for k, v in params.items() if v is not None}
-def bool_to_binary(value: str) -> int:
-    """Convert boolen into binary"""
-    if isinstance(value, bool):
-        return int(value)
-    value = value.strip().lower()
-    return 1 if value == "true" else 0
+        
 
 ''' COMMAND FUNCTIONS '''
 
@@ -1853,7 +1840,7 @@ def test_module(client: Client) -> str:
     Raises exceptions if something goes wrong.
 
     :type client: ``Client``
-    :param Client: SilentPush client to use
+    :param client: SilentPush client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -1902,9 +1889,9 @@ def get_job_status_command(client: Client, args: dict) -> CommandResults:
 
     params = {
         "max_wait": arg_to_number(args.get("max_wait")),
-        "status_only": bool_to_binary(args.get("status_only", False)),
-        "force_metadata_on": bool_to_binary(args.get("force_metadata_on", False)),
-        "force_metadata_off": bool_to_binary(args.get("force_metadata_off", False))
+        "status_only": argToBoolean(args.get("status_only", False)),
+        "force_metadata_on": argToBoolean(args.get("force_metadata_on", False)),
+        "force_metadata_off": argToBoolean(args.get("force_metadata_off", False))
     }
 
     if not job_id:
@@ -1950,7 +1937,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
         CommandResults: The command results containing nameserver reputation data.
     """
     nameserver = args.get("nameserver")
-    explain = bool_to_binary(args.get("explain", False))
+    explain = argToBoolean(args.get("explain", False))
     limit = arg_to_number(args.get("limit"))
 
     if not nameserver:
@@ -2004,7 +1991,7 @@ def get_subnet_reputation_command(client: Client, args: dict) -> CommandResults:
     if not subnet:
         raise DemistoException("Subnet is a required parameter.")
 
-    explain = bool_to_binary(args.get('explain', False))
+    explain = argToBoolean(args.get('explain', False))
     limit = arg_to_number(args.get('limit'))
 
     raw_response = client.get_subnet_reputation(subnet, explain, limit)
@@ -2237,7 +2224,7 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Formatted results of the infratags lookup.
     """
     domains = argToList(args.get('domains', ''))
-    cluster = bool_to_binary(args.get('cluster', False))
+    cluster = argToBoolean(args.get('cluster', False))
     mode = args.get('mode', 'live')
     match = args.get('match', 'self')
     as_of = args.get('as_of', None)
@@ -2311,8 +2298,8 @@ def parse_arguments(args: Dict[str, Any]) -> Tuple[List[str], bool, bool]:
         raise DemistoException('No domains provided')
     
     domains = argToList(domains_arg)
-    fetch_risk_score = bool_to_binary(args.get('fetch_risk_score', False))
-    fetch_whois_info = bool_to_binary(args.get('fetch_whois_info', False))
+    fetch_risk_score = argToBoolean(args.get('fetch_risk_score', False))
+    fetch_whois_info = argToBoolean(args.get('fetch_whois_info', False))
     
     return domains, fetch_risk_score, fetch_whois_info
 
@@ -2387,18 +2374,18 @@ def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> Com
     if not domain:
         raise DemistoException("The 'domain' parameter is required.")
 
-    params = filter_none_values({
+    params = remove_nulls_from_dictionary({
         'domain_regex': args.get('domain_regex'),
         'cert_issuer': args.get('certificate_issuer'),
         'date_min': args.get('date_min'),
         'date_max': args.get('date_max'),
         'prefer': args.get('prefer'),
         'max_wait': arg_to_number(args.get('max_wait')),
-        'with_metadata': bool_to_binary(args.get('with_metadata')) if 'with_metadata' in args else None,
+        'with_metadata': argToBoolean(args.get('with_metadata')) if 'with_metadata' in args else None,
         'skip': arg_to_number(args.get('skip')),
         'limit': arg_to_number(args.get('limit'))
     })
-    raw_response = client.get_domain_certificates(domain, **params)
+    raw_response = client.get_domain_certificates(domain, **(params or {}))
 
     if raw_response.get('response', {}).get('job_status', {}):
         job_details = raw_response.get('response', {}).get('job_status', {})
@@ -2478,8 +2465,8 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     """
     resource = args.get("resource").lower()
     value = args.get("value")
-    explain = bool_to_binary(args.get("explain", False))
-    scan_data = bool_to_binary(args.get("scan_data", False))
+    explain = argToBoolean(args.get("explain", False))
+    scan_data = argToBoolean(args.get("scan_data", False))
 
     if not resource or not value:
         raise ValueError("Both 'resource' and 'value' arguments are required.")
@@ -2652,7 +2639,7 @@ def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
     """
     asn = args.get("asn")
     limit = arg_to_number(args.get("limit", None))
-    explain = bool_to_binary(args.get("explain", False))
+    explain = argToBoolean(args.get("explain", False))
 
     if not asn:
         raise ValueError("ASN is required.")
@@ -2779,7 +2766,7 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
 
     limit = arg_to_number(args.get('limit'))
 
-    explain = bool_to_binary(args.get('explain', False))
+    explain = argToBoolean(args.get('explain', False))
 
     response = client.get_asn_takedown_reputation(asn=asn, limit=limit, explain=explain)
 
@@ -2829,7 +2816,7 @@ def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> Command
 
     validate_ip(client, 'ipv4', ipv4)
 
-    explain = bool_to_binary(args.get('explain', "false"))
+    explain = argToBoolean(args.get('explain', "false"))
     limit = arg_to_number(args.get('limit'))
 
     raw_response = client.get_ipv4_reputation(ipv4, explain, limit)
@@ -2900,7 +2887,7 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Both 'qtype' and 'qname' are required parameters.")
 
     netmask = args.get('netmask')
-    subdomains = bool_to_binary(args.get('subdomains')) if 'subdomains' in args else None
+    subdomains = argToBoolean(args.get('subdomains')) if 'subdomains' in args else None
     regex = args.get('regex')
     match = args.get('match')
     first_seen_after = args.get('first_seen_after')
@@ -2989,12 +2976,12 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     if not qtype or not qname:
         raise DemistoException("Both 'qtype' and 'qname' are required parameters.")
 
-    filtered_args = filter_none_values({key: value for key, value in args.items() if key not in ('qtype', 'qname')})
+    filtered_args = remove_nulls_from_dictionary({key: value for key, value in args.items() if key not in ('qtype', 'qname')})
 
     raw_response = client.reverse_padns_lookup(
         qtype=qtype,
         qname=qname,
-        **filtered_args
+        **(filtered_args or {})
     )
 
     if raw_response.get('error'):
@@ -3062,7 +3049,7 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='SilentPush.ScanData',
         outputs_key_field='domain',
-        outputs=filter_none_values({
+        outputs=remove_nulls_from_dictionary({
             'records': scan_data,
             'query': query
         }),
@@ -3262,7 +3249,7 @@ def screenshot_url_command(client: Client, args: Dict[str, Any]) -> CommandResul
         "file_name": "filename"
     }
 
-    result_data = filter_none_values(result_data)
+    result_data = remove_nulls_from_dictionary(result_data)
 
     # Download link of the image
     return_results(fileResult(filename, image_response.content))
