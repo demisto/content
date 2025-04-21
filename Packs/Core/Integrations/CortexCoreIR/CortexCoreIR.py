@@ -30,7 +30,7 @@ PREVALENCE_COMMANDS = {
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
 COMMAND_DATA_KEYS = ['failed_files', 'retention_date', 'retrieved_files', 'standard_output', 'command_output']
-EXECUTE_COMMAND_READABLE_FIELDS = ['command', 'command_output', 'endpoint_id', 'endpoint_ip_address', 'endpoint_name',
+EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = ['command', 'command_output', 'endpoint_id', 'endpoint_ip_address', 'endpoint_name',
                                    'endpoint_status', 'execution_status']
 
 
