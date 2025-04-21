@@ -179,7 +179,7 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
 
 def reformat_readable_output(script_res: list) -> None:
     """
-    Reformat the human_readable output so that each command appears as a separate row in the table.
+    Reformat the human-readable output of the 'core_execute_command' command so that each command appears as a separate row in the table.
 
     Args:
         script_res (list): The result from the polling command.
