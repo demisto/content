@@ -47,6 +47,8 @@ script:
     outputs:
     - contextPath: GoogleChatWebhook.Message.SpaceType
       description: Google Chat space type.
+    - contextPath: GoogleChatWebhook.Message.SenderName
+      description: Google Chat message sender name.
     - contextPath: GoogleChatWebhook.Message.ThreadReply
       description: Determines if a message is in a thread reply.
     - contextPath: GoogleChatWebhook.Message.SpaceDisplayName
@@ -55,12 +57,16 @@ script:
       description: Google Chat message.
     - contextPath: GoogleChatWebhook.Message.Name
       description: Google Chat space full name.
+    - contextPath: GoogleChatWebhook.Message.SenderType
+      description: Google Chat message sender type.
     - contextPath: GoogleChatWebhook.Message.SpaceName
       description: Google Chat space name.
     - contextPath: GoogleChatWebhook.Message.CreatedTime
       description: Google Chat message creation time.
     - contextPath: GoogleChatWebhook.Message.ThreadName
       description: Google Chat thread name.
+    - contextPath: GoogleChatWebhook.Message.SenderDisplayName
+      description: Google Chat message sender display name.
   - arguments:
     - description: JSON blocks copied from https://addons.gsuite.google.com/uikit/builder
       name: blocks
@@ -74,18 +80,24 @@ script:
       description: Google Chat custom card details.
     - contextPath: GoogleChatWebhook.CustomCard.SpaceType
       description: Google Chat space type.
+    - contextPath: GoogleChatWebhook.CustomCard.SenderName
+      description: Google Chat custom card sender name.
     - contextPath: GoogleChatWebhook.CustomCard.ThreadReply
       description: Determines if a custom card is in a thread reply.
     - contextPath: GoogleChatWebhook.CustomCard.SpaceDisplayName
       description: Google Chat space display name.
     - contextPath: GoogleChatWebhook.CustomCard.Name
       description: Google Chat space full name.
+    - contextPath: GoogleChatWebhook.CustomCard.SenderType
+      description: Google Chat custom card sender type.
     - contextPath: GoogleChatWebhook.CustomCard.SpaceName
       description: Google Chat space name.
     - contextPath: GoogleChatWebhook.CustomCard.CreatedTime
       description: Google Chat custom card creation time.
     - contextPath: GoogleChatWebhook.CustomCard.ThreadName
       description: Google Chat thread name.
+    - contextPath: GoogleChatWebhook.CustomCard.SenderDisplayName
+      description: Google Chat custom card sender display name.
   dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''

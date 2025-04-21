@@ -104,6 +104,9 @@ def send_google_chat_message_command(client: Client, message: str, threadName: O
         "ThreadReply": res.get("threadReply", False),
         "ThreadName": res.get("thread").get("name"),
         "Name": res.get("name"),
+        "SenderDisplayName": res.get("sender", {}).get("displayName"),
+        "SenderName": res.get("sender", {}).get("name"),
+        "SenderType": res.get("sender", {}).get("type"),
     }
     markdown = "### Google Chat\n"
     markdown += tableToMarkdown("Message Webhook", result)
@@ -135,6 +138,9 @@ def send_google_chat_custom_card_command(client: Client, blocks: str, threadName
         "ThreadReply": res.get("threadReply", False),
         "ThreadName": res.get("thread").get("name"),
         "Name": res.get("name"),
+        "SenderDisplayName": res.get("sender", {}).get("displayName"),
+        "SenderName": res.get("sender", {}).get("name"),
+        "SenderType": res.get("sender", {}).get("type"),
     }
     markdown = "### Google Chat\n"
     markdown += tableToMarkdown("Custom Card Webhook", result)

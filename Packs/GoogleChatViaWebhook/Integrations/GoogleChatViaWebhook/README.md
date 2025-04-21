@@ -39,13 +39,16 @@ Send a message to Google Chat Space via Incoming Webhook.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GoogleChatWebhook.Message.SpaceType | unknown | Google Chat space type | 
+| GoogleChatWebhook.Message.SenderName | unknown | Google Chat message sender name | 
 | GoogleChatWebhook.Message.ThreadReply | unknown | Determines if a message is in a thread reply | 
 | GoogleChatWebhook.Message.SpaceDisplayName | unknown | Google Chat space display name | 
 | GoogleChatWebhook.Message.Message | unknown | Google Chat message | 
 | GoogleChatWebhook.Message.Name | unknown | Google Chat space full name | 
+| GoogleChatWebhook.Message.SenderType | unknown | Google Chat message sender type | 
 | GoogleChatWebhook.Message.SpaceName | unknown | Google Chat space name | 
 | GoogleChatWebhook.Message.CreatedTime | unknown | Google Chat message creation time | 
 | GoogleChatWebhook.Message.ThreadName | unknown | Google Chat thread name | 
+| GoogleChatWebhook.Message.SenderDisplayName | unknown | Google Chat message sender display name | 
 
 ### send-google-chat-custom-card
 
@@ -69,9 +72,12 @@ Send a customizable card to Google Chat Space via Incoming Webhook
 | --- | --- | --- |
 | GoogleChatWebhook.CustomCard.Cards | unknown | Google Chat custom card details | 
 | GoogleChatWebhook.CustomCard.SpaceType | unknown | Google Chat space type | 
+| GoogleChatWebhook.CustomCard.SenderName | unknown | Google Chat custom card sender name | 
 | GoogleChatWebhook.CustomCard.ThreadReply | unknown | Determines if a custom card is in a thread reply | 
 | GoogleChatWebhook.CustomCard.SpaceDisplayName | unknown | Google Chat space display name | 
 | GoogleChatWebhook.CustomCard.Name | unknown | Google Chat space full name | 
+| GoogleChatWebhook.CustomCard.SenderType | unknown | Google Chat custom card sender type | 
 | GoogleChatWebhook.CustomCard.SpaceName | unknown | Google Chat space name | 
 | GoogleChatWebhook.CustomCard.CreatedTime | unknown | Google Chat custom card creation time | 
 | GoogleChatWebhook.CustomCard.ThreadName | unknown | Google Chat thread name | 
+| GoogleChatWebhook.CustomCard.SenderDisplayName | unknown | Google Chat custom card sender display name | 
