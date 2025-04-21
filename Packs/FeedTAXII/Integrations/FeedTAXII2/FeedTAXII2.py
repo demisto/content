@@ -1,8 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from typing import Any
 from urllib.parse import urlparse
+
+import demistomock as demisto
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 """ CONSTANT VARIABLES """
 
@@ -376,7 +378,7 @@ def main():  # pragma: no cover
             return_results(commands[command](client, **args))  # type: ignore[operator]
 
     except Exception as e:
-        err_msg = f"Failed to execute {command} command. Error: {str(e)}\n\ntraceback: {traceback.format_exc()}"
+        err_msg = f"Failed to execute {command} command. Error: {e!s}\n\ntraceback: {traceback.format_exc()}"
         if isinstance(e, requests.exceptions.SSLError):
             LOG(err_msg)
             err_msg = (
