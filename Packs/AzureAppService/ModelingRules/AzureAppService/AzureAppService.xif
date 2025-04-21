@@ -61,7 +61,7 @@ filter category = "AppServiceHTTPLogs"
 | call msft_azure_app_service_map_common_http_fields
 | alter
         tmp_http_request_method = coalesce(properties -> CsMethod, CsMethod),
-        tmp_http_status = coalesce(properties -> ScStatus, ScStatus),
+        tmp_http_status = coalesce(properties -> ScStatus, to_string(ScStatus)),
         tmp_result = lowercase(coalesce(properties -> Result, Result))
 | alter
         xdm.event.duration = to_integer(coalesce(properties -> TimeTaken, to_string(TimeTaken))),
