@@ -1,6 +1,6 @@
 Use Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) to deliver industry-leading endpoint security for Windows, macOS, Linux, Android, iOS, and network devices. It helps to rapidly stop attacks, scale your security resources, and evolve your defenses. Microsoft Defender for Endpoint is an enterprise endpoint security platform designed to help enterprise networks prevent, detect, investigate, and respond to advanced threats.
 
-## Integration capabilities:
+## Integration capabilities
 
 Microsoft Defender for Endpoint allows you to perform preventative protection, post-breach detection, automated investigation, and response.
 Microsoft Defender for Endpoint delivers continuous asset visibility, intelligent risk-based assessments, and built-in remediation tools to help your security and IT teams prioritize and address critical vulnerabilities and misconfigurations across your organization.
@@ -11,7 +11,7 @@ Microsoft Defender for Endpoint delivers continuous asset visibility, intelligen
 - Enriches IOCs from XSOAR to Microsoft Defender for Endpoint and vice versa
 - Allows remediation actions for connected endpoints
 - Provides investigation capabilities on connected assets
-- Allows asset visibility, status, and health (vulnerability assessment) 
+- Allows asset visibility, status, and health (vulnerability assessment)
 
 ## Content Pack components
 
@@ -25,7 +25,6 @@ Microsoft Defender for Endpoint delivers continuous asset visibility, intelligen
 For more details about the authentication used for components in this content pack, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 ### Endpoint URL
-
 
 | **Environment Type** | **Endpoint URL**                            |
 |--------------------------|---------------------------------------------|
@@ -46,7 +45,6 @@ To find the appropriate Endpoint URI, use the following resources:
 
 Note: In order to parse the timestamp correctly, make sure that the timestamp field is in UTC time zone (timestamp ends with "Z").
 The supported time format are yyyy-MM-ddThh:mm:%E3S (2021-12-08 10:00:00.123Z) or yyyy-MM-ddThh:mm:ss (2021-07-01T10:00:00Z). The relevant field is "lastEventTime".
-
 
 ## Licence information
 
