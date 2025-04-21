@@ -9,6 +9,7 @@ Input3:       Name of the docx file that will be produced. Give the full name in
 Requirements: This automation requires "Core REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -17,6 +18,7 @@ Requirements: This automation requires "Core REST API" integration enabled and c
 | Tags | General, Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,10 +28,12 @@ Requirements: This automation requires "Core REST API" integration enabled and c
 | Output_Format |  |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ### Troubleshooting
-Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
-automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
+
+Multi-tenant environments should be configured with the Cortex Rest API instance when using this
+automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked
 to ensure that API calls are made to the current tenant instead of the master tenant.
