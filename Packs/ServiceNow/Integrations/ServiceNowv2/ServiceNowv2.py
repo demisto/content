@@ -27,6 +27,7 @@ DATE_FORMAT_OPTIONS = {
     "dd.MM.yyyy": "%d.%m.%Y %H:%M:%S",
     "yyyy-MM-dd": "%Y-%m-%d %H:%M:%S",
     "mmm-dd-yyyy": "%b-%d-%Y %H:%M:%S",
+    "yyyy-MMM-dd": "%Y-%b-%d %H:%M:%S",
 }
 
 TICKET_STATES = {
@@ -769,7 +770,7 @@ class Client(BaseClient):
                         proxies=self._proxies,
                     )
         except Exception as err:
-            raise Exception(f"Failed to upload file - {str(err)}")
+            raise Exception(f"Failed to upload file - {err!s}")
 
     def _send_regular_request(self, url: str, method: str, headers: dict, body: dict, params: dict) -> requests.Response:
         if self.use_oauth:
@@ -877,8 +878,8 @@ class Client(BaseClient):
                         else:
                             raise Exception(
                                 f"ServiceNow Error: {message}, details: {details}"
-                                f" Got status code {res.status_code} with url {url} with body {str(res.content)}"
-                                f" with response headers {str(res.headers)}"
+                                f" Got status code {res.status_code} with url {url} with body {res.content!s}"
+                                f" with response headers {res.headers!s}"
                             )
                     else:
                         raise Exception(f"ServiceNow Error: {error}")
@@ -887,8 +888,8 @@ class Client(BaseClient):
                 return json_res
             else:
                 raise Exception(
-                    f"Got status code {res.status_code} with url {url} with body {str(res.content)}"
-                    f" with response headers {str(res.headers)}"
+                    f"Got status code {res.status_code} with url {url} with body {res.content!s}"
+                    f" with response headers {res.headers!s}"
                 )
         return json_res
 
