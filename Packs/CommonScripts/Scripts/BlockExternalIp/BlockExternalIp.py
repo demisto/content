@@ -163,38 +163,6 @@ def reduce_pan_os_responses(responses: list) -> list[list[dict]]:
     return sanitize_responses
 
 
-def prepare_context_and_hr(response: list[dict], verbose: bool, ip_list: list[str]) -> list[CommandResults]:
-    """ Creates the relevant context and human readable in case of a single command execution.
-    Args:
-        response (list[dict]): The response returned from the execute command.
-        verbose (bool): Whether to print the all the human readable from the executions of all the commands or just the summary.
-        ip_list (list[str]): The list of ips.
-    Returns:
-        A list containing the relevant Command results.
-    """
-    results = []
-    entry = {}
-    failed_message = ''
-    for entry in response:  # There is only 1 entry
-        command_hr = entry.get('HumanReadable')
-        if verbose and command_hr:
-            demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
-            results.append(CommandResults(readable_output=command_hr))
-        contents = entry.get('Contents', '')
-        failed_message = contents if (contents and 'Failed' in contents) or not command_hr else ''
-    used_integration = entry.get('Metadata', {}).get('brand')
-    hr = create_final_human_readable(failed_message, used_integration, ip_list)
-    context = create_final_context(failed_message, used_integration, ip_list)
-    demisto.debug(f"BEI: {hr=} {context=}")
-    results.append(CommandResults(
-        readable_output=hr,
-        outputs_prefix="BlockExternalIPResults",
-        outputs=context,
-        raw_response=context
-    ))
-    return results
-
-
 def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | list:
     """ Get the relevant context object from the execute_command response.
     Args:
@@ -856,7 +824,7 @@ def main():  # pragma: no cover
                     }
                     command_name = 'zscaler-blacklist-ip'
                     result = run_execute_command(command_name, brand_args)
-                    results.append(prepare_context_and_hr(result, verbose, ip_list_arr))
+                    results.append(prepare_context_and_hr_multiple_executions([result], verbose, '', ip_list_arr))
                     executed_brands.append(brand)
 
                 elif brand == "Cisco ASA":
@@ -869,7 +837,7 @@ def main():  # pragma: no cover
                             "permit": False
                         }
                         result = run_execute_command(command_name, brand_args)
-                        results.append(prepare_context_and_hr(result, verbose, [ip]))
+                        results.append(prepare_context_and_hr_multiple_executions([result], verbose, '', [ip]))
                     executed_brands.append(brand)
 
                 elif brand == "F5Silverline":
@@ -881,7 +849,7 @@ def main():  # pragma: no cover
                             "tags": tag
                         }
                         result = run_execute_command(command_name, brand_args)
-                        results.append(prepare_context_and_hr(result, verbose, [ip]))
+                        results.append(prepare_context_and_hr_multiple_executions([result], verbose, '', [ip]))
                     executed_brands.append(brand)
 
                 elif brand == "FortiGate":
@@ -890,7 +858,7 @@ def main():  # pragma: no cover
                         "ip_address": ip_list_arg
                     }
                     result = run_execute_command(command_name, brand_args)
-                    results.append(prepare_context_and_hr(result, verbose, ip_list_arr))
+                    results.append(prepare_context_and_hr_multiple_executions([result], verbose, '', ip_list_arr))
                     executed_brands.append(brand)
 
                 elif brand == "Palo Alto Networks - Prisma SASE":
