@@ -8,7 +8,7 @@ The *Google Cloud Logging Integration* enables you to retrieve selected log entr
 
 <~XSIAM>
 ### Google Cloud Logging SIEM Content
-The SIEM content includes *Cortex Data Modeling (XDM) Rules* and *Parsing Rules* which are applied on [*Google Cloud Audit Logs*](https://cloud.google.com/logging/docs/audit) and [*Google Cloud DNS Query Logs*](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format) that are ingested into the *`google_cloud_logging_raw`* and *`google_dns_raw`* datasets (respectively) via the *Google Cloud Platform Pub/Sub* data source on Cortex XSIAM. See [*Ingest Logs and Data from a GCP Pub/Sub*](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg) for additional details.
+The SIEM content includes *Cortex Data Modeling (XDM) Rules* and *Parsing Rules* which are applied on [*Google Cloud Audit Logs*](https://cloud.google.com/logging/docs/audit), [*Google Cloud DNS Query Logs*](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format) and [*Google Cloud VPC Flow Logs*](https://cloud.google.com/vpc/docs/flow-logs). *Audit* and *VPC Flow* logs are ingested into the *`google_cloud_logging_raw`* dataset, *DNS* logs are ingested into the *`google_dns_raw`* dataset. Log are ingested via the *Google Cloud Platform Pub/Sub* data source on Cortex XSIAM. See [*Ingest Logs and Data from a GCP Pub/Sub*](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg) for additional details.
 
 #### Remarks
 - When configuring a [sink](https://cloud.google.com/logging/docs/export/configure_export_v2#creating_sink) to route Google Cloud logs to the [Pub/Sub service](https://cloud.google.com/pubsub/docs/pubsub-basics) as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg), you may wish to create an inclusion filter to include only a subset of the logs. See filter examples [here](https://cloud.google.com/logging/docs/export/configure_export_v2#filter-examples) and samples below: 
@@ -19,6 +19,10 @@ The SIEM content includes *Cortex Data Modeling (XDM) Rules* and *Parsing Rules*
   -  Sample filter for including only [*Google Cloud DNS Query Logs*](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format):
   ```
     log_id("dns.googleapis.com/dns_queries") 
+  ```
+  -  Sample filter for including only [*Google Cloud VPC Flow Logs*](https://cloud.google.com/vpc/docs/using-flow-logs):
+  ```
+    log_id("compute.googleapis.com/vpc_flows")
   ```
 - For auditing [*Data Access Audit Logs*](https://cloud.google.com/logging/docs/audit#data-access), you may need to explicitly enable the requested Google Cloud services. See [*Enable Data Access audit logs*](https://cloud.google.com/logging/docs/audit/configure-data-access) for additional details.  
 
