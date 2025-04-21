@@ -82,6 +82,7 @@ Create log settings to enable event logging for access system events or URL filt
 12. Click **OK**.
 
 ### Configuring remote syslog entries to use ISO timestamp format
+
 - Formal documentation for ISO timestamp configuration [doc](https://my.f5.com/manage/s/article/K02733223).
 
 1. Log in to **tmsh** by typing the following command:

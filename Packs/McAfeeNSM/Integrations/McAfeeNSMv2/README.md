@@ -2589,7 +2589,7 @@ There is no context output for this command.
 
 >
 >The current percentage of deployment for 'push_configuration_signature_set' is: 0%
-> 
+>
 >And the current message is: NA
 >
 >

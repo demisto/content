@@ -141,6 +141,7 @@ Replies to an email using Graph Mail Single User.
 ##### Required Permissions
 
 **The following permissions are required for this command:**
+
 * Mail.Send (Application)
 * Mail.ReadWrite (Application) - to send attachments > 3mb
 
@@ -184,6 +185,7 @@ Sends an email using Microsoft Graph.
 ##### Required Permissions
 
 **The following permissions are required for this command:**
+
 * Mail.Send (Application)
 * Mail.ReadWrite (Application) - to send attachments > 3mb
 

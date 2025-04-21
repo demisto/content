@@ -118,7 +118,6 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
    - Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom proxy URL is required for accessing a national cloud.
    - See further documentation in [Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud).
 
-
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
@@ -144,14 +143,12 @@ Executes an Analytics query for data.
 | timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. Default is 10. | Optional |
 | workspace_id | The Workspace ID. Note: This argument will override the instance parameter 'Default Workspace ID'. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureLogAnalytics.Query.Query | String | The executed query. |
 | AzureLogAnalytics.Query.TableName | String | The name of the query table. |
-
 
 #### Command Example
 
@@ -169,7 +166,6 @@ Executes an Analytics query for data.
 >| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.012602 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
 >| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | OfficeActivity | Office365/SecurityInsights | 0 | 0 | 0 | 0 | 0 | 0.00201499908978072 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
 >| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.009107 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
-
 
 ### azure-log-analytics-test
 
@@ -196,7 +192,6 @@ There is no context output for this command.
 
 >```✅ Success!```
 
-
 ### azure-log-analytics-list-saved-searches
 
 ***
@@ -216,7 +211,6 @@ Gets the saved searches of the Log Analytics workspace.
 | resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional |
 | workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -232,7 +226,6 @@ Gets the saved searches of the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. |
 | AzureLogAnalytics.SavedSearch.type | String | The resource type, e.g., Microsoft.Compute/virtualMachines or Microsoft.Storage/storageAccounts. |
 
-
 #### Command Example
 
 ```!azure-log-analytics-list-saved-searches limit=3```
@@ -245,8 +238,7 @@ Gets the saved searches of the Log Analytics workspace.
 >|---|---|---|---|---|---|---|---|---|---|
 >| W/"datetime'2020-07-05T13%3A38%3A41.053438Z'" | test2 | category1 | test2 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
 >| W/"datetime'2020-07-28T18%3A43%3A56.8625448Z'" | test123 | Saved Search Test Category | test123 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
->| W/"datetime'2020-07-30T11%3A41%3A35.1459664Z'" | test1234 | test | test |  |  | 	SecurityAlert<br/>\| summarize arg_max(TimeGenerated, *) by SystemAlertId<br/>\| where SystemAlertId in("TEST_SYSTEM_ALERT_ID") |  | 2 | Microsoft.OperationalInsights/savedSearches |
-
+>| W/"datetime'2020-07-30T11%3A41%3A35.1459664Z'" | test1234 | test | test |  |  |  SecurityAlert<br/>\| summarize arg_max(TimeGenerated, *) by SystemAlertId<br/>\| where SystemAlertId in("TEST_SYSTEM_ALERT_ID") |  | 2 | Microsoft.OperationalInsights/savedSearches |
 
 ### azure-log-analytics-get-saved-search-by-id
 
@@ -266,7 +258,6 @@ Gets a specified saved search from the Log Analytics workspace.
 | resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional |
 | workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -281,7 +272,6 @@ Gets a specified saved search from the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. |
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. |
 | AzureLogAnalytics.SavedSearch.type | String | The resource type, e.g., Microsoft.Compute/virtualMachines or Microsoft.Storage/storageAccounts. |
-
 
 #### Command Example
 
@@ -320,7 +310,6 @@ Creates or updates a saved search from the Log Analytics workspace.
 | resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional |
 | workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -335,7 +324,6 @@ Creates or updates a saved search from the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. |
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. |
 | AzureLogAnalytics.SavedSearch.type | String | The resource type, e.g., Microsoft.Compute/virtualMachines or Microsoft.Storage/storageAccounts. |
-
 
 #### Command Example
 
@@ -352,7 +340,6 @@ Creates or updates a saved search from the Log Analytics workspace.
 >|Etag|Id|Category|Display Name|Query|Version|
 >|---|---|---|---|---|---|
 >| W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | new display name test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
-
 
 ### azure-log-analytics-delete-saved-search
 
@@ -384,14 +371,12 @@ There is no context output for this command.
 
 >Successfully deleted the saved search test1234.
 
-
 ### azure-log-analytics-generate-login-url
 
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
-
 
 `azure-log-analytics-generate-login-url`
 
@@ -417,7 +402,6 @@ You will be automatically redirected to a link with the following structure:
 >2. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
-
 ### azure-log-analytics-subscriptions-list
 
 ***
@@ -426,7 +410,6 @@ List all subscriptions for a tenant.
 #### Base Command
 
 `azure-log-analytics-subscriptions-list`
-
 
 #### Input
 
@@ -448,12 +431,10 @@ There are no input arguments for this command.
 
 ### azure-log-analytics-workspace-list
 
-
 ***
 Gets workspaces in a resource group.
 
 #### Base Command
-
 
 `azure-log-analytics-workspace-list`
 
@@ -553,7 +534,6 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-
 
 ### azure-log-analytics-run-search-job
 
@@ -749,7 +729,6 @@ Gets a Log Analytics workspace table.
 >|---|---|---|---|---|---|---|---|
 >| 2023-11-02T17:28:22.9374877Z | This table was created using a Search Job with the following query: 'AuditLogs'. | test_SRCH | Analytics | AuditLogs | 2023-11-02T17:28:18.602Z | InProgress | 2023-11-01T17:28:18.592Z |
 
-
 ### azure-log-analytics-delete-search-job
 
 ***
@@ -783,6 +762,7 @@ There is no context output for this command.
 ## Troubleshooting
 
 In case of a **hash verification** error:
+
 1. Use the Oproxy flow to generate a new pair of credentials. This is crucial as it ensures that any issues related to authentication can be mitigated with fresh credentials.
 2. Execute the command ***!azure-log-analytics-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
 3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.

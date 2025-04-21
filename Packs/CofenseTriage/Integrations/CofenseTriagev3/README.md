@@ -2792,6 +2792,7 @@ The following sections list the changes in this version.
 ### Commands
 
 #### The following commands were removed in this version
+
 - _cofense-search-reports_ - this command was replaced by cofense-report-list.
 - _cofense-search-inbox-reports_ - this command was replaced by cofense-report-list with argument 'report_location' .
 - _cofense-get-attachment_
@@ -2805,6 +2806,7 @@ The following sections list the changes in this version.
 The ability to mirror incident data has been added.
 
 #### The following commands were added in this version
+
 - _cofense-attachment-payload-list_
 - _cofense-category-list_
 - _cofense-cluster-list_

@@ -10,7 +10,7 @@ Verifies that a cryptocurrency address is valid and only returns the address if 
 | Tags |  |
 | Cortex XSOAR Version | 5.0.0 |
 
-#### Supported cryptocurrencies:
+#### Supported cryptocurrencies
 
 * Bitcoin
 
