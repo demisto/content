@@ -290,9 +290,8 @@ def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> Com
     """
     auto_commit_message = None
     if auto_commit:
-        res_auto_commit = run_execute_command("prisma-sase-candidate-config-push",
-                                                 {
-                                                     "folders": "Remote Networks, Mobile Users, Service Connections"})
+        command_name = "prisma-sase-candidate-config-push"
+        res_auto_commit = run_execute_command(command_name,{"folders": "Remote Networks, Mobile Users, Service Connections"})
         responses.append(res_auto_commit)
     else:
         auto_commit_message = CommandResults(readable_output=f"Not commiting the changes in Palo Alto Networks - Prisma SASE, "
@@ -315,7 +314,8 @@ def prisma_sase_security_rule_update(rule_name: str, address_group: str, respons
     rule_id = context_rule_list.get('id', '')  # type: ignore
     rule_destination = context_rule_list.get('destination', [])  # type: ignore
     if address_group not in rule_destination:
-        res_rule_update = run_execute_command("prisma-sase-security-rule-update",
+        command_name = "prisma-sase-security-rule-update"
+        res_rule_update = run_execute_command(command_name,
                                               {'rule_id': rule_id, 'action': 'deny', 'destination': address_group})
         responses.append(res_rule_update)
         return res_rule_update
@@ -336,25 +336,29 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
     rule_name = brand_args['rule_name']
     auto_commit_message = None
 
-    res_address_object_list = run_execute_command("prisma-sase-address-object-list", {'name': ip})
+    command_name_address_object_list = "prisma-sase-address-object-list"
+    res_address_object_list = run_execute_command(command_name_address_object_list, {'name': ip})
     responses.append(res_address_object_list)
     contents_address_object_list = res_address_object_list[0].get('Contents')
 
     if isinstance(contents_address_object_list, str) and "does not exist" in contents_address_object_list:
         demisto.debug(f"The {ip} does not exist in the address-object list.")
-        res_add_obj_create = run_execute_command("prisma-sase-address-object-create",
+        command_name_address_object_create = "prisma-sase-address-object-create"
+        res_add_obj_create = run_execute_command(command_name_address_object_create,
                                                  {'name': ip, 'type': 'ip_netmask', 'address_value': ip})
         responses.append(res_add_obj_create)
         if is_error(res_add_obj_create):
             return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], '', [ip])
         auto_commit_message = prisma_sase_candidate_config_push(brand_args['auto_commit'], responses)
 
-    res_add_group_list = run_execute_command("prisma-sase-address-group-list", {'name': address_group})
+    command_name_address_group_list = "prisma-sase-address-group-list"
+    res_add_group_list = run_execute_command(command_name_address_group_list, {'name': address_group})
     responses.append(res_add_group_list)
     contents_add_group_list = res_add_group_list[0].get('Contents', '')
     if isinstance(contents_add_group_list, str) and "does not exist" in contents_add_group_list:
         demisto.debug(f"The {address_group=} doesn't exist, creating it.")
-        res_address_group_create = run_execute_command("prisma-sase-address-group-create",
+        command_name_group_create = "prisma-sase-address-group-create"
+        res_address_group_create = run_execute_command(command_name_group_create,
                                                        {"name": address_group,
                                                         "type": "static",
                                                         "static_addresses": ip})
@@ -362,12 +366,14 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
         if is_error(res_address_group_create):
             return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], '', [ip])
 
-        res_rule_list = run_execute_command("prisma-sase-security-rule-list", {"name": rule_name})
+        command_name_security_rule_list = "prisma-sase-security-rule-list"
+        res_rule_list = run_execute_command(command_name_security_rule_list, {"name": rule_name})
         contents_rule_list = res_rule_list[0].get('Contents', '')
         responses.append(res_rule_list)
         if isinstance(contents_rule_list, str) and "does not exist" in contents_rule_list:
             demisto.debug(f"Creating a new rule {rule_name}")
-            res_rule_create = run_execute_command("prisma-sase-security-rule-create",
+            command_name_rule_create = "prisma-sase-security-rule-create"
+            res_rule_create = run_execute_command(command_name_rule_create,
                                                   {"action": "deny", "name": rule_name, 'destination': address_group})
             responses.append(res_rule_create)
             if is_error(res_rule_create):
@@ -387,7 +393,8 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
             demisto.debug(
                 f"The {address_group=} exists, but the {ip=} isn't in the {addresses_group_ip_list=} of {address_group=}")
             group_id = context_add_group_list.get('id')  # type: ignore
-            res_add_group_update = run_execute_command("prisma-sase-address-group-update",
+            command_name_address_group_update = "prisma-sase-address-group-update"
+            res_add_group_update = run_execute_command(command_name_address_group_update,
                                                        {'group_id': group_id, 'static_addresses': ip})
             responses.append(res_add_group_update)
             if is_error(res_add_group_update):
@@ -415,7 +422,8 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
         The PollResult object.
     """
     commit_job_id = args['commit_job_id']
-    res_commit_status = run_execute_command("pan-os-commit-status", {'job_id': commit_job_id})
+    command_name = "pan-os-commit-status"
+    res_commit_status = run_execute_command(command_name, {'job_id': commit_job_id})
     responses.append(res_commit_status)
     result_commit_status = res_commit_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {})
     job_result = result_commit_status.get('result')
@@ -446,7 +454,8 @@ def pan_os_check_trigger_push_to_device(responses: list) -> bool:
     Returns:
         The PollResult object.
     """
-    res_pan_os = run_execute_command("pan-os", {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
+    command_name = "pan-os"
+    res_pan_os = run_execute_command(command_name, {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
     responses.append(res_pan_os)
     context = get_relevant_context(res_pan_os[0].get('EntryContext', {}), 'Panorama.Command')
     model = context.get('response', {}).get('result', {}).get('system', {}).get('model', '')  # type: ignore
@@ -466,7 +475,8 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     Returns:
         The PollResult object.
     """
-    res_push_to_device = run_execute_command("pan-os-push-to-device-group", {'polling': True})
+    command_name = "pan-os-push-to-device-group"
+    res_push_to_device = run_execute_command(command_name, {'polling': True})
     responses.append(res_push_to_device)
     polling_args = res_push_to_device[0].get('Metadata', {}).get('pollingArgs', {})
     job_id = polling_args.get('push_job_id')
@@ -517,7 +527,8 @@ def pan_os_push_status(args: dict, responses: list):
         The PollResult object.
     """
     push_job_id = args['push_job_id']
-    res_push_device_status = run_execute_command("pan-os-push-status", {'job_id': push_job_id})
+    command_name = "pan-os-push-status"
+    res_push_device_status = run_execute_command(command_name, {'job_id': push_job_id})
     responses.append(res_push_device_status)
     push_status = (res_push_device_status[0].get('Contents', {}).get('response', {}).get('result', {}).get('job', {})
                    .get('status', ''))
@@ -557,10 +568,11 @@ def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
     """
     tag = args.get('tag')
     ip_list = args['ip_list']
+    command_name = 'pan-os-register-ip-tag'
     demisto.setContext('push_job_id', '')  # delete any previous value if exists
     demisto.setContext('commit_job_id', '')  # delete any previous value if exists
     demisto.setContext('panorama_responses', '')  # delete any previous value if exists
-    responses.append(run_execute_command('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list}))
+    responses.append(run_execute_command(command_name, {'tag': tag, 'IPs': ip_list}))
     results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], args['rule_name'], ip_list)
     return results
 
@@ -576,11 +588,13 @@ def pan_os_create_edit_address_group(address_group: str, context_list_add_group:
     if check_value_exist_in_context(address_group, context_list_add_group, 'Name'):
         current_match = get_match_by_name(address_group, context_list_add_group)
         new_match = f'{current_match} or {tag}' if current_match else tag
-        res_edit_add_group = run_execute_command("pan-os-edit-address-group",
+        command_name_edit = "pan-os-edit-address-group"
+        res_edit_add_group = run_execute_command(command_name_edit,
                                                  {'name': address_group, 'type': 'dynamic', 'match': new_match})
         responses.append(res_edit_add_group)
     else:
-        res_create_add_group = run_execute_command("pan-os-create-address-group",
+        command_name_create = "pan-os-create-address-group"
+        res_create_add_group = run_execute_command(command_name_create,
                                                    {'name': address_group, 'type': 'dynamic', 'match': tag})
         responses.append(res_create_add_group)
 
@@ -596,17 +610,20 @@ def pan_os_create_edit_rule(rule_name: str, context_list_rules: list, address_gr
         responses (list): The responses of the previous commands.
     """
     if check_value_exist_in_context(rule_name, context_list_rules, 'Name'):
-        responses.append(run_execute_command("pan-os-edit-rule", {'rulename': rule_name,
+        command_name_edit = "pan-os-edit-rule"
+        responses.append(run_execute_command(command_name_edit, {'rulename': rule_name,
                                                                   'element_to_change': 'source',
                                                                   'element_value': address_group,
                                                                   'pre_post': 'pre-rulebase'}))
     else:
         create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase',
                             'source': address_group}
+        command_name_create = "pan-os-create-rule"
         if log_forwarding_name:
             create_rule_args['log_forwarding'] = log_forwarding_name
-        responses.append(run_execute_command("pan-os-create-rule", create_rule_args))
-    responses.append(run_execute_command("pan-os-move-rule", {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'}))
+        responses.append(run_execute_command(command_name_create, create_rule_args))
+    command_name_move = "pan-os-move-rule"
+    responses.append(run_execute_command(command_name_move, {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'}))
 
 
 def start_pan_os_flow(args: dict) -> tuple[list, bool]:
@@ -627,7 +644,8 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
     log_forwarding_name = args.get('log_forwarding_name', '')
     auto_commit = args['auto_commit']
 
-    res_list_add_group = run_execute_command("pan-os-list-address-groups", {})
+    command_name_list_address_group = "pan-os-list-address-groups"
+    res_list_add_group = run_execute_command(command_name_list_address_group, {})
     responses.append(res_list_add_group)
     context_list_add_group = get_relevant_context(res_list_add_group[0].get('EntryContext', {}), "Panorama.AddressGroups")
     if not check_value_exist_in_context(tag, context_list_add_group, 'Match'):  # type: ignore
@@ -635,7 +653,8 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
         demisto.debug(f"The {tag=} doesn't exist in the address groups")
         pan_os_create_edit_address_group(address_group, context_list_add_group, tag, responses)  # type: ignore
 
-        res_list_rules = run_execute_command("pan-os-list-rules", {'pre_post': 'pre-rulebase'})
+        command_name_list_rules = "pan-os-list-rules"
+        res_list_rules = run_execute_command(command_name_list_rules, {'pre_post': 'pre-rulebase'})
         responses.append(res_list_rules)
         context_list_rules = get_relevant_context(res_list_rules[0].get('EntryContext', {}), 'Panorama.SecurityRule')
         pan_os_create_edit_rule(rule_name, context_list_rules, address_group, log_forwarding_name, responses)  # type: ignore
@@ -661,7 +680,8 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     Returns:
         A PollResult object.
     """
-    res_commit = run_execute_command("pan-os-commit", {'polling': True})
+    command_name = "pan-os-commit"
+    res_commit = run_execute_command(command_name, {'polling': True})
     polling_args = res_commit[0].get('Metadata', {}).get('pollingArgs', {})
     job_id = polling_args.get('commit_job_id')
     if job_id:
