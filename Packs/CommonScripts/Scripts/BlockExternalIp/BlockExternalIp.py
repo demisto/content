@@ -116,7 +116,7 @@ def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verb
             if command_hr and command_hr != str(None):
                 demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
                 results.append(CommandResults(readable_output=command_hr))
-            elif is_error(entry):  # (message and 'Failed' in message) or
+            elif is_error(entry):
                 demisto.debug(f"A failure was found {message=}")
                 failed_messages.append(message)
             elif message and isinstance(message, str):
@@ -269,7 +269,7 @@ def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
     """
     incident_context = demisto.context()
     executed_brands = incident_context.get('executed_brands', '')
-    executed_brands = ast.literal_eval(incident_context.get('executed_brands', '')) if executed_brands else []
+    executed_brands = ast.literal_eval(executed_brands) if executed_brands else []
     updated_brands_to_run = {b for b in brands_to_run if b not in executed_brands}
     demisto.debug(f"Removed {executed_brands=} from {brands_to_run=}")
     return executed_brands, updated_brands_to_run
@@ -329,7 +329,7 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
     Returns:
         A list of CommandResults.
     """
-    demisto.debug(f"The arguments to prisma_sase_block_ip is {brand_args=}")
+    demisto.debug(f"The arguments to prisma_sase_block_ip are {brand_args=}")
     responses = []
     ip = brand_args['ip']
     address_group = brand_args['address_group']
@@ -411,7 +411,6 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
    name='block-external-ip',
    interval=60,
    timeout=600,
-   requires_polling_arg=True,
 )
 def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     """ Check the status of the commit process in pan-os.
@@ -466,7 +465,6 @@ def pan_os_check_trigger_push_to_device(responses: list) -> bool:
    name='block-external-ip',
    interval=60,
    timeout=600,
-   requires_polling_arg=True,
 )
 def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     """ Execute pan-os-push-to-device-group.
@@ -516,7 +514,6 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
    name='block-external-ip',
    interval=60,
    timeout=600,
-   requires_polling_arg=True,
 )
 def pan_os_push_status(args: dict, responses: list):
     """ Check the status of the push operation in pan-os.
@@ -670,7 +667,6 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
    name='block-external-ip',
    interval=60,
    timeout=600,
-   #requires_polling_arg=True,
 )
 def pan_os_commit(args: dict, responses: list) -> PollResult:
     """ Execute pan-os-commit.
