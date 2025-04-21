@@ -221,7 +221,7 @@ def reformat_output(script_res: list) -> None:
     Args:
         script_res (list): The result from the polling command.
     """
-    reformated_res: dict[str, Any] = {}
+    reformatted_res: dict[str, Any] = {}
     for response in script_res:
         results = response.outputs.get('results')
         for res in results:
