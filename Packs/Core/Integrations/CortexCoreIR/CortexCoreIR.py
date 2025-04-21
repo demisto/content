@@ -216,7 +216,7 @@ def new_executed_command(result: dict) -> dict:
 
 def reformat_output(script_res: list) -> None:
     """
-    Reformat the output so that each endpoint has its own result section, without any duplicated data.
+    Reformats the context outputs so that each endpoint has its own result section, without any duplicated data.
 
     Args:
         script_res (list): The result from the polling command.
