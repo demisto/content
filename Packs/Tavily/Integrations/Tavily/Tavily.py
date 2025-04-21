@@ -9,6 +9,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class TavilyExtractClient(BaseClient):
+
     def __init__(self, api_key, url="https://api.tavily.com/extract", proxy: bool = False, verify: bool = False):
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -32,7 +33,7 @@ class TavilyExtractClient(BaseClient):
             raise Exception(f"Request failed: {response.status_code} - {response.text}")
 
 
-def extarct_command(client: TavilyExtractClient, args: dict):
+def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
     """
     This function extracts the content from the given urls.
     """
