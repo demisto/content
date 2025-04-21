@@ -2,12 +2,13 @@ from CommonServerPython import *
 
 """ IMPORTS """
 
-import urllib.parse
-import urllib3
-import hashlib
 import copy
-from typing import Any, NamedTuple
+import hashlib
+import urllib.parse
 from collections.abc import Callable
+from typing import Any, NamedTuple
+
+import urllib3
 from GSuiteApiModule import *  # noqa: E402
 
 # Disable insecure warnings
@@ -201,7 +202,7 @@ def return_file_from_entry_id(entry_id):  # pragma: no cover
         file_info = demisto.getFilePath(entry_id)
 
     except Exception as e:
-        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {str(e)}")
+        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {e!s}")
 
     file_path = file_info.get("path")
 
@@ -1343,7 +1344,7 @@ def device_list_automatic_pagination(
     next_page_token = ""
     continue_pagination = True  # This will decide if we should continue requesting from the API or that we should stop
     while continue_pagination:
-        query_params["maxResults"] = results_limit if results_limit <= MAX_PAGE_SIZE else MAX_PAGE_SIZE
+        query_params["maxResults"] = min(results_limit, MAX_PAGE_SIZE)
         if next_page_token:
             query_params["pageToken"] = next_page_token
         response = request_by_device_type(client=client, customer_id=customer_id, query_params=query_params)
@@ -2134,7 +2135,7 @@ def main() -> None:
         # Log exceptions
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
-        return_error(f"Error: {str(e)}")
+        return_error(f"Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
