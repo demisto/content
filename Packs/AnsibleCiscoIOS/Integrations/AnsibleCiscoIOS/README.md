@@ -625,11 +625,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```
 
 #### Human Readable Output
-
-># 123.123.123.123 -  SUCCESS
->
-> * net_api: cliconf
-> * net_config: !
+<!-- markdownlint-disable MD005 -->
+># 123.123.123.123 -  SUCCESS 
+>  * net_api: cliconf
+>  * net_config: !
 >! Last configuration change at 08:56:26 UTC Sun Jul 11 2021 by admin
 >!
 >version 15.7
@@ -924,6 +923,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 > * ## Net_Neighbors
 >
 > * ## Network_Resources
+
+<!-- markdownlint-enable MD005 -->
 
 ### ios-interfaces
 
