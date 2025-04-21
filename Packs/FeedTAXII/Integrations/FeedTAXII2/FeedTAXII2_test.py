@@ -1,5 +1,4 @@
 import json
-from unittest.mock import MagicMock, patch
 
 import pytest
 import demistomock as demisto
@@ -522,37 +521,20 @@ def test_feed_main_enrichment_excluded(mocker):
 
 
 def test_fetch_indicators_error_handling(mocker):
-    import FeedTAXII2
-    mock_client = MagicMock()
-    mock_client.collections = [
-        MagicMock(id='1'),  # This will simulate a failing collection
-        MagicMock(id='3'),  # This will simulate a passing collection
-    ]
-
+    mock_client = Taxii2FeedClient(url="", collection_to_fetch="default", proxies=[], verify=False, objects_to_fetch=[])
+    mock_client.collections = [MockCollection(1, "trow exception"), MockCollection(2, "pass")]
+    
+    mock_update_health = mocker.patch('FeedTAXII2.demisto.updateModuleHealth')
+    mock_error = mocker.patch('FeedTAXII2.demisto.error')
+    
     # Error simulation on the first collection
     def side_effect(limit, added_after):
         if mock_client.collection_to_fetch.id == '1':
             raise Exception("Simulated Error")
         return ['dummy_indicator_1', 'dummy_indicator_2']
 
-    mock_client.build_iterator.side_effect = side_effect
+    mocker.patch(mock_client, "build_iterator", side_effect=side_effect)
+    indicators, last_run = fetch_indicators_command(mock_client, "1 day", -1, {})
     
-
-    # Prepare mocks for Demisto functions
-    mock_update_health = mocker.patch('FeedTAXII2.demisto.updateModuleHealth')
-    mock_error = mocker.patch('FeedTAXII2.demisto.error')
-        # Execute
-    mocker.patch.object(FeedTAXII2, 'filter_previously_fetched_indicators')
-    try:
-        indicators, last_run_ctx = fetch_indicators_command(
-            client=mock_client,
-            initial_interval='10 days',
-            limit=10,
-            last_run_ctx={},
-            fetch_full_feed=False
-        )
-    except Exception:
-        pass
-
     mock_update_health.assert_called_once_with({"message": "Error fetching collection 1: Simulated Error"}, is_error=True)
     mock_error.assert_called_once_with("Failed to fetch IOCs from collection 1: Simulated Error")
