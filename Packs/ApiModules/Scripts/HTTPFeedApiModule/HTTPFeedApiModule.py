@@ -8,7 +8,7 @@ from re import Pattern
 
 import requests
 import urllib3
-from typing import Optional, Pattern, List
+from typing import Optional, Pattern
 from ipaddress import ip_address, summarize_address_range
 
 # disable insecure warnings
