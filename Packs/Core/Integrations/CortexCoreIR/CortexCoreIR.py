@@ -252,7 +252,7 @@ def reformate_args(args: dict) -> None:
     # the value of script_uid is the Unique identifier of execute_commands script.
     args |= {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
     is_raw_command = argToBoolean(args.get('is_raw_command', False))
-    commands_list = [commands] if is_raw_command else argToList(commands, args.get('command_separator'))
+    commands_list = [commands] if is_raw_command else argToList(commands, args.get('command_separator', ','))
     if args.get('command_type') == 'powershell':
         commands_list = [form_powershell_command(command) for command in commands_list]
     args['parameters'] = json.dumps({'commands_list': commands_list})
