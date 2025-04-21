@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any
+from typing import Any, Tuple
 from requests import Response
 import time
 
@@ -104,6 +104,65 @@ def format_data_fields(events: list[dict], evnet_type: str | None):
         event['source_log_type'] = evnet_type
 
 
+def filter_documents(documents: List[Dict[str, Union[str, Dict]]],
+                     timestamp: Union[str, None], ids: List[str], data_type: str) -> List[Dict[str, Union[str, Dict]]]:
+    """
+    Filters out documents from the given list based on the specified timestamp and ids.
+    Args:
+        documents (List[Dict[str, Union[str, Dict]]]): The list of documents to filter.
+        timestamp (Union[str, None]): The timestamp to filter against.
+        ids (List[str]): The list of ids to filter against.
+        data_type (str): The type of data.
+    Returns: (List[Dict[str, Union[str, Dict]]]): The filtered list of documents.
+    """
+    if not documents or not timestamp or not ids:
+        return documents
+
+    def get_timestamp(data: Dict[str, Union[str, Dict]]) -> Union[str, None]:
+        if data_type == 'events':
+            return data['endTimestamp']
+        else:
+            return data.get('context', {}).get('_timestamp')
+
+    filtered_documents = []
+    for doc in documents:  # Iterate through the original list
+        if get_timestamp(doc) == timestamp and doc.get('_id') in ids:
+            continue
+        filtered_documents.append(doc)
+
+    return filtered_documents
+
+
+def get_latest_timestamp_and_ids(documents: List[Dict[str, Union[str, Dict]]],
+                                 data_type: str) -> Tuple[Union[str, None], List[str]]:
+    """
+    Retrieves the latest timestamp and the corresponding ids from the given list of documents.
+    args:
+        documents (List[Dict[str, Union[str, Dict]]]): The list of documents.
+        data_type (str): The type of data.
+    Returns: (Tuple[Union[str, None], List[str]]): A tuple containing the latest timestamp and a list of corresponding ids.
+    """
+    if not documents:
+        return None, []
+
+    def get_timestamp(data):
+        if data_type == 'events':
+            return data['endTimestamp']
+        else:
+            return data.get('context', {}).get('_timestamp')
+
+    latest_timestamp = get_timestamp(documents[0])
+    ids = [documents[0].get('_id')]
+
+    for doc in documents[1:]:
+        if get_timestamp(doc) == latest_timestamp:
+            ids.append(doc.get('_id'))
+        else:
+            break
+
+    return latest_timestamp, ids
+
+
 def fetch_data(client, last_run, data_type):
     """
     Fetch data of a specified type (either 'events' or 'alerts') from the client.
@@ -120,7 +179,8 @@ def fetch_data(client, last_run, data_type):
     last_fetch_key = f'last_fetch_{data_type}'
     continue_fetch_key = f'continue_fetch_{data_type}'
 
-    start_time = last_run.get(last_fetch_key, end_time - 2) + 1
+    latest_fetch = last_run.get(last_fetch_key, {})
+    start_time = latest_fetch.get('latest_timestamp', end_time - 1)
     continue_fetch_data = last_run.get(continue_fetch_key, None)
     skip = 0
 
@@ -142,42 +202,43 @@ def fetch_data(client, last_run, data_type):
     demisto.debug(f'RadwareCloudDDoS: {data_type=} {len(documents)=}')
     new_continue_fetch_data = {}
 
-    if documents:
-        if data_type == 'events':
-            latest_timestamp = documents[0].get("endTimestamp")
-        elif data_type == 'alerts':
-            latest_timestamp = documents[0].get('context', {}).get("_timestamp")
+    filtered_documents = filter_documents(documents, timestamp=latest_fetch.get('latest_timestamp'),
+                                          ids=latest_fetch.get('latest_ids'), data_type=data_type)
+    demisto.debug(f'RadwareCloudDDoS: {data_type=} {len(filtered_documents)=}')
 
-        demisto.debug(f'RadwareCloudDDoS: {data_type=} {latest_timestamp=}')
+    if filtered_documents:
 
-        if len(documents) == PAGE_SIZE:
+        if len(filtered_documents) == PAGE_SIZE:
             demisto.debug(f'RadwareCloudDDoS: {data_type=} found next page')
             new_continue_fetch_data = {'end_time': end_time, 'start_time': start_time,
-                                       'fetched_' + data_type: len(documents) + skip}
+                                       'fetched_' + data_type: len(filtered_documents) + skip}
 
         if not continue_fetch_data:
-            last_run[last_fetch_key] = latest_timestamp
-            demisto.debug(f'RadwareCloudDDoS: {data_type=} saved {latest_timestamp=}')
+            latest_timestamp, latest_ids = get_latest_timestamp_and_ids(filtered_documents, data_type)
+            last_run[last_fetch_key] = {'latest_timestamp': latest_timestamp, 'latest_ids': latest_ids}
+            demisto.debug(f'RadwareCloudDDoS: {data_type=} saved {last_run[last_fetch_key]=}')
 
         if new_continue_fetch_data:
             last_run['nextTrigger'] = '0'
 
-        last_run[continue_fetch_key] = new_continue_fetch_data
-        demisto.debug(f'RadwareCloudDDoS: {data_type=} set {new_continue_fetch_data=}')
-
         if data_type == 'events':
-            format_data_fields(documents, 'security_events')
+            format_data_fields(filtered_documents, 'security_events')
         elif data_type == 'alerts':
-            format_data_fields(documents, 'operational_alerts')
+            format_data_fields(filtered_documents, 'operational_alerts')
+    else:
+        if not latest_fetch.get('latest_timestamp'):
+            last_run[last_fetch_key] = {'latest_timestamp': start_time, 'latest_ids': []}
 
-    return documents, last_run
+    last_run[continue_fetch_key] = new_continue_fetch_data
+    demisto.debug(f'RadwareCloudDDoS: {data_type=} set {new_continue_fetch_data=}')
+
+    return filtered_documents, last_run
 
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-
     params = demisto.params()
     account_id: str = params.get('credentials', {}).get('identifier', '')
     api_key: str = params.get('credentials', {}).get('password', '')
@@ -212,7 +273,8 @@ def main() -> None:
             demisto.setLastRun(last_run)
             send_events_to_xsiam(events+alerts, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Successfully sent {len(events)}events and {len(alerts)}alerts to XSIAM')
-
+            demisto.debug(f'Successfully sent event {[event.get("_id") for event in events]} IDs to XSIAM')
+            demisto.debug(f'Successfully sent alert {[alert.get("_id") for alert in alerts]} IDs to XSIAM')
         elif command == "radware-cloud-ddos-protection-services-get-events":
             events = []
             alerts = []

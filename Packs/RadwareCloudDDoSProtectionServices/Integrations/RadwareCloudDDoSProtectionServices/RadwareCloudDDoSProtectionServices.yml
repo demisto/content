@@ -23,6 +23,7 @@ configuration:
   options:
   - Events
   - Alerts
+  defaultvalue: Events,Alerts
   required: true
   type: 16
   section: Collect
