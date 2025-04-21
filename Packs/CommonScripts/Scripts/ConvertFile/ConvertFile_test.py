@@ -6,7 +6,8 @@ import subprocess
 import demistomock as demisto
 import pytest
 from CommonServerPython import entryTypes
-from ConvertFile import find_zombie_processes, main, make_sha, CommandResults
+from ConvertFile import find_zombie_processes, main, make_sha
+from unittest.mock import patch
 
 RETURN_ERROR_TARGET = "ConvertFile.return_error"
 
@@ -72,3 +73,19 @@ def test_zombie_prcesses(mocker):
     zombies, output = find_zombie_processes()
     assert len(zombies) == 9
     assert output == ps_output
+    
+
+def test_make_sha_with_mocked_file_data(mocker):
+    # Mocking the file reading process
+    file_data = b'Test file content'
+    mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data=file_data))
+    
+    # Mocking hashlib.sha1 function
+    mock_sha1 = mocker.MagicMock()
+    mock_sha1.hexdigest.return_value = 'mocked_sha1_hash'
+    
+    with patch('hashlib.sha1', return_value=mock_sha1):
+        sha1_hash = make_sha('test_file.txt')
+        
+        mock_open.assert_called_once_with('test_file.txt', 'rb')
+        assert sha1_hash == 'mocked_sha1_hash'
