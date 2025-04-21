@@ -9,48 +9,20 @@ The scrip blocks a list of IPs in supported integrations.
 | Script Type | python3 |
 | Cortex XSOAR Version | 6.1.0 |
 
-## Dependencies
-
----
-This script uses the following commands and scripts.
-
-* Palo Alto Networks - Prisma SASE
-* Panorama
-* pan-os
-* pan-os-commit
-* pan-os-commit-status
-* pan-os-create-address-group
-* pan-os-create-rule
-* pan-os-edit-rule
-* pan-os-list-address-groups
-* pan-os-list-rules
-* pan-os-move-rule
-* pan-os-push-to-device-group
-* pan-os-register-ip-tag
-* prisma-sase-address-group-create
-* prisma-sase-address-group-list
-* prisma-sase-address-group-update
-* prisma-sase-address-object-create
-* prisma-sase-address-object-list
-* prisma-sase-candidate-config-push
-* prisma-sase-security-rule-create
-* prisma-sase-security-rule-list
-* prisma-sase-security-rule-update
-
 ## Inputs
 
 ---
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                              |
-| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ip_list | List of IPs to block.                                                                                                                                                                                                                                        |
-| rule_name | The name of the rule which will be created in the relevant products.                                                                                                                                                                                         |
-| log_forwarding_name | Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules.                                                                                                                              |
-| address_group | This input determines whether PANW Panorama or Firewall or Prisma SASE Address Groups are used. Specify the Address Group name for IPs list handling.                                                                                                        |
-| auto_commit | Whether to commit the new rule.                                                                                                                                                                                                                              |
-| tag | The designated tag name for the IP.                                                                                                                                                                                                                          |
+| **Argument Name** | **Description** |
+| --- | --- |
+| ip_list | List of IPs to block. |
+| rule_name | The name of the rule which will be created in the relevant products. |
+| log_forwarding_name | Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |
+| address_group | This input determines whether PANW Panorama or Firewall or Prisma SASE Address Groups are used. Specify the Address Group name for IPs list handling. |
+| auto_commit | Whether to commit the new rule. |
+| tag | The designated tag name for the IP. |
 | brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2". |
-| verbose | Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result.                                                 |
+| verbose | Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result. |
 
 
 ## Outputs
