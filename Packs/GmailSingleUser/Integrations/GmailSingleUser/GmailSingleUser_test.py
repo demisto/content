@@ -561,8 +561,8 @@ def test_get_incidents_command(mocker):
     [
         (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
         ((datetime(2023, 1, 1, 12, 0), "date"), datetime(2023, 1, 1, 12, 0)),
-        ((datetime(2023, 1, 1, 12, 0)), "2023-01-01T12:00:00Z"),
-        (("2023-01-01T12:00:00Z"), "2023-01-01T12:00:00Z"),
+        ((datetime(2023, 1, 1, 12, 0), "str"), "2023-01-01T12:00:00Z"),
+        (("2023-01-01T12:00:00Z", "str"), "2023-01-01T12:00:00Z"),
     ],
     ids=["date_str_to_datetime", "date_datetime_pass", "datetime_to_iso_str", "iso_str_pass"]
 )
