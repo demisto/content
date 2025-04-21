@@ -597,6 +597,7 @@ def get_indicators_command(client: Client, args, enrichment_excluded: bool = Fal
     limit = int(args.get('limit'))
     feed_tags = args.get('feedTags')
     tlp_color = args.get('tlp_color')
+    cidr_32_to_ip = args.get('cidr_32_to_ip')
     auto_detect = demisto.params().get('auto_detect_type')
     create_relationships = demisto.params().get('create_relationships')
     indicators_list, _ = fetch_indicators_command(client,
@@ -605,6 +606,7 @@ def get_indicators_command(client: Client, args, enrichment_excluded: bool = Fal
                                                   itype,
                                                   auto_detect,
                                                   create_relationships,
+                                                  cidr_32_to_ip,
                                                   enrichment_excluded)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
@@ -647,6 +649,7 @@ def fetch_indicators_command(client,
 
                     if is_32_cidr:
                         ip_value = convert_cidr32_to_ip(indicator_value)
+                        attributes["type"] = FeedIndicatorType.IP
                         indicators.append(process_indicator_data(
                             client,
                             ip_value,
@@ -728,6 +731,7 @@ def feed_main(feed_name, params=None, prefix=''):
                 args['feedTags'] = feed_tags
             if tlp_color:
                 args['tlp_color'] = tlp_color
+            args['cidr_32_to_ip'] = cidr_32_to_ip
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
