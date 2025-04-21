@@ -632,25 +632,17 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict):
 
 def create_zip_with_password(generated_password: str, zip_password: str):
     """
-    Create a zip file with a password.
-    The function returns a zip file to the war room, and calls this script recursively using polling.
-
-    Args:
-        args (dict): The arguments passed to the script.
-        generated_password (str): The password to encrypt.
-        zip_password (str): The password to use for encrypting the zip file.
+    Create a zip file with a password containing the generated_password.
+    The function no longer writes a plaintext file to disk.
     """
-    text_file_name = 'TAPPolicyPass.txt'
     zip_file_name = 'TAPPolicyInfo.zip'
 
     try:
-        with open(text_file_name, 'w') as text_file:
-            text_file.write(generated_password)
+        demisto.debug('Creating password-protected zip file')
 
-        demisto.debug(f'zipping {text_file_name=}')
         with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
             zf.pwd = bytes(zip_password, 'utf-8')
-            zf.write(text_file_name)
+            zf.writestr('TAPPolicyPass.txt', generated_password)
 
         with open(zip_file_name, 'rb') as zip_file:
             zip_content = zip_file.read()
@@ -659,9 +651,8 @@ def create_zip_with_password(generated_password: str, zip_password: str):
         raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
 
     finally:
-        for file_name in (text_file_name, zip_file_name):
-            if os.path.exists(file_name):
-                os.remove(file_name)
+        if os.path.exists(zip_file_name):
+            os.remove(zip_file_name)
 
     return_results(fileResult(zip_file_name, zip_content))
 
