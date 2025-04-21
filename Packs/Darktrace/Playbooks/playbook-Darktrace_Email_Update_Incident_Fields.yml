@@ -80,6 +80,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
     scriptarguments:
       id:
         simple: ${incident.id}
@@ -174,6 +177,33 @@ tasks:
     - incidentfield: Darktrace Email Read Status
       output:
         simple: ${Darktrace.Email.read_status}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ab041bc5-3084-4234-8a00-dcc58f2311c5
+    type: title
+    task:
+      id: ab041bc5-3084-4234-8a00-dcc58f2311c5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
