@@ -384,7 +384,6 @@
 <h3>Known Limitations</h3>
 <ul>
 <li>New category will automatically be set to block access. You may change category access with Forcepoint TRITON manager.</li>
-<li>Since the API does not support TLS 1.2, the integration works only with TLS versions 1.0 and below.</li>    
 </ul>
 <h3>Troubleshooting</h3>
 <ul>
