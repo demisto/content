@@ -2,25 +2,31 @@ category: Analytics & SIEM
 commonfields:
   id: Tavily
   version: -1
+sectionOrder:
+  - Connect
 configuration:
 - name: url
   display: Server URL
   defaultvalue: https://api.tavily.com/extract
   type: 0
   required: true
+  section: Connect
 - display: API Key
   additionalinfo: The API Key to use for the connection
   name: api_key
   required: true
   type: 4
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 description: "Tavily is a web service that provides real-time web search and retrieval capabilities through an API, enabling developers to fetch and extract relevant information from the internet in structured formats like JSON."
 display: Tavily
 name: Tavily
