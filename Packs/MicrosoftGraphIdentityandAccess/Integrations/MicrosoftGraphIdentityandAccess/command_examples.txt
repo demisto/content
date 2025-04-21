@@ -9,6 +9,6 @@
 !msgraph-identity-ip-named-locations-update ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True ip_id=098699fc-10ad-420e-91ec-c555555555
 !msgraph-identity-ip-named-locations-list limit=50
 !msgraph-identity-ca-policies-list
-!msgraph-identity-ca-policy-create policy_name="Test Merge Cases Policy" state="disabled" include_users="All"
+!msgraph-identity-ca-policy-create policy_name="Block iOS access for test user" client_app_types="all" include_users="exampleUser" include_applications="exampleApp" include_platforms="iOS" built_in_controls="block" state="disabled" grant_control_operator="AND"
 !msgraph-identity-ca-policy-delete policy_id="fc271abb-e52c-4c40-aff9-5fd1e534a58d"
 !msgraph-identity-ca-policy-update policy_id="fc271abb-e52c-4c40-aff9-5fd1e534a58d" state="enabled"

@@ -449,6 +449,72 @@ class Client:  # pragma: no cover
 
 """ UTILITIES"""
 
+def resolve_merge_value(field: str, existing_list: List[str], new_list: List[str], messages: List[str]) -> List[str]:
+    """
+    Resolves how to merge a new list of values into an existing list for a given Conditional Access policy field,
+    handling special cases like 'All', 'AllTrusted', and 'None'.
+
+    Simplified logic:
+    - If existing is ['None'], return new.
+    - If existing is ['All'] or ['AllTrusted'], return existing.
+    - If new is a special value like ['All'], ['AllTrusted'], or ['None'], return new.
+    - Otherwise, merge both lists.
+
+    Args:
+        field (str): The name of the field (for context).
+        existing_list (List[str]): The current value in the policy.
+        new_list (List[str]): The values to add.
+        messages (List[str]): List to hold informational or warning messages.
+
+    Returns:
+        List[str]: The merged or selected list to apply.
+    """
+    special_values = {"All", "AllTrusted", "None"}
+
+    # Normalize to list of strings
+    existing_list = list(map(str, existing_list or []))
+    new_list = list(map(str, new_list or []))
+
+    if existing_list == ["None"]:
+        return new_list
+
+    if existing_list in [["All"], ["AllTrusted"]]:
+        messages.append(
+            f"Note: The field '{field}' was not updated because it currently holds the special value '{existing_list[0]}'. "
+            f"This value cannot be merged with others. All other updates were applied. "
+            f"To update this field, use update_action='override'."
+        )
+        return existing_list
+
+    if set(new_list).issubset(special_values):
+        return new_list
+
+    return list(set(existing_list + new_list))
+
+def merge_field(section: str, sub_section: Optional[str], field: str,
+    existing_policy: dict, new_policy: dict, messages: List[str], ) -> None:
+    def safe_get(d, *keys):
+        for key in keys:
+            if not isinstance(d, dict):
+                return []
+            d = d.get(key)
+        return d if isinstance(d, list) else []
+
+    if sub_section:
+        if field not in new_policy.get(section, {}).get(sub_section, {}):
+            return
+        existing_list = safe_get(existing_policy, section, sub_section, field)
+        new_list = safe_get(new_policy, section, sub_section, field)
+        merged = resolve_merge_value(field, existing_list, new_list, messages)
+        new_policy.setdefault(section, {}).setdefault(sub_section, {})[field] = merged
+    else:
+        if field not in new_policy.get(section, {}):
+            return
+        existing_list = safe_get(existing_policy, section, field)
+        new_list = safe_get(new_policy, section, field)
+        merged = resolve_merge_value(field, existing_list, new_list, messages)
+        new_policy.setdefault(section, {})[field] = merged
+        
 def format_policy_context(policy: Dict[str, Any]) -> Dict[str, Any]:
     """
     Convert a raw Conditional Access policy into a normalized context dictionary.
@@ -523,6 +589,15 @@ def parse_error_from_exception(e: Exception) -> Dict[str, str]:
     except Exception:
         return {'code': 'UnknownError', 'message': str(e)}
 
+def convert_to_list(value):
+    if isinstance(value, str):
+        return [item.strip() for item in value.split(",") if item.strip()]
+    return value or []
+
+def clean_dict(d):
+    if isinstance(d, dict):
+        return {k: clean_dict(v) for k, v in d.items() if v not in [None, [], {}, ""] and clean_dict(v) != {}}
+    return d
 
 """ COMMAND FUNCTIONS """
 
@@ -1145,11 +1220,6 @@ def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any
 
     return client.delete_conditional_access_policy(policy_id)
 
-def clean_dict(d):
-    if isinstance(d, dict):
-        return {k: clean_dict(v) for k, v in d.items() if v not in [None, [], {}, ""] and clean_dict(v) != {}}
-    return d
-
 def create_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Creates a Conditional Access policy.
@@ -1210,83 +1280,7 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
         }
 
     policy = clean_dict(policy)
-    return_results(policy)
     return client.create_conditional_access_policy(policy)
-
-def resolve_merge_value(field: str, existing_list: List[str], new_list: List[str], messages: List[str]) -> List[str]:
-    """
-    Resolves how to merge a new list of values into an existing list for a given Conditional Access policy field,
-    handling special cases like 'All', 'AllTrusted', and 'None'.
-
-    Simplified logic:
-    - If existing is ['None'], return new.
-    - If existing is ['All'] or ['AllTrusted'], return existing.
-    - If new is a special value like ['All'], ['AllTrusted'], or ['None'], return new.
-    - Otherwise, merge both lists.
-
-    Args:
-        field (str): The name of the field (for context).
-        existing_list (List[str]): The current value in the policy.
-        new_list (List[str]): The values to add.
-        messages (List[str]): List to hold informational or warning messages.
-
-    Returns:
-        List[str]: The merged or selected list to apply.
-    """
-    special_values = {"All", "AllTrusted", "None"}
-
-    # Normalize to list of strings
-    existing_list = list(map(str, existing_list or []))
-    new_list = list(map(str, new_list or []))
-
-    if existing_list == ["None"]:
-        return new_list
-
-    if existing_list in [["All"], ["AllTrusted"]]:
-        messages.append(
-            f"Note: The field '{field}' was not updated because it currently holds the special value '{existing_list[0]}'. "
-            f"This value cannot be merged with others. All other updates were applied. "
-            f"To update this field, use update_action='override'."
-        )
-        return existing_list
-
-    if set(new_list).issubset(special_values):
-        return new_list
-
-    return list(set(existing_list + new_list))
-
-
-
-
-def merge_field(
-    section: str,
-    sub_section: Optional[str],
-    field: str,
-    existing_policy: dict,
-    new_policy: dict,
-    messages: List[str],
-) -> None:
-    def safe_get(d, *keys):
-        for key in keys:
-            if not isinstance(d, dict):
-                return []
-            d = d.get(key)
-        return d if isinstance(d, list) else []
-
-    if sub_section:
-        if field not in new_policy.get(section, {}).get(sub_section, {}):
-            return
-        existing_list = safe_get(existing_policy, section, sub_section, field)
-        new_list = safe_get(new_policy, section, sub_section, field)
-        merged = resolve_merge_value(field, existing_list, new_list, messages)
-        new_policy.setdefault(section, {}).setdefault(sub_section, {})[field] = merged
-    else:
-        if field not in new_policy.get(section, {}):
-            return
-        existing_list = safe_get(existing_policy, section, field)
-        new_list = safe_get(new_policy, section, field)
-        merged = resolve_merge_value(field, existing_list, new_list, messages)
-        new_policy.setdefault(section, {})[field] = merged
 
 
 def update_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1297,16 +1291,18 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
     update_action = args.get("update_action", "append").lower()
     messages: list[str] = []
 
+    '''
     def convert_to_list(value):
         if isinstance(value, str):
             return [item.strip() for item in value.split(",") if item.strip()]
         return value or []
-
+    '''
+    '''
     def clean_dict(d):
         if isinstance(d, dict):
             return {k: clean_dict(v) for k, v in d.items() if v not in [None, [], {}, ""] and clean_dict(v) != {}}
         return d
-
+    '''
 
     policy = args.get("policy")
     if isinstance(policy, str):

@@ -308,7 +308,15 @@ def test_list_role_members_command(mocker):
     ]
 )
 def test_resolve_merge_value(field, existing_list, new_list, expected, expected_messages):
-    
+    """
+    Given:
+        - An existing list and a new list of values for a specific field in a policy.
+    When:
+        - Calling resolve_merge_value to decide how to merge these lists.
+    Then:
+        - Verify the correct merging logic or override behavior.
+        - Verify if appropriate messages are generated when special values are involved (e.g., 'All').
+    """
     from MicrosoftGraphIdentityandAccess import resolve_merge_value
     
     messages = []
@@ -316,17 +324,16 @@ def test_resolve_merge_value(field, existing_list, new_list, expected, expected_
     assert sorted(result) == sorted(expected)
     assert messages == expected_messages
 
-
 @pytest.mark.parametrize(
     "src, expected",
     [
-        # כל הערכים תקינים – אין שינוי
+        # All values are valid – no changes expected
         ({"a": 1, "b": [1], "c": {"d": 2}}, {"a": 1, "b": [1], "c": {"d": 2}}),
 
-        # ערכים “ריקים” ברמה העליונה מוסרים
+        # Top-level empty values should be removed
         ({"a": None, "b": "", "c": [], "d": {}}, {}),
 
-        # ניקוי רקורסיבי – גם במבנה מקונן
+        # Recursive cleaning – also in nested structures
         (
             {
                 "a": 1,
@@ -340,11 +347,19 @@ def test_resolve_merge_value(field, existing_list, new_list, expected, expected_
             {"a": 1, "c": {"e": {"g": 3}}},
         ),
 
-        # רשימה כערך – אינה מטופלת אלא אם היא ממש []
+        # List as a value – should not be altered unless it's completely empty
         ({"a": [None, 1, ""]}, {"a": [None, 1, ""]}),
     ],
 )
 def test_clean_dict(src, expected):
+    """
+    Given:
+        - A dictionary with nested structures containing empty or null-like values.
+    When:
+        - Cleaning the dictionary using clean_dict.
+    Then:
+        - Verify that all empty values and empty nested structures are removed.
+    """
     from MicrosoftGraphIdentityandAccess import clean_dict
 
     assert clean_dict(src) == expected
@@ -352,31 +367,31 @@ def test_clean_dict(src, expected):
 @pytest.mark.parametrize(
     "exception_input, expected_output",
     [
-        # מקרה 1: שגיאה בתור dict
+        # Case 1: Exception with a dictionary containing an 'error' field
         (
             Exception({"error": {"code": "BadRequest", "message": "Invalid policy"}}),
             {"code": "BadRequest", "message": "Invalid policy"}
         ),
 
-        # מקרה 2: שגיאה כ־string שמכיל JSON
+        # Case 2: Exception as a string that contains a JSON object
         (
             Exception("Something failed: {\"error\": {\"code\": \"AuthError\", \"message\": \"Unauthorized access\"}}"),
             {"code": "AuthError", "message": "Unauthorized access"}
         ),
 
-        # מקרה 3: שגיאה כ־string שלא מכילה JSON
+        # Case 3: Exception as a string that does not contain JSON
         (
             Exception("Something went wrong"),
             {"code": "UnknownError", "message": "Something went wrong"}
         ),
 
-        # מקרה 4: חריגה בלי args בכלל
+        # Case 4: Exception with no arguments at all
         (
             Exception(),
             {"code": "UnknownError", "message": ""}
         ),
 
-        # מקרה 5: חריגה שמכילה dict אבל בלי מפתח 'error'
+        # Case 5: Exception with a dictionary that does not have an 'error' key
         (
             Exception({"status": 403}),
             {"code": "UnknownError", "message": "{'status': 403}"}
@@ -384,27 +399,18 @@ def test_clean_dict(src, expected):
     ]
 )
 def test_parse_error_from_exception(exception_input, expected_output):
+    """
+    Given:
+        - An exception raised in different formats (dict, string with JSON, plain string, etc.).
+    When:
+        - Parsing the error using parse_error_from_exception.
+    Then:
+        - Verify that the correct code and message are extracted or fallback values are used.
+    """
+
     from MicrosoftGraphIdentityandAccess import parse_error_from_exception
     result = parse_error_from_exception(exception_input)
     assert result == expected_output
-
-def test_delete_policy_missing_policy_id_raises():
-    """
-    Given:
-        - args that do NOT include 'policy_id'.
-    When:
-        - Running delete_conditional_access_policy_command.
-    Then:
-        - ValueError should be raised with the correct message.
-    """
-    from MicrosoftGraphIdentityandAccess import Client, delete_conditional_access_policy_command
-
-    client = Client("", False, False)
-    args = {}
-    with pytest.raises(ValueError) as e:
-        delete_conditional_access_policy_command(client, args)
-
-    assert str(e.value) == "The 'policy_id' argument is required to delete a Conditional Access policy."
 
 def test_update_policy_missing_policy_id_raises():
     """
@@ -423,3 +429,125 @@ def test_update_policy_missing_policy_id_raises():
         update_conditional_access_policy_command(client, args)
 
     assert str(e.value) == "The 'policy_id' argument is required to update a Conditional Access policy."
+    
+
+@pytest.mark.parametrize(
+    "args, should_raise, delete_mock, expected_output",
+    [
+        # Case 1: Missing policy_id
+        ({}, True, None, "The 'policy_id' argument is required to delete a Conditional Access policy."),
+
+        # Case 2: policy_id provided but not found
+        ({"policy_id": "nonexistent-id"}, False, Exception("API Error with status 404"),
+         "Error deleting Conditional Access policy:"),
+
+        # Case 3: Successful deletion
+        ({"policy_id": "valid-id"}, False, None, "Conditional Access policy valid-id was successfully deleted.")
+    ]
+)
+def test_delete_conditional_access_policy_command(mocker, args, should_raise, delete_mock, expected_output):
+    """
+    Given:
+        - Different cases of policy deletion including:
+            - Missing 'policy_id'
+            - Valid 'policy_id' but API error
+            - Valid 'policy_id' and successful deletion
+    When:
+        - Executing delete_conditional_access_policy_command.
+    Then:
+        - Verify correct behavior for each case: exception raised or readable_output contains success/failure.
+    """
+    from MicrosoftGraphIdentityandAccess import (Client, delete_conditional_access_policy_command, CommandResults,)
+    client = Client("", False, False)
+
+    if delete_mock is not None:
+        mocker.patch.object(
+            client.ms_client, "http_request",
+            side_effect=delete_mock
+        )
+    else:
+        mocker.patch.object(
+            client.ms_client, "http_request",
+            return_value=None
+        )
+
+    if should_raise:
+        with pytest.raises(ValueError) as e:
+            delete_conditional_access_policy_command(client, args)
+        assert str(e.value) == expected_output
+    else:
+        result = delete_conditional_access_policy_command(client, args)
+        assert isinstance(result, CommandResults)
+        assert expected_output in result.readable_output
+        
+
+@pytest.mark.parametrize(
+    "args, mock_response, expected_count, expected_call_args, expected_display",
+    [
+        (
+            {},  # case: no policy_id, returns list
+            {"value": [{"id": "1", "displayName": "Policy A", "state": "enabled"}]},
+            1,
+            (None, None),
+            "Policy A"
+        ),
+        (
+            {"policy_id": "abc123"},  # case: specific policy by id
+            {"id": "abc123", "displayName": "Policy B", "state": "disabled"},
+            1,
+            ("abc123", None),
+            "Policy B"
+        ),
+        (
+            {"filter": "state eq 'enabled'"},  # case: filtered list
+            {"value": [{"id": "2", "displayName": "Policy C", "state": "enabled"}]},
+            1,
+            (None, "state eq 'enabled'"),
+            "Policy C"
+        ),
+        (
+            {},  # case: empty list
+            {"value": []},
+            0,
+            (None, None),
+            None
+        ),
+        (
+            {"policy_id": "not-found"},  # case: not found single policy
+            None,
+            0,
+            ("not-found", None),
+            None
+        ),
+    ]
+)
+def test_list_conditional_access_policies_command_cases(
+    mocker, args, mock_response, expected_count, expected_call_args, expected_display
+):
+    """
+    Given:
+        - A variety of inputs such as a specific policy ID, a filter, no input, or an empty result.
+    When:
+        - Calling list_conditional_access_policies_command.
+    Then:
+        - Verify that the correct policy list is returned and the client was called with the right arguments.
+        - Verify the readable_output reflects the expected policies.
+    """
+    from MicrosoftGraphIdentityandAccess import Client, list_conditional_access_policies_command
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.list_conditional_access_policies.return_value = mock_response
+
+    result = list_conditional_access_policies_command(mock_client, args)
+
+    # assert the call was correct
+    mock_client.list_conditional_access_policies.assert_called_once_with(*expected_call_args)
+
+    # assert the output length
+    if isinstance(result.outputs, list):
+        assert len(result.outputs) == expected_count
+    else:
+        assert result.outputs is None
+    # assert something from the output (only if something returned)
+    if expected_display:
+        assert expected_display in result.readable_output
