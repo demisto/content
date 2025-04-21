@@ -1,6 +1,6 @@
 {
 	"description": "",
-	"fromVersion": "6.0.0",
+	"fromVersion": "6.10.0",
 	"detailsV2": {
 		"tabs": [
 			{
@@ -65,7 +65,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "analysis",
+								"fieldId": " incident_zerofoxkeyincidentanalysis",
 								"height": 44,
 								"id": "be071470-0f0a-11f0-b641-158aaf1a906d",
 								"index": 5,
@@ -1185,8 +1185,8 @@
 		]
 	},
 	"group": "incident",
-	"id": "331f1c29-422d-49df-81dc-4329a2073078",
-	"name": "331f1c29-422d-49df-81dc-4329a2073078",
+	"id": "ZeroFox Key Incidents Layout",
+	"name": "ZeroFox Key Incidents Layout",
 	"system": false,
 	"version": -1
 }

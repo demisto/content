@@ -32,15 +32,27 @@ configuration:
   - display: Incident type
     name: incidentType
     type: 13
-    section: Connect
+    section: Collect
     required: false
   - display: Maximum number of incidents per fetch
     name: max_fetch
     type: 0
     section: Collect
-    defaultvalue: '0'
+    defaultvalue: '10'
     required: false
     hidden: true
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    section: Connect
+    advanced: true
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+    section: Connect
+    advanced: true
 description: Cloud-based SaaS to detect risks found on social media and digital channels.
 display: ZeroFox Key Incidents
 name: ZeroFoxKeyIncidents

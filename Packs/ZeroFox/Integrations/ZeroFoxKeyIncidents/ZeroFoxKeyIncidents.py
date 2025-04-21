@@ -11,8 +11,6 @@ from requests import Response
 
 """ GLOBALS / PARAMS  """
 FETCH_TIME_DEFAULT = "7 days"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-MAX_ALERT_IDS_STORED = 300
 
 # Disable insecure warnings
 urllib3.disable_warnings()

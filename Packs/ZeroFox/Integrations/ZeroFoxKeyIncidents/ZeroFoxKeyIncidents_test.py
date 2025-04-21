@@ -136,6 +136,7 @@ def test_fetch_incidents_zerofox_error(requests_mock, zerofox):
     with pytest.raises(ZeroFoxInternalException):
         fetch_incidents(zerofox, last_run, first_fetch_time)
 
+
 @freezegun.freeze_time("2022-05-25")
 def test_fetch_incidents_no_incidents(requests_mock, zerofox):
     start_time = "2022-05-24T00:00:00"
@@ -243,6 +244,7 @@ def test_get_key_incident_attachment_command(requests_mock, zerofox, mock_file_i
     }
 
     assert results == expected
+
 
 def test_key_incident_attachment_command_not_found(requests_mock, zerofox):
     """
