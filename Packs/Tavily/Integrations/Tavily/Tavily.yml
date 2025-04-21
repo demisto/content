@@ -1,0 +1,51 @@
+category: Analytics & SIEM
+commonfields:
+  id: Tavily
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://api.tavily.com/extract
+  type: 0
+  required: true
+- display: API Key
+  additionalinfo: The API Key to use for the connection
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: "Tavily is a web service that provides real-time web search and retrieval capabilities through an API, enabling developers to fetch and extract relevant information from the internet in structured formats like JSON."
+display: Tavily
+name: Tavily
+script:
+  commands:
+  - arguments:
+    - description: Comma-separated list of urls to extract.
+      name: urls
+      required: true
+      isArray: true
+    description: ''
+    name: extract
+    outputs:
+    - contextPath: Tavily
+      description: List of dictionaries with URL and Content keys, both strings.
+      type: list
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
