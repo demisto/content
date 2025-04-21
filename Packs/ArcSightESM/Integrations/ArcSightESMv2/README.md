@@ -43,7 +43,7 @@ Cortex XSOAR is designed for an automatic response, so make sure to define condi
 6.Save the Query Viewer resource ID integration configuration in Cortex XSOAR.
 
 
-# Configure ArcSight ESM on Cortex XSOAR
+## Configure ArcSight ESM on Cortex XSOAR
 1. Navigate to Settings>Integrations>Servers & Services.
 2. Search for ArcSight ESM.
 3. Click **Add instance** to create and configure a new integration instance.
