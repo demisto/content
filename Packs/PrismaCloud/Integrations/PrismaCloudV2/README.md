@@ -2841,9 +2841,7 @@ Access keys are a secure way to enable programmatic access to the Prisma Cloud A
 
 A service account is a special Prisma Cloud identity used to access Prisma Cloud programmatically via API.
 
-To create a service account, see [Add Service Accounts On Prisma Cloud
-](https://docs.prismacloud.io/en/enterprise-edition/content-collections/administration/add-service-account-prisma-cloud)
-
+To create a service account, see [Add Service Accounts On Prisma Cloud](https://docs.prismacloud.io/en/enterprise-edition/content-collections/administration/add-service-account-prisma-cloud)
 #### Base Command
 
 `prisma-cloud-access-key-create`

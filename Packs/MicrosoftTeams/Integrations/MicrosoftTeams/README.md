@@ -171,7 +171,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 9. Navigate to **Settings -> Configuration** on the left bar, and fill in the **Messaging Endpoint**.
 
     - To get the correct messaging endpoint based on the server URL, the server version, and the instance configurations, use the `microsoft-teams-create-messaging-endpoint`command.
-**Note:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
+    **Note:** Using this command requires an active integration instance. This step can be done after completing the [instance configuration](#configure-microsoft-teams-on-cortex-xsoar) section.
 
 10. Store the **Microsoft App ID** value for the next steps, and navigate to **Manage** next to it.
 11. Click **New Client Secret**, fill in the **Description** and **Expires** fields as desired. Then click **Add**.
@@ -199,7 +199,7 @@ Perform the following steps to add the needed permissions:
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-   **Application permissions required to use all credential flow supported commands:**
+    **Application permissions required to use all credential flow supported commands:**
 
     - `User.Read.All`
     - `GroupMember.Read.All`
@@ -217,7 +217,7 @@ Perform the following steps to add the needed permissions:
 
 #### Authorization Code Flow
 
-Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system.
+Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires authenticating with `Client Credentials` due to a limitation in Microsoft's permissions system. (Calling this command will perform the authentication seemlessly)
 
 Executing commands when using an authorization code requires **Delegated Permissions**.
 Perform the following steps to add the needed permissions:
@@ -226,7 +226,7 @@ Perform the following steps to add the needed permissions:
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions** > **Add a permission** > **Microsoft Graph** > **Delegated permissions**.
 4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-   **Delegated permissions required to use all auth code flow supported commands:**
+    **Delegated permissions required to use all auth code flow supported commands:**
 
     - `User.Read.All`
     - `GroupMember.Read.All`
@@ -234,10 +234,15 @@ Perform the following steps to add the needed permissions:
     - `ChannelMember.ReadWrite.All`
     - `Channel.Create`
     - `Channel.Delete.All`
+    - `ChannelMessage.Send`
     - `OnlineMeetings.ReadWrite.All`
     - `Chat.ReadWrite`
     - `AppCatalog.Read.All`
     - `TeamsAppInstallation.ReadWriteSelfForChat`
+
+    **Application permissions:** (For `microsoft-teams-ring-user`)
+    - `User.Read.All`
+    - `Calls.Initiate.All`
 
     Alternatively, check each relevant command section below for the minimum permissions it requires.
 
@@ -356,7 +361,7 @@ For more detailed instructions, refer to the [Configuring the instance with the 
 ---
 
 - In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to. It will trigger a communication and solve the issue.
-- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system.
+- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command requires using the `Client Credentials` authentication due to a limitation in Microsoft's permissions system.As such, when using `Authorization Code flow` and calling this command, the integration will internally authenticate using the `Client Credentials flow`.
 - In addition, the chat commands are only supported when using the `Authorization Code flow`.
 - Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
 - In case of multiple chats/users sharing the same name, the first one will be taken.
@@ -387,6 +392,8 @@ and picture to match the bot will make it appear to be from the same source.
 `GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 `Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
+
+`ChannelMessage.Send` - *Delegated (Authorization Code) - Only needed for sending replies to messages*
 
 ##### Input
 
@@ -527,7 +534,7 @@ There is no context output for this command.
 ### microsoft-teams-ring-user
 
 ***
-Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
+Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered.
 
 ##### Base Command
 
@@ -849,6 +856,7 @@ Sends a new chat message in the specified chat.
 Notes:
 
 - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
+- This command will fail if the consent user is not a member of the destination chat.
 - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
 
 ##### Base Command
@@ -871,9 +879,9 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 
 ##### Input
 
-| **Argument Name** | **Description**                                                                  | **Required** |
-|-------------------|----------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). | Required     |
+| **Argument Name** | **Description**                                                                                                                       | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. |  Required     |
 | content           | The content of the chat message.                                                 | Required     |
 | content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     |
 | message_type      | The type of chat message. Default is message.                                    | Optional     |
@@ -923,6 +931,11 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 ***
 Adds a member (user) to a group chat.
 
+Notes: 
+- This command works with the consent user, not with the bot. Which means, the member will be added to the given chat by the consent user, not the bot. 
+- This command will fail if the consent user is not a member of the destination chat.
+
+
 #### Base Command
 
 `microsoft-teams-chat-add-user`
@@ -935,9 +948,9 @@ Adds a member (user) to a group chat.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                    | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID or group chat name (topic) to which to add the member.                                 | Required     |
+| **Argument Name** | **Description**                                                                                                         | **Required** |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------|--------------|
+| chat              | The chat ID or group chat name (topic) to which to add the member. Note - the consent user must be a member of the chat.                               | Required     |
 | member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.                   | Required     |
 | share_history     | Whether to share the whole history of the chat. Possible values are: true, false. Default is True. | Optional     |
 
@@ -958,6 +971,11 @@ The User "Bruce Willis" has been added to chat "example chat" successfully.
 ***
 Retrieves a list of members from a chat.
 
+
+Notes: 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
+
 #### Base Command
 
 `microsoft-teams-chat-member-list`
@@ -972,7 +990,7 @@ Retrieves a list of members from a chat.
 
 | **Argument Name** | **Description**                                                                  | **Required** |
 |-------------------|----------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN). | Required     |
+| chat              | The chat ID / group chat name (topic) / oneOnOne Member (Display name/mail/UPN). Note - the consent user must be a member of the chat.| Required     |
 
 #### Context Output
 
@@ -1003,7 +1021,7 @@ Retrieves a list of members from a chat.
 ### microsoft-teams-chat-list
 
 ***
-Retrieves a list of chats that the user is part of. If 'chat' is specified - retrieves this chat only.
+Retrieves a list of chats that the consent user is a member of. If 'chat' is specified - retrieves this chat only.
 
 #### Base Command
 
@@ -1019,7 +1037,7 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 
 | **Argument Name** | **Description**                                                                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                         | Optional     |
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).  Note - the consent user must be a member of the chat.                                                                       | Optional     |
 | filter            | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. | Optional     |
 | expand            | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview.                               | Optional     |
 | limit             | The number of results to retrieve. Default is 50.                                                                                                        | Optional     |
@@ -1059,6 +1077,10 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 ***
 Retrieves a list of messages in a chat.
 
+Notes: 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
+
 #### Base Command
 
 `microsoft-teams-chat-message-list`
@@ -1073,7 +1095,7 @@ Retrieves a list of messages in a chat.
 
 | **Argument Name** | **Description**                                                                                                                                                                       | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                                                      | Required     |
+| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat.                                                                                                   | Required     |
 | limit             | The number of results to retrieve. Default is 50.                                                                                                                                     | Optional     |
 | order_by          | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional     |
 | next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                                                   | Optional     |
@@ -1125,6 +1147,10 @@ Retrieves a list of messages in a chat.
 ***
 Updates the chat name. It can only be set for group chats.
 
+Notes: 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+
+
 #### Base Command
 
 `microsoft-teams-chat-update`
@@ -1139,7 +1165,7 @@ Updates the chat name. It can only be set for group chats.
 
 | **Argument Name** | **Description**                                                                 | **Required** |
 |-------------------|---------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic).                                          | Required     |
+| chat              | The chat ID / group chat name (topic). Note - the consent user must be a member of the chat.                                      | Required     |
 | chat_name         | The new chat name. Maximum length is 250 characters. Use of ':' is not allowed. | Required     |
 
 #### Context Output
@@ -1205,7 +1231,7 @@ There is no context output for this command.
 
 >### Authorization instructions
 >
->1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+>1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 >You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
