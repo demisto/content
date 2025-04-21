@@ -1253,6 +1253,7 @@ def fetch_incidents(client: Client):
             f"keeping current last fetch: {last_fetch} as result has additional pages to fetch."
             f" token: {next_page_token}. Ignoring incremented last_fatch: {next_last_fetch}"
         )
+        msg_to_exclude_in_next_fetch = lookback_ids_and_dates + emails_ids_and_dates
     else:
         # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
         if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
@@ -1279,7 +1280,7 @@ def fetch_incidents(client: Client):
         "ignore_list_used": ignore_list_used,
         "lookback_msg": msg_to_exclude_in_next_fetch or lookback_ids_and_dates,
     }
-    demisto.debug(f"Gmail: call to setLastRun function with {new_last_run}")
+    demisto.debug(f"Gmail: save the following msg IDs to LastRun: {new_last_run.get('lookback_msg')}")
     demisto.setLastRun(new_last_run)
     return incidents
 

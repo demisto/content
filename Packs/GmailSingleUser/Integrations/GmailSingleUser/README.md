@@ -351,4 +351,4 @@ Retrieves a list of emails from Gmail within a specific date range and formats t
 There is no context output for this command.
 
 #### Command Example
-```!gmail-get-incidents from="admin@demistodev.com"```
+```!gmail-get-incidents from="admin@dummy.com"```
