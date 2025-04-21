@@ -1,7 +1,7 @@
 Use the Armis integration to search alerts and devices, tag and untag devices, and set alert statuses.
 This integration was integrated and tested with the latest version of Armis.
-## Configure Armis in Cortex
 
+## Configure Armis in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,49 +19,52 @@ This integration was integrated and tested with the latest version of Armis.
 | Proxy | Whether to use the System proxy | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### armis-search-alerts
+
 ***
 Search Armis Alerts.
-
 
 #### Base Command
 
 `armis-search-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_results | The maximum number of results to get. Default is 50. | Optional | 
-| time_frame | Filter by start time. <br/>Examples:<br/>  "3 days ago"<br/>  "1 month"<br/>  "2019-10-10T12:22:00"<br/>  "2019-10-10". Default is 3 days. | Optional | 
-| alert_id | The ID of the alert. | Optional | 
-| severity | A comma-separated list of alert severity levels by which to filter the search results. Possible values: "Low", "Medium", and "High". | Optional | 
-| status | A comma-separated list of alert statuses by which to filter the search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED". | Optional | 
-| alert_type | A comma-separated list of alert types by which to filter the search results. Possible values: "Policy Violation", "System Policy Violation", and "Anomaly Detection" | Optional | 
-
+| max_results | The maximum number of results to get. Default is 50. | Optional |
+| time_frame | Filter by start time. <br/>Examples:<br/>  "3 days ago"<br/>  "1 month"<br/>  "2019-10-10T12:22:00"<br/>  "2019-10-10". Default is 3 days. | Optional |
+| alert_id | The ID of the alert. | Optional |
+| severity | A comma-separated list of alert severity levels by which to filter the search results. Possible values: "Low", "Medium", and "High". | Optional |
+| status | A comma-separated list of alert statuses by which to filter the search results. Possible values: "UNHANDLED", "SUPPRESSED", and "RESOLVED". | Optional |
+| alert_type | A comma-separated list of alert types by which to filter the search results. Possible values: "Policy Violation", "System Policy Violation", and "Anomaly Detection" | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Armis.Alert.activityIds | Number | The activity IDs of the alert. | 
-| Armis.Alert.activityUUIDs | String | The activity UUIDs of the alert. | 
-| Armis.Alert.alertId | Number | The ID of the alert. | 
-| Armis.Alert.connectionIds | Number | The connection IDs of the alert. | 
-| Armis.Alert.description | String | A text description of the alert. | 
-| Armis.Alert.deviceIds | Number | The device IDs of the alert | 
-| Armis.Alert.severity | String | The severity of the alert. | 
-| Armis.Alert.status | String | The status of the alert. | 
-| Armis.Alert.time | Date | The date and time the alert occurred. | 
-| Armis.Alert.title | String | The title of the alert. | 
-| Armis.Alert.type | String | The type of the alert. | 
-
+| Armis.Alert.activityIds | Number | The activity IDs of the alert. |
+| Armis.Alert.activityUUIDs | String | The activity UUIDs of the alert. |
+| Armis.Alert.alertId | Number | The ID of the alert. |
+| Armis.Alert.connectionIds | Number | The connection IDs of the alert. |
+| Armis.Alert.description | String | A text description of the alert. |
+| Armis.Alert.deviceIds | Number | The device IDs of the alert |
+| Armis.Alert.severity | String | The severity of the alert. |
+| Armis.Alert.status | String | The status of the alert. |
+| Armis.Alert.time | Date | The date and time the alert occurred. |
+| Armis.Alert.title | String | The title of the alert. |
+| Armis.Alert.type | String | The type of the alert. |
 
 #### Command Example
+
 ```!armis-search-alerts status=RESOLVED max_results=10```
 
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -106,75 +109,75 @@ Search Armis Alerts.
 #### Human Readable Output
 
 >### Alerts
+>
 >|Severity|Type|Time|Status|Title|Description|Activity Ids|Activity UUI Ds|Alert Id|Connection Ids|Device Ids|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Medium | System Policy Violation | 2021-03-09T01:28:44.032944+00:00 | Resolved | Smart TV connected to Corporate network | Smart TV started connection to Corporate Network | 23314066,<br/>23316462,<br/>23317202,<br/>23326470,<br/>23341779,<br/>23342441 | enyZFHgBAAAC-vCT9nJG,<br/>0Hy2FHgBAAAC-vCTGnJB,<br/>3Hy_FHgBAAAC-vCTp3Kz,<br/>v3wSFXgBAAAC-vCTFnNL,<br/>_nxOGHgBAAAC-vCTUnc2,<br/>2HxpGHgBAAAC-vCT03jo | 3984 | 923419,<br/>923501,<br/>924451 | 165722,<br/>532 |
 
-
 ### armis-update-alert-status
+
 ***
 Updates the status for an alert.
-
 
 #### Base Command
 
 `armis-update-alert-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The ID of the alert to update. | Required | 
-| status | New status of the alert. Possible values are: UNHANDLED, RESOLVED, SUPPRESSED. | Required | 
-
+| alert_id | The ID of the alert to update. | Required |
+| status | New status of the alert. Possible values are: UNHANDLED, RESOLVED, SUPPRESSED. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### armis-search-alerts-by-aql-string
+
 ***
 Searches the alerts with a raw AQL string.
-
 
 #### Base Command
 
 `armis-search-alerts-by-aql-string`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| aql_string | The AQL string to by which to search. | Required | 
-| max_results | The maximum number of results to get. Default is 50. | Optional | 
-
+| aql_string | The AQL string to by which to search. | Required |
+| max_results | The maximum number of results to get. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Armis.Alert.activityIds | Number | The activity IDs of the alert. | 
-| Armis.Alert.activityUUIDs | String | The activity UUIDs of the alert. | 
-| Armis.Alert.alertId | Number | The ID of the alert. | 
-| Armis.Alert.connectionIds | Number | The connection IDs of the alert. | 
-| Armis.Alert.description | String | The description of the alert. | 
-| Armis.Alert.deviceIds | Number | The device IDs of the alert. | 
-| Armis.Alert.severity | String | The severity of the alert. | 
-| Armis.Alert.status | String | The status of the alert. | 
-| Armis.Alert.time | Date | The date and time the alert occurred. | 
-| Armis.Alert.title | String | The title of the alert. | 
-| Armis.Alert.type | String | The type of the alert. | 
-
+| Armis.Alert.activityIds | Number | The activity IDs of the alert. |
+| Armis.Alert.activityUUIDs | String | The activity UUIDs of the alert. |
+| Armis.Alert.alertId | Number | The ID of the alert. |
+| Armis.Alert.connectionIds | Number | The connection IDs of the alert. |
+| Armis.Alert.description | String | The description of the alert. |
+| Armis.Alert.deviceIds | Number | The device IDs of the alert. |
+| Armis.Alert.severity | String | The severity of the alert. |
+| Armis.Alert.status | String | The status of the alert. |
+| Armis.Alert.time | Date | The date and time the alert occurred. |
+| Armis.Alert.title | String | The title of the alert. |
+| Armis.Alert.type | String | The type of the alert. |
 
 #### Command Example
+
 ```!armis-search-alerts-by-aql-string aql_string="alertId:(3821)"```
 
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -204,32 +207,33 @@ Searches the alerts with a raw AQL string.
 #### Human Readable Output
 
 >### Alerts
+>
 >|Alert Id|Description|Type|Title|Severity|Status|Time|Activity Ids|Activity UUI Ds|Device Ids|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3821 | The Armis security platform has detected a violation of a policy and generated an alert. | System Policy Violation | Unencrypted Traffic: SMB | Medium | Resolved | 2021-02-16T06:23:02.101479+00:00 | 22060159 | nTiGqXcBAAAC-vCTfzPN | 199808 |
 
-
 ### armis-tag-device
+
 ***
 Adds a tag to a device.
-
 
 #### Base Command
 
 `armis-tag-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device to add a tag to. | Required | 
-| tags | The tags to add to the device. | Required | 
-
+| device_id | The ID of the device to add a tag to. | Required |
+| tags | The tags to add to the device. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!armis-tag-device device_id=165722 tags=test```
 
 #### Human Readable Output
@@ -237,26 +241,27 @@ There is no context output for this command.
 >Successfully Tagged device: 165722 with tags: ['test']
 
 ### armis-untag-device
+
 ***
 Removes a tag from a device.
-
 
 #### Base Command
 
 `armis-untag-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device to remove a tag from. | Required | 
-| tags | The tags to remove from the device. | Required | 
-
+| device_id | The ID of the device to remove a tag from. | Required |
+| tags | The tags to remove from the device. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!armis-untag-device device_id=165722 tags=test```
 
 #### Human Readable Output
@@ -264,56 +269,59 @@ There is no context output for this command.
 >Successfully Untagged device: 165722 with tags: ['test']
 
 ### armis-search-devices
+
 ***
 Search devices by identifiers.
-
 
 #### Base Command
 
 `armis-search-devices`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the device to search for. | Optional | 
-| device_id | The ID of the device to search for. | Optional | 
-| mac_address | The MAC address of the device to search for. | Optional | 
-| ip_address | The IP address of the device to search for. | Optional | 
-| device_type | A comma-separated list of device types by which to filter the results. for example "Routers", "Laptops", "IP Cameras" (there are many device types. for a full list access your Armis instance). | Optional | 
-| time_frame | The time frame of the device to search for. | Optional | 
-| max_results | The maximum number of results to get. Default is 50. | Optional | 
-| risk_level | A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High". | Optional | 
-
+| name | The name of the device to search for. | Optional |
+| device_id | The ID of the device to search for. | Optional |
+| mac_address | The MAC address of the device to search for. | Optional |
+| ip_address | The IP address of the device to search for. | Optional |
+| device_type | A comma-separated list of device types by which to filter the results. for example "Routers", "Laptops", "IP Cameras" (there are many device types. for a full list access your Armis instance). | Optional |
+| time_frame | The time frame of the device to search for. | Optional |
+| max_results | The maximum number of results to get. Default is 50. | Optional |
+| risk_level | A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Armis.Device.accessSwitch | String | The access switch of the device. | 
-| Armis.Device.category | String | The category of the device. | 
-| Armis.Device.firstSeen | Date | The first time the device was seen. | 
-| Armis.Device.id | Number | The ID of the device. | 
-| Armis.Device.ipaddress | String | The IP address of the device. | 
-| Armis.Device.ipv6 | String | The IPv6 address of the device. | 
-| Armis.Device.lastSeen | Date | The last time the device was seen. | 
-| Armis.Device.macAddress | String | The MAC address of the device. | 
-| Armis.Device.manufacturer | String | The manufacturer of the device. | 
-| Armis.Device.model | String | The model of the device. | 
-| Armis.Device.name | String | The name of the device. | 
-| Armis.Device.operatingSystem | String | The operating system of the device. | 
-| Armis.Device.operatingSystemVersion | String | The operating system version of the device. | 
-| Armis.Device.purdueLevel | String | The purdue level of the device. | 
-| Armis.Device.riskLevel | String | The risk level of the device. | 
-| Armis.Device.sensor | String | The sensor of the device. | 
-| Armis.Device.site | String | The site of the device. | 
-| Armis.Device.tags | String | The tags of the device. | 
-| Armis.Device.type | String | The type of the device. | 
-| Armis.Device.user | String | The user of the device. | 
-| Armis.Device.visibility | String | The visibility of the device. | 
+| Armis.Device.accessSwitch | String | The access switch of the device. |
+| Armis.Device.category | String | The category of the device. |
+| Armis.Device.firstSeen | Date | The first time the device was seen. |
+| Armis.Device.id | Number | The ID of the device. |
+| Armis.Device.ipaddress | String | The IP address of the device. |
+| Armis.Device.ipv6 | String | The IPv6 address of the device. |
+| Armis.Device.lastSeen | Date | The last time the device was seen. |
+| Armis.Device.macAddress | String | The MAC address of the device. |
+| Armis.Device.manufacturer | String | The manufacturer of the device. |
+| Armis.Device.model | String | The model of the device. |
+| Armis.Device.name | String | The name of the device. |
+| Armis.Device.operatingSystem | String | The operating system of the device. |
+| Armis.Device.operatingSystemVersion | String | The operating system version of the device. |
+| Armis.Device.purdueLevel | String | The purdue level of the device. |
+| Armis.Device.riskLevel | String | The risk level of the device. |
+| Armis.Device.sensor | String | The sensor of the device. |
+| Armis.Device.site | String | The site of the device. |
+| Armis.Device.tags | String | The tags of the device. |
+| Armis.Device.type | String | The type of the device. |
+| Armis.Device.user | String | The user of the device. |
+| Armis.Device.visibility | String | The visibility of the device. |
 
 #### Command example
+
 ```!armis-search-devices device_id=2172```
+
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -447,58 +455,59 @@ Search devices by identifiers.
 #### Human Readable Output
 
 ### Devices
+>
 >|Risk Level|Id|Name|Type|Ip Address|Ipv 6|Mac Address|Operating System|Operating System Version|Manufacturer|Model|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 5 | 2172 | 000000731194pc.corporate.acme.com | Laptops | 10.77.27.183 | fe80::647b:ba0f:9628:6014 | 50:76:AF:D3:3F:AB | Windows | 10 | Lenovo | ThinkPad X1 Yoga 3rd Gen | Corporate,<br>ServiceNow,<br>SCCM |
 
-
 ### armis-search-devices-by-aql
+
 ***
 Searches devices with a custom AQL search string.
-
 
 #### Base Command
 
 `armis-search-devices-by-aql`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| aql_string | The AQL string. | Required | 
-| max_results | The maximum number of results to get. Default is 50. | Optional | 
-
+| aql_string | The AQL string. | Required |
+| max_results | The maximum number of results to get. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Armis.Device.accessSwitch | String | The access switch of the device. | 
-| Armis.Device.category | String | The category of the device. | 
-| Armis.Device.firstSeen | Date | The first time the device was seen. | 
-| Armis.Device.id | Number | The ID of the device. | 
-| Armis.Device.ipaddress | String | The IP address of the device. | 
-| Armis.Device.ipv6 | String | The IPv6 address of the device. | 
-| Armis.Device.lastSeen | Date | The last time the device was seen. | 
-| Armis.Device.macAddress | String | The MAC address of the device. | 
-| Armis.Device.manufacturer | String | The manufacturer of the device. | 
-| Armis.Device.model | String | The model of the device. | 
-| Armis.Device.name | String | The name of the device. | 
-| Armis.Device.operatingSystem | String | The operating system of the device. | 
-| Armis.Device.operatingSystemVersion | String | The operating system version of the device. | 
-| Armis.Device.purdueLevel | String | The purdue level of the device. | 
-| Armis.Device.riskLevel | String | The risk level of the device. | 
-| Armis.Device.sensor | String | The sensor of the device. | 
-| Armis.Device.site | String | The site of the device. | 
-| Armis.Device.tags | String | The tags of the device. | 
-| Armis.Device.type | String | The type of the device. | 
-| Armis.Device.user | String | The user of the device. | 
-| Armis.Device.visibility | String | The visibility of the device. | 
-
+| Armis.Device.accessSwitch | String | The access switch of the device. |
+| Armis.Device.category | String | The category of the device. |
+| Armis.Device.firstSeen | Date | The first time the device was seen. |
+| Armis.Device.id | Number | The ID of the device. |
+| Armis.Device.ipaddress | String | The IP address of the device. |
+| Armis.Device.ipv6 | String | The IPv6 address of the device. |
+| Armis.Device.lastSeen | Date | The last time the device was seen. |
+| Armis.Device.macAddress | String | The MAC address of the device. |
+| Armis.Device.manufacturer | String | The manufacturer of the device. |
+| Armis.Device.model | String | The model of the device. |
+| Armis.Device.name | String | The name of the device. |
+| Armis.Device.operatingSystem | String | The operating system of the device. |
+| Armis.Device.operatingSystemVersion | String | The operating system version of the device. |
+| Armis.Device.purdueLevel | String | The purdue level of the device. |
+| Armis.Device.riskLevel | String | The risk level of the device. |
+| Armis.Device.sensor | String | The sensor of the device. |
+| Armis.Device.site | String | The site of the device. |
+| Armis.Device.tags | String | The tags of the device. |
+| Armis.Device.type | String | The type of the device. |
+| Armis.Device.user | String | The user of the device. |
+| Armis.Device.visibility | String | The visibility of the device. |
 
 #### Command Example
+
 ```!armis-search-devices-by-aql aql_string="macAddress:(a4:5d:36:c5:32:69)"```
 
 #### Context Example
+
 ```json
 {
     "Armis": {
@@ -566,6 +575,7 @@ Searches devices with a custom AQL search string.
 #### Human Readable Output
 
 >### Devices
+>
 >|Risk Level|Name|Type|Ip Address|Tags|Id|
 >|---|---|---|---|---|---|
 >| 10 | wc-shoretel.winslow.local | Servers | 10.0.100.10 | MERAKI_NETWORK=Winslow Campbellfield | 74745 |
