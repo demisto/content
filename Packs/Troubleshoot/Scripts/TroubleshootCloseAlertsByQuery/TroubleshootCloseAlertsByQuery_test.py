@@ -1,5 +1,5 @@
-from CommonServerPython import *
 import demistomock as demisto
+from CommonServerPython import *
 from TroubleshootCloseAlertsByQuery import main
 
 
