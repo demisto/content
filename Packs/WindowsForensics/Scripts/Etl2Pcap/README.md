@@ -1,6 +1,7 @@
 Receives an ETL file and converts it to a PCAP file.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Receives an ETL file and converts it to a PCAP file.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * PS-Remote Get Network Traffic
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +26,7 @@ This script is used in the following playbooks and scripts.
 | EntryID | The file entry ID of the ETL File. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
