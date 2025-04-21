@@ -628,43 +628,21 @@ script:
         The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.
       required: false
       isArray: false
-      possibleValues: 
-        - enabled
-        - disabled
     - name: sign_in_risk_levels
       description: |
         List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
       required: false
       isArray: true
-      possibleValues:
-        - low
-        - medium
-        - high
-        - hidden
-        - none
     - name: user_risk_levels
       description: |
         List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
       required: false
       isArray: true
-      possibleValues:
-        - low
-        - medium
-        - high
-        - hidden
-        - none
     - name: client_app_types
       description: |
         Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.
       required: false
       isArray: true
-      possibleValues:
-        - all
-        - browser
-        - mobileAppsAndDesktopClients
-        - exchangeActiveSync
-        - easSupported
-        - other
     - name: include_applications
       description: |
         List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.
@@ -680,9 +658,6 @@ script:
         List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.
       required: false
       isArray: true
-      possibleValues:
-        - vrn:user:registersecurityinfo
-        - urn:user:registerdevice
     - name: include_users
       description: |
         List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.
@@ -718,14 +693,6 @@ script:
         List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.
       required: false
       isArray: true
-      possibleValues:
-        - Android
-        - iOS
-        - Windows
-        - windowsPhone
-        - macOS
-        - Linux
-        - all
     - name: exclude_platforms
       description: |
         List of platforms to be excluded from the policy.
@@ -746,9 +713,6 @@ script:
         The operator for grant control. Can be `AND` or `OR`. Default is `AND`.
       required: false
       isArray: false
-      possibleValues:
-        - AND
-        - OR
     - name: built_in_controls
       description: |
         List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.
@@ -758,14 +722,6 @@ script:
         - The policy should target all applications and not exclude any.
       required: false
       isArray: true
-      possibleValues:
-        - block
-        - mfa
-        - compliantDevice
-        - domainJoinedDevice
-        - approvedApplication
-        - compliantApplication
-        - passwordChange
     outputs:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id
       description: The unique ID of the Conditional Access policy.
@@ -916,43 +872,21 @@ script:
         The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.
       required: false
       isArray: false
-      possibleValues: 
-        - enabled
-        - disabled
     - name: sign_in_risk_levels
       description: |
         List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
       required: false
       isArray: true
-      possibleValues:
-        - low
-        - medium
-        - high
-        - hidden
-        - none
     - name: user_risk_levels
       description: |
         List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
       required: false
       isArray: true
-      possibleValues:
-        - low
-        - medium
-        - high
-        - hidden
-        - none
     - name: client_app_types
       description: |
         Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.
       required: false
       isArray: true
-      possibleValues:
-        - all
-        - browser
-        - mobileAppsAndDesktopClients
-        - exchangeActiveSync
-        - easSupported
-        - other
     - name: include_applications
       description: |
         List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.
@@ -968,9 +902,6 @@ script:
         List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.
       required: false
       isArray: true
-      possibleValues:
-        - vrn:user:registersecurityinfo
-        - urn:user:registerdevice
     - name: include_users
       description: |
         List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.
@@ -1006,14 +937,6 @@ script:
         List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.
       required: false
       isArray: true
-      possibleValues:
-        - Android
-        - iOS
-        - Windows
-        - windowsPhone
-        - macOS
-        - Linux
-        - all
     - name: exclude_platforms
       description: |
         List of platforms to be excluded from the policy.
@@ -1034,9 +957,6 @@ script:
         The operator for grant control. Can be `AND` or `OR`. Default is `AND`.
       required: false
       isArray: false
-      possibleValues:
-        - AND
-        - OR
     - name: built_in_controls
       description: |
         List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.
@@ -1046,14 +966,6 @@ script:
         - The policy should target all applications and not exclude any.
       required: false
       isArray: true
-      possibleValues:
-        - block
-        - mfa
-        - compliantDevice
-        - domainJoinedDevice
-        - approvedApplication
-        - compliantApplication
-        - passwordChange
     - name: update_action
       description: |
         Defines how to update fields in the policy.
