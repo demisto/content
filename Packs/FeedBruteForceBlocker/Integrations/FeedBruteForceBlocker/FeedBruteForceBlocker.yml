@@ -80,6 +80,13 @@ configuration:
   name: proxy
   type: 8
   required: false
+- additionalinfo: When enabled, each /32 CIDR will also be returned as an IP indicator. Only relevant if the integration fetches /32 CIDR indicators.
+  display: Set /32 CIDRs as IP Indicators
+  name: cidr_32_to_ip
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 description: BruteForceBlocker is a Perl script that works with pf – firewall developed by the OpenBSD team, and is also available on FreeBSD from version 5.2. From BruteForceBlocker version 1.2 it is also possible to report blocked IP addresses to the project site and share your information with other users.
 display: BruteForceBlocker Feed
 name: BruteForceBlocker Feed
