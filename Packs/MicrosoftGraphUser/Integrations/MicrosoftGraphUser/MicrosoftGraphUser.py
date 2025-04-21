@@ -366,7 +366,8 @@ def create_user_command(client: MsGraphClient, args: dict):
     user_data = client.get_user(user, "*")
 
     user_readable, user_outputs = parse_outputs(user_data)
-    human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
+    human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable,
+                                     removeNull=True)
     accounts = create_account_outputs(user_outputs)
     outputs = {
         'MSGraphUser': user_outputs,
@@ -568,7 +569,8 @@ def list_tap_policy_command(client: MsGraphClient, args: dict):
     if isinstance(tap_readable_dict, dict):
         tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID', '')
     headers = ['Policy ID', 'Start Date Time', 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
-    human_readable = tableToMarkdown(name=f'TAP Policy for User ID {user_id}:', headers=headers, t=tap_readable_dict, removeNull=True)
+    human_readable = tableToMarkdown(name=f'TAP Policy for User ID {user_id}:', headers=headers, t=tap_readable_dict,
+                                     removeNull=True)
     
     return CommandResults(
         outputs_prefix='MSGraphUser.TAPPolicy',
