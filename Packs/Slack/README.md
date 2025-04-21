@@ -1,7 +1,10 @@
 Send messages and notifications to your Slack team and integrates with Slack's services to execute create, read, update, and delete operations for employee lifecycle processes.
 
 ## What does this pack do?
+
+<~XSOAR>
 - Mirrors the investigation between Slack and the Cortex XSOAR War Room.
+</~XSOAR>
 - Sends a message to a user, group, or channel.
 - Archives a Slack channel.
 - Sends a file to a user, channel, or group.
