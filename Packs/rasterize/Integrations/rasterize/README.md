@@ -294,4 +294,9 @@ Converts an html file to a PDF or PNG file.
 }
 ```
 
+#### Passing Multiple URLs
+If you want to pass several URLs as an argument, you can do so by providing them as a Python list. Make sure the list is formatted as a string, like this:
+ ```"[\"https://www.a.com\", \"https://www.b.com\"]"```
+ This allows the program to correctly parse and handle multiple URLs. Be sure to wrap the list in quotes (") so it is interpreted as a single argument.
+
 #### Human Readable Output
