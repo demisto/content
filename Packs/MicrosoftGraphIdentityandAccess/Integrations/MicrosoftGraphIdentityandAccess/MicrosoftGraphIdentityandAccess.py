@@ -1210,6 +1210,7 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
         }
 
     policy = clean_dict(policy)
+    return_results(policy)
     return client.create_conditional_access_policy(policy)
 
 def resolve_merge_value(field: str, existing_list: List[str], new_list: List[str], messages: List[str]) -> List[str]:
