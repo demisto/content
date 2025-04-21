@@ -4072,7 +4072,7 @@ script:
       predefined:
       - "powershell"
       - "native"
-    description: Run command on a specific endpoint and return its result.
+    description: Run a shell command on a specific endpoint and return its result.
     name: core-execute-command
     polling: true
     outputs:
