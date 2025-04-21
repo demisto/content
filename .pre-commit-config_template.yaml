@@ -18,7 +18,6 @@ repos:
   - id: check-added-large-files
     args: ['--maxkb=5120', --enforce-all]
     skip:nightly: true
-    exclude: Integrations/.*/README.md
   - id: check-case-conflict
 - repo: https://github.com/python-poetry/poetry
   rev: 1.8.2
