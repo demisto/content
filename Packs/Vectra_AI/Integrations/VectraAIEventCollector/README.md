@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Vectra Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Your server URL |  | True |
@@ -14,7 +13,6 @@ This is the default integration for this content pack when configured by the Dat
 | Fetch Limit | Maximum amount of detections to fetch. Audits API does not include a fetch limit therefore this configuration is only relevant to detections. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -34,7 +32,7 @@ Fetches events (detections and audits) from Vectra.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. | Required | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. | Required |
 
 #### Context Output
 
