@@ -241,7 +241,7 @@ def reformat_output(script_res: list) -> None:
 
 def reformate_args(args: dict) -> None:
     """
-    Reformat args before start polling command.
+    Reformats the 'core_execute_command' args before starting the polling.
 
     Args:
         args (dict): Dictionary containing the arguments for the command.
