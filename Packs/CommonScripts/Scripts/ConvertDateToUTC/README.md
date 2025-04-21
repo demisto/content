@@ -1,6 +1,7 @@
 Converts a date from a different timezone to UTC timezone
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Converts a date from a different timezone to UTC timezone
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Converts a date from a different timezone to UTC timezone
 | timezone | Timezone accepted by pytz. Default is America/Los_Angeles  |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

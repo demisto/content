@@ -1,6 +1,7 @@
 Checks whether a given entry(ies) return an error. Use `${lastCompletedTaskEntries}` to check the previous task entries. If an array is provided, it will return "yes" if one of the entries returned an error.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Checks whether a given entry(ies) return an error. Use `${lastCompletedTaskEntri
 | Script Type | javascript |
 | Tags | Condition, Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +18,7 @@ Checks whether a given entry(ies) return an error. Use `${lastCompletedTaskEntri
 | entryId | The entry to check. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
