@@ -1,14 +1,14 @@
 
 Email security gateways produce a high volume of phishing alerts. To protect an organization from malicious emails, analysts investigating phishing alerts need to adjust their response procedures by email type, severity, or content to identify campaigns and inspect IoCs.
 
-This content pack enables analysts to retrieve, process, and analyze email files to manage phishing alert incidents. 
+This content pack enables analysts to retrieve, process, and analyze email files to manage phishing alert incidents.
 The out-of-the-box items are robust enough to get you started, but are easily customizable to fit your specific requirements.
 
-
 ##### What Does This Pack Do?
+
 - Retrieves emails from user inboxes or email security gateways.
 - Creates a Phishing Alerts incident in Cortex XSOAR associated with the alert.
-- Extracts and enriches all indicators from email attachments. 
+- Extracts and enriches all indicators from email attachments.
 - Analyzes files and provides reputation using your sandbox and threat intelligence integrations.
 - Generates a screenshot of the email and embedded links, and calculates reputation for all indicators involved.
 - Runs checks for URL SSL certificates, email address breach involvement, domain squatting and email authenticity using SPF, DKIM and DMARC checks.
@@ -18,7 +18,6 @@ The out-of-the-box items are robust enough to get you started, but are easily cu
 - Engages with the end user regarding the incident such as notifying them of receipt of email and providing further instructions if an email is found to be malicious.
 
 This content pack also includes out-of-the-box phishing incident views, a full layout, and automation scripts. All of these are easily customizable to suit the needs of your organization.
-
 
 ##### Additional Information
 

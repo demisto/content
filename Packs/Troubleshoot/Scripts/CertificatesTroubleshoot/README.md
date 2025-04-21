@@ -342,41 +342,53 @@ When reporting issues always run this script with `debug-mode=true` and include 
 #### Human Readable Output
 
 > ## Docker container engine - custom certificate
+>
 > ### Enviorment variables
+>
 > |CERT_FILE|SSL_CERT_FILE|
 > |---|---|
 > | /etc/custom-python-ssl/certs.pem | /etc/custom-python-ssl/certs.pem |
 >
 > ### General
+>
 > |NotValidBefore|NotValidAfter|Version|
 > |---|---|---|
 > | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
+>
 > ### Issuer
+>
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
+>
 > ### Subject
+>
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
 >
 > ## Endpoint certificate - ec2.eu.compute-1.amazonaws.com
+>
 > ### General
+>
 > |NotValidBefore|NotValidAfter|Version|
 > |---|---|---|
 > | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
+>
 > ### Issuer
+>
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
+>
 > ### Subject
+>
 > |CommonName|CountryName|EmailAddress|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|
 > | ec2.eu.compute-1.amazonaws.com | IL | test@gmail.com | Content | Test | Demisto |
+>
 > ### Extentions
+>
 > |IssuerAlternativeName|
 > |---|
 > | *.google.com,*.android.com,*.appengine.google.com,*.bdn.dev,*.cloud.google.com |
-
-
- 
