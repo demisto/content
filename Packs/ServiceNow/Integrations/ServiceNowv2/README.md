@@ -61,7 +61,8 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 This integration supports two types of authorization:
 
 1. Basic authorization using username and password.
-2. OAuth 2.0 authorization with or without JWT authentication.
+2. OAuth 2.0 authorization 
+3. JWT authentication.
 
 #### OAuth 2.0 Authorization
 
@@ -80,6 +81,8 @@ To use OAuth 2.0 authorization follow the next steps:
 3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
 
+
+#### JWT Authentication
 
 
 #### Prerequisites in order to support JWT

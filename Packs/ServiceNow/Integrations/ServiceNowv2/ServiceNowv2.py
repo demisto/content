@@ -697,14 +697,15 @@ class Client(BaseClient):
             self._auth = (self._username, self._password)
             
 
-    def check_private_key(self, private_key:str) -> str:
+    def check_private_key(self, private_key) -> str:
         # Define the start and end markers
         start_marker = "-----BEGIN PRIVATE KEY-----"
         end_marker = "-----END PRIVATE KEY-----"
+        if isinstance(private_key, dict):
+            private_key = private_key.get('password')
         
         if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
             raise ValueError("Invalid private key format")
-        
         # Remove the markers and replace whitespaces with '\n'
         key_content = private_key.replace(start_marker, "").replace(end_marker, "")\
             .replace(" ", "\n").replace("\n\n", "\n").strip()
@@ -3548,9 +3549,10 @@ def main():
     use_jwt = params.get('use_jwt', False)
     
     #use jwt only with OAuth
-    if use_jwt and not use_oauth:
-        raise ValueError('When using JWT, mark OAuth checkbox first')
-
+    if use_jwt and use_oauth:
+        raise ValueError('choose only one authentication method (OAuth ot JWT)')
+    elif use_jwt and not use_oauth:
+        use_oauth = True
     jwt_params = {}
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         username = ""
@@ -3568,6 +3570,8 @@ def main():
             "use_oauth": use_oauth,
         }
         if use_jwt:
+            if not params.get('private_key') or not params.get('kid') or not params.get('sub'):
+                raise Exception('When using JWT, fill private key, kid and sub fields')
             jwt_params = {
                 'private_key': params.get('private_key'),
                 'kid': params.get('kid'),

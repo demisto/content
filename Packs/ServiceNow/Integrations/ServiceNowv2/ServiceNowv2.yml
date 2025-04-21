@@ -23,14 +23,15 @@ configuration:
   required: false
   section: Connect
 - additionalinfo: Select this checkbox to use JWT authentication. See (?) for more information.
-  display: Use JWT OAuth
+  display: Use JWT Authentication
   name: use_jwt
   type: 8
   required: false
   section: Connect
-- display: Private key
+- displaypassword: Private key
   name: private_key
-  type: 0
+  hiddenusername: true
+  type: 9
   required: false
   section: Connect
 - display: kid (Key Id)
