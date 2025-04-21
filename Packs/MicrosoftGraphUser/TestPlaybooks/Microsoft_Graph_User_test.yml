@@ -1,23 +1,25 @@
 id: Microsoft Graph User - Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Microsoft Graph User - Test
+description: Tests the validity of the MS Graph User commands
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f8fc5cf8-2be3-4396-8405-54c00722c0ff
+    taskid: 638549b2-df87-4d6f-8ced-6b83a7b8aedb
     type: start
     task:
-      id: f8fc5cf8-2be3-4396-8405-54c00722c0ff
+      id: 638549b2-df87-4d6f-8ced-6b83a7b8aedb
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,13 +34,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 74188a9b-7f1c-41df-89d0-f24a07bbbb4d
+    taskid: bd03f1b2-efbe-496d-85cd-3d04511ae17d
     type: regular
     task:
-      id: 74188a9b-7f1c-41df-89d0-f24a07bbbb4d
+      id: bd03f1b2-efbe-496d-85cd-3d04511ae17d
       version: -1
       name: 'Create test user #1'
       description: Creates a new user.
@@ -60,8 +61,9 @@ tasks:
         simple: ${NEW_PASSWORD}
       user_principal_name:
         simple: ${GeneratedUUID}-1@${inputs.baseurl}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -76,13 +78,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 563dfb00-8e6e-42f2-8b2e-8763c1229bf4
+    taskid: c56565a9-e4e4-4b08-870b-13caf59445e8
     type: regular
     task:
-      id: 563dfb00-8e6e-42f2-8b2e-8763c1229bf4
+      id: c56565a9-e4e4-4b08-870b-13caf59445e8
       version: -1
       name: 'Get User #1'
       description: Retrieve the properties and relationships of user object. [link](https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
@@ -97,6 +98,7 @@ tasks:
       user:
         simple: ${MSGraphUser.UserPrincipalName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,13 +113,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: a5e59cc0-e397-4d98-8ece-ba8ddc5dfe80
+    taskid: 442e790f-c5b6-45b0-8b72-92463823877d
     type: regular
     task:
-      id: a5e59cc0-e397-4d98-8ece-ba8ddc5dfe80
+      id: 442e790f-c5b6-45b0-8b72-92463823877d
       version: -1
       name: 'Update user #1 phone number'
       description: Update the properties of a user object.
@@ -134,6 +135,7 @@ tasks:
       user:
         simple: ${MSGraphUser.UserPrincipalName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -148,16 +150,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 9eaae2a1-89eb-411a-8be7-1c639d1aa461
+    taskid: 995ee890-f7af-45e9-8410-0895038695eb
     type: regular
     task:
-      id: 9eaae2a1-89eb-411a-8be7-1c639d1aa461
+      id: 995ee890-f7af-45e9-8410-0895038695eb
       version: -1
       name: Get Delta (mobilePhone)
-      description: Get newly created, updated, or deleted users without having to perform a full read of the entire user collection.
+      description: Get newly created, updated, or deleted users without having to
+        perform a full read of the entire user collection.
       script: '|||msgraph-user-get-delta'
       type: regular
       iscommand: true
@@ -171,6 +173,7 @@ tasks:
       properties:
         simple: mobilePhone
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -185,13 +188,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 21021a5b-4add-485f-80da-06fa7b7bd491
+    taskid: 47e9e990-4550-4e97-8f4f-d812c5915c64
     type: regular
     task:
-      id: 21021a5b-4add-485f-80da-06fa7b7bd491
+      id: 47e9e990-4550-4e97-8f4f-d812c5915c64
       version: -1
       name: 'Block user #2'
       description: |-
@@ -209,6 +211,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -223,13 +226,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 01912dd1-3d7c-41ff-8bfe-aded80e2fa3f
+    taskid: 6b9cc46c-9de4-4e18-8481-de2fcf742ee8
     type: regular
     task:
-      id: 01912dd1-3d7c-41ff-8bfe-aded80e2fa3f
+      id: 6b9cc46c-9de4-4e18-8481-de2fcf742ee8
       version: -1
       name: Sleep for 30 seconds
       description: Sleep for X seconds
@@ -244,6 +246,7 @@ tasks:
       seconds:
         simple: "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -258,13 +261,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 7f917217-7c27-4d94-83e9-e78ac0d8fcac
+    taskid: 325034bc-42d1-4f84-85d2-8120f0e96aad
     type: regular
     task:
-      id: 7f917217-7c27-4d94-83e9-e78ac0d8fcac
+      id: 325034bc-42d1-4f84-85d2-8120f0e96aad
       version: -1
       name: 'Unblock User #2'
       description: Unblock a user.
@@ -279,6 +281,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -293,13 +296,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: ec507de1-1110-4dd8-8977-71dfea8c3ed1
+    taskid: 5de86664-280a-4326-845e-7122e7d3a51b
     type: regular
     task:
-      id: ec507de1-1110-4dd8-8977-71dfea8c3ed1
+      id: 5de86664-280a-4326-845e-7122e7d3a51b
       version: -1
       name: 'Delete user #1'
       description: Deletes an exsiting user.
@@ -314,6 +316,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-1@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -328,20 +331,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 1841d412-0312-4410-8b42-99bebc6f4fe1
+    taskid: adecd589-dd92-4735-8a51-e91ca3aec426
     type: title
     task:
-      id: 1841d412-0312-4410-8b42-99bebc6f4fe1
+      id: adecd589-dd92-4735-8a51-e91ca3aec426
       version: -1
       name: Done!
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -356,13 +358,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 703999bf-edf6-4a75-8002-92ebdedb4796
+    taskid: c3c31125-6cff-4225-8f47-b9f53fb96f6f
     type: regular
     task:
-      id: 703999bf-edf6-4a75-8002-92ebdedb4796
+      id: c3c31125-6cff-4225-8f47-b9f53fb96f6f
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -377,6 +378,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -391,13 +393,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: 15a06ede-f5bb-43b6-8208-3f9e17b88689
+    taskid: e856cb98-6062-4534-80af-470cdabb6f06
     type: regular
     task:
-      id: 15a06ede-f5bb-43b6-8208-3f9e17b88689
+      id: e856cb98-6062-4534-80af-470cdabb6f06
       version: -1
       name: List Users
       description: Retrieve a list of user objects.
@@ -412,6 +413,7 @@ tasks:
       properties:
         simple: id,userPrincipalName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -426,13 +428,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 33431e75-2535-4290-8254-a91894347a9a
+    taskid: 5ab9740c-9650-475b-82d1-332cacfbff70
     type: regular
     task:
-      id: 33431e75-2535-4290-8254-a91894347a9a
+      id: 5ab9740c-9650-475b-82d1-332cacfbff70
       version: -1
       name: 'Create test user #3 with no "Other_properties"'
       description: Creates a new user.
@@ -453,6 +454,7 @@ tasks:
       user_principal_name:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -467,16 +469,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "16":
     id: "16"
-    taskid: eb35a104-5ade-4f4f-82ff-642c1dce2142
+    taskid: 8189f90e-f435-441d-8f42-60d120f94a72
     type: regular
     task:
-      id: eb35a104-5ade-4f4f-82ff-642c1dce2142
+      id: 8189f90e-f435-441d-8f42-60d120f94a72
       version: -1
       name: 'Get User #3'
-      description: 'Retrieves the properties and relationships of user object. for more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
+      description: 'Retrieves the properties and relationships of user object. for
+        more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
       script: '|||msgraph-user-get'
       type: regular
       iscommand: true
@@ -488,6 +490,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -502,13 +505,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "17":
     id: "17"
-    taskid: 4154cb4f-6e61-42d1-8f27-367b3461f247
+    taskid: cdf8e48e-d1bc-4881-851f-6bf2eec154a1
     type: regular
     task:
-      id: 4154cb4f-6e61-42d1-8f27-367b3461f247
+      id: cdf8e48e-d1bc-4881-851f-6bf2eec154a1
       version: -1
       name: 'Delete User #2'
       description: Deletes an exsiting user.
@@ -523,6 +525,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -537,24 +540,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "18":
     id: "18"
-    taskid: ddfee0a8-6f5a-4956-8b1e-8642f3f34dfc
+    taskid: bbceed37-785b-4bf3-829a-93dd91ee36b9
     type: regular
     task:
-      id: ddfee0a8-6f5a-4956-8b1e-8642f3f34dfc
+      id: bbceed37-785b-4bf3-829a-93dd91ee36b9
       version: -1
       name: Generate UUID for user principal name
       description: Generates random UUID
+      scriptName: GenerateUUID
       type: regular
       iscommand: false
       brand: ""
-      scriptName: GenerateUUID
     nexttasks:
       '#none#':
       - "34"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -569,16 +572,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: ee85574e-3e80-469c-8eb1-90816e6ef1b9
+    taskid: c1196c0a-edcc-468c-8506-c5a710711361
     type: regular
     task:
-      id: ee85574e-3e80-469c-8eb1-90816e6ef1b9
+      id: c1196c0a-edcc-468c-8506-c5a710711361
       version: -1
       name: 'Assign manager #4 to test user #3'
-      description: 'Assigns a manager to the user. Permissions: - User.ReadWrite.All (Delegated & Application)'
+      description: 'Assigns a manager to the user. Permissions: - User.ReadWrite.All
+        (Delegated & Application)'
       script: '|||msgraph-user-assign-manager'
       type: regular
       iscommand: true
@@ -592,6 +595,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -606,13 +610,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: a82224bc-1376-4aaa-82ac-919f409be2d5
+    taskid: 37a0606e-9ec6-40c7-8edc-e55e5aeaa8f5
     type: regular
     task:
-      id: a82224bc-1376-4aaa-82ac-919f409be2d5
+      id: 37a0606e-9ec6-40c7-8edc-e55e5aeaa8f5
       version: -1
       name: 'Get test user #3 manager'
       description: Retrieves the properties from the manager of a user
@@ -627,6 +630,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -641,16 +645,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 84b8fa03-8d82-43c2-8806-479c1b8336a6
+    taskid: 8087adde-7d99-4659-8103-5d622106b887
     type: regular
     task:
-      id: 84b8fa03-8d82-43c2-8806-479c1b8336a6
+      id: 8087adde-7d99-4659-8103-5d622106b887
       version: -1
       name: 'Get user #4 direct reports'
-      description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
+      description: Retrieves the direct reports for a user. Direct reports are the
+        people who have that user configured as their manager.
       script: '|||msgraph-direct-reports'
       type: regular
       iscommand: true
@@ -662,6 +666,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -676,13 +681,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "25":
     id: "25"
-    taskid: 09af46ab-9278-44fc-88b9-054489207a52
+    taskid: 2a3d07e8-3921-4181-8d2d-4d6f3ce3a67e
     type: condition
     task:
-      id: 09af46ab-9278-44fc-88b9-054489207a52
+      id: 2a3d07e8-3921-4181-8d2d-4d6f3ce3a67e
       version: -1
       name: Validate user manager assignment and retrieval
       type: condition
@@ -746,6 +750,7 @@ tasks:
           right:
             value:
               simple: ${GeneratedUUID}-4@${inputs.baseurl}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -760,13 +765,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "26":
     id: "26"
-    taskid: aa99bef6-618b-4f4d-87f5-72ac3ce1cebe
+    taskid: 94950900-88d5-403a-8345-d25fb12c804e
     type: regular
     task:
-      id: aa99bef6-618b-4f4d-87f5-72ac3ce1cebe
+      id: 94950900-88d5-403a-8345-d25fb12c804e
       version: -1
       name: 'Create test user #2'
       description: Creates a new user.
@@ -788,8 +792,9 @@ tasks:
         simple: ${NEW_PASSWORD}
       user_principal_name:
         simple: ${GeneratedUUID}-2@${inputs.baseurl}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -804,13 +809,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 0850d85d-41f9-4002-86de-fb1a21f57142
+    taskid: 95963c7a-7416-4e44-82a1-27af8c0c1d5d
     type: regular
     task:
-      id: 0850d85d-41f9-4002-86de-fb1a21f57142
+      id: 95963c7a-7416-4e44-82a1-27af8c0c1d5d
       version: -1
       name: 'Create test user #4'
       description: Creates a new user.
@@ -832,8 +836,9 @@ tasks:
         simple: ${NEW_PASSWORD}
       user_principal_name:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -848,13 +853,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
-    taskid: beaee755-6ceb-4eca-8941-171670d5d5d6
+    taskid: 3671bdb9-e1e5-4892-8dcc-71cd324558d9
     type: condition
     task:
-      id: beaee755-6ceb-4eca-8941-171670d5d5d6
+      id: 3671bdb9-e1e5-4892-8dcc-71cd324558d9
       version: -1
       name: Validate user direct reports retrieval
       type: condition
@@ -879,6 +883,7 @@ tasks:
           right:
             value:
               simple: ${GeneratedUUID}-3@${inputs.baseurl}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -893,13 +898,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "30":
     id: "30"
-    taskid: a3049d9c-c9cb-42fc-85b6-41599298de0d
+    taskid: 8a76602b-ccdd-4461-8ae1-75721b6fe6b7
     type: regular
     task:
-      id: a3049d9c-c9cb-42fc-85b6-41599298de0d
+      id: 8a76602b-ccdd-4461-8ae1-75721b6fe6b7
       version: -1
       name: 'Delete User #3'
       description: Deletes an exsiting user.
@@ -914,6 +918,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-3@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -928,13 +933,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "31":
     id: "31"
-    taskid: 2bc7ac44-c095-4524-8119-379ff7eb18d3
+    taskid: f600f7e5-8260-4526-87fc-ffc0adf6c33a
     type: regular
     task:
-      id: 2bc7ac44-c095-4524-8119-379ff7eb18d3
+      id: f600f7e5-8260-4526-87fc-ffc0adf6c33a
       version: -1
       name: 'Delete User #4'
       description: Deletes an exsiting user.
@@ -949,6 +953,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -963,13 +968,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "32":
     id: "32"
-    taskid: b3033382-e1e9-4805-87ab-1f0c16ae0bb0
+    taskid: c693fce4-498d-43ec-896e-23a3f9c30c5e
     type: regular
     task:
-      id: b3033382-e1e9-4805-87ab-1f0c16ae0bb0
+      id: c693fce4-498d-43ec-896e-23a3f9c30c5e
       version: -1
       name: Failed to assign and retrieve manager
       description: Prints an error entry with a given message
@@ -981,6 +985,7 @@ tasks:
       message:
         simple: Could not correctly retrieve the assigned manager.
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -995,13 +1000,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "33":
     id: "33"
-    taskid: b48a4e15-94b6-4e39-8107-103e3205497f
+    taskid: 47f84747-ab62-4fc2-8680-4da6a11765ed
     type: regular
     task:
-      id: b48a4e15-94b6-4e39-8107-103e3205497f
+      id: 47f84747-ab62-4fc2-8680-4da6a11765ed
       version: -1
       name: Failed to retrieve the direct reports
       description: Prints an error entry with a given message
@@ -1013,6 +1017,7 @@ tasks:
       message:
         simple: Could not correctly retrieve the direct reports.
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1027,16 +1032,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "34":
     id: "34"
-    taskid: 8e8f5ea5-0d75-437b-8120-ad203631c973
+    taskid: 19e0c0c9-72b8-48b0-87d2-61e3d56e16b4
     type: regular
     task:
-      id: 8e8f5ea5-0d75-437b-8120-ad203631c973
+      id: 19e0c0c9-72b8-48b0-87d2-61e3d56e16b4
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters
+        to customize the properties of the password depending on the use case (e.g.
+        password complexity requirements).  The default behavior is to generate a
+        password of  *random length* including all four character classes (upper,
+        lower, digits, symbols) with at least five and at most ten characters per
+        class. \n\nThe min_* values all default to 0. This means that if the command
+        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
+        a password of length zero could be generated. It is therefore recommended
+        to always include a min_* parameter that matches. \n\nThe debug parameter
+        will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
@@ -1062,6 +1075,7 @@ tasks:
       min_ucase:
         simple: "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1076,13 +1090,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "35":
     id: "35"
-    taskid: b2fad62c-2adf-4dff-8df6-63c463988924
+    taskid: 674063a9-cf30-4ba1-8e89-2bfd8f14e80f
     type: regular
     task:
-      id: b2fad62c-2adf-4dff-8df6-63c463988924
+      id: 674063a9-cf30-4ba1-8e89-2bfd8f14e80f
       version: -1
       name: 'Revoke session for user #4'
       description: |-
@@ -1099,6 +1112,7 @@ tasks:
       user:
         simple: ${GeneratedUUID}-4@${inputs.baseurl}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1113,16 +1127,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "36":
     id: "36"
-    taskid: 083c87b3-50ce-4734-87b4-c518b01f9dcf
+    taskid: 7e0c7912-e4a0-42ec-8eba-1c3649c11501
     type: regular
     task:
-      id: 083c87b3-50ce-4734-87b4-c518b01f9dcf
+      id: 7e0c7912-e4a0-42ec-8eba-1c3649c11501
       version: -1
       name: 'create TAP policy for user #2'
-      description: "Create a new temporaryAccessPassAuthenticationMethod object on a user. \nA user can only have one Temporary Access Pass that's usable within its specified lifetime. "
+      description: "Create a new Temporary Access Pass Authentication Method object
+        on a user. \ngiven a user ID and a zip file password, obtain a secured zip
+        file which contains the TemporaryAccessPass\nA user can only have one Temporary
+        Access Pass that's usable within its specified lifetime. \nPermission: UserAuthenticationMethod.ReadWrite.All"
       script: '|||msgraph-user-tap-policy-create'
       type: regular
       iscommand: true
@@ -1153,13 +1169,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f32c366a-1331-4cb2-8a8f-2dd5067e328f
+    taskid: aeddd44b-ed8f-420b-85f2-5e00da989cfa
     type: regular
     task:
-      id: f32c366a-1331-4cb2-8a8f-2dd5067e328f
+      id: aeddd44b-ed8f-420b-85f2-5e00da989cfa
       version: -1
       name: 'get the TAP policy for user #2'
-      description: "This command will only return a single object in the collection \nas a user can have only one Temporary Access Pass method."
+      description: "Get the TAP policy details for a specific user.\nProviding user
+        ID and policy ID (optional).\nThis command will only return a single object
+        in the collection \nas a user can have only one Temporary Access Pass method.\nPermission:UserAuthenticationMethod.Read.All"
       script: '|||msgraph-user-tap-policy-list'
       type: regular
       iscommand: true
@@ -1190,13 +1208,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 8fa08337-6625-4897-85e8-e7c58a302254
+    taskid: 71892a92-a89b-444b-8101-716eba11189a
     type: regular
     task:
-      id: 8fa08337-6625-4897-85e8-e7c58a302254
+      id: 71892a92-a89b-444b-8101-716eba11189a
       version: -1
       name: 'delete TAP policy for user #2'
-      description: This command will delete a specific Temporary Access Pass policy
+      description: |-
+        This command will delete a specific Temporary Access Pass policy
+        providing User ID and TAP policy ID
+        Permission:UserAuthenticationMethod.ReadWrite.All
       script: '|||msgraph-user-tap-policy-delete'
       type: regular
       iscommand: true
@@ -1243,7 +1264,5 @@ inputs:
     simple: demistodev.onmicrosoft.com
   required: true
   description: Base url of your instance
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-fromversion: 5.0.0
-description: Tests the validity of the MS Graph User commands
