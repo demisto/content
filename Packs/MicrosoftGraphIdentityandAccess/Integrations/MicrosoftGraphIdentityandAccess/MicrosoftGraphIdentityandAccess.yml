@@ -477,12 +477,139 @@ script:
     - name: filter
       description: Optional. The OData filter query to retrieve specific Conditional Access policies.
       required: false
+    outputs:
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id
+      description: The unique ID of the Conditional Access policy.
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.displayName
+      description: The display name of the Conditional Access policy.
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.createdDateTime
+      description: The date and time the policy was created.
+      type: date
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime
+      description: The date and time the policy was last modified.
+      type: date
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.state
+      description: The state of the policy (enabled/disabled).
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels
+      description: List of sign-in risk levels this policy applies to.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes
+      description: Client application types this policy targets.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications
+      description: List of applications included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications
+      description: List of applications excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions
+      description: User actions included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers
+      description: User IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers
+      description: User IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups
+      description: Group IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups
+      description: Group IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles
+      description: Role IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles
+      description: Role IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms
+      description: Platforms included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms
+      description: Platforms excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations
+      description: Location IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations
+      description: Location IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator
+      description: Logical operator used in the grant controls (e.g., AND, OR).
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls
+      description: List of built-in access controls (e.g., MFA, compliant device).
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors
+      description: Custom authentication factors used in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse
+      description: List of Terms of Use policy IDs applied.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType
+      description: The type of cloud app security control.
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled
+      description: Whether cloud app security is enabled.
+      type: boolean
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value
+      description: Sign-in frequency value.
+      type: number
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type
+      description: Unit of the sign-in frequency (e.g., hours, days).
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
+      description: Whether sign-in frequency control is enabled.
+      type: boolean
+
+
+
+
   - description: Delete specific Conditional Access policy by id.
     name: msgraph-identity-ca-policy-delete
     arguments:
     - name: policy_id
       description: Required. The ID of the Conditional Access policy to delete.
       required: true
+
+
+
+
+
+
+
   - description: Creates a Conditional Access policy.
     name: msgraph-identity-ca-policy-create
     arguments:
@@ -639,6 +766,134 @@ script:
         - approvedApplication
         - compliantApplication
         - passwordChange
+    outputs:
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id
+      description: The unique ID of the Conditional Access policy.
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.displayName
+      description: The display name of the Conditional Access policy.
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.createdDateTime
+      description: The date and time the policy was created.
+      type: date
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime
+      description: The date and time the policy was last modified.
+      type: date
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.state
+      description: The state of the policy (enabled/disabled).
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels
+      description: List of sign-in risk levels this policy applies to.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes
+      description: Client application types this policy targets.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications
+      description: List of applications included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications
+      description: List of applications excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions
+      description: User actions included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers
+      description: User IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers
+      description: User IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups
+      description: Group IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups
+      description: Group IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles
+      description: Role IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles
+      description: Role IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms
+      description: Platforms included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms
+      description: Platforms excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations
+      description: Location IDs included in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations
+      description: Location IDs excluded from the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator
+      description: Logical operator used in the grant controls (e.g., AND, OR).
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls
+      description: List of built-in access controls (e.g., MFA, compliant device).
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors
+      description: Custom authentication factors used in the policy.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse
+      description: List of Terms of Use policy IDs applied.
+      type: list
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType
+      description: The type of cloud app security control.
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled
+      description: Whether cloud app security is enabled.
+      type: boolean
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value
+      description: Sign-in frequency value.
+      type: number
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type
+      description: Unit of the sign-in frequency (e.g., hours, days).
+      type: string
+
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
+      description: Whether sign-in frequency control is enabled.
+      type: boolean
+
+
+
+
+
+
+
+
+
+
+
+
 
   - description: Updates a Conditional Access policy.
     name: msgraph-identity-ca-policy-update
@@ -799,7 +1054,7 @@ script:
         - approvedApplication
         - compliantApplication
         - passwordChange
-    - name: command_action
+    - name: update_action
       description: |
         Defines how to update fields in the policy.
         - `override` (default): Replaces existing values.

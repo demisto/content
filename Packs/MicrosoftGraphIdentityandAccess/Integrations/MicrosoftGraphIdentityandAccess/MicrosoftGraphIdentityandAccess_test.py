@@ -262,3 +262,164 @@ def test_list_role_members_command(mocker):
     mocker.patch.object(Client, "get_role_members", side_effect=NotFoundError(message=message))
     result = list_role_members_command(ms_client=client, args={"role_id": "0000c00f", "limit": 1})
     assert result.readable_output == "Role ID: 0000c00f, was not found or invalid"
+
+
+
+
+@pytest.mark.parametrize(
+    "field, existing_list, new_list, expected, expected_messages",
+    [
+        # Test replacing 'None' with new values
+        ("includeUsers", ["None"], ["user1"], ["user1"], []),
+
+        # Test existing 'All' - should not update
+        (
+            "includeUsers",
+            ["All"],
+            ["user1"],
+            ["All"],
+            ["Note: The field 'includeUsers' was not updated because it currently holds the special value 'All'."
+             " This value cannot be merged with others. All other updates were applied."
+             " To update this field, use update_action='override'."]
+        ),
+
+        # Test existing 'AllTrusted' - should not update
+        (
+            "includeLocations",
+            ["AllTrusted"],
+            ["loc1"],
+            ["AllTrusted"],
+            ["Note: The field 'includeLocations' was not updated because it currently holds the special value 'AllTrusted'."
+             " This value cannot be merged with others. All other updates were applied."
+             " To update this field, use update_action='override'."]
+        ),
+
+        # Test new list is special value - should override
+        ("includeUsers", ["user1"], ["All"], ["All"], []),
+
+        # Test regular merge
+        ("includeUsers", ["user1"], ["user2"], sorted(["user1", "user2"]), []),
+
+        # Test empty existing list
+        ("includeUsers", [], ["user1"], ["user1"], []),
+
+        # Test both lists empty
+        ("includeUsers", [], [], [], []),
+    ]
+)
+def test_resolve_merge_value(field, existing_list, new_list, expected, expected_messages):
+    
+    from MicrosoftGraphIdentityandAccess import resolve_merge_value
+    
+    messages = []
+    result = resolve_merge_value(field, existing_list, new_list, messages)
+    assert sorted(result) == sorted(expected)
+    assert messages == expected_messages
+
+
+@pytest.mark.parametrize(
+    "src, expected",
+    [
+        # כל הערכים תקינים – אין שינוי
+        ({"a": 1, "b": [1], "c": {"d": 2}}, {"a": 1, "b": [1], "c": {"d": 2}}),
+
+        # ערכים “ריקים” ברמה העליונה מוסרים
+        ({"a": None, "b": "", "c": [], "d": {}}, {}),
+
+        # ניקוי רקורסיבי – גם במבנה מקונן
+        (
+            {
+                "a": 1,
+                "b": "",
+                "c": {
+                    "d": [],
+                    "e": {"f": {}, "g": 3},
+                    "h": "",
+                },
+            },
+            {"a": 1, "c": {"e": {"g": 3}}},
+        ),
+
+        # רשימה כערך – אינה מטופלת אלא אם היא ממש []
+        ({"a": [None, 1, ""]}, {"a": [None, 1, ""]}),
+    ],
+)
+def test_clean_dict(src, expected):
+    from MicrosoftGraphIdentityandAccess import clean_dict
+
+    assert clean_dict(src) == expected
+
+@pytest.mark.parametrize(
+    "exception_input, expected_output",
+    [
+        # מקרה 1: שגיאה בתור dict
+        (
+            Exception({"error": {"code": "BadRequest", "message": "Invalid policy"}}),
+            {"code": "BadRequest", "message": "Invalid policy"}
+        ),
+
+        # מקרה 2: שגיאה כ־string שמכיל JSON
+        (
+            Exception("Something failed: {\"error\": {\"code\": \"AuthError\", \"message\": \"Unauthorized access\"}}"),
+            {"code": "AuthError", "message": "Unauthorized access"}
+        ),
+
+        # מקרה 3: שגיאה כ־string שלא מכילה JSON
+        (
+            Exception("Something went wrong"),
+            {"code": "UnknownError", "message": "Something went wrong"}
+        ),
+
+        # מקרה 4: חריגה בלי args בכלל
+        (
+            Exception(),
+            {"code": "UnknownError", "message": ""}
+        ),
+
+        # מקרה 5: חריגה שמכילה dict אבל בלי מפתח 'error'
+        (
+            Exception({"status": 403}),
+            {"code": "UnknownError", "message": "{'status': 403}"}
+        ),
+    ]
+)
+def test_parse_error_from_exception(exception_input, expected_output):
+    from MicrosoftGraphIdentityandAccess import parse_error_from_exception
+    result = parse_error_from_exception(exception_input)
+    assert result == expected_output
+
+def test_delete_policy_missing_policy_id_raises():
+    """
+    Given:
+        - args that do NOT include 'policy_id'.
+    When:
+        - Running delete_conditional_access_policy_command.
+    Then:
+        - ValueError should be raised with the correct message.
+    """
+    from MicrosoftGraphIdentityandAccess import Client, delete_conditional_access_policy_command
+
+    client = Client("", False, False)
+    args = {}
+    with pytest.raises(ValueError) as e:
+        delete_conditional_access_policy_command(client, args)
+
+    assert str(e.value) == "The 'policy_id' argument is required to delete a Conditional Access policy."
+
+def test_update_policy_missing_policy_id_raises():
+    """
+    Given:
+        - args that do NOT include 'policy_id'.
+    When:
+        - Running update_conditional_access_policy_command.
+    Then:
+        - ValueError should be raised with the correct message.
+    """
+    from MicrosoftGraphIdentityandAccess import Client, update_conditional_access_policy_command
+
+    client = Client("", False, False)
+    args = {}
+    with pytest.raises(ValueError) as e:
+        update_conditional_access_policy_command(client, args)
+
+    assert str(e.value) == "The 'policy_id' argument is required to update a Conditional Access policy."
