@@ -3301,7 +3301,7 @@ xdm__asset__type__name | xdm__asset__strong_id |
 ### core-execute-command
 
 ***
-Run command on a specific endpoint and return its result.
+Run a shell command on a specific endpoint and return its result.
 
 #### Base Command
 
