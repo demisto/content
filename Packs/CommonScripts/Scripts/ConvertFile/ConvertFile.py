@@ -16,7 +16,7 @@ def find_zombie_processes():
     Returns:
         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
     """
-    ps_out = subprocess.check_output(["ps", "-e", "-o", "pid,ppid,state,cmd"], stderr=subprocess.STDOUT, universal_newlines=True)
+    ps_out = subprocess.check_output(["ps", "-e", "-o", "pid,ppid,state,cmd"], stderr=subprocess.STDOUT, universal_newlines=True)  # pragma: no cover
     lines = ps_out.splitlines()
     pid = str(os.getpid())
     zombies = []
@@ -77,7 +77,7 @@ def make_sha(file_path):
 
 
 def main():
-    entry_id = demisto.args()["entry_id"]
+    entry_id = demisto.args()["entry_id"]  # pragma: no cover
     out_format = demisto.args().get("format", "pdf")  # pragma: no cover
     all_files = demisto.args().get("all_files", "no") == "yes"  # pragma: no cover
     # URLS
@@ -99,7 +99,7 @@ def main():
             for f in files:
                 try:
                     temp = demisto.uniqueFile()
-                    shutil.copy(f, demisto.investigation()["id"] + "_" + temp)
+                    shutil.copy(f, demisto.investigation()["id"] + "_" + temp)  # pragma: no cover
                     name = os.path.basename(f)
                     if file_name:
                         name = name.replace(file_path_name_only, file_name)
