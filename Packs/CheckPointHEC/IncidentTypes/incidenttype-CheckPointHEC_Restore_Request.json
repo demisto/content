@@ -1,11 +1,11 @@
 {
-    "id": "CheckPointHEC Security Event",
+    "id": "CheckPointHEC Restore Request",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "CheckPointHEC Security Event",
-    "prevName": "CheckPointHEC Security Event",
-    "color": "#ee0c5d",
+    "name": "CheckPointHEC Restore Request",
+    "prevName": "CheckPointHEC Restore Request",
+    "color": "#171f2c",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -19,7 +19,6 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "CP HEC Security Event Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

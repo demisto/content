@@ -1,5 +1,5 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.1.9 of CheckPointHEC
+This integration was integrated and tested with version 1.1.10 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
 

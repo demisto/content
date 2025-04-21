@@ -13,7 +13,8 @@
         "shadow_it": "CheckPointHEC Security Event",
         "suspicious_phishing": "CheckPointHEC Security Event",
         "suspicious_malware": "CheckPointHEC Security Event",
-        "spam": "CheckPointHEC Security Event"
+        "spam": "CheckPointHEC Security Event",
+        "graymail": "CheckPointHEC Security Event"
     },
     "name": "CheckPointHEC Classifier",
     "propagationLabels": [
