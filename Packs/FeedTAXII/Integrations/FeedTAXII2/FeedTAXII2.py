@@ -135,6 +135,7 @@ def fetch_indicators_command(
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
         indicators: list = []
+        pass_collection, fail_collection = 0, 0
         for collection in client.collections:
             try:
                 client.collection_to_fetch = collection
@@ -149,10 +150,13 @@ def fetch_indicators_command(
                     limit -= len(fetched_iocs)
                     if limit <= 0:
                         break
+                pass_collection += 1
             except Exception as e:
                 demisto.updateModuleHealth({"message": f"Error fetching collection {collection.id}: {str(e)}"}, is_error=True)
                 demisto.error(f"Failed to fetch IOCs from collection {collection.id}: {str(e)}")
+                fail_collection += 1
                 continue
+            demisto.debug(f"{pass_collection} collections successfully fetched. {fail_collection} collections failed.")
     else:
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
