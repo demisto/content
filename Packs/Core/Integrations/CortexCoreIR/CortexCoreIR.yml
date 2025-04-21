@@ -4031,7 +4031,7 @@ script:
       required: true
       isArray: true
       type: String
-    - description: List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator.
+    - description: List of shell commands to execute, separated by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the separator character.
       name: command
       required: true
       isArray: true
