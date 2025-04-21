@@ -186,7 +186,10 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre
     latest_time_event = max(event["_time"] for event in events)
     
     next_fetch_from = datetime.fromisoformat(
-        min(latest_time_event, pre_fetch_look_back or latest_time_event).isoformat()[:-9] + '000+00:00'
+        min(
+            latest_time_event,
+            pre_fetch_look_back or latest_time_event
+        ).strftime('%Y-%m-%dT%H:%M:%S.%f')[:23] + '000+00:00'
     )
 
     latest_event_ids: List = [
@@ -257,13 +260,13 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         file_event_time,
         limit=max_fetch_file_events + len(last_fetched_event_file_ids)
     )
-    file_events = dedup_fetched_events(
+    dedup_file_events = dedup_fetched_events(
         file_events, last_run_fetched_event_ids=last_fetched_event_file_ids, keys_list_to_id=["event", "id"]
     )
-    if file_events:
+    if dedup_file_events:
         latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(
             file_events, keys_to_id=["event", "id"], pre_fetch_look_back=pre_fetch_look_back)
-        datetime_to_date_string(file_events)
+        datetime_to_date_string(dedup_file_events)
         new_last_run.update(
             {
                 FileEventLastRun.TIME.value: latest_file_event_time,
@@ -272,7 +275,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         )
 
     demisto.debug(f"updated last run of {EventType.FILE} events to {new_last_run}")
-    return file_events, new_last_run
+    return dedup_file_events, new_last_run
 
 
 def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
@@ -319,7 +322,8 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
 
     last_run.update(file_events_last_run)
     futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
-    tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
+    if futures:
+        tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
 
     demisto.debug(
         f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
