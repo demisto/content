@@ -42,7 +42,7 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str, 
         ]
         env = os.environ.copy()
         env["HOME"] = "/tmp/convertfile"
-        res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, universal_newlines=True, env=env)
+        res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, universal_newlines=True, env=env)  # pragma: no cover
         demisto.debug(f"completed running: {run_cmd}. With result: {res}")
         if all_files:
             files = glob.glob(outdir + "/*")
