@@ -1,6 +1,7 @@
 Each entry in an array is merged into the existing array if the keyed-value matches.
 
 ---
+
 ## Script Data
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Each entry in an array is merged into the existing array if the keyed-value matc
 | Script Type | javascript |
 | Tags | transformer, entirelist, general |
 
-
 ---
+
 ## Examples
 
     {

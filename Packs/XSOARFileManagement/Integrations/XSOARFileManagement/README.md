@@ -2,14 +2,12 @@ This integration uses the XSOAR API to perform basic but essentials actions on f
 
 ## Configure XSOAR File Management in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. https://example.net) | Make sure XSOAR config 'External Host Name' is set and let this field empty otherwise set the external ip of XSOAR. Using https://127.0.0.1 don't work. | False |
 | XSOAR Server API Key |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -29,16 +27,17 @@ Copies a file from this incident to the specified incident. Usefull if you want 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incidentID | Incident ID to upload the file. If empty, the current incident ID is taken. | Optional | 
-| fileContent | Non binary content of the file (if set let filePath and filePath empty). | Optional | 
-| entryID | Entry ID of the file to read (if set let filePath and fileContent empty). | Optional | 
-| filePath | Path of the file to read ex: incident.attachment.path (if set let entryID and fileContent empty). | Optional | 
-| fileName | Name of the file. Mandatory if used with filePath and fileContent otherwise the name of the file will not change. | Optional | 
-| target | Where to upload the file - Available options are: - 'war room entry': the file will be uploaded as war room entry. - 'incident attachment': the file will be uploaded as incident attachment. - default are 'war room entry'. Possible values are: war room entry, incident attachment. Default is war room entry. | Optional | 
+| incidentID | Incident ID to upload the file. If empty, the current incident ID is taken. | Optional |
+| fileContent | Non binary content of the file (if set let filePath and filePath empty). | Optional |
+| entryID | Entry ID of the file to read (if set let filePath and fileContent empty). | Optional |
+| filePath | Path of the file to read ex: incident.attachment.path (if set let entryID and fileContent empty). | Optional |
+| fileName | Name of the file. Mandatory if used with filePath and fileContent otherwise the name of the file will not change. | Optional |
+| target | Where to upload the file - Available options are: - 'war room entry': the file will be uploaded as war room entry. - 'incident attachment': the file will be uploaded as incident attachment. - default are 'war room entry'. Possible values are: war room entry, incident attachment. Default is war room entry. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### file-management-delete-file
 
 ***
@@ -52,11 +51,12 @@ Delete the file from the incident and from the XSOAR server
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryID | Entry ID of the file. | Required | 
+| entryID | Entry ID of the file. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### file-management-check-file
 
 ***
@@ -70,13 +70,13 @@ Check if entry ID exist
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryID | Entry ID of the file. | Required | 
+| entryID | Entry ID of the file. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IsFileExists | unknown | Dictionary with EntryID as key and boolean if the file exists as value | 
+| IsFileExists | unknown | Dictionary with EntryID as key and boolean if the file exists as value |
 
 ### file-management-delete-attachment
 
@@ -91,9 +91,9 @@ Delete the attachment from the incident and from the XSOAR server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filePath | File path of the file. | Required | 
-| incidentID | ID of the incident to delete attachment. | Optional | 
-| fieldName | Name of the field (type attachment) you want to remove the attachment by default it's the incident attachment (incident.attachment) field. | Optional | 
+| filePath | File path of the file. | Required |
+| incidentID | ID of the incident to delete attachment. | Optional |
+| fieldName | Name of the field (type attachment) you want to remove the attachment by default it's the incident attachment (incident.attachment) field. | Optional |
 
 #### Context Output
 
@@ -112,9 +112,9 @@ Delete the custom field attachment from the incident and from the XSOAR server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filePath | File path of the file. | Required | 
-| incidentID | ID of the incident to delete attachment. | Optional | 
-| fieldName | Name of the custom field (type attachment) you want to remove the attachment. | Required | 
+| filePath | File path of the file. | Required |
+| incidentID | ID of the incident to delete attachment. | Optional |
+| fieldName | Name of the custom field (type attachment) you want to remove the attachment. | Required |
 
 #### Context Output
 
@@ -133,12 +133,13 @@ Rename a file. Warning: use this only if necessary, it's HEAVY to run, this will
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryID | Entry ID of the file to rename. | Required | 
-| newFileName | New name for the file. | Required | 
+| entryID | Entry ID of the file to rename. | Required |
+| newFileName | New name for the file. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### file-management-download-file
 
 ***
@@ -152,10 +153,10 @@ Download files from server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileURI | File URI ex:'/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg'. | Required | 
-| fileName | Name of the new downloaded file. | Required | 
-| incidentID | Incident ID to upload the file. If empty, the current incident ID is taken. | Optional | 
-| target | Where to upload the file - Available options are: - 'war room entry': the file will be uploaded as war room entry. - 'incident attachment': the file will be uploaded as incident attachment. - default are 'war room entry'. Possible values are: war room entry, incident attachment. Default is war room entry. | Optional | 
+| fileURI | File URI ex:'/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg'. | Required |
+| fileName | Name of the new downloaded file. | Required |
+| incidentID | Incident ID to upload the file. If empty, the current incident ID is taken. | Optional |
+| target | Where to upload the file - Available options are: - 'war room entry': the file will be uploaded as war room entry. - 'incident attachment': the file will be uploaded as incident attachment. - default are 'war room entry'. Possible values are: war room entry, incident attachment. Default is war room entry. | Optional |
 
 #### Context Output
 
@@ -186,23 +187,23 @@ Get file hash from URI.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileURI | File URI ex:'/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg'. | Required | 
+| fileURI | File URI ex:'/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg'. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File_Hash.Extension | String | Extension of the file. | 
-| File_Hash.MD5 | String | MD5 of the file. | 
-| File_Hash.Name | String | Name of the file. | 
-| File_Hash.SHA1 | String | SHA1 of the file. | 
-| File_Hash.SHA256 | String | SHA256 of the file. | 
-| File_Hash.SHA512 | String | SHA512 of the file. | 
-| File_Hash.Size | String | Size of the file. | 
+| File_Hash.Extension | String | Extension of the file. |
+| File_Hash.MD5 | String | MD5 of the file. |
+| File_Hash.Name | String | Name of the file. |
+| File_Hash.SHA1 | String | SHA1 of the file. |
+| File_Hash.SHA256 | String | SHA256 of the file. |
+| File_Hash.SHA512 | String | SHA512 of the file. |
+| File_Hash.Size | String | Size of the file. |
 
 #### Command Example
 
-```!file-management-get-file-hash fileURI="/markdown/image/12142_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg" ```
+```!file-management-get-file-hash fileURI="/markdown/image/12142_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg"```
 
 #### Context Example
 
