@@ -1,6 +1,6 @@
 {
-    "name": "Cortex CloudSec",
-    "description": "Cortex CloudSec Pack",
+    "name": "AWS Cloud Automations",
+    "description": "Amazon Web Services Automations",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex",

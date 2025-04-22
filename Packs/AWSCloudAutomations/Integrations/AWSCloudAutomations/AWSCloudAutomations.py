@@ -5,9 +5,18 @@ from http import HTTPStatus
 from datetime import date
 from collections.abc import Callable
 
-def test_module(aws_client: AWSClient) -> str:
-    # aws_client.aws_session(service='sts')
-    return "ok"
+def test_module(params, command_args) -> str:
+    if test_account_id := params.get('test_account_id'):
+        command_args['account_id'] = test_account_id
+    else:
+        return "Please provide Test AWS Account ID for the Integration instance to run test"
+    
+    aws_client = get_client(params, command_args)
+    client_session = aws_client.aws_session(service='sts')
+    if client_session:
+        return "ok"
+    else:
+        return "fail"
 
 # =================== #
 # Helpers
@@ -184,7 +193,7 @@ def main():
                 return_results(ec2_instance_metadata_options_modify(aws_client, command_args))
                 
             case 'test-module':
-                return_results(test_module(aws_client))
+                return_results(test_module(params, command_args))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 
