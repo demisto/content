@@ -37,7 +37,7 @@ def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
     """
     This function extracts the content from the given url.
     """
-    response = client.extract(args.get("url"), extract_depth="advanced", include_images=False)
+    response = client.extract(args["url"], extract_depth="advanced", include_images=False)
     results = response.get("results", [])
     if len(results) == 1:
         output = {
