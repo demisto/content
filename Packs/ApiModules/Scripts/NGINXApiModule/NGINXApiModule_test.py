@@ -146,7 +146,7 @@ def test_nginx_test_start_valid(nginx_cleanup, params, mocker):
     ps_out = subprocess.check_output(['ps', 'aux'], text=True)
     assert 'nginx' not in ps_out
 
-
+# test
 @docker_only
 def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     import NGINXApiModule as module

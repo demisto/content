@@ -196,7 +196,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                 start = end
         Path(old_error).unlink()
 
-
+# test
 def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
     """An endless loop to monitor nginx logs. Meant to be spawned as a greenlet.
     Will run every minute and if needed will dump the nginx logs and roll them if needed.
