@@ -1181,6 +1181,8 @@ tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
+
+
 supportedModules:
 - X1
 - X3
