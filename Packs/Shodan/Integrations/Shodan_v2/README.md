@@ -2,7 +2,6 @@ Shodan is a search engine for Internet-connected devices. Unlike traditional sea
 
 ## Configure Shodan v2 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key |  | False |
@@ -11,7 +10,6 @@ Shodan is a search engine for Internet-connected devices. Unlike traditional sea
 | Use system proxy settings |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | The maximum number of events per fetch |  | False |
-
 
 ## Commands
 
@@ -22,7 +20,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 Searches Shodan using facets to get summary information on properties.
-
 
 #### Base Command
 
@@ -35,7 +32,6 @@ Searches Shodan using facets to get summary information on properties.
 | query | The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany. | Required |
 | facets | A CSV list of properties on which to get summary information. The search query supports filtering using the "property:count" format to define the number of facets to return for a property. For example, the query "country:100" returns the top 100 countries. | Optional |
 | page | The page number of the fetched results. Each page contains a maximum of 100 results. Default is 1. | Optional |
-
 
 #### Context Output
 
@@ -56,7 +52,6 @@ Searches Shodan using facets to get summary information on properties.
 | Shodan.Banner.Timestamp | Date | The timestamp in UTC format indicating when the banner was fetched from the searched device. |
 | Shodan.Banner.Domains | String | An array of strings containing the top-level domains for the host names of the searched device. It is a utility property for filtering by a top-level domain instead of a subdomain. It supports handling global top-level domains that have several dots in the domain. For example, "co.uk". |
 | Shodan.Banner.OS | String | The operating system that powers the searched device. |
-
 
 #### Command Example
 
@@ -143,16 +138,15 @@ Searches Shodan using facets to get summary information on properties.
 #### Human Readable Output
 
 >Search results for query "country:HK org:RLL-HK -port:80 -port:443 -port:21 -port:25 has_ssl:false" - page 1, facets: None
+>
 >|IP|Port|Timestamp|
 >|---|---|---|
 >| 1.2.3.4 | 5353 | 2021-08-17T03:13:54.617598 |
-
 
 ### ip
 
 ***
 Returns all services that have been found on the IP address of the searched host.
-
 
 #### Base Command
 
@@ -163,7 +157,6 @@ Returns all services that have been found on the IP address of the searched host
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | The IP address of the host. | Required |
-
 
 #### Context Output
 
@@ -249,16 +242,15 @@ Returns all services that have been found on the IP address of the searched host
 #### Human Readable Output
 
 >Shodan details for IP 8.8.8.8
+>
 >|ASN|Country|Hostname|ISP|Location|Ports|
 >|---|---|---|---|---|---|
 >| AS15169 | United States | dns.google | Google LLC | 37.406,-122.078 | 53 |
-
 
 ### shodan-search-count
 
 ***
 Returns the total number of results that match only the specified query or facet settings. This command does not return host results. This command does not consume query credits.
-
 
 #### Base Command
 
@@ -270,13 +262,11 @@ Returns the total number of results that match only the specified query or facet
 | --- | --- | --- |
 | query | The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany. | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Shodan.Search.ResultCount | Number | The number of results matched in the search query. |
-
 
 #### Command Example
 
@@ -303,7 +293,6 @@ Returns the total number of results that match only the specified query or facet
 ***
 Requests Shodan to crawl a network.
 
-
 #### Base Command
 
 `shodan-scan-ip`
@@ -314,14 +303,12 @@ Requests Shodan to crawl a network.
 | --- | --- | --- |
 | ips | A CSV list of IP addresses or netblocks for Shodan to crawl defined in CIDR notation. | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Shodan.Scan.ID | String | The unique ID of the scan. |
 | Shodan.Scan.Status | String | The status of the scan. |
-
 
 #### Command Example
 
@@ -343,16 +330,15 @@ Requests Shodan to crawl a network.
 #### Human Readable Output
 
 >Scanning results for scan wQEp0bIIEHklpAwa
+>
 >|ID|Status|
 >|---|---|
 >| wQEp0bIIEHklpAwa | PROCESSING |
-
 
 ### shodan-scan-internet
 
 ***
 Requests for Shodan to perform a scan on the specified port and protocol.
-
 
 #### Base Command
 
@@ -365,27 +351,22 @@ Requests for Shodan to perform a scan on the specified port and protocol.
 | port | The port for which Shodan crawls the Internet. | Required |
 | protocol | The name of the protocol used to interrogate the port. | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Shodan.Scan.ID | String | The ID of the initial scan. |
 
-
 #### Command Example
 
-``` ```
+``````
 
 #### Human Readable Output
-
-
 
 ### shodan-scan-status
 
 ***
 Checks the progress of a previously submitted scan request on the specified port and protocol.
-
 
 #### Base Command
 
@@ -397,14 +378,12 @@ Checks the progress of a previously submitted scan request on the specified port
 | --- | --- | --- |
 | scanID | The unique ID of the initial scan. | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Shodan.Scan.Id | String | The unique ID of the scan request checked for progress. |
 | Shodan.Scan.Status | String | The status of the scan job checked for progress. |
-
 
 #### Command Example
 
@@ -426,16 +405,15 @@ Checks the progress of a previously submitted scan request on the specified port
 #### Human Readable Output
 
 >Scanning results for scan 7rbp1CAtx91BMwcg
+>
 >|ID|Status|
 >|---|---|
 >| 7rbp1CAtx91BMwcg | DONE |
-
 
 ### shodan-create-network-alert
 
 ***
 Creates a network alert for a defined IP address or netblock used for subscribing to changes or events that are discovered within the netblock's range.
-
 
 #### Base Command
 
@@ -449,14 +427,12 @@ Creates a network alert for a defined IP address or netblock used for subscribin
 | ip | A list of IP addresses or network ranges defined in CIDR notation. | Required |
 | expires | The number of seconds for the network alert to remain active. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Shodan.Alert.ID | String | The ID of the subscription of the specified network alert. |
 | Shodan.Alert.Expires | String | The number of seconds that the specified network alert remains active. |
-
 
 #### Command Example
 
@@ -478,16 +454,15 @@ Creates a network alert for a defined IP address or netblock used for subscribin
 #### Human Readable Output
 
 >Alert ID CB68M776ICCMS36L
+>
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.1.1.1 | test_alert |
-
 
 ### shodan-network-get-alert-by-id
 
 ***
 Gets the details of a network alert.
-
 
 #### Base Command
 
@@ -499,14 +474,12 @@ Gets the details of a network alert.
 | --- | --- | --- |
 | alertID | The ID of the network alert. | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Shodan.Alert.ID | String | The ID of the subscription of the network alert. |
 | Shodan.Alert.Expires | String | The number of seconds that the network alert remains active. |
-
 
 #### Command Example
 
@@ -528,16 +501,15 @@ Gets the details of a network alert.
 #### Human Readable Output
 
 >Alert ID 0EKRH38BBQEHTQ3E
+>
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.2.3.4 | test_alert |
-
 
 ### shodan-network-get-alerts
 
 ***
 Gets a list of all created network alerts.
-
 
 #### Base Command
 
@@ -553,7 +525,6 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | Shodan.Alert.ID | String | The IDs of the subscriptions of the network alerts. |
 | Shodan.Alert.Expires | String | The number of seconds that the network alerts remain active. |
-
 
 #### Command Example
 
@@ -595,16 +566,15 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >Alert ID VXGB6CZ536X5AWE6
+>
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.1.1.1 | test_alert |
-
 
 ### shodan-network-delete-alert
 
 ***
 Removes the specified network alert.
-
 
 #### Base Command
 
@@ -615,7 +585,6 @@ Removes the specified network alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alertID | The ID of the network alert to remove. | Required |
-
 
 #### Context Output
 
@@ -634,7 +603,6 @@ There is no context output for this command.
 ***
 Enables receiving notifications for network alerts that are set off by the specified triggers.
 
-
 #### Base Command
 
 `shodan-network-alert-set-trigger`
@@ -645,7 +613,6 @@ Enables receiving notifications for network alerts that are set off by the speci
 | --- | --- | --- |
 | alertID | The ID of the network alert for which to enable notifications. | Required |
 | Trigger | The name of the trigger. | Required |
-
 
 #### Context Output
 
@@ -664,7 +631,6 @@ There is no context output for this command.
 ***
 Disables receiving notifications for network alerts that are set off by the specified triggers.
 
-
 #### Base Command
 
 `shodan-network-alert-remove-trigger`
@@ -675,7 +641,6 @@ Disables receiving notifications for network alerts that are set off by the spec
 | --- | --- | --- |
 | alertID | The ID of the network alert for which to disable notifications. | Required |
 | Trigger | The name of the trigger. | Required |
-
 
 #### Context Output
 
@@ -694,7 +659,6 @@ There is no context output for this command.
 ***
 Ignores the specified services for network alerts that are set off by the specified triggers.
 
-
 #### Base Command
 
 `shodan-network-alert-whitelist-service`
@@ -706,7 +670,6 @@ Ignores the specified services for network alerts that are set off by the specif
 | alertID | The ID of the network alert for which to ignore the specified services. | Required |
 | trigger | The name of the trigger. | Required |
 | service | The service specified in the "ip:port" format. For example, "1.1.1.1:80". | Required |
-
 
 #### Context Output
 
@@ -725,7 +688,6 @@ There is no context output for this command.
 ***
 Resumes receiving notifications for network alerts that are set off by the specified triggers.
 
-
 #### Base Command
 
 `shodan-network-alert-remove-service-from-whitelist`
@@ -738,7 +700,6 @@ Resumes receiving notifications for network alerts that are set off by the speci
 | trigger | The name of the trigger. | Required |
 | service | The service specified in the "ip:port" format. For example, "1.1.1.1:80". | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
@@ -750,6 +711,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Removed service "1.1.1.1:80" for trigger any in alert 0EKRH38BBQEHTQ3E from the allow list
+>
 ### shodan-get-events
 
 ***
@@ -763,14 +725,13 @@ Retrieves events from Shodan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If set to 'True', the command will create events; otherwise, it will only display them. Possible values are: True, False. Default is False. | Optional | 
-| start_date | Fetch events created after this date. You can also use relative terms like "3 days ago". Default is 3 days ago. | Optional | 
-| max_fetch | The maximum amount of events to return. Default is 50000. | Optional | 
+| should_push_events | If set to 'True', the command will create events; otherwise, it will only display them. Possible values are: True, False. Default is False. | Optional |
+| start_date | Fetch events created after this date. You can also use relative terms like "3 days ago". Default is 3 days ago. | Optional |
+| max_fetch | The maximum amount of events to return. Default is 50000. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
-
 
 ## Fetch Events
 
@@ -778,7 +739,6 @@ Fetch process returns a listing of all the network alerts that are currently act
 
 To enable the Shodan integration you need to have an API key, which you can get for free by creating a Shodan account <https://account.shodan.io/register>
 Once you have an API key, you insert it into the *API Key* field and click the **Test** button.
-
 
 ## Rate Limits
 
