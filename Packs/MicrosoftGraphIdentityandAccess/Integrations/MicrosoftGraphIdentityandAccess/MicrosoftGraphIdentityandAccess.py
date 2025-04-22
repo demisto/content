@@ -1107,6 +1107,9 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     """
     policy_id = args.get('policy_id')
     filter_query = args.get('filter')
+    limit = args.get('limit', 50)
+    all_results = argToBoolean(args.get('all_results', True))
+    
     raw_response = client.list_conditional_access_policies(policy_id, filter_query)
 
     policies: list[dict[str, Any]]
@@ -1119,9 +1122,13 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     else:
         policies = [raw_response]
     
+    max_items = len(policies) if all_results else min(len(policies), int(limit))
+
+    policies_to_process = policies[:max_items]
+
     context = []
     readable_policies = []
-    for policy in policies:
+    for policy in policies_to_process:
         context.append(policy)
         readable_policies.append({
             'ID': policy.get('id'),
@@ -1423,3 +1430,4 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
+
