@@ -1437,7 +1437,79 @@ def test_main_with_all_commands(mocker):
 
         main()
 
-# Final test to ensure comprehensive coverage
+
+def test_detection_platform_values_match_cloud_platform_class():
+    """Test that detection_platform values in YAML match CloudPlatform class values"""
+    import yaml
+    import os
+    from WizDefend import CloudPlatform
+
+    # Load the YAML file
+    yaml_path = os.path.join(os.path.dirname(__file__), 'WizDefend.yml')
+    with open(yaml_path, 'r') as yaml_file:
+        yaml_content = yaml.safe_load(yaml_file)
+
+    # Get values from CloudPlatform class
+    cloud_platform_values = CloudPlatform.values()
+    cloud_platform_set = set(cloud_platform_values)
+
+    # Check configuration section
+    config_param = None
+    for config_item in yaml_content.get('configuration', []):
+        if config_item.get('name') == 'detection_platform':
+            config_param = config_item
+            break
+
+    assert config_param is not None, "detection_platform parameter not found in configuration section"
+
+    config_options = config_param.get('options', [])
+    config_options_set = set(config_options)
+
+    # Check if configuration values match CloudPlatform class
+    assert config_options_set == cloud_platform_set, (
+        f"Configuration detection platform values don't match CloudPlatform class!\n"
+        f"In configuration but not in CloudPlatform: {config_options_set - cloud_platform_set}\n"
+        f"In CloudPlatform but not in configuration: {cloud_platform_set - config_options_set}"
+    )
+
+    # Check commands section
+    commands = yaml_content.get('script', {}).get('commands', [])
+    command_param = None
+
+    for command in commands:
+        if command.get('name') == 'wiz-get-detections':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'detection_platform':
+                    command_param = arg
+                    break
+            break
+
+    assert command_param is not None, "detection_platform argument not found in wiz-get-detections command"
+
+    command_predefined = command_param.get('predefined', [])
+    command_predefined_set = set(command_predefined)
+
+    # Check if command values match CloudPlatform class
+    assert command_predefined_set == cloud_platform_set, (
+        f"Command detection platform values don't match CloudPlatform class!\n"
+        f"In command but not in CloudPlatform: {command_predefined_set - cloud_platform_set}\n"
+        f"In CloudPlatform but not in command: {cloud_platform_set - command_predefined_set}"
+    )
+
+    # Check if both YAML locations have the same values
+    assert config_options_set == command_predefined_set, (
+        f"Detection platform values differ between configuration and command sections!\n"
+        f"In configuration but not in command: {config_options_set - command_predefined_set}\n"
+        f"In command but not in configuration: {command_predefined_set - config_options_set}"
+    )
+
+    # Print success message
+    print(f"✓ Success: All {len(config_options)} detection platform values match across:")
+    print(f"  - Configuration section")
+    print(f"  - Command argument predefined values")
+    print(f"  - CloudPlatform class")
+
+
 def test_comprehensive_integration(mocker):
     """Test a complete flow from main to get_filtered_detections"""
     from WizDefend import main
