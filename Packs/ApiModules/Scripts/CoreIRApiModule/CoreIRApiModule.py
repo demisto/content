@@ -2035,7 +2035,7 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
                      f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
             raw_response=result
         )
-    except Exception as e:
+    except DemistoException as e:
         return catch_and_exit_gracefully(e)
 
 
@@ -2581,7 +2581,7 @@ def quarantine_files_command(client, args):
                      f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
             raw_response=reply
         )
-    except Exception as e:
+    except DemistoException as e:
         return catch_and_exit_gracefully(e)
 
 

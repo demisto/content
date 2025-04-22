@@ -7,9 +7,13 @@
     "url": "https://supportcenter.checkpoint.com/",
     "email": "ndr@checkpoint.com",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
     "itemPrefix": "CheckPointNDR",
     "keywords": [

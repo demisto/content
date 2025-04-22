@@ -116,5 +116,11 @@
 	"name": "Microsoft 365 Defender - Outgoing Mapper",
 	"type": "mapping-outgoing",
 	"version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

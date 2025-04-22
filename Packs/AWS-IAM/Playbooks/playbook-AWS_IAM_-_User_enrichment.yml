@@ -45,8 +45,7 @@ tasks:
       id: 6375c9c5-a24c-4469-8b62-21f382d3d5a5
       version: -1
       name: AWS IAM - Get user information
-      description: Retrieves information about the specified IAM user, including the
-        user's creation date, path, unique ID, and ARN.
+      description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
       script: AWS - IAM|||aws-iam-get-user
       type: regular
       iscommand: true
@@ -81,8 +80,7 @@ tasks:
       id: 05067a56-0350-4f75-8075-85ccd9c98f0c
       version: -1
       name: 'AWS IAM -  List user access keys   '
-      description: Returns information about the access key IDs associated with the
-        specified IAM user.
+      description: Returns information about the access key IDs associated with the specified IAM user.
       script: AWS - IAM|||aws-iam-list-access-keys-for-user
       type: regular
       iscommand: true
@@ -166,13 +164,11 @@ outputs:
 - contextPath: AWS.IAM.Users.Path
   description: The path to the user.
 - contextPath: AWS.IAM.Users.PasswordLastUsed
-  description: The date and time,  when the user's password was last used to sign
-    in to an AWS website.
+  description: The date and time,  when the user's password was last used to sign in to an AWS website.
 - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
   description: The ID for this access key.
 - contextPath: AWS.IAM.Users.AccessKeys.Status
-  description: The status of the access key. Active means the key is valid for API
-    calls; Inactive means it is not.
+  description: The status of the access key. Active means the key is valid for API calls; Inactive means it is not.
 - contextPath: AWS.IAM.Users.AccessKeys.CreateDate
   description: The date when the access key was created.
 - contextPath: AWS.IAM.Users.AccessKeys.UserName
@@ -180,3 +176,8 @@ outputs:
 tests:
 - No tests
 fromversion: 5.5.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

@@ -1,6 +1,6 @@
 import copy
 from datetime import datetime
-
+from unittest.mock import patch, MagicMock
 import pytest
 from bson.objectid import ObjectId
 from CommonServerPython import DemistoException
@@ -514,3 +514,60 @@ class TestBulkUpdateQueryCommands:
             \nMongoDB: Total of 1 entries has been inserted."
         # 'replace' method is used due to inconsistent spaces in the output
         assert return_value[0].replace(" ", "") == excepted_output.replace(" ", "")
+
+
+def test_client_initialization_success():
+    with patch('MongoDB.MongoClient') as mock_mongo_client:
+        mock_db = MagicMock()
+        mock_mongo_client.return_value.get_database.return_value = mock_db
+
+        client = Client(
+            urls=['mongodb://localhost:27017'],
+            username='testuser',
+            password='testpass',
+            database='testdb',
+            ssl=True,
+            insecure=True,
+            auth_source='admin',
+            timeout=3000
+        )
+
+        assert client.db == mock_db
+        mock_mongo_client.assert_called_once_with(
+            host=['mongodb://localhost:27017'],
+            username='testuser',
+            password='testpass',
+            ssl=True,
+            socketTimeoutMS=3000,
+            tlsAllowInvalidCertificates=True,
+            authSource='admin'
+        )
+
+
+def test_client_initialization_insecure_without_ssl():
+    with pytest.raises(DemistoException) as e:
+        Client(
+            urls=['mongodb://localhost:27017'],
+            username='testuser',
+            password='testpass',
+            database='testdb',
+            ssl=False,
+            insecure=True
+        )
+
+    assert e.value.args[0] == '"Trust any certificate (not secure)" must be ticked with "Use TLS/SSL secured connection"'
+
+
+def test_client_initialization_without_auth_source():
+    with patch('MongoDB.MongoClient') as mock_mongo_client:
+        Client(
+            urls=['mongodb://localhost:27017'],
+            username='testuser',
+            password='testpass',
+            database='testdb',
+            ssl=True
+        )
+
+        mock_mongo_client.assert_called_once()
+        assert 'authSource' not in mock_mongo_client.call_args[1]
+

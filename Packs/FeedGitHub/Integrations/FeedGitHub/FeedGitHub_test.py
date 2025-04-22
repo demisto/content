@@ -1,10 +1,9 @@
 import base64
-
-import pytest
-
 import json
-from freezegun import freeze_time
+
 import demistomock as demisto
+import pytest
+from freezegun import freeze_time
 
 
 def util_load_json(path):

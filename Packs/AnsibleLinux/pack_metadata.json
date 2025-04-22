@@ -9,7 +9,9 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "Ubuntu",
@@ -17,7 +19,8 @@
         "CentOS",
         "Red Hat",
         "FreeBSD",
-        "Asset Management"
+        "Asset Management",
+        "system configuration"
     ],
     "marketplaces": [
         "xsoar",

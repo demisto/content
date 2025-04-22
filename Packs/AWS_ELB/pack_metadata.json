@@ -7,12 +7,18 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
-        "ELB"
+        "AWS",
+        "ELB",
+        "Amazon"
     ],
     "marketplaces": [
         "marketplacev2",

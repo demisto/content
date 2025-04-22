@@ -1,9 +1,9 @@
+import copy
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import copy
-from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
-
+from requests import Response
 
 API_VERSION = "2021-03-01"
 
@@ -1872,9 +1872,7 @@ def validate_predefined_argument(argument_name: str, argument_value: object, arg
 
     for value in argument_value:
         if value not in argument_options:
-            raise Exception(
-                f"Invalid {argument_name} argument. Please provide one of the following options:{str(argument_options)}"
-            )
+            raise Exception(f"Invalid {argument_name} argument. Please provide one of the following options:{argument_options!s}")
 
     return True
 

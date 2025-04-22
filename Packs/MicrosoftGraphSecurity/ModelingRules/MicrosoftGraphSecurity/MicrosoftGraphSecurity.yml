@@ -3,4 +3,9 @@ id: Microsoft_Graph_Security_ModelingRule
 name: Microsoft Graph Security Modeling Rules
 rules: ''
 schema: ''
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
 tags: ''

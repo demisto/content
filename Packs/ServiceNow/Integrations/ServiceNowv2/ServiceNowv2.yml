@@ -113,6 +113,7 @@ configuration:
   - dd.MM.yyyy
   - yyyy-MM-dd
   - mmm-dd-yyyy
+  - yyyy-MMM-dd
   type: 15
   required: false
   section: Collect

@@ -54,7 +54,7 @@ from werkzeug.datastructures import Headers
 
 """ GLOBAL VARIABLES """
 INTEGRATION_NAME: str = "TAXII Server"
-PAGE_SIZE = 200
+PAGE_SIZE = 1000
 APP: Flask = Flask("demisto-taxii")
 NAMESPACE_URI = "https://www.paloaltonetworks.com/cortex"
 NAMESPACE = "cortex"
@@ -731,11 +731,20 @@ def find_indicators_loop(indicator_query: str):
         Indicator query results from Demisto.
     """
     iocs: list[dict] = []
+    start_time: float = time.time()
+
+    demisto.info(f"Starting to search for indicators using query: {indicator_query} and page size: {PAGE_SIZE}.")
+
     search_indicators = IndicatorsSearcher(query=indicator_query, size=PAGE_SIZE)
     for ioc_res in search_indicators:
         fetched_iocs = ioc_res.get("iocs") or []
         iocs.extend(fetched_iocs)
 
+    finish_time: float = time.time()
+    demisto.info(
+        f"Finished searching for indicators using query: {indicator_query} and page size: {PAGE_SIZE}. "
+        f"Found {len(iocs)} indicators. Total query time: {finish_time - start_time} seconds."
+    )
     return iocs
 
 
