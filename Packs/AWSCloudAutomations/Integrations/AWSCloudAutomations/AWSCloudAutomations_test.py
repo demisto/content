@@ -1,5 +1,5 @@
 import pytest
-import AWS
+import AWSCloudAutomations
 
 class AWSClient:
     def aws_session(self, **kwargs):
@@ -78,7 +78,7 @@ def test_put_public_access_block(aws_client, mocker, bucket, get_command_return,
         }
     }
 
-    result = AWS.put_public_access_block(aws_client, args)
+    result = AWSCloudAutomations.put_public_access_block(aws_client, args)
     assert result.readable_output == expected_result
 
 
@@ -101,7 +101,7 @@ def test_get_account_password_policy(aws_client, mocker):
     }
     mocker.patch.object(Boto3Client, "get_account_password_policy", return_value=get_account_password_policy_return)
 
-    result = AWS.get_account_password_policy(aws_client, {})
+    result = AWSCloudAutomations.get_account_password_policy(aws_client, {})
     assert result.outputs == get_account_password_policy_return.get('PasswordPolicy')
 
 
@@ -153,7 +153,7 @@ def test_update_account_password_policy(aws_client, mocker, command_args, comman
     mocker.patch.object(Boto3Client, "get_account_password_policy", return_value=get_account_password_policy_return)
     mocker.patch.object(Boto3Client, "update_account_password_policy", return_value=command_return)
 
-    result = AWS.update_account_password_policy(aws_client, command_args)
+    result = AWSCloudAutomations.update_account_password_policy(aws_client, command_args)
     assert result.readable_output == expected_result
 
 
@@ -189,5 +189,5 @@ def test_aws_ec2_instance_metadata_options_modify(aws_client, mocker, command_ar
 
     mocker.patch.object(Boto3Client, "modify_instance_metadata_options", return_value=command_return)
 
-    result = AWS.ec2_instance_metadata_options_modify(aws_client, command_args)
+    result = AWSCloudAutomations.ec2_instance_metadata_options_modify(aws_client, command_args)
     assert result.readable_output == expected_result

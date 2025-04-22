@@ -1,4 +1,4 @@
-# AWS Integration
+# AWS Cloud Automations Integration
 
 This integration can be used to connect to your AWS accounts. You can run playbooks, scripts and commands on several AWS accounts using single EC2 machine. To leverage this integration with AWS, several steps must be completed to properly set up the environment within your AWS account.
 
@@ -18,7 +18,9 @@ For detailed instructions, see the [AWS Integrations - Authentication](https://x
 
 - Target roles are identified based on a combination of the `Role Name` specified during integration setup and the `account_id` provided as an argument in the integration commands. For example: `arn:aws:iam::<account_id>:role/<aws_role_name>`.
 
-- Target roles may exist across different AWS accounts. To enable the EC2 instance to assume these roles, you must configured appropriate permissions and trust relationships.
+- Target roles may exist across different AWS accounts. To enable the EC2 instance to assume these roles, you must configure appropriate permissions and trust relationships.
+
+- Target roles for all AWS accounts should have same name. This name can be configured by `Role Name` integration input.
 
 - Target role should have appropriate permissions to perform required action on the corresponding AWS account.
 

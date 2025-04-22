@@ -1,9 +1,9 @@
 category: Cloud Services
 description: 'Support for AWS cloud'
-display: Cortex CloudSec - AWS
-name: Cortex CloudSec - AWS
+display: AWS Cloud Automations
+name: AWS Cloud Automations
 commonfields:
-  id: Cortex CloudSec - AWS
+  id: AWS Cloud Automations
   version: -1
 configuration:
 - display: Role Name
@@ -12,9 +12,15 @@ configuration:
   section: Connect
   required: true
   additionalinfo: ARN of the role to be used for authentication
+- display: Test AWS Account ID
+  name: test_account_id
+  type: 0
+  section: Connect
+  additionalinfo: AWS Account ID used for running integration test
 - display: Role Session Name
   name: role_session_name
   type: 0
+  defaultvalue: cortex-session
   section: Connect
   advanced: true
   additionalinfo: Role session name to be used for authentication
@@ -93,6 +99,40 @@ script:
     - description: The AWS region.
       name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     - description: The name of the Amazon S3 bucket.
       name: bucket
       required: true
@@ -167,6 +207,40 @@ script:
     - description: The AWS region.
       name: region
       required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     - description: The ID of the instance.
       name: instance_id
       required: true

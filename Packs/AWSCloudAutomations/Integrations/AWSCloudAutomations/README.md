@@ -1,7 +1,7 @@
 Support for AWS cloud
-This integration was integrated and tested with version 1.0.0 of Cortex CloudSec - AWS.
+This integration was integrated and tested with version 1.0.0 of AWS Cloud Automations.
 
-## Configure Cortex CloudSec - AWS in Cortex
+## Configure AWS Cloud Automations in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
