@@ -16,7 +16,8 @@
     ],
     "useCases": [],
     "keywords": [
-        "TIM"
+        "TIM",
+        "Palo Alto Networks"
     ],
     "dependencies": {
         "CommonScripts": {
