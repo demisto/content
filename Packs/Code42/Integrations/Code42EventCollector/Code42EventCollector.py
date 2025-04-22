@@ -130,10 +130,12 @@ class Client:
             f'Fetched {len(file_events)} events. '
             f'First: ID={file_events[0].event.id!r}, Time={file_events[0].event.inserted}. '
             f'Last: ID={file_events[-1].event.id!r}, Time={file_events[-1].event.inserted}')
+        demisto.debug(f'[TEMP] Just fetched file_events={"|".join(TEMP_event_id(event.event.id) for event in file_events)}')
 
         sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)
-        demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
-        demisto.debug('[TEMP] Last 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(max(0, len(file_events) - 100), len(file_events)), file_events)))
+        
+        # demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
+        # demisto.debug('[TEMP] Last 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(max(0, len(file_events) - 100), len(file_events)), file_events)))
 
         sorted_file_events = sorted_file_events[:limit]
 
@@ -144,7 +146,7 @@ class Client:
         return [event.dict() for event in sorted_file_events]
 
 
-def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str], keys_list_to_id: List[str]) -> List[dict]:
+def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: list[dict], keys_list_to_id: List[str]) -> List[dict]:
     """
     Dedup events, removes events which were already fetched.
 
@@ -164,8 +166,8 @@ def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str
             duplicate_events.append(event_id)
 
     new_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in new_events}
-    demisto.debug(f'{new_event_ids=}')
-    demisto.debug(f'{duplicate_events=}')
+    demisto.debug(f'new_event_ids={list(map(TEMP_event_id, new_event_ids))}')
+    demisto.debug(f'duplicate_events={list(map(TEMP_event_id, duplicate_events))}')
 
     return new_events
 
@@ -192,13 +194,13 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre
         ).strftime('%Y-%m-%dT%H:%M:%S.%f')[:23] + '000+00:00'
     )
 
-    latest_event_ids: List = [
-        dict_safe_get(event, keys=keys_to_id)
+    latest_event_ids = {
+        dict_safe_get(event, keys=keys_to_id): event["_time"].isoformat()
         for event in events
         if event["_time"] >= next_fetch_from
-    ]
+    }
 
-    demisto.debug(f'Latest {event_type}s event IDs {latest_event_ids} occurred in {next_fetch_from}')
+    demisto.debug(f'Latest {event_type}s event IDs {list(map(TEMP_event_id, latest_event_ids))} occurred in {next_fetch_from}')
     return latest_event_ids, next_fetch_from.strftime(DATE_FORMAT)
 
 
@@ -252,20 +254,23 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         else (datetime.now() - timedelta(minutes=1))
     )
 
-    last_fetched_event_file_ids = set(
+    fetched_events = process_last_run_dupes(
         last_run.get(FileEventLastRun.FETCHED_IDS, [])
     )
     pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
     file_events = client.get_file_events(  # type: ignore[arg-type]
         file_event_time,
-        limit=max_fetch_file_events + len(last_fetched_event_file_ids)
+        limit=max_fetch_file_events + len(fetched_events)
     )
     dedup_file_events = dedup_fetched_events(
-        file_events, last_run_fetched_event_ids=last_fetched_event_file_ids, keys_list_to_id=["event", "id"]
+        file_events, last_run_fetched_event_ids=fetched_events, keys_list_to_id=["event", "id"]
     )
-    if dedup_file_events:
+    if file_events:
         latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(
-            file_events, keys_to_id=["event", "id"], pre_fetch_look_back=pre_fetch_look_back)
+            file_events + fetched_events,
+            keys_to_id=["event", "id"],
+            pre_fetch_look_back=pre_fetch_look_back
+        )
         datetime_to_date_string(dedup_file_events)
         new_last_run.update(
             {
@@ -310,6 +315,24 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
 
     demisto.debug(f"updated last run of {EventType.AUDIT} logs to {new_last_run}")
     return audit_logs, new_last_run
+
+
+def process_last_run_dupes(dupes: dict | list) -> list[dict]:
+    if isinstance(dupes, list):  # for BC
+        return [
+            {
+                "eventType": "file",
+                "event": {"id": dupe_id},
+                "_time": datetime.now(tz=timezone.utc) - timedelta(minutes=3)
+            } for dupe_id in dupes
+        ]
+    return [
+        {
+            "eventType": "file",
+            "event": {"id": dupe_id},
+            "_time": datetime.fromisoformat(dupe_time)
+        } for dupe_id, dupe_time in dupes.items()
+    ]
 
 
 def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max_fetch_audit_events: int):
@@ -374,6 +397,10 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="Code42EventCollector.Events", outputs=events, raw_response=events, readable_output=readable_output
     )
+
+
+def TEMP_event_id(_id: str):
+    return _id[-20:]
 
 
 def main() -> None:
