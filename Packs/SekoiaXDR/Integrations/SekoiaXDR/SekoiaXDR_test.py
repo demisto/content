@@ -28,6 +28,17 @@ def client():
     return client
 
 
+@pytest.fixture()
+def context_cache_with_mirroring():
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    return {"mirroring_cache": [{"alert": alert, "entries": {}}]}
+
+
+@pytest.fixture()
+def context_cache_without_mirroring():
+    return {}
+
+
 """ TEST HELPER FUNCTIONS """
 
 
@@ -133,6 +144,77 @@ def test_filter_dict_by_keys_with_empty_dict():
     keys_to_keep = ["key1", "key3"]
     expected_result = {}
     assert SekoiaXDR.filter_dict_by_keys(dict, keys_to_keep) == expected_result
+
+
+def test_handle_alert_events_query_finished_status(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
+
+    mock_response_query_events_status = util_load_json(
+        "test_data/SekoiaXDR_query_events_status.json"
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=mock_response_query_events_status,
+    )
+
+    mock_response_retrieve_events = util_load_json(
+        "test_data/SekoiaXDR_retrieve_events.json"
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f/events",
+        json=mock_response_retrieve_events,
+    )
+
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    args = {
+        "client": client,
+        "alert": alert,
+        "earliest_time": "2024-04-25T10:00:23",
+        "latest_time": "2024-04-25T15:00:23",
+        "events_term": "sekoiaio.intake.uuid:834a2d7f-3623-4b26",
+    }
+
+    result = SekoiaXDR.handle_alert_events_query(**args)
+    assert result["events"]
+
+
+def test_handle_alert_events_query_in_progress_status(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_query_events.json")
+    requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=mock_response)
+
+    mock_response_query_events_status = util_load_json(
+        "test_data/SekoiaXDR_query_events_status_in_progress.json"
+    )
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=mock_response_query_events_status,
+    )
+
+    alert = util_load_json("test_data/SekoiaXDR_get_alert.json")
+    args = {
+        "client": client,
+        "alert": alert,
+        "earliest_time": "2024-04-25T10:00:23",
+        "latest_time": "2024-04-25T15:00:23",
+        "events_term": "sekoiaio.intake.uuid:834a2d7f-3623-4b26",
+    }
+
+    result = SekoiaXDR.handle_alert_events_query(**args)
+    assert not result.get("events")
+    assert result["job_uuid"] == "df904d2e-2c57-488f"
+
+
+def test_check_id_in_context_with_mirroring(context_cache_with_mirroring):
+    assert SekoiaXDR.check_id_in_context(
+        "ALL1A4SKUiU2", context_cache_with_mirroring
+    ) == (context_cache_with_mirroring["mirroring_cache"][0], 0)
+
+
+def test_check_id_in_context_without_mirroring(context_cache_without_mirroring):
+    assert not SekoiaXDR.check_id_in_context(
+        "ALL1A4SKUiU2", context_cache_without_mirroring
+    )
 
 
 """ TEST COMMANDS FUNCTIONS """
