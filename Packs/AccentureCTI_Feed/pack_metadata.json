@@ -13,7 +13,10 @@
         "Threat Intelligence Management"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Accenture",
+        "CTI"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
