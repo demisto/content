@@ -20,7 +20,7 @@ args:
   required: true
   description: The replacement string.
 scripttarget: 0
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 tests:
 - No test - unit test
