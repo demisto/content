@@ -268,7 +268,7 @@ def test_suppress_errors(mocker):
     )
     for test in TEST_SUPPRESS_ERRORS:
         mocker.patch.object(client, test["mock_fun"], side_effect=test["mock_value"])
-        results, _, _ = test["fun"](client, test["args"])
+        results = test["fun"](client, test["args"])
         assert results == test["expected_result"]
 
 

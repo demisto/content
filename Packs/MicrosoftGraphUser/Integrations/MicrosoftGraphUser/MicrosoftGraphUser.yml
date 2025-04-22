@@ -655,9 +655,6 @@ script:
     - contextPath: MSGraphUser.TAPPolicy.CreatedDateTime
       description: TAP policy's creation date and time.
       type: String
-    - contextPath: MSGraphUser.TAPPolicy.TemporaryAccessPass
-      description: TAP policy's temporary access pass.
-      type: String
     - contextPath: MSGraphUser.TAPPolicy.MethodUsabilityReason
       description: TAP policy's method usability reason.
       type: String
@@ -711,9 +708,6 @@ script:
       type: Bool
     - contextPath: MSGraphUser.TAPPolicy.CreatedDateTime
       description: TAP policy's creation date and time.
-      type: String
-    - contextPath: MSGraphUser.TAPPolicy.TemporaryAccessPass
-      description: TAP policy's temporary access pass.
       type: String
     - contextPath: MSGraphUser.TAPPolicy.MethodUsabilityReason
       description: TAP policy's method usability reason.

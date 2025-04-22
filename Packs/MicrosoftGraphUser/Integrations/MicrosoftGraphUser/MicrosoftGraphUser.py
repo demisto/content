@@ -274,14 +274,14 @@ def suppress_errors_with_404_code(func):
             if client.handle_error:
                 if (user := args.get("user", "___")) in str(e):
                     human_readable = f"#### User -> {user} does not exist"
-                    return human_readable, None, None
+                    return human_readable
                 elif (manager := args.get("manager", "___")) in str(e):
                     human_readable = f"#### Manager -> {manager} does not exist"
-                    return human_readable, None, None
+                    return human_readable
                 elif "The specified user could not be found." in str(e.message):
-                    user = args.get('user', '___')
+                    user = args.get('user_id', '___')
                     human_readable = f'#### User -> {user} does not exist'
-                    return human_readable, None, None
+                    return human_readable
             raise
 
     return wrapper
@@ -554,20 +554,36 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
 
 
 @suppress_errors_with_404_code
-def list_tap_policy_command(client: MsGraphClient, args: dict):
+def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Lists the Temporary Access Pass (TAP) policies associated with a specific user.
+    Returns a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary containing the input arguments, including 'user_id'
+                     (required) and optionally 'policy_id' to retrieve a specific TAP method.
+
+    Returns:
+        CommandResults
+        
+    API Reference:
+        https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods/[policy_id]
+    """
     user_id = args.get('user_id')
     policy_id = args.get('policy_id', '')
     tap_data = client.list_tap_policy(user_id, policy_id)
     tap_readable, tap_policy_output = parse_outputs(tap_data)
-
-    # change HR from ID to Policy ID
-    if isinstance(tap_readable, list) and tap_readable:
+    
+    if tap_readable and isinstance(tap_readable, list):
         tap_readable_dict = tap_readable[0]
     else:
         tap_readable_dict = tap_readable
 
-    if isinstance(tap_readable_dict, dict):
-        tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID', '')
+    # change HR from ID to Policy ID
+    # if isinstance(tap_readable_dict, dict):
+    tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID')
+        
     headers = ['Policy ID', 'Start Date Time', 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
     human_readable = tableToMarkdown(name=f'TAP Policy for User ID {user_id}:', headers=headers, t=tap_readable_dict,
                                      removeNull=True)
@@ -582,7 +598,26 @@ def list_tap_policy_command(client: MsGraphClient, args: dict):
 
 
 @suppress_errors_with_404_code
-def create_tap_policy_command(client: MsGraphClient, args: dict):
+def create_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Creates a Temporary Access Pass (TAP) policy for a Microsoft Graph user.
+    Generates a password-protected ZIP file containing the TAP password.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary of arguments which may include:
+            - user_id (str): The ID of the user to assign the TAP policy to.
+            - zip_password (str): Password to encrypt the ZIP file.
+            - lifetime_in_minutes (int. optional): Lifetime of the TAP in minutes.
+            - is_usable_once (bool, optional): Whether the TAP can only be used once.
+            - start_time (str, optional): ISO 8601 formatted start time for the TAP.
+
+    Returns:
+        CommandResults
+        
+    API Reference:
+        https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
+    """
     user_id = args.get('user_id')
     zip_password = args.get('zip_password', '')
     lifetime_in_minutes = arg_to_number(args.get('lifetime_in_minutes'))
@@ -597,8 +632,10 @@ def create_tap_policy_command(client: MsGraphClient, args: dict):
     }
     res = client.create_tap_policy(user_id, fields)
 
-    generated_password = res.get('temporaryAccessPass')
-    return_results(create_zip_with_password(generated_tap_password=generated_password, zip_password=zip_password))
+    # Remove the 'temporaryAccessPass' value as it should be removed from context
+    generated_password = res.pop('temporaryAccessPass')
+
+    create_zip_with_password(generated_tap_password=generated_password, zip_password=zip_password)
     human_readable = f'Temporary Access Pass Authentication methods policy {user_id} was successfully created'
     _, tap_policy_output = parse_outputs(res)
 
@@ -611,7 +648,22 @@ def create_tap_policy_command(client: MsGraphClient, args: dict):
 
 
 @suppress_errors_with_404_code
-def delete_tap_policy_command(client: MsGraphClient, args: dict):
+def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Deletes a Temporary Access Pass (TAP) policy for a specified user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary of arguments, which must include:
+            - user_id (str): The ID of the user whose TAP policy is to be deleted.
+            - policy_id (str): The ID of the TAP policy to be deleted.
+
+    Returns:
+        CommandResults
+        
+    API Reference:
+        https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods/[policy_id]
+    """
     user_id = args.get('user_id')
     policy_id = args.get('policy_id')
     client.delete_tap_policy(user_id, policy_id)

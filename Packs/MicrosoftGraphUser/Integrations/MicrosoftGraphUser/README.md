@@ -752,7 +752,6 @@ A user can only have one Temporary Access Pass that's usable within its specifie
 | MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
 | MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
 | MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
-| MSGraphUser.TAPPolicy.TemporaryAccessPass | String | TAP policy's temporary access pass. | 
 | MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
 | MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
 | MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 
@@ -782,7 +781,6 @@ as a user can have only one Temporary Access Pass method.
 | MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
 | MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
 | MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
-| MSGraphUser.TAPPolicy.TemporaryAccessPass | String | TAP policy's temporary access pass. | 
 | MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
 | MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
 | MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 
