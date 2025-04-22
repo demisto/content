@@ -21,5 +21,4 @@ The SSH features in PAN-OS are not affected by CVE-2024-6387.
 
 Reference:
 
-[Threat Brief: CVE-2024-6387 OpenSSH RegreSSHion Vulnerability
-](https://unit42.paloaltonetworks.com/threat-brief-cve-2024-6387-openssh/).
+[Threat Brief: CVE-2024-6387 OpenSSH RegreSSHion Vulnerability](https://unit42.paloaltonetworks.com/threat-brief-cve-2024-6387-openssh/).
