@@ -9,7 +9,9 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Attack"
+    ],
     "useCases": [],
     "keywords": [
         "zero-day",
@@ -19,7 +21,9 @@
         "Outlook",
         "CVE-2023-23397",
         "23397",
-        "EoP"
+        "EoP",
+        "Elevation of Privilege",
+        "Vulnerability"
     ],
     "dependencies": {
         "MajorBreachesInvestigationandResponse": {

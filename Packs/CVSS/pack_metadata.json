@@ -1,5 +1,5 @@
 {
-    "name": "CVSS  (Deprecated)“",
+    "name": "CVSS  (Deprecated)\u201c",
     "description": "Deprecated. Use from CommonScripts instead.",
     "support": "xsoar",
     "currentVersion": "1.0.3",
@@ -8,13 +8,18 @@
     "email": "",
     "created": "2020-06-16T07:58:55Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Utilities",
+        "Vulnerability Management"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [
         "cvss",
-        "score"
+        "score",
+        "Common Vulnerability Scoring System",
+        "Vulnerability",
+        "Scoring"
     ],
     "marketplaces": [
         "xsoar",

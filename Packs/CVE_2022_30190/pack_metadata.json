@@ -9,12 +9,16 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Attack"
+    ],
     "useCases": [],
     "keywords": [
         "0-day",
         "zero day",
         "MSDT",
+        "Windows",
+        "Microsoft",
         "Follina",
         "CVE",
         "CVE-2022-30190",

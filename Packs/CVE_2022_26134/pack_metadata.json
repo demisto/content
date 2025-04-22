@@ -9,7 +9,10 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Attack",
+        "Breach"
+    ],
     "useCases": [],
     "keywords": [
         "zero-day",
@@ -19,7 +22,10 @@
         "CVE-2022-26134",
         "26134",
         "RCE",
-        "OGNL"
+        "OGNL",
+        "Object-Graph Navigation Language",
+        "remote code execution",
+        "vulnerability"
     ],
     "marketplaces": [
         "xsoar",

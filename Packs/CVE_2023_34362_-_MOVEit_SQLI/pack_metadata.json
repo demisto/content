@@ -9,12 +9,17 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Attack",
+        "Breach"
+    ],
     "useCases": [],
     "keywords": [
         "zero-day",
         "0-day",
         "MOVEit",
+        " file transfer solution",
+        "Transfer",
         "SQLI",
         "SQL Injection",
         "CVE-2023-34362",

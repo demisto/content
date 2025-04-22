@@ -7,12 +7,18 @@
     "url": "https://docs.cadosecurity.com/docs/cado-response/integrations/cortex-xsoar/",
     "email": "contact@cadosecurity.com",
     "categories": [
-        "Forensics & Malware Analysis"
+        "Forensics & Malware Analysis",
+        "Cloud Security"
     ],
-    "tags": [],
+    "tags": [
+        "Attack",
+        "Incident Response"
+    ],
     "useCases": [],
     "keywords": [
-        "Cado Security"
+        "Cado Security",
+        "cloud investigation",
+        "forensic"
     ],
     "devEmail": [
         "jthompson@cadosecurity.com",
