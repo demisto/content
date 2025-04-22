@@ -58,11 +58,11 @@ def test_extarct_command(mock_post, client):
     """
     Given:
         - A client
-        - Two urls for check
+        - An url for check
     When:
         - Executing the extarct_command function
     Then:
-        - Ensure the command results contains two outputs (for each url)
+        - Ensure the command results contains two outputs (URL and Content)
         - Ensure the first dictionary for the first given url contains the two keys: URL and Content and correct values
     """
     mock_response = MagicMock()
@@ -70,22 +70,18 @@ def test_extarct_command(mock_post, client):
     mock_response.json.return_value = {
         "results": [
             {
-                "url": "https://example1.com",
-                "raw_content": "Example content number 1 from the web page."
-            },
-            {
-                "url": "https://example2.com",
-                "raw_content": "Example content number 2 from the web page."
+                "url": "https://example.com",
+                "raw_content": "Example content from the web page."
             }
         ]
     }
     mock_post.return_value = mock_response
-    args = {"urls": "https://example1.com, https://example2.com"}
+    args = {"urls": "https://example.com"}
     command_results = extarct_command(client, args)
 
     assert len(command_results.outputs) == 2
-    assert isinstance(command_results.outputs[0], dict)
-    assert len(command_results.outputs[0].keys()) == 2
-    assert command_results.outputs[0]["URL"] == "https://example1.com"
-    assert command_results.outputs[0]["Content"] == "Example content number 1 from the web page."
+    assert isinstance(command_results.outputs, dict)
+    assert len(command_results.outputs.keys()) == 2
+    assert command_results.outputs["URL"] == "https://example.com"
+    assert command_results.outputs["Content"] == "Example content from the web page."
 

@@ -33,16 +33,18 @@ name: Tavily
 script:
   commands:
   - arguments:
-    - description: Comma-separated list of urls to extract.
-      name: urls
+    - description: The url to extract its content.
+      name: url
       required: true
-      isArray: true
-    description: ''
-    name: extract
+    description: 'Extracts its content from the given url.'
+    name: tavily-extract
     outputs:
-    - contextPath: Tavily
-      description: List of dictionaries with URL and Content keys, both strings.
-      type: list
+    - contextPath: Tavily.URL
+      description: The give url to extract its content.
+      type: string
+    - contextPath: Tavily.Content
+      description: The extracted content from the given url.
+      type: string
   isfetch: false
   runonce: false
   script: '-'

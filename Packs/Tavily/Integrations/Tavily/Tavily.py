@@ -17,10 +17,10 @@ class TavilyExtractClient(BaseClient):
         }
         super().__init__(base_url=url, verify=verify, headers=headers, proxy=proxy)
 
-    def extract(self, urls: list[str], extract_depth: str = "basic", include_images: bool = False) -> dict:
+    def extract(self, url: str, extract_depth: str = "basic", include_images: bool = False) -> dict:
 
         payload = {
-            "urls": urls,
+            "urls": [url],
             "extract_depth": extract_depth,
             "include_images": include_images
         }
@@ -35,19 +35,19 @@ class TavilyExtractClient(BaseClient):
 
 def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
     """
-    This function extracts the content from the given urls.
+    This function extracts the content from the given url.
     """
-    response = client.extract(argToList(args.get("urls")), extract_depth="advanced", include_images=False)
-    final_results_content: list[dict] = []
+    response = client.extract(args.get("url"), extract_depth="advanced", include_images=False)
     results = response.get("results", [])
-    final_results_content.extend(
-        {
-            "URL": result.get("url"),
-            "Content": result.get("raw_content", "No content found."),
+    if len(results) == 1:
+        output = {
+            "URL": results[0].get("url"),
+            "Content": results[0].get("raw_content", "No content found."),
         }
-        for result in results
-    )
-    return CommandResults(outputs=final_results_content, readable_output="Extract content is finished", outputs_prefix="Tavily")
+        return CommandResults(outputs=output, readable_output="Extract content is finished", outputs_prefix="Tavily",
+                              outputs_key_field="URL")
+
+    raise DemistoException(f"There are no results for the given url {args.get('url')}")
 
 
 def main():
@@ -66,7 +66,7 @@ def main():
         demisto.debug(f"{client}")
         if command == "test-module":
             return_results('ok')
-        elif command == 'extract':
+        elif command == 'tavily-extract':
             return_results(extarct_command(client=client, args=args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
