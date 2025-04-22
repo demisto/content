@@ -7,7 +7,7 @@ sectionOrder:
 configuration:
 - name: url
   display: Server URL
-  defaultvalue: https://api.tavily.com/extract
+  defaultvalue: https://api.tavily.com
   type: 0
   required: true
   section: Connect
@@ -52,8 +52,5 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.8.1983910
 fromversion: 6.1.0
-marketplaces:
-- xsoar
-- marketplacev2
 tests:
 - No tests (auto formatted)

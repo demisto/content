@@ -1,6 +1,5 @@
 from CommonServerPython import *  # noqa: F401
 
-import requests
 import warnings
 import urllib3
 
@@ -10,7 +9,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class TavilyExtractClient(BaseClient):
 
-    def __init__(self, api_key, url="https://api.tavily.com/extract", proxy: bool = False, verify: bool = False):
+    def __init__(self, api_key, url="https://api.tavily.com", proxy: bool = False, verify: bool = False):
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
@@ -25,7 +24,8 @@ class TavilyExtractClient(BaseClient):
             "include_images": include_images
         }
 
-        response = requests.post(self._base_url, headers=self._headers, json=payload, verify=self._verify)
+        response = self._http_request("POST", url_suffix="extract", json_data=payload, headers=self._headers,
+                                      resp_type='response')
 
         if response.status_code == 200:
             return response.json()
@@ -37,7 +37,7 @@ def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
     """
     This function extracts the content from the given url.
     """
-    response = client.extract(args["url"], extract_depth="advanced", include_images=False)
+    response = client.extract(args["url"], extract_depth="basic", include_images=False)
     results = response.get("results", [])
     if len(results) == 1:
         output = {
@@ -48,6 +48,14 @@ def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
                               outputs_key_field="URL")
 
     raise DemistoException(f"There are no results for the given url {args.get('url')}")
+
+
+def test_module(client: TavilyExtractClient) -> str:
+    """
+    Sanity test with Google
+    """
+    client.extract("google.com", extract_depth="basic", include_images=False)
+    return 'ok'
 
 
 def main():  # pragma: no cover
@@ -65,7 +73,7 @@ def main():  # pragma: no cover
         client = TavilyExtractClient(api_key, url=url, verify=verify_certificate, proxy=proxy)
         demisto.debug(f"{client}")
         if command == "test-module":
-            return_results('ok')
+            return_results(test_module(client=client))
         elif command == 'tavily-extract':
             return_results(extarct_command(client=client, args=args))
         else:
