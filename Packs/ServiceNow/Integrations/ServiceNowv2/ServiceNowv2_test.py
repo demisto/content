@@ -15,8 +15,8 @@ from requests_mock import MockerCore
 from ServiceNowv2 import (
     DATE_FORMAT,
     DATE_FORMAT_OPTIONS,
-    Client,
     MAX_RETRY,
+    Client,
     ServiceNowClient,
     add_comment_command,
     add_link_command,
@@ -2372,51 +2372,19 @@ TICKET_FIELDS = {
 
 
 def ticket_fields(*args, **kwargs):
-    state = "7" if kwargs.get("ticket_type") == "incident" else "3"
-    assert args[0] == {
-        "close_notes": "This is closed",
-        "closed_at": "2020-10-29T13:19:07.345995+02:00",
-        "impact": "3",
-        "priority": "4",
-        "resolved_at": "2020-10-29T13:19:07.345995+02:00",
-        "severity": "1 - Low",
-        "short_description": "Post parcel",
-        "sla_due": "0001-01-01T00:00:00Z",
-        "urgency": "3",
-        "state": state,
-        "work_start": "0001-01-01T00:00:00Z",
-    }
+    state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
+    assert args[0] == {'state': state }
 
     return {
-        "close_notes": "This is closed",
-        "closed_at": "2020-10-29T13:19:07.345995+02:00",
-        "impact": "3",
-        "priority": "4",
-        "resolved_at": "2020-10-29T13:19:07.345995+02:00",
-        "severity": "1 - Low",
-        "short_description": "Post parcel",
-        "sla_due": "0001-01-01T00:00:00Z",
-        "urgency": "3",
-        "state": "1",
-        "work_start": "0001-01-01T00:00:00Z",
-    }
+        "state": "3"
+        }
 
 
 def update_ticket(*args):
     state = "7" if "incident" in args else "3"
     return {
-        "short_description": "Post parcel",
-        "close_notes": "This is closed",
-        "closed_at": "2020-10-29T13:19:07.345995+02:00",
-        "impact": "3",
-        "priority": "4",
-        "resolved_at": "2020-10-29T13:19:07.345995+02:00",
-        "severity": "1 - High - Low",
-        "sla_due": "0001-01-01T00:00:00Z",
-        "state": state,
-        "urgency": "3",
-        "work_start": "0001-01-01T00:00:00Z",
-    }
+        "state": state
+        }
 
 
 @pytest.mark.parametrize("ticket_type", ["sc_task", "sc_req_item", "incident"])
@@ -2969,20 +2937,8 @@ def test_converts_close_code_or_state_to_close_reason(
 
 
 def ticket_fields_mocker(*args, **kwargs):
-    state = "88" if kwargs.get("ticket_type") == "incident" else "90"
-    fields = {
-        "close_notes": "This is closed",
-        "closed_at": "2020-10-29T13:19:07.345995+02:00",
-        "impact": "3",
-        "priority": "4",
-        "resolved_at": "2020-10-29T13:19:07.345995+02:00",
-        "severity": "1 - Low",
-        "short_description": "Post parcel",
-        "sla_due": "0001-01-01T00:00:00Z",
-        "urgency": "3",
-        "state": state,
-        "work_start": "0001-01-01T00:00:00Z",
-    }
+    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
+    fields = {'state': state }
     assert fields == args[0]
     return fields
 

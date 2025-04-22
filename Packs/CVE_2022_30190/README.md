@@ -15,8 +15,7 @@ This playbook includes the following tasks:
 
 **More information:**
 
-[Prevention, Hunting and Playbooks for MSDT Zero-Day (CVE-2022-30190)
-](https://www.paloaltonetworks.com/blog/security-operations/prevention-hunting-and-playbooks-for-msdt-zero-day-cve-2022-30190/)
+[Prevention, Hunting and Playbooks for MSDT Zero-Day (CVE-2022-30190)](https://www.paloaltonetworks.com/blog/security-operations/prevention-hunting-and-playbooks-for-msdt-zero-day-cve-2022-30190/)
 
 **Note:** This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
