@@ -35,4 +35,4 @@ Extract web page content from a specified URL.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Tavily.URL | string | The URL from which the content was extracted. | 
-| Tavily.Content | string | The extracted content from the given url. | 
+| Tavily.Content | string | The full content extracted from the URL. | 
