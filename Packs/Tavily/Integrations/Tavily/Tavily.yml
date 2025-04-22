@@ -33,7 +33,7 @@ name: Tavily
 script:
   commands:
   - arguments:
-    - description: The url to extract its content.
+    - description: The URL to extract content from.
       name: url
       required: true
     description: 'Extracts its content from the given url.'
