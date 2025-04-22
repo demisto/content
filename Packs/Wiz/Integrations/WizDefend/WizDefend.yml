@@ -23,9 +23,66 @@ configuration:
   type: 0
   defaultvalue: https://api.us1.app.wiz.io/graphql
 - defaultvalue: 2 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch timestamp (max 14 days)
+  additionalinfo: 'How many detections to pull the first time. The format is <number> <time unit>, e.g., 12 hours, 7 days. The maximum is 14 days.'
   name: first_fetch
   type: 0
+  required: false
+- name: severity
+  additionalinfo: 'The chosen severity and above will be fetched.'
+  display: Detection severities to fetch
+  options:
+  - None
+  - Critical
+  - High
+  - Medium
+  - Low
+  defaultvalue: High
+  type: 15
+  required: false
+- name: detection_type
+  display: Detection type to fetch
+  options:
+  - None
+  - GENERATED_THREAT
+  - MATCH_ONLY
+  defaultvalue: None
+  type: 15
+  required: false
+- name: detection_platform
+  display: Detection platforms to fetch
+  options:
+  - AWS
+  - GCP
+  - Azure
+  - OCI
+  - Alibaba
+  - vSphere
+  - OpenStack
+  - AKS
+  - EKS
+  - GKE
+  - Kubernetes
+  - OpenShift
+  - OKE
+  - Linode
+  - AzureDevOps
+  - GitHub
+  - GitLab
+  - Bitbucket
+  - Terraform
+  - OpenAI
+  - Snowflake
+  - MongoDBAtlas
+  - Databricks
+  - Okta
+  - Cloudflare
+  - Microsoft365
+  - Wiz
+  - ACK
+  - SelfHosted
+  - LKE
+  type: 16
   required: false
 - display: Use system proxy settings
   name: proxy
