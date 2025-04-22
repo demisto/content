@@ -19,7 +19,7 @@ def get_custom_scripts_playbooks():
             query = {"query": "script.name:" + str(item['name']) + " AND hidden:F AND deprecated:F"}
             playbooksUsingScripts = (
                 demisto.executeCommand(
-                    "demisto-api-post", {"uri": "playbook/search", "body": query}
+                    "core-api-post", {"uri": "playbook/search", "body": query}
                 )[0]
                 .get("Contents", {})
                 .get("response", {})
@@ -69,7 +69,7 @@ def get_integrations_playbooks() -> None:
             query = {"query": "brands:" + str(string_brand) + " AND hidden:F AND deprecated:F"}
             playbooksUsingIntegrations = (
                 demisto.executeCommand(
-                    "demisto-api-post", {"uri": "playbook/search", "body": query}
+                    "core-api-post", {"uri": "playbook/search", "body": query}
                 )[0]
                 .get("Contents", {})
                 .get("response", {})
