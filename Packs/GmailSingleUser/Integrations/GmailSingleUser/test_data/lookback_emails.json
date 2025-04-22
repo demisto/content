@@ -1,0 +1,93 @@
+[
+    {
+        "id": "1",
+        "threadId": "AAA",
+        "labelIds": [
+            "SENT"
+        ],
+        "snippet": "Test message 1234",
+        "payload": {
+            "partId": "",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+                {
+                    "name": "from",
+                    "value": "test@test.com"
+                },
+                {
+                    "name": "Date",
+                    "value": "Mon,24 Mar 2025 11: 17: 58 -0400"
+                }
+            ]
+        },
+        "sizeEstimate": 1123,
+        "historyId": "12345",
+        "internalDate": "1742839025000"
+    },
+    {
+        "id": "2",
+        "threadId": "BBBB",
+        "labelIds": [
+            "UNREAD",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+        ],
+        "snippet": "Test message 1234",
+        "payload": {
+            "partId": "",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+                {
+                    "name": "from",
+                    "value": "test@test.com"
+                },
+                {
+                    "name": "Date",
+                    "value": "Mon,24 Mar 2025 11: 17: 52 -0400"
+                },
+                {
+                    "name": "To",
+                    "value": "test@test.com"
+                }
+            ]
+        },
+        "sizeEstimate": 6148,
+        "historyId": "1234",
+        "internalDate": "1742839054000"
+    },
+    {
+        "id": "3",
+        "threadId": "CCC",
+        "labelIds": [
+            "UNREAD",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+        ],
+        "snippet": "Test message 1234",
+        "payload": {
+            "partId": "",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+                {
+                    "name": "from",
+                    "value": "test@test.com"
+                },
+                {
+                    "name": "Date",
+                    "value": "Mon,24 Mar 2025 11: 17: 52 -0400"
+                },
+                {
+                    "name": "To",
+                    "value": "test@test.com"
+                }
+            ]
+        },
+        "sizeEstimate": 6148,
+        "historyId": "1234",
+        "internalDate": "1742839078000"
+        
+    }
+]

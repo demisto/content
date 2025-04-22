@@ -14,7 +14,9 @@
         "Free Enricher"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "AbuseDB"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
