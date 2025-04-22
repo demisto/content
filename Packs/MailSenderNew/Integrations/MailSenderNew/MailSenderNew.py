@@ -27,9 +27,9 @@ from itertools import zip_longest
 SERVER: Optional[smtplib.SMTP] = None
 UTF_8 = "utf-8"
 
-def support_utf8_patch():
+def support_utf8_patch(server: SMTP):
     """
-    Patches the SMTP class authentication methods to support utf-8 credentials.
+    Patches the SMTP object authentication methods to support utf-8 credentials.
 
     smtplib currently only supports ascii characters in credentials.
     This patch should be removed once support is added by smtplib. (https://github.com/python/cpython/issues/73936)
@@ -72,8 +72,9 @@ def support_utf8_patch():
             #self.password.encode('ascii'), challenge, 'md5').hexdigest()
             self.password.encode('utf-8'), challenge, 'md5').hexdigest()
 
-    SMTP.auth = auth # type: ignore[assignment]
-    SMTP.auth_cram_md5 = auth_cram_md5 # type: ignore[assignment]
+    # Bind the functions as methods of the SMTP instance and replace the originals
+    server.auth = types.MethodType(auth, server) # type: ignore[assignment]
+    server.auth_cram_md5 = types.MethodType(auth_cram_md5, server) # type: ignore[assignment]
 
 def randomword(length):
     """
@@ -370,6 +371,13 @@ def main():
     # Following methods raise exceptions so no need to check for return codes
     # But we do need to catch them
     global SERVER
+
+    # Reload smtplib to undo previous bad patch
+    import importlib
+    importlib.reload(smtplib)
+    from smtplib import SMTP
+
+    demisto.debug(f"Command being run: {demisto.command()}")
     from_email = demisto.getParam("from")
     fqdn = demisto.params().get("fqdn")
     fqdn = (fqdn and fqdn.strip()) or None
@@ -398,11 +406,12 @@ def main():
         user, password = get_user_pass()
         if user:
             try:
+                demisto.debug("Authenticating with smtp server")
                 SERVER.login(user, password)  # type: ignore[union-attr]
             except UnicodeEncodeError as e:
-                demisto.debug(f"Login failed with encode error: {e}\n"
+                demisto.debug(f"Authentication failed with encode error: {e}\n"
                               "Retrying using utf-8 patch")
-                support_utf8_patch()
+                support_utf8_patch(SERVER)
                 SERVER.login(user, password)  # type: ignore[union-attr]
 
     except Exception as e:
