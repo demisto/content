@@ -1,5 +1,5 @@
 Tavily is a web service that provides real-time web search and retrieval capabilities through an API, enabling
-developers to fetch and extract relevant information from the internet in structured formats like JSON.
+developers to fetch and extract relevant information from the internet.
 
 ## Configure Tavily in Cortex
 
