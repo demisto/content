@@ -44,7 +44,7 @@ def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
             "URL": results[0].get("url"),
             "Content": results[0].get("raw_content", "No content found."),
         }
-        return CommandResults(outputs=output, readable_output=f"Successfully extract the content from {args['url']}",
+        return CommandResults(outputs=output, readable_output=f"Successfully extracted the content from {args['url']}",
                               outputs_prefix="Tavily", outputs_key_field="URL")
 
     return CommandResults(readable_output=f"There are no results for the given url {args['url']}")
