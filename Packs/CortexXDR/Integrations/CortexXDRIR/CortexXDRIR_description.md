@@ -1,27 +1,27 @@
-## Palo Alto Networks Cortex XDR - IR
-[Cortex XDR](https://www.paloaltonetworks.com/cortex/cortex-xdr) is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-
-### Generate an API Key and API Key ID
-1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **Integrations** >**API key** page..
-2. Click the **+New Key** button in the top right corner.
-3. Generate a key of *Security Level* type **Advanced**, and a *Role* according your Permissions.
-4. Copy and paste the key from Generated key.
-5. From the ID column, copy the Key ID.
-
-### URL
-1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **Integrations** > **API key** page.
-2. Click the **Copy API URL** button in the top right corner.
+### Configurations
 
 ---
 
-### Mirroring
+#### Generate an API Key and Key ID
 
-**XDR mirroring delay in minutes**: In case of missing updates in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the delay period. However, be aware that this may result in increased latency when updating incidents.
+To enable secure communication with Cortex XDR, you need to generate an API Key and Key ID. Follow these steps:
 
-**Close-reason default mapping XSOAR -> XDR**: _Other=Other, Duplicate=Duplicate Incident, False Positive=False Positive, Resolved=True Positive_
+1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API Keys**.
+2. Click the **+New Key** button in the top right corner.
+3. Set the **Security Level** to **Advanced** and select a **Role** appropriate for your permissions.
+4. Copy the API Key displayed in the **Generated Key** field.
+5. From the **ID** column, copy the Key ID.
 
-**Close-reason default mapping XDR -> XSOAR**: _Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto=Resolved_
 
-**Close Mirrored Cortex XDR Incident**: In case this checkbox is not selected but **Close all related alerts in XDR** is selected, the incident will be closed automatically,
+#### Notes:
+
+1. When configuring a role for the API Key's permission you can create a custom role or use a built-in role. The highest privileged built-in role is the Instance Admin. To use a built-in role with less permission but maximum command capabilities, use the Privileged Responder role.
+
+2. Securely store the API Key, as it will not be displayed again.
+
+#### Retrieve API URL
+
+1. In the Cortex XDR platform, go to **Settings**> **Configurations** > **API Keys**.
+2. Click the **Copy API URL** button in the top-right corner.
 
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir)
