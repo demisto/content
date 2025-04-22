@@ -1812,7 +1812,7 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
             },
             raw_response=result,
         )
-    except Exception as e:
+    except DemistoException as e:
         return catch_and_exit_gracefully(e)
 
 
@@ -2365,7 +2365,7 @@ def quarantine_files_command(client, args):
             },
             raw_response=reply,
         )
-    except Exception as e:
+    except DemistoException as e:
         return catch_and_exit_gracefully(e)
 
 
