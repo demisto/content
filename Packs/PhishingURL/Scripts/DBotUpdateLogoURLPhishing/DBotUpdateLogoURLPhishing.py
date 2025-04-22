@@ -5,28 +5,25 @@ import dill
 from PIL import Image
 import io
 import traceback
+from typing import Literal
+from collections.abc import Iterable
+import numpy as np
+import cv2 as cv
 
-MAJOR_VERSION = 1
-MINOR_DEFAULT_VERSION = 0
 
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
 MSG_EMPTY_NAME_OR_URL = "Empty logo name or/and logo image ID"
 MSG_EMPTY_LOGO_NAME = "Empty logo name argument"
 OOB_VERSION_INFO_KEY = 'oob_version'
-OOB_MAJOR_VERSION_INFO_KEY = 'major'
-OOB_MINOR_VERSION_INFO_KEY = 'minor'
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
 MALICIOUS_VERDICT = "malicious"
 BENIGN_VERDICT = "benign"
 SUSPICIOUS_VERDICT = "suspicious"
 
-MSG_ID_NOT_EXIST = "File ID does not seems to exist"
 MSG_WRONG_CONFIGURATION = "Wrong configuration of the model"
-MSG_SAVE_MODEL_IN_DEMISTO = "Saved model version %s.%s"
 MSG_TRANSFER_LOGO = "Transfer logo from demisto model into new docker model"
 MSG_ERROR_READING_MODEL = "Error reading model %s from Demisto"
 MSG_NEED_TO_KNOW_WHICH_ACTION = "Need to choose one of the action: Add logo/ Remove logo/ Modify logo/ Display logos"
-UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
 KEY_ADD_LOGO = 'AddLogo'
 KEY_REMOVE_LOGO = 'RemoveLogo'
@@ -34,105 +31,101 @@ KEY_DISPLAY_LOGOS = 'DisplayAllLogos'
 KEY_MODIFY_LOGO = 'ModifiedDomainForLogo'
 
 
-def get_minor_version_upgrade(model):
-    model.minor = model.minor + 1
-    return model.minor, model
+class Model:
+    '''Abstract class that represents the class of the built-in phishing model.'''
+
+    clf: Any  # sklearn.pipeline.Pipeline
+    df_voc: dict
+    top_domains: dict
+    logos_dict: dict
+    custom_logo_associated_domain: dict
 
 
-def load_oob_model_from_model64(encoded_model, major, minor):
-    """
-    Save model in demisto
-    :param encoded_model: model base64
-    :param major:  major version
-    :param minor: minor version
-    :return: msg
-    """
-    res = demisto.executeCommand('createMLModel', {
-        'modelData': encoded_model.decode('utf-8'),
-        'modelName': URL_PHISHING_MODEL_NAME,
-        'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
-        'modelOverride': 'true',
-        'modelHidden': True,
-        'modelType': 'url_phishing',
-        'modelExtraInfo': {
-            OOB_MAJOR_VERSION_INFO_KEY: major,
-            OOB_MINOR_VERSION_INFO_KEY: minor
-        }})
-    if is_error(res):
-        raise DemistoException(get_error(res))
-    return MSG_SAVE_MODEL_IN_DEMISTO % (str(major), str(minor))
+class ModelData(dict[Literal['top_domains', 'logos_dict', 'custom_logo_associated_domain'], dict]):
+    '''Abstract class that represents the format of the data stored in the server.'''
 
 
-def save_upgraded_version_model(model):
+def b64encode_string(string: str) -> str:
+    return base64.b64encode(string.encode()).decode()
+
+
+def b64decode_string(string: str) -> str:
+    return base64.b64decode(string.encode()).decode()
+
+
+def delete_model():
+    res = demisto.executeCommand('deleteMLModel', {'modelName': URL_PHISHING_MODEL_NAME})
+    demisto.debug(f'Deleted model. server response: {res}')
+
+
+def load_old_model_data(encoded_model: str) -> ModelData:  # pragma: no cover
+    '''Update the model to the new version'''
+    import warnings
+    warnings.filterwarnings("ignore", module='sklearn')
+
+    old_import = dill._dill._import_module
+    dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
+    model = cast(Model, dill.loads(base64.b64decode(encoded_model.encode())))  # guardrails-disable-line
+    dill._dill._import_module = old_import
+
+    if demisto.getArg('action') != KEY_DISPLAY_LOGOS:
+        delete_model()
+
+    return model_to_data(model)
+
+
+def save_model_data(model_data: ModelData):
     """
     Encode base 64 the model and call load_oob_model_from_model64
     :param model: URL Phishing model
     :return: msg
     """
-    model_bytes = dill.dumps(model)  # guardrails-disable-line
-    model_64 = base64.b64encode(model_bytes)
-    msg = load_oob_model_from_model64(model_64, model.major, model.minor)
-    return msg
+    res = demisto.executeCommand(
+        'createMLModel',
+        {
+            'modelData': b64encode_string(json.dumps(model_data)),
+            'modelName': URL_PHISHING_MODEL_NAME,
+            'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
+            'modelOverride': 'true',
+            'modelHidden': True,
+            'modelType': 'url_phishing'
+        }
+    )
+    if is_error(res):
+        raise DemistoException(get_error(res))
+    demisto.debug(f'Saved data: {res}')
 
 
-def get_model_data(model_name: str):
-    """
-    Return model data saved in demisto (string of encoded base 64)
-    :param model_name: name of the model to load from demisto
-    :return: str, str
-    """
-    res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-    if is_error(res_model):
-        raise DemistoException(MSG_ERROR_READING_MODEL % model_name)
-    else:
-        model_data = res_model['Contents']['modelData']
-        try:
-            model_type = res_model['Contents']['model']["type"]["type"]
-            return model_data, model_type
-        except Exception:
-            return model_data, UNKNOWN_MODEL_TYPE
+def model_to_data(model: Model) -> ModelData:
+    return cast(ModelData, {
+        'top_domains': model.top_domains,
+        'logos_dict': model.logos_dict,
+        'custom_logo_associated_domain': model.custom_logo_associated_domain
+    })
 
 
-def oob_model_exists_and_updated():
-    """
-    Check is the model exist and is updated in demisto
-    :return: bool, int, int
-    """
-    res_model = demisto.executeCommand("getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]
-    if is_error(res_model):
-        return False, -1, -1
-    existing_model_version_major = res_model['Contents']['model']['extra'].get(OOB_MAJOR_VERSION_INFO_KEY, -1)
-    existing_model_version_minor = res_model['Contents']['model']['extra'].get(OOB_MINOR_VERSION_INFO_KEY, -1)
-    return True, existing_model_version_major, existing_model_version_minor
-
-
-def load_demisto_model():
-    """
-    Load base64 demisto model and decode it
-    :return: URL Phishing model
-    """
-    model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
-    model = decode_model_data(model_64_str)
-    return model
-
-
-def decode_model_data(model_data: str):
-    """
-    Decode the base 64 version of the model
-    :param model_data: string of the encoded based 64 model
-    :return: URL Phishing model
-    """
-    return dill.loads(base64.b64decode(model_data.encode('utf-8')))  # guardrails-disable-line
-
-
-def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
+def load_data_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH) -> ModelData:
     """
     Load model from docker
     :param path: path of the model in the docker
     :return: URL Phishing model
     """
-    model = dill.load(open(path, 'rb'))  # guardrails-disable-line
-    return model
+    with open(path, 'rb') as f:
+        return model_to_data(cast(Model, dill.load(f)))  # guardrails-disable-line
+
+
+def load_data_from_xsoar() -> Optional[ModelData]:
+    res = demisto.executeCommand("getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]
+    if is_error(res):
+        demisto.debug(f'Model not found: {get_error(res)}')
+        return None
+    extra_data = dict_safe_get(res, ('Contents', 'model', 'extra'))
+    model_data = dict_safe_get(res, ('Contents', 'modelData'))
+
+    if isinstance(extra_data, dict) and 'minor' in extra_data:  # this means the old model exists as a pickled object
+        demisto.debug(f'Old model found. {extra_data=}')
+        return load_old_model_data(model_data)
+    return cast(ModelData, json.loads(b64decode_string(model_data)))
 
 
 def image_from_base64_to_bytes(base64_message: str):
@@ -141,15 +134,14 @@ def image_from_base64_to_bytes(base64_message: str):
     :param base64_message:
     :return:
     """
-    base64_bytes = base64_message.encode('utf-8')
-    message_bytes = base64.b64decode(base64_bytes)
-    return message_bytes
+    return base64.b64decode(base64_message.encode())
 
 
-def get_concat_logo_single_image(logo_list):
+def get_concat_logo_single_image(logo_list: Iterable[str]):
+    byte_images = map(image_from_base64_to_bytes, logo_list)
     number_of_image_per_row = 5
     width_new, height_new = 300, 300
-    images = [Image.open(io.BytesIO(image_bytes)) for image_bytes in logo_list]
+    images = [Image.open(io.BytesIO(image_bytes)) for image_bytes in byte_images]
     total_number_of_images = len(images)
     total_width = number_of_image_per_row * width_new
     max_height = (total_number_of_images // number_of_image_per_row + 1) * height_new
@@ -172,118 +164,114 @@ def get_concat_logo_single_image(logo_list):
     return buf.getvalue()
 
 
-def display_all_logos(model):
-    description = ""
-    logo_list = []
-    for name, logo in model.logos_dict.items():
-        custom_associated_logo = model.custom_logo_associated_domain.get(name, '')
-        if name in model.custom_logo_associated_domain:
-            description = description + ", {} ({}, {})".format(name, 'Custom Logo', ','.join(custom_associated_logo))
-        else:
-            description = description + ", {} ({})".format(name, 'Default Logo')
-        logo_list.append(logo)
-    description = description[1:]
-    merged_logos = get_concat_logo_single_image([image_from_base64_to_bytes(logo) for logo in logo_list])
-    res = fileResult(filename=description, data=merged_logos)
-    res['Type'] = entryTypes['image']
-    return_results(res)
+def decode_image(base64_message: str) -> np.ndarray:
+    """
+    Decode image from base64 to numpy array of pixels
+    :param base64_message: str representing the encoded image
+    :return: numpy.narray representing the image
+    """
+    base64_message = base64.decodebytes(base64_message.encode())
+    nparr = np.frombuffer(base64_message, np.uint8)
+    return cv.imdecode(nparr, cv.IMREAD_GRAYSCALE)  # pylint: disable=E1101
 
 
-def execute_action(action, logo_name, logo_content, associated_domains, model):
-    if action == KEY_ADD_LOGO:
-        success, msg = model.add_new_logo(logo_name, logo_content, associated_domains)
-    elif action == KEY_REMOVE_LOGO:
-        success, msg = model.remove_logo(logo_name)
-    else:
-        success, msg = model.update_domain_for_custom_logo(logo_name, associated_domains)
-    return success, msg
+def update_top_domain(top_domains: dict, remove_list, add_list):
+    for item_to_remove in remove_list:
+        if top_domains.get(item_to_remove, -1) == 0:
+            top_domains.pop(item_to_remove, None)
+    for item_to_add in add_list:
+        top_domains.setdefault(item_to_add, 0)
 
 
-def main():
+def add_new_logo(model_data: ModelData, logo_name, logo_image_id, associated_domains):
     try:
-        msg_list = []
-        logo_image_id = demisto.args().get('logoImageId', '')
-        logo_name = demisto.args().get('logoName', '')
-        associated_domains = demisto.args().get('associatedDomains', '').split(',')
-        action = demisto.args().get('action', None)
+        res = demisto.getFilePath(logo_image_id)
+        with open(res['path'], 'rb') as file:
+            logo_content = file.read()
+        if logo_name in model_data['logos_dict']:
+            return_error(f"The logo name {logo_name!r} is already in use. Please use another logo name.")
+        encoded_image = base64.b64encode(logo_content).decode()
+        imm_arr = decode_image(encoded_image)
+        if imm_arr is None:
+            raise DemistoException("The file is not a valid image.")
+        model_data['logos_dict'][logo_name] = encoded_image
+        model_data['custom_logo_associated_domain'][logo_name] = associated_domains
+        update_top_domain(model_data['top_domains'], [], associated_domains)
+        return f"Logo {logo_name!r} successfully added."
+    except (ValueError, KeyError):
+        return_error(f"File not found: {logo_image_id}")
+    except Exception as e:
+        return_error(f'Unable to use image. Error: {e}')
 
-        if action == KEY_DISPLAY_LOGOS:
-            exist, _, _ = oob_model_exists_and_updated()
-            if exist:
-                model = load_demisto_model()
-            else:
-                model = load_model_from_docker()
-            display_all_logos(model)
-            return None
 
-        if (action == KEY_ADD_LOGO) and (not logo_image_id or not logo_name):
-            return_error(MSG_EMPTY_NAME_OR_URL)
-        if (action == KEY_REMOVE_LOGO) and (not logo_name):
-            return_error(MSG_EMPTY_LOGO_NAME)
-        if (action == KEY_MODIFY_LOGO) and (not logo_name):
-            return_error(MSG_EMPTY_LOGO_NAME)
+def remove_logo(model_data: ModelData, logo_name):
+    if logo_name not in model_data['logos_dict'] or logo_name not in model_data['custom_logo_associated_domain']:
+        return_error(f"Logo name {logo_name!r} not found.")
+    update_top_domain(model_data['top_domains'], model_data['custom_logo_associated_domain'][logo_name], [])
+    model_data['logos_dict'].pop(logo_name)
+    model_data['custom_logo_associated_domain'].pop(logo_name)
+    return f"Logo {logo_name!r} successfully removed."
 
-        if action == KEY_ADD_LOGO:
-            try:
-                res = demisto.getFilePath(logo_image_id)
-                path = res['path']
-                with open(path, 'rb') as file:
-                    logo_content = file.read()
-            except ValueError:
-                return_error(MSG_ID_NOT_EXIST)
-        else:
-            logo_content = bytearray()
 
-        exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
+def update_domain_for_custom_logo(model_data: ModelData, logo_name, associated_domains):
+    if logo_name not in model_data['logos_dict'] or logo_name not in model_data['custom_logo_associated_domain']:
+        return_error(f"Logo name {logo_name!r} not found.")
+    update_top_domain(model_data['top_domains'], model_data['custom_logo_associated_domain'][logo_name], associated_domains)
+    model_data['custom_logo_associated_domain'][logo_name] = associated_domains
+    return f"Logo {logo_name!r} successfully modified."
 
-        # Case 1: model in demisto does not exist OR new major released but no logo were added -> load from docker
-        if not exist or (demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
-            model = load_model_from_docker()
-            success, msg = execute_action(action, logo_name, logo_content, associated_domains, model)
-            msg_list.append(msg)
-            if success:
-                minor, model = get_minor_version_upgrade(model)
-                msg = save_upgraded_version_model(model)
-                msg_list.append(msg)
-            else:
-                return_error(msg)
 
-        # Case where there were new new model release -> load model from demisto
-        elif (demisto_major_version == MAJOR_VERSION):
-            model = load_demisto_model()
-            success, msg = execute_action(action, logo_name, logo_content, associated_domains, model)
-            msg_list.append(msg)
-            if success:
-                minor, model = get_minor_version_upgrade(model)
-                msg = save_upgraded_version_model(model)
-                msg_list.append(msg)
-            else:
-                return_error(msg)
+def display_all_logos(model_data: ModelData):
+    description = []
+    for name in model_data['logos_dict']:
+        custom_associated_logo = model_data['custom_logo_associated_domain'].get(name, '')
+        description.append(
+            "{} ({}, {})".format(name, 'Custom Logo', ','.join(custom_associated_logo))
+            if name in model_data['custom_logo_associated_domain']
+            else "{} ({})".format(name, 'Default Logo')
+        )
+    merged_logos = get_concat_logo_single_image(model_data['logos_dict'].values())
+    return fileResult(filename=', '.join(description), data=merged_logos, file_type=entryTypes['image'])
 
-        # Case where new model release and logo were added -> transfer logo from model in demisto to new model in docker
-        elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
-            model_docker = load_model_from_docker()
-            model_demisto = load_demisto_model()
-            model_docker.logos_dict = model_demisto.logos_dict
-            model_docker.custom_logo_associated_domain = model_demisto.custom_logo_associated_domain
-            model_docker.top_domains = model_demisto.top_domains
-            msg_list.append(MSG_TRANSFER_LOGO)
-            success, msg = execute_action(action, logo_name, logo_content, associated_domains, model_docker)
-            msg_list.append(msg)
-            if success:
-                model_docker.minor = demisto_minor_version
-                minor, model_docker = get_minor_version_upgrade(model_docker)
-                msg = save_upgraded_version_model(model_docker)
-                msg_list.append(msg)
-            else:
-                return_error(msg)
-                msg_list.append(msg)
 
-        else:
-            msg_list.append(MSG_WRONG_CONFIGURATION)
-            return_error(MSG_WRONG_CONFIGURATION)
-        return_results(' , '.join(msg_list))
-        return msg_list
+def execute_action(model_data: ModelData, action, logo_name, logo_image_id, associated_domains):
+    if action == KEY_ADD_LOGO:
+        return add_new_logo(model_data, logo_name, logo_image_id, associated_domains)
+    elif action == KEY_REMOVE_LOGO:
+        return remove_logo(model_data, logo_name)
+    elif action == KEY_MODIFY_LOGO:
+        return update_domain_for_custom_logo(model_data, logo_name, associated_domains)
+    return display_all_logos(model_data)
+
+
+def verify_args(action, logo_image_id, logo_name):
+    if (action == KEY_ADD_LOGO) and not (logo_image_id or logo_name):
+        return_error(MSG_EMPTY_NAME_OR_URL)
+    elif (action == KEY_REMOVE_LOGO) and (not logo_name):
+        return_error(MSG_EMPTY_LOGO_NAME)
+    elif (action == KEY_MODIFY_LOGO) and (not logo_name):
+        return_error(MSG_EMPTY_LOGO_NAME)
+
+
+def main():  # pragma: no cover
+    try:
+        args = demisto.args()
+        logo_image_id = args.get('logoImageId', '')
+        logo_name = args.get('logoName', '')
+        associated_domains = argToList(args.get('associatedDomains', ''))
+        action = args.get('action')
+
+        verify_args(action, logo_image_id, logo_name)
+
+        model_data = load_data_from_xsoar() or load_data_from_docker()
+
+        res = execute_action(model_data, action, logo_name, logo_image_id, associated_domains)
+
+        if action != KEY_DISPLAY_LOGOS:
+            save_model_data(model_data)
+
+        return_results(res)
+
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute URL Phishing script. Error: {str(ex)}')
