@@ -72,8 +72,9 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str, 
 def make_sha(file_path):
     with open(file_path, "rb") as file:
         file_data = file.read()
-        sha1_hash = hashlib.sha1(file_data).hexdigest()  # pragma: no cover
-    return sha1_hash
+        hash_object = hashlib.sha256(file_data)
+        sha256_hash = hash_object.hexdigest()
+    return sha256_hash
 
 
 def main():
@@ -84,7 +85,9 @@ def main():
     try:
         result = demisto.getFilePath(entry_id)  # pragma: no cover
         if not result:
-            return_error(f"Couldn't find entry id: {entry_id}")
+            return_results(CommandResults(outputs_prefix='ConvertedFile',
+                                          outputs={'EntryID': entry_id, 'Convertable': 'no',
+                                                   "ERROR": f"Couldn't find entry id: {entry_id}"}))
         demisto.debug(f"going to convert: {result}")
         file_path = result["path"]
         file_path_name_only = os.path.splitext(os.path.basename(file_path))[0]
@@ -94,7 +97,9 @@ def main():
         with tempfile.TemporaryDirectory() as outdir:
             files = convert_file(file_path, out_format, all_files, outdir, entry_id)
             if not files:
-                return_error(f"No file result returned for convert format: {out_format}")
+                return_results(CommandResults(outputs_prefix='ConvertedFile',
+                                          outputs={'EntryID': entry_id, 'Convertable': 'no',
+                                                   "ERROR": f"No file result returned for convert format: {out_format}"}))
                 return
             for f in files:
                 try:
@@ -109,9 +114,9 @@ def main():
                          "Type": entryTypes["file"],
                          "File": name, "FileID": temp}
                     )
-                    sha1 = make_sha(f)
+                    sha256 = make_sha(f)
                     return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                                  outputs={'Name': name, 'FileSHA1': sha1, 'Convertable': 'yes'}))
+                                                  outputs={'Name': name, 'FileSHA256': sha256, 'Convertable': 'yes'}))
                 except Exception as e:
                     return_results(CommandResults(outputs_prefix='ConvertedFile',
                                                   outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
@@ -124,5 +129,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins":  # pragma: no cover
     main()
