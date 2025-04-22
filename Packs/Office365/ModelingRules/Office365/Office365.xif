@@ -267,12 +267,30 @@ call o365_common_fields
 
 [MODEL: dataset = "msft_o365_emails_raw"]
 alter
+	is_itemAttachment = if(arrayindex(attachments -> [], 0) -> ["@odata.type"] = "#microsoft.graph.itemAttachment"),
+	is_itemAttachment_contentType_message = if(arrayindex(attachments -> [], 0) -> contentType ~= "[Mm]essage"),
+	is_fileAttachment = if(arrayindex(attachments -> [], 0) -> ["@odata.type"] = "#microsoft.graph.fileAttachment"),
+	get_attachment = arrayindex(attachments -> [], 0)
+| alter 
+	xdm.event.id = id,
 	xdm.alert.severity = importance,
-	xdm.email.attachment.filename = arraystring(arraymap(Attachments -> [], "@element"-> name), "|"),
-	xdm.email.cc = arraymap(ccRecipients -> [], "@element"-> emailAddress.address),
-	xdm.email.data = to_string(internetMessageHeaders),
-	xdm.email.message_id = InternetMessageId,
-	xdm.email.recipients = arraymap(toRecipients -> [], "@element"-> emailAddress.address),
-	xdm.email.sender = coalesce(Sender -> emailAddress.address, From -> emailAddress.address),
+	xdm.event.operation_sub_type = object_create("isRead", isRead, "isDraft", isDraft, "hasAttachments", hasAttachments, "isReadReceiptRequested", isReadReceiptRequested, "isDeliveryReceiptRequested", isDeliveryReceiptRequested),
+	xdm.email.origination_timestamp = sentDateTime,
+	xdm.email.delivery_timestamp = receivedDateTime,
+	xdm.source.user.username = from -> emailAddress.name,
+	xdm.source.user.upn = from -> emailAddress.address,
+	xdm.target.user.upn = mailboxOwner,
+	xdm.email.sender = sender -> emailAddress.address,
+	xdm.email.return_path = arrayindex(arraymap(replyTo -> [], "@element" -> emailAddress.address), 0),
 	xdm.observer.unique_identifier = webLink,
-	xdm.source.user.username = coalesce(Sender -> emailAddress.name, From -> emailAddress.name);
+	xdm.alert.original_alert_id = if(is_itemAttachment and is_itemAttachment_contentType_message, get_attachment -> id),
+	xdm.alert.name = if(is_itemAttachment and is_itemAttachment_contentType_message, get_attachment -> name),
+	xdm.email.attachment.file_type = get_attachment -> contentType,
+	xdm.email.attachment.filename = if(is_fileAttachment, get_attachment -> name),
+	xdm.email.attachment.size = to_integer(get_attachment -> size),
+	xdm.email.cc = arraymap(ccRecipients -> [], "@element" -> emailAddress.address),
+	xdm.email.recipients = arraymap(toRecipients -> [], "@element" -> emailAddress.address),
+	xdm.email.bcc = arraymap(bccRecipients -> [], "@element" -> emailAddress.address),
+	xdm.email.message_id = internetMessageId,
+	xdm.email.data = to_string(internetMessageHeaders),
+	xdm.email.subject = subject;
