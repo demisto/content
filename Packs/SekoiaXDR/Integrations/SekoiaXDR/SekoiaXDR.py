@@ -1005,7 +1005,7 @@ def get_remote_data_command(
             and (investigation["status"] == 1)
         ):
             demisto.debug(
-                f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, "\
+                f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, "
                 f"reopening incident {incident_id} in XSOAR"
             )
             entries = [
