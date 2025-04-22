@@ -50,7 +50,7 @@ def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
     raise DemistoException(f"There are no results for the given url {args.get('url')}")
 
 
-def main():
+def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get("url")
