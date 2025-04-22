@@ -522,7 +522,7 @@ def get_entries(query, variables):
         raise Exception(f"An unexpected error occurred.\nError info: {error_message}")
 
 
-def query_api(query, variables):
+def query_api(query, variables, paginate=True):
     entries, page_info = get_entries(query, variables)
     if not entries:
         demisto.info("No detection(/s) available to fetch.")
@@ -532,41 +532,9 @@ def query_api(query, variables):
         new_entries, page_info = get_entries(query, variables)
         if new_entries is not None:
             entries += new_entries
+        if not paginate:
+            break
     return entries
-
-
-def checkAPIerrors(query, variables):
-    if not TOKEN:
-        get_token()
-
-    data = {"variables": variables, "query": query}
-
-    demisto.info(f"Invoking the API with {json.dumps(data)}")
-
-    result = requests.post(url=URL, json=data, headers=HEADERS)
-
-    demisto.info(f"Response status code is {result.status_code}")
-    demisto.info(f"The response is {result.json()}")
-
-    error_message = ""
-    result_json = result.json()
-    if WizApiResponse.ERRORS in result_json:
-        demisto.info(f"Wiz error content: {result_json[WizApiResponse.ERRORS]}")
-        error_message = f"Wiz API error details: {get_error_output(result_json)}"
-
-    elif WizApiResponse.DATA in result_json and \
-        WizApiResponse.DETECTIONS in result_json[WizApiResponse.DATA] and \
-        not result_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS].get(WizApiResponse.NODES):
-        demisto.info("No detection(/s) available to fetch.")
-
-    if error_message:
-        demisto.error("An error has occurred using:"
-                      f"\tQuery: {query} - "
-                      f"\tVariables: {variables} -"
-                      f"\t{error_message}")
-        demisto.error(error_message)
-        raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
-    return result_json
 
 
 def translate_severity(detection):
@@ -620,18 +588,10 @@ def fetch_incidents():
     detection_variables = apply_creation_after_days_filter(detection_variables, last_run)
     api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
 
-    response_json = checkAPIerrors(PULL_DETECTIONS_QUERY, detection_variables)
-
-    detections = response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES]
-    while response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO][WizApiResponse.HAS_NEXT_PAGE]:
-        detection_variables[WizApiVariables.AFTER] = \
-            response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO][WizApiResponse.END_CURSOR]
-        response_json = checkAPIerrors(PULL_DETECTIONS_QUERY, detection_variables)
-        if response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES] != []:
-            detections.extend(response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES])
+    wiz_detections = query_api(PULL_DETECTIONS_QUERY, detection_variables)
 
     incidents = []
-    for detection in detections:
+    for detection in wiz_detections:
         incident = build_incidents(detection=detection)
         incidents.append(incident)
 
@@ -1195,7 +1155,7 @@ def apply_all_filters(variables, validated_values):
     return variables
 
 
-def get_filtered_detections(detection_type, detection_platform, resource_id, severity, limit,
+def get_filtered_detections(detection_type, detection_platform, resource_id, severity,
                            creation_days_back=None, matched_rule=None, matched_rule_name=None, project_id=None):
     """
     Retrieves Filtered Detections
@@ -1205,7 +1165,6 @@ def get_filtered_detections(detection_type, detection_platform, resource_id, sev
         detection_platform (str): Cloud platform
         resource_id (str): Resource ID
         severity (str): Severity level
-        limit (int): Limit of results
         creation_days_back (str): Number of days back for creation filter
         matched_rule (str): Matched rule ID
         matched_rule_name (str): Matched rule name
@@ -1235,34 +1194,17 @@ def get_filtered_detections(detection_type, detection_platform, resource_id, sev
         WizInputParam.PROJECT_ID: project_id
     }
 
-    # Validate all parameters in a single function call
     validation_success, error_message, validated_values = validate_all_parameters(parameters_dict)
 
     if not validation_success or error_message:
         return error_message
 
     detection_variables = PULL_DETECTIONS_VARIABLES.copy()
-
-    # Apply all filters in a single function call
     detection_variables = apply_all_filters(detection_variables, validated_values)
 
-    response_json = checkAPIerrors(PULL_DETECTIONS_QUERY, detection_variables)
+    wiz_detections = query_api(PULL_DETECTIONS_QUERY, detection_variables)
 
-    demisto.info(f"The API response is {response_json}")
-
-    detections = {}
-    if response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES] != []:
-        detections = response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES]
-
-    # Handle pagination
-    while response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO][WizApiResponse.HAS_NEXT_PAGE]:
-        detection_variables[WizApiVariables.AFTER] = \
-            response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO][WizApiResponse.END_CURSOR]
-        response_json = checkAPIerrors(PULL_DETECTIONS_QUERY, detection_variables)
-        if response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES] != []:
-            detections.extend(response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES])
-
-    return detections
+    return wiz_detections
 
 
 def get_error_output(wiz_api_response):
@@ -1320,7 +1262,8 @@ def main():
         if command == DemistoCommands.TEST_MODULE:
             auth_token = get_token()
             if 'error' not in auth_token:
-                test_response = checkAPIerrors(PULL_DETECTIONS_QUERY, PULL_DETECTIONS_VARIABLES)
+                test_response = query_api(PULL_DETECTIONS_QUERY, PULL_DETECTIONS_VARIABLES,
+                                          paginate=False)
 
                 if WizApiResponse.ERRORS not in test_response:
                     demisto.results('ok')
@@ -1348,7 +1291,6 @@ def main():
                 detection_platform=detection_platform,
                 resource_id=resource_id,
                 severity=severity,
-                limit=WIZ_API_LIMIT,
                 creation_days_back=creation_days_back,
                 matched_rule=matched_rule,
                 matched_rule_name=matched_rule_name,
