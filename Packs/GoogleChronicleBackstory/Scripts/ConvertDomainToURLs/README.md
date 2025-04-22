@@ -1,7 +1,5 @@
 Converts Domain(s) to URL(s).
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +9,6 @@ Converts Domain(s) to URL(s).
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,19 +16,17 @@ Converts Domain(s) to URL(s).
 | domains | List of Domain\(s\) to be converted to URL\(s\). |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | DomainToURL | Converted URLs | Unknown |
 
-## Script Example
 
+## Script Example
 ```!ConvertDomainToURLs domains=demo.com```
 
 ## Context Example
-
 ```
 {
     "DomainToURL": [
@@ -42,5 +37,4 @@ Converts Domain(s) to URL(s).
 ```
 
 ## Human Readable Output
-
 {}

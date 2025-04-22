@@ -1,7 +1,6 @@
 Retrieves the value of the given registry key.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Retrieves the value of the given registry key.
 | Script Type | javascript |
 | Tags | agent, registry |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +17,5 @@ Retrieves the value of the given registry key.
 | regpath | The registry path of the key to be queried. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.
