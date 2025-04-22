@@ -551,3 +551,88 @@ def test_list_conditional_access_policies_command_cases(
     # assert something from the output (only if something returned)
     if expected_display:
         assert expected_display in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "input_value, expected",
+    [
+        ("a,b,c", ["a", "b", "c"]),
+        (" a , b ,c ", ["a", "b", "c"]),
+        (["a", "b"], ["a", "b"]),
+        ([], []),
+        (None, []),
+        ("", []),
+    ]
+)
+def test_convert_to_list(input_value, expected):
+    """
+    Given:
+        - A string or list to convert to a list.
+    When:
+        - Calling convert_to_list with different types and formats.
+    Then:
+        - Ensure the resulting list is correctly formatted.
+    """
+    from MicrosoftGraphIdentityandAccess import convert_to_list
+
+    assert convert_to_list(input_value) == expected
+
+
+@pytest.mark.parametrize(
+    "existing_policy, new_policy, expected_result, expected_messages",
+    [
+        # Normal merge case
+        (
+            {"conditions": {"users": {"includeUsers": ["user1"]}}},
+            {"conditions": {"users": {"includeUsers": ["user2"]}}},
+            {"conditions": {"users": {"includeUsers": ["user1", "user2"]}}},
+            [],
+        ),
+
+        # Special value 'All' blocks update
+        (
+            {"conditions": {"users": {"includeUsers": ["All"]}}},
+            {"conditions": {"users": {"includeUsers": ["user2"]}}},
+            {"conditions": {"users": {"includeUsers": ["All"]}}},
+            ["Note: The field 'includeUsers' was not updated because it currently holds the special value 'All'."
+             " This value cannot be merged with others. All other updates were applied."
+             " To update this field, use update_action='override'."],
+        ),
+
+        # New policy does not contain the field - nothing happens
+        (
+            {"conditions": {"users": {"includeUsers": ["user1"]}}},
+            {"conditions": {"users": {}}},
+            {"conditions": {"users": {}}},
+            [],
+        ),
+
+        # No sub_section usage
+        (
+            {"grantControls": {"builtInControls": ["mfa"]}},
+            {"grantControls": {"builtInControls": ["compliantDevice"]}},
+            {"grantControls": {"builtInControls": ["compliantDevice", "mfa"]}},
+            [],
+        ),
+    ]
+)
+def test_merge_field(mocker, existing_policy, new_policy, expected_result, expected_messages):
+    """
+    Given:
+        - An existing policy and a new policy dict
+    When:
+        - Merging a specific field (includeUsers or builtInControls)
+    Then:
+        - Ensure the result reflects expected merging or blocked updates
+    """
+    from MicrosoftGraphIdentityandAccess import merge_field
+
+    messages: list[str] = []
+
+    if "grantControls" in new_policy:
+        merge_field("grantControls", None, "builtInControls", existing_policy, new_policy, messages)
+    else:
+        merge_field("conditions", "users", "includeUsers", existing_policy, new_policy, messages)
+
+    assert new_policy == expected_result
+    assert messages == expected_messages
