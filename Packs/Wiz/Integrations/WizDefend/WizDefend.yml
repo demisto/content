@@ -16,7 +16,7 @@ configuration:
 - display: Authentication Endpoint
   name: auth_endpoint
   type: 0
-  required: false
+  required: true
 - display: API Endpoint
   name: api_endpoint
   required: true
@@ -144,6 +144,7 @@ script:
         - SelfHosted
         - LKE
       auto: PREDEFINED
+      isArray: true
     - name: resource_id
       description: Get Detections of a specific resource.
     - name: severity

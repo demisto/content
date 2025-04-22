@@ -375,7 +375,7 @@ def test_get_filtered_detections_invalid_platform(mocker):
     mocker.patch('WizDefend.query_api', return_value=test_get_detections_response['data']['detections']['nodes'])
     result = get_filtered_detections(None, 'INVALID_PLATFORM', None, None)
 
-    assert 'Invalid platform: INVALID_PLATFORM' in result
+    assert 'Invalid platform(s)' in result
 
 
 def test_get_filtered_detections_invalid_type(mocker):
@@ -472,7 +472,7 @@ def test_validate_detection_platform_valid():
 
     result = validate_detection_platform("AWS")
     assert result.is_valid is True
-    assert result.value == "AWS"
+    assert result.value == ["AWS"]
 
 
 def test_validate_detection_platform_invalid():
@@ -1537,3 +1537,181 @@ def test_comprehensive_integration(mocker):
         # Verify return_results was called
         from WizDefend import return_results
         assert return_results.called
+
+
+def test_validate_first_fetch_timestamp():
+    """Test the validate_first_fetch_timestamp function"""
+    from WizDefend import validate_first_fetch_timestamp
+    from datetime import datetime, timedelta
+    import dateparser
+
+    # Test valid timestamp within 14 days
+    is_valid, error_msg, valid_date = validate_first_fetch_timestamp('5 days')
+    assert is_valid is True
+    assert error_msg is None
+    expected_date = dateparser.parse('5 days')
+    assert (valid_date.date() - expected_date.date()).days == 0
+
+    # Test timestamp beyond 14 days - should return max allowed
+    is_valid, error_msg, valid_date = validate_first_fetch_timestamp('30 days')
+    assert is_valid is True
+    assert error_msg is None
+    max_days_back = datetime.now() - timedelta(days=14)
+    assert (valid_date.date() - max_days_back.date()).days == 0
+
+    # Test invalid timestamp format
+    is_valid, error_msg, valid_date = validate_first_fetch_timestamp('invalid')
+    assert is_valid is False
+    assert 'Invalid date format' in error_msg
+    assert valid_date is None
+
+    # Test empty timestamp - should use default
+    is_valid, error_msg, valid_date = validate_first_fetch_timestamp('')
+    assert is_valid is True
+    assert error_msg is None
+    expected_date = dateparser.parse('2 days')
+    assert (valid_date.date() - expected_date.date()).days == 0
+
+    # Test None timestamp - should use default
+    is_valid, error_msg, valid_date = validate_first_fetch_timestamp(None)
+    assert is_valid is True
+    assert error_msg is None
+    expected_date = dateparser.parse('2 days')
+    assert (valid_date.date() - expected_date.date()).days == 0
+
+
+def test_get_fetch_timestamp(mocker):
+    """Test the get_fetch_timestamp function"""
+    from WizDefend import get_fetch_timestamp
+    import demistomock as demisto
+
+    # Mock demisto.info and demisto.error
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'error')
+
+    # Test valid timestamp within 14 days
+    timestamp = get_fetch_timestamp('5 days')
+    assert timestamp.endswith('Z')
+    assert demisto.info.call_count == 0  # No info message for valid timestamp
+
+    # Test timestamp beyond 14 days - should log info
+    timestamp = get_fetch_timestamp('30 days')
+    assert timestamp.endswith('Z')
+    assert demisto.info.called
+    info_call_args = demisto.info.call_args[0][0]
+    assert 'automatically setting to 14 days back' in info_call_args
+
+    # Test invalid timestamp - should raise exception
+    with pytest.raises(ValueError) as e:
+        get_fetch_timestamp('invalid date format')
+    assert 'Invalid date format' in str(e.value)
+    assert demisto.error.called
+
+
+def test_fetch_incidents_with_timestamp_functions(mocker):
+    """Test fetch_incidents with the new timestamp functions"""
+    from WizDefend import fetch_incidents
+    import demistomock as demisto
+    from datetime import datetime
+
+    # Mock demisto functions
+    mocker.patch.object(demisto, 'getLastRun', return_value={})  # No last run - first fetch
+    mocker.patch.object(demisto, 'params', return_value={
+        'first_fetch': '20 days',  # More than 14 days
+        'severity': 'HIGH',
+        'detection_type': 'GENERATED_THREAT',
+        'detection_platform': 'AWS'
+    })
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'error')
+
+    # Mock get_filtered_detections to return some test detections
+    mock_detections = [
+        {
+            'id': 'test-id-1',
+            'createdAt': '2022-01-01T00:00:00Z',
+            'severity': 'HIGH',
+            'ruleMatch': {'rule': {'name': 'Test Rule 1'}}
+        }
+    ]
+    mocker.patch('WizDefend.get_filtered_detections', return_value=mock_detections)
+
+    # Run fetch_incidents
+    fetch_incidents()
+
+    # Verify that demisto.info was called with the appropriate message
+    assert demisto.info.called
+    info_calls = [call[0][0] for call in demisto.info.call_args_list]
+    assert any('automatically setting to 14 days back' in call for call in info_calls)
+
+    # Verify incidents were created
+    assert demisto.incidents.called
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 1
+
+    # Verify last run was set
+    assert demisto.setLastRun.called
+
+
+def test_fetch_incidents_with_invalid_timestamp(mocker):
+    """Test fetch_incidents with invalid first fetch timestamp"""
+    from WizDefend import fetch_incidents
+    import demistomock as demisto
+
+    # Mock demisto functions
+    mocker.patch.object(demisto, 'getLastRun', return_value={})  # No last run - first fetch
+    mocker.patch.object(demisto, 'params', return_value={
+        'first_fetch': 'invalid timestamp format',
+        'severity': 'HIGH',
+        'detection_type': 'GENERATED_THREAT',
+        'detection_platform': 'AWS'
+    })
+    mocker.patch.object(demisto, 'error')
+
+    # Test that invalid timestamp raises an exception
+    with pytest.raises(ValueError) as e:
+        fetch_incidents()
+    assert 'Invalid date format' in str(e.value)
+
+    # Verify error was logged
+    assert demisto.error.called
+    error_calls = [call[0][0] for call in demisto.error.call_args_list]
+    assert any('Invalid date format' in call for call in error_calls)
+
+
+def test_get_fetch_timestamp_date_comparison(mocker):
+    """Test the date comparison logic in get_fetch_timestamp"""
+    from WizDefend import get_fetch_timestamp
+    import demistomock as demisto
+    from datetime import datetime, timedelta
+    import dateparser
+
+    # Mock demisto.info
+    mocker.patch.object(demisto, 'info')
+
+    # Test when date is exactly at 14 days boundary
+    fourteen_days_ago = datetime.now() - timedelta(days=14)
+    fourteen_days_ago_str = f"{fourteen_days_ago.strftime('%Y-%m-%d')} 00:00:00"
+
+    # Parse to get a date object for comparison
+    parsed_date = dateparser.parse(fourteen_days_ago_str)
+
+    timestamp = get_fetch_timestamp(fourteen_days_ago_str)
+    assert timestamp.endswith('Z')
+
+    # Should not log info message since it's exactly at boundary
+    assert not demisto.info.called
+
+    # Test with a slight offset to ensure comparison is working
+    fifteen_days_ago = datetime.now() - timedelta(days=15)
+    fifteen_days_ago_str = f"{fifteen_days_ago.strftime('%Y-%m-%d')} 00:00:00"
+
+    timestamp = get_fetch_timestamp(fifteen_days_ago_str)
+    assert timestamp.endswith('Z')
+
+    # Should log info message since it's beyond boundary
+    assert demisto.info.called
+    info_call_args = demisto.info.call_args[0][0]
+    assert 'automatically setting to 14 days back' in info_call_args
