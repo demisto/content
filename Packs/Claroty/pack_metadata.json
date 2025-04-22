@@ -10,7 +10,11 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "IoT",
+        "Security",
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "Claroty",
