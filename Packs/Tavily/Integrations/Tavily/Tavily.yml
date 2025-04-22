@@ -36,7 +36,7 @@ script:
     - description: The URL to extract content from.
       name: url
       required: true
-    description: 'Extract web page content from a specified URL.'
+    description: Extract web page content from a specified URL.
     name: tavily-extract
     outputs:
     - contextPath: Tavily.URL
