@@ -76,7 +76,7 @@ def test_extarct_command(mock_post, client):
         ]
     }
     mock_post.return_value = mock_response
-    args = {"urls": "https://example.com"}
+    args = {"url": "https://example.com"}
     command_results = extarct_command(client, args)
 
     assert len(command_results.outputs) == 2
