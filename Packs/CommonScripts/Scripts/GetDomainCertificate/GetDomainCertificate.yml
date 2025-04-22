@@ -45,6 +45,9 @@ outputs:
 - contextPath: SSLInfo.error
   description: Error message if certificate verification fails.
   type: String
+- contextPath: SSLInfo.full_certificate
+  description: The full SSL certificate details when verbose mode is enabled.
+  type: String
 scripttarget: 0
 subtype: python3
 runonce: false

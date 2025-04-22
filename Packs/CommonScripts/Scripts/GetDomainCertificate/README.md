@@ -1,6 +1,7 @@
 # GetDomainCertificate
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,34 +10,44 @@
 | Tags | certificate, domain |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| domain | The domain to retrieve the certificate for. |
+| domains | The domains to retrieve the certificate for. |
+| verbose | if true attaches the complete certificate under "full_certificate". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Subject | The subject of the certificate | String |
-| Issuer | The issuer of the certificate | String |
-| Version | The version of the certificate | Number |
-| SerialNumber | The serial number of the certificate | String |
-| NotBefore | The start date of the certificate validity | Date |
-| NotAfter | The expiration date of the certificate | Date |
-| SubjectAlternativeName | The Subject Alternative Name (SAN) of the certificate | String |
+| SSLInfo.domain | The domain name. | String |
+| SSLInfo.issuer_country | The country of the certificate issuer. | String |
+| SSLInfo.issuer_organization | The organization of the certificate issuer. | String |
+| SSLInfo.issuer_common_name | The common name of the certificate issuer. | String |
+| SSLInfo.subject_country | The country of the certificate subject. | String |
+| SSLInfo.subject_organization | The organization of the certificate subject. | String |
+| SSLInfo.version | The SSL/TLS version. | String |
+| SSLInfo.issue_date | The date the certificate was issued. | Date |
+| SSLInfo.expiry_date | The date the certificate expires. | Date |
+| SSLInfo.error | Error message if certificate verification fails. | String |
+| SSLInfo.full_certificate | Full certificate details in PEM format. | String |
 
 ## Description
 ---
 This script retrieves the SSL/TLS certificate for a given domain and returns its details.
 
 ## Script Example
+
 ```!GetDomainCertificate domain="example.com"```
 
 ## Human Readable Output
+
 ### Certificate Details for example.com
+
 | Field | Value |
 | --- | --- |
 | Subject | CN=example.com |

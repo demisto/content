@@ -68,6 +68,8 @@ def SSL_info(domain: str, verbose: bool = False) -> dict:
             if isinstance(expiry_date, str):
                 ca_info["expiry_date"] = datetime.strptime(expiry_date, "%b %d %H:%M:%S %Y %Z").isoformat()
             
+            if verbose:
+                ca_info['full_certificate'] = cert
             
     except ssl.SSLCertVerificationError as e:
         demisto.debug(f"Error verifying certificate for {domain}: {e}")
