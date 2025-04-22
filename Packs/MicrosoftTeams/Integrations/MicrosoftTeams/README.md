@@ -183,7 +183,7 @@ Perform the following steps to add the needed permissions:
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-   **Application permissions required to use all credential flow supported commands:**
+    **Application permissions required to use all credential flow supported commands:**
 
     - `User.Read.All`
     - `GroupMember.Read.All`
@@ -210,7 +210,7 @@ Perform the following steps to add the needed permissions:
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions** > **Add a permission** > **Microsoft Graph** > **Delegated permissions**.
 4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-   **Delegated permissions required to use all auth code flow supported commands:**
+    **Delegated permissions required to use all auth code flow supported commands:**
 
     - `User.Read.All`
     - `GroupMember.Read.All`
@@ -218,6 +218,7 @@ Perform the following steps to add the needed permissions:
     - `ChannelMember.ReadWrite.All`
     - `Channel.Create`
     - `Channel.Delete.All`
+    - `ChannelMessage.Send`
     - `OnlineMeetings.ReadWrite.All`
     - `Chat.ReadWrite`
     - `AppCatalog.Read.All`
@@ -373,6 +374,8 @@ and picture to match the bot will make it appear to be from the same source.
 `GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 `Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
+
+`ChannelMessage.Send` - *Delegated (Authorization Code) - Only needed for sending replies to messages*
 
 ##### Input
 
