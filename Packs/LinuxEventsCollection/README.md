@@ -35,7 +35,7 @@ Follow the steps bellow for configuring an [XDR Collector](https://docs-cortex.p
 3. Configure an [XDR Collector Filebeat profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/XDR-Collector-profiles) for the requested linux servers as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-profile-for-Linux).
       - When configuring the Filebeat YAML configuration file, use the *LinuxEventCollection* template as a reference:
  ![LinuxEventCollection Filebeat Template](doc_files/LinuxFilebeatTemplate.png)
-    - Customize the *[paths](https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-input-filestream.html#filestream-input-paths)* parameter in accordance to the requested log files for collection: 
+      - Customize the *[paths](https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-input-filestream.html#filestream-input-paths)* parameter in accordance to the requested log files for collection: 
          ```yaml
             filebeat.inputs:
             - type: filestream
