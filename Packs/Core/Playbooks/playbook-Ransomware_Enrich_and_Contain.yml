@@ -1182,8 +1182,6 @@ tests:
 marketplaces: ["marketplacev2", "platform"]
 fromversion: 6.6.0
 supportedModules:
-- C3
-- X0
 - X1
 - X3
 - X5

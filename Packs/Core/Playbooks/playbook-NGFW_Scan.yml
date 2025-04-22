@@ -1728,15 +1728,13 @@ outputSections:
 outputs: []
 tests:
 - Test Playbook - NGFW Scan
-marketplaces: 
+marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- C3
-- X0
 - X1
 - X3
 - X5
