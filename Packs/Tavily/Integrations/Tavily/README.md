@@ -18,7 +18,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### tavily-extract
 
 ***
-Extracts its content from the given url.
+Extract web page content from a specified URL.
 
 #### Base Command
 
