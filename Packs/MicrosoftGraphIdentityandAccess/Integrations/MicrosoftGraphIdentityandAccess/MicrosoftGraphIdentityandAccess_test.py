@@ -784,9 +784,6 @@ def test_update_conditional_access_policy_command_append_mode(mocker):
             "users": {
                 "includeUsers": ["user1"]
             }
-        },
-        "grantControls": {
-            "builtInControls": ["mfa"]
         }
     }
 
@@ -796,9 +793,6 @@ def test_update_conditional_access_policy_command_append_mode(mocker):
             "users": {
                 "includeUsers": ["user1", "user2", "user3"]
             }
-        },
-        "grantControls": {
-            "builtInControls": ["mfa"]
         }
     }
 
@@ -807,12 +801,20 @@ def test_update_conditional_access_policy_command_append_mode(mocker):
         if field == "includeUsers":
             existing_users = existing.get(section, {}).get(sub_section, {}).get(field, [])
             new_users = new.get(section, {}).get(sub_section, {}).get(field, [])
-            merged = list(set(existing_users + new_users))
+            
+            merged = []
+            seen = set()
+            for user in existing_users + new_users:
+                if user not in seen:
+                    seen.add(user)
+                    merged.append(user)
+
             if section not in new:
                 new[section] = {}
             if sub_section not in new[section]:
                 new[section][sub_section] = {}
             new[section][sub_section][field] = merged
+
 
     mock_client = mocker.Mock()
     mock_client.list_conditional_access_policies.return_value = existing_policy
