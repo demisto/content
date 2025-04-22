@@ -43,7 +43,7 @@ script:
       description: The give url to extract its content.
       type: string
     - contextPath: Tavily.Content
-      description: The extracted content from the given url.
+      description: The full content extracted from the URL.
       type: string
   isfetch: false
   runonce: false
