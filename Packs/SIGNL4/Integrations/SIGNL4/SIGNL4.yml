@@ -1,0 +1,53 @@
+category: Messaging and Conferencing
+commonfields:
+  id: SIGNL4
+  version: -1
+configuration:
+- display: Team or Integration Secret
+  name: secret
+  hiddenusername: true
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: SIGNL4, mobile alerting.
+display: SIGNL4
+name: SIGNL4
+script:
+  commands:
+  - arguments:
+    - description: The alert title.
+      name: title
+      required: true
+    - description: The alert text.
+      name: message
+      required: true
+    - description: The external ID is used to reference the alert in order to close it later.
+      name: s4_external_id
+    - description: The SIGNL4 category to use for this alert.
+      name: s4_service
+    - description: Transmit location information ('latitude, longitude') with your event and display a map in the mobile app.
+      name: s4_location
+    - description: "If this event triggers an, allows to control how SIGNL4 notifies the team. single_ack: Only one person needs to acknowledge this alert. multi_ack: The alert must be confirmed by the number of people who are on duty at the time this Signl is created. emergency: All people in the team are notified regardless of their duty status and must acknowledge the alert, which is also assigned to the built-in emergency category."
+      name: s4_alerting_scenario
+    - description: Specify a boolean value of true or false to apply event filtering for this event, or not. If set to true, the event will only trigger a notification to the team, if it contains at least one keyword from one of your services and system categories (i.e. it is whitelisted).
+      name: s4_filtering
+      type: Boolean
+    description: Trigger a SIGNL4 alert.
+    name: signl4_alert
+  - arguments:
+    - description: The external ID is used to reference the open alert which shall be closed.
+      name: s4_external_id
+    description: Close an alert in SIGNL4
+    name: signl4_close
+  dockerimage: demisto/python3:3.11.10.115186
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+beta: true
+tests:
+- no test
+fromversion: 5.0.0
