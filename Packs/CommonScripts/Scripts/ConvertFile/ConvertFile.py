@@ -16,7 +16,8 @@ def find_zombie_processes():
     Returns:
         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
     """
-    ps_out = subprocess.check_output(["ps", "-e", "-o", "pid,ppid,state,cmd"], stderr=subprocess.STDOUT, universal_newlines=True)  # pragma: no cover
+    ps_out = subprocess.check_output(["ps", "-e", "-o", "pid,ppid,state,cmd"],  # pragma: no cover
+                                     stderr=subprocess.STDOUT, universal_newlines=True)  # pragma: no cover
     lines = ps_out.splitlines()
     pid = str(os.getpid())
     zombies = []
@@ -119,7 +120,8 @@ def main():
                                                   outputs={'Name': name, 'FileSHA256': sha256, 'Convertable': 'yes'}))
                 except Exception as e:
                     return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                                  outputs={'Name': name, 'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
+                                                  outputs={'Name': name, 'EntryID': entry_id,
+                                                           'Convertable': 'no', "ERROR": str(e)}))
     except subprocess.CalledProcessError as e:
         return_results(CommandResults(outputs_prefix='ConvertedFile',
                                       outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))

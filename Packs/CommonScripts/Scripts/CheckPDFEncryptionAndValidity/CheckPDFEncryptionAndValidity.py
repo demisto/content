@@ -34,21 +34,24 @@ def check_PDF_encryption_and_validity(entry_id) -> CommandResults:
         if not file_path:
             raise DemistoException("File not found. Please enter a valid entry ID.")
         
-        demisto.debug("Trying to open file")
+        demisto.debug(f"Trying to open file {file_path=}")
         
         with open(file_path, "rb") as f:
             reader = PyPDF2.PdfReader(f)
             is_valid = True
             is_encrypted = reader.is_encrypted
+            demisto.debug(f"Opened file with {file_path=}")
             
         return CommandResults(outputs_prefix='File',
                     outputs_key_field='EntryID',
-                    outputs={'EntryID': entry_id, 'IsValid': is_valid, 'IsEncrypted': is_encrypted})
+                    outputs={'EntryID': entry_id, 'IsValid': is_valid, 'IsEncrypted': is_encrypted},
+                    readable_output=f'The file with EntryID {entry_id} status is: Valid-{is_valid}, Encrypted-{is_encrypted}')
     
     except Exception as ex:
         return CommandResults(outputs_prefix='File',
                     outputs_key_field='EntryID',
-                    outputs={'EntryID': entry_id, 'IsValid': is_valid, 'IsEncrypted': is_encrypted, 'Error': str(ex)})
+                    outputs={'EntryID': entry_id, 'IsValid': is_valid, 'IsEncrypted': is_encrypted, 'Error': str(ex)},
+                    readable_output=f'The file with EntryID {entry_id} status is: Valid-{is_valid}, Encrypted-{is_encrypted}')
         
     
 def main():  # pragma: no cover
