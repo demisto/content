@@ -515,56 +515,6 @@ def merge_field(section: str, sub_section: Optional[str], field: str,
         merged = resolve_merge_value(field, existing_list, new_list, messages)
         new_policy.setdefault(section, {})[field] = merged
         
-def format_policy_context(policy: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Convert a raw Conditional Access policy into a normalized context dictionary.
-
-    Args:
-        policy (Dict[str, Any]): Raw policy from Microsoft Graph API.
-
-    Returns:
-        Dict[str, Any]: Flattened policy context for Cortex XSOAR.
-    """
-    conditions = policy.get('conditions', {})
-    users = conditions.get('users', {})
-    applications = conditions.get('applications', {})
-    platforms = conditions.get('platforms', {})
-    locations = conditions.get('locations', {})
-
-    grant_controls = policy.get('grantControls', {})
-
-    return {
-        'id': policy.get('id'),
-        'displayName': policy.get('displayName'),
-        'createdDateTime': policy.get('createdDateTime'),
-        'modifiedDateTime': policy.get('modifiedDateTime'),
-        'state': policy.get('state'),
-
-        'signInRiskLevels': conditions.get('signInRiskLevels'),
-        'userRiskLevels': conditions.get('userRiskLevels'),
-        'clientAppTypes': conditions.get('clientAppTypes'),
-
-        'includeApplications': applications.get('includeApplications'),
-        'excludeApplications': applications.get('excludeApplications'),
-        'includeUserActions': applications.get('includeUserActions'),
-
-        'includeUsers': users.get('includeUsers'),
-        'excludeUsers': users.get('excludeUsers'),
-        'includeGroups': users.get('includeGroups'),
-        'excludeGroups': users.get('excludeGroups'),
-        'includeRoles': users.get('includeRoles'),
-        'excludeRoles': users.get('excludeRoles'),
-
-        'includePlatforms': platforms.get('includePlatforms'),
-        'excludePlatforms': platforms.get('excludePlatforms'),
-
-        'includeLocations': locations.get('includeLocations'),
-        'excludeLocations': locations.get('excludeLocations'),
-
-        'grantControlOperator': grant_controls.get('operator'),
-        'builtInControls': grant_controls.get('builtInControls'),
-    }
-        
 def parse_error_from_exception(e: Exception) -> Dict[str, str]:
     try:
         if not e.args:
