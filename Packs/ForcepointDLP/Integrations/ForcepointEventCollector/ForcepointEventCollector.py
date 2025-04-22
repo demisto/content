@@ -1,12 +1,10 @@
 import http
-import inspect
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime
 from functools import wraps
-from typing import (Any, Callable, Optional, TypeVar, Union, get_args,
-                    get_origin, get_type_hints)
+from typing import Any, Callable, Optional, TypeVar
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -111,72 +109,8 @@ XSOAR_FP_SEVERITY_MAPPER = {
 }
 DEFAULT_LIMIT = 50
 
-
-class ValidatableMixin:
-    """
-    Mixin that adds automatic validation to dataclasses using __post_init__ and inspect.
-    """
-
-    def __post_init__(self):
-        self.validate_fields()
-
-    def validate_fields(self):
-        """
-        Validate all fields in the dataclass based on type hints and custom validators.
-        """
-        sig = inspect.signature(self.__init__)
-        type_hints = get_type_hints(self.__class__)  # Type annotations for the dataclass
-
-        for param_name, _ in sig.parameters.items():
-            if param_name == "self":  # Skip 'self'
-                continue
-            value = getattr(self, param_name, None)
-            expected_type = type_hints.get(param_name, Any)  # Default to Any if not annotated
-
-            # Handle None values
-            if value is None and not self._is_optional(expected_type):
-                raise DemistoException(f"Field '{param_name}' cannot be None.")
-
-            # Handle Union types (e.g., `str | None` or `Union[str, int]`)
-            if self._is_union(expected_type):
-                allowed_types = get_args(expected_type)
-                if not any(isinstance(value, t) for t in allowed_types if t is not type(None)):
-                    raise TypeError(
-                        f"Field '{param_name}' must be of type {expected_type}, "
-                        f"got {type(value).__name__} instead."
-                    )
-
-            # Handle generic types like list[int], dict[str, int]
-            elif (origin := get_origin(expected_type)) is not None:
-                if not isinstance(value, origin):
-                    raise TypeError(
-                        f"Field '{param_name}' must be of type {expected_type}, "
-                        f"got {type(value).__name__} instead."
-                    )
-
-            # Standard type check
-            elif expected_type is not Any and not isinstance(value, expected_type):
-                raise TypeError(
-                    f"Field '{param_name}' must be of type {expected_type}, "
-                    f"got {type(value).__name__} instead."
-                )
-
-            # Custom field validator if defined (validate_<field_name>)
-            custom_validator = getattr(self, f"validate_{param_name}", None)
-            if callable(custom_validator):
-                custom_validator(value)
-
-    def _is_optional(self, expected_type):
-        """Check if a type hint allows None (i.e., Optional, Union with None, or new-style '| None')."""
-        return self._is_union(expected_type) and type(None) in get_args(expected_type)
-
-    def _is_union(self, expected_type):
-        """Check if a type hint is a Union type (including new-style '|')."""
-        return get_origin(expected_type) is Union
-
-
 @dataclass
-class Classifier(ValidatableMixin):
+class Classifier:
     """
     Represents a classifier inside a rule
     """
@@ -200,18 +134,18 @@ class Classifier(ValidatableMixin):
             and self.threshold_value_from > self.threshold_value_to
         ):
             raise DemistoException(
-                f"Field 'threshold_value_from' for classifier {self.classifier_name}\
-                      shoud be lower than field 'threshold_value_to'."
+                f"Field 'threshold_value_from' for classifier {self.classifier_name}"
+                " should be lower than field 'threshold_value_to'."
             )
         if self.predefined not in ["true", "false"]:
             raise DemistoException(
-                f"Invalid value for classifier {self.classifier_name} 'predefined': {self.predefined}.\
-                  Must be 'true' or 'false'."
+                f"Invalid value for classifier {self.classifier_name} 'predefined': {self.predefined}."
+                " Must be 'true' or 'false'."
             )
 
 
 @dataclass
-class SeverityActionClassifier(ValidatableMixin):
+class SeverityActionClassifier:
     """
     Represents severity and action classifier.
     """
@@ -225,13 +159,13 @@ class SeverityActionClassifier(ValidatableMixin):
     def __post_init__(self) -> None:
         if self.selected not in ["true", "false"]:
             raise DemistoException(
-                f"Invalid value for severity classifier {self.number_of_matches} \
-                    'selected': {self.selected}. Must be 'true' or 'false'."
+                f"Invalid value for severity classifier {self.number_of_matches}"
+                f" 'selected': {self.selected}. Must be 'true' or 'false'."
             )
 
 
 @dataclass
-class Rule(ValidatableMixin):
+class Rule:
     """
     Represents a policy rule.
     """
@@ -262,7 +196,7 @@ class Rule(ValidatableMixin):
 
 
 @dataclass
-class SeverityActionException(ValidatableMixin):
+class SeverityActionException:
     """
     Represents a severity and action exception in rule.
     """
@@ -273,13 +207,13 @@ class SeverityActionException(ValidatableMixin):
     def __post_init__(self) -> None:
         if len(self.classifier_details) > 3:
             raise DemistoException(
-                "The maximum number of classifiers is 3.\
-                      Use `override_classifier_number_of_matches` to override another classifier."
+                "The maximum number of classifiers is 3."
+                " Use `override_classifier_number_of_matches` to override another classifier."
             )
 
 
 @dataclass
-class ExceptionRule(ValidatableMixin):
+class ExceptionRule:
     """
     Represents an exception of a rule.
     """
@@ -318,7 +252,7 @@ class ExceptionRule(ValidatableMixin):
 
 
 @dataclass
-class SeverityActionRule(ValidatableMixin):
+class SeverityActionRule:
     """
     Represents severity and action settings in rule.
     """
@@ -352,13 +286,13 @@ class SeverityActionRule(ValidatableMixin):
 
         if len(self.classifier_details) > 3:
             raise DemistoException(
-                "The maximum number of classifiers is 3.\
-                      Use `override_classifier_number_of_matches` to override another classifier."
+                "The maximum number of classifiers is 3."
+                " Use `override_classifier_number_of_matches` to override another classifier."
             )
 
 
 @dataclass
-class Resource(ValidatableMixin):
+class Resource:
     """
     Represents a resoure in rule.
     """
@@ -375,7 +309,7 @@ class Resource(ValidatableMixin):
 
 
 @dataclass
-class Channel(ValidatableMixin):
+class Channel:
     """
     Represents a channel in rule source and destination.
     """
@@ -388,13 +322,13 @@ class Channel(ValidatableMixin):
     def __post_init__(self) -> None:
         if self.enabled not in ["true", "false"]:
             raise DemistoException(
-                f"Invalid value for the channel ({self.channel_type}) \
-                    'enabled': {self.enabled}. Must be 'true' or 'false'."
+                f"Invalid value for the channel ({self.channel_type})"
+                f" 'enabled': {self.enabled}. Must be 'true' or 'false'."
             )
 
 
 @dataclass
-class RuleDestination(ValidatableMixin):
+class RuleDestination:
     """
     Represents destination settings in source and destination rule.
     """
@@ -404,7 +338,7 @@ class RuleDestination(ValidatableMixin):
 
 
 @dataclass
-class RuleSource(ValidatableMixin):
+class RuleSource:
     """
     Represents source settings in source and destination rule.
     """
@@ -415,7 +349,7 @@ class RuleSource(ValidatableMixin):
 
 
 @dataclass
-class SourceDestinationRule(ValidatableMixin):
+class SourceDestinationRule:
     """
     Represents source and destination settings rule.
     """
@@ -426,7 +360,7 @@ class SourceDestinationRule(ValidatableMixin):
 
 
 @dataclass
-class PolicyLevel(ValidatableMixin):
+class PolicyLevel:
     """
     Represents the rule policy level.
     """
@@ -436,7 +370,7 @@ class PolicyLevel(ValidatableMixin):
 
 
 @dataclass
-class PolicyRule(ValidatableMixin):
+class PolicyRule:
     """
     Represents a rule in policy.
     """
@@ -463,7 +397,7 @@ class PolicyRule(ValidatableMixin):
 
 
 @dataclass
-class PolicySeverityAction(ValidatableMixin):
+class PolicySeverityAction:
     """
     Represents severity and action rule.
     """
@@ -473,7 +407,7 @@ class PolicySeverityAction(ValidatableMixin):
 
 
 @dataclass
-class PolicySourceDestination(ValidatableMixin):
+class PolicySourceDestination:
     """
     Represents source and destination rule.
     """
@@ -483,7 +417,7 @@ class PolicySourceDestination(ValidatableMixin):
 
 
 @dataclass
-class PolicyExceptionRule(ValidatableMixin):
+class PolicyExceptionRule:
     """
     Represents exception rule.
     """
@@ -1139,7 +1073,6 @@ def list_exception_rule_command(client: Client, args: dict) -> CommandResults:
             removeNull=True,
             headerTransform=string_to_table_header,
         )
-
     else:
         response = client.list_exception_rules(policy_type=policy_type)
 
@@ -1229,8 +1162,6 @@ def get_rule_source_destination_command(client: Client, args: dict) -> CommandRe
         CommandResults: Command results to return to the war room.
     """
     policy_name = args["policy_name"]
-
-    # Call the API
     response = client.get_rule_source_destination(policy_name=policy_name)
 
     outputs = transform_keys(
@@ -1289,7 +1220,7 @@ def list_incidents_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Results to return to the war room.
     """
-    incident_type = args.get("type", "INCIDENTS")  # Default to INCIDENTS
+    incident_type = args.get("type", "INCIDENTS")
     from_date = arg_to_datetime(args["from_date"], required=True)
     to_date = arg_to_datetime(args.get("to_date", "now"), required=True)
     status = args.get("status")
@@ -2120,7 +2051,22 @@ def get_paginated_data(data: list, limit: int, all_results: bool):
     return data if all_results else data[:limit]
 
 
-def transform_keys(data: DictOrList, key_map: dict[str, str] = {}) -> DictOrList:
+def transform_keys(data: DictOrList, key_map: dict[str, str] | None = None) -> DictOrList:
+    """Recursively transforms the keys of a dictionary or list of dictionaries
+        according to a provided key_map. If a key is not found in the key_map,
+        it can be camelized based on the value's type.
+
+    Args:
+        data (DictOrList): A dictionary or list of dictionaries to transform.
+        key_map (dict[str, str] | None): A mapping of old key names to new key names.
+            Defaults to None.
+
+    Returns:
+        DictOrList: The transformed structure with updated keys.
+    """
+    if key_map is None:
+        key_map = {}
+
     if isinstance(data, list):
         return [transform_keys(item, key_map) for item in data]
 
