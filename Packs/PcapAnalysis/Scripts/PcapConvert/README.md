@@ -1,7 +1,6 @@
 Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) pcap from which to convert.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,7 +9,6 @@ Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) p
 | Tags | pcap, Utility, transformer |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +19,5 @@ Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) p
 | error_action | The action on error to parsing pcap. Possible values are abort \(default\), ignore, and keep. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

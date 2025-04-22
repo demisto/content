@@ -1,7 +1,5 @@
 Executes a PE Dump on a file that is under /tmp path (relative). This is used internally by StaticAnalyze.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +7,8 @@ Executes a PE Dump on a file that is under /tmp path (relative). This is used in
 | Script Type | javascript |
 | Tags | executable, agent |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +16,5 @@ Executes a PE Dump on a file that is under /tmp path (relative). This is used in
 | file | The path to the PE file to analyze, relative to /tmp. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

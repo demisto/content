@@ -1,7 +1,6 @@
 Gets a File from using a D2 agent.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Gets a File from using a D2 agent.
 | Script Type | javascript |
 | Tags | - |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +18,5 @@ Gets a File from using a D2 agent.
 | filepath | The local filepath on the endpoint. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

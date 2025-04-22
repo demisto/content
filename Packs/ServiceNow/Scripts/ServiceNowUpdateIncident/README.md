@@ -1,7 +1,6 @@
 Wraps the generic `update-record` command in ServiceNow. Fields can be added that update the record with as script arguments or in the code and work with the records easily.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,16 +8,14 @@ Wraps the generic `update-record` command in ServiceNow. Fields can be added tha
 | Script Type | python |
 | Tags | servicenow |
 
-## Dependencies
 
+## Dependencies
 ---
 This script uses the following commands and scripts.
-
 * servicenow-query-table
 * servicenow-update-record
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -32,7 +29,6 @@ This script uses the following commands and scripts.
 | query | The query to use.  |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

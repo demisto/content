@@ -1,7 +1,6 @@
 Executes the command and packs the output back to server.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Executes the command and packs the output back to server.
 | Script Type | javascript |
 | Tags | agent, endpoint |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +17,5 @@ Executes the command and packs the output back to server.
 | cmd | The system command to execute. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

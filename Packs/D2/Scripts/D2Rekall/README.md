@@ -1,7 +1,6 @@
 Executes Rekall on a system (usually a forensics workstation) and analyzes a memory dump file located on that system.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,8 +8,8 @@ Executes Rekall on a system (usually a forensics workstation) and analyzes a mem
 | Script Type | javascript |
 | Tags | agent, memory, forensics |
 
-## Inputs
 
+## Inputs
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +18,5 @@ Executes Rekall on a system (usually a forensics workstation) and analyzes a mem
 | format | The format argument for Rekall. For example, json or text. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

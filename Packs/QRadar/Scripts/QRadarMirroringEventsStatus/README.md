@@ -1,7 +1,6 @@
 This script displays the the mirroring events status in the offense.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,11 +10,9 @@ This script displays the the mirroring events status in the offense.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 There are no inputs for this script.
 
 ## Outputs
-
 ---
 There are no outputs for this script.

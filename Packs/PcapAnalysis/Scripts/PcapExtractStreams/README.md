@@ -1,6 +1,5 @@
 Extract payloads of each stream from a pcap.
 The payloads will be retrieved with an array of dictionaries of these keys:
-
 - protocol
 - client_ip
 - client_port
@@ -17,7 +16,6 @@ The payloads will be retrieved with an array of dictionaries of these keys:
 - incoming_base64
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -26,7 +24,6 @@ The payloads will be retrieved with an array of dictionaries of these keys:
 | Tags | pcap, Utility, transformer |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -43,6 +40,5 @@ The payloads will be retrieved with an array of dictionaries of these keys:
 | server_ports | Default server port numbers by which to decide the direction. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

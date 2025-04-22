@@ -2,7 +2,6 @@ Parses ZTAP event fields to display as key/value pairs in
 a dynamic table.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -12,7 +11,6 @@ a dynamic table.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +20,5 @@ a dynamic table.
 | full | Do not truncate output |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

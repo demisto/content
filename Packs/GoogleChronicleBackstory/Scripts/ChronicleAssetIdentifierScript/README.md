@@ -1,7 +1,5 @@
 Collect all asset identifiers - Hostname, IP address and MAC address in the context.
-
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +9,6 @@ Collect all asset identifiers - Hostname, IP address and MAC address in the cont
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -19,7 +16,6 @@ Collect all asset identifiers - Hostname, IP address and MAC address in the cont
 | artifact_identifiers | Hostname, IP address or MAC address that can identify the asset. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -27,7 +23,6 @@ Collect all asset identifiers - Hostname, IP address and MAC address in the cont
 | AssetIdentifiers | Collects all the asset identifier. | Unknown |
 
 ## Script Example
-
 ```
 !ChronicleAssetIdentifierScript artifact_identifiers="{
         \"AccessedDomain\": \"dummy-accessed-domain.com\",
@@ -38,7 +33,6 @@ Collect all asset identifiers - Hostname, IP address and MAC address in the cont
 ```
 
 ##### Context Example
-
 ```
 {
     "AssetIdentifiers": [
@@ -48,5 +42,4 @@ Collect all asset identifiers - Hostname, IP address and MAC address in the cont
 ```
 
 ##### Human Readable Output
-
 {}

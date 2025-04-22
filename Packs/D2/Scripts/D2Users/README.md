@@ -1,7 +1,6 @@
 Shows local accounts.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -9,12 +8,11 @@ Shows local accounts.
 | Script Type | javascript |
 | Tags | agent, endpoint |
 
-## Inputs
 
+## Inputs
 ---
 There are no inputs for this script.
 
 ## Outputs
-
 ---
 There are no outputs for this script.
