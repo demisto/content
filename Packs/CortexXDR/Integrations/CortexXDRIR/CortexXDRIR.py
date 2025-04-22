@@ -3,7 +3,6 @@ import secrets
 import string
 from datetime import datetime, timedelta
 from itertools import zip_longest
-from typing import Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -192,7 +191,7 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
             )
 
 
-def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> Tuple[list, bool]:
+def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> tuple[list, bool]:
     """handles the excluded_alert_fields parameter
 
     Args:
