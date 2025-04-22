@@ -469,6 +469,8 @@ script:
       description: The ids of the users to dismiss seperated be commas.
       required: true
   - description: Retrieve one or all Conditional Access policies from Microsoft Graph API.
+
+  
     name: msgraph-identity-ca-policies-list
     arguments:
     - name: policy_id
@@ -476,6 +478,12 @@ script:
       required: false
     - name: filter
       description: Optional. The OData filter query to retrieve specific Conditional Access policies.
+      required: false
+    - name: limit
+      description: Optional. The maximum number of Conditional Access policies to return. Ignored if 'all_results' is true.
+      required: false
+    - name: all_results
+      description: Optional. Whether to retrieve all results without applying the 'limit'. Set to true to ignore the limit.
       required: false
     outputs:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id

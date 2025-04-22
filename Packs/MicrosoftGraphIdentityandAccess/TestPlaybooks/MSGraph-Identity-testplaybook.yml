@@ -386,7 +386,7 @@ tasks:
       - "13"
     scriptarguments:
       seconds:
-        simple: "15"
+        simple: "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-

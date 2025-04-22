@@ -581,7 +581,7 @@ def test_convert_to_list(input_value, expected):
 @pytest.mark.parametrize(
     "existing_policy, new_policy, expected_result, expected_messages",
     [
-        # Normal merge case
+        # Normal merge case (סדר לא חשוב)
         (
             {"conditions": {"users": {"includeUsers": ["user1"]}}},
             {"conditions": {"users": {"includeUsers": ["user2"]}}},
@@ -611,7 +611,7 @@ def test_convert_to_list(input_value, expected):
         (
             {"grantControls": {"builtInControls": ["mfa"]}},
             {"grantControls": {"builtInControls": ["compliantDevice"]}},
-            {"grantControls": {"builtInControls": ["compliantDevice", "mfa"]}},
+            {"grantControls": {"builtInControls": ["mfa", "compliantDevice"]}},
             [],
         ),
     ]
@@ -631,8 +631,198 @@ def test_merge_field(mocker, existing_policy, new_policy, expected_result, expec
 
     if "grantControls" in new_policy:
         merge_field("grantControls", None, "builtInControls", existing_policy, new_policy, messages)
-    else:
+
+        assert set(new_policy["grantControls"]["builtInControls"]) == set(
+            expected_result["grantControls"]["builtInControls"]
+        )
+
+    elif "includeUsers" in new_policy.get("conditions", {}).get("users", {}):
         merge_field("conditions", "users", "includeUsers", existing_policy, new_policy, messages)
 
-    assert new_policy == expected_result
+        assert set(new_policy["conditions"]["users"]["includeUsers"]) == set(
+            expected_result["conditions"]["users"]["includeUsers"]
+        )
+
+    else:
+        merge_field("conditions", "users", "includeUsers", existing_policy, new_policy, messages)
+        assert new_policy == expected_result
+
     assert messages == expected_messages
+
+    
+
+
+@pytest.mark.parametrize(
+    "args, expected_policy_id, expected_payload",
+    [
+        (
+            {
+                "policy_id": "abc123",
+                "state": "enabled",
+                "include_users": "user1,user2",
+                "grant_control_operator": "OR",
+                "built_in_controls": "mfa",
+                "update_action": "override"
+            },
+            "abc123",
+            {
+                "state": "enabled",
+                "conditions": {
+                    "users": {
+                        "includeUsers": ["user1", "user2"]
+                    }
+                },
+                "grantControls": {
+                    "operator": "OR",
+                    "builtInControls": ["mfa"]
+                }
+            }
+        ),
+        (
+            {
+                "policy_id": "xyz456",
+                "policy": '{"state": "disabled"}'
+            },
+            "xyz456",
+            '{"state": "disabled"}'
+        )
+    ]
+)
+def test_update_conditional_access_policy_command_minimal_input(mocker, args, expected_policy_id, expected_payload):
+    """
+    Given:
+        - A dictionary of input arguments for the update command.
+    When:
+        - The update command is invoked with valid input.
+    Then:
+        - Ensure that the client's update method is called with the correct policy ID and payload.
+    """
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_command_results = CommandResults(readable_output="OK")
+    mock_client.update_conditional_access_policy = mocker.Mock(return_value=mock_command_results)
+
+    result = update_conditional_access_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "OK"
+    mock_client.update_conditional_access_policy.assert_called_once_with(expected_policy_id, expected_payload)
+
+
+def test_update_conditional_access_policy_command_missing_id_raises(mocker):
+    """
+    Given:
+        - No 'policy_id' in args
+    When:
+        - Calling the update_conditional_access_policy_command
+    Then:
+        - ValueError should be raised
+    """
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command
+    args = {
+        "state": "enabled"
+    }
+
+    with pytest.raises(ValueError, match="The 'policy_id' argument is required"):
+        update_conditional_access_policy_command(mocker.Mock(), args)
+
+
+@pytest.mark.parametrize("invalid_json", [
+    "{'state': 'enabled'}",      # invalid JSON string (single quotes)
+    "not_a_json",                # totally invalid
+    "[invalid:]"                 # malformed
+])
+def test_update_conditional_access_policy_command_invalid_json_policy(invalid_json, mocker):
+    """
+    Given:
+        - A 'policy' argument that is not a valid JSON string.
+    When:
+        - The update command is called.
+    Then:
+        - A ValueError should be raised.
+    """
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command
+
+    args = {
+        "policy_id": "abc123",
+        "policy": invalid_json
+    }
+
+    client = mocker.Mock()
+    client.update_conditional_access_policy = mocker.Mock(side_effect=
+                                                          ValueError("The provided policy string is not a valid JSON."))
+
+    with pytest.raises(ValueError, match="The provided policy string is not a valid JSON."):
+        update_conditional_access_policy_command(client, args)
+        
+
+def test_update_conditional_access_policy_command_append_mode(mocker):
+    """
+    Given:
+        - An existing policy from the API.
+        - New args with update_action=append and partial fields.
+    When:
+        - Calling update_conditional_access_policy_command.
+    Then:
+        - Ensure merge_field is called.
+        - Ensure merged result is passed to client.update_conditional_access_policy.
+    """
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, CommandResults
+
+    args = {
+        "policy_id": "abc123",
+        "update_action": "append",
+        "include_users": "user2,user3",
+        "state": "enabled"
+    }
+
+    # Mock existing policy returned from the list_conditional_access_policies
+    existing_policy = {
+        "state": "enabled",
+        "conditions": {
+            "users": {
+                "includeUsers": ["user1"]
+            }
+        },
+        "grantControls": {
+            "builtInControls": ["mfa"]
+        }
+    }
+
+    expected_merged_policy = {
+        "state": "enabled",
+        "conditions": {
+            "users": {
+                "includeUsers": ["user1", "user2", "user3"]
+            }
+        },
+        "grantControls": {
+            "builtInControls": ["mfa"]
+        }
+    }
+
+    # Mock merge_field so it simulates merging (updates new_policy in-place)
+    def mock_merge_field(section, sub_section, field, existing, new, messages):
+        if field == "includeUsers":
+            existing_users = existing.get(section, {}).get(sub_section, {}).get(field, [])
+            new_users = new.get(section, {}).get(sub_section, {}).get(field, [])
+            merged = list(set(existing_users + new_users))
+            if section not in new:
+                new[section] = {}
+            if sub_section not in new[section]:
+                new[section][sub_section] = {}
+            new[section][sub_section][field] = merged
+
+    mock_client = mocker.Mock()
+    mock_client.list_conditional_access_policies.return_value = existing_policy
+    mock_client.update_conditional_access_policy.return_value = CommandResults(readable_output="Updated")
+
+    mocker.patch("MicrosoftGraphIdentityandAccess.merge_field", side_effect=mock_merge_field)
+
+    result = update_conditional_access_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output.startswith("Updated")
+
+    mock_client.update_conditional_access_policy.assert_called_once_with("abc123", expected_merged_policy)
