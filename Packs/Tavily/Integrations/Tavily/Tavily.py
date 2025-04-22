@@ -44,8 +44,8 @@ def extarct_command(client: TavilyExtractClient, args: dict) -> CommandResults:
             "URL": results[0].get("url"),
             "Content": results[0].get("raw_content", "No content found."),
         }
-        return CommandResults(outputs=output, readable_output="Successfully extract the content from {url}", outputs_prefix="Tavily",
-                              outputs_key_field="URL")
+        return CommandResults(outputs=output, readable_output="Successfully extract the content from {url}",
+                              outputs_prefix="Tavily", outputs_key_field="URL")
 
     raise DemistoException(f"There are no results for the given url {args.get('url')}")
 
