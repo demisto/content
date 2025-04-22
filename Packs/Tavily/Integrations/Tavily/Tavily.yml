@@ -40,7 +40,7 @@ script:
     name: tavily-extract
     outputs:
     - contextPath: Tavily.URL
-      description: The give url to extract its content.
+      description: The URL from which the content was extracted.
       type: string
     - contextPath: Tavily.Content
       description: The full content extracted from the URL.
