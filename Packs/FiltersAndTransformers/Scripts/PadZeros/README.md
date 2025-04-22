@@ -1,7 +1,6 @@
 Adds zeros (0) to the beginning of the string, until the string reaches the specified length.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Adds zeros (0) to the beginning of the string, until the string reaches the spec
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +18,5 @@ Adds zeros (0) to the beginning of the string, until the string reaches the spec
 | length | The desired length of the string. The value specified in the "value" argument will be padded with zeros until the string reaches this length. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

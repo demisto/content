@@ -27,7 +27,6 @@ When values have different types of data, the hierarchy is: null < bool < int/fl
 There are no outputs for this script.
 
 ---
-
 ## Examples-1
 
 Here is a table for the sorting samples in the Examples-1.
@@ -77,7 +76,8 @@ Sort by `Country` in ascending order.
 
 > descending_keys:
 
-#### Output
+
+#### Output:
 
 It will give you the result like this. But the order except for the `Country` is not guaranteed.
 
@@ -123,7 +123,8 @@ Sort by `Country` in ascending order, and sort by `Score` in ascending order wit
 
 > descending_keys:
 
-#### Output
+
+#### Output:
 
 It will give you the result like this. But the order except for the `Country` and `Score` is not guaranteed.
 
@@ -161,6 +162,7 @@ It will give you the result like this. But the order except for the `Country` an
         "Score": 50
       }
     ]
+
 
 ---
 Sort by `Country` in ascending order, and sort by `Score` in descending order with keeping the order by `Country`.
@@ -169,7 +171,8 @@ Sort by `Country` in ascending order, and sort by `Score` in descending order wi
 
 > descending_keys: Score
 
-#### Output
+
+#### Output:
 
 It will give you the result like this. But the order except for the `Country` and `Score` is not guaranteed.
 
@@ -209,7 +212,6 @@ It will give you the result like this. But the order except for the `Country` an
     ]
 
 ---
-
 ## Examples-2
 
 Here is an array for the sorting samples in the Examples-2.
@@ -235,7 +237,8 @@ Sort in ascending order.
 
 > descending_keys:
 
-#### Output
+
+#### Output:
 
     [
       null,
@@ -250,6 +253,7 @@ Sort in ascending order.
       }
     ]
 
+
 ---
 Sort in descending order.
 
@@ -257,7 +261,8 @@ Sort in descending order.
 
 > descending_keys: *
 
-#### Output
+
+#### Output:
 
     [
       {

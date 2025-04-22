@@ -1,7 +1,6 @@
 Checks whether the given value is within the specified time (hour) range.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Checks whether the given value is within the specified time (hour) range.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -21,7 +19,6 @@ Checks whether the given value is within the specified time (hour) range.
 | end_time | The end time range in the format HH:MM:SS. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |

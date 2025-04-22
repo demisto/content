@@ -1,7 +1,6 @@
 A transformer for simple if-then-else logic.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ A transformer for simple if-then-else logic.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -31,6 +29,5 @@ A transformer for simple if-then-else logic.
 | optionsB | Option flags \(comma separated list\): available options are \`case_insensitive\`, \`regex_dot_all\`, \`regex_multiline\`, \`regex_full_match\`, \`input_data_type:then=&amp;lt;type&amp;gt;\`, \`input_data_type:else=&amp;lt;type&amp;gt;\`, \`input_data_type:lhs=&amp;lt;type&amp;gt;\` and \`input_data_type:rhs=&amp;lt;type&amp;gt;\`. Choose \`value\`, \`json\` or \`raw\` for &amp;lt;type&amp;gt;. |
 
 ## Outputs
-
 ---
 There are no outputs for this script.

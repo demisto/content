@@ -1,7 +1,6 @@
 Verifies that a given object includes all the given fields.
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -11,7 +10,6 @@ Verifies that a given object includes all the given fields.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
@@ -20,7 +18,6 @@ Verifies that a given object includes all the given fields.
 | object | Map in which to search fields. |
 
 ## Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -28,11 +25,9 @@ Verifies that a given object includes all the given fields.
 | FieldsExists | If true, all the given fields exist in the object. | boolean |
 
 ## Script Example
-
 ```!VerifyObjectFieldsList fields_to_search=name,type object=${Indicators}```
 
 ## Context Example
-
 ```json
 {
     "CheckIfFieldsExists": {
@@ -44,5 +39,5 @@ Verifies that a given object includes all the given fields.
 ## Human Readable Output
 
 >### Results
->
 > Fields name, type are in given context.
+
