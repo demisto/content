@@ -43,8 +43,7 @@ tasks:
       id: 861a1a46-66fe-4f8a-8248-266ee3caa7b9
       version: -1
       name: Is CTM360 CyberBlindspot Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -322,3 +321,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)

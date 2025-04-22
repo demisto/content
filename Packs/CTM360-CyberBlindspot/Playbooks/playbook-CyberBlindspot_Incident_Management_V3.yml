@@ -84,8 +84,7 @@ tasks:
       id: 207dad80-8343-453e-8b29-28ffa24a5e00
       version: -1
       name: Is The Remote Incident Closed?
-      description: Check whether or not the incident had been closed on the remote
-        server.
+      description: Check whether or not the incident had been closed on the remote server.
       type: condition
       iscommand: false
       brand: ""
@@ -174,8 +173,7 @@ tasks:
       id: 8aa215dd-9226-41c2-8a6f-9ff827be75c6
       version: -1
       name: Is The Incident Pending User Action?
-      description: If the incident is not yet closed on the remote server, check if
-        any action is required/permitted on the user's side.
+      description: If the incident is not yet closed on the remote server, check if any action is required/permitted on the user's side.
       type: condition
       iscommand: false
       brand: ""
@@ -266,8 +264,7 @@ tasks:
       id: 69c526f5-be4f-4086-8f8e-4aed8f3f29d0
       version: -1
       name: Is There Action To Take?
-      description: If action is required/permitted on the user's side, check the possible
-        actions.
+      description: If action is required/permitted on the user's side, check the possible actions.
       type: condition
       iscommand: false
       brand: ""
@@ -337,16 +334,14 @@ tasks:
       to:
         simple: Analyst
       subject:
-        simple: CyberBlindspot Incident ${incident.dbotMirrorId} waiting for user
-          input
+        simple: CyberBlindspot Incident ${incident.dbotMirrorId} waiting for user input
       body:
-        simple: The CyberBlindspot incident is waiting for your input to close the
-          incident.
+        simple: The CyberBlindspot incident is waiting for your input to close the incident.
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -439,8 +434,7 @@ tasks:
       id: 3a9ad2a9-96f5-4b7d-81fb-fd359fcfc97d
       version: -1
       name: Prompt User to Close Incident or Request Takedown of Asset
-      description: Ask the user whether to close the incident or request a take-down
-        of the related asset/subject.
+      description: Ask the user whether to close the incident or request a take-down of the related asset/subject.
       type: condition
       iscommand: false
       brand: ""
@@ -467,16 +461,14 @@ tasks:
       to:
         simple: Analyst
       subject:
-        simple: CyberBlindspot Incident ${incident.dbotMirrorId} waiting for user
-          input
+        simple: CyberBlindspot Incident ${incident.dbotMirrorId} waiting for user input
       body:
-        simple: The CyberBlindspot incident is waiting for your input to either takedown
-          the asset or close the incident.
+        simple: The CyberBlindspot incident is waiting for your input to either takedown the asset or close the incident.
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -682,8 +674,7 @@ tasks:
       - "12"
     scriptarguments:
       value:
-        simple: The playbook indicates that the incident is currently in "${CyberBlindspot.RemoteIncident.status}"
-          status on the platform. No further action is required at this time.
+        simple: The playbook indicates that the incident is currently in "${CyberBlindspot.RemoteIncident.status}" status on the platform. No further action is required at this time.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -708,8 +699,7 @@ tasks:
       id: 3a856dd5-c2b0-40f7-8b3b-8c3b94759daf
       version: -1
       name: Is CTM360 CyberBlindspot Integration Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
