@@ -734,14 +734,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.37.2"
+version = "1.37.3"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 groups = ["dev"]
 files = [
-    {file = "demisto_sdk-1.37.2-py3-none-any.whl", hash = "sha256:38ea4e5b8bfb5543e7da3c65e1a1da5abdc1ee55a79907231b7faee8c8d8f0e0"},
-    {file = "demisto_sdk-1.37.2.tar.gz", hash = "sha256:4a1671a648946dda51ef07d83a6b65ca27149ca46661dba09495eac936c75ead"},
+    {file = "demisto_sdk-1.37.3-py3-none-any.whl", hash = "sha256:5a015cb92e46ea9d4541d6b67f1ea5ecf2c2e1a77a5ebc9541d26834cf61609d"},
+    {file = "demisto_sdk-1.37.3.tar.gz", hash = "sha256:013a2fc17a8d14ef805d2bceb0191307b02bfacafe21da06603a37433e57068a"},
 ]
 
 [package.dependencies]
@@ -4729,4 +4729,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10,<3.12"
-content-hash = "71458d2ba0ce0de352e5be5b3e32249b96d694a099a8504b1c8929e15c362509"
+content-hash = "c06de1676eaec3b503c9d5b33297206869401586c8ea33423fa5ee289234e973"
