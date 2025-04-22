@@ -1,4 +1,5 @@
 Tavily is a web service that provides real-time web search and retrieval capabilities through an API, enabling developers to fetch and extract relevant information from the internet in structured formats like JSON.
+This integration was integrated and tested with version xx of Tavily.
 
 ## Configure Tavily in Cortex
 
@@ -15,22 +16,24 @@ Tavily is a web service that provides real-time web search and retrieval capabil
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### extract
+### tavily-extract
 
 ***
+Extracts its content from the given url.
 
 #### Base Command
 
-`extract`
+`tavily-extract`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| urls | Comma-separated list of urls to extract. | Required | 
+| url | The url to extract its content. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tavily | list | List of dictionaries with URL and Content keys, both strings. | 
+| Tavily.URL | string | The give url to extract its content. | 
+| Tavily.Content | string | The extracted content from the given url. | 
