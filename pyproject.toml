@@ -22,7 +22,7 @@ blessings = "^1.7"
 PyGithub = "^2.2.0"
 gitpython = "^3.1.43"
 sendgrid = "^6.11"
-slack_sdk = "^3.31.0"
+slack_sdk = "^3.35.0"
 
 [tool.poetry.group.dev.dependencies]
 demisto-sdk = "1.37.3" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
