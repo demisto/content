@@ -1510,7 +1510,7 @@ def main():  # pragma: no cover
 
     except Exception as ex:
         return_err_or_warn(
-            f"Failed to execute {command} command." f"\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}"
+            f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}"
         )
     finally:
         kill_zombie_processes()
