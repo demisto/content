@@ -574,24 +574,26 @@ def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults
     policy_id = args.get('policy_id', '')
     tap_data = client.list_tap_policy(user_id, policy_id)
     tap_readable, tap_policy_output = parse_outputs(tap_data)
-    
+        
     if tap_readable and isinstance(tap_readable, list):
         tap_readable_dict = tap_readable[0]
+        tap_policy_output_dict = tap_policy_output[0]
     else:
         tap_readable_dict = tap_readable
-
+        tap_policy_output_dict = tap_policy_output
+        
     # change HR from ID to Policy ID
     # if isinstance(tap_readable_dict, dict):
+    tap_policy_output_dict.pop('TemporaryAccessPass')
     tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID')
         
     headers = ['Policy ID', 'Start Date Time', 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
-    human_readable = tableToMarkdown(name=f'TAP Policy for User ID {user_id}:', headers=headers, t=tap_readable_dict,
-                                     removeNull=True)
+    human_readable = tableToMarkdown(name=f'TAP Policy for User ID {user_id}:', headers=headers, t=tap_readable_dict)
     
     return CommandResults(
         outputs_prefix='MSGraphUser.TAPPolicy',
         outputs_key_field='ID',
-        outputs=tap_policy_output,
+        outputs=tap_policy_output_dict,
         readable_output=human_readable,
         raw_response=tap_data
     )
