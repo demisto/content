@@ -1,10 +1,10 @@
 import json
 from unittest.mock import patch
 
+import demistomock as demisto
 import pytest
 from CommonServerPython import DemistoException
-import demistomock as demisto
-from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES, Client
+from GSuiteAdmin import HR_MESSAGES, MESSAGES, OUTPUT_PREFIX, Client, GSuiteClient
 
 with open("test_data/service_account_json.txt") as f:
     TEST_JSON = f.read()
@@ -81,7 +81,7 @@ def test_test_function(mocker, gsuite_client):
     Then:
     - Ensure 'ok' should be return.
     """
-    from GSuiteAdmin import test_module, GSuiteClient
+    from GSuiteAdmin import GSuiteClient, test_module
 
     mocker.patch.object(GSuiteClient, "set_authorized_http")
     mocker.patch.object(GSuiteClient, "http_request")
@@ -159,8 +159,8 @@ def test_invalid_gsuite_mobile_update_command_command(mocker, gsuite_client, err
     Then:
         - Validate that the ambiguous error message is mapped to a more human readable error message.
     """
-    from GSuiteAdmin import mobile_update_command
     from CommonServerPython import DemistoException
+    from GSuiteAdmin import mobile_update_command
 
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=DemistoException(message=error_message))
     with pytest.raises(DemistoException) as e:
@@ -976,8 +976,8 @@ def test_invalid_chromeos_action_command(mocker, gsuite_client, error_message, p
     Then:
         - Validate that the ambiguous error message is mapped to a more human readable error message.
     """
-    from GSuiteAdmin import gsuite_chromeos_device_action_command
     from CommonServerPython import DemistoException
+    from GSuiteAdmin import gsuite_chromeos_device_action_command
 
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=DemistoException(message=error_message))
     with pytest.raises(DemistoException) as e:
@@ -1012,8 +1012,8 @@ def test_invalid_pagination_arguments(args, error_message):
     Then:
         - Validate that an exception is thrown in response to invalid pagination arguments.
     """
-    from GSuiteAdmin import prepare_pagination_arguments
     from CommonServerPython import DemistoException, arg_to_number
+    from GSuiteAdmin import prepare_pagination_arguments
 
     with pytest.raises(DemistoException) as e:
         prepare_pagination_arguments(
@@ -1033,8 +1033,8 @@ def test_chromeos_device_action(mocker, gsuite_client):
     Then:
         - A CommandResults is returned that marks the command as successful
     """
-    from GSuiteAdmin import gsuite_chromeos_device_action_command
     from CommonServerPython import CommandResults
+    from GSuiteAdmin import gsuite_chromeos_device_action_command
 
     expected_command_result = CommandResults(
         readable_output=HR_MESSAGES.get("CHROMEOS_DEVICE_ACTION_SUCCESS", "").format("resource_id"),
