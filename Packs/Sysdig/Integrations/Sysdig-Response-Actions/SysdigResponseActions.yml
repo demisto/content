@@ -41,6 +41,7 @@ script:
     - description: The caller ID, it must be unique every time
       name: callerId
       required: true
+      type: String
     - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
       name: container_id
       type: String
@@ -86,7 +87,7 @@ script:
       required: true
     - defaultvalue: 15
       description: 'Capture duration in seconds'
-      name: scap_duration
+      name: scan_duration
       type: Number
       required: true
     - description: 'Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi)'
@@ -102,7 +103,7 @@ script:
   - arguments:
     - description: System Capture ID
       name: capture_id
-      type: String
+      type: Number
       required: true
     description: Command to get a system capture based on the capture ID.
     name: get-capture-file

@@ -1,4 +1,4 @@
-id: 4c043586-8f9d-4c47-80b2-02288506f7e3
+id: Sysdig Trigger System Capture
 version: -1
 contentitemexportablefields:
   contentitemfields:
@@ -120,7 +120,7 @@ tasks:
         simple: ${incident.hostname}
       machine_id:
         simple: ${incident.macaddress}
-      scap_duration:
+      scan_duration:
         simple: "15"
     separatecontext: false
     continueonerrortype: ""

@@ -61,6 +61,9 @@ class Client(BaseClient):
             data: The data to use
             json_data: The JSON data to use
             resp_type: The response type to use
+            full_url: The full URL to use
+        Returns:
+            The response from the API
         '''
         demisto.debug(f"Calling endpoint: {self.base_url+url_suffix}")
         return self._http_request(
@@ -77,6 +80,11 @@ class Client(BaseClient):
 def _build_data_payload(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Parse the input parameters to the data payload to execute an action
+
+    Args:
+        args: The input parameters
+    Returns:
+        The data payload
     """
     data = {field: args.get(field) for field in RESPONSE_ACTIONS_REQUIRED_FIELDS}
 
@@ -108,7 +116,7 @@ def _build_capture_payload(args: Dict[str, Any]) -> Dict[str, Any]:
     # Extract required and optional fields with defaults
     data = {
         'containerId': args.get("container_id"),
-        'duration': args.get("scap_duration", 15),  # Default duration is 15 seconds
+        'duration': args.get("scan_duration", 15),  # Default duration is 15 seconds
         'hostName': args.get("host_name"),
         'name': args.get("capture_name"),
         'filters': args.get("scap_filter", ""),

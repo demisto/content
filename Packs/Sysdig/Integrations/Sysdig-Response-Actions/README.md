@@ -7,7 +7,7 @@ This integration was integrated and tested with version xx of SysdigResponseActi
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Your server URL |  | True |
-| API Key | The API Key to use for the connection | True |
+| Password | The API Key to use for the connection | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -61,7 +61,7 @@ Command to trigger a system capture, it will record all system calls at the host
 | agent_id | The agent ID. | Required | 
 | customer_id | The customer ID. | Required | 
 | machine_id | The machine ID/MAC. Example "01:aa:02:bb:03:cc". | Required | 
-| scap_duration | Capture duration in seconds. | Required | 
+| scan_duration | Capture duration in seconds. | Required | 
 | scap_filter | Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi). | Optional | 
 
 #### Context Output
