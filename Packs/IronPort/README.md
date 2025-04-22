@@ -2,8 +2,7 @@
 
 This pack includes Cortex XSIAM content.
 
-# Integration
-
+## Integration
 The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 
 ## What does this pack do?
