@@ -3040,7 +3040,7 @@ def get_client_host_list_detection_with_timeout(
         tuple[str, bool]: A tuple of raw API response body string and set_new_limit boolean (to make next API call smaller).
     """
     demisto.debug("Starting thread pool executor to get host list dectections.")
-    with ThreadPoolExecutor(max_workers=1) as executor:
+    with ThreadPoolExecutor(max_workers=1, thread_name_prefix="qualys_client_host_list_detections") as executor:
         future = executor.submit(client.get_host_list_detection, since_datetime, next_page, limit)
 
         try:
@@ -3053,6 +3053,10 @@ def get_client_host_list_detection_with_timeout(
             demisto.debug(f"Exceeded host list dectections thread timeout: {thread_timeout}. Setting new limit.")
             raw_response, set_new_limit = "", True  # empty response and set_new_limit = True due to timeout
 
+    demisto.debug(
+        "Finsihed getting host list dectections via thread pool executor. "
+        f"Raw response length: {len(raw_response)}. Set new limit: {set_new_limit}."
+    )
     return raw_response, set_new_limit
 
 
@@ -3072,17 +3076,22 @@ def get_host_list_detections_events(client, since_datetime, next_page="", limit=
 
     demisto.debug(f"Starting to get client host list dections with thread timeout: {HOST_LIST_DETECTIONS_THREAD_TIME_OUT}.")
     host_list_detections, set_new_limit = get_client_host_list_detection_with_timeout(client, since_datetime, next_page, limit)
-
+    demisto.debug(f"Finished getting client host list dections with thread timeout: {HOST_LIST_DETECTIONS_THREAD_TIME_OUT}.")
+    
     if not set_new_limit:
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
 
+        demisto.debug("Starting to parse asset detections from hosts.")
         assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (host_list_assets and not is_test) else ([], False)
-        demisto.debug(f"Parsed detections from hosts, created {len(assets)=} assets.")
+        demisto.debug(f"Finished parsing asset detections from hosts, created {len(assets)} assets.")
 
         if not set_new_limit:
+            demisto.debug(f"Adding fields to {len(assets)} parsed asset detections.")
             add_fields_to_events(assets, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+            demisto.debug(f"Extracting next page from URL: {next_url}.")
             next_page = get_next_page_from_url(next_url, "id_min")
 
+    demisto.debug(f"Created {len(assets)} assets. Next page: {next_page}. Set new limit: {set_new_limit}.")
     return assets, next_page, set_new_limit
 
 
@@ -3185,10 +3194,11 @@ def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
         dict: Updated next assets run.
     """
     new_limit = int(limit / 2) if limit > 1 else 1
-    demisto.debug(f"Setting host limit to: {new_limit}")
+    demisto.debug(f"Starting setting host limit to: {new_limit}.")
     last_run["limit"] = new_limit
     last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
     last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
+    demisto.debug(f"Finished setting host limit to: {new_limit}.")
     return last_run
 
 
@@ -3414,6 +3424,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     if fetch_stage == "assets":
         demisto.debug(f"Starting fetch for assets, {EXECUTION_START_TIME=}")
         assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
+        demisto.debug("Finished fetch for assets.")
 
         # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
         if set_new_limit or check_fetch_assets_duration_time_exceeded(EXECUTION_START_TIME):
@@ -3757,6 +3768,7 @@ def main():  # pragma: no cover
         },
     }
 
+    demisto.debug("Running custom version of QualysV2 with additional logs.")
     demisto.debug(f"Command being called is {command}")
     try:
         headers: dict = {"X-Requested-With": "Cortex"}
