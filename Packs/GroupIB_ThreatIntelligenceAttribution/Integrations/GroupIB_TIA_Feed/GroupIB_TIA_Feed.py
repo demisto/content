@@ -1,559 +1,853 @@
-"""IMPORTS"""
-
-from collections.abc import Generator
-
-import dateparser
 import demistomock as demisto
-import urllib3
 from CommonServerPython import *
-from requests.auth import HTTPBasicAuth
-
 from CommonServerUserPython import *
 
+""" IMPORTS """
+
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3 import disable_warnings as urllib3_disable_warnings
+from cyberintegrations import TIPoller
+from traceback import format_exc
+
 # Disable insecure warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3_disable_warnings(InsecureRequestWarning)
+
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-# todo: add all necessary field types
-COMMON_FIELD_TYPES = ["trafficlightprotocol"]
-DATE_FIELDS_LIST = ["creationdate", "firstseenbysource", "lastseenbysource", "gibdatecompromised"]
 
-IP_COMMON_FIELD_TYPES = ["asn", "geocountry", "geolocation"]
 
-EVALUATION_FIELDS = ["evaluation.reliability", "evaluation.credibility", "evaluation.admiraltyCode", "evaluation.severity"]
-EVALUATION_FIELD_TYPES = ["gibreliability", "gibcredibility", "gibadmiraltycode", "gibseverity"]
-
-MALWARE_FIELDS = ["malware.name"]
-MALWARE_FIELD_TYPES = ["gibmalwarename"]
-
-THREAT_ACTOR_FIELDS = ["threatActor.name", "threatActor.isAPT", "threatActor.id"]
-THREAT_ACTOR_FIELD_TYPES = ["gibthreatactorname", "gibthreatactorisapt", "gibthreatactorid"]
-
-MAPPING: dict = {
-    "compromised/mule": {
-        "indicators": [
-            {
-                "main_field": "account",
-                "main_field_type": "GIB Compromised Mule",
-                "add_fields": ["dateAdd", "sourceType", *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS],
-                "add_fields_types": [
-                    "creationdate",
-                    "source",
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    *EVALUATION_FIELD_TYPES,
-                ],
+COMMON_MAPPING = {
+    "compromised/account_group": {
+        "types": {
+            "event_url": "URL",
+            "event_domain": "Domain",
+            "events_ipv4_ip": "IP",
+            "service_url": "URL",
+        },
+        "add_fields_types": {
+            "event_url": {
+                "id": "gibid",
             },
-            {
-                "main_field": "cnc.url",
-                "main_field_type": "URL",
-                "add_fields": [*MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS],
-                "add_fields_types": [*MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES],
+            "event_domain": {
+                "id": "gibid",
             },
-            {
-                "main_field": "cnc.domain",
-                "main_field_type": "Domain",
-                "add_fields": [*MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS],
-                "add_fields_types": [*MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES],
+            "events_ipv4_ip": {
+                "id": "gibid",
+                "asn": "asn",
+                "country_name": "geocountry",
+                "region": "geolocation",
             },
-            {
-                "main_field": "cnc.ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "cnc.ipv4.asn",
-                    "cnc.ipv4.countryName",
-                    "cnc.ipv4.region",
-                    *MALWARE_FIELDS,
-                    *THREAT_ACTOR_FIELDS,
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    *IP_COMMON_FIELD_TYPES,
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    *EVALUATION_FIELD_TYPES,
-                ],
+            "service_url": {
+                "id": "gibid",
             },
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "event_url": "events.cnc.url",
+            "event_domain": "events.cnc.domain",
+            "events_ipv4_ip": "events.cnc.ipv4.ip",
+            "asn": "events.client.ipv4.asn",
+            "country_name": "events.client.ipv4.countryName",
+            "region": "events.client.ipv4.region",
+            "service_url": "service.url",
+        },
     },
-    "compromised/imei": {
-        "indicators": [
-            {
-                "main_field": "cnc.url",
-                "main_field_type": "URL",
-                "add_fields": [*MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS],
-                "add_fields_types": [*MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES],
+    "compromised/bank_card_group": {
+        "types": {
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "cnc_url": {
+                "id": "gibid",
             },
-            {
-                "main_field": "cnc.domain",
-                "main_field_type": "Domain",
-                "add_fields": [*MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS],
-                "add_fields_types": [*MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES],
+            "cnc_domain": {
+                "id": "gibid",
             },
-            {
-                "main_field": "cnc.ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "cnc.ipv4.asn",
-                    "cnc.ipv4.countryName",
-                    "cnc.ipv4.region",
-                    *MALWARE_FIELDS,
-                    *THREAT_ACTOR_FIELDS,
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    *IP_COMMON_FIELD_TYPES,
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    *EVALUATION_FIELD_TYPES,
-                ],
+            "cnc_ipv4_ip": {
+                "id": "gibid",
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
             },
-            {
-                "main_field": "device.imei",
-                "main_field_type": "GIB Compromised IMEI",
-                "add_fields": [
-                    "dateDetected",
-                    "dateCompromised",
-                    "device.model",
-                    "client.ipv4.asn",
-                    "client.ipv4.countryName",
-                    "client.ipv4.region",
-                    "client.ipv4.ip",
-                    *MALWARE_FIELDS,
-                    *THREAT_ACTOR_FIELDS,
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    "creationdate",
-                    "gibdatecompromised",
-                    "devicemodel",
-                    *IP_COMMON_FIELD_TYPES,
-                    "ipaddress",
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    *EVALUATION_FIELD_TYPES,
-                ],
+        },
+        "parser_mapping": {
+            "id": "id",
+            "cnc_url": "events.cnc.url",
+            "cnc_domain": "events.cnc.domain",
+            "cnc_ipv4_ip": "events.cnc.ipv4.ip",
+            "cnc_ipv4_asn": "events.cnc.ipv4.asn",
+            "cnc_ipv4_country_name": "events.cnc.ipv4.countryName",
+            "cnc_ipv4_region": "events.cnc.ipv4.region",
+        },
+    },
+    "compromised/mule": {
+        "types": {
+            "account": "GIB Compromised Mule",
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "account": {
+                "id": "gibid",
+                "date_add": "creationdate",
+                "source_type": "source",
+                "malware_name": "gibmalwarename",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             },
-        ]
+            "cnc_url": {
+                "id": "gibid",
+                "malware_name": "gibmalwarename",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+            },
+            "cnc_domain": {
+                "id": "gibid",
+                "malware_name": "gibmalwarename",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+            },
+            "cnc_ipv4_ip": {
+                "id": "gibid",
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
+                "malware_name": "gibmalwarename",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+            },
+        },
+        "parser_mapping": {
+            "id": "id",
+            "account": "account",
+            "date_add": "dateAdd",
+            "source_type": "sourceType",
+            "malware_name": "malware.name",
+            "threat_actor_name": "threatActor.name",
+            "threat_actor_is_apt": "threatActor.isAPT",
+            "threat_actor_id": "threatActor.id",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+            "cnc_url": "cnc.url",
+            "cnc_domain": "cnc.domain",
+            "cnc_ipv4_ip": "cnc.ipv4.ip",
+            "cnc_ipv4_asn": "cnc.ipv4.asn",
+            "cnc_ipv4_country_name": "cnc.ipv4.countryName",
+            "cnc_ipv4_region": "cnc.ipv4.region",
+        },
     },
     "attacks/ddos": {
-        "indicators": [
-            {
-                "main_field": "cnc.url",
-                "main_field_type": "URL",
-                "add_fields": [
-                    *MALWARE_FIELDS,
-                    *THREAT_ACTOR_FIELDS,
-                    *EVALUATION_FIELDS,
-                    "dateBegin",
-                    "dateEnd",
-                ],
-                "add_fields_types": [
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    *EVALUATION_FIELD_TYPES,
-                    "firstseenbysource",
-                    "lastseenbysource",
-                ],
+        "types": {
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
+            "target_ipv4_ip": "GIB Victim IP",
+        },
+        "add_fields_types": {
+            "cnc_url": {
+                "id": "gibid",
+                "malware_name": "gibmalwarename",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "date_begin": "firstseenbysource",
+                "date_end": "lastseenbysource",
             },
-            {
-                "main_field": "cnc.domain",
-                "main_field_type": "Domain",
-                "add_fields": [
-                    *MALWARE_FIELDS,
-                    *THREAT_ACTOR_FIELDS,
-                    *EVALUATION_FIELDS,
-                    "dateBegin",
-                    "dateEnd",
-                ],
-                "add_fields_types": [
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    *EVALUATION_FIELD_TYPES,
-                    "firstseenbysource",
-                    "lastseenbysource",
-                ],
+            "cnc_domain": {
+                "id": "gibid",
+                "malware_name": "gibmalwarename",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "date_begin": "firstseenbysource",
+                "date_end": "lastseenbysource",
             },
-            {
-                "main_field": "cnc.ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "cnc.ipv4.asn",
-                    "cnc.ipv4.countryName",
-                    "cnc.ipv4.region",
-                    *MALWARE_FIELDS,
-                    *THREAT_ACTOR_FIELDS,
-                    *EVALUATION_FIELDS,
-                    "dateBegin",
-                    "dateEnd",
-                ],
-                "add_fields_types": [
-                    *IP_COMMON_FIELD_TYPES,
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    *EVALUATION_FIELD_TYPES,
-                    "firstseenbysource",
-                    "lastseenbysource",
-                ],
+            "cnc_ipv4_ip": {
+                "id": "gibid",
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
+                "malware_name": "gibmalwarename",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "date_begin": "firstseenbysource",
+                "date_end": "lastseenbysource",
             },
-            {
-                "main_field": "target.ipv4.ip",
-                "main_field_type": "GIB Victim IP",
-                "add_fields": [
-                    "target.ipv4.asn",
-                    "target.ipv4.countryName",
-                    "target.ipv4.region",
-                    *MALWARE_FIELDS,
-                    *THREAT_ACTOR_FIELDS,
-                    "dateBegin",
-                    "dateEnd",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    *IP_COMMON_FIELD_TYPES,
-                    *MALWARE_FIELD_TYPES,
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    "firstseenbysource",
-                    "lastseenbysource",
-                    *EVALUATION_FIELD_TYPES,
-                ],
+            "target_ipv4_ip": {
+                "id": "gibid",
+                "target_ipv4_asn": "asn",
+                "target_ipv4_country_name": "geocountry",
+                "target_ipv4_region": "geolocation",
+                "malware_name": "malware.name",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "date_begin": "firstseenbysource",
+                "date_end": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             },
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "malware_name": "malware.name",
+            "threat_actor_name": "threatActor.name",
+            "threat_actor_is_apt": "threatActor.isAPT",
+            "threat_actor_id": "threatActor.id",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+            "date_begin": "dateBegin",
+            "date_end": "dateEnd",
+            "cnc_url": "cnc.url",
+            "cnc_domain": "cnc.domain",
+            "cnc_ipv4_ip": "cnc.ipv4.ip",
+            "cnc_ipv4_asn": "cnc.ipv4.asn",
+            "cnc_ipv4_country_name": "cnc.ipv4.countryName",
+            "cnc_ipv4_region": "cnc.ipv4.region",
+            "target_ipv4_ip": "target.ipv4.ip",
+            "target_ipv4_asn": "target.ipv4.asn",
+            "target_ipv4_country_name": "target.ipv4.countryName",
+            "target_ipv4_region": "target.ipv4.region",
+        },
     },
     "attacks/deface": {
-        "indicators": [
-            {
-                "main_field": "url",
-                "main_field_type": "URL",
-                "add_fields": [*THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES],
+        "types": {"url": "URL", "target_domain": "Domain", "target_ip_ip": "IP"},
+        "add_fields_types": {
+            "url": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             },
-            {
-                "main_field": "targetDomain",
-                "main_field_type": "Domain",
-                "add_fields": [*THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES],
+            "target_domain": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             },
-            {
-                "main_field": "targetIp.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "targetIp.asn",
-                    "targetIp.countryName",
-                    "targetIp.region",
-                    *THREAT_ACTOR_FIELDS,
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [*IP_COMMON_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES],
+            "target_ip_ip": {
+                "id": "gibid",
+                "target_ip_asn": "asn",
+                "target_ip_country_name": "geocountry",
+                "target_ip_region": "geolocation",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             },
-        ]
-    },
-    "attacks/phishing": {
-        "indicators": [
-            {
-                "main_field": "url",
-                "main_field_type": "URL",
-                "add_fields": ["type", *EVALUATION_FIELDS],
-                "add_fields_types": ["gibphishingtype", *EVALUATION_FIELD_TYPES],
-            },
-            {
-                "main_field": "phishingDomain.domain",
-                "main_field_type": "Domain",
-                "add_fields": [
-                    "phishingDomain.dateRegistered",
-                    "dateDetected",
-                    "phishingDomain.registrar",
-                    "phishingDomain.title",
-                    "targetBrand",
-                    "targetCategory",
-                    "targetDomain",
-                    "type",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    "creationdate",
-                    "firstseenbysource",
-                    "registrarname",
-                    "gibphishingtitle",
-                    "gibtargetbrand",
-                    "gibtargetcategory",
-                    "gibtargetdomain",
-                    "gibphishingtype",
-                    *EVALUATION_FIELD_TYPES,
-                ],
-            },
-            {
-                "main_field": "ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": ["ipv4.asn", "ipv4.countryName", "ipv4.region", "type", *EVALUATION_FIELDS],
-                "add_fields_types": [*IP_COMMON_FIELD_TYPES, "gibphishingtype", *EVALUATION_FIELD_TYPES],
-            },
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "url": "url",
+            "target_domain": "targetDomain",
+            "target_ip_ip": "targetIp.ip",
+            "target_ip_asn": "targetIp.asn",
+            "target_ip_country_name": "targetIp.countryName",
+            "target_ip_region": "targetIp.region",
+            "threat_actor_name": "threatActor.name",
+            "threat_actor_is_apt": "threatActor.isAPT",
+            "threat_actor_id": "threatActor.id",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
     },
     "attacks/phishing_kit": {
-        "indicators": [
-            {
-                "main_field": "emails",
-                "main_field_type": "Email",
-                "add_fields": ["dateFirstSeen", "dateLastSeen", *EVALUATION_FIELDS],
-                "add_fields_types": ["firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+        "types": {
+            "emails": "Email",
+        },
+        "add_fields_types": {
+            "emails": {
+                "id": "gibid",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             }
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "emails": "emails",
+            "date_first_seen": "dateFirstSeen",
+            "date_last_seen": "dateLastSeen",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
+    },
+    "attacks/phishing_group": {
+        "types": {
+            "url": "URL",
+            "phishing_domain_domain": "Domain",
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "url": {
+                "id": "gibid",
+            },
+            "phishing_domain_domain": {
+                "id": "gibid",
+                "phishing_domain_registrar": "registrarname",
+            },
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_country_name": "geocountry",
+            },
+        },
+        "parser_mapping": {
+            "id": "id",
+            "url": "phishing.url",
+            "phishing_domain_registrar": "domainInfo.registrar",
+            "ipv4_ip": "phishing.ip.ip",
+            "ipv4_country_mame": "phishing.ip.countryName",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
     },
     "apt/threat": {
-        "indicators": [
-            {
-                "main_field": "indicators.params.ipv4",
-                "main_field_type": "IP",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "indicators.dateFirstSeen", "indicators.dateLastSeen", *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+        "types": {
+            "indicators_params_ipv4": "IP",
+            "indicators_params_domain": "Domain",
+            "indicators_params_url": "URL",
+            "indicators_params_hashes_md5": "File",
+        },
+        "add_fields_types": {
+            "indicators_params_ipv4": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "indicators.params.domain",
-                "main_field_type": "Domain",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "indicators.dateFirstSeen", "indicators.dateLastSeen", *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+            "indicators_params_domain": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "indicators.params.url",
-                "main_field_type": "URL",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "indicators.dateFirstSeen", "indicators.dateLastSeen", *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+            "indicators_params_url": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "indicators.params.hashes.md5",
-                "main_field_type": "File",
-                "add_fields": [
-                    "indicators.params.name",
-                    "indicators.params.hashes.md5",
-                    "indicators.params.hashes.sha1",
-                    "indicators.params.hashes.sha256",
-                    "indicators.params.size",
-                    *THREAT_ACTOR_FIELDS,
-                    "indicators.dateFirstSeen",
-                    "indicators.dateLastSeen",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    "gibfilename",
-                    "md5",
-                    "sha1",
-                    "sha256",
-                    "size",
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    "firstseenbysource",
-                    "lastseenbysource",
-                    *EVALUATION_FIELD_TYPES,
-                ],
+            "indicators_params_hashes_md5": {
+                "id": "gibid",
+                "indicators_params_name": "gibfilename",
+                "indicators_params_hashes_md5": "md5",
+                "indicators_params_hashes_sha1": "sha1",
+                "indicators_params_hashes_sha256": "sha256",
+                "indicators_params_size": "size",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "indicators_params_ipv4": "indicators.params.ipv4",
+            "indicators_params_domain": "indicators.params.domain",
+            "indicators_params_url": "indicators.params.url",
+            "indicators_params_hashes_md5": "indicators.params.hashes.md5",
+            "threat_actor_name": "threatActor.name",
+            "threat_actor_is_apt": "threatActor.isAPT",
+            "threat_actor_id": "threatActor.id",
+            "indicators_date_first_seen": "indicators.dateFirstSeen",
+            "indicators_date_last_seen": "indicators.dateLastSeen",
+            "indicators_params_name": "indicators.params.name",
+            "indicators_params_hashes_sha1": "indicators.params.hashes.sha1",
+            "indicators_params_hashes_sha256": "indicators.params.hashes.sha256",
+            "indicators_params_size": "indicators.params.size",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+            "malware_list_names": "malwareList.name",
+        },
     },
     "hi/threat": {
-        "indicators": [
-            {
-                "main_field": "indicators.params.ipv4",
-                "main_field_type": "IP",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "indicators.dateFirstSeen", "indicators.dateLastSeen", *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+        "types": {
+            "indicators_params_ipv4": "IP",
+            "indicators_params_domain": "Domain",
+            "indicators_params_url": "URL",
+            "indicators_params_hashes_md5": "File",
+        },
+        "add_fields_types": {
+            "indicators_params_ipv4": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "indicators.params.domain",
-                "main_field_type": "Domain",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "indicators.dateFirstSeen", "indicators.dateLastSeen", *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+            "indicators_params_domain": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "indicators.params.url",
-                "main_field_type": "URL",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "indicators.dateFirstSeen", "indicators.dateLastSeen", *EVALUATION_FIELDS],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+            "indicators_params_url": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "indicators.params.hashes.md5",
-                "main_field_type": "File",
-                "add_fields": [
-                    "indicators.params.name",
-                    "indicators.params.hashes.md5",
-                    "indicators.params.hashes.sha1",
-                    "indicators.params.hashes.sha256",
-                    "indicators.params.size",
-                    *THREAT_ACTOR_FIELDS,
-                    "indicators.dateFirstSeen",
-                    "indicators.dateLastSeen",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    "gibfilename",
-                    "md5",
-                    "sha1",
-                    "sha256",
-                    "size",
-                    *THREAT_ACTOR_FIELD_TYPES,
-                    "firstseenbysource",
-                    "lastseenbysource",
-                    *EVALUATION_FIELD_TYPES,
-                ],
+            "indicators_params_hashes_md5": {
+                "id": "gibid",
+                "indicators_params_name": "gibfilename",
+                "indicators_params_hashes_md5": "md5",
+                "indicators_params_hashes_sha1": "sha1",
+                "indicators_params_hashes_sha256": "sha256",
+                "indicators_params_size": "size",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "indicators_date_first_seen": "firstseenbysource",
+                "indicators_date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+                "malware_list_names": "gibmalwarename",
             },
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "indicators_params_ipv4": "indicators.params.ipv4",
+            "indicators_params_domain": "indicators.params.domain",
+            "indicators_params_url": "indicators.params.url",
+            "indicators_params_hashes_md5": "indicators.params.hashes.md5",
+            "threat_actor_name": "threatActor.name",
+            "threat_actor_is_apt": "threatActor.isAPT",
+            "threat_actor_id": "threatActor.id",
+            "indicators_date_first_seen": "indicators.dateFirstSeen",
+            "indicators_date_last_seen": "indicators.dateLastSeen",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+            "indicators_params_name": "indicators.params.name",
+            "indicators_params_hashes_sha1": "indicators.params.hashes.sha1",
+            "indicators_params_hashes_sha256": "indicators.params.hashes.sha256",
+            "indicators_params_size": "indicators.params.size",
+            "malware_list_names": "malwareList.name",
+        },
     },
     "suspicious_ip/tor_node": {
-        "indicators": [
-            {
-                "main_field": "ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "ipv4.asn",
-                    "ipv4.countryName",
-                    "ipv4.region",
-                    "dateFirstSeen",
-                    "dateLastSeen",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [*IP_COMMON_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_country_mame": "geocountry",
+                "ipv4_region": "geolocation",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             }
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_mame": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+            "date_first_seen": "dateFirstSeen",
+            "date_last_seen": "dateLastSeen",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
     },
     "suspicious_ip/open_proxy": {
-        "indicators": [
-            {
-                "main_field": "ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "ipv4.asn",
-                    "ipv4.countryName",
-                    "ipv4.region",
-                    "port",
-                    "anonymous",
-                    "source",
-                    "dateFirstSeen",
-                    "dateDetected",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    *IP_COMMON_FIELD_TYPES,
-                    "gibproxyport",
-                    "gibproxyanonymous",
-                    "source",
-                    "firstseenbysource",
-                    "lastseenbysource",
-                    *EVALUATION_FIELD_TYPES,
-                ],
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_country_mame": "geocountry",
+                "ipv4_region": "geolocation",
+                "port": "gibproxyport",
+                "anonymous": "gibproxyanonymous",
+                "source": "source",
+                "date_first_seen": "firstseenbysource",
+                "date_detected": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             }
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_mame": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+            "port": "port",
+            "anonymous": "anonymous",
+            "source": "source",
+            "date_first_seen": "dateFirstSeen",
+            "date_detected": "dateDetected",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
     },
     "suspicious_ip/socks_proxy": {
-        "indicators": [
-            {
-                "main_field": "ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "ipv4.asn",
-                    "ipv4.countryName",
-                    "ipv4.region",
-                    "dateFirstSeen",
-                    "dateLastSeen",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [*IP_COMMON_FIELD_TYPES, "firstseenbysource", "lastseenbysource", *EVALUATION_FIELD_TYPES],
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_country_mame": "geocountry",
+                "ipv4_region": "geolocation",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             }
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_mame": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+            "date_first_seen": "dateFirstSeen",
+            "date_last_seen": "dateLastSeen",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
+    },
+    "suspicious_ip/vpn": {
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_country_mame": "geocountry",
+                "ipv4_region": "geolocation",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
+            }
+        },
+        "parser_mapping": {
+            "id": "id",
+            "date_first_seen": "dateFirstSeen",
+            "date_last_seen": "dateLastSeen",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_mame": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
+    },
+    "suspicious_ip/scanner": {
+        "types": {
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_countr_mame": "geocountry",
+                "ipv4_region": "geolocation",
+            },
+        },
+        "parser_mapping": {
+            "id": "id",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_name": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+        },
     },
     "malware/cnc": {
-        "indicators": [
-            {
-                "main_field": "url",
-                "main_field_type": "URL",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "dateDetected", "dateLastSeen"],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource"],
+        "types": {
+            "url": "URL",
+            "domain": "Domain",
+            "ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "url": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "date_detected": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "domain",
-                "main_field_type": "Domain",
-                "add_fields": [*THREAT_ACTOR_FIELDS, "dateDetected", "dateLastSeen"],
-                "add_fields_types": [*THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource"],
+            "domain": {
+                "id": "gibid",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "date_detected": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "malware_list_names": "gibmalwarename",
             },
-            {
-                "main_field": "ipv4.ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "ipv4.asn",
-                    "ipv4.countryName",
-                    "ipv4.region",
-                    *THREAT_ACTOR_FIELDS,
-                    "dateDetected",
-                    "dateLastSeen",
-                ],
-                "add_fields_types": [*IP_COMMON_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, "firstseenbysource", "lastseenbysource"],
+            "ipv4_ip": {
+                "id": "gibid",
+                "ipv4_asn": "asn",
+                "ipv4_country_mame": "geocountry",
+                "ipv4_region": "geolocation",
+                "threat_actor_name": "gibthreatactorname",
+                "threat_actor_is_apt": "gibthreatactorisapt",
+                "threat_actor_id": "gibthreatactorid",
+                "date_detected": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
+                "malware_list_names": "gibmalwarename",
             },
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "url": "url",
+            "domain": "domain",
+            "ipv4_ip": "ipv4.ip",
+            "ipv4_asn": "ipv4.asn",
+            "ipv4_country_mame": "ipv4.countryName",
+            "ipv4_region": "ipv4.region",
+            "threat_actor_name": "threatActor.name",
+            "threat_actor_is_apt": "threatActor.isAPT",
+            "threat_actor_id": "threatActor.id",
+            "date_detected": "dateDetected",
+            "date_last_seen": "dateLastSeen",
+            "malware_list_names": "malwareList.name",
+        },
     },
     "osi/vulnerability": {
-        "indicators": [
-            {
-                "main_field": "id",
-                "main_field_type": "CVE",
-                "add_fields": [
-                    "cvss.score",
-                    "cvss.vector",
-                    "softwareMixed",
-                    "description",
-                    "dateModified",
-                    "datePublished",
-                    *EVALUATION_FIELDS,
-                ],
-                "add_fields_types": [
-                    "cvss",
-                    "gibcvssvector",
-                    "gibsoftwaremixed",
-                    "cvedescription",
-                    "cvemodified",
-                    "published",
-                    *EVALUATION_FIELD_TYPES,
-                ],
+        "types": {
+            "id": "CVE",
+        },
+        "add_fields_types": {
+            "id": {
+                "id": "gibid",
+                "cvss_score": "cvss",
+                "cvss_vector": "gibcvssvector",
+                "software_mixed": "gibsoftwaremixed",
+                "description": "cvedescription",
+                "date_modified": "cvemodified",
+                "date_published": "published",
+                "evaluation_reliability": "gibreliability",
+                "evaluation_credibility": "gibcredibility",
+                "evaluation_admiralty_code": "gibadmiraltycode",
+                "evaluation_severity": "gibseverity",
             }
-        ]
+        },
+        "markdowns": {
+            "software_mixed": (
+                "| Software Name | Software Type | Software Version |\n"
+                "| ------------- | ------------- | ---------------- |\n"
+            )
+        },
+        "parser_mapping": {
+            "id": "id",
+            "cvss_score": "cvss.score",
+            "cvss_vector": "cvss.vector",
+            "software_mixed": {
+                "names": "softwareMixed.softwareName",
+                "types": "softwareMixed.softwareType",
+                "versions": "softwareMixed.softwareVersion",
+            },
+            "description": "description",
+            "date_modified": "dateModified",
+            "date_published": "datePublished",
+            "evaluation_reliability": "evaluation.reliability",
+            "evaluation_credibility": "evaluation.credibility",
+            "evaluation_admiralty_code": "evaluation.admiraltyCode",
+            "evaluation_severity": "evaluation.severity",
+        },
+    },
+    "osi/git_repository": {
+        "types": {
+            "contributors_emails": "Email",
+            "hash": "GIB Hash",
+        },
+        "add_fields_types": {
+            "contributors_emails": {
+                "id": "gibid",
+            },
+            "hash": {
+                "id": "gibid",
+            },
+        },
+        "parser_mapping": {
+            "id": "id",
+            "hash": "files.revisions.hash",
+            "contributors_emails": "contributors.authorEmail",
+        },
     },
     "ioc/common": {
-        "indicators": [
-            {
-                "main_field": "url",
-                "main_field_type": "URL",
-                "add_fields": [
-                    "dateFirstSeen",
-                    "dateLastSeen",
-                ],
-                "add_fields_types": [
-                    "firstseenbysource",
-                    "lastseenbysource",
-                ],
+        "types": {
+            "url": "URL",
+            "domain": "Domain",
+            "ip": "IP",
+        },
+        "add_fields_types": {
+            "url": {
+                "id": "gibid",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
             },
-            {
-                "main_field": "domain",
-                "main_field_type": "Domain",
-                "add_fields": [
-                    "dateFirstSeen",
-                    "dateLastSeen",
-                ],
-                "add_fields_types": [
-                    "firstseenbysource",
-                    "lastseenbysource",
-                ],
+            "domain": {
+                "id": "gibid",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
             },
-            {
-                "main_field": "ip",
-                "main_field_type": "IP",
-                "add_fields": [
-                    "dateFirstSeen",
-                    "dateLastSeen",
-                ],
-                "add_fields_types": [
-                    "firstseenbysource",
-                    "lastseenbysource",
-                ],
+            "ip": {
+                "id": "gibid",
+                "date_first_seen": "firstseenbysource",
+                "date_last_seen": "lastseenbysource",
             },
-        ]
+        },
+        "parser_mapping": {
+            "id": "id",
+            "url": "url",
+            "domain": "domain",
+            "ip": "ip",
+            "date_first_seen": "dateFirstSeen",
+            "date_last_seen": "dateLastSeen",
+        },
     },
 }
+
+COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = [
+    "osi/git_repository",
+    "osi/public_leak",
+    "compromised/breached",
+]
 
 
 class Client(BaseClient):
@@ -562,93 +856,43 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def create_update_generator(
-        self, collection_name: str, date_from: str | None = None, seq_update: int | str | None = None, limit: int = 200
-    ) -> Generator:
-        """
-        Creates generator of lists with feeds class objects for an update session
-        (feeds are sorted in ascending order) `collection_name` with set parameters.
-
-        `seq_update` allows you to receive all relevant feeds. Such a request uses the seq_update parameter,
-        you will receive a portion of feeds that starts with the next `seq_update` parameter for the current collection.
-        For all feeds in the Group IB Intelligence continuous numbering is carried out.
-        For example, the `seq_update` equal to 1999998 can be in the `compromised/accounts` collection,
-        and a feed with seq_update equal to 1999999 can be in the `attacks/ddos` collection.
-        If item updates (for example, if new attacks were associated with existing APT by our specialists
-        or tor node has been detected as active again), the item gets a new parameter and it automatically rises
-        in the database and "becomes relevant" again.
-
-        :param collection_name: collection to update.
-        :param date_from: start date of update session.
-        :param seq_update: identification number from which to start the session.
-        :param limit: size of portion in iteration.
-        """
-
-        while True:
-            session = requests.Session()
-            session.auth = HTTPBasicAuth(self._auth[0], self._auth[1])
-
-            session.headers["Accept"] = "*/*"
-            session.headers["User-Agent"] = f"SOAR/CortexSOAR/{self._auth[0]}/unknown"
-
-            params = {"df": date_from, "limit": limit, "seqUpdate": seq_update}
-            params = {key: value for key, value in params.items() if value}
-            portion = session.get(url=f"{self._base_url}{collection_name}/updated", params=params, timeout=60).json()
-
-            # product = f'SOAR/CortexSOAR/Username/unkown}'
-            # portion = self._http_request(method="GET", url_suffix=collection_name + '/updated',
-            #                              params=params, timeout=60.,
-            #                              retries=4, status_list_to_retry=[429, 500])
-            if portion.get("count") == 0:
-                break
-            seq_update = portion.get("seqUpdate")
-            date_from = None
-            yield portion.get("items")
-
-    def create_search_generator(self, collection_name: str, date_from: str = None, limit: int = 200) -> Generator:
-        """
-        Creates generator of lists with feeds for the search session
-        (feeds are sorted in descending order) for `collection_name` with set parameters.
-
-        :param collection_name: collection to search.
-        :param date_from: start date of search session.
-        :param limit: size of portion in iteration.
-        """
-
-        result_id = None
-        while True:
-            session = requests.Session()
-            session.auth = HTTPBasicAuth(self._auth[0], self._auth[1])
-
-            session.headers["Accept"] = "*/*"
-            session.headers["User-Agent"] = f"SOAR/CortexSOAR/{self._auth[0]}/unknown"
-
-            params = {"df": date_from, "limit": limit, "resultId": result_id}
-            params = {key: value for key, value in params.items() if value}
-            portion = session.get(url=f"{self._base_url}{collection_name}", params=params, timeout=60).json()
-            # params = {'df': date_from, 'limit': limit, 'resultId': result_id}
-            # params = {key: value for key, value in params.items() if value}
-            # portion = self._http_request(method="GET", url_suffix=collection_name,
-            #                              params=params, timeout=60.,
-            #                              retries=4, status_list_to_retry=[429, 500])
-            if len(portion.get("items")) == 0:
-                break
-            result_id = portion.get("resultId")
-            date_from = None
-            yield portion.get("items")
-
-    def search_feed_by_id(self, collection_name: str, feed_id: str) -> dict:
-        """
-        Searches for feed with `feed_id` in collection with `collection_name`.
-
-        :param collection_name: in what collection to search.
-        :param feed_id: id of feed to search.
-        """
-
-        portion = self._http_request(
-            method="GET", url_suffix=collection_name + "/" + feed_id, timeout=60.0, retries=4, status_list_to_retry=[429, 500]
+    def __init__(self, base_url, verify=True, proxy=False, headers=None, auth=None):
+        super().__init__(
+            base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth
         )
-        return portion
+
+        self._auth: tuple[str, str]
+        self.poller = TIPoller(
+            username=self._auth[0],
+            api_key=self._auth[1],
+            api_url=base_url,
+        )
+        self.poller.set_product(
+            product_type="SOAR",
+            product_name="CortexSOAR",
+            product_version="unknown",
+            integration_name="Group-IB Threat Intelligence",
+            integration_version="2.0.0",
+        )
+
+    def create_update_generator_proxy_functions(
+        self,
+        collection_name: str,
+        date_from: str | None = None,
+        sequpdate: int | str | None = None,
+        apply_hunting_rules: int | str | None = None,
+        limit: int | str | None = None,
+    ):
+        return self.poller.create_update_generator(
+            collection_name=collection_name,
+            date_from=date_from,
+            sequpdate=sequpdate,
+            apply_hunting_rules=apply_hunting_rules,
+            limit=limit,
+        )
+
+    def get_available_collections_proxy_function(self) -> list:
+        return self.poller.get_available_collections()
 
 
 def test_module(client: Client) -> str:
@@ -658,190 +902,374 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI&A_Feed client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-
-    generator = client.create_update_generator(collection_name="compromised/mule", limit=10)
-    generator.__next__()
+    test = client.get_available_collections_proxy_function()
+    if len(test) == 0:
+        return "There are no collections available"
     return "ok"
 
 
 """ Support functions """
 
 
-def find_element_by_key(obj, key):
-    """
-    Recursively finds element or elements in dict.
-    """
+class IndicatorBuilding:
+    fields_list_for_parse = [
+        "creationdate",
+        "firstseenbysource",
+        "lastseenbysource",
+        "gibdatecompromised",
+    ]
 
-    path = key.split(".", 1)
-    if len(path) == 1:
-        if isinstance(obj, list):
-            return [i.get(path[0]) for i in obj]
-        elif isinstance(obj, dict):
-            return obj.get(path[0])
-        else:
-            return obj
-    else:
-        if isinstance(obj, list):
-            return [find_element_by_key(i.get(path[0]), path[1]) for i in obj]
-        elif isinstance(obj, dict):
-            return find_element_by_key(obj.get(path[0]), path[1])
-        else:
-            return obj
+    def __init__(
+        self,
+        parsed_json: list[dict],
+        collection_name: str,
+        common_fields: dict,
+        collection_mapping: dict,
+        limit: int | None = None,
+        build_for_comand: bool = False,
+    ) -> None:
+        self.parsed_json = parsed_json
+        self.collection_name = collection_name
+        self.common_fields = common_fields
+        self.tags = common_fields.pop("tags", [])
+        self.limit = limit
+        self.collection_mapping = collection_mapping
+        self.build_for_comand = build_for_comand
 
+    @staticmethod
+    def clean_data(data):
+        def clean_list(lst):
+            """Removes None, empty rows and empty lists from a list and unpacks nested lists."""
+            cleaned = []
+            for item in lst:
+                if isinstance(item, list):
+                    cleaned.extend(clean_list(item))
+                elif item not in (None, "", []):
+                    cleaned.append(item)
+            return cleaned
 
-def unpack_iocs_from_list(ioc):
-    # type: (Union[list, str]) -> list
-    """
-    Recursively unpacks all IOCs in one list.
-    """
-    unpacked = []
-    if isinstance(ioc, list):
-        for i in ioc:
-            unpacked.extend(unpack_iocs_from_list(i))
-    else:
-        unpacked.append(ioc)
+        cleaned_data = []
 
-    return list(unpacked)
-
-
-def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
-    """
-    Recursively ties together and transforms indicator data.
-    """
-    unpacked = []
-    if isinstance(iocs, list):
-        for i, ioc in enumerate(iocs):
-            buf_fields = []
-            for field in fields:
-                if isinstance(field, list):
-                    buf_fields.append(field[i])
+        for item in data:
+            cleaned_item = {}
+            for key, value in item.items():
+                if isinstance(value, list):
+                    cleaned_item[key] = clean_list(value)
                 else:
-                    buf_fields.append(field)
-            unpacked.extend(unpack_iocs(ioc, ioc_type, buf_fields, fields_names, collection_name))
+                    cleaned_item[key] = value
+            cleaned_data.append(cleaned_item)
 
-    else:
-        if iocs in ["255.255.255.255", "0.0.0.0", "", None]:
-            return unpacked
+        return cleaned_data
 
-        # fields=unpack_iocs_from_list(fields)
-        fields_dict = {fields_names[i]: fields[i] for i in range(len(fields_names)) if fields[i] is not None}
+    @staticmethod
+    def invert_dict(data_dict: dict):
+        return {v: k for k, v in data_dict.items()}
 
-        # Transforming one certain field into a markdown table
-        if ioc_type == "CVE" and len(fields_dict["gibsoftwaremixed"]) != 0:
-            soft_mixed = fields_dict.get("gibsoftwaremixed", {})
-            buffer = ""
-            for chunk in soft_mixed:
-                software_name = ", ".join(chunk.get("softwareName"))
-                software_type = ", ".join(chunk.get("softwareType"))
-                software_version = ", ".join(chunk.get("softwareVersion"))
-                if len(software_name) != 0 or len(software_type) != 0 or len(software_version) != 0:
-                    buffer += "| {} | {} | {} |\n".format(software_name, software_type, software_version.replace("||", ", "))
-            if len(buffer) != 0:
-                buffer = (
-                    "| Software Name | Software Type | Software Version |\n"
-                    "| ------------- | ------------- | ---------------- |\n" + buffer
+    @staticmethod
+    def get_key_by_value(data_dict: dict, target_value: str):
+        inverted_dict = IndicatorBuilding.invert_dict(data_dict)
+        return inverted_dict.get(target_value)
+
+    @staticmethod
+    def get_human_readable_feed(
+        indicators: list, type_: str, collection_name: str
+    ) -> str:
+
+        headers = ["value", "type"]
+
+        collection_data = COMMON_MAPPING.get(collection_name)
+        initial_type = IndicatorBuilding.get_key_by_value(collection_data["types"], type_)  # type: ignore
+        additional_headers = collection_data["add_fields_types"].get(initial_type)  # type: ignore
+        headers.extend(additional_headers.values())
+
+        return tableToMarkdown(
+            f"{type_} indicators", indicators, removeNull=True, headers=headers
+        )
+
+    @staticmethod
+    def transform_list_to_str(data: list[dict]) -> list[dict]:
+        def process_item(item):
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    if isinstance(value, list):
+                        item[key] = ", ".join(str(process_item(v)) for v in value)
+                    else:
+                        item[key] = process_item(value)
+            return item
+
+        return [process_item(item) for item in data]
+
+    @staticmethod
+    def sorting_indicators(
+        indicators: list[dict[str, Any]]
+    ) -> dict[str, list[dict[str, Any]]]:
+        sorted_indicators: dict[str, list[dict[str, Any]]] = {}
+
+        for indicator in indicators:
+            raw_json = indicator.get("rawJSON", {})
+            indicator_type = raw_json.get("type")
+
+            if indicator_type == "CVE":
+                raw_json.pop("gibsoftwaremixed", None)
+
+            sorted_indicators.setdefault(indicator_type, []).append(raw_json)
+
+        return sorted_indicators
+
+    def build_indicator_value_for_software_mixed(self, feed: dict) -> str:
+        markdowns = self.collection_mapping.get("markdowns", {})
+        software_mixed_data = feed.get("software_mixed", {})
+
+        rows = markdowns.get("software_mixed", "")
+        num_rows = len(next(iter(software_mixed_data.values())))
+
+        if num_rows > 0:
+            for i in range(num_rows):
+                row = (
+                    " | "
+                    + " | ".join(
+                        software_mixed_data[key][i] for key in software_mixed_data
+                    )
+                    + " \n"
                 )
-                fields_dict["gibsoftwaremixed"] = buffer
-            else:
-                del fields_dict["gibsoftwaremixed"]
+                rows += row
 
-        # Transforming into correct date format
-        for date_field in DATE_FIELDS_LIST:
-            if fields_dict.get(date_field):
-                previous_date = dateparser.parse(fields_dict.get(date_field, ""))
-                # previous_date = fields_dict.get(date_field, "")
-
-                if previous_date:
-                    fields_dict[date_field] = previous_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-                    # fields_dict[date_field] = convert_to_timestamp(previous_date)
-        fields_dict.update({"gibcollection": collection_name})
-
-        raw_json = {"value": iocs, "type": ioc_type, **fields_dict}
-        unpacked.append({"value": iocs, "type": ioc_type, "rawJSON": raw_json, "fields": fields_dict})
-
-    return unpacked
-
-
-def find_iocs_in_feed(feed: dict, collection_name: str, common_fields: dict) -> list:
-    """
-    Finds IOCs in the feed and transform them to the appropriate format to ingest them into Demisto.
-
-    :param feed: feed from GIB TI&A.
-    :param collection_name: which collection this feed belongs to.
-    :param common_fields: fields defined by user.
-    """
-
-    indicators = []
-    indicators_info = MAPPING.get(collection_name, {}).get("indicators", [])
-    for i in indicators_info:
-        main_field = find_element_by_key(feed, i["main_field"])
-        main_field_type = i["main_field_type"]
-        add_fields = []
-        add_fields_list = i.get("add_fields", []) + ["id"]
-        for j in add_fields_list:
-            add_fields.append(find_element_by_key(feed, j))
-        add_fields_types = i.get("add_fields_types", []) + ["gibid"]
-        for field_type in COMMON_FIELD_TYPES:
-            if common_fields.get(field_type):
-                add_fields.append(common_fields.get(field_type))
-                add_fields_types.append(field_type)
-        if collection_name in ["apt/threat", "hi/threat", "malware/cnc"]:
-            add_fields.append(", ".join(find_element_by_key(feed, "malwareList.name")))
-            add_fields_types = add_fields_types + ["gibmalwarename"]
-        indicators.extend(unpack_iocs(main_field, main_field_type, add_fields, add_fields_types, collection_name))
-    return indicators
-
-
-def get_human_readable_feed(indicators: list, type_: str, collection_name: str) -> str:
-    headers = ["value", "type"]
-    for fields in MAPPING.get(collection_name, {}).get("indicators", {}):
-        if fields.get("main_field_type") == type_:
-            headers.extend(fields["add_fields_types"])
-            break
-    if collection_name in ["apt/threat", "hi/threat", "malware/cnc"]:
-        headers.append("gibmalwarename")
-    return tableToMarkdown(f"{type_} indicators", indicators, removeNull=True, headers=headers)
-
-
-def format_result_for_manual(indicators: list) -> dict:
-    formatted_indicators: dict[str, Any] = {}
-    for indicator in indicators:
-        indicator = indicator.get("rawJSON")
-        type_ = indicator.get("type")
-        if type_ == "CVE":
-            del indicator["gibsoftwaremixed"]
-        if formatted_indicators.get(type_) is None:
-            formatted_indicators[type_] = [indicator]
+            software_mixed = rows
         else:
-            formatted_indicators[type_].append(indicator)
-    return formatted_indicators
+            software_mixed = ""
 
+        indicator_value = software_mixed
+        return indicator_value
 
-def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
-    last_fetch = last_run.get("last_fetch", {}).get(collection_name)
+    def build_indicator_value_for_date_field(
+        self, feed: dict, indicator_type_name: str
+    ):
+        indicator_value = dateparser.parse(feed.get(indicator_type_name))  # type: ignore
+        if indicator_value is not None:
+            indicator_value = indicator_value.strftime(DATE_FORMAT)  # type: ignore
+        return indicator_value
 
-    # Handle first time fetch
-    date_from = None
-    seq_update = None
-    if not last_fetch:
-        date_from_for_mypy = dateparser.parse(first_fetch_time)
-        if date_from_for_mypy is None:
-            raise DemistoException(
-                "Inappropriate indicators_first_fetch format, "
-                "please use something like this: 2020-01-01 or January 1 2020 or 3 days"
+    def extract_single_value(self, value):
+        """
+        Extracts a single non-empty value from a potentially nested list.
+
+        :param value: The value to process, which could be a single value or a list of values.
+        :return: A single non-empty value or None if no valid value exists.
+        """
+        if isinstance(value, list):
+            for item in value:
+                # Recursively extract a value from nested lists
+                result = self.extract_single_value(item)
+                if result is not None and result != "":
+                    return result
+            return None
+        else:
+            return value if value is not None and value != "" else None
+
+    def find_iocs_in_feed(self, feed: dict) -> list:
+        """
+        Finds IOCs in the feed and transforms them to the appropriate format to ingest them into Demisto.
+
+        :param feed: feed from GIB TI&A.
+        """
+        indicators_types = self.collection_mapping.get("types", {})
+        indicators_add_fields_types = self.collection_mapping.get(
+            "add_fields_types", {}
+        )
+
+        indicators = []
+
+        demisto.debug(
+            f"Starting to process find_iocs_in_feed feed: {feed}, collection: {self.collection_name}"
+        )
+
+        for indicator_type_name, indicator_type in indicators_types.items():
+            add_fields = {}
+            demisto.debug(
+                f"Processing find_iocs_in_feed indicator type: {indicator_type_name}, corresponding type: {indicator_type}"
             )
-        date_from = date_from_for_mypy.strftime("%Y-%m-%d")
-    else:
-        seq_update = last_fetch
 
-    return date_from, seq_update
+            if indicator_type in self.fields_list_for_parse:
+                indicator_value = self.build_indicator_value_for_date_field(
+                    feed=feed, indicator_type_name=indicator_type_name
+                )
+                demisto.debug(
+                    f"Extracted date field find_iocs_in_feed indicator value: {indicator_value}"
+                )
+            else:
+                if indicator_type_name == "software_mixed":
+                    indicator_value = self.build_indicator_value_for_software_mixed(
+                        feed=feed
+                    )
+                    demisto.debug(
+                        f"Extracted software mixed find_iocs_in_feed indicator value: {indicator_value}"
+                    )
+
+                elif indicator_type_name in indicators_add_fields_types:
+                    # Retrieve the initial indicator value
+                    indicator_value = feed.get(indicator_type_name)
+                    demisto.debug(
+                        f"Raw find_iocs_in_feed indicator value for {indicator_type_name}: {indicator_value}"
+                    )
+
+                    # If the value is a list, flatten it to get a single non-list value
+                    indicator_value = self.extract_single_value(indicator_value)
+                    demisto.debug(
+                        f"Flattened find_iocs_in_feed indicator value: {indicator_value}"
+                    )
+
+                    # Now process additional fields
+                    for (
+                        additional_field_name,
+                        additional_field_type,
+                    ) in indicators_add_fields_types.get(
+                        indicator_type_name
+                    ).items():  # noqa: E501
+                        additional_field_value = feed.get(additional_field_name)
+
+                        # Process additional_field_value similarly
+                        additional_field_value = self.extract_single_value(
+                            additional_field_value
+                        )
+
+                        demisto.debug(
+                            f"Processed find_iocs_in_feed additional field '{additional_field_name}': {additional_field_value}"
+                        )
+
+                        # Only add to add_fields if additional_field_value is not None or empty
+                        if (
+                            additional_field_value is not None
+                            and additional_field_value != ""
+                        ):
+                            add_fields[additional_field_type] = additional_field_value
+                            demisto.debug(
+                                f"Added additional field find_iocs_in_feed '{additional_field_type}': {additional_field_value}"
+                            )
+
+                    add_fields.update(
+                        {
+                            "trafficlightprotocol": self.common_fields.get(
+                                "trafficlightprotocol"
+                            ),
+                            "gibcollection": self.collection_name,
+                        }
+                    )
+                    demisto.debug(
+                        f"Updated find_iocs_in_feed additional fields: {add_fields}"
+                    )
+
+            # Create the raw JSON object
+            if indicator_value is not None and indicator_value != "":
+                raw_json = {
+                    "value": indicator_value,
+                    "type": indicator_type,
+                    **add_fields,
+                }
+                if self.tags:
+                    add_fields.update({"tags": self.tags})
+                    raw_json.update({"tags": self.tags})
+
+                indicators.append(
+                    {
+                        "value": indicator_value,
+                        "type": indicator_type,
+                        "rawJSON": raw_json,
+                        "fields": add_fields,
+                    }
+                )
+                demisto.debug(
+                    f"Added indicator find_iocs_in_feed: {indicator_value} of type: {indicator_type}"
+                )
+
+        demisto.debug(f"Final list of find_iocs_in_feed indicators: {indicators}")
+
+        indicators = IndicatorBuilding.transform_list_to_str(indicators)
+        return indicators
+
+    def get_indicators(self) -> list:
+        indicators = []
+        results = []
+        for feed in self.parsed_json:
+            indicators.extend(self.find_iocs_in_feed(feed))
+            if (self.limit is not None) and len(indicators) >= self.limit:
+                indicators = indicators[: self.limit]
+                break
+
+        indicators = IndicatorBuilding.clean_data(indicators)
+
+        if self.build_for_comand:
+            sorted_indicators = IndicatorBuilding.sorting_indicators(indicators)
+
+            for type_, indicator in sorted_indicators.items():
+                results.append(
+                    CommandResults(
+                        readable_output=IndicatorBuilding.get_human_readable_feed(
+                            indicator, type_, self.collection_name
+                        ),
+                        raw_response=self.parsed_json,
+                        ignore_auto_extract=True,
+                    )
+                )
+
+        return results if self.build_for_comand is True else indicators
+
+
+class DateHelper:
+
+    @staticmethod
+    def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
+        last_fetch = last_run.get("last_fetch", {}).get(collection_name)
+
+        # Handle first time fetch
+        date_from = None
+        seq_update = None
+        if not last_fetch:
+            date_from_for_mypy = dateparser.parse(first_fetch_time)
+            if date_from_for_mypy is None:
+                raise DemistoException(
+                    "Inappropriate indicators_first_fetch format, "
+                    "please use something like this: 2020-01-01 or January 1 2020 or 3 days."
+                    f"It's now been received: {date_from}"
+                )
+            date_from = date_from_for_mypy.strftime("%Y-%m-%d")
+        else:
+            seq_update = last_fetch
+
+        return date_from, seq_update
+
+
+def validate_launch_get_indicators_command(limit, collection_name):
+    try:
+        if limit > 50:
+            raise Exception("A limit should be lower than 50.")
+    except ValueError:
+        raise Exception("A limit should be a number, not a string.")
+
+    if collection_name not in COMMON_MAPPING:
+        raise Exception(
+            "Incorrect collection name. Please, choose one of the displayed options."
+        )
 
 
 """ Commands """
 
 
+def collection_availability_check(client: Client, collection_name: str) -> None:
+    if collection_name not in client.get_available_collections_proxy_function():
+        raise Exception(
+            f"Collection {collection_name} is not available from you, "
+            "please disable collection on it or contact Group-IB to grant access"
+            f"{client.get_available_collections_proxy_function()}"
+        )
+
+
 def fetch_indicators_command(
-    client: Client, last_run: dict, first_fetch_time: str, indicator_collections: list, requests_count: int, common_fields: dict
+    client: Client,
+    last_run: dict,
+    first_fetch_time: str,
+    indicator_collections: list,
+    requests_count: int,
+    common_fields: dict,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -857,26 +1285,43 @@ def fetch_indicators_command(
     """
     indicators = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
-    tags = common_fields.pop("tags", [])
+
     for collection_name in indicator_collections:
-        date_from, seq_update = handle_first_time_fetch(
-            last_run=last_run, collection_name=collection_name, first_fetch_time=first_fetch_time
+        collection_availability_check(client=client, collection_name=collection_name)
+        mapping: dict = COMMON_MAPPING.get(collection_name, {})
+        requests_sent = 0
+        date_from, seq_update = DateHelper.handle_first_time_fetch(
+            last_run=last_run,
+            collection_name=collection_name,
+            first_fetch_time=first_fetch_time,
         )
 
-        generator = client.create_update_generator(collection_name=collection_name, date_from=date_from, seq_update=seq_update)
-        k = 0
-        for portion in generator:
-            for feed in portion:
-                seq_update = feed.get("seqUpdate")
-                indicators.extend(find_iocs_in_feed(feed, collection_name, common_fields))
-            k += 1
-            if k >= requests_count:
-                break
+        if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
+            hunting_rules = 1
+        else:
+            hunting_rules = None
 
-        if tags:
-            for indicator in indicators:
-                indicator["fields"].update({"tags": tags})
-                indicator["rawJSON"].update({"tags": tags})
+        portions = client.create_update_generator_proxy_functions(
+            collection_name=collection_name,
+            date_from=date_from,
+            sequpdate=seq_update,
+            apply_hunting_rules=hunting_rules,
+        )
+        # print('portions', portions)
+        for portion in portions:
+            seq_update = portion.sequpdate
+            parsed_json: list[dict] = portion.parse_portion(keys=mapping.get("parser_mapping"))  # type: ignore
+            builded_indicators = IndicatorBuilding(
+                parsed_json=parsed_json,
+                collection_name=collection_name,
+                common_fields=common_fields,
+                collection_mapping=mapping,
+            ).get_indicators()
+
+            indicators.extend(builded_indicators)
+            requests_sent += 1
+            if requests_sent >= requests_count:
+                break
 
         next_run["last_fetch"][collection_name] = seq_update
 
@@ -891,73 +1336,89 @@ def get_indicators_command(client: Client, args: dict[str, str]):
     :param args: arguments, provided by client.
     """
 
-    id_, collection_name = args.get("id"), args.get("collection", "")
-    indicators = []
-    raw_json = None
-    try:
-        limit = int(args.get("limit", "50"))
-        if limit > 50:
-            raise Exception("A limit should be lower than 50.")
-    except ValueError:
-        raise Exception("A limit should be a number, not a string.")
+    id_, collection_name, limit = (
+        args.get("id"),
+        args.get("collection", ""),
+        int(args.get("limit", "50")),
+    )
 
-    if collection_name not in MAPPING:
-        raise Exception("Incorrect collection name. Please, choose one of the displayed options.")
+    validate_launch_get_indicators_command(limit, collection_name)
+    mapping: dict = COMMON_MAPPING.get(collection_name, {})
+
+    indicators = []
 
     if not id_:
-        generator = client.create_search_generator(collection_name=collection_name, limit=limit)
-        for portion in generator:
-            for feed in portion:
-                indicators.extend(find_iocs_in_feed(feed, collection_name, {}))
-                if len(indicators) >= limit:
-                    indicators = indicators[:limit]
-                    break
+        if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
+            apply_hunting_rules = 1
+        else:
+            apply_hunting_rules = None
+        portions = client.create_update_generator_proxy_functions(
+            collection_name=collection_name,
+            limit=limit,
+            apply_hunting_rules=apply_hunting_rules,
+        )
+        for portion in portions:
+            parsed_json = portion.parse_portion(keys=mapping.get("parser_mapping"))
+            builded_indicators = IndicatorBuilding(
+                parsed_json=parsed_json,
+                collection_name=collection_name,
+                common_fields={},
+                limit=limit,
+                collection_mapping=mapping,
+                build_for_comand=True,
+            ).get_indicators()
+            indicators.extend(builded_indicators)
+
             if len(indicators) >= limit:
                 break
     else:
-        raw_json = client.search_feed_by_id(collection_name=collection_name, feed_id=id_)
-        indicators.extend(find_iocs_in_feed(raw_json, collection_name, {}))
-        if len(indicators) >= limit:
-            indicators = indicators[:limit]
-
-    formatted_indicators = format_result_for_manual(indicators)
-    results = []
-    for type_, indicator in formatted_indicators.items():
-        results.append(
-            CommandResults(
-                readable_output=get_human_readable_feed(indicator, type_, collection_name),
-                raw_response=raw_json,
-                ignore_auto_extract=True,
-            )
+        portions = client.poller.search_feed_by_id(
+            collection_name=collection_name, feed_id=id_
         )
-    return results
+        portions.get_iocs()
+        parsed_json = portions.parse_portion(keys=mapping.get("parser_mapping"))
+        builded_indicators = IndicatorBuilding(
+            parsed_json=parsed_json,  # type: ignore
+            collection_name=collection_name,
+            common_fields={},
+            limit=limit,
+            collection_mapping=mapping,
+            build_for_comand=True,
+        ).get_indicators()
+        indicators.extend(builded_indicators)
+
+    return indicators
 
 
 def main():  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    params = demisto.params()
-    username = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
-    proxy = params.get("proxy", False)
-    verify_certificate = not params.get("insecure", False)
-    base_url = str(params.get("url"))
-
-    indicator_collections = params.get("indicator_collections", [])
-    indicators_first_fetch = params.get("indicators_first_fetch", "3 days").strip()
-    requests_count = int(params.get("requests_count", 2))
-
-    args = demisto.args()
-    command = demisto.command()
-    LOG(f"Command being called is {command}")
+    indicator_collections = None
     try:
+        params = demisto.params()
+        credentials: dict = params.get("credentials")  # type: ignore
+        username = credentials.get("identifier")
+        password = credentials.get("password")
+        proxy = params.get("proxy", False)
+        verify_certificate = not params.get("insecure", False)
+        base_url = str(params.get("url"))
+
+        indicator_collections = params.get("indicator_collections", [])
+        indicators_first_fetch = params.get("indicators_first_fetch", "3 days").strip()
+        requests_count = int(params.get("requests_count", 2))
+
+        args = demisto.args()
+        command = demisto.command()
+        LOG(f"Command being called is {command}")
+        demisto.debug(f"Command being called is {command}")
+
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             auth=(username, password),
             proxy=proxy,
-            headers={"Accept": "*/*", "User-Agent": f"SOAR/CortexSOAR/{username}/unknown"},
+            headers={"Accept": "*/*"},
         )
 
         commands = {"gibtia-get-indicators": get_indicators_command}
@@ -969,9 +1430,11 @@ def main():  # pragma: no cover
 
         elif command == "fetch-indicators":
             # Set and define the fetch incidents command to run after activated via integration settings.
+            tlp_color = params.get("tlp_color")
+            tags = argToList(params.get("feedTags"))
             common_fields = {
-                "trafficlightprotocol": params.get("tlp_color"),
-                "tags": argToList(params.get("feedTags")),
+                "trafficlightprotocol": tlp_color,
+                "tags": tags,
             }
             next_run, indicators = fetch_indicators_command(
                 client=client,
@@ -981,6 +1444,8 @@ def main():  # pragma: no cover
                 requests_count=requests_count,
                 common_fields=common_fields,
             )
+            demisto.debug(f"fetch-indicators lenght indicators: {len(indicators)}")
+
             set_integration_context(next_run)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)  # type: ignore
@@ -989,8 +1454,12 @@ def main():  # pragma: no cover
             return_results(commands[command](client, args))
 
     # Log exceptions
-    except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
+    except Exception:
+        return_error(
+            f"Failed to execute {demisto.command()} command.\n"
+            f"Indicator collections: {indicator_collections}.\n"
+            f"Error: {format_exc()}"
+        )
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

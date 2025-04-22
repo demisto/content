@@ -2,10 +2,19 @@
 This pack includes Cortex XSIAM content. 
 
 <~XSIAM>
+## What does this pack contain?
+
+- XDRC (XDR Collector) and Broker VM syslog integration.
+- Modeling Rules for the following events:
+   - Access Logs
+   - Reverse Proxy Logs
+   - Error Log
+
 ## Configuration on Server Side
+### Apache httpd configuration:
 You need to configure Apache Web Server to forward Syslog messages.
 
-Open your Apache Web Server instance, and follow these instructions [Documentation](https://docs.trellix.com/bundle/xdr_dscg/page/UUID-4540547f-28c4-0553-846e-544fbc02530f.html):
+Open your Apache Web Server instance, and follow these instructions [Documentation](https://httpd.apache.org/docs/2.4/configuring.html):
 1. Log in to your Apache Web Server instance as a **root** user.
 2. Edit the Apache configuration file **httpd.conf**.
    * Ensure to keep a backup copy of the file.
@@ -44,6 +53,14 @@ Open your Apache Web Server instance, and follow these instructions [Documentati
 ```
 10. Restart Apache to complete the syslog configuration.
 
+### Apache Reverse Proxy configuration:
+To configure Apache Reverse Proxy logging, see the following guide [here](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html).
+Supported log format for Reverse Proxy logs is:
+```
+%V:%{local}p %A %h %l %u %t \"%r\" %>s %B \"%{Referer}i\" \"%{User-Agent}i\" %P %D %{HTTPS}e %{SSL_PROTOCOL}x %{SSL_CIPHER}x %{UNIQUE_ID}e %{remote}p %I %O \"%{Host}i\" main %{CF_RAY_ID}e %{CF_EDGE_COLO}e
+```
+Custom Log Format string description list can be found [here](https://httpd.apache.org/docs/2.4/mod/mod_log_config.html#logformat).
+
 * Pay attention: Timestamp Parsing is only available for the default **%t** format: \[%d/%b/%Y{Key}%H:%M:%S %z\]
 
 ## Collect Events from Vendor
@@ -60,6 +77,25 @@ You can configure the specific vendor and product for this instance.
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - apache
-   - product as product - httpd
+   - product as product - httpd 
 
+### XDRC (XDR Collector)
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Cloud-Documentation/XDR-Collector-datasets).
+
+You can configure the vendor and product by replacing [vendor]_[product]_raw with apache_httpd_raw.
+
+When configuring the instance, you should use a YAML file that configures the vendor and product, as seen in the configuration below for the Apache Web Server
+
+Copy and paste the contents of the following YAML in the *Configure the module* section (inside the relevant profile under the *XDR Collectors Profile*s).
+#### Configure the module:
+The following example shows how to set paths in the modules.d/apache.yml file to override the default paths for Apache HTTP Server access and error logs:
+```
+- module: apache
+  access:
+    enabled: true
+    var.paths: ["/path/to/log/apache/access.log*"]
+  error:
+    enabled: true
+    var.paths: ["/path/to/log/apache/error.log*"]
+```
 </~XSIAM>
