@@ -18,7 +18,6 @@ Follow this [link](https://documentation.solarwinds.com/en/success_center/orionp
 
 ## Configure SolarWinds in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name or IP address of the Orion server | Name or IP address of the Orion server you want to connect to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2 | True |
@@ -34,61 +33,62 @@ Follow this [link](https://documentation.solarwinds.com/en/success_center/orionp
 | Incident type |  | False |
 | Fetch incidents |  | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### swis-event-list
+
 ***
 Retrieves a list of events on the filter values provided in the command arguments.
-
 
 #### Base Command
 
 `swis-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| acknowledged | Whether to retrieve events that are acknowledged. If true, then retrieves all acknowledged events.<br/>Possible values: true and false. | Optional | 
-| event_id | A comma-separated ist of event IDs.<br/>Note: event_id supports integer values (int64). | Optional | 
-| event_type | A comma-separated list of event types. For example: Warning, Informational, Node Up, etc. | Optional | 
-| node | To retrieve events of specific nodes. | Optional | 
-| sort_key | Key by which the response will be sorted.<br/>For example: EventID, EventTime, Message, TimeStamp, EventTypeName, Node, etc. Default is EventID. | Optional | 
-| sort_order | Order by which the response will be sorted. Possible values: ascending and descending. Default is ascending. | Optional | 
-| page | The page number from which retrieve events. By default, the per-page limit is 50 events. You can change this value in the limit argument. Default is 0. | Optional | 
-| limit | The maximum number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional | 
-
+| acknowledged | Whether to retrieve events that are acknowledged. If true, then retrieves all acknowledged events.<br/>Possible values: true and false. | Optional |
+| event_id | A comma-separated ist of event IDs.<br/>Note: event_id supports integer values (int64). | Optional |
+| event_type | A comma-separated list of event types. For example: Warning, Informational, Node Up, etc. | Optional |
+| node | To retrieve events of specific nodes. | Optional |
+| sort_key | Key by which the response will be sorted.<br/>For example: EventID, EventTime, Message, TimeStamp, EventTypeName, Node, etc. Default is EventID. | Optional |
+| sort_order | Order by which the response will be sorted. Possible values: ascending and descending. Default is ascending. | Optional |
+| page | The page number from which retrieve events. By default, the per-page limit is 50 events. You can change this value in the limit argument. Default is 0. | Optional |
+| limit | The maximum number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SolarWinds.Event.EventID | Number | Event ID of the triggered event. | 
-| SolarWinds.Event.EventTime | Date | Timestamp at which the event is triggered. | 
-| SolarWinds.Event.NetworkNode | Number | Network node ID of a triggered event. | 
-| SolarWinds.Event.Node | String | Network node of a triggered event. | 
-| SolarWinds.Event.NetObjectID | Number | NetObject ID of a triggered event. | 
-| SolarWinds.Event.NetObjectValue | String | NetObject value of a triggered event. | 
-| SolarWinds.Event.EngineID | Number | Engine ID of a triggered event. | 
-| SolarWinds.Event.EventType | Number | Type of a triggered event. | 
-| SolarWinds.Event.EventTypeName | String | Name of the type of a triggered event. | 
-| SolarWinds.Event.Message | String | Message of a triggered event. | 
-| SolarWinds.Event.Acknowledged | Boolean | Whether the event is acknowledged. | 
-| SolarWinds.Event.NetObjectType | String | NetObject type of a triggered event. | 
-| SolarWinds.Event.Timestamp | String | Last modified time of an event. It is a counter that SQL server automatically increments when the event is updated. | 
-| SolarWinds.Event.DisplayName | String | Display name of an event. | 
-| SolarWinds.Event.Description | String | Description of an event. | 
-| SolarWinds.Event.InstanceType | String | Instance type of an event. | 
-| SolarWinds.Event.Uri | String | URI of a triggered event. | 
-| SolarWinds.Event.InstanceSiteID | Number | ID of an instance site of which event is triggered. | 
-
+| SolarWinds.Event.EventID | Number | Event ID of the triggered event. |
+| SolarWinds.Event.EventTime | Date | Timestamp at which the event is triggered. |
+| SolarWinds.Event.NetworkNode | Number | Network node ID of a triggered event. |
+| SolarWinds.Event.Node | String | Network node of a triggered event. |
+| SolarWinds.Event.NetObjectID | Number | NetObject ID of a triggered event. |
+| SolarWinds.Event.NetObjectValue | String | NetObject value of a triggered event. |
+| SolarWinds.Event.EngineID | Number | Engine ID of a triggered event. |
+| SolarWinds.Event.EventType | Number | Type of a triggered event. |
+| SolarWinds.Event.EventTypeName | String | Name of the type of a triggered event. |
+| SolarWinds.Event.Message | String | Message of a triggered event. |
+| SolarWinds.Event.Acknowledged | Boolean | Whether the event is acknowledged. |
+| SolarWinds.Event.NetObjectType | String | NetObject type of a triggered event. |
+| SolarWinds.Event.Timestamp | String | Last modified time of an event. It is a counter that SQL server automatically increments when the event is updated. |
+| SolarWinds.Event.DisplayName | String | Display name of an event. |
+| SolarWinds.Event.Description | String | Description of an event. |
+| SolarWinds.Event.InstanceType | String | Instance type of an event. |
+| SolarWinds.Event.Uri | String | URI of a triggered event. |
+| SolarWinds.Event.InstanceSiteID | Number | ID of an instance site of which event is triggered. |
 
 #### Command Example
+
 ```!swis-event-list sort_key="EventID" sort_order="Ascending" page="1" limit="2"```
 
 #### Context Example
+
 ```json
 {
     "SolarWinds": {
@@ -153,91 +153,92 @@ Retrieves a list of events on the filter values provided in the command argument
 #### Human Readable Output
 
 >### Events
+>
 >|ID|Message|Type|Node|Acknowledged|Triggered At|
 >|---|---|---|---|---|---|
 >| 3 | Resetting unknown traffic notification events. | Notification Reset | WIN-MV956AU5BSN | false | 31/03/2021 12:02 PM |
 >| 4 | The NetFlow Receiver Service [WIN-MV956AU5BSN] started - listening on port(s) [2055] | The NetFlow Receiver Service Started | WIN-MV956AU5BSN | false | 31/03/2021 12:02 PM |
 
-
 ### swis-alert-list
+
 ***
 Retrieves a list of alerts based on the filter values provided in the command arguments.
-
 
 #### Base Command
 
 `swis-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | A comma-separated list of alert IDs.<br/>Note: alert_id supports integer values (int64). | Optional | 
-| type | A comma-separated list of the type of property to monitor. For example: Node, IPAM.IPRequests, Orion.DiscoveryLogs, APM: Component, IPAM Networks, Orion.NodesForecastCapacity, APM: Application, Orion.VolumesForecastCapacity, Orion.NodesForecastCapacity, etc. | Optional | 
-| severity | A comma-separated list of severity levels.<br/>Possible values: Information, Warning, Critical, Serious, and Notice. | Optional | 
-| sort_key | Key by which the response will be sorted.<br/>For example: AlertID, AlertActiveID, AlertObjectID, TriggeredDateTime, TriggeredMessage, AcknowledgedDateTime, EngineID, Name, ObjectType, etc. Default is AlertActiveID. | Optional | 
-| sort_order | Order by which the response will be sorted. Possible values: ascending and descending. Default is ascending. | Optional | 
-| page | The page number from which to retrieve alerts. By default, the per-page limit is 50 alerts. You can change change this value in the limit argument. Default is 0. | Optional | 
-| limit | The number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional | 
-
+| alert_id | A comma-separated list of alert IDs.<br/>Note: alert_id supports integer values (int64). | Optional |
+| type | A comma-separated list of the type of property to monitor. For example: Node, IPAM.IPRequests, Orion.DiscoveryLogs, APM: Component, IPAM Networks, Orion.NodesForecastCapacity, APM: Application, Orion.VolumesForecastCapacity, Orion.NodesForecastCapacity, etc. | Optional |
+| severity | A comma-separated list of severity levels.<br/>Possible values: Information, Warning, Critical, Serious, and Notice. | Optional |
+| sort_key | Key by which the response will be sorted.<br/>For example: AlertID, AlertActiveID, AlertObjectID, TriggeredDateTime, TriggeredMessage, AcknowledgedDateTime, EngineID, Name, ObjectType, etc. Default is AlertActiveID. | Optional |
+| sort_order | Order by which the response will be sorted. Possible values: ascending and descending. Default is ascending. | Optional |
+| page | The page number from which to retrieve alerts. By default, the per-page limit is 50 alerts. You can change change this value in the limit argument. Default is 0. | Optional |
+| limit | The number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SolarWinds.Alert.AlertActiveID | Number | Active ID of the triggered alert. | 
-| SolarWinds.Alert.AlertObjectID | Number | Object ID of the triggered alert. | 
-| SolarWinds.Alert.Acknowledged | Boolean | Whether the alert is acknowledged. | 
-| SolarWinds.Alert.AcknowledgedBy | String | Name of the person who acknowledged the alert. | 
-| SolarWinds.Alert.AcknowledgedDateTime | Date | Timestamp when the alert was acknowledged. | 
-| SolarWinds.Alert.AcknowledgedNote | String | Acknowledge note of the alert. | 
-| SolarWinds.Alert.TriggeredDateTime | Date | Timestamp when the alert was triggered. | 
-| SolarWinds.Alert.TriggeredMessage | String | Message of the triggered alert. | 
-| SolarWinds.Alert.NumberOfNotes | Number | Number of notes of the alert. | 
-| SolarWinds.Alert.LastExecutedEscalationLevel | Number | Last executed escalation level for the alert.  | 
-| SolarWinds.Alert.DisplayName | String | Display name of the alert. | 
-| SolarWinds.Alert.AlertDescription | String | Description of the alert. | 
-| SolarWinds.Alert.InstanceType | String | Type of instance of the alert. | 
-| SolarWinds.Alert.Uri | String | URI of the alert. | 
-| SolarWinds.Alert.InstanceSiteId | Number | Site ID of the instance. | 
-| SolarWinds.Alert.AlertID | Number | ID of the alert. | 
-| SolarWinds.Alert.EntityUri | String | URI for the object that triggered the alert. | 
-| SolarWinds.Alert.EntityType | String | Type of the object that triggered the alert. | 
-| SolarWinds.Alert.EntityCaption | String | The display name for the triggering object. | 
-| SolarWinds.Alert.EntityDetailsUrl | String | Relative URL for the details view for the triggering object. | 
-| SolarWinds.Alert.EntityNetObjectId | String | NetObject ID of the entity. | 
-| SolarWinds.Alert.RelatedNodeUri | String | URI of the related node | 
-| SolarWinds.Alert.RelatedNodeId | Number | ID of the related node. | 
-| SolarWinds.Alert.RelatedNodeDetailsUrl | String | URL which contains node details. | 
-| SolarWinds.Alert.RelatedNodeCaption | String | Caption of the related node. | 
-| SolarWinds.Alert.RealEntityUri | String | URI of the real entity. | 
-| SolarWinds.Alert.RealEntityType | String | Type of the real entity. | 
-| SolarWinds.Alert.TriggeredCount | Number | Number of times the alert was triggered. | 
-| SolarWinds.Alert.LastTriggeredDateTime | Date | Timestamp when the alert was last triggered. | 
-| SolarWinds.Alert.Context | String | Context of the alert. | 
-| SolarWinds.Alert.AlertNote | String | Note of the alert. | 
-| SolarWinds.Alert.AlertMessage | String | Message of the alert. | 
-| SolarWinds.Alert.AlertRefID | String | Unique identifier of the alert. | 
-| SolarWinds.Alert.Name | String | Name of the alert. | 
-| SolarWinds.Alert.ConfigurationDescription | String | Configuration description of the alert. | 
-| SolarWinds.Alert.ObjectType | String | Object type of the alert. | 
-| SolarWinds.Alert.Enabled | Boolean | Whether the alert is enabled. | 
-| SolarWinds.Alert.Frequency | Number | Frequency of the alert. | 
-| SolarWinds.Alert.Trigger | String | Condition due to which the alert was triggered. | 
-| SolarWinds.Alert.Reset | String | Reset condition for the alert. When the condition is met, the alert is removed from active alerts. | 
-| SolarWinds.Alert.Severity | Number | Severity of the alert. | 
-| SolarWinds.Alert.NotifyEnabled | Boolean | Whether it is notified enabled. | 
-| SolarWinds.Alert.NotificationSettings | String | Settings of the notifications for the alerts. | 
-| SolarWinds.Alert.LastEdit | Date | Timestamp when the alert was last edited. | 
-| SolarWinds.Alert.CreatedBy | String | Name of the person who created the alert. | 
-| SolarWinds.Alert.Category | String | Category of the alert. | 
-| SolarWinds.Alert.Canned | Boolean | Whether the alert is canned. | 
-| SolarWinds.Alert.ResponsibleTeam | String | Team that is responsible for the alert. | 
-
+| SolarWinds.Alert.AlertActiveID | Number | Active ID of the triggered alert. |
+| SolarWinds.Alert.AlertObjectID | Number | Object ID of the triggered alert. |
+| SolarWinds.Alert.Acknowledged | Boolean | Whether the alert is acknowledged. |
+| SolarWinds.Alert.AcknowledgedBy | String | Name of the person who acknowledged the alert. |
+| SolarWinds.Alert.AcknowledgedDateTime | Date | Timestamp when the alert was acknowledged. |
+| SolarWinds.Alert.AcknowledgedNote | String | Acknowledge note of the alert. |
+| SolarWinds.Alert.TriggeredDateTime | Date | Timestamp when the alert was triggered. |
+| SolarWinds.Alert.TriggeredMessage | String | Message of the triggered alert. |
+| SolarWinds.Alert.NumberOfNotes | Number | Number of notes of the alert. |
+| SolarWinds.Alert.LastExecutedEscalationLevel | Number | Last executed escalation level for the alert.  |
+| SolarWinds.Alert.DisplayName | String | Display name of the alert. |
+| SolarWinds.Alert.AlertDescription | String | Description of the alert. |
+| SolarWinds.Alert.InstanceType | String | Type of instance of the alert. |
+| SolarWinds.Alert.Uri | String | URI of the alert. |
+| SolarWinds.Alert.InstanceSiteId | Number | Site ID of the instance. |
+| SolarWinds.Alert.AlertID | Number | ID of the alert. |
+| SolarWinds.Alert.EntityUri | String | URI for the object that triggered the alert. |
+| SolarWinds.Alert.EntityType | String | Type of the object that triggered the alert. |
+| SolarWinds.Alert.EntityCaption | String | The display name for the triggering object. |
+| SolarWinds.Alert.EntityDetailsUrl | String | Relative URL for the details view for the triggering object. |
+| SolarWinds.Alert.EntityNetObjectId | String | NetObject ID of the entity. |
+| SolarWinds.Alert.RelatedNodeUri | String | URI of the related node |
+| SolarWinds.Alert.RelatedNodeId | Number | ID of the related node. |
+| SolarWinds.Alert.RelatedNodeDetailsUrl | String | URL which contains node details. |
+| SolarWinds.Alert.RelatedNodeCaption | String | Caption of the related node. |
+| SolarWinds.Alert.RealEntityUri | String | URI of the real entity. |
+| SolarWinds.Alert.RealEntityType | String | Type of the real entity. |
+| SolarWinds.Alert.TriggeredCount | Number | Number of times the alert was triggered. |
+| SolarWinds.Alert.LastTriggeredDateTime | Date | Timestamp when the alert was last triggered. |
+| SolarWinds.Alert.Context | String | Context of the alert. |
+| SolarWinds.Alert.AlertNote | String | Note of the alert. |
+| SolarWinds.Alert.AlertMessage | String | Message of the alert. |
+| SolarWinds.Alert.AlertRefID | String | Unique identifier of the alert. |
+| SolarWinds.Alert.Name | String | Name of the alert. |
+| SolarWinds.Alert.ConfigurationDescription | String | Configuration description of the alert. |
+| SolarWinds.Alert.ObjectType | String | Object type of the alert. |
+| SolarWinds.Alert.Enabled | Boolean | Whether the alert is enabled. |
+| SolarWinds.Alert.Frequency | Number | Frequency of the alert. |
+| SolarWinds.Alert.Trigger | String | Condition due to which the alert was triggered. |
+| SolarWinds.Alert.Reset | String | Reset condition for the alert. When the condition is met, the alert is removed from active alerts. |
+| SolarWinds.Alert.Severity | Number | Severity of the alert. |
+| SolarWinds.Alert.NotifyEnabled | Boolean | Whether it is notified enabled. |
+| SolarWinds.Alert.NotificationSettings | String | Settings of the notifications for the alerts. |
+| SolarWinds.Alert.LastEdit | Date | Timestamp when the alert was last edited. |
+| SolarWinds.Alert.CreatedBy | String | Name of the person who created the alert. |
+| SolarWinds.Alert.Category | String | Category of the alert. |
+| SolarWinds.Alert.Canned | Boolean | Whether the alert is canned. |
+| SolarWinds.Alert.ResponsibleTeam | String | Team that is responsible for the alert. |
 
 #### Command Example
+
 ```!swis-alert-list sort_key="AlertActiveID" sort_order="ascending" page="1" limit="2"```
 
 #### Context Example
+
 ```json
 {
     "SolarWinds": {
@@ -315,36 +316,38 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 #### Human Readable Output
 
 >### Alerts
+>
 >|Active Alert ID|Alert Name|Triggered Message|Entity Caption|Triggered At|Severity|Type|Configuration Description|
 >|---|---|---|---|---|---|---|---|
 >| 4 | IP Address Request | test test has requested 1 IP address(es) at 4/6/2021 4:54:24 PM<br/>      Contact details: , dummy@dummy.com<br/>      Comments:  | IP Request (test test) | 06/04/2021 12:53 PM | CRITICAL | IPAM.IPRequests | This alert writes to the event log when Request IP Address is created. |
 >| 7 | Network Discovery Failed | Network Discovery Failed | Import Failed | 06/04/2021 03:01 PM | INFORMATION | Orion.DiscoveryLogs | This alert will send an email if Network Discovery fails. |
 
-
 ### swis-query
+
 ***
 Executes a query request.<br/>
 Click [here](https://support.solarwinds.com/SuccessCenter/s/article/Use-SolarWinds-Query-Language-SWQL) to navigate to the guidelines to generate a query. SolarWinds Information Service schema can be found [here](http://solarwinds.github.io/OrionSDK/2020.2/schema/index.html).
 
-
 #### Base Command
 
 `swis-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The SWQL query to be executed. | Required | 
-
+| query | The SWQL query to be executed. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!swis-query query="SELECT AlertActiveID, TriggeredDateTime FROM Orion.AlertActive ORDER BY AlertActiveID DESC WITH ROWS 1 To 3"```
 
 #### Context Example
+
 ```json
 {
     "SolarWinds": {
@@ -369,6 +372,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Query Result
+>
 >|Alert Active ID|Triggered Date Time|
 >|---|---|
 >| 18543 | 2021-04-20T06:39:32.4330000Z |
