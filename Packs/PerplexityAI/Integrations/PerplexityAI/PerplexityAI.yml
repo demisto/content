@@ -31,6 +31,7 @@ configuration:
   name: model
   required: true
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
