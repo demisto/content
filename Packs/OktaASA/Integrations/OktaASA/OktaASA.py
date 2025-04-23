@@ -171,7 +171,8 @@ def is_token_expired(expires_date: str) -> bool:
 
 def add_time_and_related_object_data_to_events(events: List[Dict], related_objects: Dict, add_time_mapping: bool):
     """
-    Adds the "_time" ,"actor", "user", "client", "project" keys values to the events.
+    Adds the "_time" key to the event and enhances the "server", "project" keys values of an event.
+    Related object structure is "related_objects": {"id_of_keys_to_enhance": {"type": "some_type", "object": {}}}
     Args:
         events: List[Dict] - list of events to add the _time key to.
         related_objects: Dict - A dict of events related_objects to add the related objects to.
@@ -184,14 +185,14 @@ def add_time_and_related_object_data_to_events(events: List[Dict], related_objec
         if add_time_mapping:
             create_time = arg_to_datetime(arg=event.get("timestamp"))
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
-        event_details = event.get("details", {})
+
         for key in keys_to_enhance:
-            if key in event_details and event_details.get(key):
-                id_of_related_object = event_details.get(key)
-                related_object = related_objects.get(event_details.get(key),{})
-                if related_object.get("type") == key and related_object.get("object"):
-                    related_object_data = related_object.get("object",{})
-                    event_details[key] = related_object_data or id_of_related_object
+            if (event_details:= event.get("details", {})) and (not (id_of_key_to_enhance := event_details.get(key))):
+                continue
+            # structure is {"type": "some_type", "object": {}}
+            related_object_dict = related_objects.get(id_of_key_to_enhance,{})
+            if  key == related_object_dict.get("type") and (related_object_data:=related_object_dict.get("object")):
+                event_details[key] = related_object_data if related_object_data else id_of_key_to_enhance
 
 """COMMAND FUNCTIONS"""
 

@@ -350,6 +350,7 @@ def test_search_events_limit_lower_then_1000_with_offset(mocker):
 
     Then:
     - A list with the requested number of events returned and the correct offset.
+    - The events format is enhanced correctly.
     """
     from OktaASA import OktaASAClient
 
@@ -369,6 +370,11 @@ def test_search_events_limit_lower_then_1000_with_offset(mocker):
     assert get_audit_events_request_mocker.call_args_list[0].args[0].get("count") == 10
     assert len(results) == 10
     assert id == "10"
+    for log in results:
+        assert isinstance(log.get("details",{}).get("server"), dict)
+        assert isinstance(log.get("details",{}).get("project"), dict)
+    
+
 
 
 @freeze_time("2025-02-02 15:22:13 UTC")
