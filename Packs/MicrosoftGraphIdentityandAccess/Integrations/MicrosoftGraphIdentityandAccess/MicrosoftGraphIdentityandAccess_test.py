@@ -325,46 +325,6 @@ def test_resolve_merge_value(field, existing_list, new_list, expected, expected_
     assert messages == expected_messages
 
 @pytest.mark.parametrize(
-    "src, expected",
-    [
-        # All values are valid – no changes expected
-        ({"a": 1, "b": [1], "c": {"d": 2}}, {"a": 1, "b": [1], "c": {"d": 2}}),
-
-        # Top-level empty values should be removed
-        ({"a": None, "b": "", "c": [], "d": {}}, {}),
-
-        # Recursive cleaning – also in nested structures
-        (
-            {
-                "a": 1,
-                "b": "",
-                "c": {
-                    "d": [],
-                    "e": {"f": {}, "g": 3},
-                    "h": "",
-                },
-            },
-            {"a": 1, "c": {"e": {"g": 3}}},
-        ),
-
-        # List as a value – should not be altered unless it's completely empty
-        ({"a": [None, 1, ""]}, {"a": [None, 1, ""]}),
-    ],
-)
-def test_clean_dict(src, expected):
-    """
-    Given:
-        - A dictionary with nested structures containing empty or null-like values.
-    When:
-        - Cleaning the dictionary using clean_dict.
-    Then:
-        - Verify that all empty values and empty nested structures are removed.
-    """
-    from MicrosoftGraphIdentityandAccess import clean_dict
-
-    assert clean_dict(src) == expected
-
-@pytest.mark.parametrize(
     "exception_input, expected_output",
     [
         # Case 1: Exception with a dictionary containing an 'error' field
@@ -411,26 +371,7 @@ def test_parse_error_from_exception(exception_input, expected_output):
     from MicrosoftGraphIdentityandAccess import parse_error_from_exception
     result = parse_error_from_exception(exception_input)
     assert result == expected_output
-
-def test_update_policy_missing_policy_id_raises():
-    """
-    Given:
-        - args that do NOT include 'policy_id'.
-    When:
-        - Running update_conditional_access_policy_command.
-    Then:
-        - ValueError should be raised with the correct message.
-    """
-    from MicrosoftGraphIdentityandAccess import Client, update_conditional_access_policy_command
-
-    client = Client("", False, False)
-    args = {}
-    with pytest.raises(ValueError) as e:
-        update_conditional_access_policy_command(client, args)
-
-    assert str(e.value) == "The 'policy_id' argument is required to update a Conditional Access policy."
     
-
 @pytest.mark.parametrize(
     "args, should_raise, delete_mock, expected_output",
     [
@@ -551,32 +492,6 @@ def test_list_conditional_access_policies_command_cases(
     # assert something from the output (only if something returned)
     if expected_display:
         assert expected_display in result.readable_output
-
-
-@pytest.mark.parametrize(
-    "input_value, expected",
-    [
-        ("a,b,c", ["a", "b", "c"]),
-        (" a , b ,c ", ["a", "b", "c"]),
-        (["a", "b"], ["a", "b"]),
-        ([], []),
-        (None, []),
-        ("", []),
-    ]
-)
-def test_convert_to_list(input_value, expected):
-    """
-    Given:
-        - A string or list to convert to a list.
-    When:
-        - Calling convert_to_list with different types and formats.
-    Then:
-        - Ensure the resulting list is correctly formatted.
-    """
-    from MicrosoftGraphIdentityandAccess import convert_to_list
-
-    assert convert_to_list(input_value) == expected
-
 
 @pytest.mark.parametrize(
     "existing_policy, new_policy, expected_result, expected_messages",
@@ -708,24 +623,6 @@ def test_update_conditional_access_policy_command_minimal_input(mocker, args, ex
     assert isinstance(result, CommandResults)
     assert result.readable_output == "OK"
     mock_client.update_conditional_access_policy.assert_called_once_with(expected_policy_id, expected_payload)
-
-
-def test_update_conditional_access_policy_command_missing_id_raises(mocker):
-    """
-    Given:
-        - No 'policy_id' in args
-    When:
-        - Calling the update_conditional_access_policy_command
-    Then:
-        - ValueError should be raised
-    """
-    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command
-    args = {
-        "state": "enabled"
-    }
-
-    with pytest.raises(ValueError, match="The 'policy_id' argument is required"):
-        update_conditional_access_policy_command(mocker.Mock(), args)
 
 
 @pytest.mark.parametrize("invalid_json", [

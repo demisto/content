@@ -399,8 +399,9 @@ class Client:  # pragma: no cover
             if isinstance(policy, str):
                 try:
                     policy = json.loads(policy)
-                except json.JSONDecodeError:
-                    raise ValueError("The provided policy string is not a valid JSON.")
+                except json.JSONDecodeError as e:
+                    raise ValueError("The provided policy string is not a valid JSON."
+                                     f"Error: {e}")
 
             res = self.ms_client.http_request(
                 method="POST",
@@ -421,13 +422,10 @@ class Client:  # pragma: no cover
             return CommandResults(readable_output=(f"Error creating Conditional Access policy:"
                             f" Code - {err.get('code')}, Message - {err.get('message')}"),)
 
-    def update_conditional_access_policy(self, policy_id: str, policy: Union[dict, str]) -> CommandResults:
+    def update_conditional_access_policy(self, policy_id: Union[str, None], policy: Union[dict, str]) -> CommandResults:
         try:
             if isinstance(policy, str):
-                try:
-                    policy = json.loads(policy)
-                except json.JSONDecodeError:
-                    raise ValueError("The provided policy string is not a valid JSON.")
+                policy = json.loads(policy)
 
             res = self.ms_client.http_request(
                 method="PATCH",
@@ -435,11 +433,15 @@ class Client:  # pragma: no cover
                 json_data=policy,
                 resp_type="response"
             )
-
-            demisto.info(f"Conditional Access policy {policy_id} was successfully updated:\n {res}")
-            
-            return CommandResults(
-                readable_output=f"Conditional Access policy {policy_id} was successfully updated.",)
+            if res.status_code == 204:
+                demisto.info(f"Conditional Access policy {policy_id} was successfully updated:\n {res}")
+                return CommandResults(
+                    readable_output=f"Conditional Access policy {policy_id} was successfully updated.",)
+            else:
+                return CommandResults(
+                    readable_output=f"Conditional Access policy {policy_id} was'nt updated.",)
+        except json.JSONDecodeError:
+                    raise ValueError("The provided policy string is not a valid JSON.")
         except Exception as e:
             err = parse_error_from_exception(e)
             
@@ -539,10 +541,12 @@ def parse_error_from_exception(e: Exception) -> Dict[str, str]:
     except Exception:
         return {'code': 'UnknownError', 'message': str(e)}
 
+'''
 def convert_to_list(value):
     if isinstance(value, str):
         return [item.strip() for item in value.split(",") if item.strip()]
     return value or []
+'''
 
 def clean_dict(d):
     if isinstance(d, dict):
@@ -1195,44 +1199,40 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
     
     policy = args.get('policy', {})
     if not policy:
-       
-    
-        def convert_to_list(value):
-                return [item.strip() for item in value.split(",")] if isinstance(value, str) else value
 
         policy = {
         "displayName": args.get('policy_name'),
         "state": args.get('state', 'enabled'),
         "conditions": {
-            "clientAppTypes": convert_to_list(args.get('client_app_types', [])),
+            "clientAppTypes": argToList(args.get('client_app_types')),
             "applications": {
-                "includeApplications": convert_to_list(args.get('include_applications', [])),
-                "excludeApplications": convert_to_list(args.get('exclude_applications', [])),
-                "includeUserActions": convert_to_list(args.get('include_user_actions', [])),
+                "includeApplications": argToList(args.get('include_applications')),
+                "excludeApplications": argToList(args.get('exclude_applications')),
+                "includeUserActions": argToList(args.get('include_user_actions')),
             },
             "users": {
-                "includeUsers": convert_to_list(args.get('include_users', [])),
-                "excludeUsers": convert_to_list(args.get('exclude_users', [])),
-                "includeRoles": convert_to_list(args.get('include_roles', [])),
-                "excludeRoles": convert_to_list(args.get('exclude_roles', [])),
-                "includeGroups": convert_to_list(args.get('include_groups', [])),
-                "excludeGroups": convert_to_list(args.get('exclude_groups', [])),
+                "includeUsers": argToList(args.get('include_users')),
+                "excludeUsers": argToList(args.get('exclude_users')),
+                "includeRoles": argToList(args.get('include_roles')),
+                "excludeRoles": argToList(args.get('exclude_roles')),
+                "includeGroups": argToList(args.get('include_groups')),
+                "excludeGroups": argToList(args.get('exclude_groups')),
             },
             "platforms": {
-                "includePlatforms": convert_to_list(args.get('include_platforms', [])),
-                "excludePlatforms": convert_to_list(args.get('exclude_platforms', [])),
+                "includePlatforms": argToList(args.get('include_platforms')),
+                "excludePlatforms": argToList(args.get('exclude_platforms')),
             },
             "locations": {
-                "includeLocations": convert_to_list(args.get('include_locations', [])),
-                "excludeLocations": convert_to_list(args.get('exclude_locations', [])),
+                "includeLocations": argToList(args.get('include_locations')),
+                "excludeLocations": argToList(args.get('exclude_locations')),
             },
-            "signInRiskLevels": convert_to_list(args.get('sign_in_risk_levels', [])),
-            "userRiskLevels": convert_to_list(args.get('user_risk_levels', [])),
+            "signInRiskLevels": argToList(args.get('sign_in_risk_levels')),
+            "userRiskLevels": argToList(args.get('user_risk_levels')),
 
         },
         "grantControls": {
             "operator": args.get('grant_control_operator', []),
-            "builtInControls": convert_to_list(args.get('built_in_controls', []))
+            "builtInControls": argToList(args.get('built_in_controls'))
         }
         }
 
@@ -1242,60 +1242,44 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
 
 def update_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     policy_id = args.get('policy_id')
-    if not policy_id:
-        raise ValueError("The 'policy_id' argument is required to update a Conditional Access policy.")
-
     update_action = args.get("update_action", "append").lower()
     messages: list[str] = []
 
-    '''
-    def convert_to_list(value):
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        return value or []
-    '''
-    '''
-    def clean_dict(d):
-        if isinstance(d, dict):
-            return {k: clean_dict(v) for k, v in d.items() if v not in [None, [], {}, ""] and clean_dict(v) != {}}
-        return d
-    '''
-
     policy = args.get("policy")
-    if isinstance(policy, str):
+    if policy:
         return client.update_conditional_access_policy(policy_id, policy)
 
 
     new_conditions = {
-        "clientAppTypes": convert_to_list(args.get('client_app_types')),
+        "clientAppTypes": argToList(args.get('client_app_types')),
         "applications": {
-            "includeApplications": convert_to_list(args.get('include_applications')),
-            "excludeApplications": convert_to_list(args.get('exclude_applications')),
-            "includeUserActions": convert_to_list(args.get('include_user_actions')),
+            "includeApplications": argToList(args.get('include_applications')),
+            "excludeApplications": argToList(args.get('exclude_applications')),
+            "includeUserActions": argToList(args.get('include_user_actions')),
         },
         "users": {
-            "includeUsers": convert_to_list(args.get('include_users')),
-            "excludeUsers": convert_to_list(args.get('exclude_users')),
-            "includeRoles": convert_to_list(args.get('include_roles')),
-            "excludeRoles": convert_to_list(args.get('exclude_roles')),
-            "includeGroups": convert_to_list(args.get('include_groups')),
-            "excludeGroups": convert_to_list(args.get('exclude_groups')),
+            "includeUsers": argToList(args.get('include_users')),
+            "excludeUsers": argToList(args.get('exclude_users')),
+            "includeRoles": argToList(args.get('include_roles')),
+            "excludeRoles": argToList(args.get('exclude_roles')),
+            "includeGroups": argToList(args.get('include_groups')),
+            "excludeGroups": argToList(args.get('exclude_groups')),
         },
         "platforms": {
-            "includePlatforms": convert_to_list(args.get('include_platforms')),
-            "excludePlatforms": convert_to_list(args.get('exclude_platforms')),
+            "includePlatforms": argToList(args.get('include_platforms')),
+            "excludePlatforms": argToList(args.get('exclude_platforms')),
         },
         "locations": {
-            "includeLocations": convert_to_list(args.get('include_locations')),
-            "excludeLocations": convert_to_list(args.get('exclude_locations')),
+            "includeLocations": argToList(args.get('include_locations')),
+            "excludeLocations": argToList(args.get('exclude_locations')),
         },
-        "signInRiskLevels": convert_to_list(args.get('sign_in_risk_levels')),
-        "userRiskLevels": convert_to_list(args.get('user_risk_levels')),
+        "signInRiskLevels": argToList(args.get('sign_in_risk_levels')),
+        "userRiskLevels": argToList(args.get('user_risk_levels')),
     }
 
     new_grant_controls = {
         "operator": args.get('grant_control_operator'),
-        "builtInControls": convert_to_list(args.get('built_in_controls')),
+        "builtInControls": argToList(args.get('built_in_controls')),
     }
 
     new_policy: Dict[str, Any] = {
@@ -1327,7 +1311,7 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
         merge_field("grantControls", None, "builtInControls", existing_policy, new_policy, messages)
 
         new_policy = clean_dict(new_policy)
-
+    return_results(new_policy)
     result = client.update_conditional_access_policy(policy_id, new_policy)
 
     if messages and result.readable_output and not result.readable_output.startswith("Error"):
