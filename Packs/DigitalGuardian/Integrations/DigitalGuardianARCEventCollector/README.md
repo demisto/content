@@ -13,7 +13,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Digital Guardian ARC Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Auth Server URL (e.g. https://some_url.com) |  | True |
@@ -43,8 +42,8 @@ Gets events from the configured Digital Guardian ARC export profiles. This comma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return per export profile. Default is 1000. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum results to return per export profile. Default is 1000. | Optional |
 
 #### Command Example
 

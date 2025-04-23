@@ -1,6 +1,7 @@
 Execute `OSXcollector` on a machine. This can run only on OSX.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Execute `OSXcollector` on a machine. This can run only on OSX.
 | Script Type | javascript |
 | Tags | osx, agent |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +19,6 @@ Execute `OSXcollector` on a machine. This can run only on OSX.
 | timeout | The timeout period for the `OSXCollector` execution to complete. If omitted, the default wil be 10 minutes. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

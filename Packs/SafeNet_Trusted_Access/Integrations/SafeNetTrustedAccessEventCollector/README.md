@@ -2,7 +2,6 @@ Retrieve access, authentication, and audit logs and stores them in a Security In
 
 ## Configure SafeNetTrustedAccessEventCollector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | URL | The URL consists of the root part of the REST API Endpoint URL provided in SafeNet Trusted Access, and has the form https://api.\[name\].com | True |
@@ -16,35 +15,42 @@ Retrieve access, authentication, and audit logs and stores them in a Security In
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sta-get-events
+
 ***
 Get access, authentication, and audit logs from SafeNet Trusted Access.
-
 
 #### Base Command
 
 `sta-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| since | Since date. | Optional | 
-| until | Until date. | Optional | 
-| marker | A string pointing at the next page of results. The marker can be found within the previous response. | Optional | 
-
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| since | Since date. | Optional |
+| until | Until date. | Optional |
+| marker | A string pointing at the next page of results. The marker can be found within the previous response. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!sta-get-events should_push_events=false since="10 seconds"```
+
 #### Human Readable Output
 
 >### Event Logs
+>
 >Marker: 111111
+>
 >|category|context|details|id|logVersion|timeStamp|
 >|---|---|---|---|---|---|
 >| AUDIT | tenantId: TENENTID<br/>originatingAddress: 1.1.1.1<br/>principalId: ID<br/>globalAccessId: ID | type: AUTHENTICATION<br/>serial: SERIAL<br/>action: 0<br/>actionText: AUTH_ATTEMPT<br/>result: 1<br/>resultText: AUTH_SUCCESS<br/>agentId: ID<br/>message: MSG <br/>credentialType: TYPE | $ID | 1.0 | 2022-01-01T00:00:00.00000Z |
