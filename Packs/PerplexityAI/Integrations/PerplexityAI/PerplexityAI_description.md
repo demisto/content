@@ -2,7 +2,7 @@
  #### Integration Author: Randy Uhrlaub
  No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
 
-An API key is required for the XSAOR integration. To create your API Key:
+An API key is required for the XSOAR integration. To create your API Key:
 
 - Create your account at Perplexity.ai
 - Once the account is created, select the settings gear icon by your account name
