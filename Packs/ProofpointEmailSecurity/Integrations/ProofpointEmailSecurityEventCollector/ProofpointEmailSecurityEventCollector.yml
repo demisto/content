@@ -44,6 +44,18 @@ configuration:
   type: 8
   required: false
   section: Collect
+- additionalinfo: Denotes which event type to fetch, it's recommend to use one event type per instance.
+  display: Event type to fetch
+  name: event_type
+  type: 15
+  required: false
+  defaultvalue: message
+  options:
+  - message
+  - maillog
+  - audit
+  section: Collect
+  advanced: true
 script:
   script: ""
   type: python

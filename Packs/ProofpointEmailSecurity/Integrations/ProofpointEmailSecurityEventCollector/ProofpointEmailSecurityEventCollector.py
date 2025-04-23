@@ -52,7 +52,6 @@ class EventConnection:
         """
         Establish a new WebSocket connection.
         """
-        demisto.info(f"[test] Connecting to websocket in type = {self.event_type}")
         return connect(self.url, additional_headers=self.headers)
 
     def recv(self, timeout: float | None = None) -> Any:
@@ -66,12 +65,8 @@ class EventConnection:
         Returns:
             Any: Next event received from the connection
         """
-        demisto.info(f"[test] in {self.event_type} recv, going to acquire lock.")
         with self.lock:
-            demisto.info(f"[test] in {self.event_type} recv, lock acquired.")
             event = self.connection.recv(timeout=0)
-            demisto.info(f"[test] in {self.event_type} recv, going to release lock.")
-        demisto.info(f"[test] in {self.event_type} recv, released lock.")
         return event
 
     def reconnect(self):
@@ -85,32 +80,44 @@ class EventConnection:
         except Exception as e:
             demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
             raise
-        demisto.info(f"[test] in {self.event_type} reconnect, finished reconnecting.")
+        
+    def reconnect_with_lock(self):
+        """
+        Reconnect logic for the WebSocket connection.
+        """
+        demisto.info(f'[test] in reconnect_with_lock in {self.event_type}, preparing to acquire the lock')
+        with self.lock:
+            demisto.info(f'[test] in reconnect_with_lock in {self.event_type}, lock acquired')
+            try:
+                self.connection = self.connect()
+                demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
+            except Exception as e:
+                demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
+                raise
+            demisto.info(f'[test] in reconnect_with_lock in {self.event_type}, preparing to release the lock')
+        demisto.info(f'[test] in reconnect_with_lock in {self.event_type}, lock released')
 
     def heartbeat(self):
         """
         Heartbeat thread function to periodically send keep-alives (pong) to the server.
         Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
         """
-        with self.lock:
-            while True:
-                demisto.info(f"[test] in {self.event_type} heartbeat, going to acquire lock.")
-                try:
-                    demisto.info(f"[test] in {self.event_type} heartbeat, lock acquired.")
+        while True:
+            try:
+                with self.lock:
                     self.connection.pong()
-                    demisto.info(f"[test] in {self.event_type} heartbeat, going to release lock.")
-                    demisto.info(f"[{self.event_type}] Sent heartbeat pong")
-                    time.sleep(self.idle_timeout)
-                except exceptions.ConnectionClosedError as e:
-                    demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {e!s}")
-                    self.reconnect()
-                except exceptions.ConnectionClosedOK:
-                    demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
-                    self.reconnect()
-                except Exception as e:
-                    demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
-                    self.reconnect()
-                demisto.info(f"[test] in {self.event_type} heartbeat, lock released.")
+                demisto.info(f"[{self.event_type}] Sent heartbeat pong")
+                time.sleep(self.idle_timeout)
+            except exceptions.ConnectionClosedError as e:
+                demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {e!s}")
+                self.reconnect_with_lock()
+            except exceptions.ConnectionClosedOK:
+                demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
+                self.reconnect_with_lock()
+            except Exception as e:
+                demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
+                self.reconnect_with_lock()
+
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -217,7 +224,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, integration_c
     with connection.lock:
         while not is_interval_passed(fetch_start_time, fetch_interval):
             try:
-                event = json.loads(connection.connection.recv(timeout=0))
+                event = json.loads(connection.connection.recv(timeout=1))
                 event_id = event.get("id", event.get("guid"))
                 event_ts = event.get("ts")
                 if not event_ts:
