@@ -84,6 +84,8 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 
 INCREASE_LIMIT = 1.1
 
+EXTENSIVE_LOGGING: bool
+
 
 class IndicatorAction(Enum):
     ADDED = "Added"
@@ -101,7 +103,7 @@ def debug_function(func):
         demisto.debug(f"edl: Exiting function {func.__name__}")
         return results
 
-    return wrapper
+    return wrapper if EXTENSIVE_LOGGING else func
 
 
 class RequestArguments:
@@ -322,7 +324,8 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
         new_iocs_file.seek(0)
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
-    log_iocs_file_data(formatted_indicators)
+    if EXTENSIVE_LOGGING:
+        log_iocs_file_data(formatted_indicators)
     return formatted_indicators, original_indicators_count, new_log_stats
 
 
@@ -362,7 +365,8 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get("iocs") or []
             for ioc in fetched_iocs:
-                # demisto.debug(f"Parsing the following indicator: {ioc.get('value')}")
+                if EXTENSIVE_LOGGING:
+                    demisto.debug(f"Parsing the following indicator: {ioc.get('value')}")
 
                 ioc_counter += 1
                 if request_args.out_format == FORMAT_PROXYSG:
@@ -394,7 +398,6 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             # NG + XSIAM can recover from a shutdown
             if version.get("platform") == "x2" or is_demisto_version_ge("8"):
                 raise SystemExit("Encountered issue in Elastic Search query. Restarting container and trying again.")
-
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
         f.write("]")
@@ -997,7 +1000,8 @@ def get_edl_on_demand() -> tuple[str, int]:
         store_log_data(request_args, created_time, edl_data_stats)
 
         try:
-            demisto.debug("edl: Writing EDL data to cache")
+            if EXTENSIVE_LOGGING:
+                demisto.debug("edl: Writing EDL data to cache")
 
             with open(EDL_ON_DEMAND_CACHE_PATH, "w") as file:
                 file.write(edl_data)
@@ -1006,11 +1010,13 @@ def get_edl_on_demand() -> tuple[str, int]:
             demisto.debug(f"edl: Error in writing to file: {e!s}")
             raise e
 
-        demisto.debug("edl: Finished writing EDL data to cache")
+        if EXTENSIVE_LOGGING:
+            demisto.debug("edl: Finished writing EDL data to cache")
         set_integration_context(ctx)
 
     else:
-        demisto.debug("edl: Reading EDL data from cache")
+        if EXTENSIVE_LOGGING:
+            demisto.debug("edl: Reading EDL data from cache")
 
         try:
             with open(EDL_ON_DEMAND_CACHE_PATH) as file:
@@ -1349,10 +1355,11 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
         fields_to_present = "use_legacy_query"
 
     if query and request_args.get("q"):
-        demisto.debug(
-            "Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
-            "For more information, review the documentation."
-        )
+        if EXTENSIVE_LOGGING:
+            demisto.debug(
+                "Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
+                "For more information, review the documentation."
+            )
         limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
 
     return RequestArguments(
@@ -1547,7 +1554,7 @@ def main():
     """
     Main
     """
-    global PAGE_SIZE
+    global PAGE_SIZE, EXTENSIVE_LOGGING
     params = demisto.params()
     try:
         PAGE_SIZE = max(1, int(params.get("page_size") or PAGE_SIZE))
@@ -1556,6 +1563,9 @@ def main():
     credentials = params.get("credentials") if params.get("credentials") else {}
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
+    
+    EXTENSIVE_LOGGING = demisto.params().get("extensive_logging", False)
+    
     if (username and not password) or (password and not username):
         err_msg: str = "If using credentials, both username and password should be provided."
         demisto.debug(err_msg)
