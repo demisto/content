@@ -1,20 +1,20 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
-
-import urllib3
-from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 SINGLE_WORD = 1
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-LOG_LINE = 'FeedMISPThreatActors -'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+LOG_LINE = "FeedMISPThreatActors -"
 COUNTRIES = {
     "AF": "Afghanistan",
     "AX": "Aland Islands",
@@ -267,28 +267,25 @@ COUNTRIES = {
 }
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    '''
+    """
     Client to use in the Threat Vault integration. Overrides BaseClient.
-    '''
+    """
 
-    def __init__(
-        self, base_url: str, verify: bool, proxy: bool, reliability: str
-    ):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: str):
         super().__init__(
             base_url=base_url,
             verify=verify,
             proxy=proxy,
         )
 
-        self.name = 'MISPThreatActors'
+        self.name = "MISPThreatActors"
         self.reliability = reliability
 
-    def get_threat_actors_galaxy_file(self) -> dict[str, Any]:   # pragma: no cover
-
+    def get_threat_actors_galaxy_file(self) -> dict[str, Any]:  # pragma: no cover
         demisto.debug(f"{LOG_LINE} - Trying to fetch Threat Actor Galaxy from Github")
 
         try:
@@ -300,8 +297,8 @@ class Client(BaseClient):
 
         return data
 
-    def test_module(self) -> str:   # pragma: no cover
-        '''
+    def test_module(self) -> str:  # pragma: no cover
+        """
         Tests API connectivity and authentication
         Returning 'ok' indicates that the integration works like it is supposed to.
         Connection to the service is successful.
@@ -310,26 +307,25 @@ class Client(BaseClient):
         :param Client: client to use
         :return: 'ok' if test passed, anything else will fail the test.
         :rtype: ``str``
-        '''
+        """
 
         try:
-            demisto.debug(f'{LOG_LINE} - Running test module.')
+            demisto.debug(f"{LOG_LINE} - Running test module.")
             self.get_threat_actors_galaxy_file()
 
         except DemistoException:
             raise
 
-        return 'ok'
+        return "ok"
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
-def build_relationships(original_ioc: str,
-                        related_iocs: list[str],
-                        related_iocs_type: str,
-                        relationship_name: str) -> list[dict[str, Any]]:
-    '''
+def build_relationships(
+    original_ioc: str, related_iocs: list[str], related_iocs_type: str, relationship_name: str
+) -> list[dict[str, Any]]:
+    """
     Builds a list of EntityRelationship objects based on the provided original IOC and related IOCs.
 
     Args:
@@ -339,7 +335,7 @@ def build_relationships(original_ioc: str,
 
     Returns:
         list[EntityRelationship]: A list of EntityRelationship objects.
-    '''
+    """
     relationships = []
 
     for related_ioc in related_iocs:
@@ -352,7 +348,7 @@ def build_relationships(original_ioc: str,
             EntityRelationship(
                 name=relationship_name,
                 entity_a=original_ioc,
-                entity_a_type='Threat Actor',
+                entity_a_type="Threat Actor",
                 entity_b=parsed_ioc,
                 entity_b_type=related_iocs_type,
             ).to_indicator()
@@ -362,7 +358,7 @@ def build_relationships(original_ioc: str,
 
 
 def parse_refs(original_ioc: str, refs: list[str]) -> list[dict[str, str]]:
-    '''
+    """
     Parses the references for a given original IOC and builds the correct format to be used in the indicator Publications.
 
     Args:
@@ -371,24 +367,24 @@ def parse_refs(original_ioc: str, refs: list[str]) -> list[dict[str, str]]:
 
     Returns:
         list[dict[str, str]]: A list of dictionaries containing the parsed references for the original IOC.
-    '''
+    """
 
     parsed_refs = []
 
     for ref in refs:
         parsed_refs.append(
             {
-                'title': original_ioc,
-                'source': 'MISP Threat Actors Galaxy',
-                'link': ref,
-                'timestamp': datetime.now().strftime(DATE_FORMAT)
+                "title": original_ioc,
+                "source": "MISP Threat Actors Galaxy",
+                "link": ref,
+                "timestamp": datetime.now().strftime(DATE_FORMAT),
             }
         )
 
     return parsed_refs
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -410,33 +406,30 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResul
 
     def build_results(actors: list[dict[str, Any]]) -> CommandResults:
         return CommandResults(
-            outputs_prefix='FeedMISPThreatActors.ThreatActor',
-            outputs_key_field='',
+            outputs_prefix="FeedMISPThreatActors.ThreatActor",
+            outputs_key_field="",
             outputs=actors,
-            readable_output=tableToMarkdown('Threat Actors', actors, headers=['Name', 'Aliases', 'Country', 'Description']),
-            raw_response=data
+            readable_output=tableToMarkdown("Threat Actors", actors, headers=["Name", "Aliases", "Country", "Description"]),
+            raw_response=data,
         )
 
-    limit = int(args.get('limit', 10))
+    limit = int(args.get("limit", 10))
     data = client.get_threat_actors_galaxy_file()
-    threat_actors_data = data.get('values', [])
+    threat_actors_data = data.get("values", [])
     actors = []
 
     for counter, threat_actor in enumerate(threat_actors_data):
         if counter >= limit:
             break
 
-        actor = {
-            "Name": threat_actor['value'],
-            "Description": threat_actor.get('description', '')
-        }
+        actor = {"Name": threat_actor["value"], "Description": threat_actor.get("description", "")}
 
-        if synonyms := threat_actor["meta"].get('synonyms', []):
-            actor['Aliases'] = ', '.join(synonyms)
+        if synonyms := threat_actor["meta"].get("synonyms", []):
+            actor["Aliases"] = ", ".join(synonyms)
 
-        if origin_country := threat_actor["meta"].get('country', ''):
+        if origin_country := threat_actor["meta"].get("country", ""):
             full_country_name = COUNTRIES.get(origin_country, origin_country)
-            actor['Country'] = full_country_name
+            actor["Country"] = full_country_name
 
         actors.append(actor)
 
@@ -462,81 +455,79 @@ def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> 
     indicators = []
     data = client.get_threat_actors_galaxy_file()
 
-    version = data['version']
+    version = data["version"]
     demisto.debug(f'{LOG_LINE} - Fetched MISP threat actor galaxy version "{version}"')
-    latest_version = demisto.getLastRun().get('version', 0)
+    latest_version = demisto.getLastRun().get("version", 0)
 
     demisto.debug(f'{LOG_LINE} - Latest saved version is "{latest_version}"')
 
     if int(version) <= int(latest_version):
-        demisto.debug(f'{LOG_LINE} Detected same or older version, No new updates - Exiting')
+        demisto.debug(f"{LOG_LINE} Detected same or older version, No new updates - Exiting")
         return version, []
 
     demisto.debug(f'{LOG_LINE} - Fetched {len(data["values"])} objects.')
 
-    for threat_actor in data['values']:
+    for threat_actor in data["values"]:
         relationships = []
-        meta = threat_actor.get('meta', {})
-        value = threat_actor['value']
+        meta = threat_actor.get("meta", {})
+        value = threat_actor["value"]
 
         if len(value.split(" ")) > SINGLE_WORD:
             value = value.title()
         indicator = {
-            'value': value,
-            'type': 'Threat Actor',
-            'fields': {
-                'description': threat_actor.get('description', ''),
-                'trafficlightprotocol': tlp_color,
-                'tags': [tag for tag in feed_tags.split(',') + [f'MISP_ID: {(threat_actor.get("uuid"))}'] if tag]
+            "value": value,
+            "type": "Threat Actor",
+            "fields": {
+                "description": threat_actor.get("description", ""),
+                "trafficlightprotocol": tlp_color,
+                "tags": [tag for tag in feed_tags.split(",") + [f'MISP_ID: {(threat_actor.get("uuid"))}'] if tag],
             },
         }
 
-        if refs := meta.get('refs', []):
-            indicator['fields']['publications'] = parse_refs(threat_actor['value'], refs)
+        if refs := meta.get("refs", []):
+            indicator["fields"]["publications"] = parse_refs(threat_actor["value"], refs)
 
-        if synonyms := meta.get('synonyms', []):
-            indicator['fields']['aliases'] = synonyms
-            relationships.extend(build_relationships(indicator['value'], synonyms, 'Threat Actor', 'is-also'))
+        if synonyms := meta.get("synonyms", []):
+            indicator["fields"]["aliases"] = synonyms
+            relationships.extend(build_relationships(indicator["value"], synonyms, "Threat Actor", "is-also"))
 
-        if targets := meta.get('cfr-suspected-victims', []):
-            relationships.extend(build_relationships(indicator['value'], targets, 'Location', 'targets'))
+        if targets := meta.get("cfr-suspected-victims", []):
+            relationships.extend(build_relationships(indicator["value"], targets, "Location", "targets"))
 
-        if sectors := meta.get('cfr-target-category', []):
-            relationships.extend(build_relationships(indicator['value'], sectors, 'Identity', 'targets'))
+        if sectors := meta.get("cfr-target-category", []):
+            relationships.extend(build_relationships(indicator["value"], sectors, "Identity", "targets"))
 
-        if origin_country := meta.get('country', ''):
+        if origin_country := meta.get("country", ""):
             full_country_name = COUNTRIES.get(origin_country, origin_country)
-            indicator['fields']['geocountry'] = full_country_name
-            relationships.extend(build_relationships(indicator['value'], [full_country_name], 'Location', 'attributed-to'))
+            indicator["fields"]["geocountry"] = full_country_name
+            relationships.extend(build_relationships(indicator["value"], [full_country_name], "Location", "attributed-to"))
 
-        if goals := meta.get('cfr-type-of-incident', ''):
-            indicator['fields']['goals'] = goals
+        if goals := meta.get("cfr-type-of-incident", ""):
+            indicator["fields"]["goals"] = goals
 
-        indicator['relationships'] = relationships
+        indicator["relationships"] = relationships
 
         indicators.append(indicator)
 
     return version, indicators
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     params = demisto.params()
 
-    '''PARAMS'''
-    base_url = params['url']
-    verify = not params.get('insecure', False)
-    proxy = params.get('proxy', '')
-    reliability = params.get('integrationReliability', 'B - Usually reliable')
-    tlp_color = params.get('tlp_color') or 'WHITE'
-    feed_tags = params.get('feedTags', '')
+    """PARAMS"""
+    base_url = params["url"]
+    verify = not params.get("insecure", False)
+    proxy = params.get("proxy", "")
+    reliability = params.get("integrationReliability", "B - Usually reliable")
+    tlp_color = params.get("tlp_color") or "WHITE"
+    feed_tags = params.get("feedTags", "")
 
     if not DBotScoreReliability.is_valid_type(reliability):
-        raise Exception(
-            'Please provide a valid value for the Source Reliability parameter.'
-        )
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     try:
         command = demisto.command()
@@ -547,12 +538,12 @@ def main():
             reliability=reliability,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = client.test_module()
             return_results(result)
 
-        elif command == 'fetch-indicators':
+        elif command == "fetch-indicators":
             version, res = fetch_indicators_command(
                 client=client,
                 feed_tags=feed_tags,
@@ -560,10 +551,10 @@ def main():
             )
 
             for iter_ in batch(res, batch_size=2000):
-                demisto.debug(f'{LOG_LINE} - Processing {len(iter_)} new indicators.')
+                demisto.debug(f"{LOG_LINE} - Processing {len(iter_)} new indicators.")
                 demisto.createIndicators(iter_)
 
-            demisto.setLastRun({'version': f'{version}'})
+            demisto.setLastRun({"version": f"{version}"})
 
         elif command == "mispthreatactors-get-indicators":
             return_results(get_indicators_command(client, demisto.args()))
@@ -573,14 +564,14 @@ def main():
 
     except NotImplementedError:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command. The command not implemented')
+        return_error(f"Failed to execute {command} command. The command not implemented")
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Error running integration - {err}')
+        return_error(f"Error running integration - {err}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,81 +1,74 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
 import csv
-import pandas as pd
-from datetime import datetime
 from calendar import monthrange
 from collections import defaultdict
+from datetime import datetime
+
+import demistomock as demisto  # noqa: F401
+import pandas as pd
+from CommonServerPython import *  # noqa: F401
 
 MAXINC = 2000
 XDEBUG = True
-MONTHS_ABBR = [datetime.strptime(str(month), '%m').strftime('%b') for month in range(1, 13)]
+MONTHS_ABBR = [datetime.strptime(str(month), "%m").strftime("%b") for month in range(1, 13)]
 
-SEVERITY = {
-    'unknown': 0,
-    'information': 0.5,
-    'low': 1,
-    'medium': 2,
-    'high': 3,
-    'critical': 4
-}
+SEVERITY = {"unknown": 0, "information": 0.5, "low": 1, "medium": 2, "high": 3, "critical": 4}
 
-STATUS = {
-    'pending': 0,
-    'active': 1,
-    'done': 2,
-    'archive': 3
-}
+STATUS = {"pending": 0, "active": 1, "done": 2, "archive": 3}
 
 
 def LogMessage(message: str) -> str:
     if XDEBUG:
-        timestr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        timestr = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return f"{timestr} | {message}\n"
     return ""
 
 
 def IncidentRecord(inc: dict, slatimers: list, windowstart: str, windowend: str, computeduration: str) -> dict:
     if computeduration == "yes":
-        deltatime = ToDatetime(str(inc.get('closed'))) - ToDatetime(str(inc.get('created')))
+        deltatime = ToDatetime(str(inc.get("closed"))) - ToDatetime(str(inc.get("created")))
         duration = int(deltatime.total_seconds())
     else:
-        duration = int(inc.get('openDuration', 0))
+        duration = int(inc.get("openDuration", 0))
     record = {
-        'type': inc.get('type'),
-        'status': inc.get('status'),
-        'created': inc.get('created'),
-        'occurred': inc.get('occurred'),
-        'duration': duration,
-        'contime': "-1",
-        'dettime': "-1",
-        'remtime': "-1",
-        'asstime': "-1",
-        'tritime': "-1",
-        'UserWindow': "-1"
+        "type": inc.get("type"),
+        "status": inc.get("status"),
+        "created": inc.get("created"),
+        "occurred": inc.get("occurred"),
+        "duration": duration,
+        "contime": "-1",
+        "dettime": "-1",
+        "remtime": "-1",
+        "asstime": "-1",
+        "tritime": "-1",
+        "UserWindow": "-1",
     }
 
     for timer in slatimers:
         record[timer] = "-1"
-    fields = ['containmentsla', 'detectionsla', 'remediationsla', 'timetoassignment', 'triagesla']
-    timers = ['contime', 'dettime', 'remtime', 'asstime', 'tritime', 'UserWindow']
+    fields = ["containmentsla", "detectionsla", "remediationsla", "timetoassignment", "triagesla"]
+    timers = ["contime", "dettime", "remtime", "asstime", "tritime", "UserWindow"]
 
-    if inc.get('status') == STATUS['done'] and isinstance(inc.get('CustomFields'), dict):
+    if inc.get("status") == STATUS["done"] and isinstance(inc.get("CustomFields"), dict):
         for field, timer in zip(fields, timers):
-            if field in inc['CustomFields'] and inc['CustomFields'][field]['runStatus'] == "ended":
-                record[timer] = inc['CustomFields'][field]['totalDuration']
+            if field in inc["CustomFields"] and inc["CustomFields"][field]["runStatus"] == "ended":
+                record[timer] = inc["CustomFields"][field]["totalDuration"]
 
         for timer in slatimers:
-            if timer in inc['CustomFields'] and inc['CustomFields'][timer]['runStatus'] == "ended":
-                record[timer] = inc['CustomFields'][timer]['totalDuration']
+            if timer in inc["CustomFields"] and inc["CustomFields"][timer]["runStatus"] == "ended":
+                record[timer] = inc["CustomFields"][timer]["totalDuration"]
 
-        if (windowstart != "" and windowend != "" and windowstart in inc['CustomFields'] and windowend in inc['CustomFields']
-            and inc['CustomFields'][windowstart]['runStatus'] == "ended" and
-                    inc['CustomFields'][windowend]['runStatus'] == "ended"):
-                winduration = ToDatetime(inc['CustomFields'][windowend]['endDate']) - \
-                    ToDatetime(inc['CustomFields'][windowstart]['startDate'])
-                record['UserWindow'] = winduration.total_seconds()
+        if (
+            windowstart != ""
+            and windowend != ""
+            and windowstart in inc["CustomFields"]
+            and windowend in inc["CustomFields"]
+            and inc["CustomFields"][windowstart]["runStatus"] == "ended"
+            and inc["CustomFields"][windowend]["runStatus"] == "ended"
+        ):
+            winduration = ToDatetime(inc["CustomFields"][windowend]["endDate"]) - ToDatetime(
+                inc["CustomFields"][windowstart]["startDate"]
+            )
+            record["UserWindow"] = winduration.total_seconds()
 
     return record
 
@@ -95,8 +88,8 @@ def MonthlyIncidents(removeKeys, monthly: dict) -> dict:
 
 def BuildWindows(start_date_str, end_date_str):
     # Convert the input strings to datetime objects
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+    start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+    end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
     result_dates = []
     current_date = start_date
 
@@ -125,7 +118,7 @@ def BuildWindows(start_date_str, end_date_str):
             last = current_date.replace(day=day)
 
         # Create the start, end date tuples for each window traversed
-        result_dates.append((start.strftime('%Y-%m-%d'), last.strftime('%Y-%m-%d')))
+        result_dates.append((start.strftime("%Y-%m-%d"), last.strftime("%Y-%m-%d")))
 
         # Step to the next day of the window
         year = current_date.year
@@ -148,32 +141,32 @@ def ToDatetime(date: str):
         isodate = date.split(".", 1)[0].replace("Z", "", 1) + "+00:00"
         return datetime.fromisoformat(isodate)
     else:
-        count = date.count('-')
+        count = date.count("-")
         if count == 2:
-            return datetime.strptime(date.rsplit('.', 1)[0], "%Y-%m-%dT%H:%M:%S")
+            return datetime.strptime(date.rsplit(".", 1)[0], "%Y-%m-%dT%H:%M:%S")
         else:
-            date, tz_offset = date.rsplit('-', 1)
+            date, tz_offset = date.rsplit("-", 1)
             return datetime.fromisoformat(f"{date.rsplit('.', 1)[0]}-{tz_offset}")
 
 
 def CloseMetrics(monthly_data: dict, records: list) -> str:
     # Process each record and count the closed incidents by month and 'type'
     for record in records:
-        month = ToDatetime(record['created']).strftime('%b')
-        if record['type'] not in monthly_data[month]:
-            monthly_data[month][record['type']] = 0
-        if record['status'] == STATUS['done']:
-            monthly_data[month][record['type']] += 1
+        month = ToDatetime(record["created"]).strftime("%b")
+        if record["type"] not in monthly_data[month]:
+            monthly_data[month][record["type"]] = 0
+        if record["status"] == STATUS["done"]:
+            monthly_data[month][record["type"]] += 1
     return BuildCsv("Type", monthly_data)
 
 
 def CountMetrics(counts: dict, records: list) -> str:
     # Process each record and store the incident count by month and 'type'
     for record in records:
-        month = ToDatetime(record['created']).strftime('%b')
-        if record['type'] not in counts[month]:
-            counts[month][record['type']] = 0
-        counts[month][record['type']] += 1
+        month = ToDatetime(record["created"]).strftime("%b")
+        if record["type"] not in counts[month]:
+            counts[month][record["type"]] = 0
+        counts[month][record["type"]] += 1
     return BuildCsv("Type", counts)
 
 
@@ -184,8 +177,8 @@ def DurationMetrics(records: list) -> str:
 
     # Process each record and aggregate the 'duration' data by month and 'type'
     for record in records:
-        month = ToDatetime(record['created']).strftime('%b')
-        monthly_data[record['type']][month].append(record['duration'])
+        month = ToDatetime(record["created"]).strftime("%b")
+        monthly_data[record["type"]][month].append(record["duration"])
 
     # Calculate the average for each 'type' field for each month
     for inctype, months in monthly_data.items():
@@ -196,13 +189,13 @@ def DurationMetrics(records: list) -> str:
 
 def SlaMetrics(records: list, slatimers: list) -> str:
     # Initialize a dictionary to hold the aggregated metrics by month
-    fieldnames = ['contime', 'dettime', 'remtime', 'asstime', 'tritime', 'UserWindow']
+    fieldnames = ["contime", "dettime", "remtime", "asstime", "tritime", "UserWindow"]
     fieldnames.extend(slatimers)
     monthly_data: dict = {key: {month: [] for month in MONTHS_ABBR} for key in fieldnames}
     averages: dict = {month: {} for month in MONTHS_ABBR}
 
     for record in records:
-        month = ToDatetime(record['created']).strftime('%b')
+        month = ToDatetime(record["created"]).strftime("%b")
         for field in fieldnames:
             if field in record and record[field] != -1:
                 monthly_data[field][month].append(int(record[field]))
@@ -238,7 +231,7 @@ def SplitRecords(records: list) -> tuple[list, list]:
     lastyear: list = []
 
     for r in records:
-        year = r['created'].split("-")[0]
+        year = r["created"].split("-")[0]
         if curyear == "":
             curyear = year
         if curyear == year:
@@ -252,53 +245,53 @@ def SplitRecords(records: list) -> tuple[list, list]:
 def GenerateTables(startday: str, endday: str, records: list, slatimers: list) -> tuple[str, dict, str, dict]:
     json_met: dict = {}
     json_met2: dict = {}
-    json_met['YEAR'] = startday.split("-")[0]
-    json_met2['YEAR'] = endday.split("-")[0]
+    json_met["YEAR"] = startday.split("-")[0]
+    json_met2["YEAR"] = endday.split("-")[0]
     m = ""
     m2 = ""
 
-    twoyears = json_met['YEAR'] != json_met2['YEAR']
+    twoyears = json_met["YEAR"] != json_met2["YEAR"]
     if twoyears:
         records, records2 = SplitRecords(records)
 
     monthly: dict = {month: {} for month in MONTHS_ABBR}
     metrics = CountMetrics(monthly, records)
-    json_met['Incidents'] = CsvToJson(metrics)
+    json_met["Incidents"] = CsvToJson(metrics)
     m = metrics + "\n"
 
     if twoyears:
         monthly = {month: {} for month in MONTHS_ABBR}
         metrics2 = CountMetrics(monthly, records2)
-        json_met2['Incidents'] = CsvToJson(metrics2)
+        json_met2["Incidents"] = CsvToJson(metrics2)
         m2 = metrics2 + "\n"
 
     monthly: dict = {month: {} for month in MONTHS_ABBR}
     metrics = CloseMetrics(monthly, records)
-    json_met['Closed Incidents'] = CsvToJson(metrics)
+    json_met["Closed Incidents"] = CsvToJson(metrics)
     m += metrics + "\n"
 
     if twoyears:
         monthly = {month: {} for month in MONTHS_ABBR}
         metrics2 = CloseMetrics(monthly, records2)
-        json_met2['Closed Incidents'] = CsvToJson(metrics2)
+        json_met2["Closed Incidents"] = CsvToJson(metrics2)
         m2 += metrics2 + "\n"
 
     metrics = DurationMetrics(records)
-    json_met['Incident Open Duration'] = CsvToJson(metrics)
+    json_met["Incident Open Duration"] = CsvToJson(metrics)
     m += metrics + "\n"
 
     if twoyears:
         metrics2 = DurationMetrics(records2)
-        json_met2['Incident Open Duration'] = CsvToJson(metrics2)
+        json_met2["Incident Open Duration"] = CsvToJson(metrics2)
         m2 += metrics2 + "\n"
 
     metrics = SlaMetrics(records, slatimers)
-    json_met['SLA Metrics'] = CsvToJson(metrics)
+    json_met["SLA Metrics"] = CsvToJson(metrics)
     m += metrics
 
     if twoyears:
         metrics2 = SlaMetrics(records2, slatimers)
-        json_met2['SLA Metrics'] = CsvToJson(metrics2)
+        json_met2["SLA Metrics"] = CsvToJson(metrics2)
         m2 += metrics2
 
     return m, json_met, m2, json_met2
@@ -306,22 +299,26 @@ def GenerateTables(startday: str, endday: str, records: list, slatimers: list) -
 
 def GetIncSmallWindow(w, page: int, curday: int, curhour: int, filters: dict, userquery: str):
     if userquery == "":
-        query = {'page': page, 'size': MAXINC, 'fromdate': f"{w[curday]}T{curhour-4:02d}:00:00",
-                 'todate': f"{w[curday]}T{curhour-1:02d}:59:59"}
+        query = {
+            "page": page,
+            "size": MAXINC,
+            "fromdate": f"{w[curday]}T{curhour-4:02d}:00:00",
+            "todate": f"{w[curday]}T{curhour-1:02d}:59:59",
+        }
         query.update(filters)
     else:
         userquery += f" occurred:>={w[curday]}T{curhour-4:02d}:00:00 and occurred:<={w[curday]}T{curhour-1:02d}:59:59"
-        query = {'page': page, 'size': MAXINC, 'query': userquery}
+        query = {"page": page, "size": MAXINC, "query": userquery}
     return execute_command("getIncidents", query, extract_contents=False)
 
 
 def GetIncLargeWindow(w, page: int, filters: dict, userquery: str):
     if userquery == "":
-        query = {'page': page, 'size': MAXINC, 'fromdate': f"{w[0]}T00:00:00", 'todate': f"{w[1]}T23:59:59"}
+        query = {"page": page, "size": MAXINC, "fromdate": f"{w[0]}T00:00:00", "todate": f"{w[1]}T23:59:59"}
         query.update(filters)
     else:
         userquery += f" occurred:>={w[0]}T00:00:00 and occurred:<={w[1]}T23:59:59"
-        query = {'page': page, 'size': MAXINC, 'query': userquery}
+        query = {"page": page, "size": MAXINC, "query": userquery}
     return execute_command("getIncidents", query, extract_contents=False)
 
 
@@ -330,10 +327,10 @@ def ProcessResponse(w, response, monthly, period, inccount, slatimers, windowsta
     if curmonth not in monthly:
         monthly[curmonth] = {}
 
-    for inc in response[0]['Contents']['data']:
+    for inc in response[0]["Contents"]["data"]:
         rec = IncidentRecord(inc, slatimers, windowstart, windowend, computeduration)
         inccount += 1
-        inctype = rec['type']
+        inctype = rec["type"]
 
         if inctype not in monthly[curmonth]:
             monthly[curmonth][inctype] = []
@@ -346,7 +343,7 @@ def ProcessResponse(w, response, monthly, period, inccount, slatimers, windowsta
 
 
 def ValidArgs(args: dict) -> bool:
-    array_args = ['status', 'notstatus', 'severity', 'owner', 'type']
+    array_args = ["status", "notstatus", "severity", "owner", "type"]
     return all(key in array_args for key, value in args.items())
 
 
@@ -354,10 +351,10 @@ def ValidFilter(fil: list) -> bool:
     if len(fil) != 2:
         return False
     k, v = fil
-    filter_mappings: dict = {'status': STATUS, 'notstatus': STATUS, 'severity': SEVERITY}
+    filter_mappings: dict = {"status": STATUS, "notstatus": STATUS, "severity": SEVERITY}
     if k in filter_mappings:
         return v in filter_mappings[k]
-    elif k in ['owner', 'type']:
+    elif k in ["owner", "type"]:
         return True
     return False
 
@@ -366,7 +363,7 @@ def BuildFilters(filters: list) -> dict:
     filtargs: dict = {}
     if len(filters) == 0:
         return filtargs
-    filter_mappings: dict = {'status': STATUS, 'notstatus': STATUS, 'severity': SEVERITY}
+    filter_mappings: dict = {"status": STATUS, "notstatus": STATUS, "severity": SEVERITY}
 
     for f in filters:
         newfil = [item.strip() for item in f.split("=")]
@@ -374,15 +371,15 @@ def BuildFilters(filters: list) -> dict:
             continue
         key, val = newfil
         newval = filter_mappings.get(key, {}).get(val, val)
-        if key == 'severity':
-            filtargs['level'] = newval
+        if key == "severity":
+            filtargs["level"] = newval
         else:
             filtargs[key] = newval
     return filtargs
 
 
 def CsvToJson(csv_text: str) -> dict:
-    lines = csv_text.strip("\n").split('\n')
+    lines = csv_text.strip("\n").split("\n")
     reader = csv.reader(lines)
     data = list(reader)
     header = data[0]  # Month labels
@@ -401,7 +398,7 @@ def CsvToJson(csv_text: str) -> dict:
 
 def RollYearList(thisyearlist: str, lastyearlist: str, curmetrics: dict):
     existing_metrics = LoadJsonList(thisyearlist)
-    if 'YEAR' in existing_metrics and existing_metrics['YEAR'] != curmetrics['YEAR']:
+    if "YEAR" in existing_metrics and existing_metrics["YEAR"] != curmetrics["YEAR"]:
         SaveJsonList(lastyearlist, existing_metrics)
         existing_metrics = {}
     SaveJsonList(thisyearlist, existing_metrics)
@@ -411,8 +408,8 @@ def UpdateMetricsList(listname: str, curmetrics: dict, mode: str):
     existing_metrics = LoadJsonList(listname)
 
     for key, val in curmetrics.items():
-        if key in existing_metrics and key != 'YEAR':
-            if key not in ['SLA Metrics', 'Incident Open Duration']:
+        if key in existing_metrics and key != "YEAR":
+            if key not in ["SLA Metrics", "Incident Open Duration"]:
                 existing_metrics[key] = UpdateDict(existing_metrics[key], val, mode)
             else:
                 existing_metrics[key] = UpdateDict(existing_metrics[key], val, "initialize")
@@ -440,33 +437,25 @@ def UpdateDict(existing_dict: dict, new_dict: dict, mode: str) -> dict:
 
 
 def LoadJsonList(list_name: str) -> dict:
-    results = demisto.executeCommand("getList", {'listName': list_name})[0]['Contents']
+    results = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
     if "Item not found" not in results:
         return json.loads(results)
     return {}
 
 
 def SaveJsonList(list_name: str, json_data: dict):
-    res = demisto.executeCommand('core-api-post', {
-        "uri": '/lists/save',
-        "body": {
-            'name': list_name,
-            'data': json.dumps(json_data),
-            'type': "json"
-        }
-    })[0]['Contents']
+    res = demisto.executeCommand(
+        "core-api-post", {"uri": "/lists/save", "body": {"name": list_name, "data": json.dumps(json_data), "type": "json"}}
+    )[0]["Contents"]
     # If error, existing list, so set the list contents
     if "Script failed to run" in res:
-        demisto.executeCommand("setList", {
-            'listName': list_name,
-            'listData': json.dumps(json_data)
-        })
+        demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(json_data)})
 
 
 def NormalDate(date_str: str, first_day=True) -> str:
     if len(date_str.split("-")) == 3:
         return date_str
-    year, month = map(int, date_str.split('-'))
+    year, month = map(int, date_str.split("-"))
     if first_day:
         return f"{year}-{month:02d}-01"
     else:
@@ -475,10 +464,10 @@ def NormalDate(date_str: str, first_day=True) -> str:
 
 
 def FoundIncidents(res: List):
-    if res and isinstance(res, list) and isinstance(res[0].get('Contents'), dict):
-        if 'data' not in res[0]['Contents']:
-            raise DemistoException(res[0].get('Contents'))
-        elif res[0]['Contents']['data'] is None:
+    if res and isinstance(res, list) and isinstance(res[0].get("Contents"), dict):
+        if "data" not in res[0]["Contents"]:
+            raise DemistoException(res[0].get("Contents"))
+        elif res[0]["Contents"]["data"] is None:
             return False
         return True
     return None
@@ -493,18 +482,18 @@ def main():
         period: dict = {}
         monthly: dict = {}
         arguments = demisto.args()
-        firstday = NormalDate(arguments['firstday'])
-        lastday = NormalDate(arguments['lastday'], first_day=False)
-        esflag = arguments['esflag']
-        thisyear_list = arguments['thisyearlist']
-        lastyear_list = arguments['lastyearlist']
-        windowstart = arguments.get('windowstart', "")
-        windowend = arguments.get('windowend', "")
-        computeduration = arguments.get('computeduration', "no")
-        mode = arguments['mode']
+        firstday = NormalDate(arguments["firstday"])
+        lastday = NormalDate(arguments["lastday"], first_day=False)
+        esflag = arguments["esflag"]
+        thisyear_list = arguments["thisyearlist"]
+        lastyear_list = arguments["lastyearlist"]
+        windowstart = arguments.get("windowstart", "")
+        windowend = arguments.get("windowend", "")
+        computeduration = arguments.get("computeduration", "no")
+        mode = arguments["mode"]
         query = arguments.get("query", "")
-        filters = BuildFilters([item.strip().lower() for item in arguments.get('filters', "").split(",")])
-        timers = arguments.get('slatimers')
+        filters = BuildFilters([item.strip().lower() for item in arguments.get("filters", "").split(",")])
+        timers = arguments.get("slatimers")
         if timers:
             slatimers = [item.strip().lower() for item in timers.split(",")]
         else:
@@ -520,8 +509,9 @@ def main():
                     response: List = GetIncLargeWindow(w, page, filters, query)
                     if not FoundIncidents(response):
                         break
-                    inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount,
-                                                                slatimers, windowstart, windowend, computeduration)
+                    inccount, monthly, period = ProcessResponse(
+                        w, response, monthly, period, inccount, slatimers, windowstart, windowend, computeduration
+                    )
                     page += 1
                 # Switch to 4 hour window if the ES flag is set since it thows error next page if
                 # 10000 or more incidents were found even while paging through a smaller size page
@@ -534,8 +524,9 @@ def main():
                     while True:
                         response = GetIncSmallWindow(w, page, curday, curhour, filters, query)
                         if FoundIncidents(response):
-                            inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount,
-                                                                        slatimers, windowstart, windowend, computeduration)
+                            inccount, monthly, period = ProcessResponse(
+                                w, response, monthly, period, inccount, slatimers, windowstart, windowend, computeduration
+                            )
                             page += 1
                         # If no incidents found, step to the next 4 hour window
                         else:
@@ -582,7 +573,7 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"XSOARValueMetrics: Exception failed to execute. Error: {str(ex)}\n{XLOG}\n")
+        return_error(f"XSOARValueMetrics: Exception failed to execute. Error: {ex!s}\n{XLOG}\n")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

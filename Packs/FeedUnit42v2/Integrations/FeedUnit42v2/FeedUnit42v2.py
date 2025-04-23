@@ -1,8 +1,7 @@
+import urllib3
+from CommonServerPython import *
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
-
-from CommonServerPython import *
-import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()

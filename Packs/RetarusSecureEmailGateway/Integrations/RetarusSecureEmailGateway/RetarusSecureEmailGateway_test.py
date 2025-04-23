@@ -1,25 +1,26 @@
 import uuid
-import pytest
-import demistomock as demisto
 from contextlib import contextmanager
+
+import demistomock as demisto
+import pytest
 import RetarusSecureEmailGateway
+from CommonServerPython import *
 from RetarusSecureEmailGateway import (
-    fetch_events,
-    json,
-    datetime,
-    timedelta,
     Connection,
     EventConnection,
+    datetime,
+    fetch_events,
+    json,
     long_running_execution_command,
+    timedelta,
 )
-from CommonServerPython import *
 
 CURRENT_TIME: datetime | None = None
 
 EVENTS = [
     {"ts": "2023-08-16T13:24:12.147573+0100", "id": "1"},
     {"ts": "2023-08-14T13:24:12.147573+0200", "id": "2"},
-    {"ts": "2023-08-12T13:24:11.147573+0000", "id": "3"}
+    {"ts": "2023-08-12T13:24:11.147573+0000", "id": "3"},
 ]
 
 
@@ -85,18 +86,16 @@ def test_heartbeat(mocker, connection):
         # This mock will raise exceptions to stop the long running loop
         # StopIteration exception marks success
         if connection.connection.pongs:
-            raise StopIteration(f'Sent {connection.connection.pongs} pongs')
+            raise StopIteration(f"Sent {connection.connection.pongs} pongs")
         if datetime.now() > connection.create_time + timedelta(seconds=idle_timeout + 2):
             # Heartbeat should've been sent already
-            raise TimeoutError(f'No heartbeat sent within {idle_timeout} seconds')
+            raise TimeoutError(f"No heartbeat sent within {idle_timeout} seconds")
 
-    mocker.patch.object(RetarusSecureEmailGateway, 'websocket_connection',
-                        side_effect=mock_websocket_connection)
-    mocker.patch.object(RetarusSecureEmailGateway, 'perform_long_running_loop',
-                        side_effect=mock_perform_long_running_loop)
+    mocker.patch.object(RetarusSecureEmailGateway, "websocket_connection", side_effect=mock_websocket_connection)
+    mocker.patch.object(RetarusSecureEmailGateway, "perform_long_running_loop", side_effect=mock_perform_long_running_loop)
 
     with pytest.raises(StopIteration):
-        long_running_execution_command(url='url', token_id='token_id', fetch_interval=60, channel='channel', verify_ssl=False)
+        long_running_execution_command(url="url", token_id="token_id", fetch_interval=60, channel="channel", verify_ssl=False)
 
     assert connection.pongs > 0
 
