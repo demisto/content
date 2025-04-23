@@ -55,6 +55,8 @@ script:
       name: tenant_id
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
     - description: The maximum number of returned fields per result.
       name: max_fields
       defaultValue: 20
@@ -213,6 +215,8 @@ script:
     - description: Time in relative date or range format.
       name: time_frame
       hidden: true
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
     - description: The name of the command.
       name: command_name
       hidden: true
@@ -1565,7 +1569,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3
