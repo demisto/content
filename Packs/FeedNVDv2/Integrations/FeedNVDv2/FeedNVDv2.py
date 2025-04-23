@@ -28,7 +28,7 @@ class Client(BaseClient):
         has_kev: bool,
         first_fetch: str,
         feed_tags: list[str],
-        cvssv3severity: list[str],
+        cvssv4severity: list[str],
         keyword_search: str,
     ):
         super().__init__(base_url=base_url, proxy=proxy)
@@ -39,7 +39,7 @@ class Client(BaseClient):
         self.has_kev = has_kev
         self.feed_tags = feed_tags
         self.first_fetch = first_fetch
-        self.cvssv3severity = cvssv3severity
+        self.cvssv4severity = cvssv4severity
         self.keyword_search = keyword_search
 
     def get_cves(self, path: str, params: dict):  # pragma: no cover
@@ -75,8 +75,8 @@ class Client(BaseClient):
         param_string = param_string.replace("noRejected=None", "noRejected")
         param_string = param_string.replace("hasKev=True", "hasKev")
 
-        for value in self.cvssv3severity:
-            param_string += f"&cvssV3Severity={value}"
+        for value in self.cvssv4severity:
+            param_string += f"&cvssV4Severity={value}"
 
         return param_string
 
@@ -125,26 +125,32 @@ def build_indicators(client: Client, raw_cves: List[dict]):
 
         # Check for which CVSS Metric scoring data is available in the CVE response
         # Use the newest CVSS standard to set the CVSS Version, vector, severity, and score
-        if "cvssMetricV2" in raw_cve.get("metrics"):
-            cvss_metric = "cvssMetricV2"
-            fields["cvssversion"] = "2"
-        elif "cvssMetricV30" in raw_cve.get("metrics"):
-            cvss_metric = "cvssMetricV30"
-            fields["cvssversion"] = "3"
+        if "cvssMetricV40" in raw_cve.get("metrics"):
+            cvss_metric = "cvssMetricV40"
+            fields["cvssversion"] = "4"
         elif "cvssMetricV31" in raw_cve.get("metrics"):
             cvss_metric = "cvssMetricV31"
             fields["cvssversion"] = "3.1"
+        elif "cvssMetricV30" in raw_cve.get("metrics"):
+            cvss_metric = "cvssMetricV30"
+            fields["cvssversion"] = "3"
+        elif "cvssMetricV2" in raw_cve.get("metrics"):
+            cvss_metric = "cvssMetricV2"
+            fields["cvssversion"] = "2"
 
         if cvss_metric:
-            fields["cvssscore"] = raw_cve.get("metrics").get(cvss_metric)[0].get("impactScore")
-            fields["cvssvector"] = raw_cve.get("metrics").get(cvss_metric)[0].get("cvssData").get("vectorString")
-            fields["sourceoriginalseverity"] = raw_cve.get("metrics").get(cvss_metric)[0].get("impactScore")
+            cvss_entry = raw_cve.get("metrics").get(cvss_metric)[0]
+            cvss_data = cvss_entry.get("cvssData", {})
+            score = cvss_data.get("baseScore")
 
-            for key, value in raw_cve.get("metrics").get(cvss_metric)[0].items():
+            fields["cvssscore"] = score
+            fields["cvssvector"] = cvss_data.get("vectorString")
+            fields["sourceoriginalseverity"] = score
+
+            for key, value in cvss_entry.items():
                 if key == "cvssData":
-                    cvss = raw_cve.get("metrics").get(cvss_metric)[0]["cvssData"]
-                    for new_item in cvss:
-                        metrics.append({"metrics": str(new_item), "value": cvss[new_item]})
+                    for new_item in cvss_data:
+                        metrics.append({"metrics": str(new_item), "value": cvss_data[new_item]})
                 else:
                     metrics.append({"metrics": str(key), "value": value})
 
@@ -291,7 +297,7 @@ def cves_to_war_room(raw_cves):
 
 
 def get_cvss_version_and_score(metrics):
-    cvss_metrics = metrics.get("cvssMetricV31", metrics.get("cvssMetricV30", metrics.get("cvssMetricV2", [])))
+    cvss_metrics = metrics.get("cvssMetricV40", metrics.get("cvssMetricV31", metrics.get("cvssMetricV30", metrics.get("cvssMetricV2", []))))
 
     if cvss_metrics and cvss_metrics[0]:
         return cvss_metrics[0]["cvssData"]["version"], cvss_metrics[0]["cvssData"]["baseScore"]
@@ -494,7 +500,7 @@ def main():  # pragma: no cover
             has_kev=has_kev,
             first_fetch=first_fetch,
             feed_tags=feed_tags,
-            cvssv3severity=params.get("cvssv3severity", []),
+            cvssv4severity=params.get("cvssv4severity", []),
             keyword_search=params.get("keyword_search", ""),
         )
 

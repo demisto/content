@@ -19,8 +19,8 @@ configuration:
   type: 0
   additionalinfo: Returns only the CVEs where the word or phrase is found in the description.
   required: false
-- name: cvssv3severity
-  display: CVSS 3 Severity Filter
+- name: cvssv4severity
+  display: CVSS 4 Severity Filter
   additionalinfo: Select the severities you wish to get back from the feed.
   options:
   - CRITICAL
