@@ -13,6 +13,7 @@ Use this integration to fetch email security incidents from Ironscales as XSIAM 
 | First fetch | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
+| Collect all incidents | False | 
 
 
 ## Commands

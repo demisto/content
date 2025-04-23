@@ -40,6 +40,11 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Collect all incidents 	
+  name: colect_all_incidents
+  type: 8
+  section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

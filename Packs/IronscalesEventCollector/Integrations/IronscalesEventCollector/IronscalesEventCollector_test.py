@@ -25,7 +25,7 @@ def client(mocker):
         }
 
     mocked_client = mocker.Mock()
-    mocked_client.get_open_incident_ids.return_value = [0, 1, 3, 4]
+    mocked_client.get_incident_ids.return_value = [0, 1, 3, 4]
     mocked_client.get_incident.side_effect = mock_get_incident
     return mocked_client
 
@@ -132,7 +132,7 @@ def test_test_module(mocker, params, is_valid, result_msg):
     Then: Make sure the correct message is returned.
     """
     mocker.patch.object(Client, "get_jwt_token", return_value="mock_token")
-    mocker.patch.object(Client, "get_open_incident_ids", return_value=[])
+    mocker.patch.object(Client, "get_incident_ids", return_value=[])
     mocker.patch.object(Client, "get_incident")
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value=params)

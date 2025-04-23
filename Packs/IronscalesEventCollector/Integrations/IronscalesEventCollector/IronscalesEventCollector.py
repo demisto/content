@@ -3,6 +3,8 @@ import copy
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from urllib.parse import quote
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -33,9 +35,11 @@ class Client(BaseClient):  # pragma: no cover
         proxy: bool,
         api_key: str,
         scopes: List[str],
+        all_incident:bool,
     ) -> None:
         self.company_id = company_id
         super().__init__(base_url, verify_certificate, proxy)
+        self.all_incident = all_incident
         self._headers = {"Authorization": f"JWT {self.get_jwt_token(api_key, scopes)}"}
 
     def client_error_handler(self, res) -> Any:
@@ -63,6 +67,14 @@ class Client(BaseClient):  # pragma: no cover
             method="GET",
             url_suffix=f"/incident/{self.company_id}/details/{incident_id}",
         )
+        
+    def get_incident_ids(self, start_time: datetime)-> List[int]:
+        '''
+        Navigate to the correct endpoint
+        '''
+        if self.all_incident :
+            return self.get_all_incident_ids(start_time)
+        return self.get_open_incident_ids()
 
     def get_open_incident_ids(self) -> List[int]:
         return (
@@ -72,7 +84,30 @@ class Client(BaseClient):  # pragma: no cover
             ).get("incident_ids")
             or []
         )
+        
+    def convert_time(self ,time):
+        time  = time.isoformat() #convert to iso format
+        time_encoded = quote(time, safe = '')# Percent-encode (e.g., encode '+' to '%2B')
+        return time_encoded
+        
+    def get_all_incident_ids(self, start_time:datetime) -> List[int]:
+        until = datetime.now(timezone.utc) # Get the current datetime with UTC timezone
+        until  = self.convert_time(until)
+        start = self.convert_time(start_time)
 
+        params = {
+            "reportType": "all",
+            "state": "all",
+            "page": 1,
+            "created_start_time": start,
+            "created_end_time": until
+                }
+        
+        incidents = self._http_request(
+            method="GET",url_suffix=f"/incident/{self.company_id}/list/",params=params).get("incidents") or []
+        if not incidents:
+            return []
+        return [incident.get("incidentID") for incident in incidents]
 
 """ HELPER FUNCTIONS """
 
@@ -129,20 +164,20 @@ def get_incident_ids_by_time(
     return incident_ids[current_idx:]
 
 
-def get_open_incident_ids_to_fetch(
+def get_incident_ids_to_fetch(
     client: Client,
     first_fetch: datetime,
     last_id: Optional[int],
 ) -> List[int]:
-    all_open_incident_ids: List[int] = client.get_open_incident_ids()
-    if not all_open_incident_ids:
+    incident_ids: List[int] = client.get_incident_ids(first_fetch)
+    if not incident_ids:
         return []
     if isinstance(last_id, int):
         # We filter out only events with ID greater than the last_id
-        return list(filter(lambda i: i > last_id, all_open_incident_ids))  # type: ignore
+        return list(filter(lambda i: i > last_id, incident_ids))  # type: ignore
     return get_incident_ids_by_time(
         client,
-        all_open_incident_ids,
+        incident_ids,
         start_time=first_fetch,
     )
 
@@ -170,9 +205,9 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandRes
     since_time = arg_to_datetime(args.get("since_time") or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
     assert isinstance(since_time, datetime)
     events, _ = fetch_events_command(client, since_time, limit)
-
+    message = "All Incidents" if client.all_incident else "Open Incidents"
     result = CommandResults(
-        readable_output=tableToMarkdown("Open Incidents", events),
+        readable_output=tableToMarkdown(message, events),
         raw_response=events,
     )
     return result, events
@@ -199,7 +234,7 @@ def fetch_events_command(
             - ID of the most recent incident ingested in the current run.
     """
     events: List[dict[str, Any]] = []
-    incident_ids: List[int] = get_open_incident_ids_to_fetch(
+    incident_ids: List[int] = get_incident_ids_to_fetch(
         client=client,
         first_fetch=first_fetch,
         last_id=last_id,
@@ -238,6 +273,7 @@ def main():
             proxy=params.get("proxy", False),
             api_key=params.get("apikey", {}).get("password"),
             scopes=argToList(params.get("scopes")),
+            all_incident = params.get("collect_all_incidents"),
         )
         if command == "test-module":
             return_results(test_module_command(client, first_fetch))
