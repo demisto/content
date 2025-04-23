@@ -4,7 +4,7 @@
 
 An API key is required for the XSOAR integration. To create your API Key:
 
-- Create your account at Perplexity.ai
+- Create your account at Perplexity AI
 - Once the account is created, select the settings gear icon by your account name
 - Select the **API** option
 - Select the **+Generate** link to create the API key
