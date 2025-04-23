@@ -3,5 +3,5 @@ variables:
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: js_auto_connect_agent) 
+    ref: js_auto_connect_agent
     project: "${CI_PROJECT_NAMESPACE}/infra"
