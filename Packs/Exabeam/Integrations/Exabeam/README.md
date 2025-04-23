@@ -59,12 +59,6 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
 The "Reset the 'last run' timestamp" button resets both the regular fetch and the Exabeam Notable User fetch.
 
 
-### Troubleshooting
-
-If you are experiencing error 400 with the message "Internal Error: attempt to access uninitialized field" when trying to fetch incidents or search for a specific incident, we recommend using the user email in the username configuration with the prefix [saml].
-For example, for the email user@example.com, use [saml]user@example.com.
-
-
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -1395,3 +1389,9 @@ Returns incidents from Exabeam.
 
 #### Command Example
 ```!exabeam-list-incident priority=high```
+
+
+## Troubleshooting
+
+If you are experiencing error 400 with the message "Internal Error: attempt to access uninitialized field" when trying to fetch incidents or search for a specific incident, we recommend using the user email in the username configuration with the prefix [saml].
+For example, for the email user@example.com, use [saml]user@example.com.
