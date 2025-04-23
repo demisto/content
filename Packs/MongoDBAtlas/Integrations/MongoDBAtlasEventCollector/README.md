@@ -77,4 +77,4 @@ Retrieves a list of events from the MongoDB Atlas instance.
 
 | **Path**     | **Type** | **Description** |
 |--------------|------| --- |
-| MongoDBAtlas | List | The list of the events and the alerts. |
+| MongoDBAtlasEventCollector | List | The list of the events and the alerts. |
