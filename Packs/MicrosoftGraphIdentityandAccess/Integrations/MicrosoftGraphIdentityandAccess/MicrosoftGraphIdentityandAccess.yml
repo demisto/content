@@ -469,8 +469,6 @@ script:
       description: The ids of the users to dismiss seperated be commas.
       required: true
   - description: Retrieve one or all Conditional Access policies from Microsoft Graph API.
-
-  
     name: msgraph-identity-ca-policies-list
     arguments:
     - name: policy_id
@@ -480,11 +478,15 @@ script:
       description: Optional. The OData filter query to retrieve specific Conditional Access policies.
       required: false
     - name: limit
-      description: Optional. The maximum number of Conditional Access policies to return. Ignored if 'all_results' is true.
+      description: Optional. The maximum number of Conditional Access policies to return. Applicable only when all_results is set to false.
       required: false
     - name: all_results
-      description: Optional. Whether to retrieve all results without applying the 'limit'. Set to true to ignore the limit.
+      description: Optional. Whether to retrieve all results without applying the 'limit'. Default value is true.
       required: false
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     outputs:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id
       description: The unique ID of the Conditional Access policy.
@@ -601,23 +603,12 @@ script:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
       description: Whether sign-in frequency control is enabled.
       type: boolean
-
-
-
-
   - description: Delete specific Conditional Access policy by id.
     name: msgraph-identity-ca-policy-delete
     arguments:
     - name: policy_id
       description: Required. The ID of the Conditional Access policy to delete.
       required: true
-
-
-
-
-
-
-
   - description: Creates a Conditional Access policy.
     name: msgraph-identity-ca-policy-create
     arguments:
@@ -634,6 +625,10 @@ script:
     - name: state
       description: |
         The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.
+      auto: PREDEFINED
+      predefined:
+        - 'enabled'
+        - 'disabled'
       required: false
       isArray: false
     - name: sign_in_risk_levels
@@ -666,6 +661,10 @@ script:
         List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.
       required: false
       isArray: true
+      auto: PREDEFINED
+      predefined:
+        - vrn:user:registersecurityinfo
+        - urn:user:registerdevice
     - name: include_users
       description: |
         List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.
@@ -721,9 +720,14 @@ script:
         The operator for grant control. Can be `AND` or `OR`. Default is `AND`.
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+        - AND
+        - OR
     - name: built_in_controls
       description: |
         List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.
+        Default value is 'mfa'
         Special considerations when using `passwordChange`: 
         - `passwordChange` must be accompanied by `mfa` using an `AND` operator.
         - `passwordChange` must be used with `userRiskLevels`.
@@ -846,19 +850,6 @@ script:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
       description: Whether sign-in frequency control is enabled.
       type: boolean
-
-
-
-
-
-
-
-
-
-
-
-
-
   - description: Updates a Conditional Access policy.
     name: msgraph-identity-ca-policy-update
     arguments:
@@ -868,7 +859,7 @@ script:
     - name: policy
       description: |
         JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,
-        other required arguments like `policy_name`, `state`, `sign_in_risk_levels`, `user_risk_levels`, etc. must be included.
+        other required arguments like `policy_name`, `state`, etc. must be included.
       required: false
       isArray: false
     - name: policy_name
@@ -877,9 +868,13 @@ script:
       isArray: false
     - name: state
       description: |
-        The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.
+        The state of the policy. Can be `enabled` or `disabled`.
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+        - enabled
+        - disabled
     - name: sign_in_risk_levels
       description: |
         List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
@@ -909,6 +904,10 @@ script:
       description: |
         List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.
       required: false
+      auto: PREDEFINED
+      predefined:
+        - vrn:user:registersecurityinfo
+        - urn:user:registerdevice
       isArray: true
     - name: include_users
       description: |
@@ -962,9 +961,13 @@ script:
       isArray: true
     - name: grant_control_operator
       description: |
-        The operator for grant control. Can be `AND` or `OR`. Default is `AND`.
+        The operator for grant control. Can be `AND` or `OR`.
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+        - AND
+        - OR
     - name: built_in_controls
       description: |
         List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.

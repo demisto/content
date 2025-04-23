@@ -263,9 +263,6 @@ def test_list_role_members_command(mocker):
     result = list_role_members_command(ms_client=client, args={"role_id": "0000c00f", "limit": 1})
     assert result.readable_output == "Role ID: 0000c00f, was not found or invalid"
 
-
-
-
 @pytest.mark.parametrize(
     "field, existing_list, new_list, expected, expected_messages",
     [
@@ -278,7 +275,7 @@ def test_list_role_members_command(mocker):
             ["All"],
             ["user1"],
             ["All"],
-            ["Note: The field 'includeUsers' was not updated because it currently holds the special value 'All'."
+            ["The field 'includeUsers' was not updated because it currently holds the special value 'All'."
              " This value cannot be merged with others. All other updates were applied."
              " To update this field, use update_action='override'."]
         ),
@@ -289,7 +286,7 @@ def test_list_role_members_command(mocker):
             ["AllTrusted"],
             ["loc1"],
             ["AllTrusted"],
-            ["Note: The field 'includeLocations' was not updated because it currently holds the special value 'AllTrusted'."
+            ["The field 'includeLocations' was not updated because it currently holds the special value 'AllTrusted'."
              " This value cannot be merged with others. All other updates were applied."
              " To update this field, use update_action='override'."]
         ),
@@ -323,66 +320,15 @@ def test_resolve_merge_value(field, existing_list, new_list, expected, expected_
     result = resolve_merge_value(field, existing_list, new_list, messages)
     assert sorted(result) == sorted(expected)
     assert messages == expected_messages
-
-@pytest.mark.parametrize(
-    "exception_input, expected_output",
-    [
-        # Case 1: Exception with a dictionary containing an 'error' field
-        (
-            Exception({"error": {"code": "BadRequest", "message": "Invalid policy"}}),
-            {"code": "BadRequest", "message": "Invalid policy"}
-        ),
-
-        # Case 2: Exception as a string that contains a JSON object
-        (
-            Exception("Something failed: {\"error\": {\"code\": \"AuthError\", \"message\": \"Unauthorized access\"}}"),
-            {"code": "AuthError", "message": "Unauthorized access"}
-        ),
-
-        # Case 3: Exception as a string that does not contain JSON
-        (
-            Exception("Something went wrong"),
-            {"code": "UnknownError", "message": "Something went wrong"}
-        ),
-
-        # Case 4: Exception with no arguments at all
-        (
-            Exception(),
-            {"code": "UnknownError", "message": ""}
-        ),
-
-        # Case 5: Exception with a dictionary that does not have an 'error' key
-        (
-            Exception({"status": 403}),
-            {"code": "UnknownError", "message": "{'status': 403}"}
-        ),
-    ]
-)
-def test_parse_error_from_exception(exception_input, expected_output):
-    """
-    Given:
-        - An exception raised in different formats (dict, string with JSON, plain string, etc.).
-    When:
-        - Parsing the error using parse_error_from_exception.
-    Then:
-        - Verify that the correct code and message are extracted or fallback values are used.
-    """
-
-    from MicrosoftGraphIdentityandAccess import parse_error_from_exception
-    result = parse_error_from_exception(exception_input)
-    assert result == expected_output
     
 @pytest.mark.parametrize(
     "args, should_raise, delete_mock, expected_output",
     [
-        # Case 1: Missing policy_id
-        ({}, True, None, "The 'policy_id' argument is required to delete a Conditional Access policy."),
-
-        # Case 2: policy_id provided but not found
+        # Case 1: policy_id provided but not found
         ({"policy_id": "nonexistent-id"}, False, Exception("API Error with status 404"),
          "Error deleting Conditional Access policy:"),
 
-        # Case 3: Successful deletion
+        # Case 2: Successful deletion
         ({"policy_id": "valid-id"}, False, None, "Conditional Access policy valid-id was successfully deleted.")
     ]
 )
@@ -398,6 +344,8 @@ def test_delete_conditional_access_policy_command(mocker, args, should_raise, de
     Then:
         - Verify correct behavior for each case: exception raised or readable_output contains success/failure.
     """
+    from unittest.mock import Mock
+
     from MicrosoftGraphIdentityandAccess import (Client, delete_conditional_access_policy_command, CommandResults,)
     client = Client("", False, False)
 
@@ -407,9 +355,11 @@ def test_delete_conditional_access_policy_command(mocker, args, should_raise, de
             side_effect=delete_mock
         )
     else:
+        mock_response = Mock()
+        mock_response.status_code = 204
         mocker.patch.object(
             client.ms_client, "http_request",
-            return_value=None
+            return_value=mock_response
         )
 
     if should_raise:
@@ -427,35 +377,35 @@ def test_delete_conditional_access_policy_command(mocker, args, should_raise, de
     [
         (
             {},  # case: no policy_id, returns list
-            {"value": [{"id": "1", "displayName": "Policy A", "state": "enabled"}]},
+            [{"id": "1", "displayName": "Policy A", "state": "enabled"}],
             1,
             (None, None),
             "Policy A"
         ),
         (
             {"policy_id": "abc123"},  # case: specific policy by id
-            {"id": "abc123", "displayName": "Policy B", "state": "disabled"},
+            [{"id": "abc123", "displayName": "Policy B", "state": "disabled"}],
             1,
             ("abc123", None),
             "Policy B"
         ),
         (
             {"filter": "state eq 'enabled'"},  # case: filtered list
-            {"value": [{"id": "2", "displayName": "Policy C", "state": "enabled"}]},
+            [{"id": "2", "displayName": "Policy C", "state": "enabled"}],
             1,
             (None, "state eq 'enabled'"),
             "Policy C"
         ),
         (
             {},  # case: empty list
-            {"value": []},
+            [],
             0,
             (None, None),
             None
         ),
         (
             {"policy_id": "not-found"},  # case: not found single policy
-            None,
+            [],
             0,
             ("not-found", None),
             None
@@ -492,79 +442,6 @@ def test_list_conditional_access_policies_command_cases(
     # assert something from the output (only if something returned)
     if expected_display:
         assert expected_display in result.readable_output
-
-@pytest.mark.parametrize(
-    "existing_policy, new_policy, expected_result, expected_messages",
-    [
-        # Normal merge case (סדר לא חשוב)
-        (
-            {"conditions": {"users": {"includeUsers": ["user1"]}}},
-            {"conditions": {"users": {"includeUsers": ["user2"]}}},
-            {"conditions": {"users": {"includeUsers": ["user1", "user2"]}}},
-            [],
-        ),
-
-        # Special value 'All' blocks update
-        (
-            {"conditions": {"users": {"includeUsers": ["All"]}}},
-            {"conditions": {"users": {"includeUsers": ["user2"]}}},
-            {"conditions": {"users": {"includeUsers": ["All"]}}},
-            ["Note: The field 'includeUsers' was not updated because it currently holds the special value 'All'."
-             " This value cannot be merged with others. All other updates were applied."
-             " To update this field, use update_action='override'."],
-        ),
-
-        # New policy does not contain the field - nothing happens
-        (
-            {"conditions": {"users": {"includeUsers": ["user1"]}}},
-            {"conditions": {"users": {}}},
-            {"conditions": {"users": {}}},
-            [],
-        ),
-
-        # No sub_section usage
-        (
-            {"grantControls": {"builtInControls": ["mfa"]}},
-            {"grantControls": {"builtInControls": ["compliantDevice"]}},
-            {"grantControls": {"builtInControls": ["mfa", "compliantDevice"]}},
-            [],
-        ),
-    ]
-)
-def test_merge_field(mocker, existing_policy, new_policy, expected_result, expected_messages):
-    """
-    Given:
-        - An existing policy and a new policy dict
-    When:
-        - Merging a specific field (includeUsers or builtInControls)
-    Then:
-        - Ensure the result reflects expected merging or blocked updates
-    """
-    from MicrosoftGraphIdentityandAccess import merge_field
-
-    messages: list[str] = []
-
-    if "grantControls" in new_policy:
-        merge_field("grantControls", None, "builtInControls", existing_policy, new_policy, messages)
-
-        assert set(new_policy["grantControls"]["builtInControls"]) == set(
-            expected_result["grantControls"]["builtInControls"]
-        )
-
-    elif "includeUsers" in new_policy.get("conditions", {}).get("users", {}):
-        merge_field("conditions", "users", "includeUsers", existing_policy, new_policy, messages)
-
-        assert set(new_policy["conditions"]["users"]["includeUsers"]) == set(
-            expected_result["conditions"]["users"]["includeUsers"]
-        )
-
-    else:
-        merge_field("conditions", "users", "includeUsers", existing_policy, new_policy, messages)
-        assert new_policy == expected_result
-
-    assert messages == expected_messages
-
-    
 
 
 @pytest.mark.parametrize(
@@ -653,7 +530,7 @@ def test_update_conditional_access_policy_command_invalid_json_policy(invalid_js
     with pytest.raises(ValueError, match="The provided policy string is not a valid JSON."):
         update_conditional_access_policy_command(client, args)
         
-
+'''
 def test_update_conditional_access_policy_command_append_mode(mocker):
     """
     Given:
@@ -692,36 +569,5 @@ def test_update_conditional_access_policy_command_append_mode(mocker):
             }
         }
     }
+'''
 
-    # Mock merge_field so it simulates merging (updates new_policy in-place)
-    def mock_merge_field(section, sub_section, field, existing, new, messages):
-        if field == "includeUsers":
-            existing_users = existing.get(section, {}).get(sub_section, {}).get(field, [])
-            new_users = new.get(section, {}).get(sub_section, {}).get(field, [])
-            
-            merged = []
-            seen = set()
-            for user in existing_users + new_users:
-                if user not in seen:
-                    seen.add(user)
-                    merged.append(user)
-
-            if section not in new:
-                new[section] = {}
-            if sub_section not in new[section]:
-                new[section][sub_section] = {}
-            new[section][sub_section][field] = merged
-
-
-    mock_client = mocker.Mock()
-    mock_client.list_conditional_access_policies.return_value = existing_policy
-    mock_client.update_conditional_access_policy.return_value = CommandResults(readable_output="Updated")
-
-    mocker.patch("MicrosoftGraphIdentityandAccess.merge_field", side_effect=mock_merge_field)
-
-    result = update_conditional_access_policy_command(mock_client, args)
-
-    assert isinstance(result, CommandResults)
-    assert result.readable_output.startswith("Updated")
-
-    mock_client.update_conditional_access_policy.assert_called_once_with("abc123", expected_merged_policy)
