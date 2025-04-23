@@ -61,11 +61,8 @@
         },
         {
             "playbookID": "Test Playbook - IOC Alert",
-            "integrations": [
-                "VirusTotal (API v3)",
-                 "Cortex Core - IR"
-                ],
-            "instance_names": ["virus_total_v3"]
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3"
         },
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
