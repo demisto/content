@@ -1111,28 +1111,28 @@ metadata_collector = YMLMetadataCollector(
     ]
 )
 
-
 ''' CLIENT CLASS '''
 
 class Client(BaseClient):
-     """Client class to interact with the SilentPush API
+    """
+    Client class to interact with the SilentPush API.
 
     This Client implements API calls and does not contain any XSOAR logic.
     It should only perform requests and return data.
     It inherits from BaseClient defined in CommonServerPython.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
-        
+
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
         """
         Initializes the client with the necessary parameters.
-
         Args:
             base_url (str): The base URL for the SilentPush API.
             api_key (str): The API key for authentication.
             verify (bool): Flag to determine whether to verify SSL certificates (default True).
             proxy (bool): Flag to determine whether to use a proxy (default False).
         """
+
         self.base_url = base_url.rstrip('/') + '/api/v1/merge-api/'
         self.verify = verify
         self.proxy = proxy
@@ -1142,6 +1142,7 @@ class Client(BaseClient):
             'X-API-Key': api_key,
             'Content-Type': 'application/json'
         }
+
 
     def _http_request(self, method: str, url_suffix: str, params: dict = None, data: dict = None) -> Any:
         """
