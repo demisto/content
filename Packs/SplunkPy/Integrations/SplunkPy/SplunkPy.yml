@@ -479,9 +479,10 @@ script:
     description: Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
     name: splunk-submit-event-hec
   - arguments:
-    - description: ID of the job for which to get the status.
+    - description: Comma-seperated list of IDs of the jobs for which to get the statuses.
       name: sid
       required: true
+      isArray: true
     description: Returns the status of a job.
     name: splunk-job-status
     outputs:

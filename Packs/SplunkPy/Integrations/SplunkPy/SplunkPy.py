@@ -3016,7 +3016,9 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
 
     status_cmd_result: CommandResults | None = None
     if polling:
-        status_cmd_result = splunk_job_status(service, args)[0]
+        status_cmd_results = splunk_job_status(service, args)
+        assert status_cmd_results # if polling is true, status_cmd_result should not be an empty list
+        status_cmd_result = status_cmd_results[0]
         status = status_cmd_result.outputs["Status"]  # type: ignore[index]
         if status.lower() != "done":
             # Job is still running, schedule the next run of the command.
