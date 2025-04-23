@@ -8,6 +8,15 @@ Find custom scripts and integration dependencies used inside of playbooks.
 | --- | --- |
 | Script Type | python3 |
 
+
+## Dependencies
+---
+This script uses the following commands and scripts.
+
+* core-api-post
+* Core REST API
+  
+
 ## Inputs
 
 ---
