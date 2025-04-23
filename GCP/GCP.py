@@ -99,12 +99,12 @@ def get_access_token(
     """
     if not args.get("project_id"):
         raise DemistoException("project_id is required to retrieve a token.")
-
-    params = {
-        "cloud_type": "GCP",
-        "account_id": args.get("project_id"),
-    }
-    return {}
+    #
+    # params = {
+    #     "cloud_type": "GCP",
+    #     "account_id": args.get("project_id"),
+    # }
+    return ""
     # return demisto.get_token(params)
 
 
@@ -130,7 +130,7 @@ def compute_firewall_patch(creds: Credentials, args: Dict[str, Any]) -> CommandR
         config["network"] = args.get("network")
 
     if args.get("priority"):
-        config["priority"] = int(args.get("priority"))
+        config["priority"] = args.get("priority")
 
     if args.get("sourceRanges"):
         config["sourceRanges"] = argToList(args.get("sourceRanges"))
@@ -314,7 +314,7 @@ def container_cluster_security_update(creds: Credentials, args: Dict[str, Any]) 
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
 
     container = build("container", "v1", credentials=creds)
-    update_fields = {}
+    update_fields: Dict[str, Any] = {}
 
     if enable_intra:
         update_fields["intraNodeVisibilityConfig"] = {"enabled": True}
@@ -322,7 +322,7 @@ def container_cluster_security_update(creds: Credentials, args: Dict[str, Any]) 
     if enable_master:
         update_fields["masterAuthorizedNetworksConfig"] = {
             "enabled": True,
-            "cidrBlocks": [{"cidrBlock": cidr.strip()} for cidr in cidrs]
+            "cidrBlocks": [{"cidrBlock": cidr} for cidr in cidrs]
         }
 
     response = container.projects().locations().clusters().update(
@@ -402,18 +402,19 @@ def check_required_permissions(creds: Credentials, args: Dict[str, Any], command
         raise DemistoException(f"Permission check failed: {e}") from e
 
     granted = set(response.get("permissions", []))
+
     if command:
-        missing = [p for p in permissions if p not in granted]
-        if missing:
-            raise DemistoException(f"Missing permissions for `{command}`: {', '.join(missing)}")
+        missing_permissions = [p for p in permissions if p not in granted]
+        if missing_permissions:
+            raise DemistoException(f"Missing permissions for `{command}`: {', '.join(missing_permissions)}")
     else:
-        missing = {
+        missing_per_command: Dict[str, List[str]] = {
             cmd: [p for p in perms if p not in granted]
             for cmd, perms in REQUIRED_PERMISSIONS.items()
             if any(p not in granted for p in perms)
         }
-        if missing:
-            issues = "\n".join(f"- `{cmd}`: {', '.join(perms)}" for cmd, perms in missing.items())
+        if missing_per_command:
+            issues = "\n".join(f"- `{cmd}`: {', '.join(perms)}" for cmd, perms in missing_per_command.items())
             raise DemistoException(f"Missing permissions:\n{issues}")
 
     return "ok"
