@@ -56,7 +56,14 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
 - Important: Duplicate notable users are never fetched unless the "Reset the 'last run' timestamp" button is pressed.
 
 #### Note
+
 The "Reset the 'last run' timestamp" button resets both the regular fetch and the Exabeam Notable User fetch.
+
+
+### Troubleshooting
+
+If you are experiencing error 400 with the message "Internal Error: attempt to access uninitialized field" when trying to fetch incidents or search for a specific incident, we recommend using the user email in the username configuration with the prefix [saml].
+For example, for the email user@example.com, use [saml]user@example.com.
 
 
 ## Commands
