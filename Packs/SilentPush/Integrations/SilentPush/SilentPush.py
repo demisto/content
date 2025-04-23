@@ -1612,8 +1612,8 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             params=query_params
         )
-
-    def get_asn_takedown_reputation(self, asn: str, limit: Optional[int] = None, explain: bool = False) -> Dict[str, Any]:
+    
+    def get_asn_takedown_reputation(self, asn: str, explain: int = 0, limit: int = None) -> Dict[str, Any]:
         """
         Retrieve takedown reputation for a specific Autonomous System Number (ASN).
 
@@ -1632,19 +1632,22 @@ class Client(BaseClient):
         """
         if not asn:
             raise ValueError('ASN is required.')
+        url_suffix = f"{ASN_TAKEDOWN_REPUTATION}/{asn}"
+        query_params = assign_params(limit=limit, explain=explain)
 
-        query_params = assign_params(
-            limit=limit,
-            explain=explain
-        )
-
-        response = self._http_request(
+        raw_response = self._http_request(
             method='GET',
-            url_suffix=f'{ASN_TAKEDOWN_REPUTATION}/{asn}',
+            url_suffix=url_suffix,
             params=query_params
         )
 
-        return response.get('response', {}).get('takedown_reputation', {})
+        response = raw_response.get('response')
+
+        if isinstance(response, dict):
+            return response.get('takedown_reputation', {})
+        else:
+            # Log or wrap the unexpected response type for debugging or display
+            return {'error': response if isinstance(response, str) else 'Unexpected response type'}
 
     def get_ipv4_reputation(self, ipv4: str, explain: int = 0, limit: int = None) -> List[Dict[str, Any]]:
         """
@@ -2763,7 +2766,7 @@ def get_table_headers(explain: bool) -> list:
     outputs_list=ASN_TAKEDOWN_REPUTATION_OUTPUTS,
     description="This command retrieve the takedown reputation information for an Autonomous System Number (ASN)."
 )
-def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandResults:
+def get_asn_takedown_reputation_command(client, args):
     """
     Command handler for retrieving ASN takedown reputation.
 
@@ -2784,32 +2787,34 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
     asn = args.get('asn')
     if not asn:
         raise ValueError('ASN is a required parameter')
-
+    
+    explain = arg_to_number(args.get('explain', 0))
     limit = arg_to_number(args.get('limit'))
 
-    explain = argToBoolean(args.get('explain', False))
+    response = client.get_asn_takedown_reputation(asn, explain, limit)
 
-    response = client.get_asn_takedown_reputation(asn=asn, limit=limit, explain=explain)
+    if isinstance(response, dict):
+        table_data = [response]
+    elif isinstance(response, str):
+        table_data = [{'message': response}]
+    else:
+        table_data = [{'error': 'Invalid response format'}]
 
-    if not response:
-        return CommandResults(
-            readable_output=f'No takedown reputation data found for ASN {asn}',
-            outputs_prefix='SilentPush.ASNTakedownReputation',
-            outputs=None
-        )
+    # Explicitly specify headers from keys of first dict
+    headers = list(table_data[0].keys()) if table_data else ['message']
 
     readable_output = tableToMarkdown(
-        f'ASN Takedown Reputation Information for {asn}',
-        [response],
+        f'Takedown Reputation for ASN {asn}',
+        table_data,
+        headers=headers,
         removeNull=True
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SilentPush.ASNTakedownReputation',
-        outputs_key_field='asn',
-        outputs=response,
-        raw_response=response
+        outputs_prefix="SilentPush.TakedownReputation",
+        outputs_key_field="asn",
+        outputs=table_data
     )
 
 @metadata_collector.command(
