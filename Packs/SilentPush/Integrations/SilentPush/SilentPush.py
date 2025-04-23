@@ -2812,7 +2812,7 @@ def get_asn_takedown_reputation_command(client: Client, args: dict) -> CommandRe
     inputs_list=IPV4_REPUTATION_INPUTS,
     outputs_prefix="SilentPush.IPv4Reputation",
     outputs_list=IPV4_REPUTATION_OUTPUTS,
-    description="This command retrieve the reputation information for an IPv4."
+    description="This command retrieves the reputation information for an IPv4."
 )
 def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
@@ -2837,8 +2837,10 @@ def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> Command
 
     raw_response = client.get_ipv4_reputation(ipv4, explain, limit)
 
-    # If no data is found for the provided IPv4 address, return a message
-    if not raw_response:
+    # Defensive extraction
+    history = raw_response.get("response", {}).get("ip_reputation_history", {})
+
+    if not history or history.get("error") == "Not found":
         return CommandResults(
             readable_output=f"No reputation data found for IPv4: {ipv4}",
             outputs_prefix='SilentPush.IPv4Reputation',
@@ -2847,24 +2849,20 @@ def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> Command
             raw_response=raw_response
         )
 
-    latest_reputation = raw_response[0]
-    
-    # Prepare reputation data for output
+    # Construct result
     reputation_data = {
-        'ip': latest_reputation.get('ip', ipv4),
-        'date': latest_reputation.get('date'),
-        'reputation_score': latest_reputation.get('ip_reputation')
+        'ip': history.get('ipv4', ipv4),
+        'date': history.get('date'),
+        'reputation_score': history.get('ip_reputation'),
     }
-    ip_reputation_explain = latest_reputation.get('ip_reputation_explain', {})
-    if ip_reputation_explain:
-        ip_reputation_data = {
-            'ip_density': ip_reputation_explain.get('ip_density'),
-            'names_num_listed': ip_reputation_explain.get('names_num_listed')
+
+    explain_data = history.get('ip_reputation_explain', {})
+    if explain_data:
+        reputation_data['ip_reputation_explain'] = {
+            'ip_density': explain_data.get('ip_density'),
+            'names_num_listed': explain_data.get('names_num_listed')
         }
-        reputation_data.update({"ip_reputation_explain": ip_reputation_data})
 
-
-    # Convert data to markdown table for readable output
     readable_output = tableToMarkdown(
         f'IPv4 Reputation Information for {ipv4}',
         [reputation_data]
@@ -2877,6 +2875,7 @@ def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> Command
         readable_output=readable_output,
         raw_response=raw_response
     )
+
 
 @metadata_collector.command(
     command_name="silentpush-forward-padns-lookup",
