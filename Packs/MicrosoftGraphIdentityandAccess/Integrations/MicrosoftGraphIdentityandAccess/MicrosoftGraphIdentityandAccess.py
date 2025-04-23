@@ -6,7 +6,6 @@ https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from MicrosoftApiModule import *  # noqa: E402
-
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
@@ -344,7 +343,8 @@ class Client:  # pragma: no cover
             "DELETE", f"v1.0/directoryRoles/{role_object_id}/members/{user_id}/$ref", return_empty_response=True
         )
 
-    def list_conditional_access_policies(self, policy_id: Optional[str] = None, filter_query: Optional[str] = None) -> dict:
+    def list_conditional_access_policies(self, policy_id: Optional[str] = None, filter_query: Optional[str] = None) -> Union[list,
+                                                                                                                             CommandResults]:
         """
         Retrieve Conditional Access policies, or a specific one by ID.
 
@@ -361,11 +361,23 @@ class Client:  # pragma: no cover
             if filter_query:
                 url_suffix += f"?$filter={filter_query}"
 
-        return self.ms_client.http_request(
-            method="GET",
-            url_suffix=url_suffix,
-            resp_type="json"
-        )
+        try:
+            res = self.ms_client.http_request(
+                method="GET",
+                url_suffix=url_suffix,
+                resp_type="json"
+            )
+            # if a single policy is returned (dict), make it a list to unify the structure
+            if not res:
+                return []
+            if not policy_id:
+                return res.get('value') or []
+            else:
+                return [res]
+        except Exception as e:
+            return CommandResults(readable_output=f"Error occurred while fetching policies:\n {str(e)}")
+        
+    
         
     def delete_conditional_access_policy(self, policy_id: str) -> CommandResults:
         """
@@ -381,46 +393,62 @@ class Client:  # pragma: no cover
 
         try:
             
-            self.ms_client.http_request(
+            res = self.ms_client.http_request(
                 method="DELETE",
                 url_suffix=url_suffix,
-                resp_type="text"
+                resp_type="response"
             )
-            return CommandResults(
-            readable_output=f"Conditional Access policy {policy_id} was successfully deleted."
-            )
+            
+            if res.status_code == 204:
+                return CommandResults(
+                readable_output=f"Conditional Access policy {policy_id} was successfully deleted."
+                )
+            else:
+                demisto.error(f"Failed to delete Conditional Access policy {policy_id}. Status code: {res.status_code},"
+                              f" Response: {res.text}")
+                return CommandResults(
+                    readable_output=(
+                        f"Error deleting Conditional Access policy {policy_id}.\n"
+                        f"Status code: {res.status_code}\n"
+                        f"Response: {res.text}"
+                    )
+                )
         except Exception as e:
-            err = parse_error_from_exception(e)
-            return CommandResults(readable_output=(f"Error deleting Conditional Access policy:"
-                f" Code - {err.get('code')}, Message - {err.get('message')}"),)
-
+            return CommandResults(readable_output=(f"Error deleting Conditional Access policy:\n"
+                f"{str(e)}"),)
+            
     def create_conditional_access_policy(self, policy) -> CommandResults:
         try:
+            # in case user send json policy
             if isinstance(policy, str):
-                try:
-                    policy = json.loads(policy)
-                except json.JSONDecodeError as e:
-                    raise ValueError("The provided policy string is not a valid JSON."
-                                     f"Error: {e}")
+                policy = json.loads(policy)
+
 
             res = self.ms_client.http_request(
                 method="POST",
                 url_suffix="v1.0/identity/conditionalAccess/policies",
-                json_data=policy
+                json_data=policy,
                 )
-            policy_id = res.get('id', 'Unknown')
-            demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n {res}")
-            return CommandResults(
-                outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
-                outputs=res,
-                readable_output=f"Conditional Access policy {policy_id} was successfully created.",
-                raw_response=res,)
-            
+
+            if res.get('id'):
+                policy_id = res.get('id')
+                demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n {res}")
+                return CommandResults(
+                    outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
+                    outputs=res,
+                    readable_output=f"Conditional Access policy {policy_id} was successfully created.",
+                    raw_response=res,)
+            else:
+                demisto.error(f"Failed to create Conditional Access policy.\n{res}")
+                return CommandResults(
+                    readable_output=f"Failed to create Conditional Access policy.\n{res}",
+                )
+        except json.JSONDecodeError as e:
+            return CommandResults(readable_output=("The provided policy string is not a valid JSON.\n"
+                                f"Error: {e}"))
         except Exception as e:
-            err = parse_error_from_exception(e)
-            
-            return CommandResults(readable_output=(f"Error creating Conditional Access policy:"
-                            f" Code - {err.get('code')}, Message - {err.get('message')}"),)
+            return CommandResults(readable_output=(f"Error creating Conditional Access policy:\n"
+                f"{str(e)}"),)
 
     def update_conditional_access_policy(self, policy_id: Union[str, None], policy: Union[dict, str]) -> CommandResults:
         try:
@@ -438,15 +466,16 @@ class Client:  # pragma: no cover
                 return CommandResults(
                     readable_output=f"Conditional Access policy {policy_id} was successfully updated.",)
             else:
+                demisto.info(f"An error occurred. Conditional Access policy {policy_id} could not be updated:\n{res}")
                 return CommandResults(
-                    readable_output=f"Conditional Access policy {policy_id} was'nt updated.",)
+                    readable_output=f"An error occurred while updating Conditional Access policy '{policy_id}':\n{res}"
+                )
+
         except json.JSONDecodeError:
                     raise ValueError("The provided policy string is not a valid JSON.")
         except Exception as e:
-            err = parse_error_from_exception(e)
-            
-            return CommandResults(readable_output=(f"Error updating Conditional Access policy:"
-                            f" Code - {err.get('code')}, Message - {err.get('message')}"),)
+            return CommandResults(readable_output=(f"Error updating Conditional Access policy:\n"
+                f"{str(e)}"),)
 
 
 """ UTILITIES"""
@@ -471,18 +500,19 @@ def resolve_merge_value(field: str, existing_list: List[str], new_list: List[str
     Returns:
         List[str]: The merged or selected list to apply.
     """
-    special_values = {"All", "AllTrusted", "None"}
 
-    # Normalize to list of strings
-    existing_list = list(map(str, existing_list or []))
-    new_list = list(map(str, new_list or []))
+    if field == "signInRiskLevels":
+        return list(set(existing_list + new_list))
 
-    if existing_list == ["None"]:
+
+    special_values = {"All", "all", "AllTrusted", "None", "none"}
+
+    if existing_list == ["None"] or existing_list == ["none"]:
         return new_list
 
-    if existing_list in [["All"], ["AllTrusted"]]:
+    if existing_list in [["All"], ["all"], ["AllTrusted"]]:
         messages.append(
-            f"Note: The field '{field}' was not updated because it currently holds the special value '{existing_list[0]}'. "
+            f"The field '{field}' was not updated because it currently holds the special value '{existing_list[0]}'. "
             f"This value cannot be merged with others. All other updates were applied. "
             f"To update this field, use update_action='override'."
         )
@@ -493,65 +523,44 @@ def resolve_merge_value(field: str, existing_list: List[str], new_list: List[str
 
     return list(set(existing_list + new_list))
 
-def merge_field(section: str, sub_section: Optional[str], field: str,
-    existing_policy: dict, new_policy: dict, messages: List[str], ) -> None:
-    def safe_get(d, *keys):
-        for key in keys:
-            if not isinstance(d, dict):
-                return []
-            d = d.get(key)
-        return d if isinstance(d, list) else []
+def merge_policy_section(base_existing: dict, new: dict, messages: List[str]) -> None:
+    """
+    Iteratively merges fields from new policy into existing policy using resolve_merge_value logic.
+    Works non-recursively.
+    """
+    stack: List[tuple[dict, dict, List[str]]] = [(base_existing, new, [])]
 
-    if sub_section:
-        if field not in new_policy.get(section, {}).get(sub_section, {}):
-            return
-        existing_list = safe_get(existing_policy, section, sub_section, field)
-        new_list = safe_get(new_policy, section, sub_section, field)
-        merged = resolve_merge_value(field, existing_list, new_list, messages)
-        new_policy.setdefault(section, {}).setdefault(sub_section, {})[field] = merged
-    else:
-        if field not in new_policy.get(section, {}):
-            return
-        existing_list = safe_get(existing_policy, section, field)
-        new_list = safe_get(new_policy, section, field)
-        merged = resolve_merge_value(field, existing_list, new_list, messages)
-        new_policy.setdefault(section, {})[field] = merged
-        
-def parse_error_from_exception(e: Exception) -> Dict[str, str]:
-    try:
-        if not e.args:
-            return {'code': 'UnknownError', 'message': str(e)}
+    while stack:
+        current_existing, current_new, path = stack.pop()
+    
+        for key, value in current_new.items():
+            current_path = path + [key]
 
-        first_arg = e.args[0]
+            if isinstance(value, dict):
+                existing_sub = current_existing.get(key, {})
+                new_sub = value
+                stack.append((existing_sub, new_sub, current_path))
+            else:
+                # Get the existing value from the full base_existing path
+                existing_value = base_existing
+                for p in current_path:
+                    existing_value = existing_value[p]
 
-        if isinstance(first_arg, dict):
-            error = first_arg.get("error", {})
-        elif isinstance(first_arg, str) and "{" in first_arg:
-            json_part = first_arg[first_arg.find('{'):]
-            parsed_error = json.loads(json_part)
-            error = parsed_error.get("error", {})
-        else:
-            error = {}
+                if not isinstance(existing_value, list):
+                    demisto.info(f"Field `{'.'.join(current_path)}` is not a list. 'append' mode is not applicable."
+                                  "The existing value has been overwritten with the new value.")
+                    continue
 
-        return {
-            'code': error.get('code', 'UnknownError'),
-            'message': error.get('message', str(e))
-        }
+                merged = resolve_merge_value(key, existing_value, value, messages)
+                target = new
+                
+                for p in current_path[:-1]:
+                    target = target[p]
+                    
+                target[current_path[-1]] = merged
+                demisto.info(f"Updated `{'.'.join(current_path)}` with {merged} value successfully.")
 
-    except Exception:
-        return {'code': 'UnknownError', 'message': str(e)}
 
-'''
-def convert_to_list(value):
-    if isinstance(value, str):
-        return [item.strip() for item in value.split(",") if item.strip()]
-    return value or []
-'''
-
-def clean_dict(d):
-    if isinstance(d, dict):
-        return {k: clean_dict(v) for k, v in d.items() if v not in [None, [], {}, ""] and clean_dict(v) != {}}
-    return d
 
 """ COMMAND FUNCTIONS """
 
@@ -1114,17 +1123,10 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     limit = args.get('limit', 50)
     all_results = argToBoolean(args.get('all_results', True))
     
-    raw_response = client.list_conditional_access_policies(policy_id, filter_query)
-
-    policies: list[dict[str, Any]]
+    policies: Union[list[dict[str, Any]], CommandResults] = client.list_conditional_access_policies(policy_id, filter_query)
+    if isinstance(policies, CommandResults):
+        return policies
     
-    # if a single policy is returned (dict), make it a list to unify the structure
-    if not raw_response:
-        policies = []
-    elif not policy_id:
-        policies = raw_response.get('value') or []
-    else:
-        policies = [raw_response]
     
     max_items = len(policies) if all_results else min(len(policies), int(limit))
 
@@ -1157,7 +1159,7 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
         'Conditional Access Policies',
         readable_policies
         ),
-        raw_response=raw_response
+        raw_response=policies
     )
 def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
@@ -1176,10 +1178,11 @@ def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any
         CommandResults: Results to return to Cortex XSOAR.
     """
     policy_id = args.get('policy_id')
+    
     if not policy_id:
-        raise ValueError("The 'policy_id' argument is required to delete a Conditional Access policy.")
-
+        return CommandResults(readable_output="Policy id is required")
     return client.delete_conditional_access_policy(policy_id)
+    
 
 def create_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
@@ -1199,10 +1202,16 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
     
     policy = args.get('policy', {})
     if not policy:
+        required_fields = ['policy_name', 'state', 'sign_in_risk_levels', 'user_risk_levels', 'client_app_types']
+        missing_fields = [field for field in required_fields if not args.get(field)]
+
+        if missing_fields:
+            missing_list = ', '.join(missing_fields)
+            return CommandResults(readable_output=f"Missing required field(s): {missing_list}")
 
         policy = {
         "displayName": args.get('policy_name'),
-        "state": args.get('state', 'enabled'),
+        "state": args.get('state'),
         "conditions": {
             "clientAppTypes": argToList(args.get('client_app_types')),
             "applications": {
@@ -1231,12 +1240,12 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
 
         },
         "grantControls": {
-            "operator": args.get('grant_control_operator', []),
-            "builtInControls": argToList(args.get('built_in_controls'))
+            "operator": args.get('grant_control_operator', 'AND'),
+            "builtInControls": argToList(args.get('built_in_controls', 'mfa'))
         }
         }
 
-    policy = clean_dict(policy)
+    policy = remove_empty_elements(policy)
     return client.create_conditional_access_policy(policy)
 
 
@@ -1288,30 +1297,18 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
         "grantControls": new_grant_controls,
     }
 
-    new_policy = clean_dict(new_policy)
+    new_policy = cast(Dict[str, Any], remove_empty_elements(new_policy))
 
     if update_action == "append":
+        
         existing_policy = client.list_conditional_access_policies(policy_id)
+        
+        if isinstance(existing_policy, CommandResults):
+            return existing_policy
+        
+        merge_policy_section(existing_policy[0], new_policy, messages)
+        new_policy = cast(Dict[str, Any], remove_empty_elements(new_policy))
 
-        for field in ["includeUsers", "excludeUsers", "includeGroups", "excludeGroups", "includeRoles", "excludeRoles"]:
-            merge_field("conditions", "users", field, existing_policy, new_policy, messages)
-
-        for field in ["includeApplications", "excludeApplications", "includeUserActions"]:
-            merge_field("conditions", "applications", field, existing_policy, new_policy, messages)
-
-        for field in ["includePlatforms", "excludePlatforms"]:
-            merge_field("conditions", "platforms", field, existing_policy, new_policy, messages)
-
-        for field in ["includeLocations", "excludeLocations"]:
-            merge_field("conditions", "locations", field, existing_policy, new_policy, messages)
-
-        for field in ["clientAppTypes", "signInRiskLevels", "userRiskLevels"]:
-            merge_field("conditions", None, field, existing_policy, new_policy, messages)
-
-        merge_field("grantControls", None, "builtInControls", existing_policy, new_policy, messages)
-
-        new_policy = clean_dict(new_policy)
-    return_results(new_policy)
     result = client.update_conditional_access_policy(policy_id, new_policy)
 
     if messages and result.readable_output and not result.readable_output.startswith("Error"):
@@ -1388,7 +1385,6 @@ def main():  # pragma: no cover
             return_results(azure_ad_identity_protection_confirm_compromised_command(client, args))
         elif command == "msgraph-identity-protection-risky-user-dismiss":
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, args))
-        
         elif command == "msgraph-identity-ca-policies-list":
             return_results(list_conditional_access_policies_command(client, args))
         elif command == "msgraph-identity-ca-policy-delete":
@@ -1397,7 +1393,6 @@ def main():  # pragma: no cover
             return_results(create_conditional_access_policy_command(client, args))
         elif command == "msgraph-identity-ca-policy-update":
             return_results(update_conditional_access_policy_command(client, args))
-            
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(client, params)
             demisto.incidents(incidents)
