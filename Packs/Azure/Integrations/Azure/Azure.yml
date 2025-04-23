@@ -214,7 +214,7 @@ script:
       description: The rule's direction. Can be "Inbound" or "Outbound".
       type: String
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+    - description: The resource group name.
       name: resource_group_name
       required: false
       default: false
@@ -523,7 +523,7 @@ script:
       description: The type of the resource.
       type: String
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+    - description: The resource group name.
       name: resource_group_name
       required: false
       default: false
@@ -749,7 +749,7 @@ script:
   - arguments:
     - name: resource_group_name
       type: string
-      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      description: The resource group name.
     - name: server_name
       type: string
       required: true
@@ -760,7 +760,7 @@ script:
       description: Name of the configuration setting.
     - name: subscription_id
       type: string
-      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: Subscription ID.
     - name: source
       type: string
       description: Source of the configuration.
@@ -789,11 +789,11 @@ script:
     - name: resource_group_name
       type: string
       required: false
-      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      description: The resource group name.
     - name: subscription_id
       type: string
       required: false
-      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: Subscription ID.
     - name: name
       type: string
       required: true
@@ -831,11 +831,11 @@ script:
     - name: resource_group_name
       type: string
       required: false
-      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      description: The resource group name.
     - name: subscription_id
       type: string
       required: false
-      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: Subscription ID.
     - name: name
       type: string
       required: true
@@ -877,11 +877,11 @@ script:
     - name: resource_group_name
       type: string
       required: false
-      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      description: The resource group name.
     - name: subscription_id
       type: string
       required: false
-      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: Subscription ID.
     - name: server_name
       type: string
       required: true
@@ -907,7 +907,7 @@ script:
       required: true
       type: String
     - name: subscription_id
-      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: Subscription ID.
       type: String
     - name: location
       description: Resource location.
@@ -929,11 +929,11 @@ script:
     - name: resource_group_name
       type: string
       required: false
-      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      description: The resource group name.
     - name: subscription_id
       type: string
       required: false
-      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: Subscription ID.
     - name: disk_name
       type: string
       required: true
@@ -946,8 +946,6 @@ script:
         - Disabled
         - Enabled
       description: Policy for controlling export on the disk.
-    - name: location
-      description: Resource location.
     - name: network_access_policy
       type: string
       required: false
@@ -967,117 +965,117 @@ script:
     name: azure-compute-disk-update
     description: Updates a disk.
     outputs: 
-    - contextPath: Azure.Disk.id
+    - contextPath: Azure.Compute.Disk.id
       description: Resource ID of the disk.
       type: String
-    - contextPath: Azure.Disk.name
+    - contextPath: Azure.Compute.Disk.name
       description: Name of the disk.
       type: String
-    - contextPath: Azure.Disk.type
+    - contextPath: Azure.Compute.Disk.type
       description: Type of the resource.
       type: String
-    - contextPath: Azure.Disk.location
+    - contextPath: Azure.Compute.Disk.location
       description: Location of the disk.
       type: String
-    - contextPath: Azure.Disk.tags
+    - contextPath: Azure.Compute.Disk.tags
       description: Resource tags.
-    - contextPath: Azure.Disk.managedBy
+    - contextPath: Azure.Compute.Disk.managedBy
       description: ARM ID of the resource that manages the disk.
       type: String
-    - contextPath: Azure.Disk.sku
+    - contextPath: Azure.Compute.Disk.sku
       description: The disk SKU name.
-    - contextPath: Azure.Disk.zones
+    - contextPath: Azure.Compute.Disk.zones
       description: A list of availability zones.
-    - contextPath: Azure.Disk.properties.timeCreated
+    - contextPath: Azure.Compute.Disk.properties.timeCreated
       description: The time when the disk was created.
       type: String
-    - contextPath: Azure.Disk.properties.diskSizeGB
+    - contextPath: Azure.Compute.Disk.properties.diskSizeGB
       description: Size of the disk in GB.
       type: Number
-    - contextPath: Azure.Disk.properties.diskIopsReadWrite
+    - contextPath: Azure.Compute.Disk.properties.diskIopsReadWrite
       description: The number of IOPS allowed for this disk.
       type: Number
-    - contextPath: Azure.Disk.properties.diskMBpsReadWrite
+    - contextPath: Azure.Compute.Disk.properties.diskMBpsReadWrite
       description: The bandwidth allowed for this disk in MBps.
       type: Number
-    - contextPath: Azure.Disk.properties.diskIOPSReadOnly
+    - contextPath: Azure.Compute.Disk.properties.diskIOPSReadOnly
       description: The number of read-only IOPS for this disk.
       type: Number
-    - contextPath: Azure.Disk.properties.diskMBpsReadOnly
+    - contextPath: Azure.Compute.Disk.properties.diskMBpsReadOnly
       description: The read-only bandwidth for this disk in MBps.
       type: Number
-    - contextPath: Azure.Disk.properties.diskSizeBytes
+    - contextPath: Azure.Compute.Disk.properties.diskSizeBytes
       description: The size of the disk in bytes.
       type: Number
-    - contextPath: Azure.Disk.properties.networkAccessPolicy
+    - contextPath: Azure.Compute.Disk.properties.networkAccessPolicy
       description: Policy for accessing the disk via network.
       type: String
-    - contextPath: Azure.Disk.properties.publicNetworkAccess
+    - contextPath: Azure.Compute.Disk.properties.publicNetworkAccess
       description: Policy for export on the disk.
       type: String
-    - contextPath: Azure.Disk.properties.burstingEnabled
+    - contextPath: Azure.Compute.Disk.properties.burstingEnabled
       description: Whether bursting is enabled on the disk.
       type: Boolean
-    - contextPath: Azure.Disk.properties.optimization
+    - contextPath: Azure.Compute.Disk.properties.optimization
       description: The disk optimization setting.
       type: String
-    - contextPath: Azure.Disk.properties.diskState
+    - contextPath: Azure.Compute.Disk.properties.diskState
       description: The current state of the disk.
       type: String
-    - contextPath: Azure.Disk.properties.supportedCapabilities
+    - contextPath: Azure.Compute.Disk.properties.supportedCapabilities
       description: Supported capabilities of the disk.
-    - contextPath: Azure.Disk.properties.supportedPerformanceTiers
+    - contextPath: Azure.Compute.Disk.properties.supportedPerformanceTiers
       description: Supported performance tiers of the disk.
-    - contextPath: Azure.Disk.properties.supportedDiskTypes
+    - contextPath: Azure.Compute.Disk.properties.supportedDiskTypes
       description: Supported disk types for the disk.
-    - contextPath: Azure.Disk.properties.provisioningState
+    - contextPath: Azure.Compute.Disk.properties.provisioningState
       description: The provisioning state of the disk.
-    - contextPath: Azure.Disk.properties.timeModified
+    - contextPath: Azure.Compute.Disk.properties.timeModified
       description: The time when the disk was last modified.
-    - contextPath: Azure.Disk.properties.diskAccessId
+    - contextPath: Azure.Compute.Disk.properties.diskAccessId
       description: ARM id of the DiskAccess resource.
       type: String
-    - contextPath: Azure.Disk.properties.networkProfile
+    - contextPath: Azure.Compute.Disk.properties.networkProfile
       description: The network profile of the disk.
-    - contextPath: Azure.Disk.properties.creationData
+    - contextPath: Azure.Compute.Disk.properties.creationData
       description: Disk creation data.
-    - contextPath: Azure.Disk.properties.encryption
+    - contextPath: Azure.Compute.Disk.properties.encryption
       description: Encryption settings for the disk.
-    - contextPath: Azure.Disk.properties.encryptionSettingsCollection
+    - contextPath: Azure.Compute.Disk.properties.encryptionSettingsCollection
       description: A collection of encryption settings.
-    - contextPath: Azure.Disk.properties.encryptionType
+    - contextPath: Azure.Compute.Disk.properties.encryptionType
       description: The type of key used to encrypt the data on the disk.
       type: String
-    - contextPath: Azure.Disk.properties.securityProfile
+    - contextPath: Azure.Compute.Disk.properties.securityProfile
       description: Security profile for the disk.
-    - contextPath: Azure.Disk.properties.tieringProfile
+    - contextPath: Azure.Compute.Disk.properties.tieringProfile
       description: Tiering profile for the disk.
-    - contextPath: Azure.Disk.properties.supportedTierList
+    - contextPath: Azure.Compute.Disk.properties.supportedTierList
       description: List of supported tiers for the disk.
-    - contextPath: Azure.Disk.properties.availabilityZone
+    - contextPath: Azure.Compute.Disk.properties.availabilityZone
       description: Availability zone of the disk.
       type: String
-    - contextPath: Azure.Disk.properties.dataAccessAuthMode
+    - contextPath: Azure.Compute.Disk.properties.dataAccessAuthMode
       description: Additional authentication requirements when exporting or uploading to a disk.
       type: String
-    - contextPath: Azure.Disk.properties.osType
+    - contextPath: Azure.Compute.Disk.properties.osType
       description: The operating system type.
       type: String
-    - contextPath: Azure.Disk.properties.hyperVGeneration
+    - contextPath: Azure.Compute.Disk.properties.hyperVGeneration
       description: The HyperVGenerationType of the virtual machine.
       type: String
-    - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
+    - contextPath: Azure.Compute.Disk.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
   - arguments:
     - name: resource_group_name
       type: String
       required: false
-      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      description: The resource group name.
     - name: subscription_id
       type: String
       required: false
-      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: Subscription ID.
     - name: name
       type: String
       required: true
@@ -1092,6 +1090,18 @@ script:
         - SystemAssigned, UserAssigned
         - UserAssigned
       description: Managed service identity type.
+    - name: identity_name
+      type: string
+      required: false
+      description: The name of the User Assigned Identity to associate with the Web App. Required when using 'UserAssigned' or 'SystemAssigned, UserAssigned'.
+    - name: client_id
+      type: string
+      required: false
+      description: The client ID of the User Assigned Identity.
+    - name: principal_id
+      type: string
+      required: false
+      description: The principal ID of the User Assigned Identity.
     name: azure-webapp-identity-assign
     description: Assigns a managed identity to an Azure Web App.
     outputs: []

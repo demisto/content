@@ -476,45 +476,66 @@ and resource group "{resource_group_name}" was not found.')
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
     
-    def get_disk(self, subscription_id, resource_group_name, disk_name):
-        full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Compute/disks/{disk_name}"
-        )
-        params = {"api-version": DISKS_API_VERSION}
-        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
-    
-    
-    def disk_update(self, subscription_id, resource_group_name, disk_name, location, creation_data, public_network_access, network_access_policy, data_access_auth_mode):
+    def disk_update(self, subscription_id, resource_group_name, disk_name, public_network_access,
+                    network_access_policy, data_access_auth_mode):
         full_url=(
             f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Compute/disks/{disk_name}"
         )
         params = {"api-version": DISKS_API_VERSION}
         data = {
-            "location": location,
             "properties": {
                 "publicNetworkAccess": public_network_access,
                 "networkAccessPolicy": network_access_policy,
                 "dataAccessAuthMode": data_access_auth_mode,
-                "creationData": creation_data
             }
         }
         data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
     
     
-    def webapp_identity_assign(self, subscription_id, resource_group_name, name, identity_type):
+    def get_webapp(self, subscription_id, resource_group_name, name):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Web/sites/{name}"
+        )
+        params = {"api-version": WEBAPP_API_VERSION}
+        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+        
+    
+    def webapp_identity_assign(self, subscription_id, resource_group_name, name, identity_type, properties, location, 
+                               identity_name, client_id, principal_id):
         full_url=(
             f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}"
         )
         params = {"api-version": WEBAPP_API_VERSION}
         data = {
+            "location": location,
             "identity": {
-                "type": identity_type
+                "type": identity_type,
+                
             },
+            "properties": properties
         }
+        if "UserAssigned" in identity_type:
+            data.update(
+                {
+                    "identity":
+                    {
+                        "type": identity_type,
+                        "tenantId": client_id,
+                        "principalId": principal_id,
+                        # "userAssignedIdentities":{
+                        # (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.ManagedIdentity"
+                        #  f"/userAssignedIdentities/{identity_name}"): {
+                        #      "clientId": client_id,
+                        #      "principalId": principal_id
+                        #  }
+                        # }
+                    }
+                }
+            )
         data = remove_empty_elements(data)
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
         
@@ -584,8 +605,8 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
     access = args.get("access", "")
     # subscription_id and resource_group_name can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
 
     rule = client.get_rule(
         security_group=security_group_name,
@@ -667,8 +688,8 @@ def storage_account_create_update_command(client: AzureClient, params: dict, arg
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
     
     current_storage_account = client.get_current_storage_account(subscription_id, resource_group_name, args.get("account_name", ""))
     
@@ -724,8 +745,8 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
 
     response = client.storage_blob_service_properties_set_request(
         subscription_id=subscription_id, resource_group_name=resource_group_name, args=args
@@ -809,7 +830,7 @@ def update_aps_command(client: AzureClient, params: dict, args: dict):
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     name = args.get("name")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    subscription_id = args.get("subscription_id")
     policy_definition_id : str = args.get("policy_definition_id", "")
     display_name = args.get("display_name", "")
     parameters = json.loads(args.get("parameters", "{}"))
@@ -840,8 +861,8 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
     
 def set_postgres_config_command(client: AzureClient, params: dict, args: dict):
     server_name = args.get("server_name")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
     configuration_name = args.get("configuration_name", "")
     source = args.get("source", "")
     value = json.loads(args.get("value", "{}"))
@@ -851,8 +872,8 @@ def set_postgres_config_command(client: AzureClient, params: dict, args: dict):
 
 def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
     name = args.get("name")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
     http20_enabled = args.get("http20_enabled", "")
     remote_debugging_enabled = args.get("remote_debugging_enabled", "")
     min_tls_version = args.get("min_tls_version", "")
@@ -883,8 +904,8 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
 
 def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     name = args.get("name")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
     enabled = args.get("enabled", "")
     response = client.update_webapp_auth(name, subscription_id, resource_group_name, enabled)
     print(response)
@@ -941,8 +962,8 @@ def resource_update_command(client: AzureClient, params: dict, args: dict):
 def flexible_server_param_set_command(client: AzureClient, params: dict, args: dict):
     configuration_name = args.get("configuration_name")
     server_name = args.get("server_name", "")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
     source = args.get("source", "")
     value = args.get("value", "")
     response = client.flexible_server_param_set(server_name, configuration_name, subscription_id, resource_group_name, source, value)
@@ -952,7 +973,7 @@ def flexible_server_param_set_command(client: AzureClient, params: dict, args: d
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
     log_profile_name = args.get("log_profile_name")
     location = args.get("location")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    subscription_id = args.get("subscription_id")
     retention_policy_days = arg_to_number(args.get("retention_policy_days"))
     retention_policy_enabled = args.get("retention_policy_enabled", "")
     current_log_profile = client.get_monitor_log_profile(subscription_id, log_profile_name)
@@ -962,23 +983,20 @@ def monitor_log_profile_update_command(client: AzureClient, params: dict, args: 
     
     
 def disk_update_command(client: AzureClient, params: dict, args: dict):
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
     disk_name = args.get("disk_name")
-    public_network_access = args.get("public_network_access", "")
-    network_access_policy = args.get("network_access_policy", "")
-    data_access_auth_mode = args.get("data_access_auth_mode", "")
-    current_disk = client.get_disk(subscription_id, resource_group_name, disk_name)
-    location = current_disk.get("location")
-    creation_data = current_disk.get("properties", {}).get("creationData")
-    response = client.disk_update(subscription_id, resource_group_name, disk_name, location, creation_data, public_network_access, network_access_policy, data_access_auth_mode)
+    public_network_access = args.get("public_network_access")
+    network_access_policy = args.get("network_access_policy")
+    data_access_auth_mode = args.get("data_access_auth_mode")
+    response = client.disk_update(subscription_id, resource_group_name, disk_name, public_network_access, network_access_policy, data_access_auth_mode)
     outputs = [
         {
             "Name": response.get("name"),
             "ID": response.get("id"),
-            "Public Network Access": response.get("properties", {}).get("publicNetworkAccess"),
-            "Network Access Policy": response.get("properties", {}).get("networkAccessPolicy"),
-            "Data Access Auth Mode": response.get("properties", {}).get("dataAccessAuthMode")
+            "Public Network Access": response.get("properties", {}).get("publicNetworkAccess") if public_network_access else None,
+            "Network Access Policy": response.get("properties", {}).get("networkAccessPolicy") if network_access_policy else None,
+            "Data Access Auth Mode": response.get("properties", {}).get("dataAccessAuthMode") if data_access_auth_mode else None
         }
     ]
     md = tableToMarkdown(
@@ -988,7 +1006,7 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.Disk",
+        outputs_prefix="Azure.Compute.Disk",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -996,11 +1014,17 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
     )
     
 def webapp_identity_assign_command(client: AzureClient, params: dict, args: dict):
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    subscription_id = args.get("subscription_id")
+    resource_group_name = args.get("resource_group_name")
     name = args.get("name")
     identity_type = args.get("identity_type")
-    response = client.webapp_identity_assign(subscription_id, resource_group_name, name, identity_type)
+    client_id = args.get("client_id")
+    principal_id = args.get("principal_id")
+    identity_name = args.get("identity_name")
+    current_webapp = client.get_webapp(subscription_id, resource_group_name, name)
+    properties = current_webapp.get("properties")
+    location = current_webapp.get("location")
+    response = client.webapp_identity_assign(subscription_id, resource_group_name, name, identity_type, properties, location, identity_name, client_id, principal_id)
     print(response)
     
 
