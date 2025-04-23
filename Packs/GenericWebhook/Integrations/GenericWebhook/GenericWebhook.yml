@@ -85,4 +85,4 @@ triggers:
         required: true
 fromversion: 5.5.0
 tests:
-  - Generic Webhook - Test
+- Generic Webhook - Test
