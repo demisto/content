@@ -4026,8 +4026,8 @@ def test_splunk_job_status_418_error(mock_service):
     result = splunk.splunk_job_status(service, args)
 
     assert len(result) == 1
-    assert "Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee" in result[
-        0].readable_output
+    assert ("Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee"
+            in result[0].readable_output)
 
 
 @patch("SplunkPy.client.Service")
