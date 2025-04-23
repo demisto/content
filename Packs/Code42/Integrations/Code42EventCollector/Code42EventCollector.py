@@ -254,9 +254,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         else (datetime.now() - timedelta(minutes=1))
     )
 
-    fetched_events = process_last_run_dupes(
-        last_run.get(FileEventLastRun.FETCHED_IDS, [])
-    )
+    fetched_events = last_run.get(FileEventLastRun.FETCHED_IDS, [])
     pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
     file_events = client.get_file_events(  # type: ignore[arg-type]
         file_event_time,
@@ -267,7 +265,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     )
     if file_events:
         latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(
-            file_events + fetched_events,
+            file_events + format_last_run_dupes(fetched_events),
             keys_to_id=["event", "id"],
             pre_fetch_look_back=pre_fetch_look_back
         )
@@ -299,7 +297,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
         if AuditLogLastRun.TIME in last_run
         else (datetime.now() - timedelta(minutes=1))
     )
-    last_fetched_audit_log_ids = set(last_run[AuditLogLastRun.FETCHED_IDS]) if AuditLogLastRun.FETCHED_IDS in last_run else set()
+    last_fetched_audit_log_ids = set(last_run.get(AuditLogLastRun.FETCHED_IDS, []))
     audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)  # type: ignore[arg-type]
     audit_logs = dedup_fetched_events(audit_logs, last_run_fetched_event_ids=last_fetched_audit_log_ids, keys_list_to_id=["id"])
 
@@ -317,15 +315,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
     return audit_logs, new_last_run
 
 
-def process_last_run_dupes(dupes: dict | list) -> list[dict]:
-    if isinstance(dupes, list):  # for BC
-        return [
-            {
-                "eventType": "file",
-                "event": {"id": dupe_id},
-                "_time": datetime.now(tz=timezone.utc) - timedelta(minutes=3)
-            } for dupe_id in dupes
-        ]
+def format_last_run_dupes(dupes: dict) -> list[dict]:
     return [
         {
             "eventType": "file",
