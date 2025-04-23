@@ -1132,17 +1132,16 @@ class Client(BaseClient):
             verify (bool): Flag to determine whether to verify SSL certificates (default True).
             proxy (bool): Flag to determine whether to use a proxy (default False).
         """
+        full_base_url = base_url.rstrip('/') + '/api/v1/merge-api/'
+        super().__init__(full_base_url, verify, proxy)
 
-        self.base_url = base_url.rstrip('/') + '/api/v1/merge-api/'
-        self.verify = verify
-        self.proxy = proxy
-        super().__init__(self.base_url, verify, proxy)
+        self.base_url = full_base_url  # Store base_url
+        self.verify = verify  # ✅ Initialize verify attribute
 
         self._headers = {
             'X-API-Key': api_key,
             'Content-Type': 'application/json'
         }
-
 
     def _http_request(self, method: str, url_suffix: str, params: dict = None, data: dict = None) -> Any:
         """
@@ -1151,31 +1150,37 @@ class Client(BaseClient):
         Args:
             method (str): The HTTP method to use (e.g., 'GET', 'POST').
             url_suffix (str): The endpoint suffix to append to the base URL.
-            params (dict, optional): Query parameters to include in the request. Defaults to None.
-            data (dict, optional): JSON data to send in the request body. Defaults to None.
+            params (dict, optional): Query parameters to include in the request.
+            data (dict, optional): JSON data to send in the request body.
 
         Returns:
-            Any: The JSON response from the API or text response if not JSON.
+            Any: Parsed JSON response from the API.
 
         Raises:
-            DemistoException: If there's an error during the API call.
+            DemistoException: If the response is not JSON or if the request fails.
         """
-        base_url = demisto.params().get('url', 'https://api.silentpush.com') if url_suffix.startswith("/api/v2/") else self.base_url
-        full_url = f'{base_url}{url_suffix}'
+        full_url = f'{self.base_url}{url_suffix}'
 
         try:
             response = requests.request(
-                method,
-                full_url,
+                method=method,
+                url=full_url,
                 headers=self._headers,
                 verify=self.verify,
                 params=params,
                 json=data
             )
-            if response.headers.get('Content-Type', '').startswith('application/json'):
+
+            response.raise_for_status()
+
+            # ✅ Always try to parse as JSON
+            try:
                 return response.json()
-            else:
-                return response.text
+            except ValueError:
+                raise DemistoException(f'Expected JSON but got non-JSON response: {response.text}')
+
+        except requests.exceptions.RequestException as req_err:
+            raise DemistoException(f'Request error: {str(req_err)}')
         except Exception as e:
             raise DemistoException(f'Error in API call: {str(e)}')
 
@@ -1636,7 +1641,7 @@ class Client(BaseClient):
         response = self._http_request(
             method='GET',
             url_suffix=f'{ASN_TAKEDOWN_REPUTATION}/{asn}',
-            params=params
+            params=query_params
         )
 
         return response.get('response', {}).get('takedown_reputation', {})
