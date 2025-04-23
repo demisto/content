@@ -21,23 +21,20 @@ FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 300
 
 
-class EventType(str, Enum):
-    MESSAGE = "message"
-    MAILLOG = "maillog"
-    AUDIT = "audit"
+EVENT_TYPES=["message", "maillog", "audit"]
 
 
 class EventConnection:
     def __init__(
         self,
-        event_type: EventType,
+        event_type: str,
         url: str,
         headers: dict,
         fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
         idle_timeout: int = SERVER_IDLE_TIMEOUT - 20,
     ):
-        demisto.info(f"[test] starting EventConnection of type {event_type.value}")
-        self.event_type = event_type.value
+        demisto.info(f"[test] starting EventConnection of type {event_type}")
+        self.event_type = event_type
         self.url = url
         self.headers = headers
         self.lock = Lock()
@@ -152,6 +149,7 @@ def websocket_connections(
     since_time: str | None = None,
     to_time: str | None = None,
     fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
+    event_types: list[str] = EVENT_TYPES
 ):
     """
     Create a connection for every type of event.
@@ -184,11 +182,11 @@ def websocket_connections(
             connections = [
                 EventConnection(
                     event_type=event_type,
-                    url=url(type=event_type.value),
+                    url=url(type=event_type),
                     headers=extra_headers,
                     fetch_interval=fetch_interval,
                 )
-                for event_type in EventType
+                for event_type in event_types
             ]
             demisto.info("[test] Done init connections")
 
@@ -328,7 +326,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
         demisto.info(f"[test] Done setting context with {integration_context=}")
 
 
-def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int):
+def long_running_execution_command(host: str, cluster_id: str, api_key: str, fetch_interval: int, event_types: List[str]):
     """
     Performs the long running execution loop.
     Opens a connection to Proofpoints for every event type and fetches events in a loop.
@@ -344,9 +342,9 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
     demisto.info("[test] starting long running execution.")
     while True:
         try:
-            with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval) as connections:
+            with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval, event_types=event_types) as connections:
                 demisto.info("Connected to websocket")
-                fetch_interval = max(1, fetch_interval // len(EventType))  # Divide the fetch interval equally among all event types
+                fetch_interval = max(1, fetch_interval // len(event_types))  # Divide the fetch interval equally among all event types
 
                 while True:
                     demisto.info(f"[test] Finished sleeping {FETCH_SLEEP} seconds, starting a new interval.")
@@ -365,10 +363,10 @@ def main():  # pragma: no cover
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
     fetch_interval = int(params.get("fetch_interval", FETCH_INTERVAL_IN_SECONDS))
-
+    event_types = params.get("event_types", EVENT_TYPES)
     try:
         if command == "long-running-execution":
-            return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval))
+            return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval, event_types))
         elif command == "test-module":
             return_results(test_module(host, cluster_id, api_key))
         elif command == "proofpoint-es-get-last-run-results":

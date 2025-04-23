@@ -44,12 +44,11 @@ configuration:
   type: 8
   required: false
   section: Collect
-- additionalinfo: Denotes which event type to fetch, it's recommend to use one event type per instance.
-  display: Event type to fetch
-  name: event_type
-  type: 15
+- additionalinfo: Denotes which event type to fetch, if not provided will fetch all kinds.
+  display: Event types to fetch
+  name: event_types
+  type: 16
   required: false
-  defaultvalue: message
   options:
   - message
   - maillog
