@@ -304,7 +304,7 @@ def test_module(client: Client, params: dict):
     """
 
     try:
-        if params.get('isFetch', False):
+        if argToBoolean(params.get('isFetch', False)):
             demisto.debug('Calling fetch incidents')
             first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch = get_fetch_params(params)
             fetch_incidents(client, {}, first_fetch_time, minimum_severity, alert_type, alert_status,  # type: ignore
