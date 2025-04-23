@@ -56,7 +56,6 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
 - Important: Duplicate notable users are never fetched unless the "Reset the 'last run' timestamp" button is pressed.
 
 #### Note
-
 The "Reset the 'last run' timestamp" button resets both the regular fetch and the Exabeam Notable User fetch.
 
 
