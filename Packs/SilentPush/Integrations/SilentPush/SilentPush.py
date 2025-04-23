@@ -1115,6 +1115,13 @@ metadata_collector = YMLMetadataCollector(
 ''' CLIENT CLASS '''
 
 class Client(BaseClient):
+     """Client class to interact with the SilentPush API
+
+    This Client implements API calls and does not contain any XSOAR logic.
+    It should only perform requests and return data.
+    It inherits from BaseClient defined in CommonServerPython.
+    Most calls use _http_request() that handles proxy, SSL verification, etc.
+    """
         
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
         """
