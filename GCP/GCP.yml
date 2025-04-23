@@ -7,7 +7,7 @@ category: Cloud Services
 description: Quick remediation actions for GCP environments used in CIEM playbooks.
 script:
   commands:
-    - name: gcp-compute-patch-firewall
+    - name: gcp-compute-firewall-patch
       description: Updates the specified firewall rule with the data included in the request.
       arguments:
         - name: project_id
@@ -147,7 +147,7 @@ script:
           description: Type of the resource. Always compute#operation for Operation resources.
           type: string
 
-    - name: gcp-storage-delete-bucket-policy
+    - name: gcp-storage-bucket-policy-delete
       description: Removes an entity from a bucket's Access Control List.
       arguments:
         - name: project_id
@@ -162,7 +162,7 @@ script:
           required: false
           isArray: true
           description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
-    - name: gcp-compute-update-subnet
+    - name: gcp-compute-subnet-update
       description: Enables flow logs or Private Google Access on a subnet.
       arguments:
         - name: project_id
@@ -193,7 +193,7 @@ script:
           description: Result of subnet update.
           type: Unknown
 
-    - name: gcp-compute-project-info-add-metadata
+    - name: gcp-compute-project-metadata-add
       description: Sets metadata for the specified instance to the data included in the request.
       arguments:
         - name: project_id
@@ -209,38 +209,38 @@ script:
           required: true
           description: 'Metadata to be made available to the guest operating system running on the instances. Each entry is a key/value pair separated by '';'' like so: key=abc,value=123;key=abc,value=123.'
       outputs:
-        - contextPath: GCP.Compute.ProjectMetadata.operationType
+        - contextPath: GCP.Compute.Operations.operationType
           description: The type of operation, such as insert, update, or delete.
           type: String
-        - contextPath: GCP.Compute.ProjectMetadata.insertTime
+        - contextPath: GCP.Compute.Operations.insertTime
           description: The time that this operation was started by the server.
           type: Date
-        - contextPath: GCP.Compute.ProjectMetadata.selfLink
+        - contextPath: GCP.Compute.Operations.selfLink
           description: Server-defined URL for the project.
           type: String
-        - contextPath: GCP.Compute.ProjectMetadata.targetLink
+        - contextPath: GCP.Compute.Operations.targetLink
           description: The URL of the resource that the operation modifies.
           type: String
-        - contextPath: GCP.Compute.ProjectMetadata.name
+        - contextPath: GCP.Compute.Operations.name
           description: Name of the operation.
           type: String
-        - contextPath: GCP.Compute.ProjectMetada.progress
+        - contextPath: GCP.Compute.Operations.progress
           description: Progress indicator that ranges from 0 to 100.
           type: number
-        - contextPath: GCP.Compute.ProjectMetadata.targetId
+        - contextPath: GCP.Compute.Operations.targetId
           description: The unique target ID, which identifies a specific incarnation of the target resource.
           type: String
-        - contextPath: GCP.Compute.ProjectMetadata.startTime
+        - contextPath: GCP.Compute.Operations.startTime
           description: The time that this operation was started by the server.
           type: String
-        - contextPath: GCP.Compute.ProjectMetadata.status
+        - contextPath: GCP.Compute.Operations.status
           description: The status of the operation, which can be one of the following PENDING, RUNNING, or DONE.
           type: String
-        - contextPath: GCP.Compute.ProjectMetadata.kind
+        - contextPath: GCP.Compute.Operations.kind
           description: Type of the resource. Always compute#operation.
           type: String
 
-    - name: gcp-container-cluster-update-security-config
+    - name: gcp-container-cluster-security-update
       description: Enables security settings for GKE clusters.
       arguments:
         - name: project_id
@@ -266,12 +266,17 @@ script:
             - "true"
             - "false"
           description: Enable Master Authorized Networks.
+        - name: cidrs
+          description: |
+            Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+            Required if `enable_master_authorized_networks` is true.
+          isArray: true
       outputs:
         - contextPath: GCP.Container.Operation
           description: Cluster update response.
           type: Unknown
 
-    - name: gcp-storage-update-bucket-metadata
+    - name: gcp-storage-bucket-metadata-update
       description: Updates GCS bucket metadata (versioning, UBLA).
       arguments:
         - name: project_id
@@ -295,7 +300,7 @@ script:
             - "false"
           description: Enable uniform bucket-level access.
       outputs:
-        - contextPath: GCP.Storage.Bucket.Metadata
+        - contextPath: GCP.StorageBucket.Metadata
           description: Updated bucket metadata.
           type: Unknown
 
