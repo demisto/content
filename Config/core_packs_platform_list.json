@@ -24,6 +24,8 @@
         {
             "id": "CommonPlaybooks",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -215,6 +217,8 @@
         {
             "id": "rasterize",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -224,6 +228,8 @@
         {
             "id": "CortexResponseAndRemediation",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
