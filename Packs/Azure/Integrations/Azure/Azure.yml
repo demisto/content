@@ -243,8 +243,8 @@ script:
       - Standard_RAGRS
       - Standard_RAGZRS
       - Standard_ZRS
-      required: true
-    - description: Indicates the type of storage account.
+      # required: true
+    - description: Indicates the type of storage account, Required for account creation; optional for update.
       name: kind
       auto: PREDEFINED
       predefined:
@@ -253,8 +253,8 @@ script:
       - BlobStorage
       - FileStorage
       - BlockBlobStorage
-      required: true
-    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed.
+      # required: true
+    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed. Required for account creation; optional for update.
       name: location
       auto: PREDEFINED
       predefined:
@@ -291,7 +291,7 @@ script:
       - switzerlandnorth
       - germanywestcentral
       - norwayeast
-      required: true
+      # required: true
     - description: Gets or sets a list of tags that describe the resource.
       name: tags
       isArray: true
@@ -373,6 +373,12 @@ script:
       name: network_ruleset_ipRules
     - description: Sets the virtual network rules.
       name: virtual_network_rules
+    - auto: PREDEFINED
+      description: Allow or disallow cross AAD tenant object replication.
+      name: allow_cross_tenant_replication
+      predefined:
+      - 'true'
+      - 'false'
     description: |-
       Run this command to create or update a specific
       account storage.
@@ -792,14 +798,22 @@ script:
       type: string
       required: true
       description: Name of the Web App.
-    - name: http20_enabled
+    - auto: PREDEFINED
+      name: http20_enabled
       type: bool
       required: false
       description: Configures a web site to allow clients to connect over http2.0
-    - name: remote_debugging_enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      name: remote_debugging_enabled
       type: bool
       required: false
       description: True if remote debugging is enabled; otherwise, false.
+      predefined:
+      - 'true'
+      - 'false'
     - name: min_tls_version
       type: str
       auto: PREDEFINED
@@ -826,10 +840,14 @@ script:
       type: string
       required: true
       description: Name of the Web App.
-    - name: enabled
+    - auto: PREDEFINED
+      name: enabled
       type: bool
       required: false
       description: True if the Authentication / Authorization feature is enabled for the current app; otherwise, false.
+      predefined:
+      - 'true'
+      - 'false'
     name: azure-webapp-auth-update
     description: Updates the authentication and authorization settings of an existing Azure Web App.
     outputs: []
@@ -838,18 +856,244 @@ script:
       type: string
       required: true
       description: Full Azure resource ID to update.
-    - name: allow_blob_public_access
+    - auto: PREDEFINED
+      name: allow_blob_public_access
       type: bool
       description: Whether to allow public access to blob containers.
+      predefined:
+      - 'true'
+      - 'false'
     - name: location
-      type: string
       required: true
+      type: string
       description: Resource location.
     - name: account_type
       type: string
       description: Account type of the resource.
     name: azure-resource-update
     description: Updates a resource by ID.
+    outputs: []
+  - arguments:
+    - name: resource_group_name
+      type: string
+      required: false
+      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+    - name: subscription_id
+      type: string
+      required: false
+      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the MySQL flexible server.
+    - name: configuration_name
+      type: string
+      required: true
+      description: The name of the server configuration.
+    - name: source
+      type: string
+      required: false
+      description: Source of the configuration.
+    - name: value
+      type: string
+      required: false
+      description: Value of the configuration.
+    name: azure-mysql-flexible-server-param-set
+    description: Updates a configuration of a server.
+    outputs: []
+  - arguments:
+    - name: log_profile_name
+      description: The name of the log profile to update.
+      required: true
+      type: String
+    - name: subscription_id
+      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      type: String
+    - name: location
+      description: Resource location.
+      required: true
+    - name: retention_policy_days
+      description: Number of days to retain logs.
+      type: Number
+    - auto: PREDEFINED
+      name: retention_policy_enabled
+      description: Whether to enable the retention policy.
+      type: bool
+      predefined:
+      - 'true'
+      - 'false'
+    name: azure-monitor-log-profile-update
+    description: Create or update a log profile in Azure Monitoring REST API.
+    outputs: []
+  - arguments:
+    - name: resource_group_name
+      type: string
+      required: false
+      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+    - name: subscription_id
+      type: string
+      required: false
+      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+    - name: disk_name
+      type: string
+      required: true
+      description: The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+    - name: public_network_access
+      type: string
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - Disabled
+        - Enabled
+      description: Policy for controlling export on the disk.
+    - name: location
+      description: Resource location.
+    - name: network_access_policy
+      type: string
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - AllowAll
+        - AllowPrivate
+        - DenyAll
+      description: Policy for accessing the disk via network.
+    - name: data_access_auth_mode
+      type: string
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - AzureActiveDirectory
+      description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
+    name: azure-compute-disk-update
+    description: Updates a disk.
+    outputs: 
+    - contextPath: Azure.Disk.id
+      description: Resource ID of the disk.
+      type: String
+    - contextPath: Azure.Disk.name
+      description: Name of the disk.
+      type: String
+    - contextPath: Azure.Disk.type
+      description: Type of the resource.
+      type: String
+    - contextPath: Azure.Disk.location
+      description: Location of the disk.
+      type: String
+    - contextPath: Azure.Disk.tags
+      description: Resource tags.
+    - contextPath: Azure.Disk.managedBy
+      description: ARM ID of the resource that manages the disk.
+      type: String
+    - contextPath: Azure.Disk.sku
+      description: The disk SKU name.
+    - contextPath: Azure.Disk.zones
+      description: A list of availability zones.
+    - contextPath: Azure.Disk.properties.timeCreated
+      description: The time when the disk was created.
+      type: String
+    - contextPath: Azure.Disk.properties.diskSizeGB
+      description: Size of the disk in GB.
+      type: Number
+    - contextPath: Azure.Disk.properties.diskIopsReadWrite
+      description: The number of IOPS allowed for this disk.
+      type: Number
+    - contextPath: Azure.Disk.properties.diskMBpsReadWrite
+      description: The bandwidth allowed for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Disk.properties.diskIOPSReadOnly
+      description: The number of read-only IOPS for this disk.
+      type: Number
+    - contextPath: Azure.Disk.properties.diskMBpsReadOnly
+      description: The read-only bandwidth for this disk in MBps.
+      type: Number
+    - contextPath: Azure.Disk.properties.diskSizeBytes
+      description: The size of the disk in bytes.
+      type: Number
+    - contextPath: Azure.Disk.properties.networkAccessPolicy
+      description: Policy for accessing the disk via network.
+      type: String
+    - contextPath: Azure.Disk.properties.publicNetworkAccess
+      description: Policy for export on the disk.
+      type: String
+    - contextPath: Azure.Disk.properties.burstingEnabled
+      description: Whether bursting is enabled on the disk.
+      type: Boolean
+    - contextPath: Azure.Disk.properties.optimization
+      description: The disk optimization setting.
+      type: String
+    - contextPath: Azure.Disk.properties.diskState
+      description: The current state of the disk.
+      type: String
+    - contextPath: Azure.Disk.properties.supportedCapabilities
+      description: Supported capabilities of the disk.
+    - contextPath: Azure.Disk.properties.supportedPerformanceTiers
+      description: Supported performance tiers of the disk.
+    - contextPath: Azure.Disk.properties.supportedDiskTypes
+      description: Supported disk types for the disk.
+    - contextPath: Azure.Disk.properties.provisioningState
+      description: The provisioning state of the disk.
+    - contextPath: Azure.Disk.properties.timeModified
+      description: The time when the disk was last modified.
+    - contextPath: Azure.Disk.properties.diskAccessId
+      description: ARM id of the DiskAccess resource.
+      type: String
+    - contextPath: Azure.Disk.properties.networkProfile
+      description: The network profile of the disk.
+    - contextPath: Azure.Disk.properties.creationData
+      description: Disk creation data.
+    - contextPath: Azure.Disk.properties.encryption
+      description: Encryption settings for the disk.
+    - contextPath: Azure.Disk.properties.encryptionSettingsCollection
+      description: A collection of encryption settings.
+    - contextPath: Azure.Disk.properties.encryptionType
+      description: The type of key used to encrypt the data on the disk.
+      type: String
+    - contextPath: Azure.Disk.properties.securityProfile
+      description: Security profile for the disk.
+    - contextPath: Azure.Disk.properties.tieringProfile
+      description: Tiering profile for the disk.
+    - contextPath: Azure.Disk.properties.supportedTierList
+      description: List of supported tiers for the disk.
+    - contextPath: Azure.Disk.properties.availabilityZone
+      description: Availability zone of the disk.
+      type: String
+    - contextPath: Azure.Disk.properties.dataAccessAuthMode
+      description: Additional authentication requirements when exporting or uploading to a disk.
+      type: String
+    - contextPath: Azure.Disk.properties.osType
+      description: The operating system type.
+      type: String
+    - contextPath: Azure.Disk.properties.hyperVGeneration
+      description: The HyperVGenerationType of the virtual machine.
+      type: String
+    - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
+      description: The last time ownership of the disk was updated.
+      type: String
+  - arguments:
+    - name: resource_group_name
+      type: String
+      required: false
+      description: "The resource group name. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+    - name: subscription_id
+      type: String
+      required: false
+      description: "Subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+    - name: name
+      type: String
+      required: true
+      description: Name of the Web App.
+    - name: identity_type
+      type: String
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - None
+        - SystemAssigned
+        - SystemAssigned, UserAssigned
+        - UserAssigned
+      description: Managed service identity type.
+    name: azure-webapp-identity-assign
+    description: Assigns a managed identity to an Azure Web App.
     outputs: []
   isfetch: false
   runonce: false

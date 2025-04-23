@@ -32,6 +32,10 @@ POLICY_ASSIGNMENT_API_VERSION="2023-04-01"
 POSTGRES_CONFIG_API_VERSION="2017-12-01"
 WEBAPP_API_VERSION="2024-04-01"
 RESOURCE_API_VERSION="2021-04-01"
+FLEXIBLE_API_VERSION="2023-06-01-preview"
+STORAGE_ACCOUNT_GET_API_VERSION="2024-01-01"
+MONITOR_API_VERSION="2016-03-01"
+DISKS_API_VERSION="2024-03-02"
 """ CLIENT CLASS """
 
 
@@ -112,9 +116,10 @@ class AzureClient:
         try:
             return self.http_request(
                 "GET",
-                full_url=f"{PREFIX_URL}{subscription_id}/\
-resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
-networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
+                full_url=(
+                    f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
+                )
             )
         except Exception as e:
             if "404" in str(e):
@@ -122,8 +127,21 @@ networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
 and resource group "{resource_group_name}" was not found.')
             raise
         
+        
+    def get_current_storage_account(self, subscription_id: str, resource_group_name: str, name: str) -> dict:
+        try:
+            full_url=(
+                f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Storage/storageAccounts/{name}"
+            )
+            params = {"api-version": API_VERSION}
+            return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+        except Exception:
+            return {}
+            
+            
     @logger
-    def storage_account_create_update_request(self, subscription_id: str, resource_group_name: str, args: dict) -> dict:
+    def storage_account_create_update_request(self, subscription_id: str, resource_group_name: str, args: dict, sku: str, location: str, kind: str) -> dict:
         """
             Send the user arguments for the create/update account in the request body to the API.
         Args:
@@ -135,92 +153,47 @@ and resource group "{resource_group_name}" was not found.')
             The json response from the API call.
         """
         account_name = args.get("account_name", "")
-        json_data_args = {"sku": {"name": args["sku"]}, "kind": args["kind"], "location": args["location"], "properties": {}}
-
+        json_data_args = {"sku": {"name": sku}, "kind": kind, "location": location, "properties": {}}
         if "tags" in args:
             args_tags_list = args["tags"].split(",")
             tags_obj = {f"tag{i + 1!s}": args_tags_list[i] for i in range(len(args_tags_list))}
             json_data_args["tags"] = tags_obj
-
-        if "custom_domain_name" in args:
-            custom_domain = {"name": args["custom_domain_name"]}
-
-            if args["use_sub_domain_name"]:
-                custom_domain["useSubDomainName"] = args.get("use_sub_domain_name") == "true"
-
-            json_data_args["properties"]["customDomain"] = custom_domain
-
-        if (
-            "enc_key_source" in args
-            or "enc_keyvault_key_name" in args
-            or "enc_keyvault_key_version" in args
-            or "enc_keyvault_uri" in args
-            or "enc_requireInfrastructureEncryption" in args
-        ):
-            json_data_args["properties"]["Encryption"] = {}
-
-            if "enc_key_source" in args:
-                json_data_args["properties"]["Encryption"]["keySource"] = args.get("enc_key_source")
-
-            if "enc_keyvault_key_name" in args or "enc_keyvault_key_version" in args or "enc_keyvault_uri" in args:
-                json_data_args["properties"]["Encryption"]["keyvaultproperties"] = {}
-
-                if "enc_keyvault_key_name" in args:
-                    json_data_args["properties"]["Encryption"]["keyvaultproperties"]["keyname"] = args.get(
-                        "enc_keyvault_key_name"
-                    )
-
-                if "enc_keyvault_key_version" in args:
-                    json_data_args["properties"]["Encryption"]["keyvaultproperties"]["keyversion"] = args.get(
-                        "enc_keyvault_key_version"
-                    )
-
-                if "enc_keyvault_uri" in args:
-                    json_data_args["properties"]["Encryption"]["keyvaultproperties"]["keyvaulturi"] = args.get("enc_keyvault_uri")
-
-            if "enc_requireInfrastructureEncryption" in args:
-                json_data_args["properties"]["Encryption"]["requireInfrastructureEncryption"] = (
-                    args.get("enc_requireInfrastructureEncryption") == "true"
-                )
-
-        if (
-            "network_ruleset_bypass" in args
-            or "network_ruleset_default_action" in args
-            or "network_ruleset_ipRules" in args
-            or "virtual_network_rules" in args
-        ):
-            json_data_args["properties"]["networkAcls"] = {}
-
-            if "network_ruleset_bypass" in args:
-                json_data_args["properties"]["networkAcls"]["bypass"] = args.get("network_ruleset_bypass")
-
-            if "network_ruleset_default_action" in args:
-                json_data_args["properties"]["networkAcls"]["defaultAction"] = args.get("network_ruleset_default_action")
-
-            if "network_ruleset_ipRules" in args:
-                json_data_args["properties"]["networkAcls"]["ipRules"] = json.loads(args["network_ruleset_ipRules"])
-
-            if "virtual_network_rules" in args:
-                json_data_args["properties"]["networkAcls"]["virtualNetworkRules"] = json.loads(args["virtual_network_rules"])
-
-        if "access_tier" in args:
-            json_data_args["properties"]["accessTier"] = args.get("access_tier")
-
-        if "supports_https_traffic_only" in args:
-            json_data_args["properties"]["supportsHttpsTrafficOnly"] = args.get("supports_https_traffic_only") == "true"
-
-        if "is_hns_enabled" in args:
-            json_data_args["properties"]["isHnsEnabled"] = args.get("is_hns_enabled") == "true"
-
-        if "large_file_shares_state" in args:
-            json_data_args["properties"]["largeFileSharesState"] = args.get("large_file_shares_state")
-
-        if "allow_blob_public_access" in args:
-            json_data_args["properties"]["allowBlobPublicAccess"] = args.get("allow_blob_public_access") == "true"
-
-        if "minimum_tls_version" in args:
-            json_data_args["properties"]["minimumTlsVersion"] = args.get("minimum_tls_version")
-
+            
+        json_data_args.update({
+            "properties": {
+                "customDomain": {
+                    "name": args.get("custom_domain_name"),
+                    "useSubDomainName": args.get("use_sub_domain_name") == "true" if "use_sub_domain_name" in args else None
+                },
+                "Encryption": {
+                    "keySource": args.get("enc_key_source"),
+                    "keyvaultproperties": {
+                        "keyname": args.get("enc_keyvault_key_name"),
+                        "keyversion": args.get("enc_keyvault_key_version"),
+                        "keyvaulturi": args.get("enc_keyvault_uri")
+                    },
+                    "requireInfrastructureEncryption": args.get("enc_requireInfrastructureEncryption")
+                },
+                "networkAcls": {
+                    "bypass": args.get("network_ruleset_bypass"),
+                    "defaultAction": args.get("network_ruleset_default_action"),
+                    "ipRules": json.loads(args["network_ruleset_ipRules"])
+                        if "network_ruleset_ipRules" in args else None,
+                    "virtualNetworkRules": json.loads(args["virtual_network_rules"])
+                        if "virtual_network_rules" in args else None
+                },
+                "accessTier": args.get("access_tier"),
+                "supportsHttpsTrafficOnly": args.get("supports_https_traffic_only"),
+                "isHnsEnabled": args.get("is_hns_enabled"),
+                "largeFileSharesState": args.get("large_file_shares_state"),
+                "allowCrossTenantReplication": args.get("allow_cross_tenant_replication"),
+                "allowBlobPublicAccess": args.get("allow_blob_public_access"),
+                "minimumTlsVersion": args.get("minimum_tls_version")
+            }
+        })
+        
+        json_data_args = remove_empty_elements(json_data_args)
+        
         return self.ms_client.http_request(
             method="PUT",
             full_url=(
@@ -411,6 +384,7 @@ and resource group "{resource_group_name}" was not found.')
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
     def resource_update(self, resource_id, allow_blob_public_access, location, account_type):
+        #### should check it
         full_url=(
             f"https://management.azure.com/{resource_id}"
         )
@@ -420,11 +394,130 @@ and resource group "{resource_group_name}" was not found.')
             "properties":
             {
                 "allowBlobPublicAccess": allow_blob_public_access,
-                "accountType": account_type,
+                # "accountType": account_type,
+            },
+            "sku": {
+                "name": "Standard_LRS"
             }
         }
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
+    
+    def flexible_server_param_set(self, server_name, configuration_name, subscription_id, resource_group_name, source, value):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.DBforMySQL/flexibleServers/{server_name}/configurations/{configuration_name}"
+        )
+        params = {"api-version": FLEXIBLE_API_VERSION}
+        data = {
+            "properties":
+            {
+                "source": source,
+                "value": value
+            }
+        }
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+    
+    
+    def get_monitor_log_profile(self, subscription_id, log_profile_name):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}"
+            f"/providers/Microsoft.Insights/logprofiles"
+        )
+        params = {"api-version": MONITOR_API_VERSION}
+        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+        
+    
+    def monitor_log_profile_update(self, subscription_id, log_profile_name, location, retention_policy_days, retention_policy_enabled):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}"
+            f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
+        )
+        params = {"api-version": MONITOR_API_VERSION}
+        # data = {
+        #     "location": "",
+        #     "properties":
+        #     {
+        #         "retentionPolicy": {
+        #             "days": retention_policy_days,
+        #             "enabled": retention_policy_enabled
+        #         },
+        #         "locations": [
+        #             "global"
+        #         ],
+        #         "categories": [
+        #             "Write",
+        #             "Delete",
+        #             "Action"
+        #         ]
+        #     }
+        # }
+        data = {
+            "location": "",
+            "tags": {},
+            "properties": {
+                "locations": [
+                    "global"
+                ],
+                "categories": [
+                    "Write",
+                    "Delete",
+                    "Action"
+                ],
+                "retentionPolicy": {
+                    "enabled": True,
+                    "days": 3
+                },
+                "storageAccountId": "/subscriptions/df602c9c-7aa0-407d-a6fb-eb20c8bd1192/resourceGroups/JohnKemTest/providers/Microsoft.Storage/storageAccounts/johnkemtest8162",
+                "serviceBusRuleId": ""
+            }
+        }
+        data = remove_empty_elements(data)
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+    
+    
+    def get_disk(self, subscription_id, resource_group_name, disk_name):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Compute/disks/{disk_name}"
+        )
+        params = {"api-version": DISKS_API_VERSION}
+        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+    
+    
+    def disk_update(self, subscription_id, resource_group_name, disk_name, location, creation_data, public_network_access, network_access_policy, data_access_auth_mode):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Compute/disks/{disk_name}"
+        )
+        params = {"api-version": DISKS_API_VERSION}
+        data = {
+            "location": location,
+            "properties": {
+                "publicNetworkAccess": public_network_access,
+                "networkAccessPolicy": network_access_policy,
+                "dataAccessAuthMode": data_access_auth_mode,
+                "creationData": creation_data
+            }
+        }
+        data = remove_empty_elements(data)
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+    
+    
+    def webapp_identity_assign(self, subscription_id, resource_group_name, name, identity_type):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Web/sites/{name}"
+        )
+        params = {"api-version": WEBAPP_API_VERSION}
+        data = {
+            "identity": {
+                "type": identity_type
+            },
+        }
+        data = remove_empty_elements(data)
+        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        
 
 """ HELPER FUNCTIONS """
 def format_rule(rule_json: dict | list, security_rule_name: str):
@@ -576,25 +669,28 @@ def storage_account_create_update_command(client: AzureClient, params: dict, arg
     # if both are passed as arguments, the command arguments will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-
+    
+    current_storage_account = client.get_current_storage_account(subscription_id, resource_group_name, args.get("account_name", ""))
+    
+    sku = args.get("sku") or current_storage_account.get("sku", {}).get("name", "")
+    location = args.get("location") or current_storage_account.get("location", "")
+    kind = args.get("kind") or current_storage_account.get("kind", "")
+    if not (sku and location and kind):
+        raise DemistoException("Account name was not found. For creating new storage account, "
+                "please provide the following arguments: sku, location and kind.")
+        
     response = client.storage_account_create_update_request(
-        subscription_id=subscription_id, resource_group_name=resource_group_name, args=args
+        subscription_id=subscription_id, resource_group_name=resource_group_name, args=args, sku=sku, location=location, kind=kind
     )
-
     if not response.text:
         return f"The request was accepted - the account {args.get('account_name')} will be created shortly"
 
     response = response.json()
-    if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
-        subscription_id = subscription_id.group(1)  # type: ignore
-
-    if resource_group := re.search("resourceGroups/(.+?)/providers", response.get("id", "")):
-        resource_group = resource_group.group(1)  # type: ignore
 
     readable_output = {
         "Account Name": response.get("name"),
         "Subscription ID": subscription_id,
-        "Resource Group": resource_group,
+        "Resource Group": resource_group_name,
         "Kind": response.get("kind"),
         "Status Primary": response.get("properties", "").get("statusOfPrimary"),
         "Status Secondary": response.get("properties", "").get("statusOfSecondary"),
@@ -602,7 +698,7 @@ def storage_account_create_update_command(client: AzureClient, params: dict, arg
     }
 
     return CommandResults(
-        outputs_prefix="AzureStorage.StorageAccount",
+        outputs_prefix="Azure.Storage.StorageAccount",
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -698,8 +794,17 @@ def update_aps_command(client: AzureClient, params: dict, args: dict):
         ["Name", "AutoProvision", "ID"],
         removeNull=True,
     )
-    ec = {"AzureSecurityCenter.AutoProvisioningSetting(val.ID && val.ID === obj.ID)": outputs}
-    return md, ec, setting
+    # before the changes these two lines were existing:
+    # ec = {"AzureSecurityCenter.AutoProvisioningSetting(val.ID && val.ID === obj.ID)": outputs}
+    # return md, ec, setting
+    return CommandResults(
+        outputs_prefix="Azure.SecurityCenter",
+        outputs_key_field="id",
+        outputs=setting,
+        readable_output=md,
+        raw_response=outputs,
+    )
+    
 
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
@@ -814,16 +919,90 @@ def resource_update_command(client: AzureClient, params: dict, args: dict):
     outputs = [
         {
             "Name": response.get("name"),
-            "allow_blob_public_access": response.get("properties", {}).get("allow_blob_public_access", ""),
+            "Properties": response.get("properties", {}),
             "ID": response.get("id")
         }
     ]
     md = tableToMarkdown(
         f"Resource {resource_id} updated successfully.",
         outputs,
-        ["Name", "Enabled", "ID"],
+        ["Name", "Properties", "ID"],
         removeNull=True,
     )
+    return CommandResults(
+        outputs_prefix="Azure.Resource",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=md,
+        raw_response=outputs,
+    )
+    
+    
+def flexible_server_param_set_command(client: AzureClient, params: dict, args: dict):
+    configuration_name = args.get("configuration_name")
+    server_name = args.get("server_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    source = args.get("source", "")
+    value = args.get("value", "")
+    response = client.flexible_server_param_set(server_name, configuration_name, subscription_id, resource_group_name, source, value)
+    print(response)
+    
+    
+def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
+    log_profile_name = args.get("log_profile_name")
+    location = args.get("location")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    retention_policy_days = arg_to_number(args.get("retention_policy_days"))
+    retention_policy_enabled = args.get("retention_policy_enabled", "")
+    current_log_profile = client.get_monitor_log_profile(subscription_id, log_profile_name)
+    print(current_log_profile)
+    response = client.monitor_log_profile_update(subscription_id, log_profile_name, location, retention_policy_days, retention_policy_enabled)
+    print(response)
+    
+    
+def disk_update_command(client: AzureClient, params: dict, args: dict):
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    disk_name = args.get("disk_name")
+    public_network_access = args.get("public_network_access", "")
+    network_access_policy = args.get("network_access_policy", "")
+    data_access_auth_mode = args.get("data_access_auth_mode", "")
+    current_disk = client.get_disk(subscription_id, resource_group_name, disk_name)
+    location = current_disk.get("location")
+    creation_data = current_disk.get("properties", {}).get("creationData")
+    response = client.disk_update(subscription_id, resource_group_name, disk_name, location, creation_data, public_network_access, network_access_policy, data_access_auth_mode)
+    outputs = [
+        {
+            "Name": response.get("name"),
+            "ID": response.get("id"),
+            "Public Network Access": response.get("properties", {}).get("publicNetworkAccess"),
+            "Network Access Policy": response.get("properties", {}).get("networkAccessPolicy"),
+            "Data Access Auth Mode": response.get("properties", {}).get("dataAccessAuthMode")
+        }
+    ]
+    md = tableToMarkdown(
+        f"Disk {disk_name} updated successfully.",
+        outputs,
+        ["Name", "ID", "Public Network Access", "Network Access Policy", "Data Access Auth Mode"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.Disk",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=md,
+        raw_response=outputs,
+    )
+    
+def webapp_identity_assign_command(client: AzureClient, params: dict, args: dict):
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    name = args.get("name")
+    identity_type = args.get("identity_type")
+    response = client.webapp_identity_assign(subscription_id, resource_group_name, name, identity_type)
+    print(response)
+    
 
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication'
@@ -884,7 +1063,11 @@ def main():
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-webapp-config-set": set_webapp_config_command,
             "azure-webapp-auth-update": update_webapp_auth_command,
-            "azure-resource-update": resource_update_command
+            # "azure-resource-update": resource_update_command, ### maybe we use storage_account_create_update for this
+            "azure-mysql-flexible-server-param-set": flexible_server_param_set_command,
+            "azure-monitor-log-profile-update": monitor_log_profile_update_command,
+            "azure-compute-disk-update": disk_update_command,
+            "azure-webapp-identity-assign": webapp_identity_assign_command
         }
        
         if command == "test-module":
