@@ -43,7 +43,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/pandas:1.0.0.117209
+dockerimage: demisto/pandas:1.0.0.2067380
 fromversion: 5.0.0
 tests:
 - No tests

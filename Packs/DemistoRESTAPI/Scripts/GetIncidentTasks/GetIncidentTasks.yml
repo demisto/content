@@ -59,7 +59,7 @@ outputs:
   type: string
 scripttarget: 0
 sensitive: true
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No test
 fromversion: 6.10.0

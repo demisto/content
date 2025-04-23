@@ -13,7 +13,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: BMCTool
 comment: Parse RDP bitmap cache data into a single collage image file.

@@ -53,7 +53,7 @@ outputs:
   description: Last modified time of the entry.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
