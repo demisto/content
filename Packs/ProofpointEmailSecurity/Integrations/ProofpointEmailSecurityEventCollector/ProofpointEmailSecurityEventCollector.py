@@ -13,7 +13,7 @@ from websockets.sync.connection import Connection
 VENDOR = "proofpoint"
 PRODUCT = "email_security"
 
-URL = "{host}/v1/stream?cid={cluster_id}&type={type}&sinceTime={time}"
+URL = "{host}/v1/stream?cid={cluster_id}&type={type}"
 
 
 FETCH_INTERVAL_IN_SECONDS = 60
@@ -69,7 +69,7 @@ class EventConnection:
         demisto.info(f"[test] in {self.event_type} recv, going to acquire lock.")
         with self.lock:
             demisto.info(f"[test] in {self.event_type} recv, lock acquired.")
-            event = self.connection.recv(timeout=timeout)
+            event = self.connection.recv(timeout=0)
             demisto.info(f"[test] in {self.event_type} recv, going to release lock.")
         demisto.info(f"[test] in {self.event_type} recv, released lock.")
         return event
@@ -78,42 +78,39 @@ class EventConnection:
         """
         Reconnect logic for the WebSocket connection.
         """
-        demisto.info(f"[test] in {self.event_type} reconnect, going to acquire lock.")
-        with self.lock:
-            demisto.info(f"[test] in {self.event_type} reconnect, lock acquired.")
-            try:
-                self.connection = self.connect()
-                demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
-            except Exception as e:
-                demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
-                raise
-            demisto.info(f"[test] in {self.event_type} reconnect, going to release lock.")
-        demisto.info(f"[test] in {self.event_type} reconnect, released lock.")
+        demisto.info(f"[test] in {self.event_type} reconnect, going to reconnect.")
+        try:
+            self.connection = self.connect()
+            demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
+        except Exception as e:
+            demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
+            raise
+        demisto.info(f"[test] in {self.event_type} reconnect, finished reconnecting.")
 
     def heartbeat(self):
         """
         Heartbeat thread function to periodically send keep-alives (pong) to the server.
         Keep-alives are sent regardless of the actual connection activity to ensure the connection remains open.
         """
-        while True:
-            demisto.info(f"[test] in {self.event_type} heartbeat, going to acquire lock.")
-            try:
-                with self.lock:
+        with self.lock:
+            while True:
+                demisto.info(f"[test] in {self.event_type} heartbeat, going to acquire lock.")
+                try:
                     demisto.info(f"[test] in {self.event_type} heartbeat, lock acquired.")
                     self.connection.pong()
                     demisto.info(f"[test] in {self.event_type} heartbeat, going to release lock.")
-                demisto.info(f"[{self.event_type}] Sent heartbeat pong")
-                time.sleep(self.idle_timeout)
-            except exceptions.ConnectionClosedError as e:
-                demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {e!s}")
-                self.reconnect()
-            except exceptions.ConnectionClosedOK:
-                demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
-                self.reconnect()
-            except Exception as e:
-                demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
-                self.reconnect()
-            demisto.info(f"[test] in {self.event_type} heartbeat, lock released.")
+                    demisto.info(f"[{self.event_type}] Sent heartbeat pong")
+                    time.sleep(self.idle_timeout)
+                except exceptions.ConnectionClosedError as e:
+                    demisto.error(f"[{self.event_type}] Connection closed due to error in thread - {self.event_type}: {e!s}")
+                    self.reconnect()
+                except exceptions.ConnectionClosedOK:
+                    demisto.info(f"[{self.event_type}] Connection closed OK in thread - {self.event_type}")
+                    self.reconnect()
+                except Exception as e:
+                    demisto.error(f"[{self.event_type}] Unexpected error in heartbeat: {e!s} {traceback.format_exc()}")
+                    self.reconnect()
+                demisto.info(f"[test] in {self.event_type} heartbeat, lock released.")
 
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
@@ -171,7 +168,7 @@ def websocket_connections(
         since_time = datetime.utcnow().isoformat()
     if to_time:
         url += f"&toTime={to_time}"
-    url = partial(url.format, host=host, cluster_id=cluster_id, time=since_time)
+    url = partial(url.format, host=host, cluster_id=cluster_id)
     extra_headers = {"Authorization": f"Bearer {api_key}"}
 
     try:
@@ -200,14 +197,13 @@ def websocket_connections(
         raise DemistoException(f"{e!s}\n")
 
 
-def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout: int = 10) -> list[dict]:
+def fetch_events(connection: EventConnection, fetch_interval: int, integration_context) -> list[dict]:
     """
     This function fetches events from the given connection, for the given fetch interval
 
     Args:
         connection (EventConnection): the connection to the event type
         fetch_interval (int): Total time to keep fetching before stopping
-        recv_timeout (int): The timeout for the receive function in the socket connection
 
     Returns:
         list[dict]: A list of events
@@ -217,44 +213,48 @@ def fetch_events(connection: EventConnection, fetch_interval: int, recv_timeout:
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
-    while not is_interval_passed(fetch_start_time, fetch_interval):
-        demisto.info(f'[test] in {event_type=}, preparing to recv')
-        try:
-            event = json.loads(connection.recv(timeout=recv_timeout))
-            demisto.info(f'[test] in {event_type=}, finished recv')
-        except TimeoutError:
-            demisto.debug(f"Timeout while waiting for the event on {connection.event_type}")
-            continue
-        except exceptions.ConnectionClosedError:
-            demisto.error("Connection closed, attempting to reconnect...")
-            connection.reconnect()
-            continue
-        except Exception as e:
-            demisto.error(f"[test] Got general error in fetch_events {e}")
-            set_the_integration_context(
-                "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
-            )
-            raise DemistoException(str(e))
-        demisto.info(f'[test] processing events of type {event_type=}.')
-        event_id = event.get("id", event.get("guid"))
-        event_ts = event.get("ts")
-        if not event_ts:
-            # if timestamp is not in the response, use the current time
-            demisto.debug(f"Event {event_id} does not have a timestamp, using current time")
-            event_ts = datetime.utcnow().isoformat()
-        date = dateparser.parse(event_ts)
-        if not date:
-            demisto.debug(f"Event {event_id} has an invalid timestamp, using current time")
-            # if timestamp is not in correct format, use the current time
-            date = datetime.utcnow()
-        # the `ts` parameter is not always in UTC, so we need to convert it
-        event["_time"] = date.astimezone(tz.tzutc()).isoformat()
-        event["event_type"] = event_type
-        events.append(event)
-        event_ids.add(event_id)
-        demisto.info(f'[test] finished processing events of type {event_type=}.')
+    demisto.info(f'[test] in {event_type=}, preparing to recv')
+    with connection.lock:
+        while not is_interval_passed(fetch_start_time, fetch_interval):
+            try:
+                event = json.loads(connection.connection.recv(timeout=0))
+                event_id = event.get("id", event.get("guid"))
+                event_ts = event.get("ts")
+                if not event_ts:
+                    # if timestamp is not in the response, use the current time
+                    demisto.debug(f"Event {event_id} does not have a timestamp, using current time.")
+                    event_ts = datetime.utcnow().isoformat()
+                date = dateparser.parse(event_ts)
+                if not date:
+                    demisto.debug(f"Event {event_id} has an invalid timestamp, using current time.")
+                    # if timestamp is not in correct format, use the current time
+                    date = datetime.utcnow()
+                # the `ts` parameter is not always in UTC, so we need to convert it
+                event["_time"] = date.astimezone(tz.tzutc()).isoformat()
+                event["event_type"] = event_type
+                events.append(event)
+                event_ids.add(event_id)
+                demisto.info(f'[test] finished processing events of type {event_type=}.')
+            except TimeoutError:
+                demisto.debug(f"Timeout while waiting for the event on {connection.event_type}, breaking.")
+                break
+            except exceptions.ConnectionClosedError:
+                demisto.error("Connection closed, attempting to reconnect...")
+                connection.reconnect()
+                continue
+            except Exception as e:
+                demisto.error(f"[test] Got general error in fetch_events {e}")
+                events.extend(integration_context.get(connection.event_type, []))
+                integration_context[connection.event_type] = events  # update events in context in case of fail
+                integration_context["last_run_results"] = f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
+                set_integration_context(integration_context)
+                raise DemistoException(str(e))
+    demisto.info(f'[test] in {event_type=}, Finished recv.')
     num_events = len(events)
-    demisto.debug(f"Fetched {num_events} events of type {event_type}")
+    last_event_time = None
+    if events:
+        last_event_time =  events[-1].get("_time")
+    demisto.debug(f"Fetched {num_events} events of type {event_type} with {last_event_time=}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     set_the_integration_context(
         "last_run_results",
@@ -295,7 +295,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
     events_to_send = []
     for connection in connections:
         demisto.info(f"[test] going to call fetch_events on {connection.event_type=}")
-        events = fetch_events(connection, fetch_interval)
+        events = fetch_events(connection, fetch_interval, integration_context)
         demisto.info(f"[test] Done calling fetch_events on {connection.event_type=}")
         events.extend(integration_context.get(connection.event_type, []))
         integration_context[connection.event_type] = events  # update events in context in case of fail
