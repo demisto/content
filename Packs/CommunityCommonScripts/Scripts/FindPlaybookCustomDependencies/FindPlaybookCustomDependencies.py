@@ -63,7 +63,7 @@ def get_integrations_playbooks() -> None:
         })[0]["Contents"]["response"]["instances"]
     if enabledIntegrations is not None:
         integrations_list = []
-        for item in EnabledIntegrations:
+        for item in enabledIntegrations:
             integrations_list.append(item['brand'])
         integrations_list = list(set(integrations_list))
         for brand in integrations_list:
