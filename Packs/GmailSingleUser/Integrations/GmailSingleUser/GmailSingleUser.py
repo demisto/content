@@ -42,6 +42,7 @@ MAX_FETCH = int(params.get("fetch_limit") or 50)
 AUTH_CODE = params.get("auth_code_creds", {}).get("password") or params.get("code")
 AUTH_CODE_UNQUOTE_PREFIX = "code="
 LEGACY_NAME = argToBoolean(params.get("legacy_name", False))
+LOOK_BACK_IN_MINUTES = 1
 
 OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
 CLIENT_ID = params.get("credentials", {}).get("identifier") or params.get("client_id") or OOB_CLIENT_ID
@@ -682,6 +683,9 @@ class Client:
         }
         service = self.get_service("gmail", "v1")
         result = execute_gmail_action(service, "list", command_args)
+        demisto.info(
+            f"Retrieved the following email IDs from the list API call: {[mail.get('id') for mail in result.get('messages', [])]}"
+        )
 
         return [self.get_mail(user_id, mail["id"], "full") for mail in result.get("messages", [])], q
 
@@ -1260,6 +1264,27 @@ def fetch_incidents(client: Client):
     return incidents
 
 
+def parse_date(client: Client, date: str|datetime, return_type:str = "str") -> datetime | str:
+    """
+    Parses a date value using the client's server format utilities.
+
+    Args:
+        client (Client): The client instance with server date parsing methods.
+        date (str | datetime): The date to parse. Can be a string or datetime object.
+        return_type (str, optional): Determines the return format.
+                                     - If "date": returns a `datetime` object.
+                                     - If "str": returns an ISO-formatted date string.
+                                     Defaults to "str".
+
+    Returns:
+        datetime | str: The date in the format specified by `return_type`.
+                        Returns the input unmodified if the type doesn't match the expected conversion.
+    """
+    if return_type == "date":
+        return client.parse_date_isoformat_server(date) if isinstance(date, str) else date
+    return client.get_date_isoformat_server(date) if isinstance(date, datetime) else date
+
+
 def auth_link_command(client: Client):
     link = client.generate_auth_link()
     markdown = f"""
@@ -1283,6 +1308,106 @@ the authentication is properly set.
 def auth_test_command(client):
     client.search("me", "", "", "", "", "", "", "", "", "", [], 10, "", False, False)
     return "Authentication test completed successfully."
+
+
+def get_unix_date(args: dict) -> tuple[str, str]:
+    """
+    Converts 'before' and 'after' date arguments to Unix timestamp strings.
+
+    Args:
+        args (dict): Dictionary containing optional 'before' and 'after' keys.
+                     Defaults to 'now' and '1 day ago' respectively if not provided.
+
+    Returns:
+        tuple[str, str]: A tuple containing the Unix timestamp strings for 'before' and 'after'.
+                         Returns empty strings if the input could not be parsed to a datetime.
+    """
+    before_dt = arg_to_datetime(args.get("before", "now"))
+    after_dt = arg_to_datetime(args.get("after", "1 day ago"))
+
+    before = str(int(before_dt.timestamp())) if isinstance(before_dt, datetime) else ""
+    after = str(int(after_dt.timestamp())) if isinstance(after_dt, datetime) else ""
+
+    return before, after
+
+
+def get_incidents_command(client: Client):
+    """
+    Retrieves a list of emails from Gmail within a specific date range and formats them as incidents.
+
+    Args:
+        client (GmailClient): The Gmail API client.
+        args (dict): Command arguments, e.g., max_results, labels, before, after.
+
+    Returns:
+        CommandResults: The list of incidents formatted for Cortex XSOAR.
+    """
+    args = demisto.args()
+
+    max_results = int(args.get("max_results", 10))
+    label_ids = argToList(args.get("labels"))
+    query = args.get("query", "")
+    subject = args.get("subject", "")
+    _from = args.get("from", "")
+    to = args.get("to", "")
+    filename = args.get("filename", "")
+    _in = args.get("in", "")
+    has_attachments = argToBoolean(args.get("has_attachments", "false"))
+    before, after = get_unix_date(args)
+    demisto.debug(
+        f"Fetching emails with filters - subject: {subject}, from: {_from}, to: {to}, before: {before}, after: {after}"
+    )
+    emails = []
+    try:
+        emails, final_query = client.search(
+            user_id="me",
+            subject=subject,
+            _from=_from,
+            to=to,
+            before=before,
+            after=after,
+            filename=filename,
+            _in=_in,
+            query=query,
+            label_ids=label_ids,
+            max_results=max_results,
+            has_attachments=has_attachments,
+        )
+        demisto.debug(f"\n{emails=}\n")
+    except Exception as e:
+        return_error(f"Failed to fetch emails: {str(e)}")
+    demisto.info(f"search func raw_response: {emails, final_query}")
+
+    if not emails:
+        demisto.debug("No emails found for the given query.")
+        return CommandResults(readable_output="No incidents found.")
+    hr_emails = []
+    for email in emails:
+        hr_emails.append(
+            {
+                "id": email.get("id"),
+                "snippet": email.get("snippet"),
+                "labelIds": email.get("labelIds"),
+                "from": next(
+                    (
+                        h.get("value")
+                        for h in email.get("payload", {}).get("headers", [])
+                        if h.get("name", "").lower() == "from"
+                    ), None),
+                "internalDatetime": timestamp_to_datestring(email.get("internalDate", 0), is_utc=True)
+            }
+        )
+
+    demisto.debug(f"Retrieved {len(emails)} incidents using query: {final_query}\n\n{hr_emails=}\n\n")
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Retrieved Gmail Incidents",
+            hr_emails,
+            headers=["from", "snippet", "internalDatetime", "labelIds", "id"]
+        ),
+        raw_response=emails,
+    )
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """
@@ -1312,6 +1437,8 @@ def main():  # pragma: no cover
             sys.exit(0)
         if command in commands:
             demisto.results(commands[command](client))
+        if command == "gmail-get-incidents":
+            return_results(get_incidents_command(client))
     except Exception as e:
         return_error(f"An error occurred: {e}", error=e)
     finally:
