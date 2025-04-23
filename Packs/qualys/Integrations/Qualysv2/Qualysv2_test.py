@@ -1138,7 +1138,7 @@ class TestClientClass:
         self.client.get_host_list_detection(since_datetime=since_datetime, limit=HOST_LIMIT)
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
         assert http_request_kwargs["params"] == {
@@ -1175,7 +1175,7 @@ class TestClientClass:
 
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
