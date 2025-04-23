@@ -70,6 +70,7 @@ configuration:
   advanced: true
 - defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
   display: Status
+  section: Connect
   name: status
   options:
   - closed
@@ -101,11 +102,13 @@ configuration:
 - display: 'Advanced: Minutes to look back when fetching'
   name: look_back
   type: 0
+  section: Connect
   required: false
   defaultvalue: 1
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
 - display: Incident type
   name: incidentType
+  section: Connect
   type: 13
   required: false
 - display: Trust any certificate (not secure)
