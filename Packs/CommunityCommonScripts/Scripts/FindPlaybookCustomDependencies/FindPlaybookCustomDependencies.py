@@ -7,6 +7,8 @@ def get_custom_scripts_playbooks():
     final_results = []
     req_response = demisto.executeCommand(
         "demisto-api-post", {"uri": "automation/search", "body": "{\"query\":\"system:F AND hidden:F AND deprecated:F\"}"})
+    if is_error(req_response):
+        raise DemistoException(f"error occurred when trying to retrieve the data error: {res}")
     list_scripts = req_response[0].get('Contents', {}).get('response', {}).get('scripts')
     if not list_scripts:
         return_results("No custom scripts found.")
@@ -17,10 +19,11 @@ def get_custom_scripts_playbooks():
             results['User'] = item['user']
             results['Modified'] = item['modified']
             query = {"query": "script.name:" + str(item['name']) + " AND hidden:F AND deprecated:F"}
+            res = demisto.executeCommand("core-api-post", {"uri": "playbook/search", "body": query})
+            if is_error(res):
+                raise DemistoException(f"error occurred when trying to retrieve the data error: {res}")
             playbooksUsingScripts = (
-                demisto.executeCommand(
-                    "core-api-post", {"uri": "playbook/search", "body": query}
-                )[0]
+                res[0]
                 .get("Contents", {})
                 .get("response", {})
                 .get("playbooks")
@@ -50,7 +53,7 @@ def get_integrations_playbooks() -> None:
     incident = demisto.incidents()[0]
     accountName = incident.get('account')
     accountName = f"acc_{accountName}" if accountName != "" else ""
-    EnabledIntegrations = demisto.executeCommand(
+    enabledIntegrations = demisto.executeCommand(
         "demisto-api-post",
         {
             "uri": f"{accountName}/settings/integration/search",
@@ -58,7 +61,7 @@ def get_integrations_playbooks() -> None:
                 "preferences": "true"
             },
         })[0]["Contents"]["response"]["instances"]
-    if EnabledIntegrations is not None:
+    if enabledIntegrations is not None:
         integrations_list = []
         for item in EnabledIntegrations:
             integrations_list.append(item['brand'])
@@ -67,11 +70,11 @@ def get_integrations_playbooks() -> None:
             results['IntegrationBrands'] = brand
             string_brand = (f'"{str(brand)}"')
             query = {"query": "brands:" + str(string_brand) + " AND hidden:F AND deprecated:F"}
+            res = demisto.executeCommand("core-api-post", {"uri": "playbook/search", "body": query})
+            if is_error(res):
+                raise DemistoException(f"error occurred when trying to retrieve the data error: {res}")
             playbooksUsingIntegrations = (
-                demisto.executeCommand(
-                    "core-api-post", {"uri": "playbook/search", "body": query}
-                )[0]
-                .get("Contents", {})
+                res[0].get("Contents", {})
                 .get("response", {})
                 .get("playbooks")
             )
@@ -97,10 +100,10 @@ def get_integrations_playbooks() -> None:
 
 
 def main():
-    Mode = str(demisto.args()['mode'])
-    if Mode == 'scripts':
+    mode = str(demisto.args()['mode'])
+    if mode == 'scripts':
         get_custom_scripts_playbooks()
-    elif Mode == 'integrations':
+    elif mode == 'integrations':
         get_integrations_playbooks()
     else:
         return_error("Please enter a valid mode. Available modes: scripts, integrations.")
