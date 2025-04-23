@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 import freezegun
 import pytest
