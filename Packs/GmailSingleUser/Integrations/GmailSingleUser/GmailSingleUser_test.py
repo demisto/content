@@ -613,18 +613,18 @@ def test_get_unix_date(input_args, expected):
 
 #     Given:
 #     - A GmailSingleUser client with a mocked Gmail service and necessary method patches.
-#     - A patch on 'GmailSingleUser.execute_gmail_action' to simulate Gmail API responses for 'list' and 'get' actions based on the fetch count.
+#     - A patch on 'GmailSingleUser.execute_gmail_action' to simulate Gmail API responses for 'list' and 'get' actions based on the fetch count.  # noqa: E501
 #     - Initial 'getLastRun' returning a specific datetime indicating the last run time.
 #     - An external file 'test_data/a.json' to simulate fetched email details.
 
 #     When:
-#     - The `fetch_incidents` function is called twice, first with an initial fetch count of 0, then incremented to simulate a subsequent fetch.
+#     - The `fetch_incidents` function is called twice, first with an initial fetch count of 0, then incremented to simulate a subsequent fetch.  # noqa: E501
 
 #     Then:
 #     - The function should update 'setLastRun' correctly after each call:
 #       - After the first call, 'setLastRun' should contain exactly two messages with IDs '1' and '3'.
-#       - After the second call, 'setLastRun' should contain exactly three messages with IDs '1', '2', and '3', reflecting the updated fetch.
-#       - The 'lookback_msg' field in the data sent to 'setLastRun' should reflect the correct IDs of the messages fetched in each incident fetch.
+#       - After the second call, 'setLastRun' should contain exactly three messages with IDs '1', '2', and '3', reflecting the updated fetch.  # noqa: E501
+#       - The 'lookback_msg' field in the data sent to 'setLastRun' should reflect the correct IDs of the messages fetched in each incident fetch.  # noqa: E501
 #     """  # noqa: E501
 #     from GmailSingleUser import fetch_incidents
 #     import GmailSingleUser
