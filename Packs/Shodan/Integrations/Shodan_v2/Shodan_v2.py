@@ -276,7 +276,7 @@ def search_command():
 
         # Add SSL certificate properties, if present
         if match.get("ssl", {}).get("cert", {}):
-            ec["Shodan"]["Banner"]["Ssl"]["Cert"] = {}
+            ec["Shodan"]["Banner"]["SslCert"] = {}
 
             for cert_property, (ec_key, default_value) in ssl_cert_properties_map.items():
                 value = match["ssl"]["cert"].get(cert_property, default_value)
@@ -284,7 +284,7 @@ def search_command():
                     cert_datetime = datetime.strptime(value, "%Y%m%d%H%M%SZ")
                     value = cert_datetime.strftime(DATE_FORMAT)
 
-                ec["Shodan"]["Banner"]["Ssl"]["Cert"][ec_key] = value
+                ec["Shodan"]["Banner"]["SslCert"][ec_key] = value
 
         # Add NTLM properties, if present
         if match.get("ntlm", {}):

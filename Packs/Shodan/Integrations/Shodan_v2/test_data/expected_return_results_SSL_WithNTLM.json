@@ -141,7 +141,7 @@
         "ip_str": "10.2.3.4"
     },
     "ContentsFormat": "json",
-    "HumanReadable": "### Search results for query \"port:3389 ip:10.2.3.4\" - page 1, facets: \n|Asn|Data|Domains|Hash|Hostnames|IP|Isp|Location|Ntlm|OS|Org|Port|Ssl|Tags|Timestamp|Transport|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| AS123456 | Remote Desktop Protocol<br>\\x03\\x00\\x00\\x13\\x0e\\xd0\\x00\\x00\\x124\\x00\\x02\\x1f\\x08\\x00\\x02\\x00\\x00\\x00<br>Remote Desktop Protocol NTLM Info:<br>  OS: Windows Server 2022<br>  OS Build: 10.0.20348<br>  Target Name: test-host<br>  NetBIOS Domain Name: test-host<br>  NetBIOS Computer Name: test-host<br>  DNS Domain Name: test-host<br>  FQDN: test-host | example.com | 1234567890 | www.example.com | 10.2.3.4 | Test ISP | City: Santa Clara<br>Longitude: -121.983586<br>Latitude: 37.383038<br>Country: United States | DNSDomainName: test-host<br>DNSForestName: <br>FQDN: test-host<br>NetBIOSComputerName: test_host<br>NetBIOSDomainName: test-host<br>OS: Windows Server 2022<br>OSBuild: 10.0.20348<br>TargetRealm: test-host<br>Timestamp: 133880762199299918 | Windows Server 2022 (build 10.0.20348) | Example LLC | 3389 | versions: -TLSv1,<br>-SSLv2,<br>-SSLv3,<br>-TLSv1.1,<br>TLSv1.2,<br>TLSv1.3<br>Cert: {<br>    \"Expired\": false,<br>    \"Expires\": \"2025-06-01T07:53:49.000000\",<br>    \"Issued\": \"2025-03-03T07:00:56.000000\",<br>    \"Issuer\": {<br>        \"C\": \"US\",<br>        \"CN\": \"T1\",<br>        \"O\": \"Test Trust Services\"<br>    },<br>    \"Serial\": 1234,<br>    \"SigAlg\": \"sha256WithRSAEncryption\",<br>    \"Subject\": {<br>        \"CN\": \"www.example.com\"<br>    },<br>    \"Version\": 2<br>} | cloud | 2025-03-12T10:59:19.768166 | tcp |\n",
+    "HumanReadable": "### Search results for query \"port:3389 ip:10.2.3.4\" - page 1, facets: \n|Asn|Data|Domains|Hash|Hostnames|IP|Isp|Location|Ntlm|OS|Org|Port|Ssl|SslCert|Tags|Timestamp|Transport|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| AS123456 | Remote Desktop Protocol<br>\\x03\\x00\\x00\\x13\\x0e\\xd0\\x00\\x00\\x124\\x00\\x02\\x1f\\x08\\x00\\x02\\x00\\x00\\x00<br>Remote Desktop Protocol NTLM Info:<br>  OS: Windows Server 2022<br>  OS Build: 10.0.20348<br>  Target Name: test-host<br>  NetBIOS Domain Name: test-host<br>  NetBIOS Computer Name: test-host<br>  DNS Domain Name: test-host<br>  FQDN: test-host | example.com | 1234567890 | www.example.com | 10.2.3.4 | Test ISP | City: Santa Clara<br>Longitude: -121.983586<br>Latitude: 37.383038<br>Country: United States | DNSDomainName: test-host<br>DNSForestName: <br>FQDN: test-host<br>NetBIOSComputerName: test_host<br>NetBIOSDomainName: test-host<br>OS: Windows Server 2022<br>OSBuild: 10.0.20348<br>TargetRealm: test-host<br>Timestamp: 133880762199299918 | Windows Server 2022 (build 10.0.20348) | Example LLC | 3389 | versions: -TLSv1,<br>-SSLv2,<br>-SSLv3,<br>-TLSv1.1,<br>TLSv1.2,<br>TLSv1.3 | Expired: false<br>Expires: 2025-06-01T07:53:49.000000<br>Issued: 2025-03-03T07:00:56.000000<br>Issuer: {<br>    \"C\": \"US\",<br>    \"CN\": \"T1\",<br>    \"O\": \"Test Trust Services\"<br>}<br>Serial: 1234<br>SigAlg: sha256WithRSAEncryption<br>Subject: {<br>    \"CN\": \"www.example.com\"<br>}<br>Version: 2 | cloud | 2025-03-12T10:59:19.768166 | tcp |\n",
     "HumanReadableFormat": "markdown",
     "EntryContext": {
         "Shodan": {
@@ -160,23 +160,7 @@
                         "-TLSv1.1",
                         "TLSv1.2",
                         "TLSv1.3"
-                    ],
-                    "Cert": {
-                        "Expired": false,
-                        "Expires": "2025-06-01T07:53:49.000000",
-                        "Issued": "2025-03-03T07:00:56.000000",
-                        "Issuer": {
-                            "C": "US",
-                            "CN": "T1",
-                            "O": "Test Trust Services"
-                        },
-                        "Serial": 1234,
-                        "SigAlg": "sha256WithRSAEncryption",
-                        "Subject": {
-                            "CN": "www.example.com"
-                        },
-                        "Version": 2
-                    }
+                    ]
                 },
                 "Hostnames": [
                     "www.example.com"
@@ -197,6 +181,22 @@
                 "Tags": [
                     "cloud"
                 ],
+                "SslCert": {
+                    "Expired": false,
+                    "Expires": "2025-06-01T07:53:49.000000",
+                    "Issued": "2025-03-03T07:00:56.000000",
+                    "Issuer": {
+                        "C": "US",
+                        "CN": "T1",
+                        "O": "Test Trust Services"
+                    },
+                    "Serial": 1234,
+                    "SigAlg": "sha256WithRSAEncryption",
+                    "Subject": {
+                        "CN": "www.example.com"
+                    },
+                    "Version": 2
+                },
                 "Ntlm": {
                     "DNSDomainName": "test-host",
                     "DNSForestName": "",

@@ -185,55 +185,55 @@ script:
     - contextPath: Shodan.Banner.Tags
       description: Tag applied by Shodan analysis.
       type: Unknown
-    - contextPath: Shodan.Banner.Ssl.Cert.SigAlg
+    - contextPath: Shodan.Banner.SslCert.SigAlg
       description: Certificate Signature Algorithm.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Issued
+    - contextPath: Shodan.Banner.SslCert.Issued
       description: Timestamp of the beginning of certificate validity (Not Valid Before).
       type: Date
-    - contextPath: Shodan.Banner.Ssl.Cert.Expires
+    - contextPath: Shodan.Banner.SslCert.Expires
       description: Timestamp of the end of certificate validity (Not Valid After).
       type: Date
-    - contextPath: Shodan.Banner.Ssl.Cert.Version
+    - contextPath: Shodan.Banner.SslCert.Version
       description: X.509 Certificate Version.
       type: Number
-    - contextPath: Shodan.Banner.Ssl.Cert.Serial
+    - contextPath: Shodan.Banner.SslCert.Serial
       description: Serial Number assigned by the issuer.
       type: Number
-    - contextPath: Shodan.Banner.Ssl.Cert.Subject.CN
+    - contextPath: Shodan.Banner.SslCert.Subject.CN
       description: Subject Common Name.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Subject.O
+    - contextPath: Shodan.Banner.SslCert.Subject.O
       description: Subject Organization.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Subject.L
+    - contextPath: Shodan.Banner.SslCert.Subject.L
       description: Subject Locality or City.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Subject.ST
+    - contextPath: Shodan.Banner.SslCert.Subject.ST
       description: Subject State or Province.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Subject.C
+    - contextPath: Shodan.Banner.SslCert.Subject.C
       description: Subject Country Name.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Expired
+    - contextPath: Shodan.Banner.SslCert.Expired
       description: Boolean indicating whether the certificate is expired.
       type: Boolean
-    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.CN
+    - contextPath: Shodan.Banner.SslCert.Issuer.CN
       description: Issuer Certificate Common Name.
       type: Unknown
-    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.O
+    - contextPath: Shodan.Banner.SslCert.Issuer.O
       description: Issuer Organization.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.OU
+    - contextPath: Shodan.Banner.SslCert.Issuer.OU
       description: Issuer Organizational Unit.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.L
+    - contextPath: Shodan.Banner.SslCert.Issuer.L
       description: Issuer Locality or City.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.ST
+    - contextPath: Shodan.Banner.SslCert.Issuer.ST
       description: Issuer State or Province.
       type: String
-    - contextPath: Shodan.Banner.Ssl.Cert.Issuer.C
+    - contextPath: Shodan.Banner.SslCert.Issuer.C
       description: Issuer Country Name.
       type: String
     - contextPath: Shodan.Banner.Data

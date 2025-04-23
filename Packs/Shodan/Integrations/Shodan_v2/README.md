@@ -69,23 +69,23 @@ Searches Shodan using facets to get summary information on properties.
 | Shodan.Banner.Ntlm.DNSDomainName | String | DNS Domain Name. | 
 | Shodan.Banner.Hash | Number | Numeric hash of the "data" property which is helpful for finding other IPs with the exact same information. | 
 | Shodan.Banner.Tags | Unknown | Tag applied by Shodan analysis. | 
-| Shodan.Banner.Ssl.Cert.SigAlg | String | Certificate Signature Algorithm. | 
-| Shodan.Banner.Ssl.Cert.Issued | Date | Timestamp of the beginning of certificate validity \(Not Valid Before\). | 
-| Shodan.Banner.Ssl.Cert.Expires | Date | Timestamp of the end of certificate validity \(Not Valid After\). | 
-| Shodan.Banner.Ssl.Cert.Version | Number | X.509 Certificate Version. | 
-| Shodan.Banner.Ssl.Cert.Serial | Number | Serial Number assigned by the issuer. | 
-| Shodan.Banner.Ssl.Cert.Subject.CN | String | Subject Common Name. | 
-| Shodan.Banner.Ssl.Cert.Subject.O | String | Subject Organization. | 
-| Shodan.Banner.Ssl.Cert.Subject.L | String | Subject Locality or City. | 
-| Shodan.Banner.Ssl.Cert.Subject.ST | String | Subject State or Province. | 
-| Shodan.Banner.Ssl.Cert.Subject.C | String | Subject Country Name. | 
-| Shodan.Banner.Ssl.Cert.Expired | Boolean | Boolean indicating whether the certificate is expired. | 
-| Shodan.Banner.Ssl.Cert.Issuer.CN | String | Issuer Certificate Common Name. | 
-| Shodan.Banner.Ssl.Cert.Issuer.O | String | Issuer Organization. | 
-| Shodan.Banner.Ssl.Cert.Issuer.OU | String | Issuer Organizational Unit. | 
-| Shodan.Banner.Ssl.Cert.Issuer.L | String | Issuer Locality or City. | 
-| Shodan.Banner.Ssl.Cert.Issuer.ST | String | Issuer State or Province. | 
-| Shodan.Banner.Ssl.Cert.Issuer.C | String | Issuer Country Name. | 
+| Shodan.Banner.SslCert.SigAlg | String | Certificate Signature Algorithm. | 
+| Shodan.Banner.SslCert.Issued | Date | Timestamp of the beginning of certificate validity \(Not Valid Before\). | 
+| Shodan.Banner.SslCert.Expires | Date | Timestamp of the end of certificate validity \(Not Valid After\). | 
+| Shodan.Banner.SslCert.Version | Number | X.509 Certificate Version. | 
+| Shodan.Banner.SslCert.Serial | Number | Serial Number assigned by the issuer. | 
+| Shodan.Banner.SslCert.Subject.CN | String | Subject Common Name. | 
+| Shodan.Banner.SslCert.Subject.O | String | Subject Organization. | 
+| Shodan.Banner.SslCert.Subject.L | String | Subject Locality or City. | 
+| Shodan.Banner.SslCert.Subject.ST | String | Subject State or Province. | 
+| Shodan.Banner.SslCert.Subject.C | String | Subject Country Name. | 
+| Shodan.Banner.SslCert.Expired | Boolean | Boolean indicating whether the certificate is expired. | 
+| Shodan.Banner.SslCert.Issuer.CN | String | Issuer Certificate Common Name. | 
+| Shodan.Banner.SslCert.Issuer.O | String | Issuer Organization. | 
+| Shodan.Banner.SslCert.Issuer.OU | String | Issuer Organizational Unit. | 
+| Shodan.Banner.SslCert.Issuer.L | String | Issuer Locality or City. | 
+| Shodan.Banner.SslCert.Issuer.ST | String | Issuer State or Province. | 
+| Shodan.Banner.SslCert.Issuer.C | String | Issuer Country Name. | 
 | Shodan.Banner.Data | String | The raw data returned fro the service. | 
 | Shodan.Banner.CPE23 | Unknown | CPE information in the 2.3 format. | 
 | Shodan.Banner.Device | String | Device identified by Shodan. | 
