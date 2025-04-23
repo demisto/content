@@ -55,11 +55,11 @@ configuration:
   required: false
 - display: 'After adding the Generic Webhook settings, a unique link will be generated below.'
   section: Result
-  name: resultLink  #TODO where will this come into use? and where will the "GeneratedLink" from figma appear?
+  name: resultLink  # where will this come into use? and where will the "GeneratedLink" from figma appear?
   type: 22
-  options: null #TODO ??
-  required: true  #TODO ??
-  hasvalue: true #TODO ??
+  options: null # do we need to add this field in content?
+  required: true  # same here
+  hasvalue: true # same here
 description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
@@ -76,9 +76,9 @@ fromversion: 5.5.0
 tests:
   - Generic Webhook - Test
 triggers:
-  - conditions:   #TODO dependentFields
+  - conditions:   # maybe change the name to 'dependentFields' ?
       - name: engine
-        method: not_exists    #TODO operator??
+        method: not_exists    # maybe change the name to 'operator'?
       - name: isEngineGroup
         method: not_exists
     effects:
