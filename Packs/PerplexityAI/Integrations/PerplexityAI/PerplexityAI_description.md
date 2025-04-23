@@ -13,6 +13,4 @@ An API key is required for the XSOAR integration. To create your API Key:
 - Setting up payment options and funding the Pro option allows full use
 - Higher tiers also enable chat completion parameters such as **search-domain-filters**
 
-https://docs.perplexity.ai/api-reference/chat-completions
-https://docs.perplexity.ai/guides/search-domain-filters
 ---
