@@ -3349,30 +3349,38 @@ Run a shell command on a specific endpoint and return its result.
             "results": [
                 {
                     'endpoint_name': 'name',
-                    'endpoint_ip_address': ['218.92.0.29'], 'endpoint_status': 'STATUS_010_CONNECTED', 'domain': 'domain.name',
-                    'endpoint_id':'a6f7683c8e217d85bd3c398f0d3fb6bf','execution_status': 'COMPLETED_SUCCESSFULLY', 'executed_command': 
+                    'endpoint_ip_address': ['2.2.2.2'],
+                    'endpoint_status': 'STATUS_010_CONNECTED',
+                    'domain': 'domain.name',
+                    'endpoint_id':'dummy_id',
+                    'executed_command': 
                     [
                         {
                             'command': 'echo', 
                             'failed_files': 0, 
                             'retention_date': None,
                             'retrieved_files': 0,
-                            'standard_output': 'output', 'command_output': ['']
+                            'standard_output': 'output',
+                            'command_output': [''],
+                            'execution_status': 'COMPLETED_SUCCESSFULLY',
                         }, 
                         {
                             'command': 'echo hello',
                             'failed_files': 0, 
                             'retention_date': None, 
                             'retrieved_files': 0, 
-                            'standard_output': 'outputs', 
-                            'command_output': ['hello']
+                            'standard_output': 'outputs',
+                            'command_output': ['hello'],
+                            'execution_status': 'COMPLETED_SUCCESSFULLY',
                         }
                     ]
                     }, 
                     {
-                        'endpoint_name': 'name2', 'endpoint_ip_address': ['11.11.11.11'], 'endpoint_status': 'STATUS_010_CONNECTED', 'domain': '', 
-                        'endpoint_id':'a6f7683c8e213f56hd3c398f0d3fb6bf',
-                        'execution_status': 'COMPLETED_SUCCESSFULLY',
+                        'endpoint_name': 'name2',
+                        'endpoint_ip_address': ['11.11.11.11'],
+                        'endpoint_status': 'STATUS_010_CONNECTED',
+                        'domain': '', 
+                        'endpoint_id':'dummy_id2',
                         'executed_command': 
                         [
                             {
@@ -3381,24 +3389,21 @@ Run a shell command on a specific endpoint and return its result.
                                 'retention_date': None,
                                 'retrieved_files': 0,
                                 'standard_output': 'out',
-                                'command_output': []
+                                'command_output': [],
+                                'execution_status': 'COMPLETED_SUCCESSFULLY',
                             },
                             {
                                 'command': 'echo hello',
                                 'failed_files': 0,
-                                'retention_date': None, 'retrieved_files': 0,
-                                'standard_output': 'output', 'command_output': ['hello']
+                                'retention_date': None,
+                                'retrieved_files': 0,
+                                'standard_output': 'output',
+                                'command_output': ['hello'],
+                                'execution_status': 'COMPLETED_SUCCESSFULLY',
                             }
                         ]
                     }
             ]
-        }
-    ],
-    "Core.ScriptRun": [
-        {
-            "action_id": 1,
-            "endpoints_count": 1,
-            "status": 1
         }
     ]
 }
@@ -3408,7 +3413,7 @@ Run a shell command on a specific endpoint and return its result.
 
 |Command|Command Output|Endpoint Id|Endpoint Ip Address|Endpoint Name|Endpoint Status|Execution Status|
 |---|---|---|---|---|---|---|
-| echo | | a6f7683c8e217d85bd3c398f0d3fb6bf | 218.92.0.29 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
-| echo hello | hello | a6f7683c8e217d85bd3c398f0d3fb6bf | 218.92.0.29 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
-| echo |  | a6f7683c8e213f56hd3c398f0d3fb6bf | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
-| echo hello | hello | a6f7683c8e213f56hd3c398f0d3fb6bf | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo | | dummy_id | 2.2.2.2 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo hello | hello | dummy_id | 2.2.2.2 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo |  | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo hello | hello | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |

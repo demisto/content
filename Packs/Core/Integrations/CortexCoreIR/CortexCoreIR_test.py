@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
-from CortexCoreIR import reformate_args
+from CortexCoreIR import core_execute_command_reformate_args
 
 Core_URL = "https://api.xdrurl.com"
 STATUS_AMOUNT = 6
@@ -383,7 +383,7 @@ def test_reformat_args_missing_command_raises():
     from CommonServerPython import DemistoException
     args = {}
     with pytest.raises(DemistoException, match="'command' is a required argument."):
-        reformate_args(args)
+        core_execute_command_reformate_args(args)
 
 
 def test_reformat_args_is_raw_command_true():
@@ -399,11 +399,11 @@ def test_reformat_args_is_raw_command_true():
         "command": "dir, hostname",
         "is_raw_command": True
     }
-    reformate_args(args)
-    params = json.loads(args["parameters"])
+    reformatted_args = core_execute_command_reformate_args(args)
+    params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir, hostname"]
-    assert args["is_core"] is True
-    assert args["script_uid"] == "a6f7683c8e217d85bd3c398f0d3fb6bf"
+    assert reformatted_args["is_core"] is True
+    assert reformatted_args["script_uid"] == "a6f7683c8e217d85bd3c398f0d3fb6bf"
 
 
 @pytest.mark.parametrize("separator", [',', '/', '|'])
@@ -421,8 +421,8 @@ def test_reformat_args_separators(separator):
         "is_raw_command": False,
         "command_separator": separator
     }
-    reformate_args(args)
-    params = json.loads(args["parameters"])
+    reformatted_args = core_execute_command_reformate_args(args)
+    params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir", "hostname"]
 
 
@@ -440,8 +440,8 @@ def test_reformat_args_powershell_command_formatting():
         "command_type": "powershell",
         "is_raw_command": True
     }
-    reformate_args(args)
-    params = json.loads(args["parameters"])
+    reformatted_args = core_execute_command_reformate_args(args)
+    params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ['powershell -Command "Get-Process"']
 
 
@@ -455,20 +455,17 @@ def test_reformat_output():
         - Verify output unify all duplicated data.
         Instead of a list with element for each commmand, we'll have an element for each endpoint.
     """
-    from CortexCoreIR import reformat_output
+    from CortexCoreIR import core_execute_command_reformate_outputs
     mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
-    reformat_output([mock_res])
-    excepted_output = {
-        "action_id": 1,
-        "results": [
-            {
-                "endpoint_name": "name",
-                "endpoint_ip_address": ["218.92.0.29"],
-                "endpoint_status": "STATUS_010_CONNECTED",
-                "domain": "domain.name",
-                "endpoint_id": "a6f7683c8e217d85bd3c398f0d3fb6bf",
-                "execution_status": "COMPLETED_SUCCESSFULLY",
-                "executed_command":
+    reformatted_outputs = core_execute_command_reformate_outputs([mock_res])
+    excepted_output = [
+        {
+            "endpoint_name": "name",
+            "endpoint_ip_address": ["2.2.2.2"],
+            "endpoint_status": "STATUS_010_CONNECTED",
+            "domain": "domain.name",
+            "endpoint_id": "dummy_id",
+            "executed_command":
                 [
                     {
                         "command": "echo",
@@ -476,7 +473,8 @@ def test_reformat_output():
                         "retention_date": None,
                         "retrieved_files": 0,
                         "standard_output": "output",
-                        "command_output": []
+                        "command_output": [],
+                        "execution_status": "COMPLETED_SUCCESSFULLY",
                     },
                     {
                         "command": "echo hello",
@@ -484,40 +482,41 @@ def test_reformat_output():
                         "retention_date": None,
                         "retrieved_files": 0,
                         "standard_output": "outputs",
-                        "command_output": ["hello"]
+                        "command_output": ["hello"],
+                        "execution_status": "COMPLETED_SUCCESSFULLY",
                     }
-                ]
-            },
-            {
-                    "endpoint_name": "name2",
-                    "endpoint_ip_address": ["11.11.11.11"],
-                    "endpoint_status": "STATUS_010_CONNECTED",
-                    "domain": "",
-                    "endpoint_id": "a6f7683c8e213f56hd3c398f0d3fb6bf",
+            ]
+        },
+        {
+            "endpoint_name": "name2",
+            "endpoint_ip_address": ["11.11.11.11"],
+            "endpoint_status": "STATUS_010_CONNECTED",
+            "domain": "",
+            "endpoint_id": "dummy_id2",
+            "executed_command":
+            [
+                {
+                    "command": "echo",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "out",
+                    "command_output": [],
                     "execution_status": "COMPLETED_SUCCESSFULLY",
-                    "executed_command":
-                    [
-                        {
-                            "command": "echo",
-                            "failed_files": 0,
-                            "retention_date": None,
-                            "retrieved_files": 0,
-                            "standard_output": "out",
-                            "command_output": []
-                        },
-                        {
-                            "command": "echo hello",
-                            "failed_files": 0,
-                            "retention_date": None,
-                            "retrieved_files": 0,
-                            "standard_output": "output",
-                            "command_output": ["hello"]
-                        }
-                    ]
-            }
-        ]
-    }
-    assert mock_res.outputs == excepted_output
+                },
+                {
+                    "command": "echo hello",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "command_output": ["hello"],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                }
+            ]
+        }
+    ]
+    assert reformatted_outputs == excepted_output
 
 
 def test_reformat_readable():
@@ -530,15 +529,15 @@ def test_reformat_readable():
         - Verify readable_output show the relevant data.
         Instead of a row for each endpoint, we'll have a row for each command.
     """
-    from CortexCoreIR import reformat_readable_output
+    from CortexCoreIR import core_execute_command_reformate__readable_output
     mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
-    reformat_readable_output([mock_res])
-    excepted_output = """### Script Execution Results - 1
-|Command|Command Output|Endpoint Id|Endpoint Ip Address|Endpoint Name|Endpoint Status|Execution Status|
-|---|---|---|---|---|---|---|
-| echo |  | a6f7683c8e217d85bd3c398f0d3fb6bf | 218.92.0.29 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
-| echo hello | hello | a6f7683c8e217d85bd3c398f0d3fb6bf | 218.92.0.29 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
-| echo |  | a6f7683c8e213f56hd3c398f0d3fb6bf | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
-| echo hello | hello | a6f7683c8e213f56hd3c398f0d3fb6bf | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+    reformatted_readable_output = core_execute_command_reformate__readable_output([mock_res])
+    excepted_output = """### Script Execution Results for Action ID: 1
+|Endpoint Id|Command|Command Output|Endpoint Ip Address|Endpoint Name|Endpoint Status|
+|---|---|---|---|---|---|
+| dummy_id | echo |  | 2.2.2.2 | name | STATUS_010_CONNECTED |
+| dummy_id | echo hello | hello | 2.2.2.2 | name | STATUS_010_CONNECTED |
+| dummy_id2 | echo |  | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
+| dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 """
-    assert mock_res.readable_output == excepted_output
+    assert reformatted_readable_output == excepted_output
