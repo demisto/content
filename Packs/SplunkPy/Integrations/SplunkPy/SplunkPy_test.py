@@ -3947,3 +3947,62 @@ def test_splunk_job_create_command(mocker, query, expected_query):
     args = {"query": query}
     splunk.splunk_job_create_command(mocked_service, args)
     mocked_create_job.assert_called_once_with(expected_query, exec_mode="normal", app="")
+
+def test_splunk_search_parse_bad_chars():
+    """
+    Given:
+        The splunk search output contains a json string with invalid chars. (e.g. 0xa0, 0xd1 etc.)
+    When:
+        Attempting to parse the results from splunk search.
+    Then:
+        The parsing replaces the bad chars with � and proceeds successfully.
+    """
+    import io
+    bad_search_output = (
+b'{"preview": false, "init_offset": 0, "messages": [], "fields": [{"name": "Message"}, {"name": "_bkt"}, \
+{"name": "_cd"}, {"name": "_indextime"}, {"name": "_pre_msg"}, {"name": "_raw"}, {"name": "_serial"}, {"name": "_si"}, \
+{"name": "_sourcetype"}, {"name": "_time"}, {"name": "host"}, {"name": "index"}, {"name": "linecount"}, \
+{"name": "source"}, {"name": "sourcetype"}, {"name": "splunk_server"}], \
+"results": [{"Message": "Service \xd1started\xa0 successfully.", "_bkt": "main~1111~00000000-0000-0000-0000-000000000000", \
+"_cd": "1111:0000000", "_indextime": "5555555555", "_pre_msg": "04/23/2025 08:04:41 AM\\nLogName=Test log\\n\
+SourceName=Server\\nEventCode=0\\nEventType=4\\nType=Information\xa0\\nComputerName=#COMPUTERNAME#\\nTaskCategory=\
+Test log Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic", "_raw": "04/23/2025 08:04:41 AM\\nLogName=Test log\\n\
+SourceName=Server\\nEventCode=0\\nEventType=4\\nType=Information\xa0\\nComputerName=#COMPUTERNAME#\\nTaskCategory=Test log \
+Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service started successfully.\\n", "_serial": "1", \
+"_si": ["ip-000-00-00-000", "main"], "_sourcetype": "WinEventLog", "_time": "2025-04-23T05:04:41.000-03:00", \
+"host": "127.0.0.1", "index": "main", "linecount": "13", "source": "WinEventLog:Server", "sourcetype": "WinEventLog", \
+"splunk_server": "ip-000-00-00-000"}], "highlighted": {}}'
+    )
+
+    expected_res = (
+        [{
+            'Message': 'Service �started� successfully.',
+            '_bkt': 'main~1111~00000000-0000-0000-0000-000000000000',
+            '_cd': '1111:0000000',
+            '_indextime': '5555555555',
+            '_pre_msg': (
+                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information�\n'
+                'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic'
+            ),
+            '_raw': (
+                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information�\n'
+                'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic\n'
+                'Message=Service started successfully.\n'
+            ),
+            '_serial': '1',
+            '_si': ['ip-000-00-00-000', 'main'],
+            '_sourcetype': 'WinEventLog',
+            '_time': '2025-04-23T05:04:41.000-03:00',
+            'host': '127.0.0.1',
+            'index': 'main',
+            'linecount': '13',
+            'source': 'WinEventLog:Server',
+            'sourcetype': 'WinEventLog',
+            'splunk_server': 'ip-000-00-00-000'}],
+        [{'Indicator': '127.0.0.1', 'Type': 'hostname', 'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True}]
+    )
+    mock_result_batch = io.BytesIO(bad_search_output)
+    
+    res = splunk.parse_batch_of_results(mock_result_batch, 10, '')
+    
+    assert res == expected_res

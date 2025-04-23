@@ -2556,10 +2556,18 @@ class ResponseReaderWrapper(io.RawIOBase):
     def readinto(self, b):
         sz = len(b)
         data = self.responseReader.read(sz)
-        for idx, ch in enumerate(data):
+
+        # replace non utf-8 characters with � to avoid decode errors in JSONResultsReader
+        cleaned_data = data.decode("utf-8", errors="replace").encode("utf-8")
+        if len(cleaned_data) != len(data): # Any replaced byte is subbed by a � sign which uses 3 bytes
+            demisto.debug("Replaced non utf-8 characters in incoming Splunk data:\n"
+                          f"Original Splunk data: {data}\n"
+                          f"Modified data: {cleaned_data}\n")
+
+        for idx, ch in enumerate(cleaned_data):
             b[idx] = ch
 
-        return len(data)
+        return len(cleaned_data)
 
 
 def get_current_splunk_time(splunk_service: client.Service):
