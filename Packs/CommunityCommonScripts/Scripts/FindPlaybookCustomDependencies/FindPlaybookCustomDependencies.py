@@ -6,7 +6,7 @@ def get_custom_scripts_playbooks():
     results = {}
     final_results = []
     req_response = demisto.executeCommand(
-        "demisto-api-post", {"uri": "automation/search", "body": "{\"query\":\"system:F AND hidden:F AND deprecated:F\"}"})
+        "core-api-post", {"uri": "automation/search", "body": "{\"query\":\"system:F AND hidden:F AND deprecated:F\"}"})
     if is_error(req_response):
         raise DemistoException(f"error occurred when trying to retrieve the data error: {req_response}")
     list_scripts = req_response[0].get('Contents', {}).get('response', {}).get('scripts')
