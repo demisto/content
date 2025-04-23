@@ -42,7 +42,6 @@ MAX_FETCH = int(params.get("fetch_limit") or 50)
 AUTH_CODE = params.get("auth_code_creds", {}).get("password") or params.get("code")
 AUTH_CODE_UNQUOTE_PREFIX = "code="
 LEGACY_NAME = argToBoolean(params.get("legacy_name", False))
-LOOK_BACK_IN_MINUTES = 1
 
 OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
 CLIENT_ID = params.get("credentials", {}).get("identifier") or params.get("client_id") or OOB_CLIENT_ID
