@@ -1,9 +1,7 @@
 args:
 - name: EntryID
-  default: false
   description: The entry ID of the PDF file.
   isArray: false
-
   required: true
 comment: 'Returns wether a PDF is both valid and encrypted.'
 commonfields:
