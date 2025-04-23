@@ -4,7 +4,7 @@ commonfields:
 name: GCP
 display: GCP
 category: Cloud Services
-description: Quick remediation actions for GCP environments used in CIEM playbooks.
+description: The GCP Integration automates management and security configurations for Compute Engine, Storage, and Container resources on GCP.
 script:
   commands:
     - name: gcp-compute-firewall-patch
@@ -162,6 +162,7 @@ script:
           required: false
           isArray: true
           description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://urldefense.proofpoint.com/v2/url?u=https-3A__cloud.google.com_storage_docs_json-5Fapi_v1_bucketAccessControls-23resource&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=b9Fq_yWX5bK6LtJv3NzERfzrKVHG5CUxWT-Z_zrN7_0&m=23UgUuCAGIb_tk2KjPQ7flkf3KxEH2uNP5shu6agImd-DtM0WdvP9g6W20UUx7XU&s=1GCdJlrnmwfjQl_Y784dvhpe-evnWU4_QIdNVfl9xJw&e= "
+
     - name: gcp-compute-subnet-update
       description: Enables flow logs or Private Google Access on a subnet.
       arguments:
@@ -189,9 +190,39 @@ script:
             - "false"
           description: Enable Private Google Access.
       outputs:
-        - contextPath: GCP.Compute.Operations
-          description: Result of subnet update.
+        - contextPath: GCP.Compute.Operation.name
+          description: The name of the updated subnet.
+          type: String
+        - contextPath: GCP.Compute.Operation.region
+          description: The region of the updated subnet.
+          type: String
+        - contextPath: GCP.Compute.Operation.subnetName
+          description: The name of the subnet that was updated.
+          type: String
+        - contextPath: GCP.Compute.Operation.enableFlowLogs
+          description: Whether flow logs are enabled for the subnet.
+          type: Boolean
+        - contextPath: GCP.Compute.Operation.ipCidrRange
+          description: The updated CIDR range for the subnet.
+          type: String
+        - contextPath: GCP.Compute.Operation.privateIpGoogleAccess
+          description: Whether private Google access is enabled for the subnet.
+          type: Boolean
+        - contextPath: GCP.Compute.Operation.privateIpv6GoogleAccess
+          description: Whether private IPv6 Google access is enabled for the subnet.
+          type: Boolean
+        - contextPath: GCP.Compute.Operation.stackType
+          description: The stack type of the subnet (e.g., `IPV4`, `IPV6`).
+          type: String
+        - contextPath: GCP.Compute.Operation.rangeName
+          description: The name of the IP range associated with the subnet.
+          type: String
+        - contextPath: GCP.Compute.Operation.secondaryIpRanges
+          description: List of secondary IP ranges for the subnet.
           type: Unknown
+        - contextPath: GCP.Compute.Operation.description
+          description: The description of the subnet.
+          type: String
 
     - name: gcp-compute-project-metadata-add
       description: Sets metadata for the specified instance to the data included in the request.
@@ -241,7 +272,7 @@ script:
           type: String
 
     - name: gcp-container-cluster-security-update
-      description: Enables security settings for GKE clusters.
+      description: Configures security settings for GKE clusters, including access controls and visibility.
       arguments:
         - name: project_id
           required: true
@@ -271,13 +302,82 @@ script:
             Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
             Required if `enable_master_authorized_networks` is true.
           isArray: true
-      outputs:
-        - contextPath: GCP.Container.Operation
-          description: Cluster update response.
-          type: Unknown
+  outputs:
+    - contextPath: GCP.Container.Operation.name
+      description: The name of the GKE cluster.
+      type: String
+    - contextPath: GCP.Container.Operation.zone
+      description: The zone of the GKE cluster.
+      type: String
+    - contextPath: GCP.Container.Operation.enableStackdriverLogging
+      description: Whether Stackdriver Logging is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enableStackdriverMonitoring
+      description: Whether Stackdriver Monitoring is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enablePrivateNodes
+      description: Whether private nodes are enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enablePrivateEndpoint
+      description: Whether private endpoint is enabled for the GKE cluster control plane.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enableHttpsOnly
+      description: Whether HTTPS-only traffic is enforced for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enableNetworkPolicy
+      description: Whether network policies are enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enableAutoscaling
+      description: Whether autoscaling is enabled for the cluster nodes.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enableIstio
+      description: Whether Istio is enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enablePodSecurityPolicy
+      description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enableBinaryAuthorization
+      description: Whether Binary Authorization is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.enableLegacyABAC
+      description: Whether legacy ABAC is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.clusterIpv4Cidr
+      description: The cluster’s IPv4 CIDR block.
+      type: String
+    - contextPath: GCP.Container.Operation.masterAuthorizedNetworksConfig.cidrBlocks
+      description: List of authorized CIDR blocks that can access the GKE cluster master.
+      type: Unknown
+    - contextPath: GCP.Container.Operation.masterAuthorizedNetworksConfig.enabled
+      description: Whether master authorized networks are enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.network
+      description: The network to which the GKE cluster belongs.
+      type: String
+    - contextPath: GCP.Container.Operation.subnetwork
+      description: The subnetwork to which the GKE cluster belongs.
+      type: String
+    - contextPath: GCP.Container.Operation.loggingService
+      description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+      type: String
+    - contextPath: GCP.Container.Operation.monitoringService
+      description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+      type: String
+    - contextPath: GCP.Container.Operation.nodePools
+      description: A list of node pools in the cluster, with their configuration and security settings.
+      type: Unknown
+    - contextPath: GCP.Container.Operation.privateClusterConfig.enablePrivateNodes
+      description: Whether private nodes are enabled in the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.privateClusterConfig.enablePrivateEndpoint
+      description: Whether private endpoint is enabled for the cluster control plane.
+      type: Boolean
+    - contextPath: GCP.Container.Operation.masterVersion
+      description: The current version of the Kubernetes master in the GKE cluster.
+      type: String
 
     - name: gcp-storage-bucket-metadata-update
-      description: Updates GCS bucket metadata (versioning, UBLA).
+      description: Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
       arguments:
         - name: project_id
           required: true
@@ -303,6 +403,78 @@ script:
         - contextPath: GCP.StorageBucket.Metadata
           description: Updated bucket metadata.
           type: Unknown
+        - contextPath: GCP.StorageBucket.Metadata.name
+          description: The name of the GCP bucket.
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.id
+          description: The ID of the GCP bucket.
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.location
+          description: The location of the bucket.
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.storageClass
+          description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.created
+          description: The creation timestamp of the bucket.
+          type: Date
+        - contextPath: GCP.StorageBucket.Metadata.updated
+          description: The last update timestamp of the bucket.
+          type: Date
+        - contextPath: GCP.StorageBucket.Metadata.metageneration
+          description: The metadata generation of the bucket.
+          type: Number
+        - contextPath: GCP.StorageBucket.Metadata.labels
+          description: The labels attached to the bucket.
+          type: Unknown
+        - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+          description: Whether a default event-based hold is enabled on the bucket.
+          type: Boolean
+        - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+          description: The duration in seconds that objects in the bucket must be retained.
+          type: Number
+        - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+          description: The time from which the retention policy is effective.
+          type: Date
+        - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+          description: Whether the retention policy is locked.
+          type: Boolean
+        - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+          description: Whether object versioning is enabled.
+          type: Boolean
+        - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+          description: The destination bucket where access logs are stored.
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+          description: The object prefix used for logging.
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+          description: A list of lifecycle management rules for the bucket.
+          type: Unknown
+        - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess.enabled
+          description: Whether uniform bucket-level access is enabled.
+          type: Boolean
+        - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess.lockedTime
+          description: The time at which uniform bucket-level access became locked.
+          type: Date
+        - contextPath: GCP.StorageBucket.Metadata.cors
+          description: CORS configuration for the bucket.
+          type: Unknown
+        - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+          description: Custom placement configuration for multi-region buckets.
+          type: Unknown
+        - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+          description: The default Cloud KMS key used to encrypt objects.
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+          description: Whether requester pays is enabled.
+          type: Boolean
+        - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+          description: Suffix appended to requests for the bucket's website configuration.
+          type: String
+        - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+          description: The path to the custom 404 page for the bucket website.
+          type: String
 
     - name: test-module
       description: Test connectivity and permission validation
