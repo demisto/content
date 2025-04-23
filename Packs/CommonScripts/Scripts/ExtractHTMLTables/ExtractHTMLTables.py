@@ -12,9 +12,9 @@ def extract_html_table(html, indexes):
         table = []
         headers = []
         # Check if there are headers and use them
-        for th in tab.find_all("th"):
+        for th in tab.find_all("th"):  # type: ignore
             headers.append(th.text)
-        for tr in tab.find_all("tr"):
+        for tr in tab.find_all("tr"):  # type: ignore
             tds = tr.find_all("td")
             # This is a data row and not header row
             if len(tds) > 0:
