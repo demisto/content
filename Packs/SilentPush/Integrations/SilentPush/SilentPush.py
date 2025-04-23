@@ -1115,14 +1115,7 @@ metadata_collector = YMLMetadataCollector(
 ''' CLIENT CLASS '''
 
 class Client(BaseClient):
-    """Client class to interact with the SilentPush API
-
-    This Client implements API calls and does not contain any XSOAR logic.
-    It should only perform requests and return data.
-    It inherits from BaseClient defined in CommonServerPython.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    """
-
+        
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
         """
         Initializes the client with the necessary parameters.
@@ -1133,7 +1126,10 @@ class Client(BaseClient):
             verify (bool): Flag to determine whether to verify SSL certificates (default True).
             proxy (bool): Flag to determine whether to use a proxy (default False).
         """
-        super().__init__(base_url.rstrip('/') + '/api/v1/merge-api/', verify, proxy)
+        self.base_url = base_url.rstrip('/') + '/api/v1/merge-api/'
+        self.verify = verify
+        self.proxy = proxy
+        super().__init__(self.base_url, verify, proxy)
 
         self._headers = {
             'X-API-Key': api_key,
@@ -2660,7 +2656,7 @@ def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
         readable_output=readable_output,
         raw_response=raw_response
     )
-
+    
 def extract_and_sort_asn_reputation(raw_response: dict) -> list:
     """
     Extract ASN reputation data and sort by date.
@@ -2672,10 +2668,22 @@ def extract_and_sort_asn_reputation(raw_response: dict) -> list:
         list: Sorted ASN reputation data.
     """
     response_data = raw_response.get('response', {})
+
+    # Handle unexpected format gracefully
+    if not isinstance(response_data, dict):
+        response_data = {'asn_reputation': response_data}
+
     asn_reputation = response_data.get('asn_reputation') or response_data.get('asn_reputation_history', [])
 
-    # Sort by date in descending order
+    # Normalize to list
+    if isinstance(asn_reputation, dict):
+        asn_reputation = [asn_reputation]
+    elif not isinstance(asn_reputation, list):
+        # If it's something else (e.g., a string), fallback to an empty list
+        asn_reputation = []
+
     return sorted(asn_reputation, key=lambda x: x.get('date', ''), reverse=True)
+
 
 def generate_no_reputation_response(asn: str, raw_response: dict) -> CommandResults:
     """
