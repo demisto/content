@@ -187,7 +187,9 @@ def add_time_and_related_object_data_to_events(events: List[Dict], related_objec
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
         for key in keys_to_enhance:
-            if (event_details:= event.get("details", {})) and (not (id_of_key_to_enhance := event_details.get(key))):
+            event_details = event.get("details", {})
+            id_of_key_to_enhance = event_details.get(key)
+            if not event_details or not id_of_key_to_enhance:
                 continue
             # structure is {"type": "some_type", "object": {}}
             related_object_dict = related_objects.get(id_of_key_to_enhance,{})
