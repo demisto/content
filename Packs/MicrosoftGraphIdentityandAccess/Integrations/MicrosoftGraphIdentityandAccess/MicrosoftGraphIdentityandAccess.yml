@@ -603,7 +603,7 @@ script:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
       description: Whether sign-in frequency control is enabled.
       type: boolean
-  - description: Delete specific Conditional Access policy by id.
+  - description: Delete specific Conditional Access policy by ID.
     name: msgraph-identity-ca-policy-delete
     arguments:
     - name: policy_id
@@ -619,13 +619,13 @@ script:
       isArray: false
     - name: policy_name
       description: The name of the Conditional Access policy to be created.
-                   required if policy argument not present.
+                   Required if policy argument not present.
       required: false
       isArray: false
     - name: state
       description: |
-        The state of the policy. Can be `enabled` or `disabled`.
-        required if policy argument not present.
+        The state of the policy.
+        Required if policy argument not present.
       auto: PREDEFINED
       predefined:
         - 'enabled'
@@ -635,19 +635,19 @@ script:
     - name: sign_in_risk_levels
       description: |
         List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.
-        required if policy argument not present.
+        Required if policy argument not present.
       required: false
       isArray: true
     - name: user_risk_levels
       description: |
         List of user risk levels for the policy. Options: `low`, `medium`, `high`.
-        required if policy argument not present.
+        Required if policy argument not present.
       required: false
       isArray: true
     - name: client_app_types
       description: |
-        Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.
-        required if policy argument not present.
+        List of types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.
+        Required if policy argument not present.
       required: false
       isArray: true
     - name: include_applications
@@ -662,7 +662,7 @@ script:
       isArray: true
     - name: include_user_actions
       description: |
-        List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.
+        List of user actions to be included in the policy.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -721,7 +721,7 @@ script:
       isArray: true
     - name: grant_control_operator
       description: |
-        The operator for grant control. Can be `AND` or `OR`. Default is `AND`.
+        The operator for grant control.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -874,7 +874,7 @@ script:
       isArray: false
     - name: state
       description: |
-        The state of the policy. Can be `enabled` or `disabled`.
+        The state of the policy.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -967,7 +967,7 @@ script:
       isArray: true
     - name: grant_control_operator
       description: |
-        The operator for grant control. Can be `AND` or `OR`.
+        The operator for grant control.
       required: false
       isArray: false
       auto: PREDEFINED

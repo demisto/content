@@ -502,30 +502,142 @@ def test_update_conditional_access_policy_command_minimal_input(mocker, args, ex
 
 
 @pytest.mark.parametrize("invalid_json", [
-    "{'state': 'enabled'}",      # invalid JSON string (single quotes)
-    "not_a_json",                # totally invalid
-    "[invalid:]"                 # malformed
+    "{'state': 'enabled'}",  # invalid JSON string (single quotes)
+    "not_a_json",            # completely invalid
+    "[invalid:]"             # malformed syntax
 ])
 def test_update_conditional_access_policy_command_invalid_json_policy(invalid_json, mocker):
     """
     Given:
-        - A 'policy' argument that is not a valid JSON string.
+        - An invalid JSON string provided as the 'policy' argument.
     When:
-        - The update command is called.
+        - Calling update_conditional_access_policy_command.
     Then:
-        - A ValueError should be raised.
+        - Ensure ValueError is raised with the correct message.
     """
-    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, Client
+
+    mock_client = Client("", False, False)
 
     args = {
         "policy_id": "abc123",
         "policy": invalid_json
     }
-
-    client = mocker.Mock()
-    client.update_conditional_access_policy = mocker.Mock(side_effect=
-                                                          ValueError("The provided policy string is not a valid JSON."))
-
+    
     with pytest.raises(ValueError, match="The provided policy string is not a valid JSON."):
-        update_conditional_access_policy_command(client, args)
-        
+        update_conditional_access_policy_command(mock_client, args)
+
+    
+
+@pytest.mark.parametrize(
+    "policy_input, response_mock, expected_output, expect_exception",
+    [
+        # Case 1: Invalid JSON string -> should raise ValueError
+        ("{invalid_json}", None, "The provided policy string is not a valid JSON.", ValueError),
+
+        # Case 2: Response with non-204 status code
+        (
+            {"state": "disabled"},
+            {"status_code": 400, "text": "Bad Request"},
+            "An error occurred while updating Conditional Access policy 'abc123':\n",
+            None,
+        ),
+
+        # Case 3: Successful update (status code 204)
+        (
+            {"state": "enabled"},
+            {"status_code": 204, "text": "No Content"},
+            "Conditional Access policy abc123 was successfully updated.",
+            None,
+        ),
+    ]
+)
+
+def test_update_conditional_access_policy_cases(policy_input, response_mock, expected_output, expect_exception, mocker):
+    """
+    Given:
+        - A Conditional Access policy update input (either a dict or JSON string).
+    When:
+        - Calling update_conditional_access_policy with the mocked client.
+    Then:
+        - For invalid JSON: raise ValueError.
+        - For valid JSON string but incorrect structure: return CommandResults with error.
+        - For non-204 response: readable_output shows an error.
+        - For 204 response: readable_output shows success.
+    """
+    from MicrosoftGraphIdentityandAccess import Client
+    from CommonServerPython import CommandResults
+    
+    mock_client = Client("", False, False)
+
+    if expect_exception:
+        with pytest.raises(expect_exception) as e:
+            mock_client.update_conditional_access_policy("abc123", policy_input)
+        assert expected_output in str(e.value)
+    else:
+        mock_response = mocker.Mock()
+        mock_response.status_code = response_mock["status_code"]
+        mock_response.text = response_mock["text"]
+        mock_response.__str__ = mocker.Mock(return_value=response_mock["text"])
+        mocker.patch.object(mock_client.ms_client, "http_request", return_value=mock_response)
+        result = mock_client.update_conditional_access_policy("abc123", policy_input)
+        assert isinstance(result, CommandResults)
+        assert result.readable_output.startswith(expected_output)
+
+
+@pytest.mark.parametrize(
+    "base_existing, new_input, expected_merged, expected_messages",
+    [
+        (
+            # Case 1: Regular merge of list field
+            {"conditions": {"users": {"includeUsers": ["user1"]}}},
+            {"conditions": {"users": {"includeUsers": ["user2"]}}},
+            {"conditions": {"users": {"includeUsers": ["user1", "user2"]}}},
+            [],
+        ),
+        (
+            # Case 2: Merge with special value 'All'
+            {"conditions": {"users": {"includeUsers": ["All"]}}},
+            {"conditions": {"users": {"includeUsers": ["user2"]}}},
+            {"conditions": {"users": {"includeUsers": ["All"]}}},
+            [
+                "The field 'includeUsers' was not updated because it currently holds the special value 'All'."
+                " This value cannot be merged with others. All other updates were applied."
+                " To update this field, use update_action='override'."
+            ],
+        ),
+        (
+            # Case 3: Non-list field - should skip
+            {"state": "enabled"},
+            {"state": "disabled"},
+            {"state": "disabled"},  # unchanged due to skip
+            [],  # we don't capture demisto.info in test
+        ),
+    ]
+)
+def test_merge_policy_section_behavior(base_existing, new_input, expected_merged, expected_messages, mocker):
+    """
+    Given:
+        - An existing policy dict.
+        - A new policy dict with updated values.
+    When:
+        - Calling merge_policy_section to merge list-based fields (append logic).
+    Then:
+        - Fields that are lists should be merged correctly.
+        - Special values (like 'All') should not be merged, and a message should be logged.
+        - Non-list fields should be ignored for merging.
+    """
+    from MicrosoftGraphIdentityandAccess import merge_policy_section
+
+    # Patch resolve_merge_value to use actual logic
+
+    messages: list[str] = []
+    # Deepcopy to avoid mutation
+    import copy
+    base_existing_copy = copy.deepcopy(base_existing)
+    new_input_copy = copy.deepcopy(new_input)
+
+    merge_policy_section(base_existing_copy, new_input_copy, messages)
+
+    assert new_input_copy == expected_merged
+    assert messages == expected_messages
