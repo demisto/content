@@ -495,7 +495,7 @@ def test_final_part_pan_os(mocker):
     Then:
       - Verify the context was cleared and the execute command is called with the correct arguments.
     """
-    from BlockExternalIp import final_part_pan_os
+    from BlockExternalIp import pan_os_register_ip_finish
     tag = 'new_tag3'
     ip_list = ['1.2.3.7']
     args = {
@@ -508,7 +508,7 @@ def test_final_part_pan_os(mocker):
     res_register_ip_tag = util_load_json('test_data/pan_os_responses.json').get('register_ip_tag')
     mocker_register_ip = mocker.patch.object(demisto, 'executeCommand', return_value=res_register_ip_tag)
     mocker_set_context = mocker.patch.object(demisto, 'setContext', return_value={})
-    final_part_pan_os(args, responses)
+    pan_os_register_ip_finish(args, responses)
     assert mocker_set_context.call_count == 3
     mocker_register_ip.assert_called_with('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list})
 

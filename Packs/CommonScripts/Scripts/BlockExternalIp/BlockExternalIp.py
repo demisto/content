@@ -267,17 +267,17 @@ def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> Com
     return auto_commit_message
 
 
-def prisma_sase_security_rule_update(rule_name: str, address_group: str, responses: list) -> list:
+def prisma_sase_security_rule_update(rule_name: str, address_group: str, res_rule_list: list, responses: list) -> list:
     """ Execute the command prisma-sase-security-rule-update if needed.
     Args:
         rule_name (str): The name of the rule.
         address_group (list[dict]): The address group name.
+        res_rule_list (list): The response from prisma-sase-security-rule-list.
         responses (list): The list of current responses from the previous execute command executions of prisma-sase.
     Returns:
         The response of prisma-sase-security-rule-update if it was executed, else an empty list.
     """
     demisto.debug(f"The rule {rule_name} exists.")
-    res_rule_list = responses[-1]
     context_rule_list = get_relevant_context(res_rule_list[0].get('EntryContext', {}), 'PrismaSase.SecurityRule')
     rule_id = context_rule_list.get('id', '')  # type: ignore
     rule_destination = context_rule_list.get('destination', [])  # type: ignore
@@ -310,7 +310,7 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
     contents_address_object_list = res_address_object_list[0].get('Contents')
 
     if isinstance(contents_address_object_list, str) and "does not exist" in contents_address_object_list:
-        demisto.debug(f"The {ip} does not exist in the address-object list.")
+        demisto.debug(f"The {ip} does not exist in the address-object list. Hence we are creating an address object.")
         command_name_address_object_create = "prisma-sase-address-object-create"
         res_add_obj_create = run_execute_command(command_name_address_object_create,
                                                  {'name': ip, 'type': 'ip_netmask', 'address_value': ip})
@@ -339,7 +339,7 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
         contents_rule_list = res_rule_list[0].get('Contents', '')
         responses.append(res_rule_list)
         if isinstance(contents_rule_list, str) and "does not exist" in contents_rule_list:
-            demisto.debug(f"Creating a new rule {rule_name}")
+            demisto.debug(f"The security rule doesn't exist. Creating a new rule {rule_name}")
             command_name_rule_create = "prisma-sase-security-rule-create"
             res_rule_create = run_execute_command(command_name_rule_create,
                                                   {"action": "deny", "name": rule_name, 'destination': address_group})
@@ -347,7 +347,8 @@ def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
             if is_error(res_rule_create):
                 return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], '', [ip])
         else:
-            res_rule_update = prisma_sase_security_rule_update(rule_name, address_group, responses)
+            # The security rule exist, check whether to update it.
+            res_rule_update = prisma_sase_security_rule_update(rule_name, address_group, res_rule_list, responses)
             if res_rule_update and is_error(res_rule_update):
                 return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], rule_name, [ip])
 
@@ -473,7 +474,7 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
         response=push_cr,
         continue_to_poll=continue_to_poll,
         partial_result=CommandResults(
-            readable_output=f'Waiting for Job-ID {job_id} to finish push changes to device-group {device_group}...'
+            readable_output=f'Waiting for Job-ID {job_id} to finish push the changes...'
         )
     )
 
@@ -508,7 +509,7 @@ def pan_os_push_status(args: dict, responses: list):
     push_cr = CommandResults(
         outputs_key_field='JobID',
         outputs=context_output,  # update it according to the output from the execution.
-        readable_output=tableToMarkdown('Push to Device Group:', context_output, removeNull=True)
+        readable_output=tableToMarkdown('Push to Device Group:', context_output, ['JobID', 'Status'], removeNull=True)
     )
     global POLLING
     POLLING = continue_to_poll
@@ -516,12 +517,12 @@ def pan_os_push_status(args: dict, responses: list):
         response=push_cr,
         continue_to_poll=continue_to_poll,
         partial_result=CommandResults(
-            readable_output=f'Waiting for Job-ID {push_job_id} to finish push changes...'
+            readable_output=f'Waiting for Job-ID {push_job_id} to finish push the changes...'
         )
     )
 
 
-def final_part_pan_os(args: dict, responses: list) -> list[CommandResults]:
+def pan_os_register_ip_finish(args: dict, responses: list) -> list[CommandResults]:
     """ Execute the final part of the pan-os flow.
     1. Initialize all the context values.
     2. Create the list of Command Results.
@@ -607,7 +608,7 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
     address_group = args['address_group']
     rule_name = args['rule_name']
     log_forwarding_name = args.get('log_forwarding_name', '')
-    auto_commit = args['auto_commit']
+    auto_commit = args.get('auto_commit')
 
     command_name_list_address_group = "pan-os-list-address-groups"
     res_list_add_group = run_execute_command(command_name_list_address_group, {})
@@ -627,7 +628,7 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
     else:
         args['rule_name'] = ''
         demisto.debug(f"The {tag=} does exist in the address groups, registering the ip.")
-        results = final_part_pan_os(args, responses)
+        results = pan_os_register_ip_finish(args, responses)
         return results, False
 
 
@@ -690,6 +691,12 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
 
 def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | PollResult:  # pragma: no cover
     """ Manage the different states of the pan-os flow.
+        1. The flow start.
+        2. If auto_commit == true, and there were changes to commit, execute pan-os-commit.
+        3. There is a commit job id in the arguments, check what is the status of the commit.
+        4. The commit was executed successfully, check if this is a panorama instance and push to the devices.
+        5. There is a push job id, check what id the status of the push action.
+        6. The push action was successful, register the ip & tag and finish the flow.
     Args:
         args (dict): The arguments of the function.
     Returns:
@@ -702,24 +709,28 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
     res_push_status = None
     responses = []
     commit_job_id = args.get('commit_job_id') or demisto.get(incident_context, 'commit_job_id')
+    # state 5
     if push_job_id := demisto.get(incident_context, 'push_job_id'):
         demisto.debug(f"Has a {push_job_id=}")
         responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
         args['push_job_id'] = push_job_id
         res_push_status = pan_os_push_status(args, responses)
+        # state 6
         if not POLLING:
             demisto.debug("Finished polling, finishing the flow")
-            return final_part_pan_os(args, responses)
+            return pan_os_register_ip_finish(args, responses)
         else:
             demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
             responses = reduce_pan_os_responses(responses)
             demisto.setContext('panorama_responses', str(responses))
             return res_push_status
+    # state 3
     elif commit_job_id:
         demisto.debug(f"Has a {commit_job_id=}")
         args['commit_job_id'] = commit_job_id
         responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
         poll_commit_status = pan_os_commit_status(args, responses)
+        # state 4
         if not POLLING:
             demisto.debug("Finished polling for the commit status, checking if we need to trigger pan_os_push_to_device")
             if pan_os_check_trigger_push_to_device(responses):
@@ -727,7 +738,7 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
                 poll_push_to_device = pan_os_push_to_device(args, responses)
                 if not POLLING:
                     demisto.debug("Nothing to push. Finish the process.")
-                    return final_part_pan_os(args, responses)
+                    return pan_os_register_ip_finish(args, responses)
                 else:
                     demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
                     responses = reduce_pan_os_responses(responses)
@@ -735,22 +746,23 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
                     return poll_push_to_device
             else:
                 demisto.debug("Not a Panorama instance, not pushing to device. Continue to register the IP.")
-                return final_part_pan_os(args, responses)
+                return pan_os_register_ip_finish(args, responses)
         else:
             demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
             responses = reduce_pan_os_responses(responses)
             demisto.setContext('panorama_responses', str(responses))
             return poll_commit_status
 
-    # if we are here, it is the beginning of the flow
+    # if we are here, it is the beginning of the flow, state 1
     responses, should_commit = start_pan_os_flow(args)
     demisto.debug(f"The length of the responses is {len(responses)}")
     if should_commit:
+        # state 2
         poll_result = pan_os_commit(args, responses)
         demisto.debug(f"The result that returned from the commit execution is {poll_result=} and {args=}")
         demisto.debug(f"The length of the responses after adding the res_commit is {len(responses)}")
         if not POLLING:
-            result = final_part_pan_os(args, responses)
+            result = pan_os_register_ip_finish(args, responses)
             demisto.debug(f"The result after continue_to_poll is false {result=}")
             return result
         else:
@@ -764,7 +776,7 @@ def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | Po
         cr_should_commit = CommandResults(readable_output=f"Not commiting the changes in Panorama, since "
                                                           f"{auto_commit=}. Please do so manually for the changes "
                                                           f"to take affect.")
-        result = final_part_pan_os(args, responses)
+        result = pan_os_register_ip_finish(args, responses)
         result.append(cr_should_commit)
         return result
 
@@ -890,7 +902,6 @@ def main():  # pragma: no cover
                     if not POLLING:
                         demisto.debug("Not in a polling mode, adding Panorama to the executed_brands.")
                         executed_brands.append(brand)
-                    demisto.setContext('executed_brands', str(executed_brands))
                     demisto.debug(f"Before returning {result_pan_os=} in panorama")
                     results.append(result_pan_os)  # type: ignore
 
@@ -899,11 +910,14 @@ def main():  # pragma: no cover
                                  f"The supported integrations are: Palo Alto Networks - Prisma SASE, Panorama, "
                                  f"FortiGate, F5Silverline, Cisco ASA, Zscaler.")
             else:
-                demisto.info(f"The brand {brand} isn't enabled.")
-        demisto.debug(f"returning at the end of main(), {results=}")
-        if not POLLING:
-            demisto.debug("Not in a polling mode, initializing the executed_brands.")
+                results.append(CommandResults(readable_output=f"The brand {brand} isn't enabled."))
+        if POLLING:
+            demisto.debug(f"Updating the executed_brands {executed_brands=}")
+            demisto.setContext('executed_brands', str(executed_brands))
+        else:
+            demisto.debug("Not in a polling mode, initializing the executed_brands")
             demisto.setContext('executed_brands', '')
+        demisto.debug(f"returning at the end of main(), {results=}")
         return_results(results)
 
     except Exception as ex:
