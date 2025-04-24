@@ -307,27 +307,31 @@ class URLCheck:
                 host += self.modified_url[index]
                 index += 1
 
-        if not is_ip:
-            try:  # Check if host is a numerical representation of an IP address
-                host = int(host)
+        if not is_ip and not re.search(r'(?i)[^0-9a-fx.]', host):
+
+            try:
+                parsed_ip = parse_mixed_ip(host)
                 numerical_ip = True
 
             except ValueError:
-                pass
+                parsed_ip = host
 
-            try:
-                ip = ipaddress.ip_address(host)
+        else:
+            parsed_ip = host
 
-                if ip.version == 6 and not self.output.endswith(']'):
-                    self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
+        try:
+            ip = ipaddress.ip_address(parsed_ip)
 
-            except ValueError:
-                self.check_domain(host)
+            if ip.version == 6 and not self.output.endswith(']'):
+                self.output = f"{self.output}]"  # Adding a closing square bracket for IPv6
+
+        except ValueError:
+            self.check_domain(host)
 
         if numerical_ip:
             self.url.hostname = ip.exploded
-            self.output = self.output.replace(str(host), ip.exploded)
-        self.url.hostname = host
+            self.output = self.output.replace(host, ip.exploded)
+        self.url.hostname = str(parsed_ip)
         self.check_done(index)
 
     def port_check(self):
@@ -677,13 +681,13 @@ class URLFormatter:
     # URL Security Wrappers
     ATP_regex = re.compile('.*?[.]safelinks[.]protection[.](?:outlook|office365)[.](?:com|us)/.*?[?]url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.+?)(?:&amp|&d|$)|'
-                                  'https?(?::|%3A)//urldefense[.]\w{2,3}/v3/__(.+?)(?:__;|$))')
-    trendmicro_regex = re.compile('.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url[?]u=)?(.+?)(?:&amp|&d|$)|'
+                                  'https?(?::|%3A)//urldefense[.]\\w{2,3}/v3/__(.+?)(?:__;|$))')
+    trendmicro_regex = re.compile('.*?trendmicro[.]com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&',  # disable-secrets-detection
                                   re.I)
 
     # Scheme slash fixer
-    scheme_fix = re.compile("https?(:[/|\\\]*)")
+    scheme_fix = re.compile("https?(:[/|\\\\]*)")
 
     def __init__(self, original_url):
         """
@@ -845,3 +849,67 @@ def format_urls(raw_urls: list[str]) -> list[str]:
         finally:
             formatted_urls.append(formatted_url)
     return formatted_urls
+
+
+def parse_mixed_ip(ip_str: str) -> int:
+    """
+    Parse a mixed format IP address string and return an IPv4 or IPv6 address object.
+
+    This function can handle IP addresses in various formats including decimal, octal, and hexadecimal notations.
+    It converts the mixed format IP to a standard decimal IP and then creates an appropriate IP address object.
+
+    Args:
+        ip_str (str): A string representing an IP address in mixed format.
+
+    Returns:
+        int: An IPv4 in integer format.
+
+    Raises:
+        ValueError: If the resulting IP address is invalid.
+    """
+
+    def convert_octal_to_decimal(octet: str) -> int:
+        """Convert octal string to decimal."""
+        return int(octet, 8)
+
+    def convert_hex_to_decimal(octet: str) -> int:
+        """Convert hexadecimal string to decimal."""
+        return int(octet, 16)
+
+    def convert_decimal(octet: str) -> int:
+        """Convert decimal string to integer."""
+        return int(octet)
+
+    def convert_octet(octet: str) -> int:
+        """Convert a single octet to decimal if it is in octal, hex, or decimal format."""
+        if octet.startswith(('0x', '0X')):
+            # Hexadecimal
+            return convert_hex_to_decimal(octet)
+
+        elif octet.startswith('0') and len(octet) > 1:
+            # Assuming octal if it starts with '0' but more than one digit
+            return convert_octal_to_decimal(octet)
+
+        else:
+            # Decimal
+            return convert_decimal(octet)
+
+    numerical_ip: int = 0
+
+    # Split the IP address into octets
+    octets: list[str] = ip_str.split('.')
+
+    # Convert each octet to decimal
+    decimal_octets: list[int] = [convert_octet(octet) for octet in octets]
+
+    for index, octet in enumerate(decimal_octets, start=1):
+        if octet <= 255:
+            numerical_ip += octet << (32 - (index * 8))
+        else:
+            numerical_ip += octet
+
+    if numerical_ip > 4294967295:
+        # Maximum value for IPv4 address
+        raise ValueError("Invalid IP address format")
+
+    return numerical_ip

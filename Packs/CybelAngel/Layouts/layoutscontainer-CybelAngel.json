@@ -1,0 +1,970 @@
+{
+	"close": {
+		"sections": []
+	},
+	"description": "",
+	"details": {},
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cybelangeltitle",
+								"height": 22,
+								"id": "31d82010-d9aa-11ef-8c70-f3286c01e863",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelincidenttype",
+								"height": 22,
+								"id": "46212620-d9aa-11ef-8c70-f3286c01e863",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelseverity",
+								"height": 22,
+								"id": "74038470-d9aa-11ef-8c70-f3286c01e863",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelincidentid",
+								"height": 22,
+								"id": "b1c1a3a0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelip",
+								"height": 22,
+								"id": "cd186350-d9aa-11ef-8c70-f3286c01e863",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelasseturls",
+								"height": 22,
+								"id": "d04930e0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelboard",
+								"height": 22,
+								"id": "d5838a10-d9aa-11ef-8c70-f3286c01e863",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelmodule",
+								"height": 22,
+								"id": "d90a8df0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelorigins",
+								"height": 22,
+								"id": "dfa8e3f0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelport",
+								"height": 22,
+								"id": "e5191a30-d9aa-11ef-8c70-f3286c01e863",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxW": 3,
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxW": 3,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelport",
+								"height": 53,
+								"id": "e2df7de0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangeldetectedat",
+								"height": 53,
+								"id": "88d36dc0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelsentat",
+								"height": 53,
+								"id": "81da74a0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelupdatedat",
+								"height": 53,
+								"id": "91942e90-d9aa-11ef-8c70-f3286c01e863",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelabstract",
+								"height": 53,
+								"id": "a766e1e0-d9aa-11ef-8c70-f3286c01e863",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelanalysis",
+								"height": 53,
+								"id": "c2698e20-d9aa-11ef-8c70-f3286c01e863",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			},
+			{
+				"hidden": false,
+				"id": "tsnp16l4nu",
+				"name": "Report",
+				"sections": [
+					{
+						"h": 2,
+						"i": "caseinfoid-1a093740-2342-11ef-ab43-b35594896b69",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "War Room Entries",
+						"query": null,
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "pt8ee5sehr",
+				"name": "All Fields",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 8,
+						"hideName": false,
+						"i": "caseinfoid-71105b20-d9b5-11ef-8c70-f3286c01e863",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelabstract",
+								"height": 22,
+								"id": "7ebedbc0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelabuseemail",
+								"height": 22,
+								"id": "806511b0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelabuseemail",
+								"height": 22,
+								"id": "816bfa60-d9b5-11ef-8c70-f3286c01e863",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelanalysis",
+								"height": 22,
+								"id": "826c5360-d9b5-11ef-8c70-f3286c01e863",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelasseturls",
+								"height": 22,
+								"id": "833807d0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelboard",
+								"height": 22,
+								"id": "84c621e0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelcity",
+								"height": 22,
+								"id": "85ddac60-d9b5-11ef-8c70-f3286c01e863",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelcity",
+								"height": 22,
+								"id": "86c85a80-d9b5-11ef-8c70-f3286c01e863",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelcountrycode",
+								"height": 22,
+								"id": "89e503d0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelcreatedat",
+								"height": 22,
+								"id": "8b4a3920-d9b5-11ef-8c70-f3286c01e863",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangeldetectedat",
+								"height": 22,
+								"id": "8c58c2f0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangeldetectedat",
+								"height": 22,
+								"id": "8d757d90-d9b5-11ef-8c70-f3286c01e863",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangeldomainregisteredat",
+								"height": 22,
+								"id": "8f2417f0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelincidentid",
+								"height": 22,
+								"id": "90621630-d9b5-11ef-8c70-f3286c01e863",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelincidenttype",
+								"height": 22,
+								"id": "914b64c0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelinvestigationid",
+								"height": 22,
+								"id": "92477800-d9b5-11ef-8c70-f3286c01e863",
+								"index": 15,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelip",
+								"height": 22,
+								"id": "933903f0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelkeywords",
+								"height": 22,
+								"id": "9446ca70-d9b5-11ef-8c70-f3286c01e863",
+								"index": 17,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangellanguage",
+								"height": 22,
+								"id": "9b4800f0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 18,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelliveness",
+								"height": 22,
+								"id": "9c5ad080-d9b5-11ef-8c70-f3286c01e863",
+								"index": 19,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangellocation",
+								"height": 22,
+								"id": "9d32e100-d9b5-11ef-8c70-f3286c01e863",
+								"index": 20,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelmachinename",
+								"height": 22,
+								"id": "9e1b6c40-d9b5-11ef-8c70-f3286c01e863",
+								"index": 21,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelmalwarelocation",
+								"height": 22,
+								"id": "9efcf2a0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 22,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelmalwarename",
+								"height": 22,
+								"id": "a00b2e50-d9b5-11ef-8c70-f3286c01e863",
+								"index": 23,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelmodule",
+								"height": 22,
+								"id": "a17b3910-d9b5-11ef-8c70-f3286c01e863",
+								"index": 24,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelmxservers",
+								"height": 22,
+								"id": "a292c390-d9b5-11ef-8c70-f3286c01e863",
+								"index": 25,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelnsservers",
+								"height": 22,
+								"id": "a3d4e080-d9b5-11ef-8c70-f3286c01e863",
+								"index": 26,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelorigins",
+								"height": 22,
+								"id": "a4dc1750-d9b5-11ef-8c70-f3286c01e863",
+								"index": 27,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelport",
+								"height": 22,
+								"id": "a6007310-d9b5-11ef-8c70-f3286c01e863",
+								"index": 28,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelregistrantemail",
+								"height": 22,
+								"id": "a7575080-d9b5-11ef-8c70-f3286c01e863",
+								"index": 29,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelregistrantname",
+								"height": 22,
+								"id": "a8f4d3e0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 30,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelreportcontent",
+								"height": 44,
+								"id": "aa167080-d9b5-11ef-8c70-f3286c01e863",
+								"index": 31,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelreporttype",
+								"height": 22,
+								"id": "ac32e7e0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 32,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelsamples",
+								"height": 22,
+								"id": "b20932f0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 33,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelrisks",
+								"height": 22,
+								"id": "af7086b0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 34,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelscreenshots",
+								"height": 22,
+								"id": "b3c8bd40-d9b5-11ef-8c70-f3286c01e863",
+								"index": 35,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelsender",
+								"height": 22,
+								"id": "b6a80f70-d9b5-11ef-8c70-f3286c01e863",
+								"index": 36,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cybelangelsentat",
+								"height": 22,
+								"id": "b9120a90-d9b5-11ef-8c70-f3286c01e863",
+								"index": 37,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelseverity",
+								"height": 22,
+								"id": "bcac6f60-d9b5-11ef-8c70-f3286c01e863",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelsolvedat",
+								"height": 22,
+								"id": "c08822f0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelsource",
+								"height": 22,
+								"id": "c21356d0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelstream",
+								"height": 22,
+								"id": "c3463180-d9b5-11ef-8c70-f3286c01e863",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelsuggestions",
+								"height": 22,
+								"id": "c4836c70-d9b5-11ef-8c70-f3286c01e863",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangeltags",
+								"height": 22,
+								"id": "c5aa8750-d9b5-11ef-8c70-f3286c01e863",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelthreat",
+								"height": 22,
+								"id": "c741c920-d9b5-11ef-8c70-f3286c01e863",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangeltitle",
+								"height": 22,
+								"id": "caabf630-d9b5-11ef-8c70-f3286c01e863",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelupdatedat",
+								"height": 22,
+								"id": "cbdf4610-d9b5-11ef-8c70-f3286c01e863",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelusersession",
+								"height": 22,
+								"id": "cd8024d0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelusergroups",
+								"height": 22,
+								"id": "ce9df0e0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelvolume",
+								"height": 22,
+								"id": "cfccfb00-d9b5-11ef-8c70-f3286c01e863",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "cybelangelwhois",
+								"height": 22,
+								"id": "d141e7c0-d9b5-11ef-8c70-f3286c01e863",
+								"index": 38,
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_reminder",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_attachment",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "cybelangelreportcontent",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"group": "incident",
+	"id": "CybelAngel",
+	"indicatorsDetails": {},
+	"indicatorsQuickView": {},
+	"mobile": {},
+	"name": "CybelAngel",
+	"quickView": {},
+	"system": false,
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"marketplaces": [
+		"xsoar"
+	]
+}
