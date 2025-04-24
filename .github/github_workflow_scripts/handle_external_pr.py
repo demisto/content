@@ -573,9 +573,6 @@ def main():
     message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
     body = message_to_send.format(selected_reviewer=content_reviewer)
     pr.create_issue_comment(body)
-    pr.create_issue_comment("Unfortunately, your PR review will be slightly delayed because of an Israeli holiday in the "
-                            "upcoming week (the 12th of April - the 19th of April). Thank you in advance for your patience "
-                            "and understanding.")
     print(f'{t.cyan}Created welcome comment{t.normal}')
 
     print('contributors.md section')
