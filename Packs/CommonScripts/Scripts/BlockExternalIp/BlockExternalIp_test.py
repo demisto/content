@@ -3,6 +3,7 @@ import json
 import pytest
 
 from CommonServerPython import *
+from BlockExternalIp import PrismaSase, PanOs
 
 
 def util_load_json(path):
@@ -132,7 +133,6 @@ def test_sanitize_pan_os_responses():
     Then:
        - The correct information is returned.
     """
-    from BlockExternalIp import reduce_pan_os_responses
     res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
     res_address_group_edit = util_load_json('test_data/pan_os_responses.json').get('edit_address_group')
     res_rules_list = util_load_json('test_data/pan_os_responses.json').get('list_rules')
@@ -145,7 +145,8 @@ def test_sanitize_pan_os_responses():
                  res_rule_edit,
                  res_rule_move,
                  res_commit]
-    result_responses = reduce_pan_os_responses(responses)
+    pan_os = PanOs({}, responses)
+    result_responses = pan_os.reduce_pan_os_responses()
     assert len(result_responses) == 6
     for result in result_responses:
         assert len(result[0]) == 3
@@ -179,13 +180,12 @@ def test_check_value_exist_in_context():
    Then:
       - Returns True when the value is found, False otherwise.
    """
-   from BlockExternalIp import check_value_exist_in_context
    context = util_load_json('test_data/pan_os_responses.json').get('address_group_list_context')
    key = 'Match'
-   tag_exist = '3.4.5.6'
-   tag_not_exist = '1.1.1.1'
-   result_exist = check_value_exist_in_context(tag_exist, context, key)
-   result_not_exist = check_value_exist_in_context(tag_not_exist, context, key)
+   pan_os_tag_exist = PanOs({'tag': '3.4.5.6'}, [])
+   pan_os_tag_not_exist = PanOs({'tag': '1.1.1.1'}, [])
+   result_exist =pan_os_tag_exist. check_value_exist_in_context(pan_os_tag_exist.args['tag'], context, key)
+   result_not_exist = pan_os_tag_not_exist.check_value_exist_in_context(pan_os_tag_not_exist.args['tag'], context, key)
    assert result_exist
    assert not result_not_exist
 
@@ -205,9 +205,9 @@ def test_get_match_by_name(address_group, expected_match):
    Then:
       - Returns the current match value ot an empty string it the address group doesn't have one.
    """
-   from BlockExternalIp import get_match_by_name
    context = util_load_json('test_data/pan_os_responses.json').get('address_group_list_context')
-   result = get_match_by_name(address_group, context)
+   pan_os = PanOs({'address_group': address_group}, [])
+   result = pan_os.get_match_by_name(address_group, context)
    assert result == expected_match
 
 
@@ -243,10 +243,10 @@ def test_prisma_sase_candidate_config_push_false():
     Then:
       - A command result with a warning is returned.
     """
-    from BlockExternalIp import prisma_sase_candidate_config_push
+    prisma_sase = PrismaSase({'auto_commit': False}, [])
     expected_auto_commit_message = ("Not commiting the changes in Palo Alto Networks - Prisma SASE, since auto_commit=False."
                                     " Please do so manually for the changes to take affect.")
-    result_auto_commit_message = prisma_sase_candidate_config_push(False, [])
+    result_auto_commit_message = prisma_sase.prisma_sase_candidate_config_push()
     assert result_auto_commit_message.readable_output == expected_auto_commit_message
 
 
@@ -259,13 +259,12 @@ def test_prisma_sase_candidate_config_push_true(mocker):
     Then:
       - Verify the correct outputs are returned from the function.
     """
-    from BlockExternalIp import prisma_sase_candidate_config_push
-    responses = []
+    prisma_sase = PrismaSase({'auto_commit': True}, [])
     entries = util_load_json('test_data/prisma_sase_responses.json').get('candidate_config_push')
     mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=entries)
-    result_auto_commit_message = prisma_sase_candidate_config_push(True, responses)
+    result_auto_commit_message = prisma_sase.prisma_sase_candidate_config_push()
     assert not result_auto_commit_message
-    assert len(responses) == 1
+    assert len(prisma_sase.responses) == 1
     mocker_object.assert_called_with("prisma-sase-candidate-config-push",
                                      {"folders": "Remote Networks, Mobile Users, Service Connections"})
 
@@ -280,20 +279,17 @@ def test_prisma_sase_security_rule_update_needed(mocker):
       - Verify the correct outputs are returned from the function, the response of the command in case it was executed,
         otherwise [].
     """
-    from BlockExternalIp import prisma_sase_security_rule_update
-    rule_name = "rules"
-    address_group = "test_debug1"
     res_rule_list = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_list')
-    responses = [res_rule_list]
+    prisma_sase = PrismaSase({'rule_name': "rules", 'address_group': "test_debug1"}, [res_rule_list])
     entries = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_update')
     mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=entries)
-    result = prisma_sase_security_rule_update(rule_name, address_group, res_rule_list, responses)
+    result = prisma_sase.prisma_sase_security_rule_update(res_rule_list)
     assert result == entries
-    assert len(responses) == 2
+    assert len(prisma_sase.responses) == 2
     mocker_object.assert_called_with("prisma-sase-security-rule-update",
                                      {'rule_id': '11111111-1111-1111-1111-111111111111',
                                       'action': 'deny',
-                                      'destination': address_group})
+                                      'destination': prisma_sase.args['address_group']})
 
 
 def test_prisma_sase_security_rule_update_not_needed():
@@ -307,12 +303,9 @@ def test_prisma_sase_security_rule_update_not_needed():
       - Verify the correct outputs are returned from the function, the response of the command in case it was executed,
         otherwise [].
     """
-    from BlockExternalIp import prisma_sase_security_rule_update
-    rule_name = "rules"
-    address_group = "test_debug"
     res_rule_list = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_list')
-    responses = [res_rule_list]
-    result = prisma_sase_security_rule_update(rule_name, address_group, res_rule_list, responses)
+    prisma_sase = PrismaSase({'rule_name': "rules", 'address_group': "test_debug"}, [res_rule_list])
+    result = prisma_sase.prisma_sase_security_rule_update(res_rule_list)
     assert not result
 
 
@@ -326,7 +319,6 @@ def test_prisma_sase_block_ip_object_not_exist(mocker):
       - Verify the correct outputs are returned from the function, the first command result should contain that the ip
         does not exist.
     """
-    from BlockExternalIp import prisma_sase_block_ip
     args = {
         "ip": "1.2.3.7",
         "address_group": "test_debug2",
@@ -334,6 +326,7 @@ def test_prisma_sase_block_ip_object_not_exist(mocker):
         "rule_name": "rules",
         "auto_commit": False
     }
+    prisma_sase = PrismaSase(args, [])
     res_address_object_list = util_load_json('test_data/prisma_sase_responses.json').get('address_object_list_1237')
     res_create_object = util_load_json('test_data/prisma_sase_responses.json').get('address_object_create1237')
     res_address_group_list = util_load_json('test_data/prisma_sase_responses.json').get('address_group_list1237')
@@ -342,7 +335,7 @@ def test_prisma_sase_block_ip_object_not_exist(mocker):
                                                                 res_create_object,
                                                                 res_address_group_list,
                                                                 res_address_group_update])
-    results = prisma_sase_block_ip(args)
+    results = prisma_sase.prisma_sase_block_ip()
     assert len(results) == 6
     assert results[0].readable_output == "The item you're searching for does not exist within the Prisma SASE API."
     assert results[1].readable_output == ('### Address Object Created\n|Address Value|Folder|Id|Name|Type|\n'
@@ -390,11 +383,10 @@ def test_pan_os_check_trigger_push_to_device(mocker):
     Then:
       - True since it is a panorama instance.
     """
-    from BlockExternalIp import pan_os_check_trigger_push_to_device
-    responses = []
+    pan_os = PanOs({}, [])
     res_pan_os = util_load_json('test_data/pan_os_responses.json').get('pan_os_check_panorama')
     mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=res_pan_os)
-    result = pan_os_check_trigger_push_to_device(responses)
+    result = pan_os.pan_os_check_trigger_push_to_device()
     assert result
     mocker_object.assert_called_with("pan-os", {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
 
@@ -408,11 +400,10 @@ def test_pan_os_check_trigger_push_to_device_not_panorama(mocker):
     Then:
       - False since it is not a panorama instance.
     """
-    from BlockExternalIp import pan_os_check_trigger_push_to_device
-    responses = []
+    pan_os = PanOs({}, [])
     res_pan_os = util_load_json('test_data/pan_os_responses.json').get('pan_os_check_not_panorama')
     mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=res_pan_os)
-    result = pan_os_check_trigger_push_to_device(responses)
+    result = pan_os.pan_os_check_trigger_push_to_device()
     assert not result
     mocker_object.assert_called_with("pan-os", {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
 
@@ -469,7 +460,6 @@ def test_final_part_pan_os(mocker):
     Then:
       - Verify the context was cleared and the execute command is called with the correct arguments.
     """
-    from BlockExternalIp import pan_os_register_ip_finish
     tag = 'new_tag3'
     ip_list = ['1.2.3.7']
     args = {
@@ -478,11 +468,11 @@ def test_final_part_pan_os(mocker):
         'verbose': False,
         'rule_name': 'rule_name'
     }
-    responses = []
+    pan_os = PanOs(args, [])
     res_register_ip_tag = util_load_json('test_data/pan_os_responses.json').get('register_ip_tag')
     mocker_register_ip = mocker.patch.object(demisto, 'executeCommand', return_value=res_register_ip_tag)
     mocker_set_context = mocker.patch.object(demisto, 'setContext', return_value={})
-    pan_os_register_ip_finish(args, responses)
+    pan_os.pan_os_register_ip_finish()
     assert mocker_set_context.call_count == 3
     mocker_register_ip.assert_called_with('pan-os-register-ip-tag', {'tag': tag, 'IPs': ip_list})
 
@@ -527,18 +517,18 @@ def test_pan_os_create_update_address_group_create(mocker):
     Then:
       - Verify the pan-os-create-address-group was called with the correct arguments.
     """
-    from BlockExternalIp import pan_os_create_edit_address_group, get_relevant_context
+    from BlockExternalIp import get_relevant_context
     address_group = 'new_add_group3'
+    tag = 'new_tag3'
+    pan_os = PanOs({'address_group': address_group, 'tag': tag}, [])
     res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
     res_address_group_create = util_load_json('test_data/pan_os_responses.json').get('create_address_group')
     context_address_group_list = get_relevant_context(res_address_group_list[0].get('EntryContext', {}), 'Panorama.AddressGroups')
-    tag = 'new_tag3'
-    responses = []
     mocker_address_group_create = mocker.patch.object(demisto, 'executeCommand', return_value=res_address_group_create)
-    pan_os_create_edit_address_group(address_group, context_address_group_list, tag, responses)
+    pan_os.pan_os_create_edit_address_group(context_address_group_list)
     mocker_address_group_create.assert_called_with("pan-os-create-address-group",
                                                    {'name': address_group, 'type': 'dynamic', 'match': tag})
-    assert len(responses) == 1
+    assert len(pan_os.responses) == 1
 
 
 def test_pan_os_create_update_address_group_edit(mocker):
@@ -550,19 +540,19 @@ def test_pan_os_create_update_address_group_edit(mocker):
     Then:
       - Verify the pan-os-edit-address-group was called with the correct arguments.
     """
-    from BlockExternalIp import pan_os_create_edit_address_group, get_relevant_context
+    from BlockExternalIp import get_relevant_context
     address_group = 'testing2'
+    tag = 'some_tag2'
+    pan_os = PanOs({'address_group': address_group, 'tag': tag}, [])
     res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
     res_address_group_edit = util_load_json('test_data/pan_os_responses.json').get('edit_address_group')
     context_address_group_list = get_relevant_context(res_address_group_list[0].get('EntryContext', {}), 'Panorama.AddressGroups')
-    tag = 'some_tag2'
     expected_match = 'xsiam-blocked-external-ip or shalom21 or some_tag or some_tag1 or some_tag2'
-    responses = []
     mocker_address_group_edit = mocker.patch.object(demisto, 'executeCommand', return_value=res_address_group_edit)
-    pan_os_create_edit_address_group(address_group, context_address_group_list, tag, responses)
+    pan_os.pan_os_create_edit_address_group(context_address_group_list)
     mocker_address_group_edit.assert_called_with("pan-os-edit-address-group",
                                                  {'name': address_group, 'type': 'dynamic', 'match': expected_match})
-    assert len(responses) == 1
+    assert len(pan_os.responses) == 1
 
 
 def test_pan_os_create_edit_rule_create(mocker):
@@ -574,21 +564,21 @@ def test_pan_os_create_edit_rule_create(mocker):
     Then:
       - Verify the pan-os-create-rule was called with the correct arguments.
     """
-    from BlockExternalIp import pan_os_create_edit_rule, get_relevant_context
+    from BlockExternalIp import get_relevant_context
     address_group = 'testing2'
     rule_name = 'rule_name1'
+    pan_os = PanOs({'address_group': address_group, 'rule_name': rule_name, 'log_forwarding_name': 'log_forwarding_name'}, [])
     expected_create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase',
-                                 'source': address_group}
+                                 'source': address_group, 'log_forwarding': 'log_forwarding_name'}
     expected_calls = [mocker.call('pan-os-create-rule', expected_create_rule_args),
                       mocker.call('pan-os-move-rule', {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'})]
     res_rules_list = util_load_json('test_data/pan_os_responses.json').get('list_rules')
     res_rule_create = util_load_json('test_data/pan_os_responses.json').get('create_rule')
     res_rule_move = util_load_json('test_data/pan_os_responses.json').get('move_rule')
     context_rule_list = get_relevant_context(res_rules_list[0].get('EntryContext', {}), 'Panorama.SecurityRule')
-    responses = []
     mocker_execute_command = mocker.patch.object(demisto, 'executeCommand', side_effect=[res_rule_create, res_rule_move])
-    pan_os_create_edit_rule(rule_name, context_rule_list, address_group, '', responses)
-    assert len(responses) == 2
+    pan_os.pan_os_create_edit_rule(context_rule_list)
+    assert len(pan_os.responses) == 2
     assert mocker_execute_command.call_count == 2
     mocker_execute_command.assert_has_calls(expected_calls)
 
@@ -602,9 +592,10 @@ def test_pan_os_create_edit_rule_edit(mocker):
     Then:
       - Verify the pan-os-edit-rule was called with the correct arguments.
     """
-    from BlockExternalIp import pan_os_create_edit_rule, get_relevant_context
+    from BlockExternalIp import get_relevant_context
     address_group = 'testing2'
     rule_name = 'new_rule'
+    pan_os = PanOs({'address_group': address_group, 'rule_name': rule_name}, [])
     expected_edit_rule_args = {'rulename': rule_name, 'element_to_change': 'source', 'element_value': address_group,
                                'pre_post': 'pre-rulebase'}
     expected_calls = [mocker.call('pan-os-edit-rule', expected_edit_rule_args),
@@ -613,10 +604,9 @@ def test_pan_os_create_edit_rule_edit(mocker):
     res_rule_edit = util_load_json('test_data/pan_os_responses.json').get('edit_rule')
     res_rule_move = util_load_json('test_data/pan_os_responses.json').get('move_rule')
     context_rule_list = get_relevant_context(res_rules_list[0].get('EntryContext', {}), 'Panorama.SecurityRule')
-    responses = []
     mocker_execute_command = mocker.patch.object(demisto, 'executeCommand', side_effect=[res_rule_edit, res_rule_move])
-    pan_os_create_edit_rule(rule_name, context_rule_list, address_group, '', responses)
-    assert len(responses) == 2
+    pan_os.pan_os_create_edit_rule(context_rule_list)
+    assert len(pan_os.responses) == 2
     assert mocker_execute_command.call_count == 2
     mocker_execute_command.assert_has_calls(expected_calls)
 
@@ -631,7 +621,6 @@ def test_start_pan_os_flow_edit(mocker):
     Then:
       - Verify the outputs of the start_pan_os_flow, include all the relevant responses, and auto_commit == true.
     """
-    from BlockExternalIp import start_pan_os_flow
     args = {
         'ip_list': ['1.2.5.9'],
         'rule_name': 'new_rule',
@@ -644,6 +633,7 @@ def test_start_pan_os_flow_edit(mocker):
         'commit_job_id': '',
         'polling': True
     }
+    pan_os = PanOs(args, [])
     res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
     res_address_group_edit = util_load_json('test_data/pan_os_responses.json').get('edit_address_group')
     res_rules_list = util_load_json('test_data/pan_os_responses.json').get('list_rules')
@@ -654,9 +644,9 @@ def test_start_pan_os_flow_edit(mocker):
                                                                                          res_rules_list,
                                                                                          res_rule_edit,
                                                                                          res_rule_move])
-    responses, auto_commit = start_pan_os_flow(args)
+    _, auto_commit = pan_os.start_pan_os_flow()
     assert mocker_execute_command.call_count == 5
-    assert len(responses) == 5
+    assert len(pan_os.responses) == 5
     assert auto_commit
 
 
@@ -669,7 +659,6 @@ def test_start_pan_os_flow_register(mocker):
     Then:
       - Verify the outputs of the start_pan_os_flow, include all the relevant responses, and auto_commit == false.
     """
-    from BlockExternalIp import start_pan_os_flow
     args = {
         'ip_list': ['1.2.5.9'],
         'rule_name': 'new_rule',
@@ -682,11 +671,12 @@ def test_start_pan_os_flow_register(mocker):
         'commit_job_id': '',
         'polling': True
     }
+    pan_os = PanOs(args, [])
     res_address_group_list = util_load_json('test_data/pan_os_responses.json').get('address_group_list')
     res_address_register_ip_tag = util_load_json('test_data/pan_os_responses.json').get('register_ip_tag')
     mocker_execute_command = mocker.patch.object(demisto, 'executeCommand', side_effect=[res_address_group_list,
                                                                                          res_address_register_ip_tag])
-    results, auto_commit = start_pan_os_flow(args)
+    results, auto_commit = pan_os.start_pan_os_flow()
     assert mocker_execute_command.call_count == 2
     assert not auto_commit
     assert results[0].readable_output == ('### The IP was blocked successfully\n|IP|Status|Result|Used integration|\n'

@@ -53,6 +53,7 @@ class PrismaSase:
                                                   {'rule_id': rule_id, 'action': 'deny', 'destination': address_group})
             self.responses.append(res_rule_update)
             return res_rule_update
+        demisto.debug(f"The {address_group=} is in {rule_destination=}.")
         return []
 
     def prisma_sase_block_ip(self) -> list[CommandResults]:
@@ -326,8 +327,8 @@ class PanOs:
             5. There is a push job id, check what id the status of the push action.
             6. The push action was successful, register the ip & tag and finish the flow.
         Returns:
-            The relevant result of the current state. If it is a polling state than a PollResult object will be returned, otherwise
-            a Command Result or a list of Command Results, depends on the commands that were executed.
+            The relevant result of the current state. If it is a polling state than a PollResult object will be returned,
+            otherwise a Command Result or a list of Command Results, depends on the commands that were executed.
         """
         incident_context = demisto.context()
         demisto.debug(f"The context in the beginning of manage_pan_os_flow {incident_context=}")
