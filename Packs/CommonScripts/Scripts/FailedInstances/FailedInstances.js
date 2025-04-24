@@ -57,8 +57,11 @@ Object.keys(all).forEach(function(m) {
             config &&
             content.includes(config.message)
         ) {
+            logDebug("Enhanced test logic triggered for brand: \"{0}\", instance: \"{1}\".".format(brand, m));
+            logDebug("Detected message: \"{0}\". Running command: \"{1}\".".format(config.message, config.command));
             cmd = config.command;
             res = executeCommand(cmd, { using: m });
+            logDebug("Command \"{0}\" executed for instance: \"{1}\". Result: {2}".format(cmd, m, res[0].Contents));
         }
         executeCommand("addEntries", {"entries": JSON.stringify([{
             Type: entryTypes.note,
