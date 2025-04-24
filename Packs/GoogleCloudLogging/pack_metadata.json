@@ -9,9 +9,16 @@
     "categories": [
         "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "GCP",
+        "VPC",
+        "flow"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

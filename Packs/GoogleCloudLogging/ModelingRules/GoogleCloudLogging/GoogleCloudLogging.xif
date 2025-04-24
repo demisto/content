@@ -237,7 +237,7 @@ alter
     destination_ipv4 = arrayindex(regextract(jsonPayload -> connection.dest_ip, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0), 
     destination_ipv6 = arrayindex(regextract(jsonPayload -> connection.dest_ip, "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"), 0),
     reporter = jsonPayload -> reporter,
-    proto = to_string(jsonPayload -> protocol)
+    proto = to_string(jsonPayload -> connection.protocol)
 | alter
     xdm.source.ipv4 = source_ipv4,
     xdm.source.ipv6 = source_ipv6,
@@ -246,7 +246,7 @@ alter
     xdm.source.port = to_integer(jsonPayload -> connection.src_port),
     xdm.source.sent_packets = to_integer(jsonPayload -> packets_sent),
     xdm.source.cloud.project_id = coalesce(to_string(jsonPayload -> src_instance.project_id),to_string(resource -> labels.project_id),arrayindex(regextract(logName, "projects\/([^\/]+)\/"), 0)),
-    xdm.source.subnet = jsonPayload -> src_vpc.vpc_name,
+    xdm.source.subnet = jsonPayload -> src_vpc.subnetwork_name,
     xdm.source.host.device_id = jsonPayload -> src_instance.managed_instance_group.name,
     xdm.source.cloud.region = jsonPayload -> src_instance.region,
     xdm.source.cloud.zone = jsonPayload -> src_instance.zone,
@@ -262,7 +262,7 @@ alter
     xdm.target.cloud.region = jsonPayload -> dest_instance.region,
     xdm.target.application.name = jsonPayload -> dest_google_service.type,
     xdm.target.host.device_id = jsonPayload -> dest_instance.managed_instance_group.name,
-    xdm.target.subnet = jsonPayload -> dest_vpc.vpc_name,
+    xdm.target.subnet = jsonPayload -> dest_vpc.subnetwork_name,
     xdm.event.tags = arraycreate(reporter),
     xdm.event.description = jsonPayload,
     xdm.event.duration = to_integer(timestamp_diff(parse_timestamp("%FT%H:%M:%E*SZ", jsonPayload -> end_time), parse_timestamp("%FT%H:%M:%E*SZ", jsonPayload -> start_time), "MILLISECOND")),
