@@ -22,7 +22,7 @@ class TestClientHelperFunctions:
         "max_last_activity_date": {"operator": "<=", "api_key": "last_activity_date"},
     }
 
-    @pytest.mark.parametrize("args, output", [({"query": 1}, {"filter": 1}), ({"wow": 1}, {"filter": "wow:'1'"})])
+    @pytest.mark.parametrize("args, output", [({"query": 1}, {"filter": 1}), ({"wow": 1}, {"filter": 'wow:"1"'})])
     def test_build_request_params(self, args, output, mocker):
         """Unit test
         Given
@@ -84,7 +84,7 @@ class TestClientHelperFunctions:
         mocker.patch.object(CrowdStrikeClient, "_generate_token")
         client = Client({})
         args = {"offset": 1, "max_last_modified_date": "2020-09-16T22:28:42.143302", "wow": 2}
-        output = "last_modified_date:<=1600295322+wow:'2'"
+        output = 'last_modified_date:<=1600295322+wow:"2"'
         assert client.build_filter_query(args) == output
 
 

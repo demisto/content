@@ -1,5 +1,7 @@
 import traceback
-from datetime import UTC, datetime
+# from datetime import UTC, datetime
+from datetime import datetime, timedelta, timezone
+UTC = timezone.utc
 from typing import Any
 
 import demistomock as demisto
