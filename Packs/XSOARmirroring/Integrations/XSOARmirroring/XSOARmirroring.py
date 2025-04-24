@@ -392,18 +392,19 @@ def fetch_incidents(
                 tags_and_operator=False,
             )
             for entry in entries:
-                demisto.debug(f"{INTEGRATION_NAME}: for incident {incident['investigationId']} entries: {entry.keys()}")
+                demisto.debug(f"{INTEGRATION_NAME}: for incident {incident['id']} entries: {entry.keys()}")
                 if "file" in entry and entry.get("file"):
                     file_entry_content = client.get_file_entry(entry.get("id"))  # type: ignore
                     file_result = fileResult(entry["file"], file_entry_content)
                     if any(attachment.get("name") == entry["file"] for attachment in incident.get("attachment", [])):
                         if file_result["Type"] == EntryType.ERROR:
                             raise Exception(f"Error getting attachment: {file_result.get('Contents', '')!s}")
-                        demisto.debug(f"{INTEGRATION_NAME}: add file_attachments for incident {incident['investigationId']}")
+                        demisto.debug(f"{INTEGRATION_NAME}: add file_attachments for incident {incident['id']}")
                         file_attachments.append({"path": file_result.get("FileID", ""), "name": file_result.get("File", "")})
 
         incident_result["attachment"] = file_attachments
-        demisto.debug(f"{INTEGRATION_NAME}: add file_attachments for incident {incident['investigationId']}")
+        if len(file_attachments) != 0:
+            demisto.debug(f"{INTEGRATION_NAME}: add file_attachments for incident {incident['id']}")
         incidents_result.append(incident_result)
         incident_created_time = dateparser.parse(incident.get("created"), settings={"TIMEZONE": "Z"})  # type: ignore[arg-type]
         # Update last run and add incident if the incident is newer than last fetch
