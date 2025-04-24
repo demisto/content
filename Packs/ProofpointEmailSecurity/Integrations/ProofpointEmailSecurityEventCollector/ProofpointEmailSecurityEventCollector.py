@@ -134,8 +134,8 @@ def websocket_connections(
         f"Starting websocket connection to {host} with cluster id: {cluster_id}, sinceTime: {since_time}, toTime: {to_time}"
     )
     url = URL
-    if not since_time:
-        since_time = datetime.utcnow().isoformat()
+    if since_time:
+        url += f"&sinceTime={since_time}"
     if to_time:
         url += f"&toTime={to_time}"
     url = partial(url.format, host=host, cluster_id=cluster_id)
