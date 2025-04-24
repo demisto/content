@@ -665,19 +665,25 @@ Creates a Conditional Access policy.
 
 `msgraph-identity-ca-policy-create`
 
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy | JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,<br/>other required arguments like `policy_name`, `state`, `sign_in_risk_levels`, `user_risk_levels`, etc. must be included.<br/>. | Optional | 
 | policy_name | The name of the Conditional Access policy to be created. | Optional | 
-| state | The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.<br/>. | Optional | 
+| state | The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.<br/>. Possible values are: enabled, disabled. | Optional | 
 | sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
 | user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
 | client_app_types | Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>. | Optional | 
 | include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional | 
 | exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional | 
-| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. | Optional | 
+| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. Possible values are: vrn:user:registersecurityinfo, urn:user:registerdevice. | Optional | 
 | include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional | 
 | exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional | 
 | include_groups | List of group IDs to be included in the policy.<br/>. | Optional | 
@@ -688,8 +694,8 @@ Creates a Conditional Access policy.
 | exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional | 
 | include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
 | exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
-| grant_control_operator | The operator for grant control. Can be `AND` or `OR`. Default is `AND`.<br/>. | Optional | 
-| built_in_controls | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
+| grant_control_operator | The operator for grant control. Can be `AND` or `OR`. Default is `AND`.<br/>. Possible values are: AND, OR. | Optional | 
+| built_in_controls | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Default value is 'mfa'<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
 
 #### Context Output
 
@@ -741,20 +747,26 @@ Updates a Conditional Access policy.
 
 `msgraph-identity-ca-policy-update`
 
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | Required. The ID of the Conditional Access policy to update. | Required | 
-| policy | JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,<br/>other required arguments like `policy_name`, `state`, `sign_in_risk_levels`, `user_risk_levels`, etc. must be included.<br/>. | Optional | 
+| policy | JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,<br/>other required arguments like `policy_name`, `state`, etc. must be included.<br/>. | Optional | 
 | policy_name | The name of the Conditional Access policy to be created. | Optional | 
-| state | The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.<br/>. | Optional | 
+| state | The state of the policy. Can be `enabled` or `disabled`.<br/>. Possible values are: enabled, disabled. | Optional | 
 | sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
 | user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.<br/>. | Optional | 
 | client_app_types | Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>. | Optional | 
 | include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional | 
 | exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional | 
-| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. | Optional | 
+| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. Possible values are: vrn:user:registersecurityinfo, urn:user:registerdevice. | Optional | 
 | include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional | 
 | exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional | 
 | include_groups | List of group IDs to be included in the policy.<br/>. | Optional | 
@@ -765,7 +777,7 @@ Updates a Conditional Access policy.
 | exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional | 
 | include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
 | exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
-| grant_control_operator | The operator for grant control. Can be `AND` or `OR`. Default is `AND`.<br/>. | Optional | 
+| grant_control_operator | The operator for grant control. Can be `AND` or `OR`.<br/>. Possible values are: AND, OR. | Optional | 
 | built_in_controls | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
 | update_action | Defines how to update fields in the policy.<br/>- `override` (default): Replaces existing values.<br/>- `append`: Adds new values to existing ones without removing them.<br/>. Possible values are: override, append. | Optional | 
 
@@ -787,6 +799,12 @@ Delete specific Conditional Access policy by id.
 #### Base Command
 
 `msgraph-identity-ca-policy-delete`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
 
 #### Input
 
@@ -812,12 +830,19 @@ Retrieve one or all Conditional Access policies from Microsoft Graph API.
 
 `msgraph-identity-ca-policies-list`
 
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | Optional. The ID of the Conditional Access policy to retrieve. If not provided, all policies will be returned. | Optional | 
 | filter | Optional. The OData filter query to retrieve specific Conditional Access policies. | Optional | 
+| limit | Optional. The maximum number of Conditional Access policies to return. Applicable only when all_results is set to false. | Optional | 
+| all_results | Optional. Whether to retrieve all results without applying the 'limit'. Default value is true. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
