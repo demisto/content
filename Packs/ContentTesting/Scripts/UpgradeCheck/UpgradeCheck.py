@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 INDENT = "##### "
 
 
@@ -27,7 +26,7 @@ def NewMajVersion(curver):
 
 
 def CleanMarkdown(text):
-    return re.sub('["*","#","-", ":"]', '', text)
+    return re.sub('["*","#","-", ":"]', "", text)
 
 
 def ChangeList(text):
@@ -45,41 +44,40 @@ def CheckUpdates(packs, types, playbook, layout):
     loupdated = False
     for p in packs:
         if p in types:
-            if types[p]['playbook'] == playbook:
+            if types[p]["playbook"] == playbook:
                 pbupdated = True
-            if types[p]['layout'] == layout:
+            if types[p]["layout"] == layout:
                 loupdated = True
 
     return pbupdated, loupdated
 
 
 def GetUpgradedPacks():
-    response = demisto.executeCommand("core-api-get", {
-        'uri': "/contentpacks/installed-expired",
-        'body': ""
-    })[0]['Contents']['response']
+    response = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/installed-expired", "body": ""})[0]["Contents"][
+        "response"
+    ]
     upgradePacks = {}
     changesPacks = {}
 
     for r in response:
-        if r['updateAvailable']:
-            packid = r['packID']
+        if r["updateAvailable"]:
+            packid = r["packID"]
             upgradePacks[packid] = r
             changes = ""
             breaking = ""
 
-            newver = NewVersion(r['currentVersion'])
-            if newver in r['changelog']:
-                changes = r['changelog'][newver]['releaseNotes']
-                breaking = r['changelog'][newver]['breakingChangesNotes']
-            newver = NewMinVersion(r['currentVersion'])
-            if newver in r['changelog']:
-                changes = r['changelog'][newver]['releaseNotes']
-                breaking = r['changelog'][newver]['breakingChangesNotes']
-            newver = NewMajVersion(r['currentVersion'])
-            if newver in r['changelog']:
-                changes = r['changelog'][newver]['releaseNotes']
-                breaking = r['changelog'][newver]['breakingChangesNotes']
+            newver = NewVersion(r["currentVersion"])
+            if newver in r["changelog"]:
+                changes = r["changelog"][newver]["releaseNotes"]
+                breaking = r["changelog"][newver]["breakingChangesNotes"]
+            newver = NewMinVersion(r["currentVersion"])
+            if newver in r["changelog"]:
+                changes = r["changelog"][newver]["releaseNotes"]
+                breaking = r["changelog"][newver]["breakingChangesNotes"]
+            newver = NewMajVersion(r["currentVersion"])
+            if newver in r["changelog"]:
+                changes = r["changelog"][newver]["releaseNotes"]
+                breaking = r["changelog"][newver]["breakingChangesNotes"]
 
             changesPacks[packid] = {"changes": changes, "breaking": breaking}
 
@@ -103,51 +101,49 @@ def FilterPacks(packs, upgradePacks, changesPacks):
 
 
 def GetUpgradedIntegrations(packs):
-    response = demisto.executeCommand("core-api-post", {
-        'uri': "/settings/integration/search",
-        "body": {}
-    })[0]['Contents']['response']
-    configs = response['configurations']
-    instances = response['instances']
+    response = demisto.executeCommand("core-api-post", {"uri": "/settings/integration/search", "body": {}})[0]["Contents"][
+        "response"
+    ]
+    configs = response["configurations"]
+    instances = response["instances"]
     integrations = {}
     integmap = {}
 
     for packid, p in packs.items():
-        integs = p['contentItems'].get('integration', [])
+        integs = p["contentItems"].get("integration", [])
         if integs is not None:
             for i in integs:
-                integmap[i['name']] = packid
+                integmap[i["name"]] = packid
 
     for c in configs:
-        instid = c['id']
-        if c['packName'] == "Palo Alto Networks Cortex XDR - Investigation and Response":
+        instid = c["id"]
+        if c["packName"] == "Palo Alto Networks Cortex XDR - Investigation and Response":
             instid = "Palo Alto Networks Cortex XDR - Investigation and Response"
         if instid in integmap:
             packid = integmap[instid]
             integrations[packid] = {
-                "classifier": c.get('defaultClassifier', ""),
-                "mapperin": c.get('defaultMapperIn', ""),
-                "mapperout": c.get('defaultMapperOut', ""),
-                "instance": ""
+                "classifier": c.get("defaultClassifier", ""),
+                "mapperin": c.get("defaultMapperIn", ""),
+                "mapperout": c.get("defaultMapperOut", ""),
+                "instance": "",
             }
 
     for i in instances:
-        instid = i['brand']
-        name = i['name']
+        instid = i["brand"]
+        name = i["name"]
         if instid == "Cortex XDR - IR":
             instid = "Palo Alto Networks Cortex XDR - Investigation and Response"
         if instid in integmap:
             packid = integmap[instid]
-            integrations[packid]['instance'] = name
+            integrations[packid]["instance"] = name
 
     return integrations
 
 
 def GetCustomPlaybooks():
-    response = demisto.executeCommand("core-api-post", {
-        'uri': "/playbook/search",
-        "body": {'query': "system:F AND hidden:F AND deprecated:F"}
-    })[0]['Contents']['response']['playbooks']
+    response = demisto.executeCommand(
+        "core-api-post", {"uri": "/playbook/search", "body": {"query": "system:F AND hidden:F AND deprecated:F"}}
+    )[0]["Contents"]["response"]["playbooks"]
     playbooks = []
 
     for r in response:
@@ -160,16 +156,16 @@ def GetFieldKey(inoutfield):
     if type(inoutfield) is list:
         output = []
         for item in inoutfield:
-            if 'key' in item:
-                output.append(item['key'])
-            elif 'contextPath' in item:
-                output.append(item['contextPath'])
+            if "key" in item:
+                output.append(item["key"])
+            elif "contextPath" in item:
+                output.append(item["contextPath"])
             else:
                 output.append(item)
-        output = ','.join(output)
+        output = ",".join(output)
     else:
-        output = re.sub('["$","{","}"]', '', inoutfield)
-    return (output)
+        output = re.sub('["$","{","}"]', "", inoutfield)
+    return output
 
 
 def GetFieldsUsed(playbooks):
@@ -178,14 +174,14 @@ def GetFieldsUsed(playbooks):
     regex = re.compile("\$\{incident\.[^}]+\}")
 
     for p in playbooks:
-        name = p['name']
+        name = p["name"]
         usedfields[name] = []
-        if p['inputs'] is not None:
-            usedfields[name].append(GetFieldKey(p['inputs']))
-        if p['outputs'] is not None:
-            usedfields[name].append(GetFieldKey(p['outputs']))
+        if p["inputs"] is not None:
+            usedfields[name].append(GetFieldKey(p["inputs"]))
+        if p["outputs"] is not None:
+            usedfields[name].append(GetFieldKey(p["outputs"]))
 
-        for _key, t in p['tasks'].items():
+        for _key, t in p["tasks"].items():
             if "scriptArguments" in t:
                 for m in regex.findall(json.dumps(t)):
                     usedfields[name].append(GetFieldKey(m))
@@ -196,20 +192,20 @@ def GetFieldsUsed(playbooks):
 def GetSubplaybooksUsed(playbooks):
     usedplaybooks = []
     for p in playbooks:
-        for _key, t in p['tasks'].items():
-            if t['type'] == 'playbook' and 'name' in p and 'name' in t['task']:
-                usedplaybooks.append({"parent": p['name'], "child": t['task']['name']})
+        for _key, t in p["tasks"].items():
+            if t["type"] == "playbook" and "name" in p and "name" in t["task"]:
+                usedplaybooks.append({"parent": p["name"], "child": t["task"]["name"]})
 
-    return (usedplaybooks)
+    return usedplaybooks
 
 
 def GetAutomationsUsed(playbooks):
     automations = []
     for p in playbooks:
-        if len(p['scriptIds']) != 0:
-            for s in p['scriptIds']:
-                if 'name' in p:
-                    automations.append({"playbook": p['name'], "scripts": s})
+        if len(p["scriptIds"]) != 0:
+            for s in p["scriptIds"]:
+                if "name" in p:
+                    automations.append({"playbook": p["name"], "scripts": s})
 
     return automations
 
@@ -217,56 +213,50 @@ def GetAutomationsUsed(playbooks):
 def GetUpgradedScripts(packs, scripts):
     scriptdict = {}
     for _index, value in enumerate(scripts):
-        scriptdict[value['scripts']] = value
+        scriptdict[value["scripts"]] = value
     upgscripts = []
 
     for p in packs:
-        response = demisto.executeCommand("core-api-get", {
-            "uri": f"/contentpacks/marketplace/{p}",
-            "body": ""
-        }
-        )[0]['Contents']['response']
-        automations = response['contentItems']['automation']
+        response = demisto.executeCommand("core-api-get", {"uri": f"/contentpacks/marketplace/{p}", "body": ""})[0]["Contents"][
+            "response"
+        ]
+        automations = response["contentItems"]["automation"]
 
         if automations is not None:
             for a in automations:
-                if a['name'] in scriptdict:
-                    s = scriptdict[a['name']]
-                    upgscripts.append({"playbook": s['playbook'], "pack": p, "script": s['scripts']})
+                if a["name"] in scriptdict:
+                    s = scriptdict[a["name"]]
+                    upgscripts.append({"playbook": s["playbook"], "pack": p, "script": s["scripts"]})
 
     return upgscripts
 
 
 def GetUpgradedIncidentTypes(packs):
-    response = demisto.executeCommand("core-api-get", {
-        'uri': "/incidenttype",
-        'body': ""
-    }
-    )[0]['Contents']['response']
+    response = demisto.executeCommand("core-api-get", {"uri": "/incidenttype", "body": ""})[0]["Contents"]["response"]
     uptypes = {}
     custtypes = []
     for r in response:
-        pb = r.get('playbookId', "<none>")
-        lo = r.get('layout', "<none>")
-        if not r['system']:
-            custype = {'id': r['id'], 'playbook': pb, 'layout': lo, 'packid': "<none>"}
+        pb = r.get("playbookId", "<none>")
+        lo = r.get("layout", "<none>")
+        if not r["system"]:
+            custype = {"id": r["id"], "playbook": pb, "layout": lo, "packid": "<none>"}
             custtypes.append(custype)
-        pi = r.get('packID', "<none>")
+        pi = r.get("packID", "<none>")
         if pi in packs:
-            uptypes[pi] = {'playbook': pb, 'layout': lo, 'packid': pi}
+            uptypes[pi] = {"playbook": pb, "layout": lo, "packid": pi}
     return (uptypes, custtypes)
 
 
 def BuildItem(pack, key):
     md = f"{key}:\n"
-    items = pack['contentItems'][key]
+    items = pack["contentItems"][key]
     if items is not None:
         for i in items:
-            if 'name' in i:
+            if "name" in i:
                 md += f"{i['name']}\n"
     if md != f"{key}:\n":
-        return (md)
-    return ("")
+        return md
+    return ""
 
 
 def ImpactMD(upgradePacks, integinstances, types, custypes, subplaybooks, upgradescripts, usedfields):
@@ -295,25 +285,25 @@ def ImpactMD(upgradePacks, integinstances, types, custypes, subplaybooks, upgrad
     md += "|Incident Type|Object Type|Object|\n"
     md += "|---|---|---|\n"
     for c in custypes:
-        if c['id'] != "Unclassified":
-            pbupd, loupd = CheckUpdates(upgradePacks, types, c['playbook'], c['layout'])
+        if c["id"] != "Unclassified":
+            pbupd, loupd = CheckUpdates(upgradePacks, types, c["playbook"], c["layout"])
             if pbupd:
                 md += f"| {c['id']} | Playbook | {c['playbook']} |\n"
             if loupd:
                 md += f"| {c['id']} | Layout   | {c['layout']}   |\n"
 
     md += "#### Integration_Instances:\n"
-    for key, i in integinstances.items():
-        if i['instance'] != "":
+    for _key, i in integinstances.items():
+        if i["instance"] != "":
             md += f"{INDENT}Instance: {i['instance']}\n"
-            if i['classifier'] != "":
+            if i["classifier"] != "":
                 md += f"Classifier: {i['classifier']}\n"
-            if i['mapperin'] != "":
+            if i["mapperin"] != "":
                 md += f"Mapperin: {i['mapperin']}\n"
-            if i['mapperout'] != "":
+            if i["mapperout"] != "":
                 md += f"Mapperout: {i['mapperout']}\n"
 
-    return (md)
+    return md
 
 
 def UpgradeMD(upgradePacks, changes):
@@ -322,42 +312,42 @@ def UpgradeMD(upgradePacks, changes):
     for p in upgradePacks:
         md += f"\n#### {p}:\n"
 
-        newmd = BuildItem(upgradePacks[p], 'incidentfield')
+        newmd = BuildItem(upgradePacks[p], "incidentfield")
         if newmd != "":
             md += f"{INDENT} {newmd}"
 
-        newmd = BuildItem(upgradePacks[p], 'integration')
+        newmd = BuildItem(upgradePacks[p], "integration")
         if newmd != "":
             md += f"{INDENT} {newmd}"
 
-        newmd = BuildItem(upgradePacks[p], 'incidenttype')
+        newmd = BuildItem(upgradePacks[p], "incidenttype")
         if newmd != "":
             md += f"{INDENT} {newmd}"
 
-        newmd = BuildItem(upgradePacks[p], 'playbook')
+        newmd = BuildItem(upgradePacks[p], "playbook")
         if newmd != "":
             md += f"{INDENT} {newmd}"
 
-        newmd = BuildItem(upgradePacks[p], 'layoutscontainer')
+        newmd = BuildItem(upgradePacks[p], "layoutscontainer")
         if newmd != "":
             md += f"{INDENT} {newmd}"
 
-        newmd = BuildItem(upgradePacks[p], 'automation')
+        newmd = BuildItem(upgradePacks[p], "automation")
         if newmd != "":
             md += f"{INDENT} {newmd}"
 
         md += f"{INDENT}changes:\n"
-        chglist = ChangeList(CleanMarkdown(changes[p]['changes']))
+        chglist = ChangeList(CleanMarkdown(changes[p]["changes"]))
         if chglist is not None:
             for c in chglist:
                 md += f"{c}\n"
 
-        breaking = CleanMarkdown(changes[p]['breaking'])
+        breaking = CleanMarkdown(changes[p]["breaking"])
         if breaking.strip() != "":
             md += f"{INDENT}breaking:\n"
             md += f"{breaking}\n"
 
-    return (md)
+    return md
 
 
 def main():
@@ -374,13 +364,13 @@ def main():
         upgradeScripts = GetUpgradedScripts(changesPacks, scripts)
 
         impact = ImpactMD(upgradePacks, upgradeIntegs, upgradeTypes, customTypes, subplaybooks, upgradeScripts, fields)
-        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcontentimpacts": impact})})
+        demisto.executeCommand("setIncident", {"customFields": json.dumps({"contenttestingcontentimpacts": impact})})
         details = UpgradeMD(upgradePacks, changesPacks)
-        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcontentdetails": details})})
+        demisto.executeCommand("setIncident", {"customFields": json.dumps({"contenttestingcontentdetails": details})})
 
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"UpgradeCheck: Exception failed to execute. Error: {str(ex)}")
+        return_error(f"UpgradeCheck: Exception failed to execute. Error: {ex!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -3,6 +3,7 @@
 <h2>Overview</h2>
 <hr>
 <p>Use the Salesforce integration to search, query, and add new objects (tasks, accounts, cases, and so on) to Salesforce directly from Cortex XSOAR.</p>
+<p>Support Salesforce API Version 63.0.</p>
 <p>The <em><strong>fetch incident</strong></em> option enables you to monitor the creation of new Salesforce cases and manage them in Cortex XSOAR.</p>
 <h2>Use cases</h2>
 <hr>

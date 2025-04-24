@@ -1,6 +1,7 @@
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *
-import traceback
 
 
 def get_html_representation(dbotscore) -> str:
@@ -16,20 +17,16 @@ def get_html_representation(dbotscore) -> str:
 
 def main() -> None:
     try:
-        dbotscore = demisto.incidents()[0].get('CustomFields').get('chronicledbotscore', 0)
+        dbotscore = demisto.incidents()[0].get("CustomFields").get("chronicledbotscore", 0)
         html = get_html_representation(dbotscore)
 
-        demisto.results({
-            "Type": 1,
-            "ContentsFormat": formats["html"],
-            "Contents": html
-        })
+        demisto.results({"Type": 1, "ContentsFormat": formats["html"], "Contents": html})
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Could not load widget:\n{e}')
+        return_error(f"Could not load widget:\n{e}")
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()

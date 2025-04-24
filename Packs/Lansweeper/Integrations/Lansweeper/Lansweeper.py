@@ -1,39 +1,39 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import traceback
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
+
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 COMMON_GRAPHQL_ENDPOINT = "https://api.lansweeper.com/api/v2/graphql"
 
 MESSAGES = {
     "AUTHENTICATION_ERROR": "Authentication error. Please provide valid 'Application Identity Code'.",
     "INTERNAL_SERVER_ERROR": "The server encountered an internal error for Lansweeper and was unable to complete your "
-                             "request.",
+    "request.",
     "REQUIRED_ARGUMENT": "Invalid argument value. '{}' is a required argument.",
     "INVALID_IP": "Provided IP Address(es) are invalid.",
     "INVALID_MAC": "Provided Mac Address(es) are invalid.",
-    "INVALID_LIMIT": '{} is an invalid value for limit. Limit must be between 1 and 500.',
-    "NO_AUTHORIZED_SITES_FOUND": "No authorized sites found for configured 'Application Identity Code'"
+    "INVALID_LIMIT": "{} is an invalid value for limit. Limit must be between 1 and 500.",
+    "NO_AUTHORIZED_SITES_FOUND": "No authorized sites found for configured 'Application Identity Code'",
 }
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    """
+    """Client class to interact with the service API"""
 
-    def http_request(self, full_url, method="POST", json_data=None,
-                     params=None) -> Any:
+    def http_request(self, full_url, method="POST", json_data=None, params=None) -> Any:
         """
         Function to make http requests using inbuilt _http_request() method.
         Handles token expiration case and makes request using refreshed token.
@@ -44,18 +44,20 @@ class Client(BaseClient):
         :return: response from the request
         """
 
-        response = self._http_request(method=method, full_url=full_url, params=params, json_data=json_data,
-                                      error_handler=self.exception_handler)
+        response = self._http_request(
+            method=method, full_url=full_url, params=params, json_data=json_data, error_handler=self.exception_handler
+        )
 
-        errors = response.get('errors', [])
+        errors = response.get("errors", [])
         if errors:
-            extensions = errors[0].get('extensions', {})
-            if extensions.get('exception', {}):
-                err_msg = extensions.get('exception', {}).get('message', '')
+            extensions = errors[0].get("extensions", {})
+            if extensions.get("exception", {}):
+                err_msg = extensions.get("exception", {}).get("message", "")
             else:
-                error_list = extensions.get('error', {}).get('extensions', {}).get('response', {}).get('body', {}).get(
-                    'errors', [])
-                err_msg = "\n".join(error.get('message', '') for error in error_list)
+                error_list = (
+                    extensions.get("error", {}).get("extensions", {}).get("response", {}).get("body", {}).get("errors", [])
+                )
+                err_msg = "\n".join(error.get("message", "") for error in error_list)
             raise DemistoException(err_msg)
         return response
 
@@ -107,30 +109,26 @@ class Client(BaseClient):
         raise DemistoException(err_msg)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def prepare_hr_for_site(sites: List[Dict[str, Any]]) -> str:
     """
-       Prepare human readable for list sites command.
+    Prepare human readable for list sites command.
 
-       :type sites: ``List[Dict[str, Any]]``
-       :param sites:The site data.
+    :type sites: ``List[Dict[str, Any]]``
+    :param sites:The site data.
 
-       :rtype: ``str``
-       :return: Human readable.
+    :rtype: ``str``
+    :return: Human readable.
     """
     hr_list = []
     for site in sites:
-        hr_record = {
-            'Site ID': site.get('id', ''),
-            'Site Name': site.get('name', '')
-        }
+        hr_record = {"Site ID": site.get("id", ""), "Site Name": site.get("name", "")}
 
         hr_list.append(hr_record)
 
-    return tableToMarkdown('Authorized Site(s)', hr_list, ['Site ID', 'Site Name'],
-                           removeNull=True)
+    return tableToMarkdown("Authorized Site(s)", hr_list, ["Site ID", "Site Name"], removeNull=True)
 
 
 def prepare_query(site_id: str, condition: str) -> str:
@@ -146,8 +144,8 @@ def prepare_query(site_id: str, condition: str) -> str:
     :rtype: ``str``
     :return: GraphQL query
     """
-    query = """query getAssetResources($pagination: AssetsPaginationInputValidated) {
-                    site(id: "%s") {
+    query = f"""query getAssetResources($pagination: AssetsPaginationInputValidated) {{
+                    site(id: "{site_id}") {{
                         assetResources (
                             assetPagination: $pagination,
                             fields: [
@@ -179,25 +177,22 @@ def prepare_query(site_id: str, condition: str) -> str:
                                 "operatingSystem.productType",
                                 "url"
                             ],
-                            filters: {
+                            filters: {{
                                 conjunction: OR,
-                                conditions: [%s]
-                            }
-                        ) {
+                                conditions: [{condition}]
+                            }}
+                        ) {{
                             total
-                            pagination {
+                            pagination {{
                                 limit
                                 current
                                 next
                                 page
-                            }
+                            }}
                             items
-                        }
-                    }
-                }""" % (
-        site_id,
-        condition
-    )
+                        }}
+                    }}
+                }}"""
 
     return query
 
@@ -216,33 +211,49 @@ def prepare_hr_for_asset(assets: List[Dict[str, Any]]) -> str:
 
     for asset in assets:
         hr_record = {
-            'Site Name': asset.get('siteName'),
-            'Name': f"[{asset.get('assetBasicInfo', {}).get('name', '')}]({asset.get('url', '')})",
-            'Domain': asset.get('assetBasicInfo', {}).get('domain', ''),
-            'User Name': asset.get('assetBasicInfo', {}).get('userName', ''),
-            'User Domain': asset.get('assetBasicInfo', {}).get('userDomain', ''),
-            'FQDN': asset.get('assetBasicInfo', {}).get('fqdn', ''),
-            'Description': asset.get('assetBasicInfo', {}).get('description', ''),
-            'Type': asset.get('assetBasicInfo', {}).get('type', ''),
-            'IP Address': asset.get('assetBasicInfo', {}).get('ipAddress', ''),
-            'Mac Address': asset.get('assetBasicInfo', {}).get('mac', ''),
-            'Model': asset.get('assetCustom', {}).get('model', ''),
-            'Manufacturer': asset.get('assetCustom', {}).get('manufacturer', ''),
-            'Serial Number': asset.get('assetCustom', {}).get('serialNumber', ''),
-            'SKU': asset.get('assetCustom', {}).get('sku', ''),
-            'First Seen': asset.get('assetBasicInfo', {}).get('firstSeen', ''),
-            'Last Seen': asset.get('assetBasicInfo', {}).get('lastSeen', ''),
-
+            "Site Name": asset.get("siteName"),
+            "Name": f"[{asset.get('assetBasicInfo', {}).get('name', '')}]({asset.get('url', '')})",
+            "Domain": asset.get("assetBasicInfo", {}).get("domain", ""),
+            "User Name": asset.get("assetBasicInfo", {}).get("userName", ""),
+            "User Domain": asset.get("assetBasicInfo", {}).get("userDomain", ""),
+            "FQDN": asset.get("assetBasicInfo", {}).get("fqdn", ""),
+            "Description": asset.get("assetBasicInfo", {}).get("description", ""),
+            "Type": asset.get("assetBasicInfo", {}).get("type", ""),
+            "IP Address": asset.get("assetBasicInfo", {}).get("ipAddress", ""),
+            "Mac Address": asset.get("assetBasicInfo", {}).get("mac", ""),
+            "Model": asset.get("assetCustom", {}).get("model", ""),
+            "Manufacturer": asset.get("assetCustom", {}).get("manufacturer", ""),
+            "Serial Number": asset.get("assetCustom", {}).get("serialNumber", ""),
+            "SKU": asset.get("assetCustom", {}).get("sku", ""),
+            "First Seen": asset.get("assetBasicInfo", {}).get("firstSeen", ""),
+            "Last Seen": asset.get("assetBasicInfo", {}).get("lastSeen", ""),
         }
 
         hr_list.append(hr_record)
 
-    return tableToMarkdown('Asset(s)', hr_list,
-                           ['Name', 'Domain', 'User Name', 'User Domain', 'FQDN', 'Description', 'Type',
-                            'IP Address',
-                            'Mac Address', 'Model', 'Manufacturer', 'Serial Number', 'SKU', 'Site Name', 'First Seen',
-                            'Last Seen'],
-                           removeNull=True)
+    return tableToMarkdown(
+        "Asset(s)",
+        hr_list,
+        [
+            "Name",
+            "Domain",
+            "User Name",
+            "User Domain",
+            "FQDN",
+            "Description",
+            "Type",
+            "IP Address",
+            "Mac Address",
+            "Model",
+            "Manufacturer",
+            "Serial Number",
+            "SKU",
+            "Site Name",
+            "First Seen",
+            "Last Seen",
+        ],
+        removeNull=True,
+    )
 
 
 def prepare_site_list(client: Client, args: Dict) -> List:
@@ -258,17 +269,17 @@ def prepare_site_list(client: Client, args: Dict) -> List:
     :return: site list
     :rtype: ``List``
     """
-    site_id = args.get('site_id')
+    site_id = args.get("site_id")
     site_response = get_authorized_sites(client)
     if not (site_id or site_response):
         raise ValueError(MESSAGES["NO_AUTHORIZED_SITES_FOUND"])
     if site_id and site_response:
         for site in site_response:
-            if site['id'] == site_id:
+            if site["id"] == site_id:
                 return [site]
-        site_list = [{'id': site_id}]
+        site_list = [{"id": site_id}]
     elif site_id:
-        site_list = [{'id': site_id}]
+        site_list = [{"id": site_id}]
     else:
         site_list = site_response
     return site_list
@@ -285,19 +296,17 @@ def get_authorized_sites(client: Client) -> List:
     :rtype: ``List``
     """
     site_response = get_integration_context()
-    authorized_sites = site_response.get('authorized_sites')
+    authorized_sites = site_response.get("authorized_sites")
     if authorized_sites:
         return authorized_sites
 
     response = client.site_list()
     site_response = get_integration_context()
 
-    sites = {
-        'authorized_sites': response.get('data', {}).get('authorizedSites', {}).get('sites', [])
-    }
+    sites = {"authorized_sites": response.get("data", {}).get("authorizedSites", {}).get("sites", [])}
     site_response.update(sites)
     set_integration_context(site_response)
-    return site_response['authorized_sites']
+    return site_response["authorized_sites"]
 
 
 def creds_changed(context: dict, identity_code: str) -> bool:
@@ -321,7 +330,7 @@ def update_context(identity_code: str) -> None:
     set_integration_context({"identity_code": identity_code})
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def lansweeper_site_list_command(client: Client) -> CommandResults:
@@ -335,15 +344,16 @@ def lansweeper_site_list_command(client: Client) -> CommandResults:
     """
 
     response = client.site_list()
-    records = response.get('data', {}).get('authorizedSites', {}).get('sites', [])
+    records = response.get("data", {}).get("authorizedSites", {}).get("sites", [])
     context = remove_empty_elements(records)
     readable_hr = prepare_hr_for_site(records)
     return CommandResults(
         outputs_prefix="Lansweeper.Site",
-        outputs_key_field='id',
+        outputs_key_field="id",
         outputs=context,
         readable_output=readable_hr,
-        raw_response=response)
+        raw_response=response,
+    )
 
 
 def lansweeper_ip_hunt_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -361,11 +371,11 @@ def lansweeper_ip_hunt_command(client: Client, args: Dict[str, str]) -> CommandR
 
     total_records = []
     site_list = prepare_site_list(client, args)
-    limit = arg_to_number(args.get('limit', 50))
-    ip_list = argToList(args['ip'])
+    limit = arg_to_number(args.get("limit", 50))
+    ip_list = argToList(args["ip"])
 
     if not ip_list:
-        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format('ip'))
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("ip"))
 
     if limit <= 0 or limit > 500:  # type:ignore
         raise ValueError(MESSAGES["INVALID_LIMIT"].format(limit))
@@ -373,18 +383,18 @@ def lansweeper_ip_hunt_command(client: Client, args: Dict[str, str]) -> CommandR
     ip_condition = ""
     for ip in ip_list:
         if is_ip_valid(ip):
-            ip_condition += ("""{operator: EQUAL,path: "assetBasicInfo.ipAddress",value: "%s"},""" % ip)
+            ip_condition += f"""{{operator: EQUAL,path: "assetBasicInfo.ipAddress",value: "{ip}"}},"""
     if not ip_condition:
         raise ValueError(MESSAGES["INVALID_IP"])
 
     for site in site_list:
-        query = prepare_query(site.get('id'), ip_condition[:-1])
+        query = prepare_query(site.get("id"), ip_condition[:-1])
         response = client.asset_list(query)
         records = response.get("data", {}).get("site", {}).get("assetResources", {}).get("items", [])
         for record in records:
-            record['assetId'] = record.pop('_id')
-            record['siteId'] = site.get('id')
-            record['siteName'] = site.get('name')
+            record["assetId"] = record.pop("_id")
+            record["siteId"] = site.get("id")
+            record["siteName"] = site.get("name")
             total_records.append(remove_empty_elements(record))
 
     context = total_records[:limit]
@@ -394,8 +404,7 @@ def lansweeper_ip_hunt_command(client: Client, args: Dict[str, str]) -> CommandR
         outputs_key_field="assetId",
         outputs=context,
         readable_output=readable_hr,
-        raw_response=response
-
+        raw_response=response,
     )
 
 
@@ -413,11 +422,11 @@ def lansweeper_mac_hunt_command(client: Client, args: Dict[str, str]) -> Command
     """
     total_records = []
     site_list = prepare_site_list(client, args)
-    limit = arg_to_number(args.get('limit', 50))
-    mac_list = argToList(args['mac_address'])
+    limit = arg_to_number(args.get("limit", 50))
+    mac_list = argToList(args["mac_address"])
 
     if not mac_list:
-        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format('mac_address'))
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("mac_address"))
 
     if limit <= 0 or limit > 500:  # type:ignore
         raise ValueError(MESSAGES["INVALID_LIMIT"].format(limit))
@@ -425,18 +434,18 @@ def lansweeper_mac_hunt_command(client: Client, args: Dict[str, str]) -> Command
     mac_condition = ""
     for mac in mac_list:
         if is_mac_address(mac):
-            mac_condition += ("""{operator: EQUAL,path: "assetBasicInfo.mac",value: "%s"},""" % mac)
+            mac_condition += f"""{{operator: EQUAL,path: "assetBasicInfo.mac",value: "{mac}"}},"""
     if not mac_condition:
         raise ValueError(MESSAGES["INVALID_MAC"])
 
     for site in site_list:
-        query = prepare_query(site.get('id'), mac_condition[:-1])
+        query = prepare_query(site.get("id"), mac_condition[:-1])
         response = client.asset_list(query)
         records = response.get("data", {}).get("site", {}).get("assetResources", {}).get("items", [])
         for record in records:
-            record['assetId'] = record.pop('_id')
-            record['siteId'] = site.get('id')
-            record['siteName'] = site.get('name')
+            record["assetId"] = record.pop("_id")
+            record["siteId"] = site.get("id")
+            record["siteName"] = site.get("name")
             total_records.append(remove_empty_elements(record))
 
     context = total_records[:limit]
@@ -446,8 +455,7 @@ def lansweeper_mac_hunt_command(client: Client, args: Dict[str, str]) -> Command
         outputs_key_field="assetId",
         outputs=context,
         readable_output=readable_hr,
-        raw_response=response
-
+        raw_response=response,
     )
 
 
@@ -466,58 +474,48 @@ def test_module(client: Client) -> str:
         'ok' if test passed, anything else will fail the test.
     """
     client.site_list()
-    return 'ok'
+    return "ok"
 
 
 def main():
     """main function, parses params and runs command functions"""
 
     command = demisto.command()
-    demisto.debug(f'[Lansweeper] Command being called is {command}')
+    demisto.debug(f"[Lansweeper] Command being called is {command}")
 
     params = demisto.params()
 
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     identity_code = params.get("identity_code")
     if creds_changed(get_integration_context(), identity_code):
         update_context(identity_code)
     # Commands dictionary
-    commands: Dict[str, Callable] = {
-        'ls-ip-hunt': lansweeper_ip_hunt_command,
-        'ls-mac-hunt': lansweeper_mac_hunt_command
-
-    }
+    commands: Dict[str, Callable] = {"ls-ip-hunt": lansweeper_ip_hunt_command, "ls-mac-hunt": lansweeper_mac_hunt_command}
 
     try:
-        headers: Dict = {
-            "Authorization": f"Token {identity_code}"
-        }
+        headers: Dict = {"Authorization": f"Token {identity_code}"}
 
-        client = Client(base_url=COMMON_GRAPHQL_ENDPOINT,
-                        verify=verify_certificate,
-                        proxy=proxy,
-                        headers=headers
-                        )
+        client = Client(base_url=COMMON_GRAPHQL_ENDPOINT, verify=verify_certificate, proxy=proxy, headers=headers)
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif command == 'ls-site-list':
+        elif command == "ls-site-list":
             return_results(lansweeper_site_list_command(client))
 
         elif command in commands:
             args = {key: value.strip() for key, value in demisto.args().items()}
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f'Command {demisto.command()} is not implemented')
+            raise NotImplementedError(f"Command {demisto.command()} is not implemented")
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

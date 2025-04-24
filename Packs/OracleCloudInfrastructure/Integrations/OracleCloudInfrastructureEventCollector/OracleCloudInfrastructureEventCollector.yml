@@ -86,6 +86,7 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

@@ -5997,7 +5997,7 @@ script:
       - corr
       - system
       - decryption
-    - description: The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
+    - description: "The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. Do not use the query arguemnt in combination with the following arugments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest."
       name: query
     - description: |-
         The time the log was generated from the timestamp and prior to it.

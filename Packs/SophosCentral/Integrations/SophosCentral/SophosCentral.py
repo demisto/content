@@ -2,10 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
-'''IMPORTS'''
+"""IMPORTS"""
 import dateparser
 
-'''GLOBAL VARS'''
+"""GLOBAL VARS"""
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 COMMON_BASE_URL = "https://api.central.sophos.com"
@@ -70,9 +70,7 @@ class Client(BaseClient):
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as err:
-            raise DemistoException(
-                f"An HTTP error occurred while validating the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"An HTTP error occurred while validating the given tenant ID: {str(err)}")
         except requests.exceptions.SSLError as err:
             raise DemistoException(f"SSL Certificate Verification Failed: {str(err)}")
         except requests.exceptions.ProxyError as err:
@@ -82,26 +80,16 @@ class Client(BaseClient):
             )
             raise DemistoException(err_msg, err)
         except requests.exceptions.ConnectionError as err:
-            raise DemistoException(
-                f"Connection error occurred while validating the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"Connection error occurred while validating the given tenant ID: {str(err)}")
         except requests.exceptions.Timeout as err:
-            raise DemistoException(
-                f"Request timed out while validating the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"Request timed out while validating the given tenant ID: {str(err)}")
         except requests.exceptions.RequestException as err:
-            raise DemistoException(
-                f"An error occurred while making REST API call to validate the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"An error occurred while making REST API call to validate the given tenant ID: {str(err)}")
         except Exception as err:
-            raise DemistoException(
-                f"An error occurred while processing the API response: {str(err)}"
-            )
+            raise DemistoException(f"An error occurred while processing the API response: {str(err)}")
 
     @staticmethod
-    def _get_tenant_base_url(
-        bearer_token: str, entity_id: str, tenant_id: str, creds_type: str
-    ) -> str:
+    def _get_tenant_base_url(bearer_token: str, entity_id: str, tenant_id: str, creds_type: str) -> str:
         """
         Fetch the tenant base URL.
 
@@ -129,9 +117,7 @@ class Client(BaseClient):
                 return ""
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
-            raise DemistoException(
-                f"An HTTP error occurred while validating the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"An HTTP error occurred while validating the given tenant ID: {str(err)}")
         except requests.exceptions.SSLError as err:
             raise DemistoException(f"SSL Certificate Verification Failed: {str(err)}")
         except requests.exceptions.ProxyError as err:
@@ -141,21 +127,13 @@ class Client(BaseClient):
             )
             raise DemistoException(err_msg, err)
         except requests.exceptions.ConnectionError as err:
-            raise DemistoException(
-                f"Connection error occurred while validating the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"Connection error occurred while validating the given tenant ID: {str(err)}")
         except requests.exceptions.Timeout as err:
-            raise DemistoException(
-                f"Request timed out while validating the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"Request timed out while validating the given tenant ID: {str(err)}")
         except requests.exceptions.RequestException as err:
-            raise DemistoException(
-                f"An error occurred while making REST API call to validate the given tenant ID: {str(err)}"
-            )
+            raise DemistoException(f"An error occurred while making REST API call to validate the given tenant ID: {str(err)}")
         except Exception as err:
-            raise DemistoException(
-                f"An error occurred while processing the API response: {str(err)}"
-            )
+            raise DemistoException(f"An error occurred while processing the API response: {str(err)}")
         return ""
 
     @staticmethod
@@ -188,9 +166,7 @@ class Client(BaseClient):
         # compare tenant id with cache
         if Client._cache_exists():
             context = get_integration_context()
-            if tenant_id == context.get("tenant_id") or context.get(
-                "is_tenant_level", False
-            ):
+            if tenant_id == context.get("tenant_id") or context.get("is_tenant_level", False):
                 # this means tenant ID hasn't changed. So use the cache
                 headers.update({"X-Tenant-ID": context.get("tenant_id")})
                 return headers, context.get("base_url")
@@ -215,16 +191,12 @@ class Client(BaseClient):
                 )
             if tenant_id and creds_type != "tenant":
                 # validate the given tenant id for partner or organization entity and get corresponding base url
-                base_url = Client._get_tenant_base_url(
-                    bearer_token, entity_id, tenant_id, creds_type
-                )
+                base_url = Client._get_tenant_base_url(bearer_token, entity_id, tenant_id, creds_type)
                 if base_url:
                     base_url = f"{base_url}/"
                     headers.update({"X-Tenant-ID": tenant_id})
                     # update the cache
-                    Client._update_integration_context(
-                        {"base_url": base_url, "tenant_id": tenant_id}
-                    )
+                    Client._update_integration_context({"base_url": base_url, "tenant_id": tenant_id})
                     return headers, base_url
                 raise DemistoException(
                     f"Value provided in tenant ID is not from managed tenants of "
@@ -233,9 +205,7 @@ class Client(BaseClient):
             else:
                 # validate that the credentials are of tenant level and get the corresponding tenant id.
                 if creds_type != "tenant":
-                    raise DemistoException(
-                        f"Tenant ID field is mandatory to configure {creds_type} user's credential."
-                    )
+                    raise DemistoException(f"Tenant ID field is mandatory to configure {creds_type} user's credential.")
 
                 headers.update({"X-Tenant-ID": entity_id})
                 if not base_url:
@@ -271,16 +241,12 @@ class Client(BaseClient):
             "client_secret": client_secret,
             "scope": "token",
         }
-        response = requests.post(
-            headers=headers, data=body, url="https://id.sophos.com/api/v2/oauth2/token"
-        )
+        response = requests.post(headers=headers, data=body, url="https://id.sophos.com/api/v2/oauth2/token")
         if not response.ok:
             raise DemistoException(response.text)
         return response.json()
 
-    def convert_id_to_name(
-        self, object_mapping_name: str, object_id: str, url_suffix: str, field_key: str
-    ) -> str:
+    def convert_id_to_name(self, object_mapping_name: str, object_id: str, url_suffix: str, field_key: str) -> str:
         """
         Converts an object id to its name using API.
         Notes:
@@ -295,15 +261,11 @@ class Client(BaseClient):
             object name (str): the object name if successful, empty string otherwise.
         """
         try:
-            object_mapping = self.integration_context.setdefault(
-                object_mapping_name, {}
-            )
+            object_mapping = self.integration_context.setdefault(object_mapping_name, {})
             if object_mapping.get(object_id):
                 return object_mapping.get(object_id)
 
-            demisto.debug(
-                f"did not find object id in {object_mapping_name} cache, retreiving from API"
-            )
+            demisto.debug(f"did not find object id in {object_mapping_name} cache, retreiving from API")
             response = self._http_request(
                 method="GET",
                 url_suffix=url_suffix,
@@ -312,9 +274,7 @@ class Client(BaseClient):
             object_mapping[object_id] = response.get(field_key, "")
             return object_mapping[object_id]
         except Exception as exc:
-            demisto.debug(
-                f"failed to convert the {object_mapping_name} id, Error: {exc}\n{traceback.format_exc()}"
-            )
+            demisto.debug(f"failed to convert the {object_mapping_name} id, Error: {exc}\n{traceback.format_exc()}")
             return ""
 
     def get_person_name(self, person_id: str) -> str:
@@ -345,9 +305,7 @@ class Client(BaseClient):
         """
         params = remove_empty_elements({"pageSize": limit})
         url_suffix = "common/v1/alerts"
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, headers=self.headers, params=params
-        )
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers, params=params)
 
     def get_alert(self, alert_id: str) -> dict:
         """
@@ -360,9 +318,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"common/v1/alerts/{alert_id}"
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, headers=self.headers
-        )
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers)
 
     def action_alert(
         self,
@@ -448,7 +404,7 @@ class Client(BaseClient):
         view: Optional[str],
         limit: Optional[int],
         ip_addresses: Optional[List[str]],
-        hostname_contains: Optional[str]
+        hostname_contains: Optional[str],
     ) -> dict:
         """
         List all endpoints for a tenant.
@@ -481,13 +437,11 @@ class Client(BaseClient):
             "view": view,
             "pageSize": limit,
             "ipAddresses": ip_addresses,
-            "hostnameContains": hostname_contains
+            "hostnameContains": hostname_contains,
         }
         params = remove_empty_elements(params)
         url_suffix = "endpoint/v1/endpoints"
-        return self._http_request(
-            method="GET", headers=self.headers, params=params, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
     def scan_endpoint(self, endpoint_id: str) -> dict:
         """
@@ -500,9 +454,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/endpoints/{endpoint_id}/scans"
-        return self._http_request(
-            method="POST", headers=self.headers, json_data={}, url_suffix=url_suffix
-        )
+        return self._http_request(method="POST", headers=self.headers, json_data={}, url_suffix=url_suffix)
 
     def get_tamper(self, endpoint_id: str) -> dict:
         """
@@ -515,9 +467,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/endpoints/{endpoint_id}/tamper-protection"
-        return self._http_request(
-            method="GET", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def update_tamper(self, endpoint_id: str, enabled: bool) -> dict:
         """
@@ -556,9 +506,7 @@ class Client(BaseClient):
         """
         params = remove_empty_elements({"pageSize": page_size, "page": page})
         url_suffix = "endpoint/v1/settings/allowed-items"
-        return self._http_request(
-            method="GET", headers=self.headers, params=params, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
     def get_allowed_item(self, allowed_item_id: str) -> dict:
         """
@@ -571,9 +519,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/settings/allowed-items/{allowed_item_id}"
-        return self._http_request(
-            method="GET", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def add_allowed_item(
         self,
@@ -651,9 +597,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/settings/allowed-items/{allowed_item_id}"
-        return self._http_request(
-            method="DELETE", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
     def list_blocked_item(
         self,
@@ -672,9 +616,7 @@ class Client(BaseClient):
         """
         params = remove_empty_elements({"pageSize": page_size, "page": page})
         url_suffix = "endpoint/v1/settings/blocked-items"
-        return self._http_request(
-            method="GET", headers=self.headers, params=params, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
     def get_blocked_item(self, allowed_item_id: str) -> dict:
         """
@@ -687,9 +629,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/settings/blocked-items/{allowed_item_id}"
-        return self._http_request(
-            method="GET", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def add_blocked_item(
         self,
@@ -747,9 +687,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/settings/blocked-items/{allowed_item_id}"
-        return self._http_request(
-            method="DELETE", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
     def list_scan_exclusion(
         self,
@@ -768,13 +706,9 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        params = remove_empty_elements(
-            {"type": exclusion_type, "pageSize": page_size, "page": page}
-        )
+        params = remove_empty_elements({"type": exclusion_type, "pageSize": page_size, "page": page})
         url_suffix = "endpoint/v1/settings/exclusions/scanning"
-        return self._http_request(
-            method="GET", headers=self.headers, params=params, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
     def get_scan_exclusion(self, exclusion_id: str) -> dict:
         """
@@ -787,9 +721,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/settings/exclusions/scanning/{exclusion_id}"
-        return self._http_request(
-            method="GET", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def add_scan_exclusion(
         self,
@@ -845,9 +777,7 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        body = remove_empty_elements(
-            {"comment": comment, "scanMode": scan_mode, "value": value}
-        )
+        body = remove_empty_elements({"comment": comment, "scanMode": scan_mode, "value": value})
         url_suffix = f"endpoint/v1/settings/exclusions/scanning/{exclusion_id}"
         return self._http_request(
             method="PATCH",
@@ -867,9 +797,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/settings/exclusions/scanning/{exclusion_id}"
-        return self._http_request(
-            method="DELETE", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
     def list_exploit_mitigation(
         self,
@@ -899,9 +827,7 @@ class Client(BaseClient):
             }
         )
         url_suffix = "endpoint/v1/settings/exploit-mitigation/applications"
-        return self._http_request(
-            method="GET", headers=self.headers, params=params, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
     def get_exploit_mitigation(self, mitigation_id: str) -> dict:
         """
@@ -913,12 +839,8 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        url_suffix = (
-            f"endpoint/v1/settings/exploit-mitigation/applications/{mitigation_id}"
-        )
-        return self._http_request(
-            method="GET", headers=self.headers, url_suffix=url_suffix
-        )
+        url_suffix = f"endpoint/v1/settings/exploit-mitigation/applications/{mitigation_id}"
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def add_exploit_mitigation(self, path: str) -> dict:
         """
@@ -939,9 +861,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def update_exploit_mitigation(
-        self, mitigation_id: str, path: Optional[str]
-    ) -> dict:
+    def update_exploit_mitigation(self, mitigation_id: str, path: Optional[str]) -> dict:
         """
         Update an existing exploit mitigation.
 
@@ -953,9 +873,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         body = remove_empty_elements({"paths": [path]})
-        url_suffix = (
-            f"endpoint/v1/settings/exploit-mitigation/applications/{mitigation_id}"
-        )
+        url_suffix = f"endpoint/v1/settings/exploit-mitigation/applications/{mitigation_id}"
         return self._http_request(
             method="PATCH",
             headers=self.headers,
@@ -973,12 +891,8 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        url_suffix = (
-            f"endpoint/v1/settings/exploit-mitigation/applications/{mitigation_id}"
-        )
-        return self._http_request(
-            method="DELETE", headers=self.headers, url_suffix=url_suffix
-        )
+        url_suffix = f"endpoint/v1/settings/exploit-mitigation/applications/{mitigation_id}"
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
     def list_detected_exploit(
         self,
@@ -1003,9 +917,7 @@ class Client(BaseClient):
             "page": page,
             "thumbprintNotIn": thumbprint_not_in,
         }
-        return self._http_request(
-            method="GET", headers=self.headers, params=params, url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
     def get_detected_exploit(self, detected_exploit_id: str) -> dict:
         """
@@ -1017,13 +929,8 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        url_suffix = (
-            "endpoint/v1/settings/exploit-mitigation"
-            f"/detected-exploits/{detected_exploit_id}"
-        )
-        return self._http_request(
-            method="GET", headers=self.headers, url_suffix=url_suffix
-        )
+        url_suffix = f"endpoint/v1/settings/exploit-mitigation/detected-exploits/{detected_exploit_id}"
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def isolate_endpoint(self, endpoint_id: List[str], comment: Optional[str]) -> dict:
         """
@@ -1044,9 +951,7 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def deisolate_endpoint(
-        self, endpoint_id: List[str], comment: Optional[str]
-    ) -> dict:
+    def deisolate_endpoint(self, endpoint_id: List[str], comment: Optional[str]) -> dict:
         """
         Initiate de-isolation request on the given endpoint(s).
 
@@ -1065,44 +970,33 @@ class Client(BaseClient):
             json_data=body,
         )
 
-    def get_endpoints_group(
-        self,
-        group_id: str
-    ) -> dict:
+    def get_endpoints_group(self, group_id: str) -> dict:
         """
-            Get endpoints in a group
+        Get endpoints in a group
 
-            Args:
-                group_id (str): Endpoint group ID.
+        Args:
+            group_id (str): Endpoint group ID.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
 
         url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints"
 
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, headers=self.headers
-        )
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers)
 
-    def add_endpoints_group(
-        self,
-        group_id: str,
-        ids: List[str]
-    ) -> dict:
+    def add_endpoints_group(self, group_id: str, ids: List[str]) -> dict:
         """
-            Add endpoints to the group.
+        Add endpoints to the group.
 
-            Args:
-                group_id (str): Endpoint group ID.
-                ids(list(str)): Endpoints in the group.
+        Args:
+            group_id (str): Endpoint group ID.
+            ids(list(str)): Endpoints in the group.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
-        body = {
-            "ids": ids
-        }
+        body = {"ids": ids}
 
         body = remove_empty_elements(body)
         url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints"
@@ -1113,60 +1007,41 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def remove_endpoints(
-        self,
-        group_id: str,
-        ids: str
-    ) -> dict:
+    def remove_endpoints(self, group_id: str, ids: str) -> dict:
         """
-            Remove endpoints from endpoint group.
+        Remove endpoints from endpoint group.
 
-            Args:
-                ids(str): Endpoints in the group.
-                group_id (str): Endpoint group ID.
+        Args:
+            ids(str): Endpoints in the group.
+            group_id (str): Endpoint group ID.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
 
-        params = {
-            "ids": ids
-        }
+        params = {"ids": ids}
 
         params = remove_empty_elements(params)
 
         url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints"
 
-        return self._http_request(
-            method="DELETE",
-            params=params,
-            headers=self.headers,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", params=params, headers=self.headers, url_suffix=url_suffix)
 
-    def remove_endpoint(
-        self,
-        group_id: str,
-        endpoint_id: str
-    ) -> dict:
+    def remove_endpoint(self, group_id: str, endpoint_id: str) -> dict:
         """
-            Remove endpoint from endpoint group.
+        Remove endpoint from endpoint group.
 
-            Args:
-                endpoint_id(str): Endpoints in the group.
-                group_id (str): Endpoint group ID.
+        Args:
+            endpoint_id(str): Endpoints in the group.
+            group_id (str): Endpoint group ID.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
 
         url_suffix = f"/endpoint/v1/endpoint-groups/{group_id}/endpoints/{endpoint_id}"
 
-        return self._http_request(
-            method="DELETE",
-            headers=self.headers,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
     def get_endpoint_policies(self, policy_type: Optional[str], page_size: Optional[int], page: Optional[int]) -> dict:
         """
@@ -1181,12 +1056,7 @@ class Client(BaseClient):
         """
         url_suffix = "endpoint/v1/policies"
         params = remove_empty_elements({"pageSize": page_size, "page": page, "pageTotal": True, "policyType": policy_type})
-        return self._http_request(
-            method="GET",
-            headers=self.headers,
-            params=params,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
     def get_endpoint_policy(self, policy_id: str) -> dict:
         """
@@ -1198,11 +1068,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/policies/{policy_id}"
-        return self._http_request(
-            method="GET",
-            headers=self.headers,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def delete_endpoint_policy(self, policy_id: str) -> dict:
         """
@@ -1215,9 +1081,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"endpoint/v1/policies/{policy_id}"
-        return self._http_request(
-            method="DELETE", headers=self.headers, url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
     def clone_endpoint_policy(self, policy_id: str, name: Optional[str]) -> dict:
         """
@@ -1266,7 +1130,7 @@ class Client(BaseClient):
         source_type: Optional[str],
         user_id: Optional[str],
         page: Optional[int],
-        page_size: Optional[int]
+        page_size: Optional[int],
     ) -> dict:
         """
         List all usergroups.
@@ -1316,11 +1180,7 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        return self._http_request(
-            method="GET",
-            headers=self.headers,
-            url_suffix=f"common/v1/directory/user-groups/{group_id}"
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=f"common/v1/directory/user-groups/{group_id}")
 
     def create_usergroup(self, group_name: str, description: Optional[str], user_ids: List[str]) -> dict:
         """Create a usergroup
@@ -1367,13 +1227,14 @@ class Client(BaseClient):
         )
 
     def get_users_in_usergroup(
-            self, group_id: str,
-            search: Optional[str],
-            search_field: Optional[str],
-            domain: Optional[str],
-            source_type: Optional[str],
-            page: int,
-            page_size: int
+        self,
+        group_id: str,
+        search: Optional[str],
+        search_field: Optional[str],
+        domain: Optional[str],
+        source_type: Optional[str],
+        page: int,
+        page_size: int,
     ) -> dict:
         """
         Add multiple users to the specified group.
@@ -1396,17 +1257,13 @@ class Client(BaseClient):
             "sourceType": source_type,
             "page": page,
             "pageSize": page_size,
-            "pageTotal": True
+            "pageTotal": True,
         }
 
         url_suffix = f"common/v1/directory/user-groups/{group_id}/users"
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, headers=self.headers, params=remove_empty_elements(params)
-        )
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers, params=remove_empty_elements(params))
 
-    def add_users_to_usergroup(
-            self, group_id: str, ids: List[str]
-    ) -> dict:
+    def add_users_to_usergroup(self, group_id: str, ids: List[str]) -> dict:
         """
         Add multiple users to the specified group.
 
@@ -1417,15 +1274,9 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"common/v1/directory/user-groups/{group_id}/users"
-        return self._http_request(
-            method="POST", url_suffix=url_suffix, headers=self.headers, json_data={
-                "ids": ids
-            }
-        )
+        return self._http_request(method="POST", url_suffix=url_suffix, headers=self.headers, json_data={"ids": ids})
 
-    def delete_user_from_usergroup(
-            self, group_id: str, user_id: str
-    ) -> dict:
+    def delete_user_from_usergroup(self, group_id: str, user_id: str) -> dict:
         """
         Delete a user from the specified group.
 
@@ -1436,9 +1287,7 @@ class Client(BaseClient):
             response (Response): API response from Sophos.
         """
         url_suffix = f"common/v1/directory/user-groups/{group_id}/users/{user_id}"
-        return self._http_request(
-            method="DELETE", url_suffix=url_suffix, headers=self.headers
-        )
+        return self._http_request(method="DELETE", url_suffix=url_suffix, headers=self.headers)
 
     def list_users(
         self,
@@ -1448,7 +1297,7 @@ class Client(BaseClient):
         domain: Optional[str],
         source_type: Optional[str],
         page_size: Optional[int],
-        page: Optional[int]
+        page: Optional[int],
     ) -> dict:
         """
         List all users.
@@ -1476,19 +1325,13 @@ class Client(BaseClient):
                 "domain": domain,
                 "pageSize": page_size,
                 "page": page,
-                "pageTotal": True
+                "pageTotal": True,
             }
         )
         url_suffix = "common/v1/directory/users"
-        return self._http_request(
-            method="GET", headers=self.headers, params=params,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, params=params, url_suffix=url_suffix)
 
-    def get_user(
-        self,
-        user_id: str
-    ) -> dict:
+    def get_user(self, user_id: str) -> dict:
         """
         Get a single user based on id.
 
@@ -1500,10 +1343,7 @@ class Client(BaseClient):
         """
 
         url_suffix = f"common/v1/directory/users/{user_id}"
-        return self._http_request(
-            method="GET", headers=self.headers,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
     def add_user(
         self,
@@ -1512,7 +1352,7 @@ class Client(BaseClient):
         email: str,
         role: Optional[str],
         exchange_login: Optional[str],
-        group_ids: Optional[list]
+        group_ids: Optional[list],
     ) -> dict:
         """
         Add a new user.
@@ -1535,7 +1375,7 @@ class Client(BaseClient):
             "email": email,
             "role": role,
             "exchangeLogin": exchange_login,
-            "groupIds": group_ids
+            "groupIds": group_ids,
         }
 
         body = remove_empty_elements(body)
@@ -1555,7 +1395,7 @@ class Client(BaseClient):
         last_name: Optional[str],
         email: Optional[str],
         role: Optional[str],
-        exchange_login: Optional[str]
+        exchange_login: Optional[str],
     ) -> dict:
         """
         Update an existing user.
@@ -1603,11 +1443,7 @@ class Client(BaseClient):
         """
 
         url_suffix = f"common/v1/directory/users/{user_id}"
-        return self._http_request(
-            method="DELETE",
-            headers=self.headers,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
     def get_endpoint_group(self, limit: Optional[int], page: Optional[int]) -> dict:
         """
@@ -1618,35 +1454,22 @@ class Client(BaseClient):
         """
         params = remove_empty_elements({"pageSize": limit, "pageTotal": True, "page": page})
         url_suffix = "endpoint/v1/endpoint-groups"
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, headers=self.headers, params=params
-        )
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=self.headers, params=params)
 
-    def create_group(
-        self,
-        description: Optional[str],
-        type: str,
-        name: str,
-        endpointIds: Optional[List[str]]
-    ) -> dict:
+    def create_group(self, description: Optional[str], type: str, name: str, endpointIds: Optional[List[str]]) -> dict:
         """
-            List all endpoint group connected to a tenant.
+        List all endpoint group connected to a tenant.
 
-            Args:
-                endpointIds(list(str)): Endpoints in the group.:
-                description (str): Group description.
-                name (str): Group name.
-                type (str): Endpoint group types server/computer.
+        Args:
+            endpointIds(list(str)): Endpoints in the group.:
+            description (str): Group description.
+            name (str): Group name.
+            type (str): Endpoint group types server/computer.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
-        body = {
-            "description": description,
-            "type": type,
-            "name": name.strip(),
-            "endpointIds": endpointIds
-        }
+        body = {"description": description, "type": type, "name": name.strip(), "endpointIds": endpointIds}
 
         body = remove_empty_elements(body)
         url_suffix = "/endpoint/v1/endpoint-groups"
@@ -1657,79 +1480,52 @@ class Client(BaseClient):
             url_suffix=url_suffix,
         )
 
-    def update_group(
-        self,
-        groupId: str,
-        name: Optional[str],
-        description: Optional[str]
-    ) -> dict:
+    def update_group(self, groupId: str, name: Optional[str], description: Optional[str]) -> dict:
         """
-            List all endpoint group connected to a tenant.
+        List all endpoint group connected to a tenant.
 
-            Args:
-                groupId (str): Endpoint group ID.
-                name (str): New group name.
-                description (str) : New group description.
+        Args:
+            groupId (str): Endpoint group ID.
+            name (str): New group name.
+            description (str) : New group description.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
 
-        body = {
-            "description": description,
-            "name": name
-        }
+        body = {"description": description, "name": name}
 
         body = remove_empty_elements(body)
         url_suffix = f"/endpoint/v1/endpoint-groups/{groupId}"
-        return self._http_request(
-            method="PATCH",
-            headers=self.headers,
-            json_data=body,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="PATCH", headers=self.headers, json_data=body, url_suffix=url_suffix)
 
-    def fetch_group(
-        self,
-        groupId: str
-    ) -> dict:
+    def fetch_group(self, groupId: str) -> dict:
         """
-            List all endpoint group connected to a tenant.
+        List all endpoint group connected to a tenant.
 
-            Args:
-                groupId (str): Endpoint group ID.
+        Args:
+            groupId (str): Endpoint group ID.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
 
         url_suffix = f"/endpoint/v1/endpoint-groups/{groupId}"
-        return self._http_request(
-            method="GET",
-            headers=self.headers,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="GET", headers=self.headers, url_suffix=url_suffix)
 
-    def delete_group(
-        self,
-        groupId: str
-    ) -> dict:
+    def delete_group(self, groupId: str) -> dict:
         """
-            Delete endpoint group connected to a tenant.
+        Delete endpoint group connected to a tenant.
 
-            Args:
-                groupId (str): Endpoint group ID.
+        Args:
+            groupId (str): Endpoint group ID.
 
-            Returns:
-                response (Response): API response from Sophos.
+        Returns:
+            response (Response): API response from Sophos.
         """
 
         url_suffix = f"/endpoint/v1/endpoint-groups/{groupId}"
-        return self._http_request(
-            method="DELETE",
-            headers=self.headers,
-            url_suffix=url_suffix
-        )
+        return self._http_request(method="DELETE", headers=self.headers, url_suffix=url_suffix)
 
 
 def flip_chars(id_to_flip: str) -> str:
@@ -1743,15 +1539,10 @@ def flip_chars(id_to_flip: str) -> str:
     Returns:
         id (str): A UID with the every two digits flipped.
     """
-    return "-".join(
-        "".join(pair[::-1] for pair in re.split(r"(.{2})", uid_part))
-        for uid_part in id_to_flip.split("-")
-    )
+    return "-".join("".join(pair[::-1] for pair in re.split(r"(.{2})", uid_part)) for uid_part in id_to_flip.split("-"))
 
 
-def create_alert_output(
-    client: Client, item: dict, table_headers: List[str]
-) -> dict[str, Optional[Any]]:
+def create_alert_output(client: Client, item: dict, table_headers: List[str]) -> dict[str, Optional[Any]]:
     """
     Create the complete output dictionary for an alert.
 
@@ -1762,9 +1553,7 @@ def create_alert_output(
     Returns:
         object_data (dict(str)): The output dictionary.
     """
-    alert_data = {
-        field: item.get(field) for field in table_headers + ["groupKey", "product"]
-    }
+    alert_data = {field: item.get(field) for field in table_headers + ["groupKey", "product"]}
     managed_agent = item.get("managedAgent")
     if managed_agent:
         managed_agent_id = managed_agent.get("id", "")
@@ -1787,9 +1576,7 @@ def create_alert_output(
     return alert_data
 
 
-def sophos_central_alert_list_command(
-    client: Client, args: dict[str, str]
-) -> CommandResults:
+def sophos_central_alert_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     List all alerts.
 
@@ -1861,9 +1648,7 @@ def sophos_central_alert_get_command(client: Client, args: dict) -> CommandResul
             "type",
         ]
         object_data = create_alert_output(client, result, table_headers)
-        readable_output = tableToMarkdown(
-            name="Found Alert:", t=object_data, headers=table_headers, removeNull=True
-        )
+        readable_output = tableToMarkdown(name="Found Alert:", t=object_data, headers=table_headers, removeNull=True)
         return CommandResults(
             outputs_key_field="id",
             outputs_prefix="SophosCentral.Alert",
@@ -1872,9 +1657,7 @@ def sophos_central_alert_get_command(client: Client, args: dict) -> CommandResul
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to find the following alert: {alert_id}"
-        )
+        return CommandResults(readable_output=f"Unable to find the following alert: {alert_id}")
 
 
 def sophos_central_alert_action_command(client: Client, args: dict) -> CommandResults:
@@ -1914,9 +1697,7 @@ def sophos_central_alert_action_command(client: Client, args: dict) -> CommandRe
             outputs.append(object_data)
         except DemistoException:
             failed_alerts.append(alert_id)
-    readable_output = tableToMarkdown(
-        name="Alerts Acted Against:", t=outputs, headers=table_headers, removeNull=True
-    )
+    readable_output = tableToMarkdown(name="Alerts Acted Against:", t=outputs, headers=table_headers, removeNull=True)
     if failed_alerts:
         readable_output += f'\nAlerts not acted against: {",".join(failed_alerts)}'
     return CommandResults(
@@ -2013,7 +1794,7 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
         args.get("view"),
         min(int(args.get("limit", "")), 100),
         argToList(args.get("ip_addresses")),
-        args.get("hostname_contains")
+        args.get("hostname_contains"),
     )
     full_match_ip = argToBoolean(args.get("full_match_ip", "false"))
     full_match_hostname = argToBoolean(args.get("full_match_hostname", "false"))
@@ -2053,17 +1834,13 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
             assigned_products = item.get("assignedProducts")
             if assigned_products:
                 object_data["assignedProductCodes"] = [
-                    product.get("code")
-                    for product in assigned_products
-                    if product.get("code")
+                    product.get("code") for product in assigned_products if product.get("code")
                 ]
             associated_person = item.get("associatedPerson")
             if associated_person:
                 object_data["associatedPersonId"] = associated_person.get("id")
                 object_data["associatedPersonName"] = associated_person.get("name")
-                object_data["associatedPersonViaLogin"] = associated_person.get(
-                    "viaLogin"
-                )
+                object_data["associatedPersonViaLogin"] = associated_person.get("viaLogin")
             group = item.get("group")
             if group:
                 object_data["groupId"] = group.get("id")
@@ -2117,9 +1894,7 @@ def sophos_central_endpoint_scan_command(client: Client, args: dict) -> CommandR
                 outputs.append(object_data)
         except DemistoException:
             failed_endpoints.append(endpoint)
-    readable_output = tableToMarkdown(
-        name="Scanning Endpoints:", t=outputs, headers=table_headers, removeNull=True
-    )
+    readable_output = tableToMarkdown(name="Scanning Endpoints:", t=outputs, headers=table_headers, removeNull=True)
     if failed_endpoints:
         readable_output += f'\nEndpoints not scanned: {",".join(failed_endpoints)}'
     return CommandResults(
@@ -2131,9 +1906,7 @@ def sophos_central_endpoint_scan_command(client: Client, args: dict) -> CommandR
     )
 
 
-def sophos_central_endpoint_tamper_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_endpoint_tamper_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get tamper protection info on one or more endpoints.
 
@@ -2181,9 +1954,7 @@ def sophos_central_endpoint_tamper_get_command(
     )
 
 
-def sophos_central_endpoint_tamper_update_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_endpoint_tamper_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update tamper protection info on one or more endpoints.
 
@@ -2279,18 +2050,13 @@ def validate_item_fields(args: dict[str, str]):
     """
     item_types = ["path", "certificateSigner", "sha256"]
     for item_type in item_types:
-        if args.get("item_type") == item_type and not args.get(
-            camel_case_to_underscore(item_type)
-        ):
+        if args.get("item_type") == item_type and not args.get(camel_case_to_underscore(item_type)):
             raise DemistoException(
-                f"{item_type} item requires a value "
-                f"in the {camel_case_to_underscore(item_type)} argument."
+                f"{item_type} item requires a value in the {camel_case_to_underscore(item_type)} argument."
             )
 
 
-def sophos_central_allowed_item_list_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_allowed_item_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all allowed items for a tenant.
 
@@ -2301,9 +2067,7 @@ def sophos_central_allowed_item_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    results = client.list_allowed_item(
-        min(int(args.get("page_size", "")), 100), args.get("page")
-    )
+    results = client.list_allowed_item(min(int(args.get("page_size", "")), 100), args.get("page"))
     items = results.get("items")
     table_headers = [
         "id",
@@ -2337,9 +2101,7 @@ def sophos_central_allowed_item_list_command(
     )
 
 
-def sophos_central_allowed_item_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_allowed_item_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get a single allowed item for a tenant.
 
@@ -2386,9 +2148,7 @@ def sophos_central_allowed_item_get_command(
         return CommandResults(readable_output=f"Unable to find item: {allowed_item_id}")
 
 
-def sophos_central_allowed_item_add_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_allowed_item_add_command(client: Client, args: dict) -> CommandResults:
     """
     Add a new allowed item.
 
@@ -2440,9 +2200,7 @@ def sophos_central_allowed_item_add_command(
     )
 
 
-def sophos_central_allowed_item_update_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_allowed_item_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update an existing allowed item.
 
@@ -2486,14 +2244,10 @@ def sophos_central_allowed_item_update_command(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to update item: {allowed_item_id}"
-        )
+        return CommandResults(readable_output=f"Unable to update item: {allowed_item_id}")
 
 
-def sophos_central_allowed_item_delete_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_allowed_item_delete_command(client: Client, args: dict) -> CommandResults:
     """
     Delete an existing allowed item.
 
@@ -2505,14 +2259,10 @@ def sophos_central_allowed_item_delete_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     result = client.delete_allowed_item(args.get("allowed_item_id", ""))
-    readable_output = (
-        f'Success deleting allowed item: {args.get("allowed_item_id", "")}'
-    )
+    readable_output = f'Success deleting allowed item: {args.get("allowed_item_id", "")}'
     outputs = {"deletedItemId": args.get("allowed_item_id", "")}
     if not result or not result.get("deleted"):
-        readable_output = (
-            f'Failed deleting allowed item: {args.get("allowed_item_id", "")}'
-        )
+        readable_output = f'Failed deleting allowed item: {args.get("allowed_item_id", "")}'
         outputs = {}
     return CommandResults(
         raw_response=result,
@@ -2522,9 +2272,7 @@ def sophos_central_allowed_item_delete_command(
     )
 
 
-def sophos_central_blocked_item_list_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_blocked_item_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all blocked items for a tenant.
 
@@ -2573,9 +2321,7 @@ def sophos_central_blocked_item_list_command(
     )
 
 
-def sophos_central_blocked_item_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_blocked_item_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get a single blocked item for a tenant.
 
@@ -2622,9 +2368,7 @@ def sophos_central_blocked_item_get_command(
         return CommandResults(readable_output=f"Unable to find item: {blocked_item_id}")
 
 
-def sophos_central_blocked_item_add_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_blocked_item_add_command(client: Client, args: dict) -> CommandResults:
     """
     Add a new blocked item.
 
@@ -2676,9 +2420,7 @@ def sophos_central_blocked_item_add_command(
     )
 
 
-def sophos_central_blocked_item_delete_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_blocked_item_delete_command(client: Client, args: dict) -> CommandResults:
     """
     Delete an existing blocked item.
 
@@ -2690,14 +2432,10 @@ def sophos_central_blocked_item_delete_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     result = client.delete_blocked_item(args.get("blocked_item_id", ""))
-    readable_output = (
-        f'Success deleting blocked item: {args.get("blocked_item_id", "")}'
-    )
+    readable_output = f'Success deleting blocked item: {args.get("blocked_item_id", "")}'
     outputs = {"deletedItemId": args.get("blocked_item_id", "")}
     if not result or not result.get("deleted"):
-        readable_output = (
-            f'Failed deleting blocked item: {args.get("blocked_item_id", "")}'
-        )
+        readable_output = f'Failed deleting blocked item: {args.get("blocked_item_id", "")}'
         outputs = {}
     return CommandResults(
         raw_response=result,
@@ -2707,9 +2445,7 @@ def sophos_central_blocked_item_delete_command(
     )
 
 
-def sophos_central_scan_exclusion_list_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_scan_exclusion_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all scan exclusions.
 
@@ -2750,9 +2486,7 @@ def sophos_central_scan_exclusion_list_command(
     )
 
 
-def sophos_central_scan_exclusion_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_scan_exclusion_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get a single scan exclusion.
 
@@ -2789,9 +2523,7 @@ def sophos_central_scan_exclusion_get_command(
         return CommandResults(f"Unable to find exclusion: {exclusion_id}")
 
 
-def sophos_central_scan_exclusion_add_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_scan_exclusion_add_command(client: Client, args: dict) -> CommandResults:
     """
     Get a single scan exclusion.
 
@@ -2829,9 +2561,7 @@ def sophos_central_scan_exclusion_add_command(
     )
 
 
-def sophos_central_scan_exclusion_update_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_scan_exclusion_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update an existing. scan exclusion.
 
@@ -2873,9 +2603,7 @@ def sophos_central_scan_exclusion_update_command(
         return CommandResults(f"Unable to update exclusion: {exclusion_id}")
 
 
-def sophos_central_scan_exclusion_delete_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_scan_exclusion_delete_command(client: Client, args: dict) -> CommandResults:
     """
     Delete an existing scan exclusion.
 
@@ -2890,9 +2618,7 @@ def sophos_central_scan_exclusion_delete_command(
     readable_output = f'Success deleting scan exclusion: {args.get("exclusion_id", "")}'
     outputs = {"deletedExclusionId": args.get("exclusion_id", "")}
     if not result or not result.get("deleted"):
-        readable_output = (
-            f'Failed deleting scan exclusion: {args.get("exclusion_id", "")}'
-        )
+        readable_output = f'Failed deleting scan exclusion: {args.get("exclusion_id", "")}'
         outputs = {}
     return CommandResults(
         raw_response=result,
@@ -2902,9 +2628,7 @@ def sophos_central_scan_exclusion_delete_command(
     )
 
 
-def sophos_central_exploit_mitigation_list_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_exploit_mitigation_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all exploit mitigations.
 
@@ -2945,9 +2669,7 @@ def sophos_central_exploit_mitigation_list_command(
     )
 
 
-def sophos_central_exploit_mitigation_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_exploit_mitigation_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get a single scan exclusion.
 
@@ -2984,9 +2706,7 @@ def sophos_central_exploit_mitigation_get_command(
         return CommandResults(f"Unable to find mitigation: {mitigation_id}")
 
 
-def sophos_central_exploit_mitigation_add_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_exploit_mitigation_add_command(client: Client, args: dict) -> CommandResults:
     """
     Add a new scan exclusion.
 
@@ -3019,9 +2739,7 @@ def sophos_central_exploit_mitigation_add_command(
     )
 
 
-def sophos_central_exploit_mitigation_update_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_exploit_mitigation_update_command(client: Client, args: dict) -> CommandResults:
     """
     Add a new scan exclusion.
 
@@ -3058,9 +2776,7 @@ def sophos_central_exploit_mitigation_update_command(
         return CommandResults(f"Unable to update mitigation: {mitigation_id}")
 
 
-def sophos_central_exploit_mitigation_delete_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_exploit_mitigation_delete_command(client: Client, args: dict) -> CommandResults:
     """
     Delete an existing exploit mitigation.
 
@@ -3072,14 +2788,10 @@ def sophos_central_exploit_mitigation_delete_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     result = client.delete_exploit_mitigation(args.get("mitigation_id", ""))
-    readable_output = (
-        f'Success deleting exploit mitigation: {args.get("mitigation_id", "")}'
-    )
+    readable_output = f'Success deleting exploit mitigation: {args.get("mitigation_id", "")}'
     outputs = {"deletedMitigationId": args.get("mitigation_id", "")}
     if not result or not result.get("deleted"):
-        readable_output = (
-            f'Failed deleting exploit mitigation: {args.get("mitigation_id", "")}'
-        )
+        readable_output = f'Failed deleting exploit mitigation: {args.get("mitigation_id", "")}'
         outputs = {}
     return CommandResults(
         raw_response=result,
@@ -3122,9 +2834,7 @@ def create_detected_exploit_output(item: dict) -> dict:
     return outputs
 
 
-def sophos_central_detected_exploit_list_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_detected_exploit_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all detected exploits.
 
@@ -3170,9 +2880,7 @@ def sophos_central_detected_exploit_list_command(
     )
 
 
-def sophos_central_detected_exploit_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_detected_exploit_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get a single detected exploit.
 
@@ -3215,9 +2923,7 @@ def sophos_central_detected_exploit_get_command(
         return CommandResults(f"Unable to find exploit: {detected_exploit_id}")
 
 
-def sophos_central_isolate_endpoint_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_isolate_endpoint_command(client: Client, args: dict) -> CommandResults:
     """
     Initiate isolation request on the given endpoint(s).
 
@@ -3228,9 +2934,7 @@ def sophos_central_isolate_endpoint_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.isolate_endpoint(
-        argToList(args.get("endpoint_id")), args.get("comment", "")
-    )
+    result = client.isolate_endpoint(argToList(args.get("endpoint_id")), args.get("comment", ""))
     return CommandResults(
         outputs_key_field="id",
         outputs_prefix="SophosCentral.EndpointIsolation",
@@ -3240,9 +2944,7 @@ def sophos_central_isolate_endpoint_command(
     )
 
 
-def sophos_central_deisolate_endpoint_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_deisolate_endpoint_command(client: Client, args: dict) -> CommandResults:
     """
     Initiate de-isolation request on the given endpoint(s).
 
@@ -3253,9 +2955,7 @@ def sophos_central_deisolate_endpoint_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    result = client.deisolate_endpoint(
-        argToList(args.get("endpoint_id")), args.get("comment", "")
-    )
+    result = client.deisolate_endpoint(argToList(args.get("endpoint_id")), args.get("comment", ""))
     return CommandResults(
         outputs_key_field="id",
         outputs_prefix="SophosCentral.EndpointIsolation",
@@ -3297,7 +2997,7 @@ def fetch_incidents(
     else:
         demisto.debug(f"First fetch time: {first_fetch_time}")
         first_fetch_time_date = dateparser.parse(first_fetch_time)
-        assert first_fetch_time_date is not None, f'could not parse {first_fetch_time}'
+        assert first_fetch_time_date is not None, f"could not parse {first_fetch_time}"
         first_fetch_date = first_fetch_time_date.replace(tzinfo=None)
         last_fetch = first_fetch_date
     incidents = []
@@ -3342,9 +3042,7 @@ def fetch_incidents(
     return {"last_fetch": next_run_timestamp}, incidents
 
 
-def sophos_central_group_list(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_group_list(client: Client, args: dict) -> CommandResults:
     """
     List all endpoint groups in the directory.
 
@@ -3359,46 +3057,32 @@ def sophos_central_group_list(
 
     if page_size is not None:
         if page_size < 0:
-            raise ValueError(
-                "page_size must be a positive number."
-            )
+            raise ValueError("page_size must be a positive number.")
 
         if page_size > 1000:
-            raise ValueError(
-                "page_size must be equal or less than 1000."
-            )
+            raise ValueError("page_size must be equal or less than 1000.")
 
     if number_of_page is not None and number_of_page < 0:
-        raise ValueError(
-            "page must be a positive number."
-        )
+        raise ValueError("page must be a positive number.")
 
     try:
         results = client.get_endpoint_group(page_size, number_of_page)
         items = results.get("items", [])
         pages = results.get("pages", {})
-        records = pages.get("items", 0),
-        current = pages.get("current", 0),
+        records = (pages.get("items", 0),)
+        current = (pages.get("current", 0),)
         total = pages.get("total", 0)
 
         if number_of_page > total:
-            return CommandResults(
-                readable_output="Page Not Found."
-            )
+            return CommandResults(readable_output="Page Not Found.")
 
-        table_headers = [
-            "id",
-            "name",
-            "type"
-        ]
+        table_headers = ["id", "name", "type"]
 
         outputs = []
 
         if items:
             for item in items:
-                group_data = {
-                    field: item.get(field) for field in table_headers
-                }
+                group_data = {field: item.get(field) for field in table_headers}
                 group_data["count"] = item.get("endpoints", {}).get("itemsCount", 0)
                 outputs.append(group_data)
 
@@ -3420,14 +3104,10 @@ def sophos_central_group_list(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output="Unable to fetch the group list."
-        )
+        return CommandResults(readable_output="Unable to fetch the group list.")
 
 
-def sophos_central_group_create(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_group_create(client: Client, args: dict) -> CommandResults:
     """
     Create a new endpoint group.
 
@@ -3439,10 +3119,9 @@ def sophos_central_group_create(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     try:
-        results = client.create_group(args.get("description"),
-                                      args.get("type", ""),
-                                      args.get("name", ""),
-                                      argToList(args.get("endpointIds", [])))
+        results = client.create_group(
+            args.get("description"), args.get("type", ""), args.get("name", ""), argToList(args.get("endpointIds", []))
+        )
 
         table_headers = ["id", "name", "type"]
 
@@ -3463,29 +3142,23 @@ def sophos_central_group_create(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output="Unable to create the group."
-        )
+        return CommandResults(readable_output="Unable to create the group.")
 
 
-def sophos_central_group_update(
-    client: Client, args: dict
-):
+def sophos_central_group_update(client: Client, args: dict):
     """
-        Update an endpoint group.
+    Update an endpoint group.
 
-        Args:
-            client (Client): Sophos Central API client.
-            args (dict): All command arguments
+    Args:
+        client (Client): Sophos Central API client.
+        args (dict): All command arguments
 
-        Returns:
-            CommandResults: outputs, readable outputs and raw response for XSOAR.
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     group_id = args.get("groupId", "")
     try:
-        results = client.update_group(group_id,
-                                      args.get("name", "").strip(),
-                                      args.get("description"))
+        results = client.update_group(group_id, args.get("name", "").strip(), args.get("description"))
 
         table_headers = ["id", "name", "description"]
 
@@ -3506,14 +3179,10 @@ def sophos_central_group_update(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to update the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to update the following group: {group_id}.")
 
 
-def sophos_central_group_get(
-    client: Client, args: dict
-):
+def sophos_central_group_get(client: Client, args: dict):
     """
     Fetch an endpoint group.
 
@@ -3547,14 +3216,10 @@ def sophos_central_group_get(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to find the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to find the following group: {group_id}.")
 
 
-def sophos_central_group_delete(
-    client: Client, args: dict
-):
+def sophos_central_group_delete(client: Client, args: dict):
     """
     Delete an endpoint group.
 
@@ -3568,7 +3233,6 @@ def sophos_central_group_delete(
     results = client.delete_group(args.get("groupId", ""))
 
     if results.get("deleted"):
-
         results["id"] = args.get("groupId")
 
         return CommandResults(
@@ -3581,9 +3245,7 @@ def sophos_central_group_delete(
         raise DemistoException("EndpointGroup Deletion Failed, Please Enter valid groupId.")
 
 
-def create_policy_output(
-        item: dict
-) -> dict[str, Optional[Any]]:
+def create_policy_output(item: dict) -> dict[str, Optional[Any]]:
     """
     Create the complete output dictionary for an endpoint policy.
 
@@ -3596,13 +3258,13 @@ def create_policy_output(
     """
 
     policy_data = {
-        'id': item.get("id"),
-        'feature': item.get("type"),
-        'settings': item.get("settings", {}),
-        'orderPriority': item.get("priority"),
-        'name': item.get("name"),
-        'enforced': item.get("enabled"),
-        'lastModified': item.get("updatedAt"),
+        "id": item.get("id"),
+        "feature": item.get("type"),
+        "settings": item.get("settings", {}),
+        "orderPriority": item.get("priority"),
+        "name": item.get("name"),
+        "enforced": item.get("enabled"),
+        "lastModified": item.get("updatedAt"),
     }
 
     if item.get("appliesTo", {}).get("users") and item.get("appliesTo", {}).get("userGroups"):
@@ -3616,9 +3278,7 @@ def create_policy_output(
     return policy_data
 
 
-def sophos_central_group_membership_get(
-    client: Client, args: dict
-):
+def sophos_central_group_membership_get(client: Client, args: dict):
     """
     Get endpoints in a group.
 
@@ -3638,17 +3298,11 @@ def sophos_central_group_membership_get(
 
         outputs = []
 
-        table_headers = [
-            "id",
-            "type",
-            "hostname"
-        ]
+        table_headers = ["id", "type", "hostname"]
 
         if items:
             for item in items:
-                group_data = {
-                    field: item.get(field) for field in table_headers
-                }
+                group_data = {field: item.get(field) for field in table_headers}
                 outputs.append(group_data)
 
         readable_output = tableToMarkdown(
@@ -3667,14 +3321,10 @@ def sophos_central_group_membership_get(
         )
 
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to find the following endpoint of group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to find the following endpoint of group: {group_id}.")
 
 
-def sophos_central_group_endpoints_add(
-    client: Client, args: dict
-):
+def sophos_central_group_endpoints_add(client: Client, args: dict):
     """
     Add endpoints to group.
 
@@ -3694,16 +3344,11 @@ def sophos_central_group_endpoints_add(
 
         outputs = []
 
-        table_headers = [
-            "id",
-            "hostname"
-        ]
+        table_headers = ["id", "hostname"]
 
         if items:
             for item in items:
-                group_data = {
-                    field: item.get(field) for field in table_headers
-                }
+                group_data = {field: item.get(field) for field in table_headers}
                 outputs.append(group_data)
 
         endpoints = {"endpoints": outputs, "id": group_id}
@@ -3724,15 +3369,10 @@ def sophos_central_group_endpoints_add(
         )
 
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to add the endpoint to the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to add the endpoint to the following group: {group_id}.")
 
 
-def sophos_central_group_endpoints_remove(
-    client: Client,
-    args: dict
-):
+def sophos_central_group_endpoints_remove(client: Client, args: dict):
     """
     Remove endpoints to group.
 
@@ -3754,16 +3394,11 @@ def sophos_central_group_endpoints_remove(
 
         outputs = []
 
-        table_headers = [
-            "id",
-            "hostname"
-        ]
+        table_headers = ["id", "hostname"]
 
         if items:
             for item in items:
-                group_data = {
-                    field: item.get(field) for field in table_headers
-                }
+                group_data = {field: item.get(field) for field in table_headers}
                 outputs.append(group_data)
         readable_output = tableToMarkdown(
             name=f"{len(outputs)} EndPoint(s) Removed Successfully.",
@@ -3780,15 +3415,10 @@ def sophos_central_group_endpoints_remove(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to remove endpoint(s) from the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to remove endpoint(s) from the following group: {group_id}.")
 
 
-def sophos_central_group_endpoint_remove(
-    client: Client,
-    args: dict
-):
+def sophos_central_group_endpoint_remove(client: Client, args: dict):
     """
 
     Remove single endpoint from group.
@@ -3819,18 +3449,12 @@ def sophos_central_group_endpoint_remove(
                 readable_output=readable_output,
             )
         else:
-            return CommandResults(
-                readable_output="Endpoint Deletion failed, Please Enter valid endpointId."
-            )
+            return CommandResults(readable_output="Endpoint Deletion failed, Please Enter valid endpointId.")
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to remove endpoint from the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to remove endpoint from the following group: {group_id}.")
 
 
-def sophos_central_endpoint_policy_search_command(
-        client: Client, args: dict
-) -> CommandResults:
+def sophos_central_endpoint_policy_search_command(client: Client, args: dict) -> CommandResults:
     """
     Get all configured policies.
 
@@ -3846,44 +3470,25 @@ def sophos_central_endpoint_policy_search_command(
 
     if page_size is not None:
         if page_size < 0:
-            raise ValueError(
-                "page_size must be a positive number"
-            )
+            raise ValueError("page_size must be a positive number")
 
         if page_size > 200:
-            raise ValueError(
-                "page_size must be equal or less than 200"
-            )
+            raise ValueError("page_size must be equal or less than 200")
 
     if number_of_page is not None and number_of_page < 0:
-        raise ValueError(
-            "page must be a positive number"
-        )
+        raise ValueError("page must be a positive number")
 
-    result = client.get_endpoint_policies(
-        args.get("policy_type", ""),
-        page_size,
-        number_of_page)
+    result = client.get_endpoint_policies(args.get("policy_type", ""), page_size, number_of_page)
 
     items = result.get("items", [])
     pages = result.get("pages", {})
-    table_headers = [
-        "id",
-        "feature",
-        "settings",
-        "orderPriority",
-        "name",
-        "enforced",
-        "typeSingle",
-        "typeGroup",
-        "lastModified"
-    ]
+    table_headers = ["id", "feature", "settings", "orderPriority", "name", "enforced", "typeSingle", "typeGroup", "lastModified"]
     outputs = []
     if items:
         for item in items:
             outputs.append(create_policy_output(item))
 
-    total_pages = pages.get('total', 1)
+    total_pages = pages.get("total", 1)
     if number_of_page > total_pages:
         return CommandResults(
             readable_output="Page Not Found.",
@@ -3907,9 +3512,7 @@ def sophos_central_endpoint_policy_search_command(
     )
 
 
-def sophos_central_endpoint_policy_get_command(
-        client: Client, args: dict
-) -> CommandResults:
+def sophos_central_endpoint_policy_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get details of Policy by ID.
 
@@ -3921,17 +3524,7 @@ def sophos_central_endpoint_policy_get_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     result = client.get_endpoint_policy(args.get("policy_id", ""))
-    table_headers = [
-        "id",
-        "feature",
-        "settings",
-        "orderPriority",
-        "name",
-        "enforced",
-        "typeSingle",
-        "typeGroup",
-        "lastModified"
-    ]
+    table_headers = ["id", "feature", "settings", "orderPriority", "name", "enforced", "typeSingle", "typeGroup", "lastModified"]
     outputs = create_policy_output(result)
     readable_output = tableToMarkdown(
         name=f'{args.get("policy_id", "")} Policy Details:',
@@ -3948,9 +3541,7 @@ def sophos_central_endpoint_policy_get_command(
     )
 
 
-def sophos_central_endpoint_policy_search_delete_command(
-        client: Client, args: dict
-) -> CommandResults:
+def sophos_central_endpoint_policy_search_delete_command(client: Client, args: dict) -> CommandResults:
     """
     Delete an existing policy.
 
@@ -3965,9 +3556,7 @@ def sophos_central_endpoint_policy_search_delete_command(
     readable_output = f'Success deleting endpoint policy: {args.get("policy_id", "")}'
     outputs = {"deletedPolicyId": args.get("policy_id", "")}
     if not (result and result.get("deleted")):
-        readable_output = (
-            f'Failed deleting endpoint policy: {args.get("policy_id", "")}.'
-        )
+        readable_output = f'Failed deleting endpoint policy: {args.get("policy_id", "")}.'
         outputs = {}
     return CommandResults(
         raw_response=result,
@@ -3977,9 +3566,7 @@ def sophos_central_endpoint_policy_search_delete_command(
     )
 
 
-def sophos_central_endpoint_policy_clone_command(
-        client: Client, args: dict
-) -> CommandResults:
+def sophos_central_endpoint_policy_clone_command(client: Client, args: dict) -> CommandResults:
     """
     Clone an existing policy.
 
@@ -3994,9 +3581,7 @@ def sophos_central_endpoint_policy_clone_command(
     readable_output = f'Success cloning endpoint policy: {result.get("id", "")}.'
     outputs = {"clonedPolicyId": result.get("id", "")}
     if not (result and result.get("id")):
-        readable_output = (
-            f'Failed cloning endpoint policy: {args.get("policy_id", "")}.'
-        )
+        readable_output = f'Failed cloning endpoint policy: {args.get("policy_id", "")}.'
         outputs = {}
     return CommandResults(
         raw_response=result,
@@ -4006,9 +3591,7 @@ def sophos_central_endpoint_policy_clone_command(
     )
 
 
-def sophos_central_endpoint_policy_reorder_command(
-        client: Client, args: dict
-) -> CommandResults:
+def sophos_central_endpoint_policy_reorder_command(client: Client, args: dict) -> CommandResults:
     """
     Update Priority in existing policy.
 
@@ -4023,9 +3606,7 @@ def sophos_central_endpoint_policy_reorder_command(
     readable_output = f'Success updating endpoint policy: {result.get("id", "")}.'
     outputs = {"updatedPolicyId": result.get("id", "")}
     if not result or not result.get("id"):
-        readable_output = (
-            f'Failed updating endpoint policy: {args.get("policy_id", "")}.'
-        )
+        readable_output = f'Failed updating endpoint policy: {args.get("policy_id", "")}.'
         outputs = {}
     return CommandResults(
         raw_response=result,
@@ -4035,9 +3616,7 @@ def sophos_central_endpoint_policy_reorder_command(
     )
 
 
-def create_usergroup_output(
-    item: dict, table_headers: List[str]
-) -> dict:
+def create_usergroup_output(item: dict, table_headers: List[str]) -> dict:
     """
     Create the complete output dictionary for an usergroup.
 
@@ -4056,9 +3635,7 @@ def create_usergroup_output(
     return usergroup_data
 
 
-def sophos_central_usergroups_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_usergroups_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get a specific usergroups by ID.
 
@@ -4071,11 +3648,13 @@ def sophos_central_usergroups_get_command(
     """
     try:
         result = client.get_usergroup(args.get("groupId", ""))
-        result.update({
-            'usersItemsCount': result.get('users', {}).get('itemsCount'),
-            'usersTotal': result.get('users', {}).get('total'),
-            'users': result.get('users', {}).get('items', []),
-        })
+        result.update(
+            {
+                "usersItemsCount": result.get("users", {}).get("itemsCount"),
+                "usersTotal": result.get("users", {}).get("total"),
+                "users": result.get("users", {}).get("items", []),
+            }
+        )
         table_headers = ["id", "name", "description", "sourceType"]
 
         object_data = create_usergroup_output(item=result, table_headers=table_headers)
@@ -4097,9 +3676,7 @@ def sophos_central_usergroups_get_command(
         return CommandResults(readable_output="Unable to fetch user group.")
 
 
-def sophos_central_usergroups_create_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_usergroups_create_command(client: Client, args: dict) -> CommandResults:
     """
     Create a usergroup.
 
@@ -4111,14 +3688,14 @@ def sophos_central_usergroups_create_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     try:
-        result = client.create_usergroup(
-            args.get("groupName", ""), args.get("description"), argToList(args.get("userIds"))
+        result = client.create_usergroup(args.get("groupName", ""), args.get("description"), argToList(args.get("userIds")))
+        result.update(
+            {
+                "usersItemsCount": result.get("users", {}).get("itemsCount"),
+                "usersTotal": result.get("users", {}).get("total"),
+                "users": result.get("users", {}).get("items", []),
+            }
         )
-        result.update({
-            'usersItemsCount': result.get('users', {}).get('itemsCount'),
-            'usersTotal': result.get('users', {}).get('total'),
-            'users': result.get('users', {}).get('items', []),
-        })
         return CommandResults(
             outputs_key_field="id",
             outputs=result,
@@ -4130,9 +3707,7 @@ def sophos_central_usergroups_create_command(
         return CommandResults(readable_output="Unable to create user group.")
 
 
-def sophos_central_usergroups_list_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_usergroups_list_command(client: Client, args: dict) -> CommandResults:
     """
     Returns a list of all user groups that match the search criteria (optional).
 
@@ -4148,7 +3723,8 @@ def sophos_central_usergroups_list_command(
     for field in search_fields:
         if field not in allowed_search_fields:
             raise DemistoException(
-                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + "."
+            )
     try:
         page = arg_to_number(args.get("page", "1"))
         page_size = arg_to_number(args.get("pageSize", "50"))
@@ -4170,19 +3746,21 @@ def sophos_central_usergroups_list_command(
             page_size,
         )
 
-        current_page = results.get('pages', {}).get('current', 1)
-        total_pages = results.get('pages', {}).get('total', 1)
+        current_page = results.get("pages", {}).get("current", 1)
+        total_pages = results.get("pages", {}).get("total", 1)
 
         if current_page > total_pages:
             return CommandResults(readable_output="No page found.")
 
         items = results.get("items", [])
         for item in items:
-            item.update({
-                'usersItemsCount': item.get('users', {}).get('itemsCount'),
-                'usersTotal': item.get('users', {}).get('total'),
-                'users': item.get('users', {}).get('items', []),
-            })
+            item.update(
+                {
+                    "usersItemsCount": item.get("users", {}).get("itemsCount"),
+                    "usersTotal": item.get("users", {}).get("total"),
+                    "users": item.get("users", {}).get("items", []),
+                }
+            )
         table_headers = ["id", "name", "description", "sourceType"]
 
         outputs = []
@@ -4211,9 +3789,7 @@ def sophos_central_usergroups_list_command(
         return CommandResults(readable_output="Unable to list user groups.")
 
 
-def sophos_central_usergroups_update_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_usergroups_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update a usergroup.
 
@@ -4226,11 +3802,13 @@ def sophos_central_usergroups_update_command(
     """
     try:
         result = client.update_usergroup(args.get("groupId", ""), args.get("groupName", ""), args.get("description"))
-        result.update({
-            'usersItemsCount': result.get('users', {}).get('itemsCount'),
-            'usersTotal': result.get('users', {}).get('total'),
-            'users': result.get('users', {}).get('items', []),
-        })
+        result.update(
+            {
+                "usersItemsCount": result.get("users", {}).get("itemsCount"),
+                "usersTotal": result.get("users", {}).get("total"),
+                "users": result.get("users", {}).get("items", []),
+            }
+        )
         return CommandResults(
             outputs_key_field="id",
             outputs=result,
@@ -4242,9 +3820,7 @@ def sophos_central_usergroups_update_command(
         return CommandResults(readable_output=f"Unable to update usergroup with ID: {args.get('groupId')}.")
 
 
-def sophos_central_usergroups_delete_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_usergroups_delete_command(client: Client, args: dict) -> CommandResults:
     """
     Delete a usergroup.
 
@@ -4300,7 +3876,8 @@ def sophos_central_usergroups_membership_get(client: Client, args: dict) -> Comm
     for field in search_fields:
         if field not in allowed_search_fields:
             raise DemistoException(
-                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + "."
+            )
 
     try:
         result = client.get_users_in_usergroup(group_id, search, search_field, domain, source_type, page, page_size)
@@ -4311,17 +3888,11 @@ def sophos_central_usergroups_membership_get(client: Client, args: dict) -> Comm
         if current_page > total_pages:
             return CommandResults(readable_output="No page found.")
 
-        table_headers = [
-            "id",
-            "name",
-            "email"
-        ]
+        table_headers = ["id", "name", "email"]
         users = []
         output = {}
         for item in items:
-            current_object_data = {
-                field: item.get(field) for field in table_headers
-            }
+            current_object_data = {field: item.get(field) for field in table_headers}
             users.append(current_object_data)
         output["id"] = group_id
         output["users"] = items
@@ -4331,7 +3902,10 @@ def sophos_central_usergroups_membership_get(client: Client, args: dict) -> Comm
                 f"Total Records: {result.get('pages', {}).get('items', '')}\n"
                 f"Page: {current_page}/{total_pages}\n"
                 f"Listed {len(users)} User(s) in Usergroup:"
-            ), t=users, headers=table_headers, removeNull=True
+            ),
+            t=users,
+            headers=table_headers,
+            removeNull=True,
         )
         return CommandResults(
             outputs_key_field="id",
@@ -4341,9 +3915,7 @@ def sophos_central_usergroups_membership_get(client: Client, args: dict) -> Comm
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to get users for the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to get users for the following group: {group_id}.")
 
 
 def sophos_central_usergroups_users_add(client: Client, args: dict) -> CommandResults:
@@ -4369,9 +3941,7 @@ def sophos_central_usergroups_users_add(client: Client, args: dict) -> CommandRe
             readable_output="User(s) added to the specified group.",
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to add user to the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to add user to the following group: {group_id}.")
 
 
 def sophos_central_usergroups_user_delete(client: Client, args: dict) -> CommandResults:
@@ -4399,14 +3969,10 @@ def sophos_central_usergroups_user_delete(client: Client, args: dict) -> Command
             readable_output="User removed from group.",
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to remove user({user_id}) from the following group: {group_id}."
-        )
+        return CommandResults(readable_output=f"Unable to remove user({user_id}) from the following group: {group_id}.")
 
 
-def sophos_central_users_list_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_users_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all users for a tenant who meets command arguments.
 
@@ -4423,7 +3989,8 @@ def sophos_central_users_list_command(
     for field in search_fields:
         if field not in allowed_search_fields:
             raise DemistoException(
-                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + "."
+            )
     try:
         page = arg_to_number(args.get("page", "1"))
         page_size = arg_to_number(args.get("pageSize", "50"))
@@ -4441,24 +4008,23 @@ def sophos_central_users_list_command(
             args.get("domain"),
             args.get("sourceType"),
             page_size,
-            page
+            page,
         )
 
-        current_page = results.get('pages', {}).get('current', 1)
-        total_pages = results.get('pages', {}).get('total', 1)
+        current_page = results.get("pages", {}).get("current", 1)
+        total_pages = results.get("pages", {}).get("total", 1)
 
         if current_page > total_pages:
             return CommandResults(readable_output="No page found.")
 
         items = results.get("items")
-        table_headers = [
-            "id", "firstName", "lastName", "email", "exchangeLogin",
-            "groupIds", "groupNames"]
+        table_headers = ["id", "firstName", "lastName", "email", "exchangeLogin", "groupIds", "groupNames"]
         outputs = []
         if items:
             for item in items:
                 current_object_data = {
-                    field: item.get(field) for field in table_headers if field not in ["groupIds", "groupNames"]}
+                    field: item.get(field) for field in table_headers if field not in ["groupIds", "groupNames"]
+                }
                 groupIds = []
                 groupNames = []
                 for group_item in item.get("groups").get("items"):
@@ -4486,14 +4052,10 @@ def sophos_central_users_list_command(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output="Unable to list users."
-        )
+        return CommandResults(readable_output="Unable to list users.")
 
 
-def sophos_central_users_get_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_users_get_command(client: Client, args: dict) -> CommandResults:
     """
     List user of a tenant with userId.
 
@@ -4507,18 +4069,11 @@ def sophos_central_users_get_command(
     """
     user_id = args.get("userId", "")
     try:
-        item = client.get_user(
-            user_id
-        )
-        table_headers = [
-            "id", "firstName", "lastName", "email", "exchangeLogin",
-            "groupIds", "groupNames"
-        ]
+        item = client.get_user(user_id)
+        table_headers = ["id", "firstName", "lastName", "email", "exchangeLogin", "groupIds", "groupNames"]
         outputs = []
         if item:
-            current_object_data = {
-                field: item.get(field) for field in table_headers if field not in ["groupIds", "groupNames"]
-            }
+            current_object_data = {field: item.get(field) for field in table_headers if field not in ["groupIds", "groupNames"]}
             groupIds = []
             groupNames = []
             for group_item in item.get("groups", {}).get("items", []):
@@ -4541,14 +4096,10 @@ def sophos_central_users_get_command(
             readable_output=readable_output,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output=f"Unable to find the following user with userId:{user_id}."
-        )
+        return CommandResults(readable_output=f"Unable to find the following user with userId:{user_id}.")
 
 
-def sophos_central_users_add_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_users_add_command(client: Client, args: dict) -> CommandResults:
     """
     Add user for a tenant.
 
@@ -4567,7 +4118,7 @@ def sophos_central_users_add_command(
             args.get("email", ""),
             args.get("role", ""),
             args.get("exchangeLogin", ""),
-            argToList(args.get("groupIds", ""))
+            argToList(args.get("groupIds", "")),
         )
 
         return CommandResults(
@@ -4578,14 +4129,10 @@ def sophos_central_users_add_command(
             raw_response=result,
         )
     except DemistoException:
-        return CommandResults(
-            readable_output="Unable to add user."
-        )
+        return CommandResults(readable_output="Unable to add user.")
 
 
-def sophos_central_users_update_command(
-    client: Client, args: dict
-) -> CommandResults:
+def sophos_central_users_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update an existing user.
 
@@ -4617,9 +4164,7 @@ def sophos_central_users_update_command(
         )
 
     except DemistoException:
-        return CommandResults(
-            readable_output="Unable to update the user."
-        )
+        return CommandResults(readable_output="Unable to update the user.")
 
 
 def sophos_central_users_delete_command(client: Client, args: dict) -> CommandResults:
@@ -4635,12 +4180,8 @@ def sophos_central_users_delete_command(client: Client, args: dict) -> CommandRe
 
     """
     try:
-        result = client.delete_user(
-            args.get("userId", "")
-        )
-        output = {
-            "deletedUserId": args.get("userId", "")
-        }
+        result = client.delete_user(args.get("userId", ""))
+        output = {"deletedUserId": args.get("userId", "")}
         return CommandResults(
             outputs_prefix="SophosCentral.DeletedUsers",
             readable_output="User deleted.",
@@ -4649,9 +4190,7 @@ def sophos_central_users_delete_command(client: Client, args: dict) -> CommandRe
         )
 
     except DemistoException:
-        return CommandResults(
-            readable_output="Unable to delete the user."
-        )
+        return CommandResults(readable_output="Unable to delete the user.")
 
 
 def test_module(client: Client) -> str:
@@ -4673,9 +4212,7 @@ def test_module(client: Client) -> str:
         raise DemistoException(exception)
 
 
-def retrieve_jwt_token(
-    client_id: str, client_secret: str, integration_context: dict
-) -> str:
+def retrieve_jwt_token(client_id: str, client_secret: str, integration_context: dict) -> str:
     """
     Get the JWT token from the integration context or create a new one.
 
@@ -4695,9 +4232,7 @@ def retrieve_jwt_token(
     bearer_token_dict = Client.get_jwt_token_from_api(client_id, client_secret)
     if bearer_token_dict:
         bearer_token = str(bearer_token_dict.get("access_token", ""))
-    Client._update_integration_context(
-        {"bearer_token": bearer_token, "valid_until": time_now + 600}
-    )
+    Client._update_integration_context({"bearer_token": bearer_token, "valid_until": time_now + 600})
     return bearer_token
 
 
@@ -4806,9 +4341,7 @@ def main():
         "sophos-central-usergroups-membership-get": sophos_central_usergroups_membership_get,
     }
     try:
-        bearer_token = retrieve_jwt_token(
-            sophos_id, sophos_secret, get_integration_context()
-        )
+        bearer_token = retrieve_jwt_token(sophos_id, sophos_secret, get_integration_context())
         client = Client(
             bearer_token=bearer_token,
             verify=True,
@@ -4846,8 +4379,7 @@ def main():
             error_string = "Wrong credentials (ID and / or secret) given."
         elif "SSL Certificate Verification Failed" in str(e):
             error_string = (
-                "SSL Certificate Verification Failed: Make sure that "
-                "Sophos Central API servers have valid SSL certificate."
+                "SSL Certificate Verification Failed: Make sure that Sophos Central API servers have valid SSL certificate."
             )
         else:
             error_string = str(e)

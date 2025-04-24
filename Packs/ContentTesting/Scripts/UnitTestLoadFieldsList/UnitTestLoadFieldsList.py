@@ -4,8 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        listName = demisto.args()['list']
-        results = demisto.executeCommand("getList", {'listName': listName})[0]['Contents']
+        listName = demisto.args()["list"]
+        results = demisto.executeCommand("getList", {"listName": listName})[0]["Contents"]
         if "Item not found" not in results:
             fields = json.loads(results)
             if fields:
@@ -17,8 +17,8 @@ def main():
             raise DemistoException(f"UnitTestLoadFieldsList: list '{listName}' not found")
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"UnitTestLoadFieldsList: Exception failed to execute. Error: {str(ex)}")
+        return_error(f"UnitTestLoadFieldsList: Exception failed to execute. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,0 +1,70 @@
+commonfields:
+  id: LookoutMobileEndpointSecurity
+  version: -1
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- defaultvalue: https://api.lookout.com/
+  display: Server URL
+  name: server_url
+  required: false
+  type: 0
+  section: Connect
+- displaypassword: Application Key
+  name: app_key
+  hiddenusername: true
+  required: false
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: Fetch interval in seconds
+  name: fetch_interval
+  type: 0
+  defaultvalue: 60
+  required: true
+  section: Collect
+  advanced: true
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+- defaultvalue: All
+  display: Event types to fetch
+  name: event_types
+  options:
+  - Threat
+  - Device
+  - Audit
+  - All
+  required: true
+  type: 16
+  advanced: true
+  section: Collect
+description: Lookout Mobile Endpoint Security (MES) provides visibility and protection against mobile threats with AI-driven mobile security dataset.
+display: Lookout Mobile Endpoint Security
+name: LookoutMobileEndpointSecurity
+script:
+  commands: []
+  dockerimage: demisto/sse-client:1.0.0.2993422
+  script: '-'
+  subtype: python3
+  type: python
+  longRunning: true
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

@@ -1,60 +1,60 @@
 import json
+
 import pytest
-from DarktraceASMRisk import (Client,
-                              TagError,
-                              CommentError,
-                              MitigationError,
-                              fetch_incidents,
-                              get_asm_risk_command,
-                              get_asm_asset_command,
-                              mitigate_asm_risk_command,
-                              post_asm_comment_command,
-                              edit_asm_comment_command,
-                              delete_asm_comment_command,
-                              create_asm_tag_command,
-                              assign_asm_tag_command,
-                              unassign_asm_tag_command)
+from DarktraceASMRisk import (
+    Client,
+    CommentError,
+    MitigationError,
+    TagError,
+    assign_asm_tag_command,
+    create_asm_tag_command,
+    delete_asm_comment_command,
+    edit_asm_comment_command,
+    fetch_incidents,
+    get_asm_asset_command,
+    get_asm_risk_command,
+    mitigate_asm_risk_command,
+    post_asm_comment_command,
+    unassign_asm_tag_command,
+)
 
 """*****CONSTANTS****"""
 
-command_dict = {"get_asm_risk": {"command": get_asm_risk_command,
-                                 "args": {"risk_id": "Umlza1R5cGU6MTE5Nzc="},
-                                 },
-                "get_asm_asset": {"command": get_asm_asset_command,
-                                  "args": {"asset_id": "QXBwbGljYXRpb25UeXBlOjI2NjI4"},
-                                  },
-                "mitigate_asm_risk": {"command": mitigate_asm_risk_command,
-                                      "args": {"risk_id": "Umlza1R5cGU6MTE5Nzc="}
-                                      },
-                "post_asm_comment": {"command": post_asm_comment_command,
-                                     "args": {"id": "Umlza1R5cGU6MTE5Nzc=",
-                                              "comment": "API Test Comment"}
-                                     },
-                "edit_asm_comment": {"command": edit_asm_comment_command,
-                                     "args": {"comment_id": "Q29tbWVudFR5cGU6OTg=",
-                                              "comment": "API Test Comment Edited"}
-                                     },
-                "delete_asm_comment": {"command": delete_asm_comment_command,
-                                       "args": {"comment_id": "Q29tbWVudFR5cGU6OTg="}
-                                       },
-                "create_asm_tag": {"command": create_asm_tag_command,
-                                   "args": {"tag_name": "API TEST"}
-                                   },
-                "assign_asm_tag": {"command": assign_asm_tag_command,
-                                   "args": {"asset_id": "QXBwbGljYXRpb25UeXBlOjI2NjI4",
-                                            "tag_name": "API TEST"}
-                                   },
-                "unassign_asm_tag": {"command": unassign_asm_tag_command,
-                                     "args": {"asset_id": "QXBwbGljYXRpb25UeXBlOjI2NjI4",
-                                              "tag_name": "API TEST"}
-                                     },
-                }
+command_dict = {
+    "get_asm_risk": {
+        "command": get_asm_risk_command,
+        "args": {"risk_id": "Umlza1R5cGU6MTE5Nzc="},
+    },
+    "get_asm_asset": {
+        "command": get_asm_asset_command,
+        "args": {"asset_id": "QXBwbGljYXRpb25UeXBlOjI2NjI4"},
+    },
+    "mitigate_asm_risk": {"command": mitigate_asm_risk_command, "args": {"risk_id": "Umlza1R5cGU6MTE5Nzc="}},
+    "post_asm_comment": {
+        "command": post_asm_comment_command,
+        "args": {"id": "Umlza1R5cGU6MTE5Nzc=", "comment": "API Test Comment"},
+    },
+    "edit_asm_comment": {
+        "command": edit_asm_comment_command,
+        "args": {"comment_id": "Q29tbWVudFR5cGU6OTg=", "comment": "API Test Comment Edited"},
+    },
+    "delete_asm_comment": {"command": delete_asm_comment_command, "args": {"comment_id": "Q29tbWVudFR5cGU6OTg="}},
+    "create_asm_tag": {"command": create_asm_tag_command, "args": {"tag_name": "API TEST"}},
+    "assign_asm_tag": {
+        "command": assign_asm_tag_command,
+        "args": {"asset_id": "QXBwbGljYXRpb25UeXBlOjI2NjI4", "tag_name": "API TEST"},
+    },
+    "unassign_asm_tag": {
+        "command": unassign_asm_tag_command,
+        "args": {"asset_id": "QXBwbGljYXRpb25UeXBlOjI2NjI4", "tag_name": "API TEST"},
+    },
+}
 
 """*****HELPER FUNCTIONS****"""
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -69,25 +69,21 @@ def func_template(requests_mock, command):
     """
 
     # GIVEN an integration is configured to Darktrace
-    mock_api_response = util_load_json(f'test_data/{command}.json')
-    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api', json=mock_api_response)
+    mock_api_response = util_load_json(f"test_data/{command}.json")
+    requests_mock.post("https://mock.darktrace.com/graph/v1.0/api", json=mock_api_response)
 
-    client = Client(
-        base_url='https://mock.darktrace.com',
-        verify=False,
-        headers={"Authorization": "Token example_token"}
-    )
+    client = Client(base_url="https://mock.darktrace.com", verify=False, headers={"Authorization": "Token example_token"})
 
-    args = command_dict[command]['args']
+    args = command_dict[command]["args"]
 
     integration_response = command_dict[command]["command"](client, args)
-    expected_response = util_load_json(f'test_data/formatted_{command}.json')
+    expected_response = util_load_json(f"test_data/formatted_{command}.json")
 
-    prefix = command.split('_')[-1]
+    prefix = command.split("_")[-1]
 
     # THEN the response should be returned and formatted
     assert integration_response.outputs == expected_response
-    assert integration_response.outputs_prefix == f'Darktrace.{prefix}'
+    assert integration_response.outputs_prefix == f"Darktrace.{prefix}"
 
 
 def func_template_post(requests_mock, command):
@@ -101,19 +97,15 @@ def func_template_post(requests_mock, command):
     """
 
     # GIVEN an integration is configured to Darktrace
-    mock_api_response = util_load_json(f'test_data/{command}.json')
-    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api', json=mock_api_response)
+    mock_api_response = util_load_json(f"test_data/{command}.json")
+    requests_mock.post("https://mock.darktrace.com/graph/v1.0/api", json=mock_api_response)
 
-    client = Client(
-        base_url='https://mock.darktrace.com',
-        verify=False,
-        headers={"Authorization": "Token example_token"}
-    )
+    client = Client(base_url="https://mock.darktrace.com", verify=False, headers={"Authorization": "Token example_token"})
 
-    args = command_dict[command]['args']
+    args = command_dict[command]["args"]
 
     integration_response = command_dict[command]["command"](client, args)
-    expected_response = util_load_json(f'test_data/formatted_{command}.json').get("readable_output")
+    expected_response = util_load_json(f"test_data/formatted_{command}.json").get("readable_output")
 
     # THEN the response should be returned and formatted
     assert integration_response == expected_response
@@ -128,24 +120,20 @@ def func_template_error(requests_mock, command):
     """
 
     # GIVEN an integration is configured to Darktrace
-    mock_api_response = util_load_json(f'test_data/{command}_error.json')
-    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api', json=mock_api_response)
+    mock_api_response = util_load_json(f"test_data/{command}_error.json")
+    requests_mock.post("https://mock.darktrace.com/graph/v1.0/api", json=mock_api_response)
 
-    client = Client(
-        base_url='https://mock.darktrace.com',
-        verify=False,
-        headers={"Authorization": "Token example_token"}
-    )
+    client = Client(base_url="https://mock.darktrace.com", verify=False, headers={"Authorization": "Token example_token"})
 
-    args = command_dict[command]['args']
+    args = command_dict[command]["args"]
 
-    if 'tag' in command:
+    if "tag" in command:
         with pytest.raises(TagError):
             command_dict[command]["command"](client, args)
-    elif 'comment' in command:
+    elif "comment" in command:
         with pytest.raises(CommentError):
             command_dict[command]["command"](client, args)
-    elif 'mitigate' in command:
+    elif "mitigate" in command:
         with pytest.raises(MitigationError):
             command_dict[command]["command"](client, args)
 
@@ -162,21 +150,23 @@ def test_fetch_incidents(requests_mock):
     Then
             Incident info will be formatted for XSOAR UI and required info for next call will be returned
     """
-    mock_api_response = util_load_json('test_data/fetch_incidents.json')
-    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api', json=mock_api_response)
+    mock_api_response = util_load_json("test_data/fetch_incidents.json")
+    requests_mock.post("https://mock.darktrace.com/graph/v1.0/api", json=mock_api_response)
 
-    client = Client(
-        base_url='https://mock.darktrace.com',
-        verify=False,
-        headers={"Authorization": "Token example_token"}
+    client = Client(base_url="https://mock.darktrace.com", verify=False, headers={"Authorization": "Token example_token"})
+
+    integration_response = fetch_incidents(
+        client,
+        last_run={},
+        first_fetch_time=0,
+        max_alerts=50,
+        min_severity=1,
+        alert_types=["gdpr", "informational", "misconfiguration", "reported", "ssl", "vulnerable software"],
     )
+    expected_response = util_load_json("test_data/formatted_fetch_incidents.json")
 
-    integration_response = fetch_incidents(client, last_run={}, first_fetch_time=0, max_alerts=50, min_severity=1, alert_types=[
-                                           'gdpr', 'informational', 'misconfiguration', 'reported', 'ssl', 'vulnerable software'])
-    expected_response = util_load_json('test_data/formatted_fetch_incidents.json')
-
-    assert integration_response[0]['last_fetch'] == expected_response['last_fetch']
-    assert integration_response[1] == expected_response['incidents']
+    assert integration_response[0]["last_fetch"] == expected_response["last_fetch"]
+    assert integration_response[1] == expected_response["incidents"]
 
 
 def test_get_asm_risk(requests_mock):
@@ -188,7 +178,7 @@ def test_get_asm_risk(requests_mock):
     Then
             The context will be updated with information pertaining to that risk id
     """
-    func_template(requests_mock, 'get_asm_risk')
+    func_template(requests_mock, "get_asm_risk")
 
 
 def test_get_asm_asset(requests_mock):
@@ -200,7 +190,7 @@ def test_get_asm_asset(requests_mock):
     Then
             The context will be updated with information pertaining to that asset id
     """
-    func_template(requests_mock, 'get_asm_asset')
+    func_template(requests_mock, "get_asm_asset")
 
 
 def test_mitigate_risk(requests_mock):
@@ -212,7 +202,7 @@ def test_mitigate_risk(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template_post(requests_mock, 'mitigate_asm_risk')
+    func_template_post(requests_mock, "mitigate_asm_risk")
 
 
 def test_post_comment(requests_mock):
@@ -224,7 +214,7 @@ def test_post_comment(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template_post(requests_mock, 'post_asm_comment')
+    func_template_post(requests_mock, "post_asm_comment")
 
 
 def test_edit_comment(requests_mock):
@@ -236,7 +226,7 @@ def test_edit_comment(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template_post(requests_mock, 'edit_asm_comment')
+    func_template_post(requests_mock, "edit_asm_comment")
 
 
 def test_delete_comment(requests_mock):
@@ -248,7 +238,7 @@ def test_delete_comment(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template_post(requests_mock, 'delete_asm_comment')
+    func_template_post(requests_mock, "delete_asm_comment")
 
 
 def test_create_tag(requests_mock):
@@ -260,7 +250,7 @@ def test_create_tag(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template_post(requests_mock, 'create_asm_tag')
+    func_template_post(requests_mock, "create_asm_tag")
 
 
 def test_assign_tag(requests_mock):
@@ -272,7 +262,7 @@ def test_assign_tag(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template_post(requests_mock, 'assign_asm_tag')
+    func_template_post(requests_mock, "assign_asm_tag")
 
 
 def test_unassign_tag(requests_mock):
@@ -284,7 +274,7 @@ def test_unassign_tag(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template_post(requests_mock, 'unassign_asm_tag')
+    func_template_post(requests_mock, "unassign_asm_tag")
 
 
 def test_assign_tag_error(requests_mock):
@@ -296,7 +286,7 @@ def test_assign_tag_error(requests_mock):
     Then
             The proper error will be raised
     """
-    func_template_error(requests_mock, 'assign_asm_tag')
+    func_template_error(requests_mock, "assign_asm_tag")
 
 
 def test_unassign_tag_error(requests_mock):
@@ -308,7 +298,7 @@ def test_unassign_tag_error(requests_mock):
     Then
             The proper error will be raised
     """
-    func_template_error(requests_mock, 'unassign_asm_tag')
+    func_template_error(requests_mock, "unassign_asm_tag")
 
 
 def test_create_tag_error(requests_mock):
@@ -320,7 +310,7 @@ def test_create_tag_error(requests_mock):
     Then
             The proper error will be raised
     """
-    func_template_error(requests_mock, 'create_asm_tag')
+    func_template_error(requests_mock, "create_asm_tag")
 
 
 def test_post_comment_error(requests_mock):
@@ -332,7 +322,7 @@ def test_post_comment_error(requests_mock):
     Then
             The proper error will be raised
     """
-    func_template_error(requests_mock, 'post_asm_comment')
+    func_template_error(requests_mock, "post_asm_comment")
 
 
 def test_edit_comment_error(requests_mock):
@@ -344,7 +334,7 @@ def test_edit_comment_error(requests_mock):
     Then
             The proper error will be raised
     """
-    func_template_error(requests_mock, 'edit_asm_comment')
+    func_template_error(requests_mock, "edit_asm_comment")
 
 
 def test_delete_comment_error(requests_mock):
@@ -356,7 +346,7 @@ def test_delete_comment_error(requests_mock):
     Then
             The proper error will be raised
     """
-    func_template_error(requests_mock, 'delete_asm_comment')
+    func_template_error(requests_mock, "delete_asm_comment")
 
 
 def test_mitigate_risk_error(requests_mock):
@@ -368,4 +358,4 @@ def test_mitigate_risk_error(requests_mock):
     Then
             The proper error will be raised
     """
-    func_template_error(requests_mock, 'mitigate_asm_risk')
+    func_template_error(requests_mock, "mitigate_asm_risk")

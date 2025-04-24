@@ -139,9 +139,7 @@ class MandiantClient(BaseClient):
         integration_context = get_integration_context()
         integration_context.update({"token": self._token})
 
-        token_expiration = resp.get(
-            "expires_in", datetime.timestamp(datetime.now(timezone.utc))
-        )
+        token_expiration = resp.get("expires_in", datetime.timestamp(datetime.now(timezone.utc)))
 
         # Subtract 10 minutes from the expiration time as a buffer
         integration_context.update({"valid_until": token_expiration - 600})
@@ -149,9 +147,7 @@ class MandiantClient(BaseClient):
 
         return self._token
 
-    def get_indicator_info_endpoint(
-        self, identifier: str, indicator_type: str, info_type: str
-    ) -> List:
+    def get_indicator_info_endpoint(self, identifier: str, indicator_type: str, info_type: str) -> List:
         """
         Retrieve detailed information for a given indicator.
         Args:
@@ -169,9 +165,7 @@ class MandiantClient(BaseClient):
 
         call_result = {}
         try:
-            call_result = self._http_request(
-                method="GET", url_suffix=url, timeout=self.timeout
-            )
+            call_result = self._http_request(method="GET", url_suffix=url, timeout=self.timeout)
         except DemistoException as e:
             # If there is an internal issue inside the server, don't fail the entire fetch session
             if e.res.status_code != 500:
@@ -209,9 +203,7 @@ class MandiantClient(BaseClient):
 
         call_result = {}
         try:
-            call_result = self._http_request(
-                method="GET", url_suffix=url, timeout=self.timeout
-            )
+            call_result = self._http_request(method="GET", url_suffix=url, timeout=self.timeout)
         except DemistoException as e:
             # If there is an internal issue inside the server, don't fail the entire fetch session
             if e.res.status_code != 500:
@@ -219,9 +211,7 @@ class MandiantClient(BaseClient):
 
         return call_result
 
-    def get_indicators(
-        self, indicator_type: str = "Indicators", params: dict = None
-    ) -> List:
+    def get_indicators(self, indicator_type: str = "Indicators", params: dict = None) -> List:
         """
         Retrieve a list of indicators from Mandiant Threat Intelligence
         Args:
@@ -233,9 +223,7 @@ class MandiantClient(BaseClient):
         params = params or {}
         try:
             url = f"/v4/{MAP_TYPE_TO_URL[indicator_type]}"
-            response = self._http_request(
-                method="GET", url_suffix=url, timeout=self.timeout, params=params
-            )
+            response = self._http_request(method="GET", url_suffix=url, timeout=self.timeout, params=params)
             response = response.get(MAP_TYPE_TO_RESPONSE[indicator_type], [])
 
         except DemistoException as e:
@@ -293,10 +281,7 @@ def filter_last_updated(indicator: dict, start_time: datetime) -> bool:
 
 
 def last_updated_filter(start_time: datetime):
-    return (
-        lambda indicator: get_last_updated(indicator).timestamp()
-        > start_time.timestamp()
-    )
+    return lambda indicator: get_last_updated(indicator).timestamp() > start_time.timestamp()
 
 
 def get_verdict(mscore: Optional[int]) -> int:
@@ -330,9 +315,7 @@ def get_dbot_score(indicator: dict, indicator_type: str = None) -> dict:
         "Type": indicator_type,
         "Vendor": "Mandiant Advantage Threat Intelligence",
         "Score": get_verdict(indicator.get("mscore", 0)),
-        "Reliability": demisto.params().get(
-            "feedReliability", DBotScoreReliability.A_PLUS
-        ),
+        "Reliability": demisto.params().get("feedReliability", DBotScoreReliability.A_PLUS),
     }
 
 
@@ -341,7 +324,7 @@ def get_dbot_score_obj(dbot_score: dict) -> Common.DBotScore:
         indicator=dbot_score["Indicator"],
         indicator_type=dbot_score["Type"],
         score=dbot_score["Score"],
-        reliability=dbot_score["Reliability"]
+        reliability=dbot_score["Reliability"],
     )
 
 
@@ -397,9 +380,7 @@ def create_malware_indicator(client: MandiantClient, raw_indicator: dict) -> tup
     Returns:
         Dict: malware indicator
     """
-    raw_indicator = {
-        k: v for k, v in raw_indicator.items() if v and v != "redacted"
-    }  # filter none and redacted values
+    raw_indicator = {k: v for k, v in raw_indicator.items() if v and v != "redacted"}  # filter none and redacted values
 
     fields = {
         "operatingsystemrefs": raw_indicator.get("operating_systems"),
@@ -430,9 +411,7 @@ def create_malware_indicator(client: MandiantClient, raw_indicator: dict) -> tup
         "DBot Score": get_dbot_score(raw_indicator, indicator_type="Malware"),
     }
 
-    fields = {
-        k: v for k, v in fields.items() if v and v != "redacted"
-    }  # filter none and redacted values
+    fields = {k: v for k, v in fields.items() if v and v != "redacted"}  # filter none and redacted values
 
     relationships = get_indicator_relationships(
         raw_indicator,
@@ -488,17 +467,12 @@ def create_campaign_indicator(client: MandiantClient, raw_indicator: dict) -> di
     Returns:
         Dict: campaign indicator
     """
-    raw_indicator = {
-        k: v for k, v in raw_indicator.items() if v and v != "redacted"
-    }  # filter none and redacted values
+    raw_indicator = {k: v for k, v in raw_indicator.items() if v and v != "redacted"}  # filter none and redacted values
 
     fields = {
         "actors": [a["name"] for a in raw_indicator.get("actors", [])],
         "description": raw_indicator.get("description"),
-        "tags": [
-            i.get("name", "") for i in argToList(raw_indicator.get("industries", []))
-        ]
-        + client.tags,
+        "tags": [i.get("name", "") for i in argToList(raw_indicator.get("industries", []))] + client.tags,
         "DBot Score": get_dbot_score(raw_indicator, indicator_type="Campaign"),
         "publications": generate_publications(raw_indicator.get("reports", [])),
     }
@@ -556,9 +530,7 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: dict) -> tuple
     Returns:
         Dict: Parsed indicator
     """
-    raw_indicator = {
-        k: v for k, v in raw_indicator.items() if v and v != "redacted"
-    }  # filter none and redacted values
+    raw_indicator = {k: v for k, v in raw_indicator.items() if v and v != "redacted"}  # filter none and redacted values
 
     primary_motivation = None
     if len(raw_indicator.get("motivations", [])) >= 1:
@@ -572,22 +544,14 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: dict) -> tuple
             # type: ignore
         ]
         + client.tags,
-        "aliases": [
-            alias.get("name") for alias in raw_indicator.get("aliases", [])
-        ],  # type:ignore
-        "firstseenbysource": [
-            item.get("earliest") for item in raw_indicator.get("observed", [])
-        ],  # type:ignore
-        "lastseenbysource": [
-            item.get("recent") for item in raw_indicator.get("observed", [])
-        ],  # type:ignore
+        "aliases": [alias.get("name") for alias in raw_indicator.get("aliases", [])],  # type:ignore
+        "firstseenbysource": [item.get("earliest") for item in raw_indicator.get("observed", [])],  # type:ignore
+        "lastseenbysource": [item.get("recent") for item in raw_indicator.get("observed", [])],  # type:ignore
         "targets": [
             target.get("name")
             for target in raw_indicator.get(  # type:ignore
                 "locations", {}
-            ).get(
-                "target", []
-            )
+            ).get("target", [])
         ],  # type:ignore
         "stixid": raw_indicator.get("id"),
         "name": raw_indicator.get("name"),
@@ -597,9 +561,7 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: dict) -> tuple
         "DBot Score": get_dbot_score(raw_indicator, indicator_type="Actor"),
     }
 
-    fields = {
-        k: v for k, v in fields.items() if v and v != "redacted"
-    }  # filter none and redacted values
+    fields = {k: v for k, v in fields.items() if v and v != "redacted"}  # filter none and redacted values
 
     relationships = get_indicator_relationships(
         raw_indicator,
@@ -720,7 +682,7 @@ def create_cve_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[C
         cvss=str(cvss_data["cvssscore"]),
         published=indicator_obj["rawJSON"]["publish_date"],
         modified=indicator_obj["rawJSON"]["last_modified_date"],
-        description=indicator_obj["rawJSON"]["title"]
+        description=indicator_obj["rawJSON"]["title"],
     )
 
     return indicator, indicator_obj
@@ -758,9 +720,7 @@ def create_file_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[
         "sha256": sha256_hashes[0] or None,
         "sha1": sha1_hashes[0] or None,
     }
-    additional_fields = {
-        k: v for k, v in additional_fields.items() if v and v != "redacted"
-    }  # filter none and redacted values
+    additional_fields = {k: v for k, v in additional_fields.items() if v and v != "redacted"}  # filter none and redacted values
 
     indicator_obj["fields"] = indicator_obj["fields"] | additional_fields
 
@@ -787,10 +747,7 @@ def create_ip_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[Co
     }
 
     indicator_obj["fields"] = indicator_obj["fields"] | additional_fields
-    indicator = Common.IP(
-        dbot_score=get_dbot_score_obj(indicator_obj["fields"]["dbotscore"]),
-        ip=additional_fields["ip"]
-    )
+    indicator = Common.IP(dbot_score=get_dbot_score_obj(indicator_obj["fields"]["dbotscore"]), ip=additional_fields["ip"])
 
     return indicator, indicator_obj
 
@@ -813,7 +770,7 @@ def create_fqdn_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[
     indicator = Common.Domain(
         domain=raw_indicator.get("value"),
         dns=raw_indicator.get("value"),
-        dbot_score=get_dbot_score_obj(indicator_obj["fields"]["dbotscore"])
+        dbot_score=get_dbot_score_obj(indicator_obj["fields"]["dbotscore"]),
     )
 
     return indicator, indicator_obj
@@ -834,10 +791,7 @@ def create_url_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[C
 
     indicator_obj["fields"] = indicator_obj["fields"] | additional_fields
 
-    indicator = Common.URL(
-        url=additional_fields["url"],
-        dbot_score=get_dbot_score_obj(indicator_obj["fields"]["dbotscore"])
-    )
+    indicator = Common.URL(url=additional_fields["url"], dbot_score=get_dbot_score_obj(indicator_obj["fields"]["dbotscore"]))
 
     return indicator, indicator_obj
 
@@ -854,9 +808,7 @@ def create_indicator(client: MandiantClient, raw_indicator: dict) -> tuple[Commo
     # return create_base_indicator(client, raw_indicator, indicator_type)
 
 
-def create_base_indicator(
-    client: MandiantClient, raw_indicator: dict, indicator_type: str
-) -> dict:
+def create_base_indicator(client: MandiantClient, raw_indicator: dict, indicator_type: str) -> dict:
     """
     Create indicator
     Args:
@@ -897,12 +849,10 @@ def create_base_indicator(
         "trafficlightprotocol": tlp_color,
         "publications": generate_publications(raw_indicator.get("publications", [])),
         "dbotscore": get_dbot_score(raw_indicator),
-        "tags": client.tags
+        "tags": client.tags,
     }
 
-    fields = {
-        k: v for k, v in fields.items() if v and v != "redacted"
-    }  # filter none and redacted values
+    fields = {k: v for k, v in fields.items() if v and v != "redacted"}  # filter none and redacted values
     indicator_obj = {
         "value": raw_indicator.get("value"),
         "score": get_verdict(raw_indicator.get("mscore")),
@@ -939,17 +889,13 @@ def generate_publications(reports_list: list[dict]):
             "source": "Mandiant",
             "title": report.get("title", ""),
             "link": f"https://advantage.mandiant.com/reports/{report.get('report_id')}",
-            "timestamp": dateutil.parser.parse(
-                report.get("published_date", str(datetime.utcnow()))
-            ).timestamp(),
+            "timestamp": dateutil.parser.parse(report.get("published_date", str(datetime.utcnow()))).timestamp(),
         }
         for report in reports_list
     ]
 
 
-def enrich_indicators(
-    client: MandiantClient, indicators_list: List, indicator_type: str
-) -> None:
+def enrich_indicators(client: MandiantClient, indicators_list: List, indicator_type: str) -> None:
     """
     For each indicator in indicators_list create relationships and adding the relevant indicators
     Args:
@@ -1038,23 +984,16 @@ def enrich_indicators(
             if campaign
         ]
 
-        relationships = (
-            reports_relationships
-            + general_relationships
-            + attack_pattern_relationships
-            + campaign_relationships
-        )
+        relationships = reports_relationships + general_relationships + attack_pattern_relationships + campaign_relationships
 
         indicator["relationships"] = indicator.get("relationships", []) + relationships
 
-        indicator["fields"]["publications"] = indicator["fields"].get(
-            "publications", []
-        ) + generate_publications(reports_list=reports_list)
+        indicator["fields"]["publications"] = indicator["fields"].get("publications", []) + generate_publications(
+            reports_list=reports_list
+        )
 
 
-def get_new_indicators(
-    client: MandiantClient, last_run: str, indicator_type: str, limit: int
-) -> tuple[List, str]:
+def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: str, limit: int) -> tuple[List, str]:
     """
     Get a list of new indicators
     Args:
@@ -1077,16 +1016,14 @@ def get_new_indicators(
 
         param_start_date: datetime = datetime.fromtimestamp(0)
         if start_date is not None:
-            param_start_date = max(
-                earliest_fetch.replace(tzinfo=pytz.UTC), start_date.replace(tzinfo=pytz.UTC)
-            )  # type:ignore
+            param_start_date = max(earliest_fetch.replace(tzinfo=pytz.UTC), start_date.replace(tzinfo=pytz.UTC))  # type:ignore
         else:
             param_start_date = earliest_fetch
         params = {
             "start_epoch": int(param_start_date.timestamp()),
             "limit": limit,
             "exclude_osint": exclude_osint,
-            "sort_by": "last_updated:asc"
+            "sort_by": "last_updated:asc",
         }  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
@@ -1115,9 +1052,7 @@ def get_new_indicators(
         return updated_indicators, new_indicators_list[-1]["last_updated"]
 
 
-def get_indicator_list(
-    client: MandiantClient, limit: int, first_fetch: str, indicator_type: str
-) -> tuple[List[dict], str]:
+def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, indicator_type: str) -> tuple[List[dict], str]:
     """
     Get a list of indicators of the given type
     Args:
@@ -1132,9 +1067,7 @@ def get_indicator_list(
     indicators_list = last_run_dict.get(f"{indicator_type}List", [])
     new_last_updated = last_run = last_run_dict.get(f"{indicator_type}LastFetch", first_fetch)
     if len(indicators_list) < limit:
-        new_indicators_list, new_last_updated = get_new_indicators(
-            client, last_run, indicator_type, limit
-        )
+        new_indicators_list, new_last_updated = get_new_indicators(client, last_run, indicator_type, limit)
         indicators_list += new_indicators_list
 
     if indicators_list:
@@ -1192,10 +1125,7 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
                 for indicator in indicators_list
             ]
         demisto.debug("getting indicators")
-        indicators = [
-            MAP_INDICATORS_FUNCTIONS[indicator_type](client, indicator)[1]
-            for indicator in indicators_list
-        ]
+        indicators = [MAP_INDICATORS_FUNCTIONS[indicator_type](client, indicator)[1] for indicator in indicators_list]
         if enrichment and indicator_type != "Indicators":
             enrich_indicators(client, indicators, indicator_type)
 
@@ -1210,9 +1140,9 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
 
 def debug_fetch_indicators(client: MandiantClient, args: dict = None):
     indicators, _ = fetch_indicators(client, args)
-    return [CommandResults(outputs=indicator,
-                           outputs_prefix="MANDIANTTI.Feed",
-                           ignore_auto_extract=True) for indicator in indicators]
+    return [
+        CommandResults(outputs=indicator, outputs_prefix="MANDIANTTI.Feed", ignore_auto_extract=True) for indicator in indicators
+    ]
 
 
 def batch_fetch_indicators(client: MandiantClient):
@@ -1247,10 +1177,7 @@ def fetch_indicator_by_value(client: MandiantClient, args: dict = None):
     indicators_list = client.get_indicators_by_value(indicator_value=indicator_value)
 
     indicators = [
-        MAP_INDICATORS_FUNCTIONS[INDICATOR_TYPE_MAP[indicator["type"]]](
-            client, indicator
-        )
-        for indicator in indicators_list
+        MAP_INDICATORS_FUNCTIONS[INDICATOR_TYPE_MAP[indicator["type"]]](client, indicator) for indicator in indicators_list
     ]
 
     for indicator in indicators:
@@ -1258,16 +1185,18 @@ def fetch_indicator_by_value(client: MandiantClient, args: dict = None):
 
     if indicators:
         table = {
-            'Value': indicators[0][1]["rawJSON"]['value'],
-            'MScore': indicators[0][1]["rawJSON"]['mscore'],
-            'Last Seen': indicators[0][1]["rawJSON"]["last_seen"]
+            "Value": indicators[0][1]["rawJSON"]["value"],
+            "MScore": indicators[0][1]["rawJSON"]["mscore"],
+            "Last Seen": indicators[0][1]["rawJSON"]["last_seen"],
         }
         indicator_type = indicators[0][1]["rawJSON"]["type"].lower()
 
-        markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {table["Value"]}\n'
-                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
-                                   f'{indicator_type}/{table["Value"]})',
-                                   table)
+        markdown = tableToMarkdown(
+            f'Mandiant Advantage Threat Intelligence information for {table["Value"]}\n'
+            f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
+            f'{indicator_type}/{table["Value"]})',
+            table,
+        )
 
         return CommandResults(
             readable_output=markdown,
@@ -1285,9 +1214,7 @@ def fetch_threat_actor(client: MandiantClient, args: dict = None):
     args = args if args else {}
     actor_name: str = args["actor_name"]
 
-    indicator_obj: dict = client.get_indicator_info(
-        identifier=actor_name, indicator_type="Actors"
-    )
+    indicator_obj: dict = client.get_indicator_info(identifier=actor_name, indicator_type="Actors")
     indicator = [create_actor_indicator(client, indicator_obj)[1]]
 
     if client.enrichment:
@@ -1310,18 +1237,14 @@ def fetch_malware_family(client: MandiantClient, args: dict = None):
     args = args if args else {}
     malware_name: str = str(args.get("malware_name"))
 
-    indicator = client.get_indicator_info(
-        identifier=malware_name, indicator_type="Malware"
-    )
+    indicator = client.get_indicator_info(identifier=malware_name, indicator_type="Malware")
     indicator_list = [create_malware_indicator(client, indicator)[1]]
     if client.enrichment:
         enrich_indicators(client, indicator_list, "Malware")
 
     demisto.createIndicators(indicator_list)
 
-    indicator_list[0]["fields"]["name"] = indicators_value_to_clickable(
-        [indicator_list[0]["fields"]["name"]]
-    )
+    indicator_list[0]["fields"]["name"] = indicators_value_to_clickable([indicator_list[0]["fields"]["name"]])
 
     return CommandResults(
         content_format=formats["json"],
@@ -1336,9 +1259,7 @@ def fetch_campaign(client: MandiantClient, args: dict = None):
     args = args if args else {}
     campaign: str = str(args.get("campaign_id"))
 
-    indicator = client.get_indicator_info(
-        identifier=campaign, indicator_type="Campaign"
-    )
+    indicator = client.get_indicator_info(identifier=campaign, indicator_type="Campaign")
 
     indicator_list = [create_campaign_indicator(client, indicator)]
 
@@ -1365,10 +1286,7 @@ def fetch_reputation(client: MandiantClient, args: dict = None):
         for i in indicator_values:
             indicators_list.extend(client.get_indicators_by_value(i))
 
-    indicators = [
-        MAP_INDICATORS_FUNCTIONS[input_type](client, indicator)
-        for indicator in indicators_list
-    ]
+    indicators = [MAP_INDICATORS_FUNCTIONS[input_type](client, indicator) for indicator in indicators_list]
 
     demisto.createIndicators([i[1] for i in indicators])
 
@@ -1377,23 +1295,28 @@ def fetch_reputation(client: MandiantClient, args: dict = None):
         for indicator_obj, indicator in indicators:
             demisto.debug(json.dumps(indicator))
             table = {
-                'Value': indicator['value'],
-                'MScore': indicator["rawJSON"].get("mscore", ''),
-                'Last Seen': indicator["rawJSON"].get("last_seen", '')
+                "Value": indicator["value"],
+                "MScore": indicator["rawJSON"].get("mscore", ""),
+                "Last Seen": indicator["rawJSON"].get("last_seen", ""),
             }
             indicator_type = indicator["rawJSON"]["type"].lower()
 
-            markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {indicator["value"]}\n'
-                                       f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
-                                       f'{indicator_type}/{indicator["value"]})',
-                                       table)
+            markdown = tableToMarkdown(
+                f'Mandiant Advantage Threat Intelligence information for {indicator["value"]}\n'
+                f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
+                f'{indicator_type}/{indicator["value"]})',
+                table,
+            )
 
-            output.append(CommandResults(
-                readable_output=markdown,
-                outputs_prefix=f"MANDIANTTI.{input_type.upper()}",
-                outputs=indicator,
-                indicator=indicator_obj,
-                ignore_auto_extract=True))
+            output.append(
+                CommandResults(
+                    readable_output=markdown,
+                    outputs_prefix=f"MANDIANTTI.{input_type.upper()}",
+                    outputs=indicator,
+                    indicator=indicator_obj,
+                    ignore_auto_extract=True,
+                )
+            )
         return output
     else:
         return f"No indicators found matching value {indicator_values}"
@@ -1484,7 +1407,7 @@ def main() -> None:
             "url": fetch_reputation,
             "domain": fetch_reputation,
             "cve": fetch_reputation,
-            "mati-feed-get-indicators": debug_fetch_indicators
+            "mati-feed-get-indicators": debug_fetch_indicators,
         }
         params_only_cmds: dict[str, Callable] = {
             "test-module": test_module,

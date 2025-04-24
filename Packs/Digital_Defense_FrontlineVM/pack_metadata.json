@@ -2,7 +2,7 @@
     "name": "Digital Defense Frontline VM",
     "description": "Use the Digital Defense Frontline VM to identify and evaluate the security and business risks of network devices and applications deployed as premise, cloud, or hybrid network-based implementations.",
     "support": "partner",
-    "currentVersion": "1.1.11",
+    "currentVersion": "1.1.12",
     "author": "Digital Defense",
     "url": "https://www.digitaldefense.com/",
     "email": "support@digitaldefense.com",
@@ -16,6 +16,13 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

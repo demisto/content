@@ -1,25 +1,28 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics import precision_score, recall_score, precision_recall_curve
-from tabulate import tabulate
 from CommonServerPython import *
+from sklearn.metrics import precision_recall_curve, precision_score, recall_score
+from tabulate import tabulate
 
 # pylint: disable=no-member
 
 METRICS = {}
-METRICS['Precision'] = 'The precision of the class in the evaluation set that were classified as this class by the ' \
-                       'model. Precision is calculated by dividing the TPs of the class by the number of incidents that ' \
-                       'the model predicted as this class.'
-METRICS['TP (true positive)'] = 'The number of incidents from the class in the evaluation set that were predicted ' \
-                                'correctly. '
-METRICS['FP (false positive)'] = 'The number of incidents from other classes that were predicted incorrectly as this class.'
-METRICS['Coverage'] = 'The number of incidents from the class in the evaluation set for which the confidence level of ' \
-                      'the model exceeded the threshold in the prediction.'
-METRICS['Total'] = 'The total number of incidents from the class in the evaluation set.'
+METRICS["Precision"] = (
+    "The precision of the class in the evaluation set that were classified as this class by the "
+    "model. Precision is calculated by dividing the TPs of the class by the number of incidents that "
+    "the model predicted as this class."
+)
+METRICS["TP (true positive)"] = "The number of incidents from the class in the evaluation set that were predicted correctly. "
+METRICS["FP (false positive)"] = "The number of incidents from other classes that were predicted incorrectly as this class."
+METRICS["Coverage"] = (
+    "The number of incidents from the class in the evaluation set for which the confidence level of "
+    "the model exceeded the threshold in the prediction."
+)
+METRICS["Total"] = "The total number of incidents from the class in the evaluation set."
 
 
 def bold_hr(s):
-    return f'**{s}:**'
+    return f"**{s}:**"
 
 
 def binarize(arr, threshold):
@@ -36,32 +39,38 @@ def calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, threshold):
     y_pred_at_threshold = [y for i, y in enumerate(y_pred) if i in indices_higher_than_threshold]
     test_tag = pd.Series(y_true_at_threshold)
     ft_test_predictions_labels = pd.Series(y_pred_at_threshold)
-    csr_matrix = pd.crosstab(test_tag, ft_test_predictions_labels, rownames=['True'], colnames=['Predicted'],
-                             margins=True)
+    csr_matrix = pd.crosstab(test_tag, ft_test_predictions_labels, rownames=["True"], colnames=["Predicted"], margins=True)
     return csr_matrix
 
 
 def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold):
-    df = pd.DataFrame(columns=['Class', 'Precision', 'Recall', 'TP', 'FP', 'Coverage', 'Total'])
+    df = pd.DataFrame(columns=["Class", "Precision", "Recall", "TP", "FP", "Coverage", "Total"])
     for class_ in sorted(y_pred_per_class):
         row = calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class)
         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-    df = pd.concat([
-        df,
-        pd.DataFrame([{
-            'Class': 'All',
-            'Precision': df["Precision"].mean(),
-            'Recall': df["Recall"].mean(),
-            'TP': df["TP"].sum(),
-            'FP': df["FP"].sum(),
-            'Coverage': df["Coverage"].sum(),
-            'Total': df["Total"].sum()}
-        ]),
-    ], ignore_index=True)
-    df = df[['Class', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
-    explained_metrics = ['Precision', 'TP (true positive)', 'FP (false positive)', 'Coverage', 'Total']
-    explanation = [f'{bold_hr(metric)} {METRICS[metric]}' for metric in explained_metrics]
-    df = df.set_index('Class')
+    df = pd.concat(
+        [
+            df,
+            pd.DataFrame(
+                [
+                    {
+                        "Class": "All",
+                        "Precision": df["Precision"].mean(),
+                        "Recall": df["Recall"].mean(),
+                        "TP": df["TP"].sum(),
+                        "FP": df["FP"].sum(),
+                        "Coverage": df["Coverage"].sum(),
+                        "Total": df["Total"].sum(),
+                    }
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
+    df = df[["Class", "Precision", "TP", "FP", "Coverage", "Total"]]
+    explained_metrics = ["Precision", "TP (true positive)", "FP (false positive)", "Coverage", "Total"]
+    explanation = [f"{bold_hr(metric)} {METRICS[metric]}" for metric in explained_metrics]
+    df = df.set_index("Class")
     return df, explanation
 
 
@@ -71,129 +80,146 @@ def calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class):
     y_pred_class_binary = binarize(y_pred_class, threshold)
     precision = precision_score(y_true=y_true_class, y_pred=y_pred_class_binary)
     recall = recall_score(y_true=y_true_class, y_pred=y_pred_class_binary)
-    classified_correctly = sum(1 for y_true_i, y_pred_i in zip(y_true_class, y_pred_class_binary) if y_true_i == 1
-                               and y_pred_i == 1)
-    above_thresh = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 1
-                       and any(y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
+    classified_correctly = sum(
+        1 for y_true_i, y_pred_i in zip(y_true_class, y_pred_class_binary) if y_true_i == 1 and y_pred_i == 1
+    )
+    above_thresh = sum(
+        1
+        for i, y_true_i in enumerate(y_true_class)
+        if y_true_i == 1 and any(y_pred_per_class[c][i] >= threshold for c in y_pred_per_class)
+    )
     fp = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 0 and y_pred_class_binary[i] == 1.0)
     total = int(sum(y_true_class))
-    row = {'Class': class_,
-           'Precision': precision,
-           'Recall': recall,
-           'TP': classified_correctly,
-           'FP': fp,
-           'Coverage': int(above_thresh),
-           'Total': total}
+    row = {
+        "Class": class_,
+        "Precision": precision,
+        "Recall": recall,
+        "TP": classified_correctly,
+        "FP": fp,
+        "Coverage": int(above_thresh),
+        "Total": total,
+    }
     return row
 
 
 def reformat_df_fractions_to_percentage(metrics_df):
     hr_df = metrics_df.copy()
-    hr_df['Precision'] = hr_df['Precision'].apply(lambda p: '{:.1f}%'.format(p * 100))
-    hr_df['TP'] = hr_df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['TP']),
-                                                                   int(row['Coverage']),
-                                                                   float(row['TP']) * 100 / row['Coverage']),
-                              axis=1)
-    hr_df['Coverage'] = hr_df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['Coverage']), row['Total'],
-                                                                         float(row['Coverage']) * 100 / row['Total']),
-                                    axis=1)
+    hr_df["Precision"] = hr_df["Precision"].apply(lambda p: f"{p * 100:.1f}%")
+    hr_df["TP"] = hr_df.apply(
+        lambda row: "{}/{} ({:.1f}%)".format(int(row["TP"]), int(row["Coverage"]), float(row["TP"]) * 100 / row["Coverage"]),
+        axis=1,
+    )
+    hr_df["Coverage"] = hr_df.apply(
+        lambda row: "{}/{} ({:.1f}%)".format(int(row["Coverage"]), row["Total"], float(row["Coverage"]) * 100 / row["Total"]),
+        axis=1,
+    )
     return hr_df
 
 
-def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, found_threshold, target_precision,
-                  actual_threshold_precision, detailed_output=True):
+def output_report(
+    y_true,
+    y_true_per_class,
+    y_pred,
+    y_pred_per_class,
+    found_threshold,
+    target_precision,
+    actual_threshold_precision,
+    detailed_output=True,
+):
     csr_matrix_at_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, found_threshold)
     csr_matrix_no_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, 0)
 
-    metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class,
-                                                          found_threshold)
+    metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, found_threshold)
 
-    coverage = metrics_df.loc[['All']]['Coverage'][0]
-    test_set_size = metrics_df.loc[['All']]['Total'][0]
-    human_readable_threshold = ['## Summary']
+    coverage = metrics_df.loc[["All"]]["Coverage"][0]
+    test_set_size = metrics_df.loc[["All"]]["Total"][0]
+    human_readable_threshold = ["## Summary"]
     # in case the found threshold meets the target accuracy
-    if actual_threshold_precision >= target_precision or abs(found_threshold - target_precision) < 10 ** -2:
-        human_readable_threshold += ['- A confidence threshold of {:.2f} meets the conditions of required precision.'
-                                     .format(found_threshold)]
+    if actual_threshold_precision >= target_precision or abs(found_threshold - target_precision) < 10**-2:
+        human_readable_threshold += [
+            f"- A confidence threshold of {found_threshold:.2f} meets the conditions of required precision."
+        ]
     else:
-        human_readable_threshold += ['- Could not find a threshold which meets the conditions of required precision. '
-                                     'The confidence threshold of {:.2f} achieved highest '
-                                     'possible precision'.format(found_threshold)]
+        human_readable_threshold += [
+            "- Could not find a threshold which meets the conditions of required precision. "
+            f"The confidence threshold of {found_threshold:.2f} achieved highest "
+            "possible precision"
+        ]
     human_readable_threshold += [
-        '- {}/{} incidents of the evaluation set were predicted with higher confidence than this threshold.'.format(
-            int(coverage), int(test_set_size)),
-        '- The remainder, {}/{} incidents of the evaluation set, were predicted with lower confidence than this threshold '
-        '(these predictions were ignored).'.format(
-            int(test_set_size - coverage), int(test_set_size)),
-        '- Expected coverage ratio: The model will attempt to provide a prediction for {:.2f}% of incidents. '
-        '({}/{})'.format(
-            float(coverage) / test_set_size * 100, int(coverage), int(test_set_size)),
-        '- Evaluation of the model performance using this probability threshold can be found below:']
-    pd.set_option('display.max_columns', None)
+        f"- {int(coverage)}/{int(test_set_size)} incidents of the evaluation set were predicted with higher confidence"
+        f" than this threshold.",
+        f"- The remainder, {int(test_set_size - coverage)}/{int(test_set_size)} incidents of the evaluation set, were"
+        f" predicted with lower confidence than this threshold "
+        "(these predictions were ignored).",
+        f"- Expected coverage ratio: The model will attempt to provide a prediction for"
+        f" {float(coverage) / test_set_size * 100:.2f}% of incidents. "
+        f"({int(coverage)}/{int(test_set_size)})",
+        "- Evaluation of the model performance using this probability threshold can be found below:",
+    ]
+    pd.set_option("display.max_columns", None)
 
     tablualted_csr = tabulate(reformat_df_fractions_to_percentage(metrics_df), tablefmt="pipe", headers="keys")
-    class_metrics_human_readable = ['## Metrics per Class', tablualted_csr]
-    class_metrics_explanation_human_readable = ['### Metrics Explanation'] + ['- ' + row for row in metrics_explanation]
-    csr_matrix_readable = ['## Confusion Matrix',
-                           'This table displays the predictions of the model on the evaluation set per each '
-                           + 'class:',
-                           tabulate(csr_matrix_at_threshold,
-                                    tablefmt="pipe",
-                                    headers="keys").replace("True", "True \\ Predicted"),
-                           '\n']
-    csr_matrix_no_thresh_readable = ['## Confusion Matrix - No Threshold',
-                                     'This table displays the predictions of the model on the evaluation set per each '
-                                     + 'class when no threshold is used:',
-                                     tabulate(csr_matrix_no_threshold,
-                                              tablefmt="pipe",
-                                              headers="keys").replace("True", "True \\ Predicted"),
-                                     '\n']
+    class_metrics_human_readable = ["## Metrics per Class", tablualted_csr]
+    class_metrics_explanation_human_readable = ["### Metrics Explanation"] + ["- " + row for row in metrics_explanation]
+    csr_matrix_readable = [
+        "## Confusion Matrix",
+        "This table displays the predictions of the model on the evaluation set per each " + "class:",
+        tabulate(csr_matrix_at_threshold, tablefmt="pipe", headers="keys").replace("True", "True \\ Predicted"),
+        "\n",
+    ]
+    csr_matrix_no_thresh_readable = [
+        "## Confusion Matrix - No Threshold",
+        "This table displays the predictions of the model on the evaluation set per each " + "class when no threshold is used:",
+        tabulate(csr_matrix_no_threshold, tablefmt="pipe", headers="keys").replace("True", "True \\ Predicted"),
+        "\n",
+    ]
     human_readable = []  # type: ignore
     if detailed_output:
-        human_readable += human_readable_threshold + ['\n']
+        human_readable += human_readable_threshold + ["\n"]
     else:
-        human_readable += [f'## Results for confidence threshold = {found_threshold:.2f}'] + ['\n']
-    human_readable += class_metrics_human_readable + ['\n']
+        human_readable += [f"## Results for confidence threshold = {found_threshold:.2f}"] + ["\n"]
+    human_readable += class_metrics_human_readable + ["\n"]
     human_readable += class_metrics_explanation_human_readable
     human_readable += csr_matrix_readable
     human_readable += csr_matrix_no_thresh_readable
-    human_readable = '\n'.join(human_readable)
-    contents = {'threshold': found_threshold,
-                'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(orient='index'),
-                'csr_matrix_no_threshold': csr_matrix_no_threshold.to_json(orient='index'),
-                'metrics_df': metrics_df.to_json()}
+    human_readable = "\n".join(human_readable)
+    contents = {
+        "threshold": found_threshold,
+        "csr_matrix_at_threshold": csr_matrix_at_threshold.to_json(orient="index"),
+        "csr_matrix_no_threshold": csr_matrix_no_threshold.to_json(orient="index"),
+        "metrics_df": metrics_df.to_json(),
+    }
     entry = {
-        'Type': entryTypes['note'],
-        'Contents': contents,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': human_readable,
-        'HumanReadableFormat': formats['markdown'],
-        'EntryContext': {
-            'GetMLModelEvaluation': {
-                'Threshold': found_threshold,
-                'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(orient='index'),
-                'ConfusionMatrixNoThreshold': csr_matrix_no_threshold.to_json(orient='index'),
-                'Metrics': metrics_df.to_json()
+        "Type": entryTypes["note"],
+        "Contents": contents,
+        "ContentsFormat": formats["json"],
+        "HumanReadable": human_readable,
+        "HumanReadableFormat": formats["markdown"],
+        "EntryContext": {
+            "GetMLModelEvaluation": {
+                "Threshold": found_threshold,
+                "ConfusionMatrixAtThreshold": csr_matrix_at_threshold.to_json(orient="index"),
+                "ConfusionMatrixNoThreshold": csr_matrix_no_threshold.to_json(orient="index"),
+                "Metrics": metrics_df.to_json(),
             }
-        }
+        },
     }
     return entry
 
 
 def merge_entries(entry, per_class_entry):
     entry = {
-        'Type': entryTypes['note'],
-        'Contents': entry['Contents'],
-        'ContentsFormat': formats['json'],
-        'HumanReadable': entry['HumanReadable'] + '\n' + per_class_entry['HumanReadable'],
-        'HumanReadableFormat': formats['markdown'],
-        'EntryContext': {**entry['EntryContext'], **per_class_entry['EntryContext']}
+        "Type": entryTypes["note"],
+        "Contents": entry["Contents"],
+        "ContentsFormat": formats["json"],
+        "HumanReadable": entry["HumanReadable"] + "\n" + per_class_entry["HumanReadable"],
+        "HumanReadableFormat": formats["markdown"],
+        "EntryContext": {**entry["EntryContext"], **per_class_entry["EntryContext"]},
     }
     return entry
 
 
 def find_threshold(y_true, y_pred_all_classes, customer_target_precision, target_recall, detailed_output=True):
-
     labels = sorted(set(y_true + list(y_pred_all_classes[0].keys())))
     n_instances = len(y_true)
     y_true_per_class = {class_: np.zeros(n_instances) for class_ in labels}
@@ -208,21 +234,28 @@ def find_threshold(y_true, y_pred_all_classes, customer_target_precision, target
 
     class_to_arrs = {class_: {} for class_ in labels}  # type: Dict[str, Dict[str, Any]]
     for class_ in labels:
-        precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_],
-                                                                           y_pred_per_class[class_])
-        class_to_arrs[class_]['precisions'] = precision_arr
-        class_to_arrs[class_]['recalls'] = recall_arr
-        class_to_arrs[class_]['thresholds'] = thresholds_arr
+        precision_arr, recall_arr, thresholds_arr = precision_recall_curve(y_true_per_class[class_], y_pred_per_class[class_])
+        class_to_arrs[class_]["precisions"] = precision_arr
+        class_to_arrs[class_]["recalls"] = recall_arr
+        class_to_arrs[class_]["thresholds"] = thresholds_arr
 
     # find threshold for all classes such as precision of all classes are higher than target precision:
     unified_threshold, unified_threshold_precision, target_unified_precision = find_best_threshold_for_target_precision(
-        class_to_arrs, customer_target_precision, labels)
+        class_to_arrs, customer_target_precision, labels
+    )
     if unified_threshold is None or unified_threshold_precision is None:
-        error_message = 'Could not find any threshold at ranges {} - {:.2f}.'.format(target_unified_precision,
-                                                                                     customer_target_precision)
+        error_message = f"Could not find any threshold at ranges {target_unified_precision} - {customer_target_precision:.2f}."
         return_error(error_message)
-    entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class, unified_threshold,
-                          customer_target_precision, unified_threshold_precision, detailed_output)
+    entry = output_report(
+        np.array(y_true),
+        y_true_per_class,
+        np.array(y_pred),
+        y_pred_per_class,
+        unified_threshold,
+        customer_target_precision,
+        unified_threshold_precision,
+        detailed_output,
+    )
     per_class_entry = calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_true_per_class)
     res = merge_entries(entry, per_class_entry)
     return res
@@ -238,11 +271,11 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
         precision_per_class = {}
         for class_ in labels:
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
-            for i, precision in enumerate(class_to_arrs[class_]['precisions'][:-1]):
-                if class_to_arrs[class_]['thresholds'][i] == 0:
+            for i, precision in enumerate(class_to_arrs[class_]["precisions"][:-1]):
+                if class_to_arrs[class_]["thresholds"][i] == 0:
                     continue
                 if precision > target_unified_precision:
-                    threshold_per_class[class_] = class_to_arrs[class_]['thresholds'][i]
+                    threshold_per_class[class_] = class_to_arrs[class_]["thresholds"][i]
                     precision_per_class[class_] = precision
                     break
         if len(threshold_per_class) == len(labels):
@@ -251,8 +284,8 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                 legal_threshold_for_all_classes = True
                 threshold_precision = sys.maxsize
                 for class_ in labels:
-                    i = np.argmax(class_to_arrs[class_]['thresholds'] >= threshold)  # type: ignore
-                    threshold_precision_for_class = class_to_arrs[class_]['precisions'][i]
+                    i = np.argmax(class_to_arrs[class_]["thresholds"] >= threshold)  # type: ignore
+                    threshold_precision_for_class = class_to_arrs[class_]["precisions"][i]
                     threshold_precision = min(threshold_precision, threshold_precision_for_class)  # type: ignore
                     if threshold_precision_for_class >= target_unified_precision:
                         legal_threshold_for_all_classes = True
@@ -269,47 +302,46 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
 
 
 def calculate_per_class_report_entry(class_to_arrs, labels, y_pred_per_class, y_true_per_class):
-    per_class_hr = ['## Per-Class Report']
-    per_class_hr += [
-        'The following tables present evlauation of the model per class at different confidence thresholds:']
+    per_class_hr = ["## Per-Class Report"]
+    per_class_hr += ["The following tables present evlauation of the model per class at different confidence thresholds:"]
     class_to_thresholds = {}
     for class_ in labels:
         class_to_thresholds[class_] = {0.001}  # using no threshold
         for target_precision in np.arange(0.95, 0.5, -0.05):
             # indexing is done by purpose - the ith precision corresponds with threshold i-1. Last precision is 1
-            for i, precision in enumerate(class_to_arrs[class_]['precisions'][:-1]):
-                if class_to_arrs[class_]['thresholds'][i] == 0:
+            for i, precision in enumerate(class_to_arrs[class_]["precisions"][:-1]):
+                if class_to_arrs[class_]["thresholds"][i] == 0:
                     continue
-                if precision > target_precision and class_to_arrs[class_]['recalls'][i] > 0:
-                    threshold = class_to_arrs[class_]['thresholds'][i]
+                if precision > target_precision and class_to_arrs[class_]["recalls"][i] > 0:
+                    threshold = class_to_arrs[class_]["thresholds"][i]
                     class_to_thresholds[class_].add(threshold)
                     break
             if len(class_to_thresholds[class_]) >= 4:
                 break
     per_class_context = {}
     for class_ in labels:
-        class_threshold_df = pd.DataFrame(columns=['Threshold', 'Precision', 'Recall', 'TP', 'FP', 'Coverage', 'Total'])
+        class_threshold_df = pd.DataFrame(columns=["Threshold", "Precision", "Recall", "TP", "FP", "Coverage", "Total"])
         for threshold in sorted(class_to_thresholds[class_]):
             row = calculate_df_row(class_, threshold, y_true_per_class, y_pred_per_class)
-            row['Threshold'] = threshold
+            row["Threshold"] = threshold
             class_threshold_df = pd.concat([class_threshold_df, pd.DataFrame([row])], ignore_index=True)
         class_threshold_df = reformat_df_fractions_to_percentage(class_threshold_df)
-        class_threshold_df['Threshold'] = class_threshold_df['Threshold'].apply(lambda p: f'{p:.2f}')
-        class_threshold_df = class_threshold_df[['Threshold', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
-        class_threshold_df = class_threshold_df.sort_values(by='Coverage', ascending=False)
-        class_threshold_df = class_threshold_df.drop_duplicates(subset='Threshold', keep='first')
-        class_threshold_df = class_threshold_df.drop_duplicates(subset='Precision', keep='first')
-        class_threshold_df = class_threshold_df.set_index('Threshold')
+        class_threshold_df["Threshold"] = class_threshold_df["Threshold"].apply(lambda p: f"{p:.2f}")
+        class_threshold_df = class_threshold_df[["Threshold", "Precision", "TP", "FP", "Coverage", "Total"]]
+        class_threshold_df = class_threshold_df.sort_values(by="Coverage", ascending=False)
+        class_threshold_df = class_threshold_df.drop_duplicates(subset="Threshold", keep="first")
+        class_threshold_df = class_threshold_df.drop_duplicates(subset="Precision", keep="first")
+        class_threshold_df = class_threshold_df.set_index("Threshold")
         per_class_context[class_] = class_threshold_df.to_json()
         tabulated_class_df = tabulate(class_threshold_df, tablefmt="pipe", headers="keys")
-        per_class_hr += [f'### {class_}', tabulated_class_df]
+        per_class_hr += [f"### {class_}", tabulated_class_df]
     per_class_entry = {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [],
-        'HumanReadable': '\n'.join(per_class_hr),
-        'HumanReadableFormat': formats['markdown'],
-        'EntryContext': {'GetMLModelEvaluation': {'PerClassReport': per_class_context}}
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats["json"],
+        "Contents": [],
+        "HumanReadable": "\n".join(per_class_hr),
+        "HumanReadableFormat": formats["markdown"],
+        "EntryContext": {"GetMLModelEvaluation": {"PerClassReport": per_class_context}},
     }
     return per_class_entry
 
@@ -319,7 +351,7 @@ def convert_str_to_json(str_json, var_name):
         y_true = json.loads(str_json)
         return y_true
     except Exception as e:
-        return_error(f'Exception while reading {var_name} :{e}')
+        return_error(f"Exception while reading {var_name} :{e}")
 
 
 def main():
@@ -328,33 +360,35 @@ def main():
         y_true = demisto.args()["yTrue"]
         target_precision = calculate_and_validate_float_parameter("targetPrecision")
         target_recall = calculate_and_validate_float_parameter("targetRecall")
-        detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
-        y_true = convert_str_to_json(y_true, 'yTrue')
-        y_pred_all_classes = convert_str_to_json(y_pred_all_classes, 'yPred')
+        detailed_output = "detailedOutput" in demisto.args() and demisto.args()["detailedOutput"] == "true"
+        y_true = convert_str_to_json(y_true, "yTrue")
+        y_pred_all_classes = convert_str_to_json(y_pred_all_classes, "yPred")
 
         if not (y_true and y_pred_all_classes):
             raise DemistoException('Either "yPred" or "yTrue" are empty.')
 
-        entries = find_threshold(y_true=y_true,
-                                 y_pred_all_classes=y_pred_all_classes,
-                                 customer_target_precision=target_precision,
-                                 target_recall=target_recall,
-                                 detailed_output=detailed_output)
+        entries = find_threshold(
+            y_true=y_true,
+            y_pred_all_classes=y_pred_all_classes,
+            customer_target_precision=target_precision,
+            target_recall=target_recall,
+            detailed_output=detailed_output,
+        )
 
         demisto.results(entries)
     except Exception as e:
-        return_error(f'Error in GetMLModelEvaluation:\n{e}')
+        return_error(f"Error in GetMLModelEvaluation:\n{e}")
 
 
 def calculate_and_validate_float_parameter(var_name):
     try:
         res = float(demisto.args()[var_name]) if var_name in demisto.args() else 0
     except Exception:
-        return_error(f'{var_name} must be a float between 0-1 or left empty')
+        return_error(f"{var_name} must be a float between 0-1 or left empty")
     if res < 0 or res > 1:
-        return_error(f'{var_name} must be a float between 0-1 or left empty')
+        return_error(f"{var_name} must be a float between 0-1 or left empty")
     return res
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

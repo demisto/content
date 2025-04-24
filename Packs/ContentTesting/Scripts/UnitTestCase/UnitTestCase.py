@@ -1,6 +1,7 @@
+import io
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import io
 
 
 def main():
@@ -10,7 +11,7 @@ def main():
     addAfter = args.get("addAfter", "")
     try:
         if listName != "":
-            listlines = demisto.executeCommand("getList", {'listName': listName})[0]['Contents']
+            listlines = demisto.executeCommand("getList", {"listName": listName})[0]["Contents"]
             buf = io.StringIO(listlines)
         else:
             raise DemistoException("No test case list provided")
@@ -27,19 +28,14 @@ def main():
                 else:
                     testList = words[1].strip()
                     playbooks = ""
-                args = {
-                    'playbook': playbooks,
-                    'addAfter': addAfter,
-                    'testType': testType,
-                    'listName': testList
-                }
+                args = {"playbook": playbooks, "addAfter": addAfter, "testType": testType, "listName": testList}
                 demisto.executeCommand("UnitTest", args)
             line = buf.readline()
 
     except Exception as ex:
         demisto.error(traceback.format_exc())
-        return_error(f"UnitTestCase: {testName} Exception failed to execute. Error: {str(ex)}")
+        return_error(f"UnitTestCase: {testName} Exception failed to execute. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

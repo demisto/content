@@ -12,10 +12,12 @@ This pack includes Cortex XSIAM content.
 
 ## What does this pack do?
 
-The pack includes the **IBM MaaS360 Security** integration that allows you to collect Admin Login reports and Admin change audits from IBM MaaS360 Security.
+This pack includes:
+  - An integration that allows you to collect Admin Login reports and Admin Change audits from IBM MaaS360 Security.
+  - Modeling rules for log normalization
 
-## How does this pack work?
+## How to collect data from IBM MaaS360:
 
-Create an instance of the **IBM MaaS360 Security** integration to start event collection.
+To integrate IBM MaaS360 with XSIAM please [click here](https://github.com/demisto/content/blob/master/Packs/IBMMaaS360Security/Integrations/IBMMaaS360SecurityEventCollector/README.md) and follow our step by step guide.
 
 </~XSIAM>

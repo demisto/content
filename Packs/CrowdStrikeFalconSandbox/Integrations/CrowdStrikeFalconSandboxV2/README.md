@@ -1075,28 +1075,28 @@ Submits a file from the investigation to the analysis server.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entryId | The War Room entry ID. | Required | 
-| environmentID | The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 300. Default is 100. | Required | 
-| polling | Whether the command should poll until the result is ready. Possible values are: true, false. | Optional | 
-| no_share_third_party | When set to 'true', the sample is never shared with any third party. Possible values are: true, false. | Optional | 
-| no_hash_lookup | When set to 'true', no hash lookup is done on the sample. Possible values are: true, false. | Optional | 
-| allow_community_access | When set to 'true', the sample is available for the community. Possible values are: true, false. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                              | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| entryId | The War Room entry ID.                                                                                                                                                                                                                                                       | Required | 
+| environmentID | The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 310. Default is 100.      | Required | 
+| polling | Whether the command should poll until the result is ready. Possible values are: true, false.                                                                                                                                                                                 | Optional | 
+| no_share_third_party | When set to 'true', the sample is never shared with any third party. Possible values are: true, false.                                                                                                                                                                       | Optional | 
+| no_hash_lookup | When set to 'true', no hash lookup is done on the sample. Possible values are: true, false.                                                                                                                                                                                  | Optional | 
+| allow_community_access | When set to 'true', the sample is available for the community. Possible values are: true, false.                                                                                                                                                                             | Optional | 
 | action_script | Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie. Possible values are: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie. | Optional | 
-| hybrid_analysis | When set to 'false', no memory dump or memory dump analysis is done. Possible values are: true, false. | Optional | 
-| experimental_anti_evasion | When set to 'true', sets all Kernelmode Monitor experimental anti-evasion options. Possible values are: true, false. | Optional | 
-| script_logging | When set to 'true', sets the Kernelmode Monitor in-depth script logging engine. Possible values are: true, false. | Optional | 
-| input_sample_tampering | When set to 'true', allows Kernelmode Monitor experimental anti-evasion options that tamper with the input sample. Possible values are: true, false. | Optional | 
-| network_settings | Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'. Possible values are: default, tor, simulated. | Optional | 
-| email | Optional email address that may be associated with the submission for notification. | Optional | 
-| comment | Optional comment text that may be associated with the submission/sample (Note: you can use #tags). | Optional | 
-| custom_cmd_line | Optional command line that should be passed to the analysis file. | Optional | 
-| custom_run_time | Optional runtime duration (in seconds). | Optional | 
-| submit_name | Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file. | Optional | 
-| priority | Optional priority value between 1 (lowest) and 10 (highest). By default all samples run with highest priority. Possible values are: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10. | Optional | 
-| document_password | Optional document password used to fill in Adobe/Office password prompts. | Optional | 
-| environment_variable | Optional system environment value. The value is provided in the format name=value. | Optional | 
+| hybrid_analysis | When set to 'false', no memory dump or memory dump analysis is done. Possible values are: true, false.                                                                                                                                                                       | Optional | 
+| experimental_anti_evasion | When set to 'true', sets all Kernelmode Monitor experimental anti-evasion options. Possible values are: true, false.                                                                                                                                                         | Optional | 
+| script_logging | When set to 'true', sets the Kernelmode Monitor in-depth script logging engine. Possible values are: true, false.                                                                                                                                                            | Optional | 
+| input_sample_tampering | When set to 'true', allows Kernelmode Monitor experimental anti-evasion options that tamper with the input sample. Possible values are: true, false.                                                                                                                         | Optional | 
+| network_settings | Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'. Possible values are: default, tor, simulated.                                                                          | Optional | 
+| email | Optional email address that may be associated with the submission for notification.                                                                                                                                                                                          | Optional | 
+| comment | Optional comment text that may be associated with the submission/sample (Note: you can use #tags).                                                                                                                                                                           | Optional | 
+| custom_cmd_line | Optional command line that should be passed to the analysis file.                                                                                                                                                                                                            | Optional | 
+| custom_run_time | Optional runtime duration (in seconds).                                                                                                                                                                                                                                      | Optional | 
+| submit_name | Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file.                                                                                                                                                 | Optional | 
+| priority | Optional priority value between 1 (lowest) and 10 (highest). By default all samples run with highest priority. Possible values are: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.                                                                                                           | Optional | 
+| document_password | Optional document password used to fill in Adobe/Office password prompts.                                                                                                                                                                                                    | Optional | 
+| environment_variable | Optional system environment value. The value is provided in the format name=value.                                                                                                                                                                                           | Optional | 
 
 
 #### Context Output
@@ -1995,7 +1995,7 @@ Retrieves result data on a file. Note: This command returns a file.
 | --- | --- | --- |
 | polling | Whether the command should poll until the result is ready. Possible values are: true, false. Default is True. | Optional | 
 | file | The file hash (MD5, SHA1, or SHA256). | Optional | 
-| environmentID | The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 300. | Optional | 
+| environmentID | The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 310. Default is 100.      | Required | 
 | JobID | The file job ID to generate a report for. | Optional | 
 | file-type | The file type. Possible values are: xml, json, html, pdf, maec, stix, misp, misp-json, openioc. Default is pdf. | Optional | 
 
@@ -2071,7 +2071,7 @@ Submits a URL for analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | The URL for analysis or the URL of the file to submit. | Required | 
-| environmentID | The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 300. Default is 100. | Required | 
+| environmentID | The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 310. Default is 100.      | Required | 
 | polling | Whether the command should poll until the result is ready. Possible values are: true, false. | Optional | 
 | no_share_third_party | When set to 'true', the sample is never shared with any third party. Possible values are: true, false. | Optional | 
 | no_hash_lookup | When set to 'true', no hash lookup is done on the sample. Possible values are: true, false. | Optional | 
@@ -2538,7 +2538,7 @@ Retrieves screenshots from a report
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file | The sha256 hash of a file. | Optional | 
-| environmentID | The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 300. | Optional | 
+| environmentID | The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 310. Default is 100.      | Required | 
 | JobID | The file job ID. | Optional | 
 
 
@@ -3870,7 +3870,7 @@ Gets the report state for the given ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | JobID | The file job ID. | Optional | 
-| environmentID | The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 300. | Optional | 
+| environmentID | The environment ID. Available environment IDs: 310: "Linux (Ubuntu 20, 64-bit)", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit". Possible values are: 100, 110, 120, 200, 310. Default is 100.      | Required | 
 | file | The hash of the file. | Optional | 
 
 
@@ -3910,3 +3910,7 @@ Gets the report state for the given ID.
 >|Error|Error Origin|Error Type|Related Reports|State|
 >|---|---|---|---|---|
 >| The requested environment ID "300" and file type "pdf" have no available execution environment | CLIENT | FILE_TYPE_BAD_ERROR |  | ERROR |
+
+## Additional Notes
+- The CrowdStrike Environment ID 300 has been deprecated and is now EOL. It is recommended to use Environment ID 310 for Linux sandboxing.
+

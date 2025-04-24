@@ -85,6 +85,7 @@ tasks:
       ip:
         simple: ${Core.OriginalAlert.event.actor_remote_ip}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1128,3 +1129,4 @@ tests:
 fromversion: 8.0.0
 marketplaces:
 - marketplacev2
+- platform
