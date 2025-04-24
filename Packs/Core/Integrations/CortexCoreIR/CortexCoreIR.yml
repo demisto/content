@@ -1327,7 +1327,7 @@ script:
       prettyname: Run action on
       prettypredefined:
         Issue initiator host: ${issue.hostname}
-        Issue remote host: ${issue.remotehost}
+        Issue remote host: ${issue.remotehost} 
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
