@@ -506,7 +506,7 @@ def test_update_conditional_access_policy_cases(policy_input, response_mock, exp
             # Case 1: Regular merge of list field
             {"conditions": {"users": {"includeUsers": ["user1"]}}},
             {"conditions": {"users": {"includeUsers": ["user2"]}}},
-            {"conditions": {"users": {"includeUsers": ["user1", "user2"]}}},
+            {"conditions": {"users": {"includeUsers": sorted(["user1", "user2"])}}},
             [],
         ),
         (
@@ -634,3 +634,143 @@ def test_create_conditional_access_policy(mocker, policy_input, http_response, e
         else:
             assert result.outputs is None or not result.outputs.get("id")
 
+import pytest
+from CommonServerPython import CommandResults
+from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client
+
+
+@pytest.mark.parametrize(
+    "args, mock_return, expected_in_output, should_mock_call",
+    [
+        # ✅ Case 2: Valid structured input
+        (
+            {
+                "policy_name": "TestPolicy",
+                "state": "enabled",
+                "client_app_types": "browser",
+                "sign_in_risk_levels": "low",
+                "user_risk_levels": "medium",
+            },
+            CommandResults(readable_output="Policy created"),
+            "Policy created",
+            True,
+        ),
+        # Case 3: Empty strings for required lists
+        (
+            {
+                "policy_name": "TestPolicy",
+                "state": "enabled",
+                "client_app_types": "",
+                "sign_in_risk_levels": "",
+                "user_risk_levels": "",
+            },
+            None,
+            "Missing required field(s):",
+            False,
+        ),
+    ],
+)
+def test_create_policy_command_variants(mocker, args, mock_return, expected_in_output, should_mock_call):
+    mock_client = mocker.Mock(spec=Client)
+    if should_mock_call:
+        mock_client.create_conditional_access_policy.return_value = mock_return
+
+    result = create_conditional_access_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert expected_in_output in result.readable_output
+
+import pytest
+from CommonServerPython import CommandResults
+from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command
+
+
+@pytest.mark.parametrize(
+    "args, existing_policy, mock_result, expected_note_text, expect_merge_message",
+    [
+        (
+            # Case: existing includeUsers is ['All'], should trigger merge message
+            {
+                "policy_id": "abc123",
+                "update_action": "append",
+                "include_users": "user1",
+                "state": "enabled"
+            },
+            # mocked list_conditional_access_policies result
+            [{
+                "id": "abc123",
+                "state": "disabled",
+                "conditions": {
+                    "users": {
+                        "includeUsers": ["All"]
+                    }
+                }
+            }],
+            # mocked update_conditional_access_policy result
+            CommandResults(readable_output="Policy updated"),
+            "The field 'includeUsers' was not updated because it currently holds the special value 'All'",
+            True
+        ),
+        (
+            # Case: no merge message because no special value
+            {
+                "policy_id": "abc123",
+                "update_action": "append",
+                "include_users": "user1",
+                "state": "enabled"
+            },
+            [{
+                "id": "abc123",
+                "state": "disabled",
+                "conditions": {
+                    "users": {
+                        "includeUsers": ["user5"]
+                    }
+                }
+            }],
+            CommandResults(readable_output="Policy updated"),
+            "Note:",
+            False
+        ),
+        (
+            # Case: message should NOT be appended because readable_output starts with 'Error'
+            {
+                "policy_id": "abc123",
+                "update_action": "append",
+                "include_users": "user1",
+                "state": "enabled"
+            },
+            [{
+                "id": "abc123",
+                "state": "disabled",
+                "conditions": {
+                    "users": {
+                        "includeUsers": ["All"]
+                    }
+                }
+            }],
+            CommandResults(readable_output="Error: update failed"),
+            "Note:",
+            False
+        ),
+    ]
+)
+def test_update_policy_appends_merge_messages_correctly(
+    mocker, args, existing_policy, mock_result, expected_note_text, expect_merge_message
+):
+    mock_client = mocker.Mock(spec=Client)
+
+    # Mock list_conditional_access_policies
+    mock_client.list_conditional_access_policies.return_value = existing_policy
+    # Mock update_conditional_access_policy
+    mock_client.update_conditional_access_policy.return_value = mock_result
+
+    result = update_conditional_access_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+
+    if expect_merge_message:
+        assert expected_note_text in result.readable_output
+        assert result.readable_output.startswith("Policy updated")
+        assert "\n\nNote:\n" in result.readable_output
+    else:
+        assert expected_note_text not in result.readable_output or result.readable_output.startswith("Error")
