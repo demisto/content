@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
-from CortexCoreIR import core_execute_command_reformate_args
+from CortexCoreIR import core_execute_command_reformat_args
 
 Core_URL = "https://api.xdrurl.com"
 STATUS_AMOUNT = 6
@@ -383,7 +383,7 @@ def test_reformat_args_missing_command_raises():
     from CommonServerPython import DemistoException
     args = {}
     with pytest.raises(DemistoException, match="'command' is a required argument."):
-        core_execute_command_reformate_args(args)
+        core_execute_command_reformat_args(args)
 
 
 def test_reformat_args_is_raw_command_true():
@@ -399,7 +399,7 @@ def test_reformat_args_is_raw_command_true():
         "command": "dir, hostname",
         "is_raw_command": True
     }
-    reformatted_args = core_execute_command_reformate_args(args)
+    reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir, hostname"]
     assert reformatted_args["is_core"] is True
@@ -421,7 +421,7 @@ def test_reformat_args_separators(separator):
         "is_raw_command": False,
         "command_separator": separator
     }
-    reformatted_args = core_execute_command_reformate_args(args)
+    reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir", "hostname"]
 
@@ -440,7 +440,7 @@ def test_reformat_args_powershell_command_formatting():
         "command_type": "powershell",
         "is_raw_command": True
     }
-    reformatted_args = core_execute_command_reformate_args(args)
+    reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ['powershell -Command "Get-Process"']
 
@@ -455,9 +455,9 @@ def test_reformat_output():
         - Verify output unify all duplicated data.
         Instead of a list with element for each commmand, we'll have an element for each endpoint.
     """
-    from CortexCoreIR import core_execute_command_reformate_outputs
+    from CortexCoreIR import core_execute_command_reformat_outputs
     mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
-    reformatted_outputs = core_execute_command_reformate_outputs([mock_res])
+    reformatted_outputs = core_execute_command_reformat_outputs([mock_res])
     excepted_output = [
         {
             "endpoint_name": "name",
@@ -529,9 +529,9 @@ def test_reformat_readable():
         - Verify readable_output show the relevant data.
         Instead of a row for each endpoint, we'll have a row for each command.
     """
-    from CortexCoreIR import core_execute_command_reformate__readable_output
+    from CortexCoreIR import core_execute_command_reformat_readable_output
     mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
-    reformatted_readable_output = core_execute_command_reformate__readable_output([mock_res])
+    reformatted_readable_output = core_execute_command_reformat_readable_output([mock_res])
     excepted_output = """### Script Execution Results for Action ID: 1
 |Endpoint Id|Command|Command Output|Endpoint Ip Address|Endpoint Name|Endpoint Status|
 |---|---|---|---|---|---|
