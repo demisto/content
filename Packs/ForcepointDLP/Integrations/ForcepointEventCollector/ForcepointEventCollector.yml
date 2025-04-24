@@ -47,7 +47,6 @@ configuration:
     defaultvalue: 1 day
     type: 0
     section: Collect
-    hidden: true
   - name: max_fetch
     display: Maximum incidents per fetch
     required: true
@@ -611,20 +610,20 @@ script:
             - GREATEST_NUMBER
             - SUM_ALL
           required: false
-        - name: classifier_selected
+        - name: severity_classifier_selected
           description: Indicates if the classifier is selected. Required when not using `entry_id`.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
           required: false
-        - name: classifier_number_of_matches
+        - name: severity_classifier_number_of_matches
           description: The number of matches for the classifier. In case therer is no classifier with this number of matches, use `override_classifier_number_of_matches` to override classifier. Required when not using `entry_id`.
           required: false
-        - name: override_classifier_number_of_matches
+        - name: override_severity_classifier_number_of_matches
           description: The number of matches classifier to override.
           required: false
-        - name: classifier_severity_type
+        - name: severity_classifier_severity_type
           description: The severity type of the classifier. Required when not using `entry_id`.
           auto: PREDEFINED
           predefined:
@@ -632,7 +631,7 @@ script:
             - MEDIUM
             - HIGH
           required: false
-        - name: classifier_action_plan
+        - name: severity_classifier_action_plan
           description: The action plan associated with the classifier. There are predefined values (such as `Audit Only`, `Block All`, `Audit and Notify`, `Drop Email Attachment`, `Audit Without Forensis`, `Block Without Forencis`) and defined by user action plans. Required when not using `entry_id`.
           required: false
         - name: entry_id
@@ -736,7 +735,7 @@ script:
           description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-rule-source-destination-get` to retrive examples for the payload to provide.
           required: false
     - name: fp-dlp-rule-exception-create
-      description: Create an exception rule for a specified parent rule and policy type. To add more classifiers, use this command multiple times or provide a JSON configuration file via the `entry_id` argument to override all classifiers.
+      description: Create an exception rule for a specified parent rule and policy type. To add more classifiers, use this command multiple times or provide a JSON configuration file via the `entry_id` argument to override all classifiers. For editing source and destination settings, use the `entry_id` argument.
       arguments:
         - name: parent_policy_name
           description: The name of the parent policy that holds the rule. Use `fp-dlp-policy-list` to obtain the required policy names.
@@ -754,7 +753,7 @@ script:
           defaultValue: DLP
         - name: exception_rule_name
           description: The name of the exception rule that will be created.
-          required: false
+          required: true
         - name: enabled
           description: Indicates whether the exception rule is enabled.
           auto: PREDEFINED
@@ -781,20 +780,6 @@ script:
           required: false
         - name: condition_enabled
           description: Indicates whether the condition is enabled.
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          required: false
-        - name: source_enabled
-          description: Indicates whether the source condition is enabled (only for DLP policy type).
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          required: false
-        - name: destination_enabled
-          description: Indicates whether the destination condition is enabled (only for DLP policy type).
           auto: PREDEFINED
           predefined:
             - "true"
@@ -866,7 +851,7 @@ script:
           description: Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-rule-exception-list` to retrieve examples for the payload to provide.
           required: false
     - name: fp-dlp-rule-exception-update
-      description: Update an existing exception rule for a specified parent rule and policy type. To add/ update more classifiers, use this command multiple times (with diffrent position to add or existing position to update) or provide a JSON configuration file via the `entry_id` argument to override all classifiers.
+      description: Update an existing exception rule for a specified parent rule and policy type. To add/ update more classifiers, use this command multiple times (with different position to add or existing position to update) or provide a JSON configuration file via the `entry_id` argument to override all classifiers. For editing source and destination settings, use the `entry_id` argument.
       arguments:
         - name: parent_policy_name
           description: The name of the parent policy that holds the rule. Use fp-dlp-policy-list to obtain the required policy names.
@@ -911,20 +896,6 @@ script:
           required: false
         - name: condition_enabled
           description: Indicates whether the condition is enabled.
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          required: false
-        - name: source_enabled
-          description: Indicates whether the source condition is enabled (only for DLP policy type).
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          required: false
-        - name: destination_enabled
-          description: Indicates whether the destination condition is enabled (only for DLP policy type).
           auto: PREDEFINED
           predefined:
             - "true"

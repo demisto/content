@@ -1,6 +1,7 @@
+import dataclasses
 import http
+import inspect
 from collections import defaultdict
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime
 from functools import wraps
@@ -109,7 +110,7 @@ XSOAR_FP_SEVERITY_MAPPER = {
 }
 DEFAULT_LIMIT = 50
 
-@dataclass
+@dataclasses.dataclass
 class Classifier:
     """
     Represents a classifier inside a rule
@@ -143,8 +144,40 @@ class Classifier:
                 " Must be 'true' or 'false'."
             )
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Classifier":
+        return cls(**{k: v for k, v in data.items() if k in inspect.signature(cls).parameters})
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "Classifier":
+        return cls(
+            classifier_name=args.get("classifier_name"),
+            predefined=args.get("classifier_predefined"),
+            position=arg_to_number(args.get("classifier_position")),
+            threshold_type=args.get("classifier_threshold_type"),
+            threshold_value_from=arg_to_number(args.get("classifier_threshold_value_from")),
+            threshold_calculate_type=args.get("classifier_threshold_calculate_type"),
+            threshold_value_to=arg_to_number(args.get("classifier_threshold_value_to")),
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "classifier_name" in args:
+            self.classifier_name = args["classifier_name"]
+        if "classifier_predefined" in args:
+            self.predefined = args["classifier_predefined"]
+        if "classifier_position" in args:
+            self.position = args["classifier_position"]
+        if "threshold_type" in args:
+            self.threshold_type = args["threshold_type"]
+        if "threshold_value_from" in args:
+            self.threshold_value_from = args["threshold_value_from"]
+        if "threshold_value_to" in args:
+            self.threshold_calculate_type = args["threshold_value_to"]
+        if "threshold_calculate_type" in args:
+            self.threshold_value_to = args["threshold_calculate_type"]
+
+
+@dataclasses.dataclass
 class SeverityActionClassifier:
     """
     Represents severity and action classifier.
@@ -163,8 +196,33 @@ class SeverityActionClassifier:
                 f" 'selected': {self.selected}. Must be 'true' or 'false'."
             )
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "SeverityActionClassifier":
+        return cls(**{k: v for k, v in data.items() if k in inspect.signature(cls).parameters})
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "SeverityActionClassifier":
+        return cls(
+            number_of_matches=arg_to_number(args.get("severity_classifier_number_of_matches")),
+            selected=args.get("severity_classifier_selected"),
+            severity_type=args.get("severity_classifier_severity_type"),
+            dup_severity_type=args.get("severity_classifier_severity_type"),
+            action_plan=args.get("severity_classifier_action_plan"),
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "severity_classifier_number_of_matches" in args:
+            self.number_of_matches = arg_to_number(args["severity_classifier_number_of_matches"])
+        if "severity_classifier_selected" in args:
+            self.selected = args["severity_classifier_selected"]
+        if "severity_classifier_severity_type" in args:
+            self.severity_type = args["severity_classifier_severity_type"]
+            self.dup_severity_type = args["severity_classifier_severity_type"]
+        if "severity_classifier_action_plan" in args:
+            self.action_plan = args["severity_classifier_action_plan"]
+
+
+@dataclasses.dataclass
 class Rule:
     """
     Represents a policy rule.
@@ -194,8 +252,48 @@ class Rule:
         if set(range(1, len(self.classifiers) + 1)) != set(positions):
             raise DemistoException("Invalid classifier position.")
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Rule":
+        classifiers = data.pop("classifiers", [])
+        return cls(
+            **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
+            classifiers=[Classifier.from_dict(classifier) for classifier in classifiers],
+        )
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "Rule":
+        return cls(
+            rule_name=args.get("rule_name"),
+            enabled=args.get("rule_enabled"),
+            parts_count_type=args.get("rule_parts_count_type"),
+            condition_relation_type=args.get("rule_condition_relation_type"),
+            classifiers=[Classifier.from_args(args)],
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "rule_name" in args:
+            self.rule_name = args["rule_name"]
+        if "rule_enabled" in args:
+            self.enabled = args["rule_enabled"]
+        if "rule_parts_count_type" in args:
+            self.parts_count_type = args["rule_parts_count_type"]
+        if "rule_condition_relation_type" in args:
+            self.condition_relation_type = args["rule_condition_relation_type"]
+
+        position = args.get("classifier_position")
+        if position is not None and (classifier := self.find_classifier(position)):
+            classifier.update_from_args(args)
+        else:
+            self.classifiers.append(Classifier.from_args(args))
+
+    def find_classifier(self, position: int) -> Classifier | None:
+        for classifier in self.classifiers:
+            if classifier.position == position:
+                return classifier
+
+        return None
+
+@dataclasses.dataclass
 class SeverityActionException:
     """
     Represents a severity and action exception in rule.
@@ -208,11 +306,67 @@ class SeverityActionException:
         if len(self.classifier_details) > 3:
             raise DemistoException(
                 "The maximum number of classifiers is 3."
-                " Use `override_classifier_number_of_matches` to override another classifier."
+                " Use `override_severity_classifier_number_of_matches` to override another classifier."
             )
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "SeverityActionException":
+        classifier_details = data.pop("classifier_details", [])
+        return cls(
+            max_matches=data.get("max_matches"),
+            classifier_details=[SeverityActionClassifier.from_dict(classifier) for classifier in classifier_details],
+        )
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "SeverityActionException":
+        classifier_details: list[SeverityActionClassifier] = []
+
+        for i in range(0, 3):
+            classifier_details.append(SeverityActionClassifier.from_args(args))
+
+            if i != 0:
+                classifier_details[i].selected = "false"
+
+        return cls(
+            max_matches=args.get("severity_classifier_max_matches"),
+            classifier_details=classifier_details,
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "severity_classifier_max_matches" in args:
+            self.max_matches = args["severity_classifier_max_matches"]
+
+        number_of_matches = arg_to_number(args.get("severity_classifier_number_of_matches"))
+        override_number_of_matches = arg_to_number(args.get("override_severity_classifier_number_of_matches"))
+
+        if override_number_of_matches is not None:
+            search_number = override_number_of_matches
+        else:
+            search_number = number_of_matches
+
+        classifier_detail = self.find_classifier_details(search_number)
+
+        if classifier_detail:
+            classifier_detail.update_from_args(args)
+        else:
+            if search_number:
+                raise DemistoException(f"{search_number} does not exists in the classifiers `number_of_matches`")
+
+            self.classifier_details.append(SeverityActionClassifier.from_args(args))
+
+        self.classifier_details.sort(
+            key=lambda x: (x.number_of_matches is None, x.number_of_matches or 0),
+            reverse=True,
+        )
+
+    def find_classifier_details(self, number_of_matches: int) -> SeverityActionClassifier | None:
+        for classifier_detail in self.classifier_details:
+            if classifier_detail.number_of_matches == number_of_matches:
+                return classifier_detail
+
+        return None
+
+@dataclasses.dataclass
 class ExceptionRule:
     """
     Represents an exception of a rule.
@@ -250,8 +404,72 @@ class ExceptionRule:
         if set(range(1, len(self.classifiers) + 1)) != set(positions):
             raise DemistoException("Invalid classifier position.")
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ExceptionRule":
+        classifiers = data.pop("classifiers", [])
+        severity_action = data.pop("severity_action", {})
+        return cls(
+            exception_rule_name=data.get("exception_rule_name"),
+            enabled=data.get("enabled"),
+            condition_enabled=data.get("condition_enabled"),
+            source_enabled="false",
+            destination_enabled="false",
+            parts_count_type=data.get("parts_count_type"),
+            condition_relation_type=data.get("condition_relation_type"),
+            classifiers=[Classifier.from_dict(classifier) for classifier in classifiers],
+            severity_action=SeverityActionException.from_dict(severity_action),
+            description=data.get("description"),
+            display_description=data.get("display_description"),
+        )
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "ExceptionRule":
+        return cls(
+            exception_rule_name=args.get("exception_rule_name"),
+            enabled=args.get("enabled"),
+            condition_enabled=args.get("condition_enabled"),
+            source_enabled="false",
+            destination_enabled="false",
+            parts_count_type=args.get("parts_count_type"),
+            condition_relation_type=args.get("condition_relation_type"),
+            classifiers=[Classifier.from_args(args)],
+            severity_action=SeverityActionException.from_args(args),
+            description=args.get("description"),
+            display_description=args.get("description"),
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> "ExceptionRule":
+        if "exception_rule_name" in args:
+            self.exception_rule_name = args["exception_rule_name"]
+        if "enabled" in args:
+            self.enabled = args["enabled"]
+        if "condition_enabled" in args:
+            self.condition_enabled = args["condition_enabled"]
+        if "parts_count_type" in args:
+            self.parts_count_type = args["parts_count_type"]
+        if "condition_relation_type" in args:
+            self.condition_relation_type = args["condition_relation_type"]
+        if "description" in args:
+            self.description = args["description"]
+            self.display_description = args["description"]
+
+        position = arg_to_number(args.get("classifier_position"))
+        if position is not None and (classifier := self.find_classifier(position)):
+            classifier.update_from_args(args)
+        else:
+            self.classifiers.append(Classifier.from_args(args))
+
+        self.severity_action.update_from_args(args)
+
+    def find_classifier(self, position: int) -> Classifier | None:
+        for classifier in self.classifiers:
+            if classifier.position == position:
+                return classifier
+
+        return None
+
+
+@dataclasses.dataclass
 class SeverityActionRule:
     """
     Represents severity and action settings in rule.
@@ -287,11 +505,69 @@ class SeverityActionRule:
         if len(self.classifier_details) > 3:
             raise DemistoException(
                 "The maximum number of classifiers is 3."
-                " Use `override_classifier_number_of_matches` to override another classifier."
+                " Use `override_severity_classifier_number_of_matches` to override another classifier."
             )
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "SeverityActionRule":
+        classifiers = data.pop("classifier_details", [])
+        return cls(
+            **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
+            classifier_details=[SeverityActionClassifier.from_dict(classifier) for classifier in classifiers],
+        )
 
-@dataclass
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        self.risk_adaptive_protection_enabled = "false"
+
+        if "rule_name" in args:
+            self.rule_name = args["rule_name"]
+        if "rule_type" in args:
+            self.type = args["rule_type"]
+        if "rule_max_matches" in args:
+            self.max_matches = args["rule_max_matches"]
+
+        if args.get("rule_type") == "CUMULATIVE_CONDITION":
+            if "rule_count_type" in args:
+                self.count_type = args["rule_count_type"]
+            if "rule_count_period" in args:
+                self.count_time_period = args["rule_count_period"]
+            if "rule_rate_match_period" in args:
+                self.count_time_period_window = args["rule_rate_match_period"]
+
+        if self.classifier_details:
+            number_of_matches = arg_to_number(args.get("severity_classifier_number_of_matches"))
+            override_number_of_matches = arg_to_number(args.get("override_severity_classifier_number_of_matches"))
+
+            if override_number_of_matches is not None:
+                search_number = override_number_of_matches
+            else:
+                search_number = number_of_matches
+
+            classifier = self.find_classifier(search_number)
+
+            if not classifier and search_number:
+                raise DemistoException(f"{search_number} does not exists in the classifiers `number_of_matches`")
+
+            classifier.update_from_args(args)
+            self.classifier_details.sort(
+                key=lambda x: (x.number_of_matches is None, x.number_of_matches or 0),
+                reverse=True,
+            )
+        else:
+            for i in range(0, 3):
+                self.classifier_details.append(SeverityActionClassifier.from_args(args))
+
+                if i != 0:
+                    self.classifier_details[i].selected = "false"
+
+    def find_classifier(self, number_of_matches: int) -> SeverityActionClassifier | None:
+        for classifier in self.classifier_details:
+            if classifier.number_of_matches == number_of_matches:
+                return classifier
+
+        return None
+
+@dataclasses.dataclass
 class Resource:
     """
     Represents a resoure in rule.
@@ -307,8 +583,30 @@ class Resource:
                 f"Invalid value for resource 'include': {self.include}. Must be 'true' or 'false'."
             )
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Resource":
+        return cls(
+            resource_name=data.get("resource_name"),
+            type=data.get("type"),
+            include=data.get("include"),
+        )
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "Resource":
+        return cls(
+            resource_name=args.get("resource_name"),
+            type=args.get("resource_type"),
+            include=args.get("resource_include"),
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "resource_type" in args:
+            self.type = args["resource_type"]
+        if "resource_include" in args:
+            self.include = args["resource_include"]
+
+
+@dataclasses.dataclass
 class Channel:
     """
     Represents a channel in rule source and destination.
@@ -316,18 +614,55 @@ class Channel:
 
     channel_type: str
     enabled: str
-    resources: list[Resource] = field(default_factory=list)
-    user_operations: list[str] = field(default_factory=list)
+    resources: list[Resource] = dataclasses.field(default_factory=list)
+    user_operations: list[str] = dataclasses.field(default_factory=list)
 
     def __post_init__(self) -> None:
-        if self.enabled not in ["true", "false"]:
+        if self.channel_type and self.enabled not in ["true", "false"]:
             raise DemistoException(
                 f"Invalid value for the channel ({self.channel_type})"
                 f" 'enabled': {self.enabled}. Must be 'true' or 'false'."
             )
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "RuleDestination":
+        resources = data.pop("resources", [])
+        return cls(
+            channel_type=data.get("channel_type"),
+            enabled=data.get("enabled"),
+            resources=[Resource.from_dict(resource) for resource in resources],
+            user_operations=data.get("user_operations", []),
+        )
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "RuleDestination":
+        return cls(
+            channel_type=args.get("channel_type"),
+            enabled=args.get("channel_enabled"),
+            resources=[Resource.from_args(args)],
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "channel_enabled" in args:
+            self.enabled = args["channel_enabled"]
+
+        resource_name  = args.get("resource_name")
+        resource = self.find_resource(resource_name)
+
+        if resource:
+            resource.update_from_args(args)
+        else:
+            self.resources.append(Resource.from_args(args))
+
+    def find_resource(self, resource_name: str) -> Resource | None:
+        for resource in self.resources:
+            if resource.resource_name == resource_name:
+                return resource
+
+        return None
+
+
+@dataclasses.dataclass
 class RuleDestination:
     """
     Represents destination settings in source and destination rule.
@@ -336,8 +671,34 @@ class RuleDestination:
     email_monitor_directions: list[str]
     channels: list[Channel]
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "RuleDestination":
+        channels = data.pop("channels", [])
+        return cls(
+            email_monitor_directions=data.get("email_monitor_directions", []),
+            channels=[Channel.from_dict(channel) for channel in channels],
+        )
 
-@dataclass
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "rule_destination_email_monitor_directions" in args:
+            self.email_monitor_directions = argToList(args["rule_destination_email_monitor_directions"])
+
+        channel = self.find_channel(args.get("channel_type"))
+
+        if channel:
+            channel.update_from_args(args)
+        else:
+            self.channels.append(Channel.from_args(args))
+
+    def find_channel(self, channel_type: str) -> Channel | None:
+        for channel in self.channels:
+            if channel.channel_type == channel_type:
+                return channel
+
+        return None
+
+
+@dataclasses.dataclass
 class RuleSource:
     """
     Represents source settings in source and destination rule.
@@ -345,10 +706,24 @@ class RuleSource:
 
     endpoint_channel_machine_type: str
     endpoint_connection_type: str
-    resources: list[Resource] = field(default_factory=list)
+    resources: list[Resource] = dataclasses.field(default_factory=list)
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "RuleSource":
+        resources = data.pop("resources", [])
+        return cls(
+            endpoint_channel_machine_type=data.get("endpoint_channel_machine_type"),
+            endpoint_connection_type=data.get("endpoint_connection_type"),
+            resources=[Resource.from_dict(resource) for resource in resources],
+        )
 
-@dataclass
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "rule_source_endpoint_channel_machine_type" in args:
+            self.endpoint_channel_machine_type = args["rule_source_endpoint_channel_machine_type"]
+        if "rule_source_endpoint_connection_type" in args:
+            self.endpoint_connection_type = args["rule_source_endpoint_connection_type"]
+
+@dataclasses.dataclass
 class SourceDestinationRule:
     """
     Represents source and destination settings rule.
@@ -358,8 +733,21 @@ class SourceDestinationRule:
     rule_source: RuleSource
     rule_destination: RuleDestination
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "SourceDestinationRule":
+        rule_source = data.pop("rule_source", {})
+        rule_destination = data.pop("rule_destination", {})
+        return cls(
+            rule_name=data.get("rule_name"),
+            rule_source=RuleSource.from_dict(rule_source),
+            rule_destination=RuleDestination.from_dict(rule_destination),
+        )
 
-@dataclass
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        self.rule_source.update_from_args(args)
+        self.rule_destination.update_from_args(args)
+
+@dataclasses.dataclass
 class PolicyLevel:
     """
     Represents the rule policy level.
@@ -368,8 +756,25 @@ class PolicyLevel:
     level: int
     data_type: Optional[str] = None
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "PolicyLevel":
+        return cls(**{k: v for k, v in data.items() if k in inspect.signature(cls).parameters})
 
-@dataclass
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "PolicyLevel":
+        return cls(
+            level=arg_to_number(args.get("policy_level")),
+            data_type=args.get("policy_data_type"),
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "policy_level" in args:
+            self.level = args["policy_level"]
+        if "policy_data_type" in args:
+            self.data_type = args["policy_data_type"]
+
+
+@dataclasses.dataclass
 class PolicyRule:
     """
     Represents a rule in policy.
@@ -395,8 +800,59 @@ class PolicyRule:
         if not self.rules:
             raise DemistoException("Policy must have at least one rule.")
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "PolicyRule":
+        policy_level = data.pop("policy_level", {})
+        rules = data.pop("rules", [])
 
-@dataclass
+        return cls(
+            **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
+            policy_level=PolicyLevel.from_dict(policy_level),
+            rules=[Rule.from_dict(rule) for rule in rules],
+        )
+
+    @classmethod
+    def from_args(cls, args: dict[str, Any]) -> "PolicyRule":
+        return cls(
+            dlp_version=args.get("dlp_version"),
+            policy_name=args.get("policy_name"),
+            enabled=args.get("policy_enabled"),
+            predefined_policy=args.get("predefined_policy"),
+            description=args.get("policy_description", ""),
+            policy_level=PolicyLevel.from_args(args),
+            rules=[Rule.from_args(args)],
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "dlp_version" in args:
+            self.dlp_version = args["dlp_version"]
+        if "policy_name" in args:
+            self.policy_name = args["policy_name"]
+        if "policy_enabled" in args:
+            self.enabled = args["policy_enabled"]
+        if "predefined_policy" in args:
+            self.predefined_policy = args["predefined_policy"]
+        if "policy_description" in args:
+            self.description = args["policy_description"]
+
+        if "policy_level" in args or "policy_data_type" in args:
+            self.policy_level.update_from_args(args)
+
+        rule_name = args.get("rule_name")
+        if rule_name is not None and (rule := self.find_rule(rule_name)):
+            rule.update_from_args(args)
+        else:
+            self.rules.append(Rule.from_args(args))
+
+    def find_rule(self, rule_name: str) -> Rule | None:
+        for rule in self.rules:
+            if rule.rule_name == rule_name:
+                return rule
+
+        return None
+
+
+@dataclasses.dataclass
 class PolicySeverityAction:
     """
     Represents severity and action rule.
@@ -405,8 +861,35 @@ class PolicySeverityAction:
     policy_name: str
     rules: list[SeverityActionRule]
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "PolicySeverityAction":
+        rules = data.pop("rules", [])
+        return cls(
+            policy_name=data.get("policy_name"),
+            rules=[SeverityActionRule.from_dict(rule) for rule in rules],
+        )
 
-@dataclass
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "policy_name" in args:
+            self.policy_name = args["policy_name"]
+
+        rule_name = args["rule_name"]
+        rule = self.find_rule(rule_name)
+
+        if not rule:
+            raise DemistoException(f"Rule `{rule_name}` not found.")
+
+        rule.update_from_args(args)
+
+    def find_rule(self, rule_name: str) -> SeverityActionRule | None:
+        for rule in self.rules:
+            if rule.rule_name == rule_name:
+                return rule
+
+        return None
+
+
+@dataclasses.dataclass
 class PolicySourceDestination:
     """
     Represents source and destination rule.
@@ -415,8 +898,36 @@ class PolicySourceDestination:
     policy_name: str
     rules: list[SourceDestinationRule]
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "PolicySourceDestination":
+        rules = data.pop("rules", [])
+        return cls(
+            policy_name=data.get("policy_name"),
+            rules=[SourceDestinationRule.from_dict(rule) for rule in rules],
+        )
 
-@dataclass
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "policy_name" in args:
+            self.policy_name = args["policy_name"]
+
+        rule_name = args["rule_name"]
+        rule = self.find_rule(rule_name)
+
+        if not rule:
+            raise DemistoException(f"Rule `{rule_name}` not found.")
+
+        rule.update_from_args(args)
+
+    def find_rule(self, rule_name: str) -> SourceDestinationRule | None:
+        for rule in self.rules:
+            if rule.rule_name == rule_name:
+                return rule
+
+        return None
+
+
+
+@dataclasses.dataclass
 class PolicyExceptionRule:
     """
     Represents exception rule.
@@ -426,6 +937,40 @@ class PolicyExceptionRule:
     parent_rule_name: str
     policy_type: str
     exception_rules: list[ExceptionRule]
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "PolicyExceptionRule":
+        exception_rules = data.pop("exception_rules", [])
+        return cls(
+            parent_policy_name=data.get("parent_policy_name"),
+            parent_rule_name=data.get("parent_rule_name"),
+            policy_type=data.get("policy_type"),
+            exception_rules=[ExceptionRule.from_dict(exception_rule) for exception_rule in exception_rules],
+        )
+
+    def update_from_args(self, args: dict[str, Any]) -> None:
+        if "parent_policy_name" in args:
+            self.parent_policy_name = args["parent_policy_name"]
+        if "parent_rule_name" in args:
+            self.parent_rule_name = args["parent_rule_name"]
+        if "policy_type" in args:
+            self.policy_type = args["policy_type"]
+
+        exception_rule_name = args["exception_rule_name"]
+        exception_rule = self.find_exception_rule(exception_rule_name)
+
+        if exception_rule:
+            exception_rule.update_from_args(args)
+        else:
+            self.exception_rules.append(ExceptionRule.from_args(args))
+
+
+    def find_exception_rule(self, exception_rule_name: str) -> ExceptionRule | None:
+        for exception_rule in self.exception_rules:
+            if exception_rule.exception_rule_name == exception_rule_name:
+                return exception_rule
+
+        return None
 
 
 def validate_authentication(func: Callable) -> Callable:
@@ -696,7 +1241,7 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="policy/rules",
-            json_data=rule,
+            json_data=remove_empty_elements(rule),
             resp_type="response",
         )
 
@@ -707,7 +1252,7 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="policy/rules/severity-action",
-            json_data=severity_action_rule,
+            json_data=remove_empty_elements(severity_action_rule),
             resp_type="response",
         )
 
@@ -718,7 +1263,7 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="policy/rules/source-destination",
-            json_data=source_destination_rule,
+            json_data=remove_empty_elements(source_destination_rule),
             resp_type="response",
         )
 
@@ -783,12 +1328,9 @@ class Client(BaseClient):
             method="POST",
             url_suffix="policy/rules/exceptions",
             params={"policyName": parent_policy_name},
-            json_data=exception_rule,
+            json_data=remove_empty_elements(exception_rule),
             resp_type="response",
         )
-
-
-""" HELPER FUNCTIONS """
 
 
 """ COMMAND FUNCTIONS """
@@ -1268,46 +1810,30 @@ def create_rule_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Command results to return to the war room.
     """
     policy_name = args["policy_name"]
-    payload = None
+    rule_name = args["rule_name"]
+
+    enabled_policies = client.list_policies().get("enabled_policies", [])
+
+    if policy_name in enabled_policies:
+        policy = client.list_policy_rules(policy_name)
+        rule = find_rule(policy, rule_name)
+
+        if rule:
+            raise DemistoException("The rule is already exist. Use the update command.")
+    else:
+        policy = None
 
     if entry_id := args.get("entry_id"):
-        payload = read_entry_id(entry_id=entry_id)
+        rule = read_entry_id(entry_id)
+    elif policy:
+        rule = PolicyRule.from_dict(policy)
+        rule.update_from_args(args)
+        rule = dataclasses.asdict(rule)
+    else:
+        rule = PolicyRule.from_args(args)
+        rule = dataclasses.asdict(rule)
 
-    policy = None
-    rule_name = args["rule_name"]
-    if policy_name in client.list_policies().get("enabled_policies", []):
-        policy = client.list_policy_rules(policy_name=policy_name)
-        if find_rule(
-            policy,
-            rule_name,
-        ):
-            raise DemistoException("The rule is already exist. Use the update command.")
-
-    client.update_rule(
-        rule=build_rule_payload(
-            dlp_version=args.get("dlp_version"),
-            policy_name=policy_name,
-            policy_enabled=args.get("policy_enabled"),
-            predefined_policy=args.get("predefined_policy"),
-            rule_name=rule_name,
-            rule_enabled=args.get("rule_enabled"),
-            parts_count_type=args.get("rule_parts_count_type"),
-            condition_relation_type=args.get("rule_condition_relation_type"),
-            classifier_name=args.get("classifier_name"),
-            classifier_predefined=args.get("classifier_predefined"),
-            classifier_position=arg_to_number(args.get("classifier_position")),
-            threshold_type=args.get("classifier_threshold_type"),
-            threshold_value_from=arg_to_number(args.get("classifier_threshold_value_from")),
-            threshold_value_to=arg_to_number(args.get("classifier_threshold_value_to")),
-            threshold_calculate_type=args.get("classifier_threshold_calculate_type"),
-            description=args.get("policy_description", ""),
-            policy_level=arg_to_number(args.get("policy_level")),
-            policy_level_data_type=args.get("policy_data_type"),
-            policy=policy,
-            payload=payload,
-        )
-    )
-
+    client.update_rule(rule)
     return CommandResults(
         readable_output=f"Rule `{rule_name}` was successfully created in policy '{policy_name}'.",
     )
@@ -1325,52 +1851,30 @@ def update_rule_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Command results to return to the war room.
     """
     policy_name = args["policy_name"]
-    payload = None
-    if entry_id := args.get("entry_id"):
-        payload = read_entry_id(entry_id=entry_id)
-
     rule_name = args["rule_name"]
 
-    if policy_name not in client.list_policies().get("enabled_policies", []):
+    enabled_policies = client.list_policies().get("enabled_policies", [])
+
+    if policy_name not in enabled_policies:
         raise DemistoException("The policy does not exist. Use the create command.")
 
-    policy = client.list_policy_rules(policy_name=policy_name)
+    policy = client.list_policy_rules(policy_name)
+    rule = find_rule(policy, rule_name)
 
-    if not (
-        find_rule(
-            policy,
-            rule_name,
-        )
-    ):
+    if not rule:
         raise DemistoException("The rule does not exist. Use the create command.")
 
-    client.update_rule(
-        rule=remove_empty_elements(
-            build_rule_payload(
-                dlp_version=args.get("dlp_version"),
-                policy_name=policy_name,
-                policy_enabled=args.get("policy_enabled"),
-                predefined_policy=args.get("predefined_policy"),
-                rule_name=rule_name,
-                rule_enabled=args.get("rule_enabled"),
-                parts_count_type=args.get("rule_parts_count_type"),
-                condition_relation_type=args.get("rule_condition_relation_type"),
-                classifier_name=args.get("classifier_name"),
-                classifier_predefined=args.get("classifier_predefined"),
-                classifier_position=arg_to_number(args.get("classifier_position")),
-                threshold_type=args.get("classifier_threshold_type"),
-                threshold_value_from=arg_to_number(args.get("classifier_threshold_value_from")),
-                threshold_value_to=arg_to_number(args.get("classifier_threshold_value_to")),
-                threshold_calculate_type=args.get("classifier_threshold_calculate_type"),
-                description=args.get("policy_description", ""),
-                policy_level=arg_to_number(args.get("policy_level")),
-                policy_level_data_type=args.get("policy_data_type"),
-                payload=payload,
-                policy=policy,
-            )
-        )
-    )
+    if entry_id := args.get("entry_id"):
+        rule = read_entry_id(entry_id)
+    elif policy:
+        rule = PolicyRule.from_dict(policy)
+        rule.update_from_args(args)
+        rule = dataclasses.asdict(rule)
+    else:
+        rule = PolicyRule.from_args(args)
+        rule = dataclasses.asdict(rule)
 
+    client.update_rule(rule)
     return CommandResults(
         readable_output=f"Rule `{rule_name}` was successfully updated in policy '{policy_name}'.",
     )
@@ -1387,46 +1891,23 @@ def update_rule_severity_action_command(client: Client, args: dict) -> CommandRe
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    payload = None
-    if entry_id := args.get("entry_id"):
-        payload = read_entry_id(entry_id=entry_id)
-
     policy_name = args["policy_name"]
     rule_name = args["rule_name"]
-    classifier_number_of_matches = args.get("classifier_number_of_matches")
-    override_classifier_number_of_matches = arg_to_number(
-        args.get("override_classifier_number_of_matches")
-    )
 
-    policy = client.get_rule_severity_action(policy_name=policy_name)
-    rule = find_rule(
-        policy=policy,
-        rule_name=rule_name,
-    )
+    policy = client.get_rule_severity_action(policy_name)
+    rule = find_rule(policy, rule_name)
 
     if not rule:
-        raise DemistoException("The rule not found.")
+        raise DemistoException(f"Rule `{rule_name}` not found.")
 
-    client.update_rule_severity_action(
-        severity_action_rule=remove_empty_elements(
-            build_severity_action_payload(
-                rule_name=rule_name,
-                rule_type=args.get("rule_type"),
-                rule_count_type=args.get("rule_count_type"),
-                rule_count_period=args.get("rule_count_period"),
-                rule_rate_match_period=args.get("rule_rate_match_period"),
-                rule_max_matches=args.get("rule_max_matches"),
-                classifier_selected=args.get("classifier_selected"),
-                classifier_number_of_matches=classifier_number_of_matches,
-                override_classifier_number_of_matches=override_classifier_number_of_matches,
-                classifier_severity_type=args.get("classifier_severity_type"),
-                classifier_action_plan=args.get("classifier_action_plan"),
-                policy=policy,
-                payload=payload,
-            )
-        )
-    )
+    if entry_id := args.get("entry_id"):
+        severity_action = read_entry_id(entry_id)
+    else:
+        severity_action = PolicySeverityAction.from_dict(policy)
+        severity_action.update_from_args(args)
+        severity_action = dataclasses.asdict(severity_action)
 
+    client.update_rule_severity_action(severity_action)
     return CommandResults(
         readable_output=f"Severity actions for Rule `{rule_name}` in policy '{policy_name}' was successfully updated.",
     )
@@ -1443,42 +1924,27 @@ def update_rule_source_destination_command(client: Client, args: dict) -> Comman
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    payload = None
-
-    if entry_id := args.get("entry_id"):
-        payload = read_entry_id(entry_id=entry_id)
-
     policy_name = args["policy_name"]
     rule_name = args["rule_name"]
 
-    policy = client.get_rule_source_destination(policy_name=policy_name)
+    policy = client.get_rule_source_destination(policy_name)
+    rule = find_rule(policy, rule_name)
 
-    if not find_rule(
-        policy=policy,
-        rule_name=rule_name,
-    ):
+    if not rule:
         raise DemistoException("The rule not found.")
 
-    client.update_rule_source_destination(
-        source_destination_rule=build_source_destination_payload(
-            rule_name=rule_name,
-            endpoint_channel_machine_type=args.get("rule_source_endpoint_channel_machine_type"),
-            endpoint_connection_type=args.get("rule_source_endpoint_connection_type"),
-            email_monitor_directions=argToList(
-                args.get("rule_destination_email_monitor_directions")
-            ),
-            channel_type=args.get("channel_type"),
-            channel_enabled=args.get("channel_enabled"),
-            resource_name=args.get("resource_name"),
-            resource_type=args.get("resource_type"),
-            resource_include=args.get("resource_include"),
-            policy=policy,
-            payload=payload,
-        )
-    )
+    if entry_id := args.get("entry_id"):
+        source_destination = read_entry_id(entry_id)
+    else:
+        source_destination = PolicySourceDestination.from_dict(policy)
+        source_destination.update_from_args(args)
+        source_destination = dataclasses.asdict(source_destination)
 
+    client.update_rule_source_destination(source_destination)
     return CommandResults(
-        readable_output=f"Source and destination for Rule `{rule_name}` in policy '{policy_name}' was successfully updated.",
+        readable_output=(
+            f"Source and destination for Rule `{rule_name}` in policy '{policy_name}' was successfully updated."
+        )
     )
 
 
@@ -1493,71 +1959,33 @@ def create_exception_rule_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    # Extract entry ID if provided
-    payload = None
-    if entry_id := args.get("entry_id"):
-        payload = read_entry_id(entry_id=entry_id)
-
     parent_policy_name = args["parent_policy_name"]
     parent_rule_name = args["parent_rule_name"]
     policy_type = args["policy_type"]
     exception_rule_name = args["exception_rule_name"]
+
     exception_rules_policy = client.get_exception_rule(
-        policy_type,
-        parent_policy_name,
-        parent_rule_name,
+        policy_type=policy_type,
+        policy_name=parent_policy_name,
+        rule_name=parent_rule_name,
     )
+    enabled_policies = client.list_policies().get("enabled_policies", [])
 
-    if parent_policy_name in client.list_policies().get("enabled_policies", []):
-        if find_exception_rule(
-            exception_rules_policy.get("exception_rules", []),
-            exception_rule_name,
-        ):
-            raise DemistoException("The exception rule is already exist. Use the update command.")
+    if parent_policy_name in enabled_policies:
+        exception_rules = exception_rules_policy.get("exception_rules", [])
+        exception_rule = find_exception_rule(exception_rules, exception_rule_name)
 
-    # Request to create the exception rule
-    client.update_exception_rule(
-        parent_policy_name=parent_policy_name,
-        exception_rule=remove_empty_elements(
-            build_exception_rule_payload(
-                parent_policy_name=parent_policy_name,
-                parent_rule_name=parent_rule_name,
-                policy_type=policy_type,
-                exception_rule_name=exception_rule_name,
-                enabled=args.get("enabled"),
-                description=args.get("description"),
-                parts_count_type=args.get("parts_count_type"),
-                condition_relation_type=args.get("condition_relation_type"),
-                condition_enabled=args.get("condition_enabled"),
-                source_enabled=args.get("source_enabled"),
-                destination_enabled=args.get("destination_enabled"),
-                classifier_name=args.get("classifier_name"),
-                classifier_predefined=args.get("classifier_predefined"),
-                classifier_position=arg_to_number(args.get("classifier_position")),
-                classifier_threshold_type=args.get("classifier_threshold_type"),
-                classifier_threshold_value_from=arg_to_number(
-                    args.get("classifier_threshold_value_from")
-                ),
-                classifier_threshold_value_to=arg_to_number(
-                    args.get("classifier_threshold_value_to")
-                ),
-                classifier_threshold_calculate_type=args.get("classifier_threshold_calculate_type"),
-                severity_classifier_max_matches=args.get("severity_classifier_max_matches"),
-                severity_classifier_selected=args.get("severity_classifier_selected"),
-                severity_classifier_number_of_matches=arg_to_number(
-                    args.get("severity_classifier_number_of_matches")
-                ),
-                override_severity_classifier_number_of_matches=arg_to_number(
-                    args.get("override_severity_classifier_number_of_matches")
-                ),
-                severity_classifier_severity_type=args.get("severity_classifier_severity_type"),
-                severity_classifier_action_plan=args.get("severity_classifier_action_plan"),
-                exception_policy=exception_rules_policy,
-                payload=payload,
-            )
-        ),
-    )
+        if exception_rule:
+            raise DemistoException("The exception rule already exists. Use the update command.")
 
+    if entry_id := args.get("entry_id"):
+        exceptions_policy = read_entry_id(entry_id)
+    else:
+        exceptions_policy = PolicyExceptionRule.from_dict(exception_rules_policy)
+        exceptions_policy.update_from_args(args)
+        exceptions_policy = dataclasses.asdict(exceptions_policy)
+
+    client.update_exception_rule(parent_policy_name, exceptions_policy)
     return CommandResults(
         readable_output=f"Exception rule '{exception_rule_name}' was successfully created in rule "
         f"'{parent_rule_name}' under policy '{parent_policy_name}'.",
@@ -1575,71 +2003,33 @@ def update_exception_rule_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    payload = None
-    if entry_id := args.get("entry_id"):
-        payload = read_entry_id(entry_id=entry_id)
-
     parent_policy_name = args["parent_policy_name"]
     parent_rule_name = args["parent_rule_name"]
     policy_type = args["policy_type"]
     exception_rule_name = args["exception_rule_name"]
-    exception_rules_policy = client.get_exception_rule(
-        policy_type,
-        parent_policy_name,
-        parent_rule_name,
-    )
-    if parent_policy_name in client.list_policies().get("enabled_policies", []):
-        if (
-            find_exception_rule(
-                exception_rules_policy.get("exception_rules", []),
-                exception_rule_name,
-            )
-            is None
-        ):
-            raise DemistoException("The exception rule is not exist. Use the create command.")
-    # Request to create the exception rule
-    client.update_exception_rule(
-        parent_policy_name=parent_policy_name,
-        exception_rule=remove_empty_elements(
-            build_exception_rule_payload(
-                parent_policy_name=parent_policy_name,
-                parent_rule_name=parent_rule_name,
-                policy_type=policy_type,
-                exception_rule_name=exception_rule_name,
-                enabled=args.get("enabled"),
-                description=args.get("description"),
-                parts_count_type=args.get("parts_count_type"),
-                condition_relation_type=args.get("condition_relation_type"),
-                condition_enabled=args.get("condition_enabled"),
-                source_enabled=args.get("source_enabled"),
-                destination_enabled=args.get("destination_enabled"),
-                classifier_name=args.get("classifier_name"),
-                classifier_predefined=args.get("classifier_predefined"),
-                classifier_position=arg_to_number(args.get("classifier_position")),
-                classifier_threshold_type=args.get("classifier_threshold_type"),
-                classifier_threshold_value_from=arg_to_number(
-                    args.get("classifier_threshold_value_from")
-                ),
-                classifier_threshold_value_to=arg_to_number(
-                    args.get("classifier_threshold_value_to")
-                ),
-                classifier_threshold_calculate_type=args.get("classifier_threshold_calculate_type"),
-                severity_classifier_max_matches=args.get("severity_classifier_max_matches"),
-                severity_classifier_selected=args.get("severity_classifier_selected"),
-                severity_classifier_number_of_matches=arg_to_number(
-                    args.get("severity_classifier_number_of_matches")
-                ),
-                override_severity_classifier_number_of_matches=arg_to_number(
-                    args.get("override_severity_classifier_number_of_matches")
-                ),
-                severity_classifier_severity_type=args.get("severity_classifier_severity_type"),
-                severity_classifier_action_plan=args.get("severity_classifier_action_plan"),
-                exception_policy=exception_rules_policy,
-                payload=payload,
-            )
-        ),
-    )
 
+    exception_rules_policy = client.get_exception_rule(
+        policy_type=policy_type,
+        policy_name=parent_policy_name,
+        rule_name=parent_rule_name,
+    )
+    enabled_policies = client.list_policies().get("enabled_policies", [])
+
+    if parent_policy_name in enabled_policies:
+        exception_rules = exception_rules_policy.get("exception_rules", [])
+        exception_rule = find_exception_rule(exception_rules, exception_rule_name)
+
+        if exception_rule is None:
+            raise DemistoException("The exception rule does not exist. Use the create command.")
+
+    if entry_id := args.get("entry_id"):
+        exceptions_policy = read_entry_id(entry_id)
+    else:
+        exceptions_policy = PolicyExceptionRule.from_dict(exception_rules_policy)
+        exceptions_policy.update_from_args(args)
+        exceptions_policy = dataclasses.asdict(exceptions_policy)
+
+    client.update_exception_rule(parent_policy_name, exceptions_policy)
     return CommandResults(
         readable_output=f"Exception rule '{exception_rule_name}' was successfully updated in rule "
         f"'{parent_rule_name}' under policy '{parent_policy_name}'.",
@@ -2015,7 +2405,7 @@ def get_end_time():
     return datetime.now().strftime(DATE_FORMAT)
 
 
-# HELPERS #
+""" HELPER FUNCTIONS """
 
 
 def from_dict(cls: Any, data: Any) -> Any:
@@ -2088,10 +2478,20 @@ def transform_keys(data: DictOrList, key_map: dict[str, str] | None = None) -> D
 
 
 def read_entry_id(entry_id: str) -> dict[str, Any]:
-    file_data = demisto.getFilePath(entry_id)
-    with open(file_data["path"], "rb") as f:
-        args = json.load(f)
-    return args
+    """Read the content of an entry file by its ID.
+
+    Args:
+        entry_id (str): The ID of the entry file.
+
+    Returns:
+        dict[str, Any]: The content of the entry file as a dictionary.
+    """
+    entry_file = demisto.getFilePath(entry_id)
+
+    with open(entry_file["path"], "rb") as handler:
+        content = json.load(handler)
+
+    return content
 
 
 def find_rule(policy: dict, rule_name: str) -> dict[str, Any] | None:
@@ -2104,582 +2504,6 @@ def find_rule(policy: dict, rule_name: str) -> dict[str, Any] | None:
 def find_exception_rule(exception_rules: list[dict[str, Any]], name: str) -> dict[str, Any] | None:
     """Find a rule by its name in the policy."""
     return next((rule for rule in exception_rules if rule.get("exception_rule_name") == name), None)
-
-
-def update_classifier(rule: dict, position: int | None, classifier_updates: dict):
-    """Update an existing classifier or add a new one."""
-    for clsf in rule.get("classifiers", []):
-        if clsf.get("position") == position:
-            clsf.update(remove_empty_elements(classifier_updates))
-            return
-    classifier_updates = remove_empty_elements(classifier_updates)
-    if classifier_updates:
-        rule.get("classifiers", []).append(classifier_updates)
-
-
-def update_severity_classifier_details(
-    rule: dict,
-    details: dict,
-    classifiers_key: str = "severity_classifier_details",
-    id: int | None = None,
-) -> None:
-    """
-    Update or add severity classifier details in a rule.
-
-    Args:
-        rule (dict): The rule object containing `severity_classifier_details`.
-        details (dict): The new details to update or add.
-
-    Example details:
-        {
-            "max_matches": "GREATEST_NUMBER",
-            "selected": "true",
-            "number_of_matches": 5,
-            "severity_type": "HIGH",
-            "action_plan": "Block"
-        }
-    """
-    if not rule.get(classifiers_key):
-        rule[classifiers_key] = []
-
-    classifiers = rule[classifiers_key]
-    # Update an existing classifier if it matches the `number_of_matches`
-    for classifier in classifiers:
-        if arg_to_number(classifier.get("number_of_matches")) == id:
-            classifier.update(remove_empty_elements(details))
-            return
-    if id:
-        raise DemistoException(f"{id} does not exists in the classifiers `number_of_matches`")
-
-    # If no existing classifier matches, add a new one
-    if details:
-        classifiers.append(details)
-
-    classifiers.sort(
-        key=lambda x: (x.get("number_of_matches") is None, x.get("number_of_matches", 0)),
-        reverse=True,
-    )
-
-
-def build_rule_payload(
-    dlp_version: str | None,
-    policy_name: str | None,
-    policy_enabled: str | None,
-    predefined_policy: str | None,
-    rule_name: str,
-    rule_enabled: str | None,
-    parts_count_type: str | None,
-    condition_relation_type: str | None,
-    classifier_name: str | None,
-    classifier_predefined: str | None,
-    classifier_position: int | None,
-    threshold_type: str | None,
-    threshold_value_from: int | None,
-    threshold_value_to: int | None,
-    threshold_calculate_type: str | None,
-    description: str | None,
-    policy_level: int | None,
-    policy_level_data_type: str | None,
-    policy: dict[str, Any] | None = None,
-    payload: dict | None = None,
-) -> dict:
-    # update case
-    if not payload and policy:
-        policy.update(
-            remove_empty_elements(
-                {
-                    "dlp_version": dlp_version,
-                    "policy_name": policy_name,
-                    "enabled": policy_enabled,
-                    "predefined_policy": predefined_policy,
-                    "description": description,
-                }
-            )
-        )
-        policy["policy_level"].update(
-            remove_empty_elements(
-                {
-                    "level": policy_level,
-                    "data_type": policy_level_data_type,
-                }
-            )
-        )
-        rule = find_rule(policy, rule_name)
-        if not rule:
-            rules: list = policy.get("rules", [])
-            rules.append(
-                {
-                    "rule_name": rule_name,
-                    "enabled": rule_enabled,
-                    "parts_count_type": parts_count_type,
-                    "condition_relation_type": condition_relation_type,
-                    "classifiers": [
-                        {
-                            "classifier_name": classifier_name,
-                            "predefined": classifier_predefined,
-                            "position": classifier_position,
-                            "threshold_type": threshold_type,
-                            "threshold_value_from": threshold_value_from,
-                            "threshold_value_to": threshold_value_to,
-                            "threshold_calculate_type": threshold_calculate_type,
-                        }
-                    ],
-                }
-            )
-        else:
-            rule.update(
-                remove_empty_elements(
-                    {
-                        "enabled": rule_enabled,
-                        "parts_count_type": parts_count_type,
-                        "condition_relation_type": condition_relation_type,
-                    }
-                )
-            )
-            update_classifier(
-                rule,
-                classifier_position,
-                {
-                    "classifier_name": classifier_name,
-                    "predefined": classifier_predefined,
-                    "position": classifier_position,
-                    "threshold_type": threshold_type,
-                    "threshold_value_from": threshold_value_from,
-                    "threshold_value_to": threshold_value_to,
-                    "threshold_calculate_type": threshold_calculate_type,
-                },
-            )
-    else:
-        # create case
-        policy = (
-            {
-                "dlp_version": dlp_version,
-                "policy_name": policy_name,
-                "enabled": policy_enabled,
-                "predefined_policy": predefined_policy,
-                "description": description,
-                "policy_level": {
-                    "level": policy_level,
-                    "data_type": policy_level_data_type,
-                },
-                "rules": [
-                    {
-                        "rule_name": rule_name,
-                        "enabled": rule_enabled,
-                        "parts_count_type": parts_count_type,
-                        "condition_relation_type": condition_relation_type,
-                        "classifiers": [
-                            {
-                                "classifier_name": classifier_name,
-                                "predefined": classifier_predefined,
-                                "position": classifier_position,
-                                "threshold_type": threshold_type,
-                                "threshold_value_from": threshold_value_from,
-                                "threshold_value_to": threshold_value_to,
-                                "threshold_calculate_type": threshold_calculate_type,
-                            }
-                        ],
-                    }
-                ],
-            }
-            if not payload
-            else payload
-        )
-    from_dict(PolicyRule, policy)
-    return remove_empty_elements(policy)
-
-
-def build_severity_action_payload(
-    rule_name: str,
-    rule_type: str | None,
-    rule_count_type: str | None,
-    rule_count_period: str | None,
-    rule_rate_match_period: str | None,
-    rule_max_matches: str | None,
-    classifier_selected: str | None,
-    classifier_number_of_matches: int | None,
-    override_classifier_number_of_matches: int | None,
-    classifier_severity_type: str | None,
-    classifier_action_plan: str | None,
-    policy: dict[str, Any],
-    payload: dict[str, Any] | None = None,
-) -> dict:
-    if not payload:
-        rule = find_rule(policy, rule_name)
-        if not rule:
-            raise DemistoException(f"Rule `{rule_name}` not found.")
-        rule.update(
-            remove_empty_elements(
-                {
-                    "type": rule_type,
-                    "max_matches": rule_max_matches,
-                    "risk_adaptive_protection_enabled": "false",
-                }
-            )
-        )
-        if rule_type == "CUMULATIVE_CONDITION":
-            rule.update(
-                remove_empty_elements(
-                    {
-                        "count_type": rule_count_type,
-                        "count_time_period": rule_count_period,
-                        "count_time_period_window": rule_rate_match_period,
-                    }
-                )
-            )
-
-        # if there is no classifiers
-        if not rule.get("classifier_details", []):
-            rule["classifier_details"] = [
-                {
-                    "selected": classifier_selected,
-                    "number_of_matches": classifier_number_of_matches,
-                    "severity_type": classifier_severity_type,
-                    "dup_severity_type": classifier_severity_type,
-                    "action_plan": classifier_action_plan,
-                },
-                {
-                    "selected": "false",
-                    "number_of_matches": classifier_number_of_matches,
-                    "severity_type": classifier_severity_type,
-                    "dup_severity_type": classifier_severity_type,
-                    "action_plan": classifier_action_plan,
-                },
-                {
-                    "selected": "false",
-                    "number_of_matches": classifier_number_of_matches,
-                    "severity_type": classifier_severity_type,
-                    "dup_severity_type": classifier_severity_type,
-                    "action_plan": classifier_action_plan,
-                },
-            ]
-        else:
-            if override_classifier_number_of_matches is not None:
-                update_severity_classifier_details(
-                    rule=rule,
-                    details={
-                        "number_of_matches": arg_to_number(classifier_number_of_matches),
-                        "selected": classifier_selected,
-                        "severity_type": classifier_severity_type,
-                        "dup_severity_type": classifier_severity_type,
-                        "action_plan": classifier_action_plan,
-                    },
-                    classifiers_key="classifier_details",
-                    id=override_classifier_number_of_matches,
-                )
-            else:
-                update_severity_classifier_details(
-                    rule=rule,
-                    details={
-                        "number_of_matches": arg_to_number(classifier_number_of_matches),
-                        "selected": classifier_selected,
-                        "severity_type": classifier_severity_type,
-                        "dup_severity_type": classifier_severity_type,
-                        "action_plan": classifier_action_plan,
-                    },
-                    classifiers_key="classifier_details",
-                    id=arg_to_number(classifier_number_of_matches),
-                )
-    policy = policy if not payload else payload
-    from_dict(PolicySeverityAction, policy)
-    return remove_empty_elements(policy)
-
-
-def build_source_destination_payload(
-    rule_name: str,
-    endpoint_channel_machine_type: str | None,
-    endpoint_connection_type: str | None,
-    email_monitor_directions: list[str] | None,
-    channel_type: str | None,
-    channel_enabled: str | None,
-    resource_name: str | None,
-    resource_type: str | None,
-    resource_include: str | None,
-    policy: dict[str, Any],
-    payload: dict[str, Any] | None,
-) -> dict:
-    if not payload:
-        rule = find_rule(policy, rule_name)
-        if not rule:
-            raise DemistoException(f"Rule `{rule_name}` not found.")
-        channels = dict_safe_get(rule, ["rule_destination", "channels"], [])
-
-        for channel in channels:
-            if channel.get("channel_type") == channel_type:
-                channel.update(
-                    remove_empty_elements(
-                        {
-                            "enabled": channel_enabled,
-                        }
-                    )
-                )
-                if resource_name:
-                    for resource in channel.get("resources", []):
-                        if resource.get("resource_name") == resource_name:
-                            resource.update(
-                                remove_empty_elements(
-                                    {
-                                        "type": resource_type,
-                                        "include": resource_include,
-                                    }
-                                )
-                            )
-                            break
-                    else:
-                        channel["resources"] = channel.get("resources", [])
-                        channel["resources"].append(
-                            {
-                                "resource_name": resource_name,
-                                "type": resource_type,
-                                "include": resource_include,
-                            }
-                        )
-                break
-        else:
-            channel = {
-                "channel_type": channel_type,
-                "enabled": channel_enabled,
-                "resources": [
-                    {
-                        "resource_name": resource_name,
-                        "type": resource_type,
-                        "include": resource_include,
-                    }
-                ],
-            }
-            if remove_empty_elements(channel):
-                channels.append(channel)
-
-        rule["rule_source"].update(
-            remove_empty_elements(
-                {
-                    "endpoint_channel_machine_type": endpoint_channel_machine_type,
-                    "endpoint_connection_type": endpoint_connection_type,
-                }
-            )
-        )
-        rule["rule_destination"].update(
-            remove_empty_elements(
-                {
-                    "email_monitor_directions": email_monitor_directions,
-                }
-            )
-        )
-        rule["rule_destination"].update(
-            {
-                "channels": channels,
-            }
-        )
-
-    policy = policy if not payload else payload
-    from_dict(PolicySourceDestination, policy)
-    return remove_empty_elements(policy)
-
-
-def build_exception_rule_payload(
-    parent_policy_name: str,
-    parent_rule_name: str,
-    policy_type: str,
-    exception_rule_name: str,
-    enabled: str | None,
-    description: str | None = None,
-    parts_count_type: str | None = None,
-    condition_relation_type: str | None = None,
-    condition_enabled: str | None = None,
-    source_enabled: str | None = None,
-    destination_enabled: str | None = None,
-    classifier_name: str | None = None,
-    classifier_predefined: str | None = None,
-    classifier_position: int | None = None,
-    classifier_threshold_type: str | None = None,
-    classifier_threshold_value_from: int | None = None,
-    classifier_threshold_value_to: int | None = None,
-    classifier_threshold_calculate_type: str | None = None,
-    severity_classifier_max_matches: str | None = None,
-    severity_classifier_selected: str | None = None,
-    severity_classifier_number_of_matches: int | None = None,
-    override_severity_classifier_number_of_matches: int | None = None,
-    severity_classifier_severity_type: str | None = None,
-    severity_classifier_action_plan: str | None = None,
-    exception_policy: dict = {},
-    payload: dict | None = None,
-) -> dict:
-    """
-    Build a payload for creating or updating exception rules in a policy.
-
-    Args:
-        parent_policy_name (str): Name of the parent policy.
-        parent_rule_name (str): Name of the parent rule.
-        policy_type (str): Type of the policy (DLP or DISCOVERY).
-        exception_rule_name (str): Name of the exception rule.
-        enabled (str): Indicates if the rule is enabled.
-        description (str | None): Description of the rule.
-        parts_count_type (str | None): Parts count type of the exception rule.
-        condition_relation_type (str | None): Relation type of the condition.
-        condition_enabled (str | None): Whether the condition is enabled.
-        source_enabled (str | None): Whether the source condition is enabled (DLP only).
-        destination_enabled (str | None): Whether the destination condition is enabled (DLP only).
-        classifier_name (str | None): Name of the classifier.
-        classifier_predefined (str | None): Whether the classifier is predefined.
-        classifier_position (int | None): Position of the classifier.
-        classifier_threshold_type (str | None): Threshold type for the classifier.
-        classifier_threshold_value_from (int | None): Threshold value for the classifier.
-        classifier_threshold_calculate_type (str | None): Calculation type for the threshold.
-        severity_classifier_max_matches (str | None): Maximum matches method.
-        severity_classifier_selected (str | None): Whether the classifier is selected.
-        severity_classifier_number_of_matches (int | None): Number of matches for the classifier.
-        severity_classifier_severity_type (str | None): Severity type for the classifier.
-        severity_classifier_action_plan (str | None): Action plan for the classifier.
-        exception_policy (dict | None): Existing exception policy data.
-
-    Returns:
-        dict: Built payload for the exception rule.
-    """
-    if not payload and not exception_policy:
-        raise DemistoException("Exception policy data is required.")
-
-    if payload:
-        return payload
-
-    # Ensure top-level attributes are consistent
-    exception_policy.update(
-        remove_empty_elements(
-            {
-                "parent_policy_name": parent_policy_name,
-                "parent_rule_name": parent_rule_name,
-                "policy_type": policy_type,
-            }
-        )
-    )
-    # Locate the existing exception rules or initialize the list
-    exception_rules = exception_policy.get("exception_rules", [])
-    # Check if the exception rule exists by name
-    existing_rule = next(
-        (
-            rule
-            for rule in exception_rules
-            if rule.get("exception_rule_name") == exception_rule_name
-        ),
-        None,
-    )
-
-    # Update the existing rule or append a new one
-    if existing_rule:
-        existing_rule.update(
-            remove_empty_elements(
-                {
-                    "enabled": enabled,
-                    "description": description,
-                    "display_description": description,
-                    "parts_count_type": parts_count_type,
-                    "condition_relation_type": condition_relation_type,
-                    "condition_enabled": condition_enabled,
-                    "source_enabled": source_enabled,
-                    "destination_enabled": destination_enabled,
-                }
-            )
-        )
-        classifier = {
-            "classifier_name": classifier_name,
-            "predefined": classifier_predefined,
-            "position": classifier_position,
-            "threshold_type": classifier_threshold_type,
-            "threshold_value_from": classifier_threshold_value_from,
-            "threshold_value_to": classifier_threshold_value_to,
-            "threshold_calculate_type": classifier_threshold_calculate_type,
-        }
-        if remove_empty_elements(classifier):
-            update_classifier(
-                existing_rule,
-                classifier_position,
-                classifier,
-            )
-        existing_rule["severity_action"] = existing_rule.get("severity_action", {})
-        existing_rule["severity_action"].update(
-            remove_empty_elements({"max_matches": severity_classifier_max_matches})
-        )
-        if override_severity_classifier_number_of_matches is not None:
-            update_severity_classifier_details(
-                rule=existing_rule["severity_action"],
-                details={
-                    "selected": severity_classifier_selected,
-                    "number_of_matches": arg_to_number(severity_classifier_number_of_matches),
-                    "severity_type": severity_classifier_severity_type,
-                    "dup_severity_type": severity_classifier_severity_type,
-                    "action_plan": severity_classifier_action_plan,
-                },
-                classifiers_key="classifier_details",
-                id=override_severity_classifier_number_of_matches,
-            )
-        else:
-            severity_classifier = {
-                "selected": severity_classifier_selected,
-                "number_of_matches": arg_to_number(severity_classifier_number_of_matches),
-                "severity_type": severity_classifier_severity_type,
-                "dup_severity_type": severity_classifier_severity_type,
-                "action_plan": severity_classifier_action_plan,
-            }
-            if remove_empty_elements(severity_classifier):
-                update_severity_classifier_details(
-                    rule=existing_rule["severity_action"],
-                    details=severity_classifier,
-                    classifiers_key="classifier_details",
-                    id=arg_to_number(severity_classifier_number_of_matches),
-                )
-    else:
-        # Add a new exception rule
-        new_rule = {
-            "exception_rule_name": exception_rule_name,
-            "enabled": enabled,
-            "description": description,
-            "display_description": description,
-            "parts_count_type": parts_count_type,
-            "condition_relation_type": condition_relation_type,
-            "condition_enabled": condition_enabled,
-            "source_enabled": source_enabled,
-            "destination_enabled": destination_enabled,
-            "classifiers": [
-                {
-                    "classifier_name": classifier_name,
-                    "predefined": classifier_predefined,
-                    "position": classifier_position,
-                    "threshold_type": classifier_threshold_type,
-                    "threshold_value_from": classifier_threshold_value_from,
-                    "threshold_calculate_type": classifier_threshold_calculate_type,
-                }
-            ],
-            "severity_action": {
-                "max_matches": severity_classifier_max_matches,
-                "classifier_details": [
-                    {
-                        "selected": severity_classifier_selected,
-                        "number_of_matches": severity_classifier_number_of_matches,
-                        "severity_type": severity_classifier_severity_type,
-                        "dup_severity_type": severity_classifier_severity_type,
-                        "action_plan": severity_classifier_action_plan,
-                    },
-                    {
-                        "selected": "false",
-                        "number_of_matches": severity_classifier_number_of_matches,
-                        "severity_type": severity_classifier_severity_type,
-                        "dup_severity_type": severity_classifier_severity_type,
-                        "action_plan": severity_classifier_action_plan,
-                    },
-                    {
-                        "selected": "false",
-                        "number_of_matches": severity_classifier_number_of_matches,
-                        "severity_type": severity_classifier_severity_type,
-                        "dup_severity_type": severity_classifier_severity_type,
-                        "action_plan": severity_classifier_action_plan,
-                    },
-                ],
-            },
-        }
-        exception_rules.append(new_rule)
-    # Update the policy with the modified exception rules
-    exception_policy["exception_rules"] = exception_rules
-    from_dict(PolicyExceptionRule, exception_policy)
-    return remove_empty_elements(exception_policy)
 
 
 def main():  # pragma: no cover

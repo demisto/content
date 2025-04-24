@@ -861,18 +861,18 @@ Update the severity actions for a rule in a specific DLP policy. To add more cla
 | rule_count_period | The period of the matches to count. Required when rule_type is CUMULATIVE_CONDITION. Required when not using `entry_id`. Possible values are: FIVE_MINUTES, FIFTEEN_MINUTES, ONE_HOUR, FOUR_HOUR, EIGHT_HOURS, TWENTY_FOUR_HOURS. | Optional |
 | rule_rate_match_period | The match type (for example, transactions) will accumulate until the rate declines for the specified duration. Required when rule_type is CUMULATIVE_CONDITION. Required when not using `entry_id`. Possible values are: FIVE_MINUTES, FIFTEEN_MINUTES, ONE_HOUR, FOUR_HOUR, EIGHT_HOURS, TWENTY_FOUR_HOURS. | Optional |
 | rule_max_matches | Matches are calculated as the X matched conditions. Required when not using `entry_id`. Possible values are: GREATEST_NUMBER, SUM_ALL. | Optional |
-| classifier_selected | Indicates if the classifier is selected. Required when not using `entry_id`. Possible values are: true, false. | Optional |
-| classifier_number_of_matches | The number of matches for the classifier. In case therer is no classifier with this number of matches, use `override_classifier_number_of_matches` to override classifier. Required when not using `entry_id`. | Optional |
+| severity_classifier_selected | Indicates if the classifier is selected. Required when not using `entry_id`. Possible values are: true, false. | Optional |
+| severity_classifier_number_of_matches | The number of matches for the classifier. In case therer is no classifier with this number of matches, use `override_classifier_number_of_matches` to override classifier. Required when not using `entry_id`. | Optional |
 | override_classifier_number_of_matches | The number of matches classifier to override. | Optional |
-| classifier_severity_type | The severity type of the classifier. Required when not using `entry_id`. Possible values are: LOW, MEDIUM, HIGH. | Optional |
-| classifier_action_plan | The action plan associated with the classifier. There are predefined values (such as `Audit Only`, `Block All`, `Audit and Notify`, `Drop Email Attachment`, `Audit Without Forensis`, `Block Without Forencis`) and defined by user action plans. Required when not using `entry_id`. | Optional |
+| severity_classifier_severity_type | The severity type of the classifier. Required when not using `entry_id`. Possible values are: LOW, MEDIUM, HIGH. | Optional |
+| severity_classifier_action_plan | The action plan associated with the classifier. There are predefined values (such as `Audit Only`, `Block All`, `Audit and Notify`, `Drop Email Attachment`, `Audit Without Forensis`, `Block Without Forencis`) and defined by user action plans. Required when not using `entry_id`. | Optional |
 | entry_id | Entry ID of a JSON file to pass the configuration instead of using the command inputs. Use `fp-dlp-rule-severity-action-get` to retrive examples for the payload to provide. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!fp-dlp-rule-severity-action-update policy_name=new_policy_4 rule_name=new_rule_2 classifier_number_of_matches=1 classifier_action_plan=test classifier_selected=true classifier_severity_type=LOW override_classifier_number_of_matches=2```
+```!fp-dlp-rule-severity-action-update policy_name=new_policy_4 rule_name=new_rule_2 severity_classifier_number_of_matches=1 severity_classifier_action_plan=test severity_classifier_selected=true severity_classifier_severity_type=LOW override_classifier_number_of_matches=2```
 #### Human Readable Output
 
 >Severity actions for Rule `new_rule_2` in policy 'new_policy_4' was successfully updated.
@@ -914,7 +914,7 @@ There is no context output for this command.
 ### fp-dlp-rule-exception-create
 
 ***
-Create an exception rule for a specified parent rule and policy type. To add more classifiers, use this command multiple times or provide a JSON configuration file via the `entry_id` argument to override all classifiers.
+Create an exception rule for a specified parent rule and policy type. To add more classifiers, use this command multiple times or provide a JSON configuration file via the `entry_id` argument to override all classifiers. For editing source and destination settings, use the `entry_id` argument.
 
 #### Base Command
 
@@ -933,8 +933,6 @@ Create an exception rule for a specified parent rule and policy type. To add mor
 | parts_count_type | The parts count type of the exception rule. Possible values are: CROSS_COUNT, INTERNAL_COUNT. | Optional |
 | condition_relation_type | The condition relation type of the exception rule. Possible values are: AND, OR, CUSTOMIZED. | Optional |
 | condition_enabled | Indicates whether the condition is enabled. Possible values are: true, false. | Optional |
-| source_enabled | Indicates whether the source condition is enabled (only for DLP policy type). Possible values are: true, false. | Optional |
-| destination_enabled | Indicates whether the destination condition is enabled (only for DLP policy type). Possible values are: true, false. | Optional |
 | classifier_name | The name of the classifier. | Optional |
 | classifier_predefined | Indicates if the classifier is predefined. Possible values are: true, false. | Optional |
 | classifier_position | The position of the classifier inside the condition. | Optional |
@@ -953,7 +951,7 @@ Create an exception rule for a specified parent rule and policy type. To add mor
 
 There is no context output for this command.
 #### Command example
-```!fp-dlp-rule-exception-create parent_policy_name=new_policy_4 parent_rule_name=new_rule_2 description=test destination_enabled=false source_enabled=false condition_enabled=true classifier_name=test classifier_position=1 classifier_predefined=false classifier_threshold_calculate_type=ALL classifier_threshold_type=CHECK_GREATER_THAN classifier_threshold_value_from=1 severity_classifier_action_plan=test severity_classifier_max_matches=SUM_ALL severity_classifier_number_of_matches=1 severity_classifier_severity_type=LOW severity_classifier_selected=true enabled=true parts_count_type=CROSS_COUNT condition_relation_type=AND exception_rule_name=test_exception```
+```!fp-dlp-rule-exception-create parent_policy_name=new_policy_4 parent_rule_name=new_rule_2 description=test condition_enabled=true classifier_name=test classifier_position=1 classifier_predefined=false classifier_threshold_calculate_type=ALL classifier_threshold_type=CHECK_GREATER_THAN classifier_threshold_value_from=1 severity_classifier_action_plan=test severity_classifier_max_matches=SUM_ALL severity_classifier_number_of_matches=1 severity_classifier_severity_type=LOW severity_classifier_selected=true enabled=true parts_count_type=CROSS_COUNT condition_relation_type=AND exception_rule_name=test_exception```
 #### Human Readable Output
 
 >Exception rule 'test_exception' was successfully created in rule 'new_rule_2' under policy 'new_policy_4'.
@@ -961,7 +959,7 @@ There is no context output for this command.
 ### fp-dlp-rule-exception-update
 
 ***
-Update an existing exception rule for a specified parent rule and policy type. To add/ update more classifiers, use this command multiple times (with diffrent position to add or existing position to update) or provide a JSON configuration file via the `entry_id` argument to override all classifiers.
+Update an existing exception rule for a specified parent rule and policy type. To add/ update more classifiers, use this command multiple times (with different position to add or existing position to update) or provide a JSON configuration file via the `entry_id` argument to override all classifiers. For editing source and destination settings, use the `entry_id` argument.
 
 #### Base Command
 
@@ -980,8 +978,6 @@ Update an existing exception rule for a specified parent rule and policy type. T
 | parts_count_type | The parts count type of the exception rule. Possible values are: CROSS_COUNT, INTERNAL_COUNT. | Optional |
 | condition_relation_type | The condition relation type of the exception rule. Possible values are: AND, OR, CUSTOMIZED. | Optional |
 | condition_enabled | Indicates whether the condition is enabled. Possible values are: true, false. | Optional |
-| source_enabled | Indicates whether the source condition is enabled (only for DLP policy type). Possible values are: true, false. | Optional |
-| destination_enabled | Indicates whether the destination condition is enabled (only for DLP policy type). Possible values are: true, false. | Optional |
 | classifier_name | The name of the classifier. | Optional |
 | classifier_predefined | Indicates if the classifier is predefined. Possible values are: true, false. | Optional |
 | classifier_position | The position of the classifier inside the condition. | Optional |
