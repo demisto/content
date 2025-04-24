@@ -2,7 +2,7 @@
     "name": "DB2",
     "description": "This pack's purpose is to provide helpful commands to build a connectivity and run queries on IBM DB2 database.",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Shubham Kaushik",
     "url": "",
     "email": "its.shubham.kaushik@gmail.com",

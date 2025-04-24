@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import urllib3
 import requests
 from typing import Optional, Pattern, List
+from ipaddress import ip_address, summarize_address_range
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -15,6 +16,8 @@ TAGS = 'tags'
 TLP_COLOR = 'trafficlightprotocol'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 THRESHOLD_IN_SECONDS = 43200        # 12 hours in seconds
+IP_RANGE_REGEX_PATTERN = r"((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))" \
+                     r"\s*-\s*((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F0-9]{1,4}(?::[a-fA-F0-9]{0,4}){0,6}::?[a-fA-F0-9]{0,4}))"
 
 
 class Client(BaseClient):
@@ -354,6 +357,31 @@ def datestring_to_server_format(date_string: str) -> str:
     return parsed_date.strftime(DATE_FORMAT)    # type: ignore
 
 
+def ip_range_to_cidr(start_ip: str, end_ip: str) -> list:
+    """
+    Converts an IP range into a CIDR.
+
+    Args:
+        start_ip (str): The first IP.
+        end_ip (str): The last IP.
+
+    Returns:
+        list: List of CIDRs.
+    """
+    try:
+        start = ip_address(start_ip)
+        end = ip_address(end_ip)
+        # Ensure both IPs are of the same type (IPv4 or IPv6)
+        if start.version != end.version:
+            raise ValueError("Start and End IP must be of the same type (IPv4 or IPv6).")
+        # Summarize the IP range into CIDRs
+        cidr_list = [str(cidr) for cidr in summarize_address_range(start, end)]
+    except Exception as e:
+        demisto.error(f"Could not convert IP range \"{start_ip}-{end_ip}\" to CIDR\n{e}")
+        return []
+    return cidr_list
+
+
 def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
     """
     Extract indicators according to the feed type
@@ -362,10 +390,9 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     :param client: The client
     :param feed_tags: The indicator tags.
     :param tlp_color: Traffic Light Protocol color.
-    :return: The indicator
+    :return: Indicator list
     """
     attributes = None
-    value: str = ''
     indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
@@ -392,9 +419,17 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
         if indicator:
             extracted_indicator = indicator['regex'].search(line)
             if extracted_indicator is None:
-                return attributes, value
+                return attributes, []
             if 'transform' in indicator:
                 extracted_indicator = extracted_indicator.expand(indicator['transform'])
+            if ip_range_match := re.fullmatch(IP_RANGE_REGEX_PATTERN, extracted_indicator):
+                ip_start, ip_end = ip_range_match.groups()
+                if cidr_list := ip_range_to_cidr(ip_start, ip_end):
+                    extracted_indicator = cidr_list
+
+            if not isinstance(extracted_indicator, list):
+                extracted_indicator = [extracted_indicator]
+
         attributes = {}
         for field in fields_to_extract:
             for f, fattrs in field.items():
@@ -411,14 +446,14 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                     pass
                 else:
                     attributes[f] = i
-        attributes['value'] = value = extracted_indicator
+
         attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
         attributes['tags'] = feed_tags
 
         if tlp_color:
             attributes['trafficlightprotocol'] = tlp_color
 
-    return attributes, value
+    return attributes, extracted_indicator
 
 
 def fetch_indicators_command(client,
@@ -438,44 +473,84 @@ def fetch_indicators_command(client,
     for iterator in iterators:
         for url, lines in iterator.items():
             for line in lines.get('result', []):
-                attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
-                if value:
-                    if 'lastseenbysource' in attributes:
-                        attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
+                attributes, indicator_values = get_indicator_fields(line, url, feed_tags, tlp_color, client)
+                demisto.debug(f"Got the following indicator values - {indicator_values}")
 
-                    if 'firstseenbysource' in attributes:
-                        attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
-                    indicator_type = determine_indicator_type(
-                        client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
-                    indicator_data = {
-                        'value': value,
-                        'type': indicator_type,
-                        'rawJSON': attributes,
-                    }
-                    if enrichment_excluded:
-                        indicator_data['enrichmentExcluded'] = enrichment_excluded
+                for indicator_value in indicator_values:
+                    indicators.append(process_indicator_data(
+                        client,
+                        indicator_value,
+                        attributes,
+                        url,
+                        itype,
+                        auto_detect,
+                        create_relationships,
+                        enrichment_excluded
+                    ))
 
-                    if (create_relationships
-                            and client.feed_url_to_config.get(url, {}).get('relationship_name')
-                            and attributes.get('relationship_entity_b')
-                        ):
-                        relationships_lst = EntityRelationship(
-                            name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
-                            entity_a=value,
-                            entity_a_type=indicator_type,
-                            entity_b=attributes.get('relationship_entity_b'),
-                            entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
-                        )
-                        relationships_of_indicator = [relationships_lst.to_indicator()]
-                        indicator_data['relationships'] = relationships_of_indicator
-
-                    if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes:
-                        custom_fields = client.custom_fields_creator(attributes)
-                        indicator_data["fields"] = custom_fields
-
-                    indicators.append(indicator_data)
     return indicators, no_update
+
+
+def process_indicator_data(client,
+                           value,
+                           attributes,
+                           url,
+                           itype,
+                           auto_detect,
+                           create_relationships=False,
+                           enrichment_excluded: bool = False):
+    """_summary_
+
+    Args:
+        client (_type_): _description_
+        value (_type_): _description_
+        attributes (_type_): _description_
+        url (_type_): _description_
+        itype (_type_): _description_
+        auto_detect (_type_): _description_
+        create_relationships (bool, optional): _description_. Defaults to False.
+        enrichment_excluded (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        _type_: _description_
+    """
+    attributes = attributes if attributes else {}
+    attributes['value'] = value
+    if 'lastseenbysource' in attributes:
+        attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
+
+    if 'firstseenbysource' in attributes:
+        attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
+    indicator_type = determine_indicator_type(
+        client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
+    indicator_data = {
+        'value': value,
+        'type': indicator_type,
+        'rawJSON': attributes.copy(),
+    }
+    if enrichment_excluded:
+        indicator_data['enrichmentExcluded'] = enrichment_excluded
+
+    if (create_relationships
+            and client.feed_url_to_config.get(url, {}).get('relationship_name')
+            and attributes.get('relationship_entity_b')
+        ):
+        relationships_lst = EntityRelationship(
+            name=client.feed_url_to_config.get(url, {}).get('relationship_name'),
+            entity_a=value,
+            entity_a_type=indicator_type,
+            entity_b=attributes.get('relationship_entity_b'),
+            entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                client.feed_url_to_config.get(url, {}).get('relationship_entity_b_type')),
+        )
+        relationships_of_indicator = [relationships_lst.to_indicator()]
+        indicator_data['relationships'] = relationships_of_indicator
+
+    if len(client.custom_fields_mapping.keys()) > 0 or TAGS in attributes:
+        custom_fields = client.custom_fields_creator(attributes)
+        indicator_data["fields"] = custom_fields
+
+    return indicator_data
 
 
 def determine_indicator_type(indicator_type, default_indicator_type, auto_detect, value):

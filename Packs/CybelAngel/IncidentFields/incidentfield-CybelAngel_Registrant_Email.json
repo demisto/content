@@ -1,0 +1,35 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"caseInsensitive": true,
+	"cliName": "cybelangelregistrantemail",
+	"closeForm": false,
+	"content": true,
+	"description": "Email associated to the registration of a domain",
+	"editForm": true,
+	"hidden": false,
+	"id": "incident_cybelangelregistrantemail",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "CybelAngel Registrant Email",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"group": 0,
+	"fromVersion": "6.2.0"
+}

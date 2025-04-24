@@ -4,35 +4,25 @@ from CommonServerPython import *  # noqa: F401
 args = demisto.args()
 assessment = args.get("assessment")
 assessment_results = args.get("assessment_results")
-original_data = json.loads(
-    demisto.executeCommand("getList", {"listName": "NCSC CAF Assessment"})[0][
-        "Contents"
-    ]
-).get(assessment)
+original_data = json.loads(demisto.executeCommand("getList", {"listName": "NCSC CAF Assessment"})[0]["Contents"]).get(assessment)
 
 questions = assessment_results.get("Questions")
 answers = assessment_results.get("Answers")
 
-assessment_output = list()
-details_output = dict()
+assessment_output = []
+details_output = {}
 overall_achievement = None
 
 for index, question in questions.items():
     question_result = None
-    details = list()
-    reason = list()
+    details = []
+    reason = []
 
     current_question = [x for x in original_data if x["question"] == question][0]
     current_answers = current_question.get("answers")
-    non_compliant_answers = [
-        x["answer"] for x in current_question.get("answers") if x["score"] == 0
-    ]
-    compliant_answers = [
-        x["answer"] for x in current_question.get("answers") if x["score"] == 2
-    ]
-    partially_compliant_answers = [
-        x["answer"] for x in current_question.get("answers") if x["score"] == 1
-    ]
+    non_compliant_answers = [x["answer"] for x in current_question.get("answers") if x["score"] == 0]
+    compliant_answers = [x["answer"] for x in current_question.get("answers") if x["score"] == 2]
+    partially_compliant_answers = [x["answer"] for x in current_question.get("answers") if x["score"] == 1]
     user_answers = answers[index]
 
     # Fill out the details
@@ -41,11 +31,7 @@ for index, question in questions.items():
         details.append(
             {
                 "Answer": answer,
-                "Status": "Achieved"
-                if score == 2
-                else "Partially achieved"
-                if score == 1
-                else "Not achieved",
+                "Status": "Achieved" if score == 2 else "Partially achieved" if score == 1 else "Not achieved",
             }
         )
     details_output[current_question.get("question")] = details
@@ -119,7 +105,7 @@ md = tableToMarkdown(
 )
 
 # Build the details
-details_md = list()
+details_md = []
 for k, v in details_output.items():
     this_md = tableToMarkdown(k, v, ["Answer", "Status"])
     details_md.append(this_md)
@@ -127,9 +113,7 @@ for k, v in details_output.items():
 # Ascertain the overall status of the assessment
 if "Not Achieved" in [x["Result"] for x in assessment_output]:
     overall_achievement = {"Acheivement": "Not Achieved"}
-elif False in [
-    lambda x: True if x["Result"] == "Achieved" else False for x in assessment_output
-]:
+elif False in [lambda x: x["Result"] == "Achieved" for x in assessment_output]:
     overall_achievement = {"Achievement": "Partially Achieved"}
 else:
     overall_achievement = {"Achievement": "Achieved"}
@@ -149,9 +133,7 @@ command_results = CommandResults(
 )
 return_results(command_results)
 
-command_results = CommandResults(
-    outputs_prefix=f"AssessmentMarkdown.{assessment}", outputs=md, readable_output=md
-)
+command_results = CommandResults(outputs_prefix=f"AssessmentMarkdown.{assessment}", outputs=md, readable_output=md)
 return_results(command_results)
 
 command_results = CommandResults(

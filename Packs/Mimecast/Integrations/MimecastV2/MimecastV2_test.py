@@ -34,69 +34,64 @@ QUERY_XML = """<?xml version=\"1.0\"?>
 
 # Parameters for Get arguments test
 policy_data = {
-    'description': 'new',
-    'fromPart': 'bla bla',
-    'fromType': 'free_mail_domains',
-    'fromValue': 'gmail.com',
-    'toType': 'email_domain',
-    'toValue': 'gmail.com',
-    'option': 'no_action',
-    'policy_id': 'IDFROMMIMECAST'
+    "description": "new",
+    "fromPart": "bla bla",
+    "fromType": "free_mail_domains",
+    "fromValue": "gmail.com",
+    "toType": "email_domain",
+    "toValue": "gmail.com",
+    "option": "no_action",
+    "policy_id": "IDFROMMIMECAST",
 }
 
 policy_args = {
-    'description': 'new',
-    'fromPart': 'bla bla',
-    'fromType': 'free_mail_domains',
-    'fromValue': 'gmail.com',
-    'toType': 'email_domain',
-    'toValue': 'gmail.com',
-    'bidirectional': '',
-    'comment': '',
-    'enabled': '',
-    'enforced': '',
-    'override': '',
-    'toDate': '',
-    'fromDate': '',
-    'fromEternal': '',
-    'toEternal': ''
+    "description": "new",
+    "fromPart": "bla bla",
+    "fromType": "free_mail_domains",
+    "fromValue": "gmail.com",
+    "toType": "email_domain",
+    "toValue": "gmail.com",
+    "bidirectional": "",
+    "comment": "",
+    "enabled": "",
+    "enforced": "",
+    "override": "",
+    "toDate": "",
+    "fromDate": "",
+    "fromEternal": "",
+    "toEternal": "",
 }
 
 
-get_args_response = (policy_args, 'no_action')
+get_args_response = (policy_args, "no_action")
 
 # Parameters for Update policy test
 policy_obj = {
-    'description': 'new new',
-    'from': {
-        'emailDomain': 'gmail.com',
-        'type': 'free_mail_domains'
-    },
-    'to': {
-        'emailDomain': 'gmail.com',
-        'type': 'email_domain'
-    }
+    "description": "new new",
+    "from": {"emailDomain": "gmail.com", "type": "free_mail_domains"},
+    "to": {"emailDomain": "gmail.com", "type": "email_domain"},
 }
 
-update_two_args = {'fromType': 'free_mail_domains', 'description': 'new new'}
-update_all_args = {'fromType': 'free_mail_domains', 'fromValue': 'gmail.com', 'toType': 'email_domain',
-                   'toValue': 'gmail.com', 'description': 'new new'}
-update_policy_req_response = {
-    'policy': policy_obj,
-    'option': 'no_action',
-    'id': 'IDFROMMIMECAST'
+update_two_args = {"fromType": "free_mail_domains", "description": "new new"}
+update_all_args = {
+    "fromType": "free_mail_domains",
+    "fromValue": "gmail.com",
+    "toType": "email_domain",
+    "toValue": "gmail.com",
+    "description": "new new",
 }
+update_policy_req_response = {"policy": policy_obj, "option": "no_action", "id": "IDFROMMIMECAST"}
 
-set_empty_value_args_res_list = [update_two_args, 'no_action', 'IDFROMMIMECAST']
-set_empty_value_args_res_list_all = [update_all_args, 'no_action', 'IDFROMMIMECAST']
-demisto_args = {'policy_id': 'IDFROMMIMECAST'}
+set_empty_value_args_res_list = [update_two_args, "no_action", "IDFROMMIMECAST"]
+set_empty_value_args_res_list_all = [update_all_args, "no_action", "IDFROMMIMECAST"]
+demisto_args = {"policy_id": "IDFROMMIMECAST"}
 
-MimecastV2.BASE_URL = 'http://test.com'
-MimecastV2.APP_KEY = 'test_key'
-MimecastV2.EMAIL_ADDRESS = 'test@test.com'
-MimecastV2.APP_ID = '1234'
-MimecastV2.ACCESS_KEY = '12345'
-MimecastV2.SECRET_KEY = 'test_key=='
+MimecastV2.BASE_URL = "http://test.com"
+MimecastV2.APP_KEY = "test_key"
+MimecastV2.EMAIL_ADDRESS = "test@test.com"
+MimecastV2.APP_ID = "1234"
+MimecastV2.ACCESS_KEY = "12345"
+MimecastV2.SECRET_KEY = "test_key=="
 
 
 def util_load_json(path):
@@ -108,7 +103,7 @@ def util_load_json(path):
     Returns:
         json object read from the path given
     """
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -118,54 +113,49 @@ def test_get_arguments_for_policy_command():
 
 
 def test_update_policy(mocker):
-    mocker.patch.object(MimecastV2, 'get_arguments_for_policy_command', return_value=get_args_response)
-    mocker.patch.object(MimecastV2, 'set_empty_value_args_policy_update', return_value=set_empty_value_args_res_list)
-    mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
-    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    mocker.patch.object(MimecastV2, "get_arguments_for_policy_command", return_value=get_args_response)
+    mocker.patch.object(MimecastV2, "set_empty_value_args_policy_update", return_value=set_empty_value_args_res_list)
+    mocker.patch.object(MimecastV2, "create_or_update_policy_request", return_value=update_policy_req_response)
+    mocker.patch.object(demisto, "args", return_value=demisto_args)
 
     res = MimecastV2.update_policy_command()
-    assert res['Contents']['Description'] == 'new new'
-    assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
+    assert res["Contents"]["Description"] == "new new"
+    assert res["Contents"]["Sender"]["Type"] == "free_mail_domains"
 
-    mocker.patch.object(MimecastV2, 'get_arguments_for_policy_command', return_value=get_args_response)
-    mocker.patch.object(MimecastV2, 'set_empty_value_args_policy_update',
-                        return_value=set_empty_value_args_res_list_all)
-    mocker.patch.object(MimecastV2, 'create_or_update_policy_request', return_value=update_policy_req_response)
-    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    mocker.patch.object(MimecastV2, "get_arguments_for_policy_command", return_value=get_args_response)
+    mocker.patch.object(MimecastV2, "set_empty_value_args_policy_update", return_value=set_empty_value_args_res_list_all)
+    mocker.patch.object(MimecastV2, "create_or_update_policy_request", return_value=update_policy_req_response)
+    mocker.patch.object(demisto, "args", return_value=demisto_args)
     res = MimecastV2.update_policy_command()
-    assert res['Contents']['Description'] == 'new new'
-    assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
-    assert res['Contents']['Sender']['Domain'] == 'gmail.com'
-    assert res['Contents']['Receiver']['Type'] == 'email_domain'
-    assert res['Contents']['Receiver']['Domain'] == 'gmail.com'
+    assert res["Contents"]["Description"] == "new new"
+    assert res["Contents"]["Sender"]["Type"] == "free_mail_domains"
+    assert res["Contents"]["Sender"]["Domain"] == "gmail.com"
+    assert res["Contents"]["Receiver"]["Type"] == "email_domain"
+    assert res["Contents"]["Receiver"]["Domain"] == "gmail.com"
 
 
 INCIDENT_API_RESPONSE = {
-    'fail': [
-
-    ],
-    'meta': {
-        'status': 200
-    },
-    'data': [
+    "fail": [],
+    "meta": {"status": 200},
+    "data": [
         {
-            'code': 'TR-CSND1A7780-00045-M',
-            'successful': 0,
-            'create': '2020-05-25T10:01:53+0000',
-            'modified': '2020-05-25T10:01:53+0000',
-            'identified': 3,
-            'failed': 0,
-            'reason': 'test',
-            'id': 'test-id',
-            'type': 'manual',
-            'searchCriteria': {
-                'start': '2020-04-25T10:01:53+0000',
-                'end': '2020-05-25T22:01:53+0000',
-                'messageId': 'test message id'
+            "code": "TR-CSND1A7780-00045-M",
+            "successful": 0,
+            "create": "2020-05-25T10:01:53+0000",
+            "modified": "2020-05-25T10:01:53+0000",
+            "identified": 3,
+            "failed": 0,
+            "reason": "test",
+            "id": "test-id",
+            "type": "manual",
+            "searchCriteria": {
+                "start": "2020-04-25T10:01:53+0000",
+                "end": "2020-05-25T22:01:53+0000",
+                "messageId": "test message id",
             },
-            'restored': 0
+            "restored": 0,
         }
-    ]
+    ],
 }
 
 EXPECTED_MARKDOWN_RESPONSE = """### Incident test-id has been created
@@ -185,29 +175,29 @@ EXPECTED_MARKDOWN_RESPONSE = """### Incident test-id has been created
 
 
 def test_mimecast_incident_api_response_to_markdown():
-    actual_response = MimecastV2.mimecast_incident_api_response_to_markdown(INCIDENT_API_RESPONSE, 'create')
+    actual_response = MimecastV2.mimecast_incident_api_response_to_markdown(INCIDENT_API_RESPONSE, "create")
     assert actual_response == EXPECTED_MARKDOWN_RESPONSE
 
 
 EXPECTED_CONTEXT_RESPONSE = {
-    'Mimecast.Incident(val.ID && val.ID == obj.ID)': {
-        'Reason': 'test',
-        'Code': 'TR-CSND1A7780-00045-M',
-        'FailedRemediatedMessages': 0,
-        'IdentifiedMessages': 3,
-        'MessagesRestored': 0,
-        'LastModified': '2020-05-25T10:01:53+0000',
-        'SearchCriteria': {
-            'StartDate': '2020-04-25T10:01:53+0000',
-            'EndDate': '2020-05-25T22:01:53+0000',
-            'FileHash': None,
-            'To': None,
-            'MessageID': 'test message id',
-            'From': None
+    "Mimecast.Incident(val.ID && val.ID == obj.ID)": {
+        "Reason": "test",
+        "Code": "TR-CSND1A7780-00045-M",
+        "FailedRemediatedMessages": 0,
+        "IdentifiedMessages": 3,
+        "MessagesRestored": 0,
+        "LastModified": "2020-05-25T10:01:53+0000",
+        "SearchCriteria": {
+            "StartDate": "2020-04-25T10:01:53+0000",
+            "EndDate": "2020-05-25T22:01:53+0000",
+            "FileHash": None,
+            "To": None,
+            "MessageID": "test message id",
+            "From": None,
         },
-        'Type': 'manual',
-        'ID': 'test-id',
-        'SuccessfullyRemediatedMessages': 0
+        "Type": "manual",
+        "ID": "test-id",
+        "SuccessfullyRemediatedMessages": 0,
     }
 }
 
@@ -217,8 +207,8 @@ def test_mimecast_incident_api_response_to_context():
     assert actual_response == EXPECTED_CONTEXT_RESPONSE
 
 
-add_member_req_response = {'data': [{'emailAddress': 'test@gmail.com', 'folderId': 'folder_id'}]}
-get_group_members_req_response = {'data': [{'groupMembers': {}}]}
+add_member_req_response = {"data": [{"emailAddress": "test@gmail.com", "folderId": "folder_id"}]}
+get_group_members_req_response = {"data": [{"groupMembers": {}}]}
 
 
 def test_mimecast_add_remove_member_to_group_with_email(mocker):
@@ -233,14 +223,14 @@ def test_mimecast_add_remove_member_to_group_with_email(mocker):
     Then
     Validate the content of the HumanReadable.
     """
-    mocker.patch.object(demisto, 'args', return_value={'group_id': '1234', 'email_address': 'test@gmail.com'})
-    mocker.patch.object(MimecastV2, 'create_add_remove_group_member_request', return_value=add_member_req_response)
-    mocker.patch.object(MimecastV2, 'create_get_group_members_request', return_value=get_group_members_req_response)
-    result = MimecastV2.add_remove_member_to_group('add')
-    assert result.readable_output == 'test@gmail.com had been added to group ID folder_id'
+    mocker.patch.object(demisto, "args", return_value={"group_id": "1234", "email_address": "test@gmail.com"})
+    mocker.patch.object(MimecastV2, "create_add_remove_group_member_request", return_value=add_member_req_response)
+    mocker.patch.object(MimecastV2, "create_get_group_members_request", return_value=get_group_members_req_response)
+    result = MimecastV2.add_remove_member_to_group("add")
+    assert result.readable_output == "test@gmail.com had been added to group ID folder_id"
 
 
-add_member_req_response_no_email = {'data': [{'folderId': 'folder_id'}]}
+add_member_req_response_no_email = {"data": [{"folderId": "folder_id"}]}
 
 
 def test_mimecast_add_remove_member_to_group_with_domain(mocker):
@@ -255,19 +245,16 @@ def test_mimecast_add_remove_member_to_group_with_domain(mocker):
     Then
     Validate the content of the HumanReadable.
     """
-    mocker.patch.object(demisto, 'args', return_value={'group_id': '1234', 'domain': 'test.com'})
-    mocker.patch.object(MimecastV2, 'create_add_remove_group_member_request',
-                        return_value=add_member_req_response_no_email)
-    mocker.patch.object(MimecastV2, 'create_get_group_members_request', return_value=get_group_members_req_response)
-    results = MimecastV2.add_remove_member_to_group('add')
-    assert results.readable_output == 'Address had been added to group ID folder_id'
+    mocker.patch.object(demisto, "args", return_value={"group_id": "1234", "domain": "test.com"})
+    mocker.patch.object(MimecastV2, "create_add_remove_group_member_request", return_value=add_member_req_response_no_email)
+    mocker.patch.object(MimecastV2, "create_get_group_members_request", return_value=get_group_members_req_response)
+    results = MimecastV2.add_remove_member_to_group("add")
+    assert results.readable_output == "Address had been added to group ID folder_id"
 
 
 CREATE_MANAGED_URL_SUCCESSFUL_MOCK = {
     "fail": [],
-    "meta": {
-        "status": 200
-    },
+    "meta": {"status": 200},
     "data": [
         {
             "comment": "None",
@@ -281,9 +268,9 @@ CREATE_MANAGED_URL_SUCCESSFUL_MOCK = {
             "path": "",
             "matchType": "explicit",
             "scheme": "https",
-            "id": "fake_id"
+            "id": "fake_id",
         }
-    ]
+    ],
 }
 
 
@@ -300,30 +287,33 @@ def test_create_managed_url(mocker):
     Validate the content of the command result.
     """
     args = {
-        'url': 'https://www.test.com',
-        'action': 'permit',
-        'matchType': 'explicit',
-        'disableRewrite': 'false',
-        'disableUserAwareness': 'false',
-        'disableLogClick': 'false'
+        "url": "https://www.test.com",
+        "action": "permit",
+        "matchType": "explicit",
+        "disableRewrite": "false",
+        "disableUserAwareness": "false",
+        "disableLogClick": "false",
     }
 
     expected_context = {
-        'Mimecast.URL(val.ID && val.ID == obj.ID)':
-            [{'Domain': 'www.test.com',
-              'disableRewrite': False,
-              'disableLogClick': False,
-              'Action': 'permit',
-              'Path': '',
-              'matchType': 'explicit',
-              'ID': 'fake_id'}]}
+        "Mimecast.URL(val.ID && val.ID == obj.ID)": [
+            {
+                "Domain": "www.test.com",
+                "disableRewrite": False,
+                "disableLogClick": False,
+                "Action": "permit",
+                "Path": "",
+                "matchType": "explicit",
+                "ID": "fake_id",
+            }
+        ]
+    }
 
-    mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(MimecastV2, 'create_managed_url_request',
-                        return_value=CREATE_MANAGED_URL_SUCCESSFUL_MOCK['data'][0])
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(MimecastV2, "create_managed_url_request", return_value=CREATE_MANAGED_URL_SUCCESSFUL_MOCK["data"][0])
     results = MimecastV2.create_managed_url()
-    assert 'Managed URL https://www.test.com created successfully!' in results.get('HumanReadable')
-    assert expected_context == results.get('EntryContext')
+    assert "Managed URL https://www.test.com created successfully!" in results.get("HumanReadable")
+    assert expected_context == results.get("EntryContext")
 
 
 def test_add_users_under_group_in_context_dict__dict(mocker):
@@ -337,15 +327,34 @@ def test_add_users_under_group_in_context_dict__dict(mocker):
     Then
     Returns a valid outputs
     """
-    context = {'Mimecast': {'Group': {'ID': 'groupID', 'Users': []}}}
+    context = {"Mimecast": {"Group": {"ID": "groupID", "Users": []}}}
     users_list = [
-        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
-         'Type': 'created_manually', 'IsRemoved': False}]
-    expected = [{'ID': 'groupID', 'Users': [
-        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
-         'Type': 'created_manually', 'IsRemoved': False}]}]
-    mocker.patch.object(demisto, 'context', return_value=context)
-    result = MimecastV2.add_users_under_group_in_context_dict(users_list, 'groupID')
+        {
+            "Domain": "demistodev.com",
+            "Name": "",
+            "EmailAddress": "testing@demistodev.com",
+            "InternalUser": True,
+            "Type": "created_manually",
+            "IsRemoved": False,
+        }
+    ]
+    expected = [
+        {
+            "ID": "groupID",
+            "Users": [
+                {
+                    "Domain": "demistodev.com",
+                    "Name": "",
+                    "EmailAddress": "testing@demistodev.com",
+                    "InternalUser": True,
+                    "Type": "created_manually",
+                    "IsRemoved": False,
+                }
+            ],
+        }
+    ]
+    mocker.patch.object(demisto, "context", return_value=context)
+    result = MimecastV2.add_users_under_group_in_context_dict(users_list, "groupID")
     assert result == expected
 
 
@@ -360,160 +369,156 @@ def test_add_users_under_group_in_context_dict__list(mocker):
     Then
     Returns a valid outpus
     """
-    context = {'Mimecast': {'Group': [{
-        'ID': 'groupID',
-        'Users': []},
-        {'ID': 'groupID2',
-         'Users': []}]}
-
-    }
+    context = {"Mimecast": {"Group": [{"ID": "groupID", "Users": []}, {"ID": "groupID2", "Users": []}]}}
     users_list = [
-        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
-         'Type': 'created_manually', 'IsRemoved': False}]
-    expected = [{'ID': 'groupID', 'Users': [
-        {'Domain': 'demistodev.com', 'Name': '', 'EmailAddress': 'testing@demistodev.com', 'InternalUser': True,
-         'Type': 'created_manually', 'IsRemoved': False}]}, {'ID': 'groupID2', 'Users': []}]
-    mocker.patch.object(demisto, 'context', return_value=context)
-    result = MimecastV2.add_users_under_group_in_context_dict(users_list, 'groupID')
+        {
+            "Domain": "demistodev.com",
+            "Name": "",
+            "EmailAddress": "testing@demistodev.com",
+            "InternalUser": True,
+            "Type": "created_manually",
+            "IsRemoved": False,
+        }
+    ]
+    expected = [
+        {
+            "ID": "groupID",
+            "Users": [
+                {
+                    "Domain": "demistodev.com",
+                    "Name": "",
+                    "EmailAddress": "testing@demistodev.com",
+                    "InternalUser": True,
+                    "Type": "created_manually",
+                    "IsRemoved": False,
+                }
+            ],
+        },
+        {"ID": "groupID2", "Users": []},
+    ]
+    mocker.patch.object(demisto, "context", return_value=context)
+    result = MimecastV2.add_users_under_group_in_context_dict(users_list, "groupID")
     assert result == expected
 
 
 def test_search_message_command(mocker):
     """
 
-        Given:
-            - Message id to search.
+    Given:
+        - Message id to search.
 
-        When:
-            - Running a search message command to retrieve information on given message.
+    When:
+        - Running a search message command to retrieve information on given message.
 
-        Then:
-            - Make sure search data is returned.
+    Then:
+        - Make sure search data is returned.
     """
 
-    mock_response = util_load_json('test_data/search_message_response.json')
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    mock_response = util_load_json("test_data/search_message_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
 
-    args = {'message_id': '12345'}
+    args = {"message_id": "12345"}
     response = MimecastV2.search_message_command(args)
 
-    assert response.outputs == mock_response.get('data')[0].get('trackedEmails')
-    assert response.outputs_prefix == 'Mimecast.SearchMessage'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response.get("data")[0].get("trackedEmails")
+    assert response.outputs_prefix == "Mimecast.SearchMessage"
+    assert response.outputs_key_field == "id"
 
 
 def test_held_message_summary_command(mocker):
     """
-        When:
-            - Running a hold message summary command to retrieve hold information messages.
+    When:
+        - Running a hold message summary command to retrieve hold information messages.
 
-        Then:
-            - Make sure hold data is returned.
+    Then:
+        - Make sure hold data is returned.
     """
 
-    mock_response = util_load_json('test_data/hold_message_summary_response.json')
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    mock_response = util_load_json("test_data/hold_message_summary_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
 
     response = MimecastV2.held_message_summary_command()
 
-    assert response.outputs == mock_response.get('data')
-    assert response.outputs_prefix == 'Mimecast.HeldMessageSummary'
-    assert response.outputs_key_field == 'policyInfo'
+    assert response.outputs == mock_response.get("data")
+    assert response.outputs_prefix == "Mimecast.HeldMessageSummary"
+    assert response.outputs_key_field == "policyInfo"
 
 
 MESSAGE_INFO_ARGS = [
-    (
-        {'ids': '12345, 1345',
-         'show_delivered_message': 'true'}, True, 1),
-    ({'ids': '12345, 1345',
-      'show_delivered_message': 'false'}, False, 0)
+    ({"ids": "12345, 1345", "show_delivered_message": "true"}, True, 1),
+    ({"ids": "12345, 1345", "show_delivered_message": "false"}, False, 0),
 ]
 
 
-@pytest.mark.parametrize('args, delivered, delivered_message_len', MESSAGE_INFO_ARGS)
+@pytest.mark.parametrize("args, delivered, delivered_message_len", MESSAGE_INFO_ARGS)
 def test_get_message_info_command(args, delivered, delivered_message_len, requests_mock):
     """
 
-        Given:
-            - Message ids to get info for.
+    Given:
+        - Message ids to get info for.
 
-        When:
-            - Running a get message info to retrieve information for.
+    When:
+        - Running a get message info to retrieve information for.
 
-        Then:
-            - Make sure correct data is returned.
+    Then:
+        - Make sure correct data is returned.
     """
 
-    mock_response = util_load_json('test_data/get_message_info_response.json')
-    requests_mock.post('/api/message-finder/get-message-info', json=mock_response)
+    mock_response = util_load_json("test_data/get_message_info_response.json")
+    requests_mock.post("/api/message-finder/get-message-info", json=mock_response)
     response = MimecastV2.get_message_info_command(args)
 
     assert len(response) == 2
-    assert ('test@test.com' in response[0].readable_output) == delivered
-    assert isinstance(response[0].outputs.get('deliveredMessage'), list)
-    assert len(response[0].outputs.get('deliveredMessage')) == delivered_message_len
-    assert response[0].outputs_prefix == 'Mimecast.MessageInfo'
+    assert ("test@test.com" in response[0].readable_output) == delivered
+    assert isinstance(response[0].outputs.get("deliveredMessage"), list)
+    assert len(response[0].outputs.get("deliveredMessage")) == delivered_message_len
+    assert response[0].outputs_prefix == "Mimecast.MessageInfo"
 
 
 def test_list_held_messages_command(mocker):
     """
 
-        When:
-            - Running a list hold messages command.
+    When:
+        - Running a list hold messages command.
 
-        Then:
-            - Make sure correct data is returned.
+    Then:
+        - Make sure correct data is returned.
     """
 
-    mock_response = util_load_json('test_data/list_hold_messages_response.json')
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-    args = {'admin': 'true', 'limit': '10'}
+    mock_response = util_load_json("test_data/list_hold_messages_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    args = {"admin": "true", "limit": "10"}
     response = MimecastV2.list_held_messages_command(args)
 
     assert len(response.outputs) == 10
-    assert response.outputs == mock_response.get('data')
-    assert response.outputs_prefix == 'Mimecast.HeldMessage'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response.get("data")
+    assert response.outputs_prefix == "Mimecast.HeldMessage"
+    assert response.outputs_key_field == "id"
 
 
 REJECT_HOLD_MESSAGE = [
-    ({"meta": {
-        "status": 200
-    }, "data": [{"id": "1234",
-                 "reject": True
-                 },
-                {"id": "1233",
-                 "reject": True
-                 }],
-        "fail": []},
-        'Held message with id 1234 was rejected successfully.\n'
-        'Held message with id 1233 was rejected successfully.\n', False),
-    ({"meta": {
-        "status": 200
-    }, "data": [{"id": "1234",
-                 "reject": False
-                 },
-                {"id": "1233",
-                 "reject": True
-                 }],
-        "fail": []
-    }, '', True)]
+    (
+        {"meta": {"status": 200}, "data": [{"id": "1234", "reject": True}, {"id": "1233", "reject": True}], "fail": []},
+        "Held message with id 1234 was rejected successfully.\nHeld message with id 1233 was rejected successfully.\n",
+        False,
+    ),
+    ({"meta": {"status": 200}, "data": [{"id": "1234", "reject": False}, {"id": "1233", "reject": True}], "fail": []}, "", True),
+]
 
 
-@pytest.mark.parametrize('mock_response, readable_output, is_exception_raised', REJECT_HOLD_MESSAGE)
+@pytest.mark.parametrize("mock_response, readable_output, is_exception_raised", REJECT_HOLD_MESSAGE)
 def test_reject_held_message_command(mock_response, readable_output, is_exception_raised, mocker):
     """
 
-        When:
-            - Running a reject hold messages command.
+    When:
+        - Running a reject hold messages command.
 
-        Then:
-            - Make sure correct data is returned.
+    Then:
+        - Make sure correct data is returned.
     """
 
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-    args = {'ids': '1234,1233', 'message': 'test', 'reason_type': 'MESSAGE CONTAINS UNDESIRABLE CONTENT',
-            'notify': 'true'}
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    args = {"ids": "1234,1233", "message": "test", "reason_type": "MESSAGE CONTAINS UNDESIRABLE CONTENT", "notify": "true"}
     try:
         response = MimecastV2.reject_held_message_command(args)
         assert response.readable_output == readable_output
@@ -522,43 +527,28 @@ def test_reject_held_message_command(mock_response, readable_output, is_exceptio
 
 
 RELEASE_HOLD_MESSAGE = [
-    ({"meta": {
-        "status": 200
-    },
-        "data": [
-        {
-            "id": "1234",
-            "release": True
-        }
-    ],
-        "fail": []
-    }, 'Held message with id 1234 was released successfully', False),
-    ({"meta": {
-        "status": 200
-    },
-        "data": [
-        {
-            "id": "1234",
-            "release": False
-        }
-    ],
-        "fail": []
-    }, 'Message release has failed.', True)]
+    (
+        {"meta": {"status": 200}, "data": [{"id": "1234", "release": True}], "fail": []},
+        "Held message with id 1234 was released successfully",
+        False,
+    ),
+    ({"meta": {"status": 200}, "data": [{"id": "1234", "release": False}], "fail": []}, "Message release has failed.", True),
+]
 
 
-@pytest.mark.parametrize('mock_response, readable_output, is_exception_raised', RELEASE_HOLD_MESSAGE)
+@pytest.mark.parametrize("mock_response, readable_output, is_exception_raised", RELEASE_HOLD_MESSAGE)
 def test_release_held_message_command(mock_response, readable_output, is_exception_raised, mocker):
     """
 
-        When:
-            - Running a release hold messages command.
+    When:
+        - Running a release hold messages command.
 
-        Then:
-            - Make sure correct data is returned.
+    Then:
+        - Make sure correct data is returned.
     """
 
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-    args = {'id': '1234'}
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    args = {"id": "1234"}
     try:
         response = MimecastV2.release_held_message_command(args)
         assert response.readable_output == readable_output
@@ -568,46 +558,55 @@ def test_release_held_message_command(mock_response, readable_output, is_excepti
 
 def test_search_processing_message_command(mocker):
     """
-        When:
-            - Running a search processing message command to retrieve information regarding messages being proccessed.
+    When:
+        - Running a search processing message command to retrieve information regarding messages being proccessed.
 
-        Then:
-            - Make sure hold data is returned.
+    Then:
+        - Make sure hold data is returned.
     """
 
-    mock_response = util_load_json('test_data/search_processing_message_response.json')
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-    args = {'sort_order': 'ascending', 'from_date': '2015-11-16T14:49:18+0000', 'to_date': '2021-11-16T14:49:18+0000'}
+    mock_response = util_load_json("test_data/search_processing_message_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    args = {"sort_order": "ascending", "from_date": "2015-11-16T14:49:18+0000", "to_date": "2021-11-16T14:49:18+0000"}
     response = MimecastV2.search_processing_message_command(args)
 
-    assert response.outputs == mock_response.get('data')[0].get('messages')
-    assert response.outputs_prefix == 'Mimecast.ProcessingMessage'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response.get("data")[0].get("messages")
+    assert response.outputs_prefix == "Mimecast.ProcessingMessage"
+    assert response.outputs_key_field == "id"
 
 
 def test_list_email_queues_command(mocker):
     """
-        When:
-            - Running a search processing message command to retrieve information regarding messages being proccessed.
+    When:
+        - Running a search processing message command to retrieve information regarding messages being proccessed.
 
-        Then:
-            - Make sure hold data is returned.
+    Then:
+        - Make sure hold data is returned.
     """
 
-    mock_response = util_load_json('test_data/search_processing_message_response.json')
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
-    args = {'sort_order': 'ascending', 'from_date': '2015-11-16T14:49:18+0000', 'to_date': '2021-11-16T14:49:18+0000'}
+    mock_response = util_load_json("test_data/search_processing_message_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+    args = {"sort_order": "ascending", "from_date": "2015-11-16T14:49:18+0000", "to_date": "2021-11-16T14:49:18+0000"}
     response = MimecastV2.search_processing_message_command(args)
 
-    assert response.outputs == mock_response.get('data')[0].get('messages')
-    assert response.outputs_prefix == 'Mimecast.ProcessingMessage'
-    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response.get("data")[0].get("messages")
+    assert response.outputs_prefix == "Mimecast.ProcessingMessage"
+    assert response.outputs_key_field == "id"
 
 
 def test_parse_queried_fields():
     assert MimecastV2.parse_queried_fields(QUERY_XML) == (
-        "attachmentcount", "status", "subject", "size", "receiveddate", "displayfrom",
-        "id", "displayto", "smash", "displaytoaddresslist", "displayfromaddress",
+        "attachmentcount",
+        "status",
+        "subject",
+        "size",
+        "receiveddate",
+        "displayfrom",
+        "id",
+        "displayto",
+        "smash",
+        "displaytoaddresslist",
+        "displayfromaddress",
     )
 
 
@@ -620,7 +619,7 @@ def test_query(mocker):
     WHEN:
         - 'query' function is called with the provided arguments,
     THEN:
-        - Make sure all return-field values are returned to context and human-readable.    """
+        - Make sure all return-field values are returned to context and human-readable."""
     query_data = util_load_json("test_data/query_response.json")
     mocker.patch.object(MimecastV2, "http_request", return_value=query_data["response"])
 
@@ -652,22 +651,32 @@ def test_empty_query(mocker):
         - Make sure no exception is raised.
 
     """
-    error = {"field": "query",
-             "code": "err_validation_blank",
-             "message": "This field, if present, cannot be blank or empty",
-             "retryable": False}
+    error = {
+        "field": "query",
+        "code": "err_validation_blank",
+        "message": "This field, if present, cannot be blank or empty",
+        "retryable": False,
+    }
 
-    def query_mocked_api(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
-                         page: int = None,
-                         page_size: int = None, use_headers: bool = False, is_file: bool = False):
-        if not data[0].get('query'):
+    def query_mocked_api(
+        api_endpoint: str,
+        data: list,
+        response_param: str = None,
+        limit: int = 100,
+        page: int = None,
+        page_size: int = None,
+        use_headers: bool = False,
+        is_file: bool = False,
+    ):
+        if not data[0].get("query"):
             raise Exception(json.dumps(error))
         else:
             return [], None
-    mocker.patch.object(MimecastV2, 'request_with_pagination', side_effect=query_mocked_api)
+
+    mocker.patch.object(MimecastV2, "request_with_pagination", side_effect=query_mocked_api)
     results = MimecastV2.query({})
 
-    assert len(results.get('Contents')) == 0
+    assert len(results.get("Contents")) == 0
 
 
 def test_query_email_arguments(requests_mock):
@@ -682,38 +691,36 @@ def test_query_email_arguments(requests_mock):
         - Ensure the request body matches the expected XML structure with the correct values.
     """
     query_data = util_load_json("test_data/query_response.json")
-    expected_body = {'admin': True,
-                     'query': '<?xml version="1.0"?> \n'
-                              '    <xmlquery trace="iql,muse">\n'
-                              '    <metadata query-type="emailarchive" archive="true" '
-                              'active="false" page-size="25" startrow="0">\n'
-                              '        <smartfolders/>\n'
-                              '        <return-fields>\n'
-                              '            <return-field>attachmentcount</return-field>\n'
-                              '            <return-field>status</return-field>\n'
-                              '            <return-field>subject</return-field>\n'
-                              '            <return-field>size</return-field>\n'
-                              '            <return-field>receiveddate</return-field>\n'
-                              '            <return-field>displayfrom</return-field>\n'
-                              '            <return-field>id</return-field>\n'
-                              '            <return-field>displayto</return-field>\n'
-                              '            <return-field>smash</return-field>\n'
-                              '        </return-fields>\n'
-                              '    </metadata>\n'
-                              '    <muse>\n'
-                              '        <text>subject: Test Email Subject</text>\n'
-                              '        <date select="last_year"/>\n'
-                              '        <sent select="from" >sender@example.com</sent><sent '
-                              'select="to" >recipient@example.com</sent>\n'
-                              '        <docs select="optional"></docs>\n'
-                              '        <route/>\n'
-                              '    </muse>\n'
-                              '</xmlquery>'}
-    mocked_post = requests_mock.post(
-        f"{MimecastV2.BASE_URL}/api/archive/search",
-        json=query_data["response"],
-        status_code=200
-    )
+    expected_body = {
+        "admin": True,
+        "query": '<?xml version="1.0"?> \n'
+        '    <xmlquery trace="iql,muse">\n'
+        '    <metadata query-type="emailarchive" archive="true" '
+        'active="false" page-size="25" startrow="0">\n'
+        "        <smartfolders/>\n"
+        "        <return-fields>\n"
+        "            <return-field>attachmentcount</return-field>\n"
+        "            <return-field>status</return-field>\n"
+        "            <return-field>subject</return-field>\n"
+        "            <return-field>size</return-field>\n"
+        "            <return-field>receiveddate</return-field>\n"
+        "            <return-field>displayfrom</return-field>\n"
+        "            <return-field>id</return-field>\n"
+        "            <return-field>displayto</return-field>\n"
+        "            <return-field>smash</return-field>\n"
+        "        </return-fields>\n"
+        "    </metadata>\n"
+        "    <muse>\n"
+        "        <text>subject: Test Email Subject</text>\n"
+        '        <date select="last_year"/>\n'
+        '        <sent select="from" >sender@example.com</sent><sent '
+        'select="to" >recipient@example.com</sent>\n'
+        '        <docs select="optional"></docs>\n'
+        "        <route/>\n"
+        "    </muse>\n"
+        "</xmlquery>",
+    }
+    mocked_post = requests_mock.post(f"{MimecastV2.BASE_URL}/api/archive/search", json=query_data["response"], status_code=200)
     args = {"sentTo": "recipient@example.com", "sentFrom": "sender@example.com", "subject": "Test Email Subject"}
     MimecastV2.query(args)
     sent_body = mocked_post.last_request.json()
@@ -722,30 +729,26 @@ def test_query_email_arguments(requests_mock):
 
 def test_get_message_metadata_with_attachments(mocker):
     """
-        Given: Message metadata from API with attachments.
-        When: Get message command being called.
-        Then: Verify the extension value is returned.
+    Given: Message metadata from API with attachments.
+    When: Get message command being called.
+    Then: Verify the extension value is returned.
     """
-    message_id = '123'
+    message_id = "123"
     expected_metadata = {
-        'subject': 'Test Email',
-        'from': {'emailAddress': 'test@example.com'},
-        'attachments': [{
-            'filename': 'hello world',
-            'id': '1',
-            'extension': '.txt'
-        }]
+        "subject": "Test Email",
+        "from": {"emailAddress": "test@example.com"},
+        "attachments": [{"filename": "hello world", "id": "1", "extension": ".txt"}],
     }
 
-    mocker.patch.object(MimecastV2, 'http_request', return_value={'data': [expected_metadata]})
+    mocker.patch.object(MimecastV2, "http_request", return_value={"data": [expected_metadata]})
 
     _, actual_metadata = MimecastV2.get_message_metadata(message_id)
 
-    assert expected_metadata.get('subject') == actual_metadata.get('Subject')
-    assert expected_metadata.get('from').get('emailAddress') == actual_metadata.get('From')
-    assert expected_metadata.get('attachments')[0].get('filename') == actual_metadata.get('Attachments')[0].get('FileName')
-    assert expected_metadata.get('attachments')[0].get('extension') == actual_metadata.get('Attachments')[0].get('Extension')
-    assert expected_metadata.get('attachments')[0].get('id') == actual_metadata.get('Attachments')[0].get('ID')
+    assert expected_metadata.get("subject") == actual_metadata.get("Subject")
+    assert expected_metadata.get("from").get("emailAddress") == actual_metadata.get("From")
+    assert expected_metadata.get("attachments")[0].get("filename") == actual_metadata.get("Attachments")[0].get("FileName")
+    assert expected_metadata.get("attachments")[0].get("extension") == actual_metadata.get("Attachments")[0].get("Extension")
+    assert expected_metadata.get("attachments")[0].get("id") == actual_metadata.get("Attachments")[0].get("ID")
 
 
 def test_get_archive_search_logs_command(mocker):
@@ -763,11 +766,11 @@ def test_get_archive_search_logs_command(mocker):
         - Make sure no exception is raised.
     """
 
-    args = {'limit': '5', 'query': 'integration.com'}
-    mock_response = util_load_json('test_data/get_archive_search_logs_response.json')
-    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=mock_response)
+    args = {"limit": "5", "query": "integration.com"}
+    mock_response = util_load_json("test_data/get_archive_search_logs_response.json")
+    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert result.outputs['data'][0]['logs'] == mock_response[0]['data'][0]['logs']
+    assert result.outputs["data"][0]["logs"] == mock_response[0]["data"][0]["logs"]
     assert result.outputs_prefix == "Mimecast.ArchiveSearchLog"
 
 
@@ -784,11 +787,11 @@ def test_get_search_logs_command(mocker):
         mocker (pytest.MonkeyFixture): Pytest mocker fixture used to patch methods.
     """
 
-    args = {'limit': '50', 'page': '1', 'page_size': '1', 'query': 'aa.aa.aa.aa', 'start': '2017-09-16T14:49:18+0000'}
-    mock_response = util_load_json('test_data/get_search_logs_response.json')
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    args = {"limit": "50", "page": "1", "page_size": "1", "query": "aa.aa.aa.aa", "start": "2017-09-16T14:49:18+0000"}
+    mock_response = util_load_json("test_data/get_search_logs_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert result.outputs == mock_response.get('data')[0]['logs']
+    assert result.outputs == mock_response.get("data")[0]["logs"]
     assert result.outputs_prefix == "Mimecast.ArchiveSearchLog"
 
 
@@ -801,11 +804,11 @@ def test_get_view_logs_command(mocker):
     """
 
     args = {"end": "2024-09-16T14:49:18+0000", "limit": "2", "query": "example@test.com", "start": "2017-09-16T14:49:18+0000"}
-    mock_response = util_load_json('test_data/get_view_logs_response.json')
+    mock_response = util_load_json("test_data/get_view_logs_response.json")
     mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
     result = MimecastV2.get_view_logs_command(args)
     assert result.outputs["data"] == mock_response[0].get("data")
-    assert result.outputs_prefix == 'Mimecast.ViewLog'
+    assert result.outputs_prefix == "Mimecast.ViewLog"
 
 
 def test_list_account_command(mocker):
@@ -816,12 +819,12 @@ def test_list_account_command(mocker):
         mocker (pytest_mock.plugin.MockerFixture): Pytest mocker fixture.
     """
 
-    args = {'account_code': 'ABC123'}
-    mock_response = util_load_json('test_data/list_account_response.json')
-    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=mock_response)
+    args = {"account_code": "ABC123"}
+    mock_response = util_load_json("test_data/list_account_response.json")
+    mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
     result = MimecastV2.list_account_command(args)
-    assert result.outputs['data'] == mock_response[0].get('data')
-    assert result.outputs_prefix == 'Mimecast.Account'
+    assert result.outputs["data"] == mock_response[0].get("data")
+    assert result.outputs_prefix == "Mimecast.Account"
     assert result.outputs_key_field == "accountCode"
 
 
@@ -829,21 +832,21 @@ def test_list_account_command(mocker):
     "args, mock_response, expected_outputs_prefix",
     [
         (
-            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'blockedsenders'},
-            (util_load_json('test_data/list_policies_response.json'), 1),
-            'Mimecast.BlockedSendersPolicy'
+            {"limit": "1", "page": "1", "page_size": "1", "policyType": "blockedsenders"},
+            (util_load_json("test_data/list_policies_response.json"), 1),
+            "Mimecast.BlockedSendersPolicy",
         ),
         (
-            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'antispoofing-bypass'},
-            (util_load_json('test_data/list_policies_response.json'), 1),
-            'Mimecast.AntispoofingBypassPolicy'
+            {"limit": "1", "page": "1", "page_size": "1", "policyType": "antispoofing-bypass"},
+            (util_load_json("test_data/list_policies_response.json"), 1),
+            "Mimecast.AntispoofingBypassPolicy",
         ),
         (
-            {'limit': '1', 'page': '1', 'page_size': '1', 'policyType': 'address-alteration'},
-            (util_load_json('test_data/list_policies_response.json'), 1),
-            'Mimecast.AddressAlterationPolicy'
+            {"limit": "1", "page": "1", "page_size": "1", "policyType": "address-alteration"},
+            (util_load_json("test_data/list_policies_response.json"), 1),
+            "Mimecast.AddressAlterationPolicy",
         ),
-    ]
+    ],
 )
 def test_list_policies_command(mocker, args, mock_response, expected_outputs_prefix):
     """
@@ -866,7 +869,7 @@ def test_list_policies_command(mocker, args, mock_response, expected_outputs_pre
     result = MimecastV2.list_policies_command(args)
     assert result.outputs == mock_response[0]
     assert result.outputs_prefix == expected_outputs_prefix
-    assert result.outputs_key_field == 'id'
+    assert result.outputs_key_field == "id"
 
 
 def test_create_antispoofing_bypass_policy_command(mocker):
@@ -897,13 +900,13 @@ def test_create_antispoofing_bypass_policy_command(mocker):
         "to_type": "email_domain",
         "to_value": "google.com",
     }
-    mock_response = util_load_json('test_data/create_antispoofing_bypass_policy_response.json')
+    mock_response = util_load_json("test_data/create_antispoofing_bypass_policy_response.json")
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.create_antispoofing_bypass_policy_command(args)
-    id = mock_response['data'][0]['id']
+    id = mock_response["data"][0]["id"]
     assert result.outputs == mock_response.get("data")
-    assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
-    assert result.readable_output == f'Anti-Spoofing Bypass policy {id} was created successfully'
+    assert result.outputs_prefix == "Mimecast.AntispoofingBypassPolicy"
+    assert result.readable_output == f"Anti-Spoofing Bypass policy {id} was created successfully"
     assert result.outputs_key_field == "id"
 
 
@@ -936,15 +939,13 @@ def test_update_antispoofing_bypass_policy_command(mocker):
         "to_date": "now",
         "to_eternal": "yes",
     }
-    mock_response = util_load_json(
-        "test_data/update_antispoofing_bypass_policy_response.json"
-    )
-    mocker.patch.object(MimecastV2, 'http_request', return_value=mock_response)
+    mock_response = util_load_json("test_data/update_antispoofing_bypass_policy_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.update_antispoofing_bypass_policy_command(args)
-    assert mock_response.get('data') == result.outputs
+    assert mock_response.get("data") == result.outputs
     assert f'Policy ID- {args["policy_id"]} has been updated successfully.' == result.readable_output
-    assert result.outputs_prefix == 'Mimecast.AntispoofingBypassPolicy'
-    assert result.outputs_key_field == 'id'
+    assert result.outputs_prefix == "Mimecast.AntispoofingBypassPolicy"
+    assert result.outputs_key_field == "id"
 
 
 def test_update_address_alteration_policy_command(mocker):
@@ -975,13 +976,13 @@ def test_update_address_alteration_policy_command(mocker):
         "to_eternal": "no",
     }
     id = args["policy_id"]
-    mock_response = util_load_json('test_data/update_address_alteration_policy_response.json')
+    mock_response = util_load_json("test_data/update_address_alteration_policy_response.json")
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     result = MimecastV2.update_address_alteration_policy_command(args)
     assert result.outputs == mock_response.get("data")
-    assert result.readable_output == f'{id} has been updated successfully'
-    assert result.outputs_prefix == 'Mimecast.AddressAlterationPolicy'
-    assert result.outputs_key_field == 'id'
+    assert result.readable_output == f"{id} has been updated successfully"
+    assert result.outputs_prefix == "Mimecast.AddressAlterationPolicy"
+    assert result.outputs_key_field == "id"
 
 
 def test_create_block_sender_policy_command(mocker):
@@ -997,17 +998,23 @@ def test_create_block_sender_policy_command(mocker):
     - Ensure the readable output is as expected.
     - Ensure the outputs prefix and key field are correct.
     """
-    args = {'description': 'test', 'fromPart': 'both', 'fromType': 'email_domain',
-            'fromValue': 'google.com', 'option': 'block_sender', 'toType': 'everyone'}
-    mock_response = util_load_json('test_data/create_block_sender_policy_response.json')
-    result_outputs = util_load_json('test_data/create_block_sender_policy_result_outputs.json')
-    result_readable_output = util_load_json('test_data/create_block_sender_policy_result_readable_output.md')
+    args = {
+        "description": "test",
+        "fromPart": "both",
+        "fromType": "email_domain",
+        "fromValue": "google.com",
+        "option": "block_sender",
+        "toType": "everyone",
+    }
+    mock_response = util_load_json("test_data/create_block_sender_policy_response.json")
+    result_outputs = util_load_json("test_data/create_block_sender_policy_result_outputs.json")
+    result_readable_output = util_load_json("test_data/create_block_sender_policy_result_readable_output.md")
     mocker.patch.object(MimecastV2, "create_or_update_policy_request", return_value=mock_response)
     result = MimecastV2.create_block_sender_policy_command(args)
     assert result.outputs == result_outputs
     assert result.readable_output == result_readable_output
-    assert result.outputs_prefix == 'Mimecast.BlockedSendersPolicy'
-    assert result.outputs_key_field == 'id'
+    assert result.outputs_prefix == "Mimecast.BlockedSendersPolicy"
+    assert result.outputs_key_field == "id"
 
 
 def test_fetch_held_messages_next_token(mocker):
@@ -1023,25 +1030,29 @@ def test_fetch_held_messages_next_token(mocker):
     - Dedup for next run is returned
     - next fetch time is returned
     """
-    last_fetch_held_messages_date_time = '2025-03-13T15:30:00+0000'
-    time_held_messages_for_next_page = '2025-03-13T15:30:00+0000'
+    last_fetch_held_messages_date_time = "2025-03-13T15:30:00+0000"
+    time_held_messages_for_next_page = "2025-03-13T15:30:00+0000"
     last_fetch_held_messages = datetime(2025, 3, 13, 15, 30, second=00)
     current_fetch_held_message = last_fetch_held_messages
     dedup_held_messages = []
-    current_next_page = ''
+    current_next_page = ""
     incidents = []
-    mock_response = {'data': [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-13T15:31:00+0000'}],
-                     'meta': {'pagination': {'next': 'test_next_token'}}}
+    mock_response = {
+        "data": [{"id": "123456", "subject": "test_subject", "dateReceived": "2025-03-13T15:31:00+0000"}],
+        "meta": {"pagination": {"next": "test_next_token"}},
+    }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     MimecastV2.MAX_FETCH = 1
-    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
-                                            time_held_messages_for_next_page,
-                                            last_fetch_held_messages,
-                                            current_fetch_held_message,
-                                            dedup_held_messages,
-                                            current_next_page,
-                                            incidents)
-    assert result == ('test_next_token', ['123456'], datetime(2025, 3, 13, 15, 31))
+    result = MimecastV2.fetch_held_messages(
+        last_fetch_held_messages_date_time,
+        time_held_messages_for_next_page,
+        last_fetch_held_messages,
+        current_fetch_held_message,
+        dedup_held_messages,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("test_next_token", ["123456"], datetime(2025, 3, 13, 15, 31))
 
 
 def test_fetch_held_messages_prev_dedup(mocker):
@@ -1058,25 +1069,29 @@ def test_fetch_held_messages_prev_dedup(mocker):
     - Dedup for next run is returned (added to the prev dedup array)
     - next fetch time is returned
     """
-    last_fetch_held_messages_date_time = '2025-03-13T15:30:00+0000'
-    time_held_messages_for_next_page = '2025-03-11T15:30:00+0000'
+    last_fetch_held_messages_date_time = "2025-03-13T15:30:00+0000"
+    time_held_messages_for_next_page = "2025-03-11T15:30:00+0000"
     last_fetch_held_messages = datetime(2025, 3, 11, 15, 30, second=00)
     current_fetch_held_message = last_fetch_held_messages
-    dedup_held_messages = ['prev_dedup']
-    current_next_page = ''
+    dedup_held_messages = ["prev_dedup"]
+    current_next_page = ""
     incidents = []
-    mock_response = {'data': [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-11T15:30:00+0000'}],
-                     'meta': {'pagination': {'next': 'test_next'}}}
+    mock_response = {
+        "data": [{"id": "123456", "subject": "test_subject", "dateReceived": "2025-03-11T15:30:00+0000"}],
+        "meta": {"pagination": {"next": "test_next"}},
+    }
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     MimecastV2.MAX_FETCH = 1
-    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
-                                            time_held_messages_for_next_page,
-                                            last_fetch_held_messages,
-                                            current_fetch_held_message,
-                                            dedup_held_messages,
-                                            current_next_page,
-                                            incidents)
-    assert result == ('test_next', ['prev_dedup', '123456'], datetime(2025, 3, 11, 15, 30))
+    result = MimecastV2.fetch_held_messages(
+        last_fetch_held_messages_date_time,
+        time_held_messages_for_next_page,
+        last_fetch_held_messages,
+        current_fetch_held_message,
+        dedup_held_messages,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("test_next", ["prev_dedup", "123456"], datetime(2025, 3, 11, 15, 30))
 
 
 def test_fetch_held_messages_no_next_token(mocker):
@@ -1092,24 +1107,26 @@ def test_fetch_held_messages_no_next_token(mocker):
     - Dedup for next run is returned (added to the prev dedup array)
     - next fetch time is returned
     """
-    last_fetch_held_messages_date_time = '2025-03-13T15:30:00+0000'
-    time_held_messages_for_next_page = '2025-03-11T15:30:00+0000'
+    last_fetch_held_messages_date_time = "2025-03-13T15:30:00+0000"
+    time_held_messages_for_next_page = "2025-03-11T15:30:00+0000"
     last_fetch_held_messages = datetime(2025, 3, 11, 15, 30, second=00)
     current_fetch_held_message = last_fetch_held_messages
-    dedup_held_messages = ['prev_dedup']
-    current_next_page = ''
+    dedup_held_messages = ["prev_dedup"]
+    current_next_page = ""
     incidents = []
-    mock_response = {'data': [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-11T15:31:00+0000'}]}
+    mock_response = {"data": [{"id": "123456", "subject": "test_subject", "dateReceived": "2025-03-11T15:31:00+0000"}]}
     mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
     MimecastV2.MAX_FETCH = 1
-    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
-                                            time_held_messages_for_next_page,
-                                            last_fetch_held_messages,
-                                            current_fetch_held_message,
-                                            dedup_held_messages,
-                                            current_next_page,
-                                            incidents)
-    assert result == ('', ['123456'], datetime(2025, 3, 11, 15, 31))
+    result = MimecastV2.fetch_held_messages(
+        last_fetch_held_messages_date_time,
+        time_held_messages_for_next_page,
+        last_fetch_held_messages,
+        current_fetch_held_message,
+        dedup_held_messages,
+        current_next_page,
+        incidents,
+    )
+    assert result == ("", ["123456"], datetime(2025, 3, 11, 15, 31))
 
 
 def test_fetch_held_messages_has_prev_next_token(mocker):
@@ -1127,30 +1144,35 @@ def test_fetch_held_messages_has_prev_next_token(mocker):
     - Dedup for next run is returned (added to the prev dedup array)
     - next fetch time is returned
     """
-    held_messages = [{'id': '123456', 'subject': 'test_subject', 'dateReceived': '2025-03-11T15:31:00+0000'}]
-    fetch_held_messages_with_pagination = mocker.patch.object(MimecastV2, "fetch_held_messages_with_pagination",
-                                                              return_value=(held_messages, 1, ''))
-    last_fetch_held_messages_date_time = '2025-03-13T15:31:00+0000'
-    time_held_messages_for_next_page = '2025-03-11T15:30:00+0000'
+    held_messages = [{"id": "123456", "subject": "test_subject", "dateReceived": "2025-03-11T15:31:00+0000"}]
+    fetch_held_messages_with_pagination = mocker.patch.object(
+        MimecastV2, "fetch_held_messages_with_pagination", return_value=(held_messages, 1, "")
+    )
+    last_fetch_held_messages_date_time = "2025-03-13T15:31:00+0000"
+    time_held_messages_for_next_page = "2025-03-11T15:30:00+0000"
     last_fetch_held_messages = datetime(2025, 3, 11, 15, 30, second=00)
     current_fetch_held_message = last_fetch_held_messages
     dedup_held_messages = []
-    current_next_page = ['current_next_page']
+    current_next_page = ["current_next_page"]
     incidents = []
     MimecastV2.MAX_FETCH = 1
-    result = MimecastV2.fetch_held_messages(last_fetch_held_messages_date_time,
-                                            time_held_messages_for_next_page,
-                                            last_fetch_held_messages,
-                                            current_fetch_held_message,
-                                            dedup_held_messages,
-                                            current_next_page,
-                                            incidents)
-    fetch_held_messages_with_pagination.assert_called_with(api_endpoint='/api/gateway/get-hold-message-list',
-                                                           data=[{'start': '2025-03-11T15:30:00+0000', 'admin': True}],
-                                                           limit=1,
-                                                           dedup_messages=[],
-                                                           current_next_page=['current_next_page'])
-    assert result == ('', ['123456'], datetime(2025, 3, 11, 15, 31))
+    result = MimecastV2.fetch_held_messages(
+        last_fetch_held_messages_date_time,
+        time_held_messages_for_next_page,
+        last_fetch_held_messages,
+        current_fetch_held_message,
+        dedup_held_messages,
+        current_next_page,
+        incidents,
+    )
+    fetch_held_messages_with_pagination.assert_called_with(
+        api_endpoint="/api/gateway/get-hold-message-list",
+        data=[{"start": "2025-03-11T15:30:00+0000", "admin": True}],
+        limit=1,
+        dedup_messages=[],
+        current_next_page=["current_next_page"],
+    )
+    assert result == ("", ["123456"], datetime(2025, 3, 11, 15, 31))
 
 
 def test_fetch_incidents_no_held_message(mocker):
@@ -1168,30 +1190,40 @@ def test_fetch_incidents_no_held_message(mocker):
     - setLastRun should be updated with the latest timestamps and deduplication list.
     - incidents should contain both the malicious attachment and the held message.
     """
-    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2025-03-16T05:45:02Z'})
-    set_last_run = mocker.patch.object(demisto, 'setLastRun')
-    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": "2025-03-16T05:45:02Z"})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    set_new_incidents = mocker.patch.object(demisto, "incidents")
     MimecastV2.FETCH_URL = False
     MimecastV2.FETCH_ATTACHMENTS = True
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = True
-    mocker.patch.object(MimecastV2, 'request_with_pagination', return_value=([{'fileName': 'file_test',
-                                                                              'date': '2025-03-16T05:50:00+0000'}], 1))
-    mocker.patch.object(MimecastV2, 'fetch_held_messages_with_pagination', return_value=([
-        {'id': '123456',
-         'subject': 'test_subject',
-         'dateReceived': '2025-03-16T16:31:00+0000'}], 1, ''))
+    mocker.patch.object(
+        MimecastV2, "request_with_pagination", return_value=([{"fileName": "file_test", "date": "2025-03-16T05:50:00+0000"}], 1)
+    )
+    mocker.patch.object(
+        MimecastV2,
+        "fetch_held_messages_with_pagination",
+        return_value=([{"id": "123456", "subject": "test_subject", "dateReceived": "2025-03-16T16:31:00+0000"}], 1, ""),
+    )
     MimecastV2.fetch_incidents()
-    set_last_run.assert_called_with({'time': '2025-03-16T05:50:01Z',
-                                     'dedup_held_messages': ['123456'],
-                                     'time_held_messages': '2025-03-16T16:31:00Z'})
-    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test', 'occurred': '2025-03-16T05:50:00Z',
-                                           'rawJSON': '{"fileName": "file_test", "date": "2025-03-16T05:50:00+0000"}'},
-                                          {'name': 'Mimecast held message: test_subject',
-                                           'occurred': '2025-03-16T16:31:00Z',
-                                           'rawJSON': ('{"id": "123456", "subject": "test_subject", "dateReceived": '
-                                                       '"2025-03-16T16:31:00+0000"}'),
-                                           'dbotMirrorId': '123456'}])
+    set_last_run.assert_called_with(
+        {"time": "2025-03-16T05:50:01Z", "dedup_held_messages": ["123456"], "time_held_messages": "2025-03-16T16:31:00Z"}
+    )
+    set_new_incidents.assert_called_with(
+        [
+            {
+                "name": "Mimecast malicious attachment: file_test",
+                "occurred": "2025-03-16T05:50:00Z",
+                "rawJSON": '{"fileName": "file_test", "date": "2025-03-16T05:50:00+0000"}',
+            },
+            {
+                "name": "Mimecast held message: test_subject",
+                "occurred": "2025-03-16T16:31:00Z",
+                "rawJSON": ('{"id": "123456", "subject": "test_subject", "dateReceived": "2025-03-16T16:31:00+0000"}'),
+                "dbotMirrorId": "123456",
+            },
+        ]
+    )
 
 
 @freeze_time("2025-01-15 17:00:00 UTC")
@@ -1211,35 +1243,43 @@ def test_fetch_incidents_first_fetch(mocker):
     - setLastRun should store the latest timestamps and deduplication list.
     - incidents should contain the fetched malicious attachment and held message.
     """
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
-    set_last_run = mocker.patch.object(demisto, 'setLastRun')
-    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    set_new_incidents = mocker.patch.object(demisto, "incidents")
     MimecastV2.FETCH_URL = False
     MimecastV2.FETCH_ATTACHMENTS = True
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = True
-    request_with_pagination = mocker.patch.object(MimecastV2, 'request_with_pagination',
-                                                  return_value=([{'fileName': 'file_test',
-                                                                  'date': '2025-01-14T17:01:00+0000'}], 1))
-    fetch_held_messages_with_pagination = mocker.patch.object(MimecastV2, 'fetch_held_messages_with_pagination', return_value=([
-        {'id': '123456',
-         'subject': 'test_subject',
-         'dateReceived': '2025-01-14T17:01:00+0000'}], 1, ''))
+    request_with_pagination = mocker.patch.object(
+        MimecastV2, "request_with_pagination", return_value=([{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}], 1)
+    )
+    fetch_held_messages_with_pagination = mocker.patch.object(
+        MimecastV2,
+        "fetch_held_messages_with_pagination",
+        return_value=([{"id": "123456", "subject": "test_subject", "dateReceived": "2025-01-14T17:01:00+0000"}], 1, ""),
+    )
     MimecastV2.fetch_incidents()
-    time_for_incidents = request_with_pagination.call_args[1].get('data')[0].get('from')
-    time_for_held_messages = fetch_held_messages_with_pagination.call_args[1].get('data')[0].get('start')
+    time_for_incidents = request_with_pagination.call_args[1].get("data")[0].get("from")
+    time_for_held_messages = fetch_held_messages_with_pagination.call_args[1].get("data")[0].get("start")
     assert time_for_incidents == time_for_held_messages
-    set_last_run.assert_called_with({'time': '2025-01-14T17:01:01Z',
-                                     'dedup_held_messages': ['123456'],
-                                     'time_held_messages': '2025-01-14T17:01:00Z'})
-    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test',
-                                           'occurred': '2025-01-14T17:01:00Z',
-                                           'rawJSON': '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}'},
-                                          {'name': 'Mimecast held message: test_subject',
-                                           'occurred': '2025-01-14T17:01:00Z',
-                                           'rawJSON': ('{"id": "123456", "subject": "test_subject", '
-                                                       '"dateReceived": "2025-01-14T17:01:00+0000"}'),
-                                           'dbotMirrorId': '123456'}])
+    set_last_run.assert_called_with(
+        {"time": "2025-01-14T17:01:01Z", "dedup_held_messages": ["123456"], "time_held_messages": "2025-01-14T17:01:00Z"}
+    )
+    set_new_incidents.assert_called_with(
+        [
+            {
+                "name": "Mimecast malicious attachment: file_test",
+                "occurred": "2025-01-14T17:01:00Z",
+                "rawJSON": '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}',
+            },
+            {
+                "name": "Mimecast held message: test_subject",
+                "occurred": "2025-01-14T17:01:00Z",
+                "rawJSON": ('{"id": "123456", "subject": "test_subject", "dateReceived": "2025-01-14T17:01:00+0000"}'),
+                "dbotMirrorId": "123456",
+            },
+        ]
+    )
 
 
 def test_fetch_incidents_dedup_held_messages(mocker):
@@ -1256,23 +1296,30 @@ def test_fetch_incidents_dedup_held_messages(mocker):
     - The last run should remain unchanged.
     - No new incidents should be set.
     """
-    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2025-03-16T05:50:01Z',
-                                                             'dedup_held_messages': ['123456'],
-                                                             'time_held_messages': '2025-03-16T16:31:00Z'})
-    set_last_run = mocker.patch.object(demisto, 'setLastRun')
-    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={
+            "time": "2025-03-16T05:50:01Z",
+            "dedup_held_messages": ["123456"],
+            "time_held_messages": "2025-03-16T16:31:00Z",
+        },
+    )
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    set_new_incidents = mocker.patch.object(demisto, "incidents")
     MimecastV2.FETCH_URL = False
     MimecastV2.FETCH_ATTACHMENTS = False
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = True
-    mocker.patch.object(MimecastV2, 'http_request',
-                        return_value=({'data': [{'id': '123456',
-                                                 'subject': 'test_subject',
-                                                 'dateReceived': '2025-03-11T15:31:00+0000'}]}))
+    mocker.patch.object(
+        MimecastV2,
+        "http_request",
+        return_value=({"data": [{"id": "123456", "subject": "test_subject", "dateReceived": "2025-03-11T15:31:00+0000"}]}),
+    )
     MimecastV2.fetch_incidents()
-    set_last_run.assert_called_with({'time': '2025-03-16T05:50:01Z',
-                                    'dedup_held_messages': ['123456'],
-                                     'time_held_messages': '2025-03-16T16:31:00Z'})
+    set_last_run.assert_called_with(
+        {"time": "2025-03-16T05:50:01Z", "dedup_held_messages": ["123456"], "time_held_messages": "2025-03-16T16:31:00Z"}
+    )
     set_new_incidents.assert_called_with([])
 
 
@@ -1292,20 +1339,26 @@ def test_fetch_incidents_not_fetching_held_messages(mocker):
     - setLastRun should store the latest timestamps and deduplication list.
     - incidents should contain the fetched malicious attachment.
     """
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
-    set_last_run = mocker.patch.object(demisto, 'setLastRun')
-    set_new_incidents = mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    set_new_incidents = mocker.patch.object(demisto, "incidents")
     MimecastV2.FETCH_URL = False
     MimecastV2.FETCH_ATTACHMENTS = True
     MimecastV2.FETCH_IMPERSONATIONS = False
     MimecastV2.FETCH_HELD_MESSAGES = False
-    request_with_pagination = mocker.patch.object(MimecastV2, 'request_with_pagination',
-                                                  return_value=([{'fileName': 'file_test',
-                                                                  'date': '2025-01-14T17:01:00+0000'}], 1))
+    request_with_pagination = mocker.patch.object(
+        MimecastV2, "request_with_pagination", return_value=([{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}], 1)
+    )
     MimecastV2.fetch_incidents()
-    time_for_incidents = request_with_pagination.call_args[1].get('data')[0].get('from')
-    assert time_for_incidents == '2025-01-14T17:00:00+0000'
-    set_last_run.assert_called_with({'time': '2025-01-14T17:01:01Z'})
-    set_new_incidents.assert_called_with([{'name': 'Mimecast malicious attachment: file_test',
-                                           'occurred': '2025-01-14T17:01:00Z',
-                                           'rawJSON': '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}'}])
+    time_for_incidents = request_with_pagination.call_args[1].get("data")[0].get("from")
+    assert time_for_incidents == "2025-01-14T17:00:00+0000"
+    set_last_run.assert_called_with({"time": "2025-01-14T17:01:01Z"})
+    set_new_incidents.assert_called_with(
+        [
+            {
+                "name": "Mimecast malicious attachment: file_test",
+                "occurred": "2025-01-14T17:01:00Z",
+                "rawJSON": '{"fileName": "file_test", "date": "2025-01-14T17:01:00+0000"}',
+            }
+        ]
+    )
