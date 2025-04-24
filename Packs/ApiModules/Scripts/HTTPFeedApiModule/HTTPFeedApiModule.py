@@ -394,6 +394,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     """
     attributes = None
     indicator = None
+    extracted_indicator = []
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
     if feed_config and 'indicator' in feed_config:
@@ -427,8 +428,8 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                 if cidr_list := ip_range_to_cidr(ip_start, ip_end):
                     extracted_indicator = cidr_list
 
-            if not isinstance(extracted_indicator, list):
-                extracted_indicator = [extracted_indicator]
+        if not isinstance(extracted_indicator, list):
+            extracted_indicator = [extracted_indicator]
 
         attributes = {}
         for field in fields_to_extract:
