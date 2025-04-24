@@ -54,13 +54,6 @@ configuration:
   type: 8
   advanced: true
   section: Connect
-- name: rasterize_mode
-  display: Rasterize Mode
-  required: false
-  type: 0
-  additionalinfo: Deprecated.
-  defaultvalue:
-  section: Connect
 - name: blocked_urls
   display: List of domains to block
   required: false

@@ -67,6 +67,7 @@ TAB_CLOSE_WAIT_TIME = 1
 DEFAULT_RETRIES_COUNT = 4
 DEFAULT_RETRY_WAIT_IN_SECONDS = 3
 PAGES_LIMITATION = 20
+MAX_ALLOWED_PARALLEL_CHROMES_RUNNING = 5
 
 # chrome instance data keys
 INSTANCE_ID = "instance_id"
@@ -329,7 +330,12 @@ def count_running_chromes(port):
         return 0
 
 
-def get_chrome_browser(port: str) -> pychrome.Browser | None:
+def get_headless_chrome(port: str) -> pychrome.Browser | None:
+    chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+    if len(chrome_instances_contents) >= MAX_ALLOWED_PARALLEL_CHROMES_RUNNING:
+        port_should_be_shut_down = next(iter(chrome_instances_contents))
+        terminate_chrome(chrome_port=port_should_be_shut_down)
+
     # Verify that the process has started
     for attempt in range(DEFAULT_RETRIES_COUNT):
         running_chromes_count = count_running_chromes(port)
@@ -351,7 +357,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
 
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
-            demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
+            demisto.debug(f"get_headless_chrome, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
@@ -373,9 +379,9 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
 
 def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str, Any]:
     """
-    Read the content from a JSON file and return it as a Python dictionary or list.
+    Read the content from a JSON file and return it as a dict.
     :param file_path: Path to the JSON file.
-    :return: The JSON content as a Python dictionary or list, or None if the file does not exist or is empty.
+    :return: The JSON content as a dict
     """
     if not os.path.exists(json_file_path):
         demisto.info(f"File '{json_file_path}' does not exist.")
@@ -483,7 +489,7 @@ def get_chrome_options(default_options, user_options):
     return options
 
 
-def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binary=CHROME_EXE):
+def start_chrome_headless(chrome_port, chrome_options, chrome_binary=CHROME_EXE):
     try:
         logfile = open(CHROME_LOG_FILE_PATH, "ab")
 
@@ -573,7 +579,7 @@ def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # p
 
 def chrome_manager() -> tuple[Any | None, str | None]:
     """
-    Manages Chrome instances based on user-specified chrome options and integration instance ID.
+    Manages Chrome instances based on user-specified chrome options.
 
     This function performs the following steps:
     1. Retrieves the instance ID of the integration and the Chrome options set by the user.
@@ -653,6 +659,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         demisto.debug("chrome_manager: condition chrome_options in chrome_options_dict is true")
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
+
     for chrome_port_ in chrome_instances_contents:
         if chrome_port_ == "None":
             terminate_port_chrome_instances_file(chrome_port_)
@@ -660,12 +667,12 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
             continue
         demisto.debug(f"chrome_manager {chrome_port_=}, terminating the port")
         terminate_chrome(chrome_port=chrome_port_)
-    return generate_new_chrome_instance(instance_id, chrome_options)
+    return generate_new_chrome_instance(chrome_options)
 
 
-def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
+def generate_new_chrome_instance(chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
-    return start_chrome_headless(chrome_port, instance_id, chrome_options)
+    return start_chrome_headless(chrome_port, chrome_options)
 
 
 def generate_chrome_port() -> str | None:
@@ -1099,13 +1106,11 @@ def perform_rasterize(
 
     demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
 
-    # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
-    browser, chrome_port = chrome_manager_one_port()
+    browser, chrome_port = chrome_manager()
 
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
             for current_path in paths:
@@ -1137,7 +1142,7 @@ def perform_rasterize(
                 f"active tabs len: {len(browser.list_tab())}"
             )
 
-            chrome_instances_file_content: dict = read_json_file()  # CR fix name
+            chrome_instances_file_content: dict = read_json_file()
 
             rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
                 rasterization_threads
@@ -1376,9 +1381,8 @@ def rasterize_command():  # pragma: no cover
     file_name = demisto.args().get("file_name", "url")
     include_url = argToBoolean(demisto.args().get("include_url", False))
 
-    file_extension = "png"
-    if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
-        file_extension = "pdf"
+    file_extension = "pdf" if (
+            rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value) else "png"
 
     demisto.debug(f"file_name type is: {type(file_name)}")
     file_names = argToList(file_name)
