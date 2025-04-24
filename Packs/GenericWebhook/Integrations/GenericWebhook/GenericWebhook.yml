@@ -57,9 +57,7 @@ configuration:
   section: Result
   name: resultLink  # Where will this 'name' be used? And where will the 'GeneratedLink' from Figma appear?
   type: 22
-  options: null # do we need to add this field in content?
-  required: true  # same here
-  hasvalue: true # same here
+  required: true  # do we need to add this field in content?
 description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
