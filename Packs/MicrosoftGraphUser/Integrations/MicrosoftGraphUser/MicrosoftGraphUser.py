@@ -232,21 +232,16 @@ class MsGraphClient:
         self.ms_client.http_request(method="POST", url_suffix=f"users/{quote(user)}/revokeSignInSessions", resp_type="text")
 
     #  If successful, this method returns 200
-    def list_tap_policy(self, user_id, policy_id):
+    def list_tap_policy(self, user_id):
         url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
-        if policy_id:
-            url_suffix += f'/{quote(policy_id)}'
-
+        
         res = self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix
         )
-        if policy_id:
-            return res
         return res.get('value', [])
 
     #  If successful, this method returns 201
-
     def create_tap_policy(self, user_id, body):
         url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
         res = self.ms_client.http_request(
@@ -254,6 +249,7 @@ class MsGraphClient:
             url_suffix=url_suffix,
             json_data=body
         )
+        res.pop("@odata.context", None)
         return res
 
     #  If successful, this method returns 204 - no content
@@ -561,8 +557,7 @@ def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults
 
     Args:
         client (MsGraphClient): The Microsoft Graph client used to make the API request.
-        args (dict): A dictionary containing the input arguments, including 'user_id'
-                     (required) and optionally 'policy_id' to retrieve a specific TAP method.
+        args (dict): A dictionary containing the input arguments, including 'user_id' (required)
 
     Returns:
         CommandResults
@@ -571,20 +566,15 @@ def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults
         https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods/[policy_id]
     """
     user_id = args.get('user_id')
-    policy_id = args.get('policy_id', '')
-    tap_data = client.list_tap_policy(user_id, policy_id)
+    tap_data = client.list_tap_policy(user_id)
     tap_readable, tap_policy_output = parse_outputs(tap_data)
-        
-    if tap_readable and isinstance(tap_readable, list):
-        tap_readable_dict = tap_readable[0]
-        tap_policy_output_dict = tap_policy_output[0]
-    else:
-        tap_readable_dict = tap_readable
-        tap_policy_output_dict = tap_policy_output
-        
-    # change HR from ID to Policy ID
-    # if isinstance(tap_readable_dict, dict):
+    
+    tap_readable_dict = tap_readable[0]
+    tap_policy_output_dict = tap_policy_output[0]
+
+    # Remove 'TemporaryAccessPass' from context
     tap_policy_output_dict.pop('TemporaryAccessPass')
+    # change HR from ID to Policy ID
     tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID')
         
     headers = ['Policy ID', 'Start Date Time', 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
@@ -633,12 +623,16 @@ def create_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
         'startDateTime': start_time_iso.strftime("%Y-%m-%dT%H:%M:%S.000Z") if start_time_iso else None
     }
     res = client.create_tap_policy(user_id, fields)
+    if not res:
+        return CommandResults(
+        readable_output='Failed to create TAP policy.'
+    )
 
     # Remove the 'temporaryAccessPass' value as it should be removed from context
     generated_password = res.pop('temporaryAccessPass')
 
     create_zip_with_password(generated_tap_password=generated_password, zip_password=zip_password)
-    human_readable = f'Temporary Access Pass Authentication methods policy {user_id} was successfully created'
+    human_readable = f'Temporary Access Pass Authentication methods policy {user_id} was successfully created.'
     _, tap_policy_output = parse_outputs(res)
 
     return CommandResults(

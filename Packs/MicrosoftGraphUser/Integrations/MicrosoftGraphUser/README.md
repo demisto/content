@@ -771,7 +771,6 @@ as a user can have only one Temporary Access Pass method.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID. | Required | 
-| policy_id | Policy ID. | Optional | 
 
 #### Context Output
 

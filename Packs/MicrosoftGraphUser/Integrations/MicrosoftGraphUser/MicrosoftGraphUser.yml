@@ -635,9 +635,6 @@ script:
     - description: The Azure AD user ID.
       name: user_id
       required: true
-    - description: Policy ID.
-      name: policy_id
-      required: false
     description:  |-
       Lists all TAP policies for a user.
       This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
@@ -671,6 +668,7 @@ script:
     - description: A password for the locked zip file that will include the password of the new TAP.
       name: zip_password
       required: true
+      secret: true
     - description: The Duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days).
       name: lifetime_in_minutes
       required: false
