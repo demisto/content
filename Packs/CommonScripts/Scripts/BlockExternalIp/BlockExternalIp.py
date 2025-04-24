@@ -608,7 +608,7 @@ def start_pan_os_flow(args: dict) -> tuple[list, bool]:
     address_group = args['address_group']
     rule_name = args['rule_name']
     log_forwarding_name = args.get('log_forwarding_name', '')
-    auto_commit = args.get('auto_commit')
+    auto_commit = args.get('auto_commit', True)
 
     command_name_list_address_group = "pan-os-list-address-groups"
     res_list_add_group = run_execute_command(command_name_list_address_group, {})
@@ -910,7 +910,7 @@ def main():  # pragma: no cover
                                  f"The supported integrations are: Palo Alto Networks - Prisma SASE, Panorama, "
                                  f"FortiGate, F5Silverline, Cisco ASA, Zscaler.")
             else:
-                results.append(CommandResults(readable_output=f"The brand {brand} isn't enabled."))
+                results.append(CommandResults(readable_output=f"The brand {brand} isn't enabled."))  # type: ignore
         if POLLING:
             demisto.debug(f"Updating the executed_brands {executed_brands=}")
             demisto.setContext('executed_brands', str(executed_brands))

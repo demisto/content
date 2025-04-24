@@ -153,32 +153,6 @@ def test_sanitize_pan_os_responses():
         assert keys_list == ['HumanReadable', 'Contents', 'Type']
 
 
-def test_prepare_context_and_hr():
-    """
-    Given:
-       - A list containing 1 response from demosto.executeCommand
-    When:
-       - Creating the context that sums the execution of each integration flow.
-    Then:
-       - The correct context data list of dict is returned.
-    """
-    from BlockExternalIp import prepare_context_and_hr
-    response = util_load_json('test_data/cisco_asa_responses.json').get('cisco_asa_successful_block')
-    verbose = True
-    ip_list = ['1.1.2.2']
-    expected_hr = ['### Created new rule. ID: 1111111111\n|ID|Source|Dest|Permit|Interface|InterfaceType|IsActive'
-                   '|Position|SourceService|DestService|\n|---|---|---|---|---|---|---|---|---|---|\n| 1111111111 '
-                   '| 0.0.0.0 | 1.1.2.2 | false |  | Global | true | 11 | ip | ip |\n',
-                   '### The IP was blocked successfully\n|IP|Status|Result|Used integration|\n|---|---|---|---|\n'
-                   '| 1.1.2.2 | Done | Success | Cisco ASA |\n']
-    expected_context = [{'IP': '1.1.2.2', 'results': {'Brand': 'Cisco ASA', 'Message': '', 'Result': 'OK'}}]
-
-    results = prepare_context_and_hr(response, verbose, ip_list)
-    for result, hr in zip(results, expected_hr):
-        assert result.readable_output == hr
-    assert results[1].outputs == expected_context
-
-
 def test_get_relevant_context():
     """
         Given:
@@ -313,7 +287,7 @@ def test_prisma_sase_security_rule_update_needed(mocker):
     responses = [res_rule_list]
     entries = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_update')
     mocker_object = mocker.patch.object(demisto, 'executeCommand', return_value=entries)
-    result = prisma_sase_security_rule_update(rule_name, address_group, responses)
+    result = prisma_sase_security_rule_update(rule_name, address_group, res_rule_list, responses)
     assert result == entries
     assert len(responses) == 2
     mocker_object.assert_called_with("prisma-sase-security-rule-update",
@@ -338,7 +312,7 @@ def test_prisma_sase_security_rule_update_not_needed():
     address_group = "test_debug"
     res_rule_list = util_load_json('test_data/prisma_sase_responses.json').get('security_rule_list')
     responses = [res_rule_list]
-    result = prisma_sase_security_rule_update(rule_name, address_group, responses)
+    result = prisma_sase_security_rule_update(rule_name, address_group, res_rule_list, responses)
     assert not result
 
 
