@@ -53,7 +53,7 @@ def CheckUpdates(packs, types, playbook, layout):
 
 
 def GetUpgradedPacks():
-    response = execute_command("core-api-get", {"uri": "/contentpacks/installed-expired", "body": ""})['response']
+    response = execute_command("core-api-get", {"uri": "/contentpacks/installed-expired", "body": ""})["response"]
     upgradePacks = {}
     changesPacks = {}
 
@@ -98,9 +98,9 @@ def FilterPacks(packs, upgradePacks, changesPacks):
 
 
 def GetUpgradedIntegrations(packs):
-    response = execute_command("core-api-post", {"uri": "/settings/integration/search", "body": {}})['response']
-    configs = response['configurations']
-    instances = response['instances']
+    response = execute_command("core-api-post", {"uri": "/settings/integration/search", "body": {}})["response"]
+    configs = response["configurations"]
+    instances = response["instances"]
     integrations = {}
     integmap = {}
 
@@ -138,7 +138,7 @@ def GetUpgradedIntegrations(packs):
 def GetCustomPlaybooks():
     response = execute_command(
         "core-api-post", {"uri": "/playbook/search", "body": {"query": "system:F AND hidden:F AND deprecated:F"}}
-    )['response']['playbooks']
+    )["response"]["playbooks"]
     playbooks = []
 
     for r in response:
@@ -211,7 +211,7 @@ def GetUpgradedScripts(packs, scripts):
     upgscripts = []
 
     for p in packs:
-        response = execute_command("core-api-get", {"uri": f"/contentpacks/marketplace/{p}", "body": ""})['response']
+        response = execute_command("core-api-get", {"uri": f"/contentpacks/marketplace/{p}", "body": ""})["response"]
         automations = response["contentItems"]["automation"]
 
         if automations is not None:
@@ -224,7 +224,7 @@ def GetUpgradedScripts(packs, scripts):
 
 
 def GetUpgradedIncidentTypes(packs):
-    response = execute_command("core-api-get", {"uri": "/incidenttype", "body": ""})['response']
+    response = execute_command("core-api-get", {"uri": "/incidenttype", "body": ""})["response"]
     uptypes = {}
     custtypes = []
     for r in response:

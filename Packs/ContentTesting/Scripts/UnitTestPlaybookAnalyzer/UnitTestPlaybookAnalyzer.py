@@ -10,12 +10,12 @@ def BuildTask(t) -> dict:
     started = 0
     notexecuted = 0
 
-    if 'state' in t:
-        state = t['state']
+    if "state" in t:
+        state = t["state"]
         if state == "Completed":
-            if 'startDate' in t and 'completedDate' in t:
-                start = datetime.fromisoformat(t['startDate'].replace('Z', '+00:00'))
-                end = datetime.fromisoformat(t['completedDate'].replace('Z', '+00:00'))
+            if "startDate" in t and "completedDate" in t:
+                start = datetime.fromisoformat(t["startDate"].replace("Z", "+00:00"))
+                end = datetime.fromisoformat(t["completedDate"].replace("Z", "+00:00"))
                 delta = end - start
                 duration = int(delta.total_seconds() * 1000)
             else:
@@ -69,10 +69,10 @@ def GetTasks(incid: str, subplaybook: str) -> list:
     })
     tasks: list = []
 
-    if "response" in resp and resp['response'] is not None:
-        for t in resp['response']:
-            if (t['type'] in ["regular", "condition", "playbook", "collection"]):
-                if t['type'] == "playbook" and subplaybook != "":
+    if "response" in resp and resp["response"] is not None:
+        for t in resp["response"]:
+            if t["type"] in ["regular", "condition", "playbook", "collection"]:
+                if t["type"] == "playbook" and subplaybook != "":
                     tasks = GetSubpbTasks(subplaybook, t, tasks)
                 else:
                     tasks.append(BuildTask(t))
@@ -122,15 +122,14 @@ def TaskStats(task: list, taskstat: dict) -> dict:
 
 
 def GetTaskStats(playbookname, subplaybookname, firstday, lastday, maxinc):
-    argument = {'size': maxinc, 'query': f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
+    argument = {"size": maxinc, "query": f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
     response = execute_command("getIncidents", argument)
-    taskstat = {}
-    taskstats = {}
+    taskstat: dict = {}
+    taskstats: dict = {}
     count = 0
-
-    if response['data'] is not None:
-        for inc in response['data']:
-            tasks = GetTasks(inc['id'], subplaybookname)
+    if response["data"] is not None:
+        for inc in response["data"]:
+            tasks = GetTasks(inc["id"], subplaybookname)
             taskstats = TaskStats(tasks, taskstat)
             count += 1
             if count >= maxinc:
