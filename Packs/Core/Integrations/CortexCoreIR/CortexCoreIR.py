@@ -236,14 +236,14 @@ def core_execute_command_reformat_outputs(script_res: list) -> list:
         for res in results:
             endpoint_id = res.get('endpoint_id')
             if endpoint_id in new_results:
-                # if the endpoint already exist, enter the command data to new_results (the endpoint data already in)
+                # if the endpoint already exists - adding the command data to new_results (the endpoint data already in)
                 new_results[endpoint_id]['executed_command'].append(core_execute_command_reformat_command_data(res))
                 # the context output include for each result a field with the name of each command, we want to remove it
                 command_name = res.get('command')
                 new_results[endpoint_id].pop(command_name)
             else:
-                # if the endpoint doesn't already exist, enter all the data to new_results[endpoint]
-                # relocate all the data reletaed to the command to be under executed_command
+                # if the endpoint doesn't already exist - adding all the data into new_results[endpoint]
+                # relocate all the data related to the command to be under executed_command
                 reformatted_res = deepcopy(res)
                 reformatted_res['executed_command'] = [core_execute_command_reformat_command_data(res)]
                 # remove from reformatted_res all the data we put under executed_command
