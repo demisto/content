@@ -139,6 +139,270 @@ class PrismaSase:
         return command_results_list
 
 
+class PanOs:
+    def __init__(self, args: dict, responses: list):
+        self.args = args
+        self.responses = responses
+
+    def reduce_pan_os_responses(self) -> list[list[dict]]:
+        """ Returns a list of just the information needed for later usage by the flow.
+        Returns:
+            A list containing the relevant parts of the command responses.
+        """
+        demisto.debug("Updating the responses in sanitize_pan_os_responses.")
+        sanitize_responses = []
+        for res in self.responses:
+            current_new_res = []
+            for entry in res:
+                command_hr = entry.get('HumanReadable')
+                message = entry.get('Contents')
+                entry_type = entry.get('Type')
+                demisto.debug(f"got {entry_type=} , {command_hr=} , {message=}")
+                current_new_res.append({
+                    'HumanReadable': command_hr,
+                    'Contents': message,
+                    'Type': entry_type
+                })
+            sanitize_responses.append(current_new_res)
+        demisto.debug(f"{len(sanitize_responses)=}, {len(self.responses)=}")
+        return sanitize_responses
+
+    def check_value_exist_in_context(self, value: str, context: list[dict], key: str) -> bool:
+        """ Verify if a specific value of a specific key is present in the context.
+        Args:
+            value (str): The value we want to verify its existence.
+            context (list[dict]): The command context.
+            key (str): The key to extract from the context.
+        Returns:
+            A boolean representing the existence of the value (True) or False.
+        """
+        for item in context:
+            match = item.get(key, '')
+            if match and match == value:
+                demisto.debug(f"The {value=} was found")
+                return True
+            elif match:
+                match_split = match.split('or') if isinstance(match, str) else match.get('#text', '').split('or')
+                match_split_strip = [m.strip() for m in match_split]
+                if value in match_split_strip:
+                    demisto.debug(f"The {value=} was found in an 'or' case")
+                    return True
+        demisto.debug(f"The {value=} isn't in the context with the {key=}")
+        return False
+
+    def get_match_by_name(self, name: str, context: list | dict) -> str:
+        """ Get the relevant "Match" value where the address_group_name == name.
+        Args:
+            name (str): The name of the relevant address group.
+            context (list | dict): The original context ('EntryContext') returned in the execute_command response.
+        Returns:
+            The match value.
+        """
+        for item in context:
+            address_group_name = item.get('Name', '')
+            if address_group_name and address_group_name == name:
+                match = item.get('Match', '')
+                if isinstance(match, dict):
+                    match = match.get('#text')
+                demisto.debug(f"The {name=} was found, returning the {match}")
+                return match
+        return ''  # when creating a dynamic address group a match value is a required, so it won't get here
+
+    def pan_os_check_trigger_push_to_device(self) -> bool:
+        """ Verify if this is a Panorama instance.
+        Returns:
+            The PollResult object.
+        """
+        command_name = "pan-os"
+        res_pan_os = run_execute_command(command_name, {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
+        self.responses.append(res_pan_os)
+        context = get_relevant_context(res_pan_os[0].get('EntryContext', {}), 'Panorama.Command')
+        model = context.get('response', {}).get('result', {}).get('system', {}).get('model', '')  # type: ignore
+        return model == 'Panorama'
+
+    def pan_os_register_ip_finish(self) -> list[CommandResults]:
+        """ Execute the final part of the pan-os flow.
+        1. Initialize all the context values.
+        2. Create the list of Command Results.
+        Returns:
+            The list of Command Results.
+        """
+        tag = self.args.get('tag', '')
+        ip_list = self.args['ip_list']
+        verbose = self.args.get('verbose', False)
+        rule_name = self.args['rule_name']
+        command_name = 'pan-os-register-ip-tag'
+        demisto.setContext('push_job_id', '')  # delete any previous value if exists
+        demisto.setContext('commit_job_id', '')  # delete any previous value if exists
+        demisto.setContext('panorama_responses', '')  # delete any previous value if exists
+        self.responses.append(run_execute_command(command_name, {'tag': tag, 'IPs': ip_list}))
+        results = prepare_context_and_hr_multiple_executions(self.responses, verbose, rule_name, ip_list)
+        return results
+
+    def pan_os_create_edit_address_group(self, context_list_add_group: list):
+        """ Checks whether to create a new address group or update an existing one, and does it.
+        Args:
+            context_list_add_group (list): The context of pan-os-list-address-group.
+        """
+        address_group = self.args['address_group']
+        tag = self.args.get('tag', '')
+        if self.check_value_exist_in_context(address_group, context_list_add_group, 'Name'):
+            current_match = self.get_match_by_name(address_group, context_list_add_group)
+            new_match = f'{current_match} or {tag}' if current_match else tag
+            command_name_edit = "pan-os-edit-address-group"
+            res_edit_add_group = run_execute_command(command_name_edit,
+                                                     {'name': address_group, 'type': 'dynamic', 'match': new_match})
+            self.responses.append(res_edit_add_group)
+        else:
+            command_name_create = "pan-os-create-address-group"
+            res_create_add_group = run_execute_command(command_name_create,
+                                                       {'name': address_group, 'type': 'dynamic', 'match': tag})
+            self.responses.append(res_create_add_group)
+
+    def pan_os_create_edit_rule(self, context_list_rules: list):
+        """ Checks whether to create a new address group or update an existing one, and does it.
+        Args:
+            context_list_rules (list): The context of pan-os-list-rules.
+        """
+        rule_name = self.args['rule_name']
+        address_group = self.args['address_group']
+        log_forwarding_name = self.args.get('log_forwarding_name', '')
+        if self.check_value_exist_in_context(rule_name, context_list_rules, 'Name'):
+            command_name_edit = "pan-os-edit-rule"
+            self.responses.append(run_execute_command(command_name_edit, {'rulename': rule_name,
+                                                                     'element_to_change': 'source',
+                                                                     'element_value': address_group,
+                                                                     'pre_post': 'pre-rulebase'}))
+        else:
+            create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase',
+                                'source': address_group}
+            command_name_create = "pan-os-create-rule"
+            if log_forwarding_name:
+                create_rule_args['log_forwarding'] = log_forwarding_name
+            self.responses.append(run_execute_command(command_name_create, create_rule_args))
+        command_name_move = "pan-os-move-rule"
+        self.responses.append(
+            run_execute_command(command_name_move, {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'}))
+
+    def start_pan_os_flow(self) -> tuple[list, bool]:
+        """ Start the flow of pan-os.
+        Returns:
+            A tuple that can be one of 2 options:
+            1. An empty list (the responses were added to self.responses), a boolean represents whether to
+                commit the changes to pan-os. This option will take effect if the input tag doesn't exist in pan-os.
+            2. A list of command results, and a "False" representing the fact that a commit to pan-os shouldn't be
+                performed since the tag already exists.
+        """
+        tag = self.args['tag']
+        auto_commit = self.args.get('auto_commit', True)
+
+        command_name_list_address_group = "pan-os-list-address-groups"
+        res_list_add_group = run_execute_command(command_name_list_address_group, {})
+        self.responses.append(res_list_add_group)
+        context_list_add_group = get_relevant_context(res_list_add_group[0].get('EntryContext', {}), "Panorama.AddressGroups")
+        if not self.check_value_exist_in_context(tag, context_list_add_group, 'Match'):  # type: ignore
+            # check if the group already exists we should update the tag.
+            demisto.debug(f"The {tag=} doesn't exist in the address groups")
+            self.pan_os_create_edit_address_group(context_list_add_group)  # type: ignore
+
+            command_name_list_rules = "pan-os-list-rules"
+            res_list_rules = run_execute_command(command_name_list_rules, {'pre_post': 'pre-rulebase'})
+            self.responses.append(res_list_rules)
+            context_list_rules = get_relevant_context(res_list_rules[0].get('EntryContext', {}), 'Panorama.SecurityRule')
+            self.pan_os_create_edit_rule(context_list_rules)  # type: ignore
+            return [], auto_commit  # should perform the commit section
+        else:
+            self.args['rule_name'] = ''
+            demisto.debug(f"The {tag=} does exist in the address groups, registering the ip.")
+            results = self.pan_os_register_ip_finish()
+            return results, False
+
+    def manage_pan_os_flow(self) -> CommandResults | list[CommandResults] | PollResult:  # pragma: no cover
+        """ Manage the different states of the pan-os flow.
+            1. The flow start.
+            2. If auto_commit == true, and there were changes to commit, execute pan-os-commit.
+            3. There is a commit job id in the arguments, check what is the status of the commit.
+            4. The commit was executed successfully, check if this is a panorama instance and push to the devices.
+            5. There is a push job id, check what id the status of the push action.
+            6. The push action was successful, register the ip & tag and finish the flow.
+        Returns:
+            The relevant result of the current state. If it is a polling state than a PollResult object will be returned, otherwise
+            a Command Result or a list of Command Results, depends on the commands that were executed.
+        """
+        incident_context = demisto.context()
+        demisto.debug(f"The context in the beginning of manage_pan_os_flow {incident_context=}")
+        auto_commit = self.args['auto_commit']
+        commit_job_id = self.args.get('commit_job_id') or demisto.get(incident_context, 'commit_job_id')
+        # state 5
+        if push_job_id := demisto.get(incident_context, 'push_job_id'):
+            demisto.debug(f"Has a {push_job_id=}")
+            self.responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
+            self.args['push_job_id'] = push_job_id
+            res_push_status = pan_os_push_status(self.args, self.responses)
+            # state 6
+            if not POLLING:
+                demisto.debug("Finished polling, finishing the flow")
+                return self.pan_os_register_ip_finish()
+            else:
+                demisto.debug(f"Poll for the push status. Save the responses to the context {len(self.responses)=}")
+                responses = self.reduce_pan_os_responses()
+                demisto.setContext('panorama_responses', str(responses))
+                return res_push_status
+        # state 3
+        elif commit_job_id:
+            demisto.debug(f"Has a {commit_job_id=}")
+            self.args['commit_job_id'] = commit_job_id
+            self.responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
+            poll_commit_status = pan_os_commit_status(self.args, self.responses)
+            # state 4
+            if not POLLING:
+                demisto.debug("Finished polling for the commit status, checking if we need to trigger pan_os_push_to_device")
+                if self.pan_os_check_trigger_push_to_device():
+                    demisto.debug("Triggering pan_os_push_to_device")
+                    poll_push_to_device = pan_os_push_to_device(self.args, self.responses)
+                    if not POLLING:
+                        demisto.debug("Nothing to push. Finish the process.")
+                        return self.pan_os_register_ip_finish()
+                    else:
+                        demisto.debug(f"Poll for the push status. Save the responses to the context {len(self.responses)=}")
+                        responses = self.reduce_pan_os_responses()
+                        demisto.setContext('panorama_responses', str(responses))
+                        return poll_push_to_device
+                else:
+                    demisto.debug("Not a Panorama instance, not pushing to device. Continue to register the IP.")
+                    return self.pan_os_register_ip_finish()
+            else:
+                demisto.debug(f"Poll for the commit status. Save the responses to the context {len(self.responses)=}")
+                responses = self.reduce_pan_os_responses()
+                demisto.setContext('panorama_responses', str(responses))
+                return poll_commit_status
+
+        # if we are here, it is the beginning of the flow, state 1
+        results, should_commit = self.start_pan_os_flow()
+        if should_commit:
+            # state 2
+            poll_result = pan_os_commit(self.args, self.responses)
+            demisto.debug(f"The length of the responses after adding the res_commit is {len(self.responses)}")
+            if not POLLING:
+                result = self.pan_os_register_ip_finish()
+                demisto.debug(f"The result after continue_to_poll is false {result=}")
+                return result
+            else:
+                demisto.debug(f"Poll for the commit status. Save the responses to the context {len(self.responses)=}")
+                responses = self.reduce_pan_os_responses()
+                demisto.setContext('panorama_responses', str(responses))
+                return poll_result
+        elif isinstance(results[0], CommandResults):  # already did the final part in start_pan_os_flow
+            return results
+        else:
+            cr_should_commit = CommandResults(readable_output=f"Not commiting the changes in Panorama, since "
+                                                              f"{auto_commit=}. Please do so manually for the changes "
+                                                              f"to take affect.")
+            result = self.pan_os_register_ip_finish()
+            result.append(cr_should_commit)
+            return result
+
+
 """ STANDALONE FUNCTION """
 
 
@@ -270,32 +534,6 @@ def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verb
     return results
 
 
-def reduce_pan_os_responses(responses: list) -> list[list[dict]]:
-    """ Returns a list of just the information needed for later usage by the flow.
-    Args:
-        responses (list[list[dict]]): The responses returned from the execute command.
-    Returns:
-        A list containing the relevant parts of the command responses.
-    """
-    demisto.debug("Updating the responses in sanitize_pan_os_responses.")
-    sanitize_responses = []
-    for res in responses:
-        current_new_res = []
-        for entry in res:
-            command_hr = entry.get('HumanReadable')
-            message = entry.get('Contents')
-            entry_type = entry.get('Type')
-            demisto.debug(f"got {entry_type=} , {command_hr=} , {message=}")
-            current_new_res.append({
-                'HumanReadable': command_hr,
-                'Contents': message,
-                'Type': entry_type
-            })
-        sanitize_responses.append(current_new_res)
-    demisto.debug(f"{len(sanitize_responses)=}, {len(responses)=}")
-    return sanitize_responses
-
-
 def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | list:
     """ Get the relevant context object from the execute_command response.
     Args:
@@ -315,49 +553,6 @@ def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | l
                 demisto.debug(f"The {key=} was found in the context as {k}")
                 return original_context.get(k, {})
         return {}
-
-
-def check_value_exist_in_context(value: str, context: list[dict], key: str) -> bool:
-    """ Verify if a specific value of a specific key is present in the context.
-    Args:
-        value (str): The value we want to verify its existence.
-        context (list[dict]): The command context.
-        key (str): The key to extract from the context.
-    Returns:
-        A boolean representing the existence of the value (True) or False.
-    """
-    for item in context:
-        match = item.get(key, '')
-        if match and match == value:
-            demisto.debug(f"The {value=} was found")
-            return True
-        elif match:
-            match_split = match.split('or') if isinstance(match, str) else match.get('#text', '').split('or')
-            match_split_strip = [m.strip() for m in match_split]
-            if value in match_split_strip:
-                demisto.debug(f"The {value=} was found in an 'or' case")
-                return True
-    demisto.debug(f"The {value=} isn't in the context with the {key=}")
-    return False
-
-
-def get_match_by_name(name: str, context: list | dict) -> str:
-    """ Get the relevant "Match" value where the address_group_name == name.
-    Args:
-        name (str): The name of the relevant address group.
-        context (list | dict): The original context ('EntryContext') returned in the execute_command response.
-    Returns:
-        The match value.
-    """
-    for item in context:
-        address_group_name = item.get('Name', '')
-        if address_group_name and address_group_name == name:
-            match = item.get('Match', '')
-            if isinstance(match, dict):
-                match = match.get('#text')
-            demisto.debug(f"The {name=} was found, returning the {match}")
-            return match
-    return ''  # when creating a dynamic address group a match value is a required, so it won't get here
 
 
 def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
@@ -416,21 +611,6 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
         args_for_next_run=args,
         continue_to_poll=continue_to_poll,  # continue polling if job isn't done
     )
-
-
-def pan_os_check_trigger_push_to_device(responses: list) -> bool:
-    """ Verify if this is a Panorama instance.
-    Args:
-        responses (list): The responses of the previous command.
-    Returns:
-        The PollResult object.
-    """
-    command_name = "pan-os"
-    res_pan_os = run_execute_command(command_name, {'cmd': '<show><system><info></info></system></show>', 'type': 'op'})
-    responses.append(res_pan_os)
-    context = get_relevant_context(res_pan_os[0].get('EntryContext', {}), 'Panorama.Command')
-    model = context.get('response', {}).get('result', {}).get('system', {}).get('model', '')  # type: ignore
-    return model == 'Panorama'
 
 
 @polling_function(
@@ -525,116 +705,6 @@ def pan_os_push_status(args: dict, responses: list):
     )
 
 
-def pan_os_register_ip_finish(args: dict, responses: list) -> list[CommandResults]:
-    """ Execute the final part of the pan-os flow.
-    1. Initialize all the context values.
-    2. Create the list of Command Results.
-    Args:
-        args (dict): The arguments of the function.
-        responses (list): The responses of the previous commands.
-    Returns:
-        The list of Command Results.
-    """
-    tag = args.get('tag')
-    ip_list = args['ip_list']
-    command_name = 'pan-os-register-ip-tag'
-    demisto.setContext('push_job_id', '')  # delete any previous value if exists
-    demisto.setContext('commit_job_id', '')  # delete any previous value if exists
-    demisto.setContext('panorama_responses', '')  # delete any previous value if exists
-    responses.append(run_execute_command(command_name, {'tag': tag, 'IPs': ip_list}))
-    results = prepare_context_and_hr_multiple_executions(responses, args['verbose'], args['rule_name'], ip_list)
-    return results
-
-
-def pan_os_create_edit_address_group(address_group: str, context_list_add_group: list, tag: str, responses: list):
-    """ Checks whether to create a new address group or update an existing one, and does it.
-    Args:
-        address_group (str): The address group.
-        context_list_add_group (list): The context of pan-os-list-address-group.
-        tag (str): The tag.
-        responses (list): The responses of the previous commands.
-    """
-    if check_value_exist_in_context(address_group, context_list_add_group, 'Name'):
-        current_match = get_match_by_name(address_group, context_list_add_group)
-        new_match = f'{current_match} or {tag}' if current_match else tag
-        command_name_edit = "pan-os-edit-address-group"
-        res_edit_add_group = run_execute_command(command_name_edit,
-                                                 {'name': address_group, 'type': 'dynamic', 'match': new_match})
-        responses.append(res_edit_add_group)
-    else:
-        command_name_create = "pan-os-create-address-group"
-        res_create_add_group = run_execute_command(command_name_create,
-                                                   {'name': address_group, 'type': 'dynamic', 'match': tag})
-        responses.append(res_create_add_group)
-
-
-def pan_os_create_edit_rule(rule_name: str, context_list_rules: list, address_group: str, log_forwarding_name: str,
-                            responses: list):
-    """ Checks whether to create a new address group or update an existing one, and does it.
-    Args:
-        rule_name (str): The rule name.
-        address_group (str): The address group.
-        context_list_rules (list): The context of pan-os-list-rules.
-        log_forwarding_name (str): Panorama log forwarding object name.
-        responses (list): The responses of the previous commands.
-    """
-    if check_value_exist_in_context(rule_name, context_list_rules, 'Name'):
-        command_name_edit = "pan-os-edit-rule"
-        responses.append(run_execute_command(command_name_edit, {'rulename': rule_name,
-                                                                  'element_to_change': 'source',
-                                                                  'element_value': address_group,
-                                                                  'pre_post': 'pre-rulebase'}))
-    else:
-        create_rule_args = {'action': 'deny', 'rulename': rule_name, 'pre_post': 'pre-rulebase',
-                            'source': address_group}
-        command_name_create = "pan-os-create-rule"
-        if log_forwarding_name:
-            create_rule_args['log_forwarding'] = log_forwarding_name
-        responses.append(run_execute_command(command_name_create, create_rule_args))
-    command_name_move = "pan-os-move-rule"
-    responses.append(run_execute_command(command_name_move, {'rulename': rule_name, 'where': 'top', 'pre_post': 'pre-rulebase'}))
-
-
-def start_pan_os_flow(args: dict) -> tuple[list, bool]:
-    """ Start the flow of pan-os.
-    Args:
-        args (dict): The arguments of the function.
-    Returns:
-        A tuple that can be one of 2 options:
-        1. A list of the responses of all the command executions until this point, a boolean represents whether to
-            commit the changes to pan-os. This option will take effect if the input tag doesn't exist in pan-os.
-        2. A list of command results, and a "False" representing the fact that a commit to pan-os shouldn't be
-            performed since the tag already exists.
-    """
-    responses = []
-    tag = args['tag']
-    address_group = args['address_group']
-    rule_name = args['rule_name']
-    log_forwarding_name = args.get('log_forwarding_name', '')
-    auto_commit = args.get('auto_commit', True)
-
-    command_name_list_address_group = "pan-os-list-address-groups"
-    res_list_add_group = run_execute_command(command_name_list_address_group, {})
-    responses.append(res_list_add_group)
-    context_list_add_group = get_relevant_context(res_list_add_group[0].get('EntryContext', {}), "Panorama.AddressGroups")
-    if not check_value_exist_in_context(tag, context_list_add_group, 'Match'):  # type: ignore
-        # check if the group already exists we should update the tag.
-        demisto.debug(f"The {tag=} doesn't exist in the address groups")
-        pan_os_create_edit_address_group(address_group, context_list_add_group, tag, responses)  # type: ignore
-
-        command_name_list_rules = "pan-os-list-rules"
-        res_list_rules = run_execute_command(command_name_list_rules, {'pre_post': 'pre-rulebase'})
-        responses.append(res_list_rules)
-        context_list_rules = get_relevant_context(res_list_rules[0].get('EntryContext', {}), 'Panorama.SecurityRule')
-        pan_os_create_edit_rule(rule_name, context_list_rules, address_group, log_forwarding_name, responses)  # type: ignore
-        return responses, auto_commit  # should perform the commit section
-    else:
-        args['rule_name'] = ''
-        demisto.debug(f"The {tag=} does exist in the address groups, registering the ip.")
-        results = pan_os_register_ip_finish(args, responses)
-        return results, False
-
-
 @polling_function(
    name='block-external-ip',
    interval=60,
@@ -691,97 +761,6 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
         )
     )
     return poll_result
-
-def manage_pan_os_flow(args: dict) -> CommandResults | list[CommandResults] | PollResult:  # pragma: no cover
-    """ Manage the different states of the pan-os flow.
-        1. The flow start.
-        2. If auto_commit == true, and there were changes to commit, execute pan-os-commit.
-        3. There is a commit job id in the arguments, check what is the status of the commit.
-        4. The commit was executed successfully, check if this is a panorama instance and push to the devices.
-        5. There is a push job id, check what id the status of the push action.
-        6. The push action was successful, register the ip & tag and finish the flow.
-    Args:
-        args (dict): The arguments of the function.
-    Returns:
-        The relevant result of the current state. If it is a polling state than a PollResult object will be returned, otherwise
-        a Command Result or a list of Command Results, depends on the commands that were executed.
-    """
-    incident_context = demisto.context()
-    demisto.debug(f"The context in the beginning of manage_pan_os_flow {incident_context=}")
-    auto_commit = args['auto_commit']
-    res_push_status = None
-    responses = []
-    commit_job_id = args.get('commit_job_id') or demisto.get(incident_context, 'commit_job_id')
-    # state 5
-    if push_job_id := demisto.get(incident_context, 'push_job_id'):
-        demisto.debug(f"Has a {push_job_id=}")
-        responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
-        args['push_job_id'] = push_job_id
-        res_push_status = pan_os_push_status(args, responses)
-        # state 6
-        if not POLLING:
-            demisto.debug("Finished polling, finishing the flow")
-            return pan_os_register_ip_finish(args, responses)
-        else:
-            demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
-            responses = reduce_pan_os_responses(responses)
-            demisto.setContext('panorama_responses', str(responses))
-            return res_push_status
-    # state 3
-    elif commit_job_id:
-        demisto.debug(f"Has a {commit_job_id=}")
-        args['commit_job_id'] = commit_job_id
-        responses = ast.literal_eval(incident_context.get('panorama_responses', ''))
-        poll_commit_status = pan_os_commit_status(args, responses)
-        # state 4
-        if not POLLING:
-            demisto.debug("Finished polling for the commit status, checking if we need to trigger pan_os_push_to_device")
-            if pan_os_check_trigger_push_to_device(responses):
-                demisto.debug("Triggering pan_os_push_to_device")
-                poll_push_to_device = pan_os_push_to_device(args, responses)
-                if not POLLING:
-                    demisto.debug("Nothing to push. Finish the process.")
-                    return pan_os_register_ip_finish(args, responses)
-                else:
-                    demisto.debug(f"Poll for the push status. Save the responses to the context {len(responses)=}")
-                    responses = reduce_pan_os_responses(responses)
-                    demisto.setContext('panorama_responses', str(responses))
-                    return poll_push_to_device
-            else:
-                demisto.debug("Not a Panorama instance, not pushing to device. Continue to register the IP.")
-                return pan_os_register_ip_finish(args, responses)
-        else:
-            demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
-            responses = reduce_pan_os_responses(responses)
-            demisto.setContext('panorama_responses', str(responses))
-            return poll_commit_status
-
-    # if we are here, it is the beginning of the flow, state 1
-    responses, should_commit = start_pan_os_flow(args)
-    demisto.debug(f"The length of the responses is {len(responses)}")
-    if should_commit:
-        # state 2
-        poll_result = pan_os_commit(args, responses)
-        demisto.debug(f"The result that returned from the commit execution is {poll_result=} and {args=}")
-        demisto.debug(f"The length of the responses after adding the res_commit is {len(responses)}")
-        if not POLLING:
-            result = pan_os_register_ip_finish(args, responses)
-            demisto.debug(f"The result after continue_to_poll is false {result=}")
-            return result
-        else:
-            demisto.debug(f"Poll for the commit status. Save the responses to the context {len(responses)=}")
-            responses = reduce_pan_os_responses(responses)
-            demisto.setContext('panorama_responses', str(responses))
-            return poll_result
-    elif isinstance(responses[0], CommandResults): # already did the final part in start_pan_os_flow
-        return responses
-    else:
-        cr_should_commit = CommandResults(readable_output=f"Not commiting the changes in Panorama, since "
-                                                          f"{auto_commit=}. Please do so manually for the changes "
-                                                          f"to take affect.")
-        result = pan_os_register_ip_finish(args, responses)
-        result.append(cr_should_commit)
-        return result
 
 
 def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
@@ -902,7 +881,8 @@ def main():  # pragma: no cover
                         'commit_job_id': args.get('commit_job_id'),
                         'polling': True
                     }
-                    result_pan_os = manage_pan_os_flow(brand_args)
+                    pan_os = PanOs(brand_args, [])
+                    result_pan_os = pan_os.manage_pan_os_flow()
                     if not POLLING:
                         demisto.debug("Not in a polling mode, adding Panorama to the executed_brands.")
                         executed_brands.append(brand)
