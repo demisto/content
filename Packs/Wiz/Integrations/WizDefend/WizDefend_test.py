@@ -7,6 +7,7 @@ from unittest.mock import patch
 import demistomock as demisto
 
 from CommonServerPython import DemistoException
+from Packs.Wiz.Integrations.WizDefend.WizDefend import WizApiVariables
 
 integration_params = {
     'api_endpoint': 'http://test.io',
@@ -1715,3 +1716,45 @@ def test_get_fetch_timestamp_date_comparison(mocker):
     assert demisto.info.called
     info_call_args = demisto.info.call_args[0][0]
     assert 'automatically setting to 14 days back' in info_call_args
+
+
+def test_multiple_detection_platforms(mocker):
+    """Test handling of multiple detection platforms in get_filtered_detections"""
+    from WizDefend import get_filtered_detections, validate_detection_platform, apply_platform_filter
+
+    # Test validation with multiple platforms
+    platforms_list = ["AWS", "Azure", "GCP"]
+    platforms_str = "AWS,Azure,GCP"
+
+    # Test validation with list input
+    list_validation = validate_detection_platform(platforms_list)
+    assert list_validation.is_valid is True
+    assert sorted(list_validation.value) == sorted(platforms_list)
+
+    # Test validation with comma-separated string
+    str_validation = validate_detection_platform(platforms_str)
+    assert str_validation.is_valid is True
+    assert sorted(str_validation.value) == sorted(platforms_list)
+
+    # Test validation with invalid platforms
+    invalid_validation = validate_detection_platform("AWS,InvalidPlatform")
+    assert invalid_validation.is_valid is False
+    assert "Invalid platform(s): InvalidPlatform" in invalid_validation.error_message
+
+    # Test filter application
+    variables = {}
+    updated_vars = apply_platform_filter(variables, platforms_list)
+
+    assert WizApiVariables.FILTER_BY in updated_vars
+    assert WizApiVariables.CLOUD_PLATFORM in updated_vars[WizApiVariables.FILTER_BY]
+    assert WizApiVariables.EQUALS in updated_vars[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_PLATFORM]
+    assert sorted(updated_vars[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_PLATFORM][WizApiVariables.EQUALS]) == sorted(
+        platforms_list)
+
+    # Test the entire flow with mock API call
+    mock_query = mocker.patch('WizDefend.query_api', return_value=[{"id": "test-detection"}])
+
+    result = get_filtered_detections(detection_platform=platforms_str)
+
+    # Verify that query_api was called with the right variables
+    call_args = mock_query.call_args[0]
