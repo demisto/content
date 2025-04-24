@@ -6,6 +6,7 @@ sectionOrder:
 name: Nessus
 display: Nessus
 category: Vulnerability Management
+description: Vulnerability scanner for auditors and security analysts by Tenable Network Security.
 configuration:
 - display: 'Server Url (format : https://127.0.0.1:8834)'
   name: url
@@ -480,7 +481,7 @@ script:
     - name: password
       description: The password used to encrypt database exports (*Required when exporting as DB).
     - name: chapters
-      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance).'
     outputs:
     - contextPath: ScanReportID
       description: ID of the scan report.
@@ -500,7 +501,7 @@ script:
     - name: password
       description: The password used to encrypt database exports (*Required when exporting as DB).
     - name: chapters
-      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance).'
     outputs:
     - contextPath: ScanReportID
       description: ID of the scan report.
