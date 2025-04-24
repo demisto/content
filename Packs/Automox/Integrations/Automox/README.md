@@ -1,22 +1,18 @@
 Use the Automox integration to create device groups, update devices, run policies, and remediate vulnerabilities of devices through the Automox platform.
 This integration was integrated and tested as of 2022-03-21 with the Automox API
 
-## Configure Automox on Cortex XSOAR
+## Configure Automox in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Automox.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Organization ID | A comma-separated list of organization ids. When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used. | False |
-    | API Key | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Organization ID | A comma-separated list of organization ids. When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used. | False |
+| API Key | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### automox-devices-list
 ***

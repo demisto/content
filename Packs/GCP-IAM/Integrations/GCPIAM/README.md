@@ -5,19 +5,15 @@ This integration was integrated and tested with the following version of GCP-IAM
 - Cloud Resource Manager API - v3 version.
 - Cloud Identity API - v1 version.
 
-## Configure GCP-IAM on Cortex XSOAR
+## Configure GCP-IAM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GCP-IAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Service Account Private Key file content (JSON). | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Service Account Private Key file content (JSON). | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gcp-iam-projects-get
 ***

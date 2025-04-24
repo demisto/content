@@ -41,8 +41,15 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-  hidden: false
+  hidden: true
   required: false
+- display: The application ID from the Azure portal
+  name: credentials_app_id
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Password
+  hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -56,12 +63,30 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  hidden: true
+- display: App Secret
+  name: credentials_app_secret
+  required: false
+  type: 9
+  displaypassword: App Secret
+  hiddenusername: true
+  section: Connect
+  advanced: true
 - display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
   required: false
+  hidden: true
+- display: Tenant ID
+  name: credentials_tenant_id
+  required: false
+  type: 9
+  displaypassword: Password
+  hiddenpassword: true
+  section: Connect
+  advanced: true
 - display: Connection URI
   name: connection_uri
   type: 0
@@ -116,8 +141,9 @@ script:
       isArray: true
       name: exchange_location
       defaultValue: 'All'
-    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. Deprecated since Microsoft is supporting it only on-premise.
       isArray: true
+      deprecated: true
       name: exchange_location_exclusion
     - description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
       isArray: true
@@ -1188,10 +1214,11 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
   runonce: true
   script: ''
   type: powershell
 fromversion: 5.5.0
 tests:
 - O365-SecurityAndComplianceV2-Test
+autoUpdateDockerImage: false

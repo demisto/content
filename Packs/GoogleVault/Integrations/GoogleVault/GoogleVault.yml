@@ -540,7 +540,7 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.86653
+  dockerimage: demisto/googleapi-python3:1.0.0.115338
   runonce: false
   script: '-'
   subtype: python3

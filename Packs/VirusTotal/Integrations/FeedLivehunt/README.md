@@ -1,10 +1,7 @@
 Use the VirusTotal Livehunt Feed integration to fetch indicators from Livehunt rules or rulesets.
 
-## Configure VirusTotal Livehunt Feed on Cortex XSOAR
+## Configure VirusTotal Livehunt Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for VirusTotal Livehunt Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,14 +15,13 @@ Use the VirusTotal Livehunt Feed integration to fetch indicators from Livehunt r
 | feedFetchInterval | The feed fetch interval. | False |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
 
-4. Click **Test** to validate the VirusTotal API Key, and connection.
 
 #### Livehunt Feed info:
 By default the Livehunt feed retrieve indicators based on all active rulesets in [livehunt](https://www.virustotal.com/gui/hunting/notifications), you have the option to get indicators only from one rule or ruleset using the filter parameter.
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
@@ -62,3 +58,19 @@ f221425286c9073cbb2168f73120b6...|59/69|Win32 EXE|Wannacry Ransomware|WannaCry_R
 <iframe width="560" height="315" src="https://www.youtube.com/watch?v=Qv89-iS9HVY" frameborder="0"
 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
 allowfullscreen="true"></iframe>
+### vt-reset-fetch-indicators
+
+***
+This command will reset your fetch history.
+
+#### Base Command
+
+`vt-reset-fetch-indicators`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

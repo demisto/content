@@ -17,7 +17,6 @@ configuration:
   additionalinfo: Enter the FQDN or IP to reach the Vectra Detect API. (e.g. "my-vectra-box.local" or "192.168.1.1")
   required: true
   defaultvalue: ''
-
 - display: API Token
   name: credentials
   type: 9    # Authentication text - allows switching to credentials
@@ -25,11 +24,10 @@ configuration:
   required: true
   hiddenusername: true
   displaypassword: API Token
-
 - display: Trust any certificate (not secure)
   name: insecure    # Do not change
   type: 8    # Boolean checkbox
-  additionalinfo: When checked, no SSL certificates check will be done when interracting with the Vectra Detect API. It's insecure. (Default - unchecked)
+  additionalinfo: When checked, no SSL certificates check will be done when interacting with the Vectra Detect API. It's insecure. (Default - unchecked)
   required: false
 - display: Use system proxy settings
   name: use_proxy    # Do not change
@@ -44,58 +42,93 @@ configuration:
   name: incidentType    # Do not change
   type: 13    # special use - automatically added - Incident type single select dropdown
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp
   name: first_fetch    # Do not change
   type: 0    # Short Text
-  additionalinfo: How far back in time you want to fetch alerts. (default - 7 days)
+  additionalinfo: "The date or relative timestamp from which to begin fetching entities.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2024, 01 Aug 2024 04:45:33, 2024-07-17T14:05:44Z. (default - 7 days)"
   defaultvalue: 7 days
-
   required: false
+- additionalinfo: The mirroring direction in which to mirror the account and host. You can mirror "Incoming" (from Vectra to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to Vectra), or in both directions.
+  display: Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: The tag value should be used to mirror the account and host note by adding the same tag in the notes.
+  defaultvalue: note
+  display: Mirror tag for notes
+  hidden: false
+  name: note_tag
+  required: false
+  type: 0
 - display: Entity types to fetch
   name: fetch_entity_types
-  type: 16    # Mutiple select dropdown
+  type: 16    # Multiple select dropdown
   additionalinfo: Choose what to fetch - Accounts and/or Hosts and/or Detections. (Default - Accounts,Hosts)
   options:
   - Accounts
   - Hosts
   - Detections
   defaultvalue: Accounts,Hosts
-
   required: false
+- additionalinfo: "Only Accounts or Hosts that contain any of the tags specified will be fetched.\n\nNote: For the partial match of the tag, use '*' at the start and end of word (Only a single word is allowed). Ex. *MDR*."
+  display: Tags
+  name: tags
+  type: 16
+- additionalinfo: "Filter the detections belonging to a specified category displayed as part of layout.\n\nNote: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type."
+  display: Detection Category
+  name: detection_category
+  options:
+  - Command & Control
+  - Botnet
+  - Reconnaissance
+  - Lateral Movement
+  - Exfiltration
+  - Info
+  type: 15
+- additionalinfo: "Filter the detections belonging to a specified type displayed as part of layout.\n\nNote: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type."
+  display: Detection Type
+  name: detection_type
+  type: 0
 - display: Hosts fetch query
   name: hosts_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Hosts matching this fetch query will be fetched. Will be used only if "Hosts" is selected in the "Entity types to fetch". (default - host.threat:>=50)
   defaultvalue: host.threat:>=50
-
   required: false
 - display: Accounts fetch query
   name: accounts_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Accounts matching this fetch query will be fetched. Will be used only if "Accounts" is selected in the "Entity types to fetch". (default - account.threat:>=50)
   defaultvalue: account.threat:>=50
-
   required: false
 - display: Detections fetch query
   name: detections_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Detections matching this fetch query will be fetched. Will be used only if "Detections" is selected in the "Entity types to fetch". (default - detection.threat:>=50 AND detection.certainty:>=50)
   defaultvalue: detection.threat:>=50 AND detection.certainty:>=50
-
   required: false
 - display: Max created incidents per fetch
   name: max_fetch
   type: 0    # Short Text
-  additionalinfo: How many new incidents do you want to create at max per fetch. This value would be split between selected "Entity types to fetch". (Default - 50)
+  additionalinfo: The maximum number of new incidents to create per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. (Default - 50)
   defaultvalue: 50
-
-
+  required: false
+- defaultvalue: 60
+  display: 'Advanced: Minutes to look back when fetching'
+  additionalinfo: "Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created."
+  name: look_back
+  type: 0
   required: false
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   commands:
     # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments
@@ -106,7 +139,7 @@ script:
     # Create an assignment outcome
 
   - name: vectra-search-accounts
-    description: Returns a list of Account objects. All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+    description: Returns a list of Account objects. All search attributes will be cumulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
     arguments:
     - name: min_id
       description: Returns Accounts with an ID greater than or equal to the specified ID.
@@ -129,7 +162,7 @@ script:
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
-      description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
+      description: Use specifically this search query. Compared to "search_query" where default arguments are appended.
     - name: min_privilege_level
       description: Returns entries with a  privilege level greater than or equal to the specified score.
     - name: max_privilege_level
@@ -184,7 +217,7 @@ script:
       description: The username of the account.
 
   - name: vectra-search-hosts
-    description: Returns a list of Host objects. All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+    description: Returns a list of Host objects. All search attributes will be cumulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
     arguments:
     - name: min_id
       description: Returns Hosts with an ID greater than or equal to the specified ID.
@@ -207,7 +240,7 @@ script:
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
-      description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
+      description: Use specifically this search query. Compared to "search_query" where default arguments are appended.
     outputs: &hostOutput
     - contextPath: Vectra.Host.Assignee
       type: String
@@ -271,7 +304,7 @@ script:
       description: Host URL to pivot to Vectra UI.
 
   - name: vectra-search-detections
-    description: Returns a list of Detection objects. All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+    description: Returns a list of Detection objects. All search attributes will be cumulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
     arguments:
     - name: min_id
       description: Returns Detections with an ID greater than or equal to the specified ID.
@@ -294,7 +327,7 @@ script:
     - name: search_query
       description: Search query in Lucene query syntax.
     - name: search_query_only
-      description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
+      description: Use specifically this search query. Compared to "search_query" where default arguments are appended.
     outputs: &detectionOutput
     - contextPath: Vectra.Detection.Assignee
       type: String
@@ -337,10 +370,10 @@ script:
       description: Detection severity according to scores ('Low', 'Medium', 'High', 'Critical').
     - contextPath: Vectra.Detection.SensorLUID
       type: String
-      description: Sensor LUID that saw this etection.
+      description: Sensor LUID that saw this detection.
     - contextPath: Vectra.Detection.SensorName
       type: String
-      description: Sensor Name that saw this Detection.
+      description: Sensor name that saw this detection.
     - contextPath: Vectra.Detection.SourceAccountID
       type: String
       description: Account ID relating to this detection.
@@ -428,7 +461,7 @@ script:
       description: When this assignment was resolved.
 
   - name: vectra-search-users
-    description: Returns a list of Vectra Users. All search attributes will be cummulative.
+    description: Returns a list of Vectra Users. All search attributes will be cumulative.
     arguments:
     - name: username
       description: Filters by user name.
@@ -514,6 +547,135 @@ script:
       isArray: true
     outputs: []
 
+  - name: vectra-account-tag-list
+    description: Returns a list of tags for a specified account.
+    arguments:
+    - name: id
+      required: true
+      description: Specify the ID of the account.
+    outputs:
+    - contextPath: Vectra.Account.ID
+      description: ID of the account associated with the tags.
+      type: Number
+    - contextPath: Vectra.Account.Tags
+      description: Tags associated to the account.
+      type: String
+  
+  - name: vectra-account-note-add
+    description: Add a note to the account.
+    arguments:
+    - description: Specify the ID of the account.
+      name: account_id
+      required: true
+    - description: Note to be added in the specified account_id.
+      name: note
+      required: true
+    outputs:
+    - contextPath: Vectra.Account.Notes.account_id
+      description: ID of the account associated with the note.
+      type: Number
+    - contextPath: Vectra.Account.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Account.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Account.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Account.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Account.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Account.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-account-note-update
+    arguments:
+    - description: Specify the ID of the account.
+      name: account_id
+      required: true
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-account-note-list command to get note_id."
+      name: note_id
+      required: true
+    - description: Note to be updated for the specified note_id.
+      name: note
+      required: true
+    description: Update a note in the account.
+    outputs:
+    - contextPath: Vectra.Account.Notes.account_id
+      description: ID of the account associated with the note.
+      type: Number
+    - contextPath: Vectra.Account.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Account.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Account.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Account.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Account.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Account.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-account-note-remove
+    arguments:
+    - description: Specify the ID of the account.
+      name: account_id
+      required: true
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-account-note-list command to get note_id."
+      name: note_id
+      required: true
+    description: Remove a note from the account.
+
+  - name: vectra-account-note-list
+    arguments:
+    - description: Specify the ID of the account.
+      name: account_id
+      required: true
+    description: List all notes of the specific account.
+    outputs:
+    - contextPath: Vectra.Account.Notes.account_id
+      description: ID of the account associated with the note.
+      type: Number
+    - contextPath: Vectra.Account.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Account.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Account.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Account.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Account.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Account.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-account-markall-detections-asfixed
+    description: Mark active detections as fixed by providing the ID of the account in the argument.
+    execution: true   # This command affects the Vectra system
+    arguments:
+    - name: account_id
+      required: true
+      description: Provide an account ID.
+    outputs: []
+
   ######
   ### Hosts
   #
@@ -551,6 +713,135 @@ script:
     - name: tags
       description: The tags list (comma separated).
       isArray: true
+    outputs: []
+
+  - name: vectra-host-tag-list
+    description: Returns a list of tags for a specified host.
+    arguments:
+    - name: id
+      required: true
+      description: Specify the ID of the host.
+    outputs:
+    - contextPath: Vectra.Host.ID
+      description: ID of the host associated with the tags.
+      type: Number
+    - contextPath: Vectra.Host.Tags
+      description: Tags associated to the host.
+      type: String
+
+  - name: vectra-host-note-add
+    description: Add a note to the host.
+    arguments:
+    - description: Specify the ID of the host.
+      name: host_id
+      required: true
+    - description: Note to be added in the specified host_id.
+      name: note
+      required: true
+    outputs:
+    - contextPath: Vectra.Host.Notes.host_id
+      description: ID of the host associated with the note.
+      type: Number
+    - contextPath: Vectra.Host.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Host.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Host.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Host.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Host.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Host.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-host-note-update
+    arguments:
+    - description: Specify the ID of the host.
+      name: host_id
+      required: true
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-host-note-list command to get note_id."
+      name: note_id
+      required: true
+    - description: Note to be updated for the specified note_id.
+      name: note
+      required: true
+    description: Update a note in the host.
+    outputs:
+    - contextPath: Vectra.Host.Notes.host_id
+      description: ID of the host associated with the note.
+      type: Number
+    - contextPath: Vectra.Host.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Host.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Host.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Host.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Host.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Host.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-host-note-remove
+    arguments:
+    - description: Specify the ID of the host.
+      name: host_id
+      required: true
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-host-note-list command to get note_id."
+      name: note_id
+      required: true
+    description: Remove a note from the host.
+
+  - name: vectra-host-note-list
+    arguments:
+    - description: Specify the ID of the host.
+      name: host_id
+      required: true
+    description: List all notes of the specific host.
+    outputs:
+    - contextPath: Vectra.Host.Notes.host_id
+      description: ID of the host associated with the note.
+      type: Number
+    - contextPath: Vectra.Host.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Host.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Host.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Host.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Host.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Host.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-host-markall-detections-asfixed
+    description: Mark active detections as fixed by providing ID of the host in the argument.
+    execution: true   # This command affects the Vectra system
+    arguments:
+    - name: host_id
+      required: true
+      description: Provide a host ID.
     outputs: []
 
   ######
@@ -610,6 +901,126 @@ script:
       description: The tags list (comma separated).
       isArray: true
     outputs: []
+
+  - name: vectra-detection-tag-list
+    description: Returns a list of tags for a specified detection.
+    arguments:
+    - name: id
+      required: true
+      description: Specify the ID of the detection.
+    outputs:
+    - contextPath: Vectra.Detection.ID
+      description: ID of the detection associated with the tags.
+      type: Number
+    - contextPath: Vectra.Detection.Tags
+      description: Tags associated to the detection.
+      type: String
+
+  - name: vectra-detection-note-add
+    description: Add a note to the detection.
+    arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    - description: Note to be added in the specified detection_id.
+      name: note
+      required: true
+    outputs:
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-detection-note-update
+    arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-detection-note-list command to get note_id."
+      name: note_id
+      required: true
+    - description: Note to be updated for the specified note_id.
+      name: note
+      required: true
+    description: Update a note in the detection.
+    outputs:
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+
+  - name: vectra-detection-note-remove
+    arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    - description: "Specify the ID of the note.\n\nNote: Use the vectra-detection-note-list command to get note_id."
+      name: note_id
+      required: true
+    description: Remove a note from the detection.
+
+  - name: vectra-detection-note-list
+    arguments:
+    - description: Specify the ID of the detection.
+      name: detection_id
+      required: true
+    description: List all notes of the specific detection.    
+    outputs:
+    - contextPath: Vectra.Detection.Notes.detection_id
+      description: ID of the detection associated with the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
 
   ######
   ### Assignment Outcomes
@@ -695,6 +1106,227 @@ script:
       default: true
       description: User ID you want to get details on.
     outputs: *userOutput
+
+  ######
+  ### Vectra Groups
+  #
+  - arguments:
+    - auto: PREDEFINED
+      description: Filter by group type.
+      name: group_type
+      predefined:
+      - account
+      - host
+      - ip
+      - domain
+    - description: |-
+        Filter by Account Names. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "account".
+      isArray: true
+      name: account_names
+    - description: |-
+        Filter by Domains. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "domain".
+      isArray: true
+      name: domains
+    - description: |-
+        Filter by Host IDs. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "host".
+      isArray: true
+      name: host_ids
+    - description: |-
+        Filter by Host Names. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "host".
+      isArray: true
+      name: host_names
+    - auto: PREDEFINED
+      description: Filter by group importance.
+      name: importance
+      predefined:
+      - high
+      - medium
+      - low
+      - never_prioritize
+    - description: |-
+        Filter by IPs. Supports comma-separated values.
+
+        Note: Only valid when the group_type parameter is set to "ip".
+      isArray: true
+      name: ips
+    - description: Filter by group description.
+      name: description
+    - description: |-
+        Return only the groups which have a last modification timestamp equal to or after the given timestamp.
+
+        Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+
+        For example: 01 May 2023, 01 Mar 2023 04:45:33, 2023-04-17T14:05:44Z.
+      name: last_modified_timestamp
+    - description: Filters by the user id who made the most recent modification to the group.
+      name: last_modified_by
+    - description: Filters by group name.
+      name: group_name
+    description: Returns a list of all groups.
+    name: vectra-group-list
+    outputs:
+    - contextPath: Vectra.Group.group_id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.name
+      description: Name of the group.
+      type: String
+    - contextPath: Vectra.Group.description
+      description: Description of the group.
+      type: String
+    - contextPath: Vectra.Group.last_modified
+      description: Date when the group was last modified.
+      type: Date
+    - contextPath: Vectra.Group.last_modified_by
+      description: Name of the user who last modified the group.
+      type: String
+    - contextPath: Vectra.Group.type
+      description: Type of the group.
+      type: String
+    - contextPath: Vectra.Group.members.id
+      description: Entity ID of member.
+      type: Number
+    - contextPath: Vectra.Group.members.name
+      description: Entity name of member.
+      type: String
+    - contextPath: Vectra.Group.members.is_key_asset
+      description: Indicates key asset.
+      type: Boolean
+    - contextPath: Vectra.Group.members.url
+      description: Entity URL of member.
+      type: String
+    - contextPath: Vectra.Group.members.uid
+      description: Entity UID of member.
+      type: String
+    - contextPath: Vectra.Group.rules.triage_category
+      description: Triage category of rule.
+      type: String
+    - contextPath: Vectra.Group.rules.id
+      description: ID of the rule.
+      type: Number
+    - contextPath: Vectra.Group.rules.description
+      description: Description of the rule.
+      type: String
+    - contextPath: Vectra.Group.importance
+      description: Importance level of the group.
+      type: String
+    - contextPath: Vectra.Group.cognito_managed
+      description: Whether the group is managed by Cognito or not.
+      type: Boolean
+  - arguments:
+    - description: "Specify Group ID to assign members.\n\nNote: You can get the group_id by executing the \"vectra-group-list\" command."
+      name: group_id
+      required: true
+    - description: "A comma-separated list of member values based on the group type.\n\nNote:\nYou can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
+      isArray: true
+      name: members
+      required: true
+    description: Assign members to the specified group.
+    name: vectra-group-assign
+    outputs:
+    - contextPath: Vectra.Group.group_id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.name
+      description: Name of the group.
+      type: String
+    - contextPath: Vectra.Group.description
+      description: Description of the group.
+      type: String
+    - contextPath: Vectra.Group.last_modified
+      description: Date when the group was last modified.
+      type: Date
+    - contextPath: Vectra.Group.last_modified_by
+      description: Name of the user who last modified the group.
+      type: String
+    - contextPath: Vectra.Group.type
+      description: Type of the group.
+      type: String
+    - contextPath: Vectra.Group.members.id
+      description: Entity ID of member.
+      type: Number
+    - contextPath: Vectra.Group.members.name
+      description: Entity name of member.
+      type: String
+    - contextPath: Vectra.Group.members.is_key_asset
+      description: Indicates key asset.
+      type: Boolean
+    - contextPath: Vectra.Group.members.url
+      description: Entity URL of member.
+      type: String
+    - contextPath: Vectra.Group.members.uid
+      description: Entity UID of member.
+      type: String
+    - contextPath: Vectra.Group.rules.triage_category
+      description: Triage category of rule.
+      type: String
+    - contextPath: Vectra.Group.rules.id
+      description: ID of the rule.
+      type: Number
+    - contextPath: Vectra.Group.rules.description
+      description: Description of the rule.
+      type: String
+  - arguments:
+    - description: "Specify Group ID to unassign members.\n\nNote: You can get the group_id by executing the \"vectra-group-list\" command."
+      name: group_id
+      required: true
+    - description: "A comma-separated list of member values based on the group type.\n\nNote:\nYou can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
+      isArray: true
+      name: members
+      required: true
+    description: Unassign members from the specified group.
+    name: vectra-group-unassign
+    outputs:
+    - contextPath: Vectra.Group.group_id
+      description: ID of the group.
+      type: Number
+    - contextPath: Vectra.Group.name
+      description: Name of the group.
+      type: String
+    - contextPath: Vectra.Group.description
+      description: Description of the group.
+      type: String
+    - contextPath: Vectra.Group.last_modified
+      description: Date when the group was last modified.
+      type: Date
+    - contextPath: Vectra.Group.last_modified_by
+      description: Name of the user who last modified the group.
+      type: String
+    - contextPath: Vectra.Group.type
+      description: Type of the group.
+      type: String
+    - contextPath: Vectra.Group.members.id
+      description: Entity ID of member.
+      type: Number
+    - contextPath: Vectra.Group.members.name
+      description: Entity name of member.
+      type: String
+    - contextPath: Vectra.Group.members.is_key_asset
+      description: Indicates key asset.
+      type: Boolean
+    - contextPath: Vectra.Group.members.url
+      description: Entity URL of member.
+      type: String
+    - contextPath: Vectra.Group.members.uid
+      description: Entity UID of member.
+      type: String
+    - contextPath: Vectra.Group.rules.triage_category
+      description: Triage category of rule.
+      type: String
+    - contextPath: Vectra.Group.rules.id
+      description: ID of the rule.
+      type: Number
+    - contextPath: Vectra.Group.rules.description
+      description: Description of the rule.
+      type: String
 
 tests:
 - No tests - Not dev yet

@@ -22,5 +22,5 @@ outputs:
 script: ''
 type: python
 subtype: python3
-dockerimage: demisto/stringsifter:3.20230711.91564
+dockerimage: demisto/stringsifter:3.20230711.117524
 fromversion: 6.1.0

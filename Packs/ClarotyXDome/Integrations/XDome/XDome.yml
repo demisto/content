@@ -104,6 +104,7 @@ script:
       - alert_labels
       - alert_name
       - alert_type_name
+      - alert_description
       - device_alert_detected_time
       - device_alert_status
       - device_alert_updated_time
@@ -136,6 +137,10 @@ script:
       - device_subcategory
       - device_type
       - device_uid
+      - mitre_technique_enterprise_ids
+      - mitre_technique_enterprise_names
+      - mitre_technique_ics_ids
+      - mitre_technique_ics_names
     - name: filter_by
       description: A filter_by object, refer to the xDome API documentation.
       required: false
@@ -173,6 +178,9 @@ script:
       type: String
     - contextPath: XDome.DeviceAlert.alert_assignees
       description: The users and or groups the alert is assigned to.
+      type: String
+    - contextPath: XDome.DeviceAlert.alert_description
+      description: 'The alert description, such as "SMBv1 Communication was detected by 2 OT Device devices".'
       type: String
     - contextPath: XDome.DeviceAlert.device_alert_detected_time
       description: Date and time when the Alert was first detected.
@@ -270,6 +278,18 @@ script:
     - contextPath: XDome.DeviceAlert.device_manufacturer
       description: Manufacturer of the device, such as "Alaris".
       type: String
+    - contextPath: XDome.DeviceAlert.mitre_technique_enterprise_ids
+      description: 'MITRE ATT&CK® Enterprise technique IDs mapped to the alert.'
+      type: List
+    - contextPath: XDome.DeviceAlert.mitre_technique_enterprise_names
+      description: 'MITRE ATT&CK® Enterprise technique names mapped to the alert.'
+      type: List
+    - contextPath: XDome.DeviceAlert.mitre_technique_ics_ids
+      description: 'MITRE ATT&CK® ICS technique IDs mapped to the alert.'
+      type: List
+    - contextPath: XDome.DeviceAlert.mitre_technique_ics_names
+      description: 'MITRE ATT&CK® ICS technique names mapped to the alert.'
+      type: List
   - name: xdome-set-status-for-device-alert-relations
     description: Set device-alert status to resolved or unresolved.
     arguments:
@@ -704,7 +724,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.111526
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

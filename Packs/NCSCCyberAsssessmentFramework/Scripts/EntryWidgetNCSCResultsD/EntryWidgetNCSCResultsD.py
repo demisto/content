@@ -3,12 +3,10 @@ from CommonServerPython import *  # noqa: F401
 
 incident = demisto.incidents()
 cafdresult = incident[0].get("CustomFields", {}).get("cafdresultraw", {})
-if type(cafdresult) != dict:
+if type(cafdresult) is not dict:
     cafdresult = json.loads(cafdresult)
 total = len(cafdresult)
-non_compliant_count = (
-    len([x for x in cafdresult if x["Result"] != "Achieved"]) if cafdresult else None
-)
+non_compliant_count = len([x for x in cafdresult if x["Result"] != "Achieved"]) if cafdresult else None
 medium = int(round(total / 3, 0))
 high = int(round(total / 3 * 2, 0))
 data = {

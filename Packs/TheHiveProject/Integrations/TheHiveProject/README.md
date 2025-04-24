@@ -1,30 +1,26 @@
 Integration with The Hive Project Security Incident Response Platform.
 This integration was integrated and tested with version 4.1.4 of TheHive Project
 
-## Configure TheHive Project on Cortex XSOAR
+## Configure TheHive Project in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TheHive Project.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Host | Ensure to include the port number with the URL \(e.g. http://IP_OF_VM:9000\) | True |
-    | API Key |  | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Incidents Fetch Interval |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | The maximum amount of incidents to fetch at once |  | False |
-    | Case mirroring | Select whether you would like cases to mirror in, out, in both directions or disabled. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Host | Ensure to include the port number with the URL \(e.g. http://IP_OF_VM:9000\) | True |
+| API Key |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Incidents Fetch Interval |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| The maximum amount of incidents to fetch at once |  | False |
+| Case mirroring | Select whether you would like cases to mirror in, out, in both directions or disabled. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### thehive-list-cases
@@ -2175,5 +2171,4 @@ There is no context output for this command.
 ``` ```
 
 #### Human Readable Output
-
 

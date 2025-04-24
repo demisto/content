@@ -1,0 +1,94 @@
+{
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "Indicator": "0.0.0.1",
+        "Reliability": "A - Completely reliable",
+        "Score": 2,
+        "Type": "ip",
+        "Vendor": "Team Cymru Scout"
+    },
+    "IP(val.Address && val.Address == obj.Address)": {
+        "ASN": 15133,
+        "ASOwner": "test_name",
+        "Address": "0.0.0.1",
+        "Description": "x509 subject \"CN=www.example.org, O=Internet Corporation for Assigned Names and Numbers.\n",
+        "Organization": {
+            "Name": "test_name Inc."
+        },
+        "Port": "443, 80",
+        "Region": "EU",
+        "Relationships": [
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "0.0.0.2",
+                "EntityBType": "IP",
+                "Relationship": "communicated-with"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "0.0.0.3",
+                "EntityBType": "IP",
+                "Relationship": "communicated-with"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "0.0.0.4",
+                "EntityBType": "IP",
+                "Relationship": "communicated-with"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "0.0.0.5",
+                "EntityBType": "IP",
+                "Relationship": "communicated-with"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "0.0.0.6",
+                "EntityBType": "IP",
+                "Relationship": "communicated-with"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "test1.aaa",
+                "EntityBType": "Domain",
+                "Relationship": "resolves-to"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "test2.bb",
+                "EntityBType": "Domain",
+                "Relationship": "resolves-to"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "test3.as",
+                "EntityBType": "Domain",
+                "Relationship": "resolves-to"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "test4.com",
+                "EntityBType": "Domain",
+                "Relationship": "resolves-to"
+            },
+            {
+                "EntityA": "0.0.0.1",
+                "EntityAType": "IP",
+                "EntityB": "test5.ovh",
+                "EntityBType": "Domain",
+                "Relationship": "resolves-to"
+            }
+        ],
+        "Tags": "cdn: (test_name)",
+        "UpdatedDate": "2012-06-22"
+    }
+}

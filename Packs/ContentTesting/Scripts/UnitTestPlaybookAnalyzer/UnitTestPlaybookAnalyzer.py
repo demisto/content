@@ -1,8 +1,7 @@
 from datetime import datetime
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-debugger = SimpleDebugger()
 
 
 def BuildTask(t) -> dict:
@@ -26,17 +25,23 @@ def BuildTask(t) -> dict:
         elif state == "WillNotBeExecuted":
             notexecuted = 1
 
-    newtask = {'name': t['task']['name'], 'duration': duration, 'state': state,
-               'tid': t['id'], 'started': started, 'notexecuted': notexecuted}
+    newtask = {
+        "name": t["task"]["name"],
+        "duration": duration,
+        "state": state,
+        "tid": t["id"],
+        "started": started,
+        "notexecuted": notexecuted,
+    }
 
     return newtask
 
 
 def GetSubpbTasks(subplaybook, t, tasks):
     if "subPlaybook" in t:
-        for _k, ts in t['subPlaybook']['tasks'].items():
-            if subplaybook == t['subPlaybook']['name']:
-                if (ts['type'] in ["regular", "condition", "playbook", "collection"]):
+        for _k, ts in t["subPlaybook"]["tasks"].items():
+            if subplaybook == t["subPlaybook"]["name"]:
+                if ts["type"] in ["regular", "condition", "playbook", "collection"]:
                     tasks.append(BuildTask(ts))
             else:
                 tasks = GetSubpbTasks(subplaybook, ts, tasks)
@@ -77,41 +82,41 @@ def GetTasks(incid: str, subplaybook: str) -> list:
 
 def TaskStats(task: list, taskstat: dict) -> dict:
     for t in task:
-        taskid = t['tid']
-        dur = int(t['duration'])
+        taskid = t["tid"]
+        dur = int(t["duration"])
         if taskid not in taskstat:
             taskstat[taskid] = {
-                'tid': taskid,
-                'name': t['name'],
-                'mindur': 1000000,
-                'maxdur': 0,
-                'avgdur': 0,
-                'totdur': 0,
-                'count': 0,
-                'completed': 0,
-                'started': 0,
-                'notexecuted': 0,
-                'error': 0,
-                'waiting': 0
+                "tid": taskid,
+                "name": t["name"],
+                "mindur": 1000000,
+                "maxdur": 0,
+                "avgdur": 0,
+                "totdur": 0,
+                "count": 0,
+                "completed": 0,
+                "started": 0,
+                "notexecuted": 0,
+                "error": 0,
+                "waiting": 0,
             }
-        if t['state'] == "Completed":
-            if dur > taskstat[taskid]['maxdur']:
-                taskstat[taskid]['maxdur'] = dur
-            if dur < taskstat[taskid]['mindur']:
-                taskstat[taskid]['mindur'] = dur
-            taskstat[taskid]['totdur'] += dur
-            taskstat[taskid]['completed'] += 1
-        elif t['state'] == "Error":
-            taskstat[taskid]['error'] += 1
-        elif t['state'] == "Waiting":
-            taskstat[taskid]['waiting'] += 1
+        if t["state"] == "Completed":
+            if dur > taskstat[taskid]["maxdur"]:
+                taskstat[taskid]["maxdur"] = dur
+            if dur < taskstat[taskid]["mindur"]:
+                taskstat[taskid]["mindur"] = dur
+            taskstat[taskid]["totdur"] += dur
+            taskstat[taskid]["completed"] += 1
+        elif t["state"] == "Error":
+            taskstat[taskid]["error"] += 1
+        elif t["state"] == "Waiting":
+            taskstat[taskid]["waiting"] += 1
         else:
-            taskstat[taskid]['started'] += t['started']
-            taskstat[taskid]['notexecuted'] += t['notexecuted']
-        taskstat[taskid]['count'] += 1
+            taskstat[taskid]["started"] += t["started"]
+            taskstat[taskid]["notexecuted"] += t["notexecuted"]
+        taskstat[taskid]["count"] += 1
 
     for _key, ts in taskstat.items():
-        ts['avgdur'] = int(ts['totdur'] / ts['count'])
+        ts["avgdur"] = int(ts["totdur"] / ts["count"])
 
     return taskstat
 
@@ -141,7 +146,7 @@ def SummaryMarkdown(playbook, subplaybook: str, firstday: str, lastday: str, cou
     output += f"#### Last Day: {lastday}\n"
     output += f"#### Analysis Date: {datetime_to_string(datetime.now())}\n"
     output += f"#### Incidents Analyzed: {count}\n"
-    return (output)
+    return output
 
 
 def StatsInfoMarkdown(stats: dict) -> str:
@@ -150,8 +155,8 @@ def StatsInfoMarkdown(stats: dict) -> str:
     markdown += "|---|:---:|:---:|:---:|\n"
 
     for _key, val in stats.items():
-        if val['mindur'] is None:
-            val['mindur'] = 0
+        if val["mindur"] is None:
+            val["mindur"] = 0
         markdown += f"|{val['name']}|{val['mindur']}|{val['avgdur']}|{val['maxdur']}|\n"
 
     return markdown
@@ -159,25 +164,24 @@ def StatsInfoMarkdown(stats: dict) -> str:
 
 def main():
     try:
-        pb = demisto.args()['playbook'].strip()
-        spb = demisto.args()['subplaybook'].strip()
-        firstday = demisto.args()['firstday'].strip()
-        lastday = demisto.args()['lastday'].strip()
-        maxinc = (demisto.args().get('maxinc') or "").strip() or 50
+        pb = demisto.args()["playbook"].strip()
+        spb = demisto.args()["subplaybook"].strip()
+        firstday = demisto.args()["firstday"].strip()
+        lastday = demisto.args()["lastday"].strip()
+        maxinc = (demisto.args().get("maxinc") or "").strip() or 50
         maxcount = arg_to_number(maxinc)
         taskstats, count = GetTaskStats(pb, spb, firstday, lastday, maxcount)
         demisto.setContext("PlaybookStatistics", json.dumps(taskstats))
         smarkdown = SummaryMarkdown(pb, spb, firstday, lastday, count)
         imarkdown = StatsInfoMarkdown(taskstats)
-        execute_command("setIncident", {'customFields': json.dumps(
-            {"contenttestingdependencies": smarkdown, "contenttestingpbainfo": imarkdown})})
+        execute_command(
+            "setIncident",
+            {"customFields": json.dumps({"contenttestingdependencies": smarkdown, "contenttestingpbainfo": imarkdown})},
+        )
     except Exception as ex:
-        # debugger.SdbgTraceOff()
         demisto.error(traceback.format_exc())
-        return_error(f"UnitTestPlaybookAnalyzer: Exception failed to execute. Error: {str(ex)}")
+        return_error(f"UnitTestPlaybookAnalyzer: Exception failed to execute. Error: {ex!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    # debugger.SdbgTraceOn()
     main()
-    # debugger.SdbgTraceOff()

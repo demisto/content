@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-CONTENTTESTING_PACK_VERSION = '2.1.8'
-demisto.debug(f'pack id = ContentTesting, pack version = {CONTENTTESTING_PACK_VERSION}')
-
 
 INDENT = "##### "
 
@@ -114,8 +111,8 @@ def GetUpgradedIntegrations(packs):
                 integmap[i["name"]] = packid
 
     for c in configs:
-        instid = c['id']
-        if c['packName'] == "Palo Alto Networks Cortex XDR - Investigation and Response":
+        instid = c["id"]
+        if c["packName"] == "Palo Alto Networks Cortex XDR - Investigation and Response":
             instid = "Palo Alto Networks Cortex XDR - Investigation and Response"
         if instid in integmap:
             packid = integmap[instid]

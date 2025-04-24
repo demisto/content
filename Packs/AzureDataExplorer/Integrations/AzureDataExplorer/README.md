@@ -69,28 +69,24 @@ In order to use the Cortex XSOAR Azure application, use the default application 
    h. Save the instance.
 
 
-## Configure Azure Data Explorer on Cortex XSOAR
+## Configure Azure Data Explorer in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Data Explorer.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Cluster URL (e.g. https://help.kusto.windows.net) |  | True |
-    | Application ID |  | True |
-    | Client Activity Prefix | A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;&amp;lt;UUID&amp;gt;'. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\), Device Code Flow or Client Credentials Flow. | False |
-    | Tenant ID | For Authorization Code or Client Credentials Flows. | False |
-    | Client Secret | For Authorization Code or Client Credentials Flows. | False |
-    | Application redirect URI (for Authorization Code mode) |  | False |
-    | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Cluster URL (e.g. https://help.kusto.windows.net) |  | True |
+| Application ID |  | True |
+| Client Activity Prefix | A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;&amp;lt;UUID&amp;gt;'. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\), Device Code Flow or Client Credentials Flow. | False |
+| Tenant ID | For Authorization Code or Client Credentials Flows. | False |
+| Client Secret | For Authorization Code or Client Credentials Flows. | False |
+| Application redirect URI (for Authorization Code mode) |  | False |
+| Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-data-explorer-search-query-execute
 ***

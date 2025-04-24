@@ -1,10 +1,7 @@
 Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 This integration was integrated and tested with version 5.0 of Delinea
-## Configure Delinea on Cortex XSOAR
+## Configure Delinea in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Delinea.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,9 +12,8 @@ This integration was integrated and tested with version 5.0 of Delinea
 | isFetchCredentials | Fetches credentials | False |
 | credentialobjects | List secret name for fetch credentials \(separated by commas\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### delinea-secret-password-get
 ***

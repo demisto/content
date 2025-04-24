@@ -79,7 +79,7 @@ script:
     - name: to_accepted_date_time
       description: ' The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''from_accepted_date_time''  as well to set the complete date range for the search.'
     - name: rejection_reason
-      description: 'list of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405") '
+      description: 'List of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405"). '
     - name: sender_ip
       description: List of sender IP addresses, max limit of entries is 10.
     - name: status
@@ -124,15 +124,15 @@ script:
     - contextPath: FireEyeETP.Message.status
       description: Message status.
     - contextPath: FireEyeETP.Message.subject
-      description: Message subject
+      description: Message subject.
     - contextPath: FireEyeETP.Message.verdicts.AS
       description: pass/fail verdict for AS.
     - contextPath: FireEyeETP.Message.verdicts.AV
-      description: pass/fail verdict for AV
+      description: pass/fail verdict for AV.
     - contextPath: FireEyeETP.Message.verdicts.AT
-      description: pass/fail verdict for AT
+      description: pass/fail verdict for AT.
     - contextPath: FireEyeETP.Message.verdicts.PV
-      description: pass/fail verdict for PV
+      description: pass/fail verdict for PV.
     - contextPath: FireEyeETP.Message.id
       description: Message ID.
     description: Search for messages that include specified message attributes that are accessible in he ETP portal.
@@ -167,15 +167,15 @@ script:
     - contextPath: FireEyeETP.Message.status
       description: Message status.
     - contextPath: FireEyeETP.Message.subject
-      description: Message subject
+      description: Message subject.
     - contextPath: FireEyeETP.Message.verdicts.AS
       description: pass/fail verdict for AS.
     - contextPath: FireEyeETP.Message.verdicts.AV
-      description: pass/fail verdict for AV
+      description: pass/fail verdict for AV.
     - contextPath: FireEyeETP.Message.verdicts.AT
-      description: pass/fail verdict for AT
+      description: pass/fail verdict for AT.
     - contextPath: FireEyeETP.Message.verdicts.PV
-      description: pass/fail verdict for PV
+      description: pass/fail verdict for PV.
     - contextPath: FireEyeETP.Message.id
       description: Message ID.
     description: Get the data of a specific message.
@@ -195,13 +195,13 @@ script:
     - contextPath: FireEyeETP.Alerts.meta.last_modified_on
       description: Last modified timestamp.
     - contextPath: FireEyeETP.Alerts.meta.legacy_id
-      description: 'Alert ID as shown in ETP Web Portal '
+      description: Alert ID as shown in ETP Web Portal.
     - contextPath: FireEyeETP.Alerts.alert.product
-      description: Product alerted
+      description: Product alerted.
     - contextPath: FireEyeETP.Alerts.alert.timestamp
-      description: Alert timestamp
+      description: Alert timestamp.
     - contextPath: FireEyeETP.Alerts.alert.malware_md5
-      description: md5 of file attached
+      description: md5 of file attached.
     - contextPath: FireEyeETP.Alerts.email.status
       description: The email status.
     - contextPath: FireEyeETP.Alerts.email.source_ip
@@ -238,9 +238,9 @@ script:
     - contextPath: FireEyeETP.Alerts.meta.last_modified_on
       description: Last modified timestamp.
     - contextPath: FireEyeETP.Alerts.meta.legacy_id
-      description: 'Alert ID as shown in ETP Web Portal '
+      description: Alert ID as shown in ETP Web Portal.
     - contextPath: FireEyeETP.Alerts.meta.acknowledged
-      description: Acknowledged
+      description: Acknowledged.
     - contextPath: FireEyeETP.Alerts.alert.product
       description: Product generate the alert.
     - contextPath: FireEyeETP.Alerts.alert.alert_type
@@ -248,31 +248,31 @@ script:
     - contextPath: FireEyeETP.Alerts.alert.severity
       description: Severity code.
     - contextPath: FireEyeETP.Alerts.alert.explanation.analysis
-      description: Analysis
+      description: Analysis.
     - contextPath: FireEyeETP.Alerts.alert.explanation.anomaly
-      description: Anomaly
+      description: Anomaly.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.domain
-      description: Malware domain
+      description: Malware domain.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.downloaded_at
-      description: Malware downloaded at timestamp
+      description: Malware downloaded at timestamp.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.executed_at
-      description: Malware executed at timestamp
+      description: Malware executed at timestamp.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.name
-      description: Malware name
+      description: Malware name.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.sid
-      description: Malware sid
+      description: Malware SID.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.stype
-      description: Malware type
+      description: Malware type.
     - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.submitted_at
-      description: Malware submitted at
+      description: Malware submitted at.
     - contextPath: FireEyeETP.Alerts.alert.explanation.protocol
-      description: Protocol
+      description: Protocol.
     - contextPath: FireEyeETP.Alerts.alert.explanation.timestamp
-      description: Explanation timestamp
+      description: Explanation timestamp.
     - contextPath: FireEyeETP.Alerts.alert.timestamp
       description: Alert timestamp.
     - contextPath: FireEyeETP.Alerts.alert.action
-      description: Alert acrion
+      description: Alert action.
     - contextPath: FireEyeETP.Alerts.alert.name
       description: Alert name.
     - contextPath: FireEyeETP.Alerts.email.status
@@ -290,19 +290,83 @@ script:
     - contextPath: FireEyeETP.Alerts.email.headers.to
       description: Email recipients.
     - contextPath: FireEyeETP.Alerts.email.headers.from
-      description: 'Email sender '
+      description: Email sender.
     - contextPath: FireEyeETP.Alerts.email.headers.subject
-      description: Email subject
+      description: Email subject.
     - contextPath: FireEyeETP.Alerts.email.attachment
-      description: File name or URL pointing to file
+      description: File name or URL pointing to file.
     - contextPath: FireEyeETP.Alerts.email.timestamp.accepted
-      description: Email eccepted time
+      description: Email eccepted time.
     - contextPath: FireEyeETP.Alerts.id
-      description: The alert unique ID
+      description: The alert unique ID.
     description: Detailed information from any particular alert. Alerts more than 90 days old are not available.
+  - name: fireeye-etp-download-alert-artifact
+    arguments:
+    - name: alert_id
+      required: true
+      description: The alert ID.
+    description: 'Downloads all case files of the alert specified by the alert ID, in
+      a zip file. You can obtain the ID from the Alert Summary response, for example
+      "id": "AV7zzRy7kvIwrKcfu0I".'
+  - name: fireeye-etp-list-yara-rulesets
+    arguments:
+    - name: policy_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the policy. (Can be found
+        in the URL of the ETP Policies).
+    outputs:
+    - contextPath: FireEyeETP.Policy
+      description: The policy id.
+    description: Fetch the list of YARA rulesets and return a list with all the rules.
+  - name: fireeye-etp-download-yara-file
+    arguments:
+    - name: policy_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the policy. (Can be found
+        in the URL of the ETP Policies).
+    - name: ruleset_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the ruleset.
+    description: Downloads a YARA file.
+  - name: fireeye-etp-upload-yara-file
+    arguments:
+    - name: policy_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the policy. (Can be found
+        in the URL of the ETP Policies).
+    - name: ruleset_uuid
+      required: true
+      description: Universally unique identifier (UUID) of the ruleset.
+    - name: entryID
+      required: true
+      description: Entry ID of yara file to upload.
+    description: Update or replace the YARA rule file in the existing ruleset.
+  - name: fireeye-etp-get-events-data
+    arguments:
+    - name: message_id
+      required: true
+      description: Message ID of alert.
+    outputs:
+    - contextPath: FireEyeETP.Events
+      description: The events of the alert.
+    - contextPath: FireEyeETP.Events.Delivered_msg
+      description: Display if event is delivered successfully or not.
+    - contextPath: FireEyeETP.Events.Delivered_status
+      description: The status of the message.
+    - contextPath: FireEyeETP.Events.InternetMessageId
+      description: The internet message ID of the alert.
+    - contextPath: FireEyeETP.Events.Logs
+      description: The logs of the alert.
+    description: Returns all events of the alert by the alert ID.
+  - name: fireeye-etp-quarantine-release
+    arguments:
+    - name: message_id
+      description: The message ID.
+    description: Releases the email file present in the quarantine for the given email.
+      Cloud message ID.
   isfetch: true
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No Test
 

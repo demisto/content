@@ -66,6 +66,38 @@ Create log settings to enable event logging for access system events or URL filt
     - Move access profiles between the **Available** and the **Selected** lists.
 12. Click **OK**.
 
+### Configuring remote syslog entries to use ISO timestamp format
+* Formal documentation for ISO timestamp configuration [doc](https://my.f5.com/manage/s/article/K02733223).
+1. Log in to **tmsh** by typing the following command:
+```bash 
+   tmsh
+```
+2. To define the desired **syslog** filter that references the remote server, type the following command:
+```bash 
+   edit /sys syslog all-properties
+```
+3. Within the **include** statement, insert the following lines:
+```bash 
+   options { proto-template(t_isostamp); };
+      template t_isostamp { template(\"$ISODATE $HOST $MSGHDR$MSG\\n\"); };
+      
+      destination d_remote_loghost {
+            tcp(\"10.10.10.1\" port(514) template(t_isostamp));
+         };
+```
+4. Exit the text editor by pressing Esc to leave Insert mode and then type the following key sequence:
+```bash 
+   :wq!
+```
+5. At the following prompt, type **y** to save the changes to the file.
+6. Save the configuration by typing the following command:
+```bash 
+   save /sys config
+```
+
+**Pay Attention**: 
+Timestamp ingestion is only supported for the suggested ISO timestamp format to implement for F5 APM logs- ***YYYY-MM-DDThh:mm:ssTZ***.
+
 For more information, refer to F5 BIG-IP APM formal [docs](https://techdocs.f5.com/en-us/bigip-17-0-0/big-ip-access-policy-manager-third-party-integration/logging-and-reporting.html#GUID-3A9514E3-33CC-43AB-840F-17624F4CA180).
 
 Note:

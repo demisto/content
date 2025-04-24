@@ -270,3 +270,9 @@ ignore=BA124
 
 [file:VerdictResult.yml]
 ignore=BA124
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-ReadFile_Test.yml]
+ignore=GR103
+[file:playbook-ConvertCountryCodeCountryName_Test.yml]
+ignore=GR103

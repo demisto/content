@@ -3,6 +3,8 @@
 This integration provides TAXII2 Services for system indicators (outbound feed).
 You can choose to use TAXII v2.0 or TAXII v2.1.
 
+The TAXII2 Server integration is a long-running integration. For more information about long-running integrations, see the [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations), [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) or [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) documentation.
+
 ## Configure Collections
 
 Each TAXII collection in the integration is represented by a Cortex XSOAR indicator query.
@@ -23,37 +25,44 @@ You can add a collection description as is done in *collection1_name*, or enter 
 
 ## How to Access the TAXII2 Server
 
-(For Cortex XSOAR 6.x) Use one of the following options:
+### For Cortex XSOAR 6.x
+Use one of the following options:
 
 - `https://<xsoar_address>/instance/execute/<instance_name>/<taxii2_api_endpoint>/`
 - `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
 
-(For Cortex XSOAR 8 or Cortex XSIAM):
+### For Cortex XSOAR 8 On-prem, Cortex XSOAR 8 Cloud, or Cortex XSIAM
 
-- `https://ext-<tenant>/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
-NOTE: The instance name cannot be changed after saving the integration configuration.
+Use `https://ext-<tenant>/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`  
+
+**Note**:  
+- For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
+  For example, `ext-xsoar.mycompany.com`.  
+- The instance name cannot be changed after saving the integration configuration.
 
 
 ## Access the TAXII Service by Instance Name
 
-To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
+To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
 
 In Cortex XSOAR 6.x:
 1. Navigate to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration**, add the *instance.execute.external* and set the value to *true*.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to **true**. If this key does not exist, click **+ Add Server Configuration**, add the ***instance.execute.external*** and set the value to **true**.
 
-### How to use HTTPS
+## How to Use HTTPS
 
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
 
-### How to use authentication
+## Set up Authentication
+### For Cortex XSOAR 8 Cloud Tenant or Cortex XSIAM Tenant
+The TAXII2 Server integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant enables using basic authentication in the requests.  
+To enable basic authentication, a user and password must be supplied in the **Credentials** parameters in the integration configuration.  
+The server will then authenticate the requests by the `Authorization` header, expecting basic authentication encrypted in base64 to match the given credentials.  
+### For Cortex XSOAR On-prem (6.x or 8) or When Using Engines
+For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authentication using custom certificates. For more information on setting up a custom certificate for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). For more information on setting up a custom certificate for Cortex XSOAR 6.x, see [HTTPS with a Signed Certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).
 
-The integration allows the use of basic authentication in the requests.
-To enable basic authentication, a user and password must be supplied in the *Credentials* parameters in the integration configuration.
+## TAXII v2.0 API Endpoints
 
-The server will then authenticate the requests by the *Authorization* header, expecting basic authentication encrypted in base64 to match the given credentials.
-
-## TAXII v2.0 API Enpoints
 
 | **URL** | **Method** | **Response** | **TAXII2 Documentation** |
 | --- | --- | --- | --- |
@@ -66,7 +75,7 @@ The server will then authenticate the requests by the *Authorization* header, ex
 
 For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/cti/taxii/v2.0/taxii-v2.0.html).
 
-## TAXII v2.1 API Enpoints
+## TAXII v2.1 API Endpoints
 
 | **URL**                                           | **Method** | **Response**                                                                   | **TAXII2 Documentation**                                                                                   |
 |---------------------------------------------------|------------|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
@@ -79,14 +88,14 @@ For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/ct
 
 For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html).
 
-## Known limitations
+## Known Limitations
 
 - GET objects by ID is not allowed.
 - Filtering objects by ID or version not allowed.
 - POST and DELETE objects are not allowed. Cannot add or delete indicators using TAXII2 Server. 
 
 
-## How UUIDs work in TAXII2 XSOAR
+## How UUIDs Work for TAXII2 in Cortex XSOAR
 
 ---
 
@@ -157,11 +166,9 @@ TIM fields (system generated and custom). An example of these two related object
 | 100,000 | 50-90 |
 
 
-## Configuration Guide
+## Microsoft Sentinel Configuration Guide
 
-### Microsoft Sentinel
-
-#### Configure the TAXII2 Server instance
+### Configure the TAXII2 Server Instance
 
   1. Set **TAXII2 Server version** to **2.0** (The integration currently doesn't work with Microsoft Sentinel in TAXII Version 2.1).
     
@@ -170,14 +177,14 @@ TIM fields (system generated and custom). An example of these two related object
   3. Set the **Listen Port** and **Collection JSON** to your linking.
 
 
-#### Find the information required for the Sentinel TAXII connector
+### Find the Information Required for the Sentinel TAXII Connector
 
-**For Cortex XSOAR 6.x:**
+#### For Cortex XSOAR 6.x
 
   1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - `https://<xsoar-server>/instance/execute/<instance_name>/threatintel/`
   2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their IDs. You can also do it manually by running `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
 
-**For Cortex XSOAR 8 or Cortex XSIAM**
+#### For Cortex XSOAR 8 On-prem, Cortex XSOAR Cloud, or Cortex XSIAM
 
   1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/threatintel/`
   2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their IDs. You can also do it manually by running `curl https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/threatintel/collections/ | jq .` to get a list of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest.
@@ -214,7 +221,7 @@ TIM fields (system generated and custom). An example of these two related object
   }
   ```
 
-#### Set up the Microsoft Sentinel TAXII connector
+### Set up the Microsoft Sentinel TAXII Connector
 
 Now that we have the API root URL and the collection ID we can configure the Threat intelligence - TAXII Connector in Microsoft Sentinel.
 
@@ -308,7 +315,7 @@ There are no input arguments for this command.
 | TAXIIServer.ServerInfo.default | String | The default URL. | 
 | TAXIIServer.ServerInfo.description | String | The server description | 
 
-#### Command example
+#### Command Example
 
 ```!taxii-server-info```
 

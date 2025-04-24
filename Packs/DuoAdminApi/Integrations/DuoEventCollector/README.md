@@ -1,25 +1,22 @@
 Collects Auth and Audit events for Duo using the API.
 
-## Configure Duo Event Collector on Cortex XSOAR
+## Configure Duo Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Duo Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                                          | **Required**  |
-    |----------------------------------------------------------------------------------------------------------|---------------| --- |
-    | Server Host               | The URL for the API.                                                                                     | True          |
-    | First fetch timestamps    | The first time fetch date range, for example: 2 days, 1 month, 3 years.                                  | True          |
-    | Integration key           | The integration key for the admin API from Duo.                                                           | True          |
-    | Secret key                | The secret key for the admin API from Duo.                                                               | True          |
-    | XSIAM request limit       | The maximum number of events to collect from the API in each cycle.                                      | True          |
-    | Request retries           | The number of times to retry a failed too many requests 429 HTTP error.                                   | False         |
-    | Use system proxy settings | Enable proxy support for running the collector.                                                          | False         |
-    | logs_type_array           | The type of APIs that this instance will use in the collector.            | False         |
+| **Parameter** | **Description**                                                                                          | **Required**  |
+|----------------------------------------------------------------------------------------------------------|---------------| --- |
+| Server Host               | The URL for the API.                                                                                     | True          |
+| First fetch timestamps    | The first time fetch date range, for example: 2 days, 1 month, 3 years.                                  | True          |
+| Integration key           | The integration key for the admin API from Duo.                                                           | True          |
+| Secret key                | The secret key for the admin API from Duo.                                                               | True          |
+| XSIAM request limit       | The maximum number of events to collect from the API in each cycle.                                      | True          |
+| Request retries           | The number of times to retry a failed too many requests 429 HTTP error.                                   | False         |
+| Use system proxy settings | Enable proxy support for running the collector.                                                          | False         |
+| logs_type_array           | The type of APIs that this instance will use in the collector.            | False         |
+| End of the fetch window   | The number of minutes to delay when fetching events (to handle events creation delay in the DUO database). The default value is 0 minutes. The recommended value is 5. | False         |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### duo-get-events
 ***
@@ -43,3 +40,6 @@ Manual command to fetch events and display them.
 #### Context Output
 
 There is no context output for this command.
+
+## Additional information
+* The Duo eventing system is not real-time. It takes a few minutes for the events to be indexed and available for an API call due to consolidation. As a result the parameter "End of the fetch window" to adjust XSIAM to Duo's delay was added.

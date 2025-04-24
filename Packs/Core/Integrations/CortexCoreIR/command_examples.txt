@@ -1,0 +1,43 @@
+!core-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"
+!core-isolate-endpoint endpoint_id="f8a2f58846b542579c12090652e79f3d"
+!core-unisolate-endpoint endpoint_id="f8a2f58846b542579c12090652e79f3d"
+!core-get-distribution-versions
+!core-create-distribution agent_version=6.1.4.1680 name="dist_1" package_type=standalone platform=linux description="some description"
+!core-get-create-distribution-status distribution_ids=2c74c11b63074653aa01d575a82bf52a
+!core-get-distribution-url distribution_id=2c74c11b63074653aa01d575a82bf52a package_type=sh
+!core-get-audit-agent-reports result=Success timestamp_gte="100 days" endpoint_ids=ea303670c76e4ad09600c8b346f7c804 type=Policy limit=2
+!core-get-audit-management-logs result=SUCCESS type=DISTRIBUTIONS limit=2 timestamp_gte="3 month"
+!core-quarantine-files endpoint_id_list=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt
+!core-get-quarantine-status endpoint_id=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt
+!core-endpoint-scan endpoint_id_list=f8a2f58846b542579c12090652e79f3d
+!core-endpoint-scan-abort endpoint_id_list=aeec6a2cc92e46fab3b6f621722e9916
+!core-restore-file file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
+!core-get-policy endpoint_id="f8a2f58846b542579c12090652e79f3d"
+!core-get-endpoint-device-control-violations violation_id_list=100,90,80
+!core-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\\Users\\demisto\\Desktop\\demisto.txt"
+!core-retrieve-file-details action_id=1763
+!core-get-scripts created_by="Palo Alto Networks" is_high_risk=true
+!core-get-script-metadata script_uid=43973479d389f2ac7e99b6db88eaee40
+!core-get-script-code script_uid=548023b6e4a01ec51a495ba6e5d2a15d
+!core-action-status-get action_id="1819"
+!core-delete-endpoints endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916
+!core-run-script script_uid=414763381b5bfb7b05796c9fe690df46 endpoint_ids=23a86310665d413a958926fce5b794b3 parameters={"path":"test.txt"}
+!core-run-snippet-code-script endpoint_ids=23a86310665d413a958926fce5b794b3 snippet_code="print('hello world')"
+!core-get-script-execution-status action_id=3641
+!core-get-script-execution-results action_id=3641
+!core-get-script-execution-result-files action_id=3641 endpoint_id=23a86310665d413a958926fce5b794b3
+!core-run-script-execute-commands endpoint_ids=23a86310665d413a958926fce5b794b3 commands=tasklist
+!core-run-script-delete-file endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
+!core-run-script-file-exists endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
+!core-run-script-kill-process endpoint_ids=23a86310665d413a958926fce5b794b3 process_name=calculator.exe
+!core-add-exclusion filterObject={\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"alert_category\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Phishing\"}]}} name=test1
+!core-get-exclusion filterObject={\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"ALERT_WHITELIST_COMMENT\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Phishing\"}]}}
+!core-delete-exclusion alert_exclusion_id=36
+!core-blocklist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252
+!core-remove-blocklist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252
+!core-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252
+!core-remove-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252
+!core-terminate-process agent_id=1 instance_id=1 incident_id=1 interval_in_seconds=1 timeout_in_seconds=1
+!core-terminate-causality agent_id=1 causality_id=1 incident_id=1 interval_in_seconds=1 timeout_in_seconds=1!core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200
+!core-script-run endpoint_ids=111 script_uid=111 polling_timeout_in_seconds=1200 timeout=1200
+!core-get-asset-details asset_id=123

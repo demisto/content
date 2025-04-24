@@ -23,12 +23,6 @@ configuration:
   required: true
   type: 15
   section: Connect
-- additionalinfo: Will run the TAXII2 Server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for TAXII2 Server will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.
-  display: Listen Port
-  name: longRunningPort
-  required: true
-  type: 0
-  section: Connect
 - display: Username
   additionalinfo: Credentials to use for the basic authentication.
   name: credentials
@@ -78,12 +72,19 @@ configuration:
   type: 8
   required: false
   defaultvalue: 'false'
+  section: Connect
 - additionalinfo: "Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL."
   display: TAXII2 Service URL Address
   name: service_address
   type: 0
   section: Connect
   required: false
+- additionalinfo: Will run the TAXII2 Server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for TAXII2 Server will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+  section: Connect
 - additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   display: NGINX Global Directives
   name: nginx_global_directives
@@ -111,7 +112,7 @@ configuration:
   - file
   - url
   - x509-certificate
-  additionalinfo: Choose which STIX Cyber Observable Object provides as STIX Domain Object of 'indicator'
+  additionalinfo: The selected types will be outputted as a "STIX Indicator type" with a STIX pattern instead of an SCO. This may be necessary based on the tool you use to ingest data.
   section: Collect
   advanced: true
   required: false
@@ -150,7 +151,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.94079
+  dockerimage: demisto/flask-nginx:1.0.0.117310
   longRunning: true
   longRunningPort: true
   script: '-'

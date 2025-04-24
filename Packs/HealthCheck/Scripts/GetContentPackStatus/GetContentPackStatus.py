@@ -6,9 +6,9 @@ res = demisto.executeCommand("core-api-get", {"uri": "contentpacks/installed-exp
 counter1 = 0
 counter2 = 0
 for item in res:
-    if item['updateAvailable'] is False:
+    if item["updateAvailable"] is True:
         counter1 += 1
-    if item['deprecated'] is True:
+    if item["deprecated"] is True:
         counter2 += 1
 
 wList = []

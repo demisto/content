@@ -10,12 +10,8 @@ In order to use this integration you need the following:
 #### BASE_URL
 The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Replace with hostname and port of the Query.AI Proxy component running in your environment.
 
-## Configure Query.AI on Cortex XSOAR
+## Configure Query.AI in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for **Query.AI**.
-3. Click **Add instance** to create and configure a new integration instance.
-4. Click **Test** to validate the URL, API token and connection.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -30,7 +26,7 @@ The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Repl
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Returns response for the query being run on Query.AI: queryai-run-query](#1-queryai-run-query)

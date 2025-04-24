@@ -1,0 +1,20 @@
+!umbrella-domain-co-occurrences domain=cisco.com
+!umbrella-domain-related domain=cisco.com
+!umbrella-domain-search regex=exa[a-z]ple.com limit=1
+!umbrella-domain-security domain=cisco.com
+!umbrella-list-domain-subdomian domain=cisco.com limit=1
+!umbrella-list-resource-record value=cisco.com type=Name limit=1
+!umbrella-get-ip-bgp ip=8.8.8.8
+!umbrella-get-asn-bgp asn=3356
+!umbrella-get-domain-whois-history domain=cisco.com limit=1
+!umbrella-get-nameserver-whois nameserver=nameserver1.com limit=1
+!umbrella-get-email-whois email=test@test.com limit=1
+!umbrella-get-regex-whois regex=t[a-z]@test.com search_field=Email
+!umbrella-get-top-most-seen-domain limit=1
+!umbrella-get-domain-queryvolume domain=cisco.com
+!umbrella-get-domain-timeline domain=maliciouswebsitetest.com limit=1
+!umbrella-get-ip-timeline ip=8.8.8.8 limit=1
+!umbrella-get-url-timeline url=www.maliciouswebsitetest.com limit=1
+!umbrella-domain-categorization domain=cisco.com
+!umbrella-get-domain-risk-score domain=cisco.com
+!umbrella-get-whois-for-domain domain=cisco.com limit=1

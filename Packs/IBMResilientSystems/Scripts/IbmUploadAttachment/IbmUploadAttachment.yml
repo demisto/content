@@ -1,0 +1,22 @@
+args:
+- name: entry_id
+  description: EntryID of the file to upload.
+  required: true
+
+comment: Use this script to upload an attachment to an IBM QRadar SOAR incident. This script should be run within an incident.
+
+commonfields:
+  id: IbmUploadAttachment
+  version: -1
+name: IbmUploadAttachment
+script: ""
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.11.10.111526
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

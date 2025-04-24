@@ -1,0 +1,31 @@
+{
+    "id": "incident_ibmsecurityqradarsoarnegativepr",
+    "version": -1,
+    "modified": "2024-09-18T12:01:41.022499455Z",
+    "name": "IBM Security QRadar SOAR Negative PR",
+    "ownerOnly": false,
+    "cliName": "ibmsecurityqradarsoarnegativepr",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "IBM QRadar SOAR Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

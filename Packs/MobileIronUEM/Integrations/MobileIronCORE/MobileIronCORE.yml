@@ -664,7 +664,7 @@ script:
     - contextPath: MobileIronCore.Device.common_mdm_managed
       description: Whether the device that was fetched is MDM managed.
       type: Boolean
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

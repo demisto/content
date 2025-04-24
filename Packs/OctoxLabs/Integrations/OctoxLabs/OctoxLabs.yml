@@ -15,6 +15,17 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
+- name: https_proxy
+  display: HTTPS Proxy
+  required: false
+  type: 0
+  additionalinfo: Your HTTPS Proxy URL
+- name: no_verify
+  required: false
+  type: 8
+  display: No Verify
+  additionalinfo: Don't Verify SSL
+
 description: 'Octox Labs Cyber Security Asset Management platform.'
 display: 'OctoxLabs'
 name: OctoxLabs
@@ -584,12 +595,225 @@ script:
     - contextPath: OctoxLabs.Permissions.results.app
       description: 'Permission app.'
       type: String
-
+  - name: octoxlabs-search-users-inventory
+    description: 'Search in your User Inventory.'
+    arguments:
+      - default:
+        description: 'Query.'
+        name: query
+      - default:
+        description: 'Fields.'
+        isArray: true
+        name: fields
+      - default:
+        description: 'Page (Default: 1).'
+        name: page
+      - default:
+        description: 'Size (Default: 50).'
+        name: size
+      - default:
+        description: 'Specific Discovery Id.'
+        name: discovery_id
+    outputs:
+      - contextPath: OctoxLabs.UserInventory.count
+        description: 'Total users count.'
+        type: Number
+      - contextPath: OctoxLabs.UserInventory.results
+        description: 'List User information.'
+        type: Unknown
+  - name: octoxlabs-search-applications
+    description: 'Search in your Applications'
+    arguments:
+      - default:
+        description: 'Query.'
+        name: query
+      - default:
+        description: 'Fields.'
+        isArray: true
+        name: fields
+      - default:
+        description: 'Page (Default: 1).'
+        name: page
+      - default:
+        description: 'Size (Default: 50).'
+        name: size
+      - default:
+        description: 'Specific Discovery Id.'
+        name: discovery_id
+    outputs:
+      - contextPath: OctoxLabs.Applications.count
+        description: 'Total applications count.'
+        type: Number
+      - contextPath: OctoxLabs.Applications.results
+        description: 'List Application information.'
+        type: Unknown
+  - name: octoxlabs-search-avm
+    description: 'Search in your AVM'
+    arguments:
+      - default:
+        description: 'Query.'
+        name: query
+      - default:
+        description: 'Fields.'
+        isArray: true
+        name: fields
+      - default:
+        description: 'Page (Default: 1).'
+        name: page
+      - default:
+        description: 'Size (Default: 50).'
+        name: size
+      - default:
+        description: 'Specific Discovery Id.'
+        name: discovery_id
+    outputs:
+      - contextPath: OctoxLabs.AVM.count
+        description: 'Total vulnerabilities count.'
+        type: Number
+      - contextPath: OctoxLabs.AVM.results
+        description: 'List Vulnerability information.'
+        type: Unknown
+  - name: octoxlabs-get-user-inventory-detail
+    description: 'Fetch your user.'
+    arguments:
+      - required: true
+        name: username
+        description: 'Your user username.'
+      - name: discovery_id
+        description: 'Your device at specific discovery.'
+    outputs:
+      - contextPath: OctoxLabs.UserInv
+        description: '<Dict> Octoxlabs User.'
+        type: Unknown
+  - name: octoxlabs-get-application-detail
+    description: 'Fetch your application.'
+    arguments:
+      - required: true
+        name: application_id
+        description: 'Your application id.'
+      - name: discovery_id
+        description: 'Your device at specific discovery.'
+    outputs:
+      - contextPath: OctoxLabs.Application
+        description: '<Dict> Octoxlabs Application.'
+        type: Unknown
+  - name: octoxlabs-search-scroll-devices
+    description: 'Search in your devices.'
+    arguments:
+      - default:
+        description: 'Query.'
+        name: query
+      - default:
+        description: 'Fields.'
+        isArray: true
+        name: fields
+      - default:
+        description: 'Size (Default: 50).'
+        name: size
+      - default:
+        description: 'Specific Discovery Id.'
+        name: discovery_id
+      - default:
+        description: 'Specific Scroll Id.'
+        name: scroll_id
+    outputs:
+      - contextPath: OctoxLabs.ScrolledDevices.count
+        description: 'Total devices count.'
+        type: Number
+      - contextPath: OctoxLabs.ScrolledDevices.scroll_id
+        description: 'Specific Scroll Id.'
+        type: String
+      - contextPath: OctoxLabs.ScrolledDevices.results
+        description: 'List Device information.'
+        type: Unknown
+  - name: octoxlabs-search-scroll-users
+    description: 'Search in your users.'
+    arguments:
+      - default:
+        description: 'Query.'
+        name: query
+      - default:
+        description: 'Fields.'
+        isArray: true
+        name: fields
+      - default:
+        description: 'Size (Default: 50).'
+        name: size
+      - default:
+        description: 'Specific Discovery Id.'
+        name: discovery_id
+      - default:
+        description: 'Specific Scroll Id.'
+        name: scroll_id
+    outputs:
+      - contextPath: OctoxLabs.ScrolledUsers.count
+        description: 'Total users count.'
+        type: Number
+      - contextPath: OctoxLabs.ScrolledUsers.scroll_id
+        description: 'Specific Scroll Id.'
+        type: String
+      - contextPath: OctoxLabs.ScrolledUsers.results
+        description: 'List Users information.'
+        type: Unknown
+  - name: octoxlabs-search-scroll-applications
+    description: 'Search in your applications.'
+    arguments:
+      - default:
+        description: 'Query.'
+        name: query
+      - default:
+        description: 'Fields.'
+        isArray: true
+        name: fields
+      - default:
+        description: 'Size (Default: 50).'
+        name: size
+      - default:
+        description: 'Specific Discovery Id.'
+        name: discovery_id
+      - default:
+        description: 'Specific Scroll Id.'
+        name: scroll_id
+    outputs:
+      - contextPath: OctoxLabs.ScrolledApplications.count
+        description: 'Total applications count.'
+        type: Number
+      - contextPath: OctoxLabs.ScrolledApplications.scroll_id
+        description: 'Specific Scroll Id.'
+        type: String
+      - contextPath: OctoxLabs.ScrolledApplications.results
+        description: 'List Application information.'
+        type: Unknown
+  - name: octoxlabs-search-scroll-avm
+    description: 'Search in your AVM.'
+    arguments:
+      - default:
+        description: 'Query.'
+        name: query
+      - default:
+        description: 'Size (Default: 50).'
+        name: size
+      - default:
+        description: 'Specific Discovery Id.'
+        name: discovery_id
+      - default:
+        description: 'Specific Scroll Id.'
+        name: scroll_id
+    outputs:
+      - contextPath: OctoxLabs.ScrolledAVM.count
+        description: 'Total vulnerabilities count.'
+        type: Number
+      - contextPath: OctoxLabs.ScrolledAVM.scroll_id
+        description: 'Specific Scroll Id.'
+        type: String
+      - contextPath: OctoxLabs.ScrolledAVM.results
+        description: 'List Vulnerability information.'
+        type: Unknown
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/octoxlabs:1.0.0.96081
+  dockerimage: demisto/octoxlabs:1.0.0.1796617
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

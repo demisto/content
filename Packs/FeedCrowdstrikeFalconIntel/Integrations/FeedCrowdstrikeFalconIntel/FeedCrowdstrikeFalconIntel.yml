@@ -59,7 +59,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   type: 17
   required: false
 - defaultvalue: '20160'
@@ -148,7 +147,7 @@ script:
       name: custom_filter
     description: Gets indicators from CrowdStrike Falcon Intel Feed.
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.10.13.82076
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

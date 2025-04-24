@@ -1,25 +1,21 @@
 Use the JsonWhoIs integration to  enrich domain indicators.
 
 
-## Configure JsonWhoIs on Cortex XSOAR
+## Configure JsonWhoIs in Cortex
 
-1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
-2.  Search for JsonWhoIs.
-3.  Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Example** |
-    | ---------             | -----------           | -------            |
-    | Name | A meaningful name for the integration instance. | JsonWhoIs_instance_1 |
-    | API Token  |  Your [JsonWhoIs API token](https://jsonwhois.com/) |  N/A  |
-    | System proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.     | https:/<span></span>/proxyserver.com |
-    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-    | Do Not Use by Default  | If checked the commands will not be used by default (this is influenced if two command are the same). | N/A  |
+| **Parameter** | **Description** | **Example** |
+| ---------             | -----------           | -------            |
+| Name | A meaningful name for the integration instance. | JsonWhoIs_instance_1 |
+| API Token  |  Your [JsonWhoIs API token](https://jsonwhois.com/) |  N/A  |
+| System proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.     | https:/<span></span>/proxyserver.com |
+| Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
+| Do Not Use by Default  | If checked the commands will not be used by default (this is influenced if two command are the same). | N/A  |
 
-4.  Click **Test** to validate the new instance.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get enriched data
 

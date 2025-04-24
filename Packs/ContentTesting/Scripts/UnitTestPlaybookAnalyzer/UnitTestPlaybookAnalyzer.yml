@@ -12,6 +12,7 @@ args:
   required: true
 - description: Maximum number of incidents to analyze.
   name: maxinc
+  required: false
 comment: |
   Profiles execution time of tasks in a playbook or sub-playbook (if specified).  Provides minimum, maximum, and average task execution times in milliseconds as well as the state of each task: completed, error, notexecuted, started, and waiting.
 commonfields:
@@ -28,10 +29,9 @@ script: ''
 scripttarget: 0
 subtype: python3
 tags: []
-timeout: 20m0s
+timeout: 1.2µs
 type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 runonce: false
-engineinfo: {}

@@ -1,0 +1,170 @@
+{
+    "links": [
+        {
+            "href": "h",
+            "rel": "self"
+        },
+        {
+            "href": "h",
+            "rel": "previous"
+        }
+    ],
+    "results": [
+        {
+            "created": "2024-10-10T14:25:46Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "12",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-10-09T14:21:28Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "13",
+            "isGlobalAdmin": false,
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "remoteAddress": "ip",
+            "userId": "id",
+            "username": "@"
+        },
+        {
+            "created": "2024-10-08T09:32:40Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "14",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-10-07T09:29:34Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "15",
+            "isGlobalAdmin": false,
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "remoteAddress": "ip",
+            "userId": "id",
+            "username": "#"
+        },
+        {
+            "created": "2024-10-05T12:13:52Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "16",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "alertConfigId": "id",
+            "created": "2024-10-05T12:09:41Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "17",
+            "isGlobalAdmin": false,
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "remoteAddress": "ip",
+            "userId": "id",
+            "username": "@"
+        },
+        {
+            "created": "2024-10-04T11:39:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "18",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-10-04T11:35:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "19",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-10-04T11:30:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "20",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-10-03T11:20:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "21",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        },
+        {
+            "created": "2024-10-02T11:10:01Z",
+            "eventTypeName": "type",
+            "groupId": "id",
+            "id": "22",
+            "links": [
+                {
+                    "href": "h",
+                    "rel": "self"
+                }
+            ],
+            "orgId": "id"
+        }
+    ],
+    "totalCount": 375
+}

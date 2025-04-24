@@ -1,10 +1,7 @@
 Pi-hole is a network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole and optionally a DHCP server, intended for use on a private network.
 This integration was integrated and tested with version FTL5.2 of PiHole
-## Configure PiHole on Cortex XSOAR
+## Configure PiHole in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PiHole.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,9 +10,8 @@ This integration was integrated and tested with version FTL5.2 of PiHole
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### pihole-get-version
 ***
@@ -1142,4 +1138,3 @@ Get all available lists from Pihole
 >|data|
 >|---|
 >| {'id': 2, 'type': 0, 'domain': 'www.googleadservices.com', 'enabled': 1, 'date_added': 1593758659, 'date_modified': 1593758659, 'comment': None, 'groups': [0]},<br/>{'id': 3, 'type': 0, 'domain': 'www.googletagmanager.com', 'enabled': 1, 'date_added': 1593758671, 'date_modified': 1593758671, 'comment': None, 'groups': [0]},<br/>{'id': 8, 'type': 0, 'domain': 'google.com', 'enabled': 1, 'date_added': 1594876318, 'date_modified': 1594876318, 'comment': None, 'groups': [0]} |
-

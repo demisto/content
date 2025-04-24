@@ -1,6 +1,6 @@
 # WALLIX Bastion
 
-Easy to use and easy to deploy, the WALLIX Bastion PAM solution delivers robust security and oversight over privileged access to critical IT infrastructure. Reduce the attack surface and meet regulatory compliance requirements with simplified Privileged Access Management.
+Easy to deploy and easy to use, the WALLIX PAM delivers robust security and helps maintain control of privileged access to critical IT infrastructure. Streamlined PAM reduces the attack surface and supports compliance with regulatory standards.
 
 ## What does this pack do
 

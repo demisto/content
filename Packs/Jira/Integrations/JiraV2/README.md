@@ -642,7 +642,7 @@ Field must be either of type string (appending by using ',') or arrayd.
     "attachment": ""
   }
 }
-
+```
 
 ### jira-get-specific-field
 ***
@@ -877,7 +877,7 @@ Edit the assignee of an existing issue.
 **This feature is compliant with Cortex XSOAR version 6.0 and above.**
 This part walks you through setting up the Jira integration to mirror incidents from Jira in Cortex XSOAR. 
 The instructions below include steps for configuring the integration and the incoming and outgoing mappers. However, not every option available in the integration, nor all classification and mapping features are covered. 
-For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).
+For information about **Classification and Mapping** visit: [Classification and Mapping (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping) or [Classification and Mapping (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Classification-and-mapping) or [Classification and Mapping (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Classification-and-mapping).
 
 When mirroring incidents, you can make changes in Jira, which will be reflected in Cortex XSOAR, or vice versa. 
 You can also attach files from either of the systems, which will then be available in the other system. 

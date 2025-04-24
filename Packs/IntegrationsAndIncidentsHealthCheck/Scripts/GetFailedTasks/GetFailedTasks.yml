@@ -7,12 +7,20 @@ args:
   name: max_incidents
 - description: Rest API instance to use.
   name: rest_api_instance
+- auto: PREDEFINED
+  description: Whether to replace the scripts ids to their name in case of custom scripts.
+  name: get_scripts_name
+  predefined:
+  - 'true'
+  - 'false'
 comment: |-
   Gets failed tasks details for incidents based on a query. Limited to 1000 incidents.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
 commonfields:
   id: GetFailedTasks
   version: -1
@@ -22,7 +30,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - No tests
 fromversion: 6.0.0

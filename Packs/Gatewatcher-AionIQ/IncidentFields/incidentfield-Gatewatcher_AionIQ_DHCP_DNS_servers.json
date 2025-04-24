@@ -1,0 +1,32 @@
+{
+    "id": "incident_gatewatcherdhcpdnsservers",
+    "version": -1,
+    "modified": "2024-12-03T18:25:05.04911841+01:00",
+    "name": "Gatewatcher AionIQ DHCP DNS servers",
+    "ownerOnly": false,
+    "cliName": "gatewatcherdhcpdnsservers",
+    "type": "multiSelect",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Gatewatcher Incident",
+        "Gatewatcher Alert Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

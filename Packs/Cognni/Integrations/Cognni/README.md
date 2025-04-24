@@ -7,27 +7,23 @@ incidents, fast enough to make a difference.
 
 This integration was integrated and tested with version 1.0 of Cognni
 
-## Configure Cognni on Cortex XSOAR
+## Configure Cognni in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cognni.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Server URL | True |
-    | isFetch | Fetch incidents | False |
-    | incidentType | Incident type | False |
-    | max_fetch | Maximum number of events per fetch | False |
-    | apikey | API Key | True |
-    | min_severity | Minimum severity of alerts to fetch | True |
-    | first_fetch | First fetch time | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Server URL | True |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| max_fetch | Maximum number of events per fetch | False |
+| apikey | API Key | True |
+| min_severity | Minimum severity of alerts to fetch | True |
+| first_fetch | First fetch time | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cognni-get-event
 ***
@@ -248,4 +244,3 @@ Fetches insights according to severity.
 >|  | f964659c-9cc3-4833-b535-0402cd953376 | Medium sensitivity content Shared outside the organization Anomaly | 2 |
 >|  | c24405d5-49f5-48b8-b15c-1a1aba540979 | Medium sensitivity content, Shared to private email address | 2 |
 >|  | c925372e-c2d5-4b61-b37e-399263ad58f9 | Medium sensitivity content Shared to private email Address Anomaly | 3 |
-

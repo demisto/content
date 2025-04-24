@@ -1,0 +1,460 @@
+id: DataBee
+name: DataBee
+version: -1
+fromversion: 6.10.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "3dc301a2-1aa3-4546-8e37-5b3abf16c886"
+    type: start
+    task:
+      id: "3dc301a2-1aa3-4546-8e37-5b3abf16c886"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: 1
+    taskid: "bcbd5c2b-152a-4c05-80be-9c113bf0c17d"
+    type: regular
+    task:
+      id: "bcbd5c2b-152a-4c05-80be-9c113bf0c17d"
+      version: -1
+      name: DeleteContext
+      description: ""
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: 2
+    taskid: "7e0ac6b5-26c5-404c-902b-c16d6bc2b8d2"
+    type: regular
+    task:
+      id: "7e0ac6b5-26c5-404c-902b-c16d6bc2b8d2"
+      version: -1
+      name: databee-device-search
+      description: ""
+      script: DataBee|||databee-device-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "3"
+    scriptarguments:
+      hostname:
+        simple: a
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: "f979c185-0d09-483a-8ef7-81b9de7158fc"
+    type: condition
+    task:
+      id: "f979c185-0d09-483a-8ef7-81b9de7158fc"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.interface_uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.interface_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.instance_uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.Device.start_time
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: 4
+    taskid: "09be813f-f8dc-45d1-a8f0-a26e9a27202a"
+    type: regular
+    task:
+      id: "09be813f-f8dc-45d1-a8f0-a26e9a27202a"
+      version: -1
+      name: databee-user-search
+      description: ""
+      script: DataBee|||databee-user-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    scriptarguments:
+      full_name:
+        simple: a
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: "e1795911-c833-452a-864a-849599360c74"
+    type: condition
+    task:
+      id: "e1795911-c833-452a-864a-849599360c74"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.User.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.User.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.User.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataBee.User.start_time
+            iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "6":
+    id: 6
+    taskid: "58c75f71-8b3c-4088-b04d-3766d882c57c"
+    type: regular
+    task:
+      id: "58c75f71-8b3c-4088-b04d-3766d882c57c"
+      version: -1
+      name: databee-finding-search
+      description: ""
+      script: DataBee|||databee-finding-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "7"
+    scriptarguments:
+      impact:
+        simple: High
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: "5b97ef17-1475-4868-aca4-124105337dfd"
+    type: condition
+    task:
+      id: "5b97ef17-1475-4868-aca4-124105337dfd"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.device_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.user_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.activity_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.activity_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Analytic
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Attack
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.category_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.CisCsc
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.class_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.confidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.data_source
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Device
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.duration
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Evidence
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Finding
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.impact
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.impact_score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.KillChain
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.message
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Metadata
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Observable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.Process
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.risk_level
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.risk_score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.start_time
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.state
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.status_detail
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.time
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.type_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding.User
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "8":
+    id: "8"
+    taskid: "799dc619-8cc0-40b6-b023-83a5f5f0c5fe"
+    type: title
+    task:
+      id: "799dc619-8cc0-40b6-b023-83a5f5f0c5fe"
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
+description: ''

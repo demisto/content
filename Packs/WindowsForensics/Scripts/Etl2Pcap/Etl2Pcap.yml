@@ -6,7 +6,7 @@ args:
 commonfields:
   id: Etl2Pcap
   version: -1
-dockerimage: demisto/etl2pcap:1.0.0.86370
+dockerimage: demisto/etl2pcap:1.0.0.117169
 enabled: true
 name: Etl2Pcap
 outputs:

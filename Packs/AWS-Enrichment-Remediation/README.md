@@ -22,27 +22,27 @@ This content pack includes the following playbooks:
 #### AWS - Enrichment
 AWS - Enrichment playbook reports EC2 information given an IP address of an EC2 instance.
 
-![AWS - Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Enrichment.png)
+![AWS - Enrichment](doc_files/AWS_-_Enrichment.png)
 
 #### AWS - Security Group Remediation
 AWS - Security Group Remediation playbook replaces current security groups associated to NIC with Remediation security group.
 
-![AWS - Security Group Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation.png)
+![AWS - Security Group Remediation](doc_files/AWS_-_Security_Group_Remediation.png)
 
 #### AWS - Security Group Remediation v2
 The AWS - Security Group Remediation v2 playbook more selectively determines which security groups are over-permissive, copies them and removes only the over-permissive portions.
 
-![AWS - Security Group Remediation v2](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation_v2.png)
+![AWS - Security Group Remediation v2](doc_files/AWS_-_Security_Group_Remediation_v2.png)
 
 #### AWS - Unclaimed S3 Bucket Validation
 AWS - Unclaimed S3 Bucket Validation playbook validates the unclaimed S3 bucket details.
 
-![AWS - Unclaimed S3 Bucket Validation](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Validation.png)
+![AWS - Unclaimed S3 Bucket Validation](doc_files/AWS_-_Unclaimed_S3_Bucket_Validation.png)
 
 #### AWS - Unclaimed S3 Bucket Remediation
 AWS - Unclaimed S3 Bucket Remediation playbook creates the unclaimed S3 bucket so other vectors can't claim the bucket.
 
-![AWS - Unclaimed S3 Bucket Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Remediation.png)
+![AWS - Unclaimed S3 Bucket Remediation](doc_files/AWS_-_Unclaimed_S3_Bucket_Remediation.png)
 
 ### Automation Scripts
 
@@ -50,7 +50,7 @@ AWS - Unclaimed S3 Bucket Remediation playbook creates the unclaimed S3 bucket s
 
 Automation to determine which interface on an EC2 instance has an over-permissive security group, determine which security groups have over-permissive rules, and replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
 
-![AWSRecreateSG](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWSRecreateSG.png)
+![AWSRecreateSG](doc_files/AWSRecreateSG.png)
 
 #### AWSAccountHierarchy
 

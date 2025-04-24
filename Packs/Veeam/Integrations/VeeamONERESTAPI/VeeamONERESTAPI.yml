@@ -1,0 +1,131 @@
+category: Vulnerability Management
+commonfields:
+  id: Veeam ONE REST API
+  version: -1
+configuration:
+- display: Username
+  displaypassword: Password
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: https://<fqdn>:1239
+  display: Resource URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: 'The maximum number of triggered alarms that can be fetched during command execution.'
+  defaultvalue: "200"
+  display: 'Triggered Alarms Per Request'
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: "120"
+  display: API Request Timeout (Seconds)
+  name: http_request_timeout_sec
+  required: false
+  type: 0
+- defaultvalue: "10"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: 'Veeam ONE REST API allows you to query information about Veeam ONE entities and perform operations with these entities using HTTP requests and standard HTTP methods.'
+display: 'Veeam ONE REST API'
+name: Veeam ONE REST API
+script:
+  commands:
+  - arguments:
+    - description: 'Number of first resources in the output that are excluded.'
+      name: Offset
+    - description: 'Number of first resources in the output that are returned.'
+      name: Limit
+      defaultValue: "100"
+    - description: 'Conditions that a resource must meet to be included in the output.'
+      name: Filter
+    - description: 'Order in which resources are returned.'
+      name: Sort
+    - description: 'Property that must be explicitly returned in a response.'
+      name: Select
+    description: 'Get All Triggered Alarms.'
+    name: veeam-vone-get-triggered-alarms
+    outputs:
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.triggeredAlarmId
+      description: ID assigned to a triggered alarm.
+      type: Number
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.name
+      description: Name of an alarm template.
+      type: String
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.alarmTemplateId
+      description: ID assigned to an alarm template.
+      type: Number
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.predefinedAlarmId
+      description: ID assigned to an alarm.
+      type: Number
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.triggeredTime
+      description: Date and time when an alarm triggered.
+      type: String
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.description
+      description: Message containing alarm details.
+      type: String
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.comment
+      description: Comment on a triggered alarm.
+      type: String
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.repeatCount
+      description: Number of times an alarm was triggered.
+      type: Number
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.childAlarmsCount
+      description: Number of alarm child objects.
+      type: Number
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.items.remediation.description
+      description: ""
+      type: String
+    - contextPath: Veeam.VONE.TriggeredAlarmInfoPage.totalCount
+      description: ""
+      type: Number
+  - arguments:
+    - description: 'List of IDs assigned to triggered alarms that you want to resolve.'
+      name: triggeredAlarmIds
+      required: true
+    - description: 'Additional information.'
+      name: comment
+      required: true
+    - description: 'Type of alarm resolution.'
+      name: resolveType
+      required: true
+    description: 'Resolve Triggered Alarms.'
+    name: veeam-vone-resolve-triggered-alarms
+  dockerimage: demisto/python3:3.11.11.1940698
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+defaultclassifier: Veeam One Incidents Classifier
+defaultmapperin: Veeam One Incoming Mapper
+tests:
+- No tests (auto formatted)

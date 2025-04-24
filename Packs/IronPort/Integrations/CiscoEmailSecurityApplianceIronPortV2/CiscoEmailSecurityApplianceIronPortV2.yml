@@ -101,7 +101,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   commands:
   - name: cisco-esa-spam-quarantine-message-search
@@ -967,6 +967,216 @@ script:
     - type: Number
       contextPath: CiscoESA.Report.resultSet
       description: Report results summary.
+  - name: cisco-esa-dictionary-list
+    description: Retrieve information of all dictionaries or a specific configured dictionary and their list of words.
+    arguments:
+    - name: mode
+      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+      required: false
+      defaultValue: cluster
+      auto: PREDEFINED
+      predefined:
+        - cluster
+        - group
+        - machine
+    - name: host_name
+      description: Required when cluster mode is 'machine'.
+      required: false
+    - name: group_name
+      description: Required when cluster mode is 'group'.
+      required: false
+    - name: dictionary_name
+      description: The name of the dictionary for which to get information. This argument is optional. 
+      required: false
+    outputs:
+      - contextPath: CiscoESA.Dictionary.name
+        description: The name of the dictionary.
+        type: String
+      - contextPath: CiscoESA.Dictionary.encoding
+        description: The encoding format used for the dictionary.
+        type: String
+      - contextPath: CiscoESA.Dictionary.ignorecase
+        description: Indicates whether the dictionary ignores case sensitivity (1 for true, 0 for false).
+        type: Number
+      - contextPath: CiscoESA.Dictionary.words
+        description: The words in the dictionary.
+        type: List
+      - contextPath: CiscoESA.Dictionary.words_count.term_count
+        description: The count of individual terms in the dictionary.
+        type: Number
+      - contextPath: CiscoESA.Dictionary.words_count.smart_identifier_count
+        description: The count of smart identifiers in the dictionary (special terms with additional metadata).
+        type: Number
+      - contextPath: CiscoESA.Dictionary.wholewords
+        description: Indicates whether the dictionary considers whole words only (1 for true, 0 for false).
+        type: Number
+  - name: cisco-esa-dictionary-add
+    description: Add a new dictionary.
+    arguments:
+    - name: mode
+      description: "The cluster mode of the email gateway determines its configuration.  If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+      required: false
+      defaultValue: cluster
+      auto: PREDEFINED
+      predefined:
+        - cluster
+        - group
+        - machine
+    - name: host_name
+      description: Required when cluster mode is 'machine'.
+      required: false
+    - name: group_name
+      description: Required when cluster mode is 'group'.
+      required: false
+    - name: dictionary_name
+      description: The name of the dictionary for which to get information. This argument is optional. 
+      required: true
+    - name: whole_words
+      description: Indicates if the words need to be matched completely.
+      required: false
+      auto: PREDEFINED
+      defaultValue: "True"
+      predefined:
+        - "True"
+        - "False"
+    - name: words
+      description: |-
+        A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
+        A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
+        Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
+      required: true
+      isArray: true
+    - name: ignore_case_sensitive
+      description: Indicates if the term that needs to be matched is case-sensitive.
+      required: false
+      defaultValue: "False"
+      auto: PREDEFINED
+      predefined:
+        - "True"
+        - "False"
+  - name: cisco-esa-dictionary-edit
+    description: Edit a dictionary.
+    arguments:
+    - name: mode
+      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+      required: false
+      defaultValue: cluster
+      auto: PREDEFINED
+      predefined:
+        - cluster
+        - group
+        - machine
+    - name: host_name
+      description: Required when cluster mode is 'machine'.
+      required: false
+    - name: group_name
+      description: Required when cluster mode is 'group'.
+      required: false
+    - name: dictionary_name
+      description: The name of the dictionary for which to get information. This argument is optional. 
+      required: true
+    - name: updated_name
+      description: Specify a new name for the dictionary to modify.
+      required: false
+    - name: whole_words
+      description: Indicates if the words need to be matched completely.
+      required: false
+      auto: PREDEFINED
+      defaultValue: "True"
+      predefined:
+        - "True"
+        - "False"
+    - name: words
+      description: |-
+        A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
+        A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
+        Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
+      required: true
+      isArray: true
+    - name: ignore_case_sensitive
+      description: Indicates if the term that needs to be matched is case-sensitive.
+      required: false
+      auto: PREDEFINED
+      defaultValue: "False"
+      predefined:
+        - "True"
+        - "False"
+  - name: cisco-esa-dictionary-delete
+    description: Delete a dictionary.
+    arguments:
+    - name: mode
+      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+      required: false
+      defaultValue: cluster
+      auto: PREDEFINED
+      predefined:
+        - cluster
+        - group
+        - machine
+    - name: host_name
+      description: Required when cluster mode is 'machine'.
+      required: false
+    - name: group_name
+      description: Required when cluster mode is 'group'.
+      required: false
+    - name: dictionary_name
+      description: The name of the dictionary for which to get information. This argument is optional. 
+      required: true
+  - name: cisco-esa-dictionary-words-add
+    description: Add words to a specific dictionary.
+    arguments:
+    - name: mode
+      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', please a group_name. If the cluster mode is set to 'machine', specify a host_name."
+      required: false
+      defaultValue: cluster
+      auto: PREDEFINED
+      predefined:
+        - cluster
+        - group
+        - machine
+    - name: host_name
+      description: Required when cluster mode is 'machine'.
+      required: false
+    - name: group_name
+      description: Required when cluster mode is 'group'.
+      required: false
+    - name: dictionary_name
+      description: The name of the dictionary for which to get information. This argument is optional. 
+      required: true
+    - name: words
+      description: |-
+        A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
+        A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
+        Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
+      required: true
+      isArray: true
+  - name: cisco-esa-dictionary-words-delete
+    description: Delete existing words from specific dictionary.
+    arguments:
+    - name: mode
+      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+      required: false
+      defaultValue: cluster
+      auto: PREDEFINED
+      predefined:
+        - cluster
+        - group
+        - machine
+    - name: host_name
+      description: Required when cluster mode is 'machine'.
+      required: false
+    - name: group_name
+      description: Required when cluster mode is 'group'.
+      required: false
+    - name: dictionary_name
+      description: The name of the dictionary for which to get information. This argument is optional. 
+      required: true
+    - name: words
+      description: |-
+        A list of terms that need to be deleted.
+        Example: credit,aba,term.
+      required: true
+      isArray: true
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- CiscoESA_dictionary_commands_tpb

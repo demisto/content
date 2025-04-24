@@ -1,0 +1,10 @@
+[
+    {
+        "Id": "<id of the item>",
+        "Type": "email or domain",
+        "Value": "<An email address or a domain name>",
+        "Description": "<description of the item>",
+        "Date Created": "<Date at which the item was created>",
+        "Date Amended": "<Date at which the item was amended>"
+    }
+]

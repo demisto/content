@@ -1,27 +1,23 @@
 Use the xDome integration to manage assets and alerts.
 This integration was integrated and tested with version 1.0.0 of XDome.
 
-## Configure xDome on Cortex XSOAR
+## Configure xDome in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for xDome.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | XDome public API base URL |  | True |
-    | API Token | The API token to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | The initial time to fetch from |  | True |
-    | Fetch Only Unresolved Device-Alert Pairs |  | False |
-    | Alert Types Selection | If no alert types are selected, all types will be fetched | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| XDome public API base URL |  | True |
+| API Token | The API token to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| The initial time to fetch from |  | True |
+| Fetch Only Unresolved Device-Alert Pairs |  | False |
+| Alert Types Selection | If no alert types are selected, all types will be fetched | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### xdome-get-device-alert-relations
@@ -37,7 +33,7 @@ Gets all device-alert pairs from xDome. You can apply a query-filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Fields to return. Possible values are: all, alert_assignees, alert_category, alert_class, alert_id, alert_labels, alert_name, alert_type_name, device_alert_detected_time, device_alert_status, device_alert_updated_time, device_assignees, device_category, device_effective_likelihood_subscore, device_effective_likelihood_subscore_points, device_first_seen_list, device_impact_subscore, device_impact_subscore_points, device_insecure_protocols, device_insecure_protocols_points, device_internet_communication, device_ip_list, device_known_vulnerabilities, device_known_vulnerabilities_points, device_labels, device_last_seen_list, device_likelihood_subscore, device_likelihood_subscore_points, device_mac_list, device_manufacturer, device_name, device_network_list, device_purdue_level, device_retired, device_risk_score, device_risk_score_points, device_site_name, device_subcategory, device_type, device_uid. Default is all. | Optional | 
+| fields | Fields to return. Possible values are: all, alert_assignees, alert_category, alert_class, alert_id, alert_labels, alert_name, alert_type_name, alert_description, device_alert_detected_time, device_alert_status, device_alert_updated_time, device_assignees, device_category, device_effective_likelihood_subscore, device_effective_likelihood_subscore_points, device_first_seen_list, device_impact_subscore, device_impact_subscore_points, device_insecure_protocols, device_insecure_protocols_points, device_internet_communication, device_ip_list, device_known_vulnerabilities, device_known_vulnerabilities_points, device_labels, device_last_seen_list, device_likelihood_subscore, device_likelihood_subscore_points, device_mac_list, device_manufacturer, device_name, device_network_list, device_purdue_level, device_retired, device_risk_score, device_risk_score_points, device_site_name, device_subcategory, device_type, device_uid, mitre_technique_enterprise_ids, mitre_technique_enterprise_names, mitre_technique_ics_ids, mitre_technique_ics_names. Default is all. | Optional | 
 | filter_by | A filter_by object, refer to the xDome API documentation. | Optional | 
 | offset | An offset in the data. This can be used to fetch all data in a paginated manner, by e.g requesting (offset=0, limit=100) followed by (offset=100, limit=100), (offset=200, limit=100), etc. | Optional | 
 | limit | Maximum amount of items to fetch. | Optional | 
@@ -54,6 +50,7 @@ Gets all device-alert pairs from xDome. You can apply a query-filter.
 | XDome.DeviceAlert.alert_category | String | Alert category such as "Risk" or "Segmentation". | 
 | XDome.DeviceAlert.alert_labels | String | The labels added to the alert manually or automatically. | 
 | XDome.DeviceAlert.alert_assignees | String | The users and or groups the alert is assigned to. | 
+| XDome.DeviceAlert.alert_description | String | The alert description, such as "SMBv1 Communication was detected by 2 OT Device devices". | 
 | XDome.DeviceAlert.device_alert_detected_time | Date | Date and time when the Alert was first detected. | 
 | XDome.DeviceAlert.device_alert_updated_time | Date | Date and time of last Alert update. | 
 | XDome.DeviceAlert.device_alert_status | String | Device-Alert relation status \(Resolved or Unresolved\). | 
@@ -86,6 +83,10 @@ Gets all device-alert pairs from xDome. You can apply a query-filter.
 | XDome.DeviceAlert.device_known_vulnerabilities | String | The calculated level of the device’s ‘known vulnerabilities’ likelihood factor, such as "Critical", or "High". | 
 | XDome.DeviceAlert.device_known_vulnerabilities_points | Number | The calculated points for ‘known vulnerabilities’ likelihood factor of a device, such as "54.1". | 
 | XDome.DeviceAlert.device_manufacturer | String | Manufacturer of the device, such as "Alaris". | 
+| XDome.DeviceAlert.mitre_technique_enterprise_ids | List | MITRE ATT&amp;CK® Enterprise technique IDs mapped to the alert. | 
+| XDome.DeviceAlert.mitre_technique_enterprise_names | List | MITRE ATT&amp;CK® Enterprise technique names mapped to the alert. | 
+| XDome.DeviceAlert.mitre_technique_ics_ids | List | MITRE ATT&amp;CK® ICS technique IDs mapped to the alert. | 
+| XDome.DeviceAlert.mitre_technique_ics_names | List | MITRE ATT&amp;CK® ICS technique names mapped to the alert. | 
 
 ### xdome-set-status-for-device-alert-relations
 

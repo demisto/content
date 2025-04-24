@@ -41,38 +41,34 @@ The following commands from the Carbon Black Endpoint Standard v2 integration ha
 ### Classifier
 **Carbon Black Endpoint Standard**
 
-## Configure Carbon Black Endpoint Standard v3 on Cortex XSOAR
+## Configure Carbon Black Endpoint Standard v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Carbon Black Endpoint Standard v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | URL |  | True |
-    | Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\). | True |
-    | Custom Api Key | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
-    | Password | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
-    | Api Key (Api/Live Response key) | This Live Response API key is required only for the policy use cases. | False |
-    | Password | This Live Response API key is required only for the policy use cases. | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | The type of the alert | Type of alert to be fetched. | False |
-    | Device ID | The alerts related to a specific device, according to the device ID. | False |
-    | Policy ID | The alerts related to a specific policy, according to the policy ID. | False |
-    | Device username | The alerts related to a specific device, according to the device username. | False |
-    | Minimum severity | The minimum severity of the alerts to be fetched. | False |
-    | Query | Query in Lucene syntax and/or value searches. If defined, the other fetch incidents parameters should be left blank. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
-    | Maximum number of incidents per fetch |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| URL |  | True |
+| Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\). | True |
+| Custom Api Key | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
+| Password | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
+| Api Key (Api/Live Response key) | This Live Response API key is required only for the policy use cases. | False |
+| Password | This Live Response API key is required only for the policy use cases. | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| The type of the alert | Type of alert to be fetched. | False |
+| Device ID | The alerts related to a specific device, according to the device ID. | False |
+| Policy ID | The alerts related to a specific policy, according to the policy ID. | False |
+| Device username | The alerts related to a specific device, according to the device username. | False |
+| Minimum severity | The minimum severity of the alerts to be fetched. | False |
+| Query | Query in Lucene syntax and/or value searches. If defined, the other fetch incidents parameters should be left blank. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). |  | False |
+| Maximum number of incidents per fetch |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cbd-get-alert-details
@@ -2545,10 +2541,10 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 | polling | When set to false, the function will not use polling and will return the process job ID. Possible values: yes, no. Default is True. | Optional | 
 | job_id | The ID of the job to retrieve the details. This is used internally for polling. | Optional | 
 | alert_id | The ID of the alert to retrieve the observation details. Must be specified alone. | Optional | 
-| event_ids | A list of observation IDs to retrieve the details. Must be specified alone. | Optional | 
+| observation_ids | A list of observation IDs to retrieve the details. Must be specified alone. | Optional | 
 | process_hash | The hash of the process to search for. Can be combined with rows, and with device_id or count_unique_devices, but not both. | Optional | 
-| device_id | The ID of the device to filter the observations. Must be combined with process_hash. Cannot be combined with alert_id, event_ids, count_unique_devices. | Optional | 
-| count_unique_devices | A boolean indicating whether to count unique devices executing the process hash. Must be combined with process_hash. Cannot be combined with alert_id, event_ids, device_id. | Optional | 
+| device_id | The ID of the device to filter the observations. Must be combined with process_hash. Cannot be combined with alert_id, observation_ids, count_unique_devices. | Optional | 
+| count_unique_devices | A boolean indicating whether to count unique devices executing the process hash. Must be combined with process_hash. Cannot be combined with alert_id, observation_ids, device_id. | Optional | 
 | rows | The maximum number of rows to return, up to 10,000. Can only be combined with process_hash. | Optional | 
 
 #### Context Output
@@ -2749,9 +2745,9 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 #### Human Readable Output
 
 >### Defense Event Details Results
->|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
->|---|---|---|---|---|
->| dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
+>|Observation Id|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
+>|---|---|---|---|---|---|
+>| dummy_observation_id | dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
 
 
 ### cbd-find-observation
@@ -4507,9 +4503,9 @@ Retrieves the search results using the specified job ID.
 #### Human Readable Output
 
 >### Defense Event Details Results
->|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
->|---|---|---|---|---|
->| dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
+>|Observation Id|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
+>|---|---|---|---|---|---|
+>| dummy_observation_id | dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
 
 
 ### cbd-find-observation-results

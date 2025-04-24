@@ -10,18 +10,14 @@ To use this integration you must generate an Access/Secret token for your Aliyun
 4. Navigate to [Permmions > Grants](https://ram.console.aliyun.com/permissions)
 4. Grant the service account principal either `AliyunECSFullAccess` or `AliyunECSReadOnlyAccess` permissions. 
 
-## Configure Ansible Alibaba Cloud on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ansible Alibaba Cloud.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Ansible Alibaba Cloud in Cortex
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Access Key | Aliyun Cloud access key | True |
-    | Access Secret Key | Aliyun Cloud secret key | True |
-    | Region | Aliyun Cloud region | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Access Key | Aliyun Cloud access key | True |
+| Access Secret Key | Aliyun Cloud secret key | True |
+| Region | Aliyun Cloud region | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Idempotence
 The action commands in this integration are idempotent. This means that the result of performing it once is exactly the same as the result of performing it repeatedly without any intervening actions.
@@ -43,7 +39,7 @@ Some commands may require structured input arguments such as `lists` or `diction
 Other more advanced data manipulation tools such as [Ansible](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html)/[Jinja2 filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters) can also be used in-line. For example to get a [random number](https://docs.ansible.com/ansible/2.9/user_guide/playbooks_filters.html#random-number-filter) between 0 and 60 you can use `{{ 60 | random }}`.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ali-instance
 ***
@@ -349,7 +345,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 ### Troubleshooting
 The Ansible-Runner container is not suitable for running as a non-root user.
-Therefore, the Ansible integrations will fail if you follow the instructions in the Cortex XSOAR [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide). 
+Therefore, the Ansible integrations will fail if you follow the instructions in [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) or [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide) or [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide). 
 
 The `docker.run.internal.asuser` server configuration causes the software that is run inside of the Docker containers utilized by Cortex XSOAR to run as a non-root user account inside the container.
 
@@ -359,4 +355,4 @@ This is a limitation of the Ansible-Runner software itself https://github.com/an
 
 A workaround is to use the `docker.run.internal.asuser.ignore` server setting and to configure Cortex XSOAR to ignore the Ansible container image by setting the value of `demisto/ansible-runner` and afterwards running /reset_containers to reload any containers that might be running to ensure they receive the configuration.
 
-See step 2 of this [guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users) for complete instructions.
+See step 2 of this [Docker hardening guide (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Run-Docker-with-Non-Root-Internal-Users). For Cortex XSOAR 8 Cloud see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Docker-hardening-guide). For Cortex XSOAR 8.7 On-prem see step 3 in *Run Docker with non-root internal users* of this [Docker hardening guide (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Docker-hardening-guide) for complete instructions.

@@ -1,41 +1,37 @@
 Netskope API v2 provides a powerful interface for managing and monitoring Netskope deployments. It enables users to retrieve alerts and events, manage URL lists, and control clients. With Netskope API v2, organizations can proactively respond to security threats, enforce web access policies, and efficiently administer their Netskope environment.
 This integration was integrated and tested with version 2 of the Netskope API.
 
-## Configure Netskope (API v2) on Cortex XSOAR
+## Configure Netskope (API v2) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Netskope (API v2).
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | API token | Netskope API access token \(make sure to generate token for the required endpoints\). | True |
-    | First fetch timestamp | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago". | False |
-    | Maximum incidents per fetch | Maximum number of incidents per fetch. Default is 50. The maximum is 100. | False |
-    | Maximum events as incidents per fetch. Max value is 200. |  | False |
-    | Fetch Events | Fetch events as incidents, in addition to the alerts. | False |
-    | Event types to fetch. | The event types to fetch as incidents. | False |
-    | Alerts Query | Free text query to filter the fetched alerts. For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\). | False |
-    | Events Query | Free text query to filter the fetched events \(if configured\). For more information, visit Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html\). | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter**                                            | **Description**                                                                                                                                                           | **Required** |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Server URL                                               |                                                                                                                                                                           | True         |
+| Use system proxy settings                                |                                                                                                                                                                           | False        |
+| Trust any certificate (not secure)                       |                                                                                                                                                                           | False        |
+| API token                                                | Netskope API access token \(make sure to generate token for the required endpoints\).                                                                                     | True         |
+| First fetch timestamp                                    | First alert created date to fetch. For example, "1 min ago", "2 weeks ago", "3 months ago".                                                                                        | False        |
+| Maximum incidents per fetch                              | Maximum number of incidents per fetch. Default is 50. The maximum is 100.                                                                                                 | False        |
+| Maximum events as incidents per fetch. Max value is 200. |                                                                                                                                                                           | False        |
+| Fetch Events                                             | Fetch events as incidents, in addition to the alerts.                                                                                                                     | False        |
+| Event types to fetch.                                    | The event types to fetch as incidents.                                                                                                                                    | False        |
+| Alerts Query                                             | Free text query to filter the fetched alerts. For more information, see the Netskope documentation \(https://docs.netskope.com/en/get-alerts-data.html).                   | False        |
+| Events Query                                             | Free text query to filter the fetched events \(if configured\). For more information, see the Netskope documentation \(https://docs.netskope.com/en/get-events-data.html). | False        |
+| Incident type                                            |                                                                                                                                                                           | False        |
+| Fetch incidents                                          |                                                                                                                                                                           | False        |
+| Incidents Fetch Interval                                 |                                                                                                                                                                           | False        |
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears with the command details in the War Room.
 
 ### netskope-alert-list
 
-***
-Retrieve alerts generated by Netskope. Select desired alerts using the alert_type parameter. Mandatory inputs include start_time and end_time, or insertion_start_time and insertion_end_time (Please note that if end_time or insertion_end_time is not provided, it will default to the current date and time). Additionally, it is not permissible to supply a combination of the aforementioned options.
+---
+
+Retrieve alerts generated by Netskope. Select the desired alerts using the alert_type parameter. Mandatory inputs include start_time and end_time, or insertion_start_time and insertion_end_time (If end_time or insertion_end_time is not provided, it defaults to the current date and time). Additionally, it is not permissible to supply a combination of the aforementioned options.
 
 #### Base Command
 
@@ -43,135 +39,138 @@ Retrieve alerts generated by Netskope. Select desired alerts using the alert_typ
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| start_time | Restrict events to those that have dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘end_time’ argument must be provided as well. . | Optional |
-| end_time | Restrict events to those that have dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago").  When this argument is provided, the ‘start_time’ argument must be provided as well. If start_time argument is provided and this argument is not - the default value will be set for now. | Optional |
-| insertion_start_time | Restrict events to those that were inserted to the system after the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_end_time’ argument must be provided as well. | Optional |
-| insertion_end_time | Restrict events to those that were inserted to the system before the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_start_time’ argument must be provided as well. If insertion_start_time argument is provided and this argument is not - the default value will be set for now. | Optional |
-| query | Free query to filter the alerts. For example, "alert_name like test". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-alerts-data.html. | Optional |
-| alert_type | Select alerts by their type. | Optional |
-| acked | Whether to retrieve acknowledged alerts or not. Possible values are: True, False. | Optional |
-| page | Page number of paginated results. Minimum value: 1. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| **Argument Name**    | **Description**                                                                                                                                                                                                                                                                                                                                                      | **Required** |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| start_time           | Restrict events to those that have dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘end_time’ argument must be provided as well.                                                                                                                                     | Optional     |
+| end_time             | Restrict events to those that have dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘start_time’ argument must also be provided. If the start_time argument is provided and this argument is not - the default value will be set for now.                       | Optional     |
+| insertion_start_time | Restrict events to those that were inserted into the system after the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_end_time’ argument must also be provided.                                                                                                                   | Optional     |
+| insertion_end_time   | Restrict events to those that were inserted into the system before the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_start_time’ argument must also be provided. If the insertion_start_time argument is provided and this argument is not - the default value will be set for now. | Optional     |
+| query                | Free query to filter the alerts. For example, "alert_name like test". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-alerts-data.html.                                                                                                                                                                                  | Optional     |
+| alert_type           | Select alerts by their type.                                                                                                                                                                                                                                                                                                                                         | Optional     |
+| acked                | Whether to retrieve acknowledged alerts. Possible values are: True, False.                                                                                                                                                                                                                                                                                    | Optional     |
+| page                 | Page number of paginated results. Minimum value: 1.                                                                                                                                                                                                                                                                                                                  | Optional     |
+| limit                | The maximum number of records to retrieve. Default is 50.                                                                                                                                                                                                                                                                                                            | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.Alert._appsession_start | String | The timestamp marking the start of an application session. |
-| Netskope.Alert._category_id | String | The unique identifier for a category. |
-| Netskope.Alert._category_name | String | The name or label associated with a category. |
-| Netskope.Alert._category_tags | Number | Numeric tags or labels associated with the category. |
-| Netskope.Alert._content_version | Number | A numeric value representing the content version. |
-| Netskope.Alert._correlation_id | String | An identifier used for correlating events or data. |
-| Netskope.Alert._creation_timestamp | Number | The timestamp when the data or event was created. |
-| Netskope.Alert._ef_received_at | Date | The timestamp indicating when the event was received. |
-| Netskope.Alert._event_id | String | A unique identifier for the event. |
-| Netskope.Alert._forwarded_by | String | Information indicating the source responsible for forwarding the event. |
-| Netskope.Alert._gef_src_dp | String | The source data path for the event. |
-| Netskope.Alert._id | String | A unique identifier for the event or data. |
-| Netskope.Alert._insertion_epoch_timestamp | Number | Insertion timestamp. |
-| Netskope.Alert._nshostname | String | The hostname associated with Netskope. |
-| Netskope.Alert._raw_event_inserted_at | Date | The timestamp indicating when the raw event was inserted. |
-| Netskope.Alert._service_identifier | String | An identifier associated with a specific service. |
-| Netskope.Alert._session_begin | String | The timestamp marking the beginning of a session. |
-| Netskope.Alert._skip_geoip_lookup | String | A flag indicating whether GeoIP lookup should be skipped. |
-| Netskope.Alert._src_epoch_now | Number | A numeric value representing the source epoch. |
-| Netskope.Alert.access_method | String | Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder etc. Administrators can also upload firewall and/or proxy logs for log analytics. This field shows the actual access method that triggered the event. For log uploads this shows the actual log type such as PAN, Websense, etc. |
-| Netskope.Alert.acked | String | Whether the user acknowledged the alert or not. |
-| Netskope.Alert.action | String | Action taken on the event for the policy. |
-| Netskope.Alert.activity | String | Description of the user-performed activity. |
-| Netskope.Alert.alert | String | Indicates whether the alert is generated or not. Populated as yes for all alerts. |
-| Netskope.Alert.alert_name | String | Name of the alert. |
-| Netskope.Alert.alert_type | String | Type of the alert. |
-| Netskope.Alert.app | String | Specific cloud application used by the user (e.g., app = Dropbox). |
-| Netskope.Alert.app_session_id | Number | Unique App/Site Session ID for traffic_type = CloudApp and Web. An app session starts when a user starts using a cloud app/site and ends once they have been inactive for a certain period of time (15 mins). Use app_session_id to check all the user activities in a single app session. app_session_id is unique for a user, device, browser, and domain. |
-| Netskope.Alert.appcategory | String | Application category as designated by Netskope. |
-| Netskope.Alert.appsuite | String | Information related to the suite of applications or software used. |
-| Netskope.Alert.browser | String | Shows the actual browser from where the cloud app was accessed. |
-| Netskope.Alert.browser_session_id | Number | Browser session ID. If there is an idle timeout of 15 minutes, it will time out the session. |
-| Netskope.Alert.category | String | A classification or grouping label for data or events. |
-| Netskope.Alert.cci | Number | Cloud Confidence Index, indicating the readiness and security of cloud applications. |
-| Netskope.Alert.ccl | String | "Cloud Confidence Level. CCL measures the enterprise readiness of the cloud apps taking into consideration those apps' security, auditability, and business continuity. Each app is assigned one of five cloud confidence levels: excellent, high, medium, low, or poor. Useful for querying if users are accessing a cloud app with a lower CCL." |
-| Netskope.Alert.connection_id | Number | Each connection has a unique ID. Shows the ID for the connection event. |
-| Netskope.Alert.count | Number | Number of raw log lines/events sessionized or suppressed during the suppressed interval. |
-| Netskope.Alert.device | String | Device type from where the user accessed the cloud app. It could be Macintosh Windows device, iPad, etc. |
-| Netskope.Alert.device_classification | String | Designation of the device as determined by the Netskope Client as to whether the device is managed or not. |
-| Netskope.Alert.domain | String | Domain value. This will hold the host header value or SNI or extracted from an absolute URI. |
-| Netskope.Alert.dst_country | String | Application’s two-letter country code as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.dst_latitude | Number | Latitude of the application as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.dst_location | String | Application’s city as determined by maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.dst_longitude | Number | Longitude of the application as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.dst_region | String | Application’s state or region as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.dst_timezone | String | Destination timezone. |
-| Netskope.Alert.dst_zipcode | String | Application’s zip code as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.dstip | String | IP address where the destination app is hosted. |
-| Netskope.Alert.hostname | String | Host name. |
-| Netskope.Alert.incident_id | Number | A unique identifier for an incident or event. |
-| Netskope.Alert.ja3 | String | A field indicating JA3 information. |
-| Netskope.Alert.ja3s | String | A field indicating JA3S information. |
-| Netskope.Alert.managed_app | String | Whether or not the app in question is managed. |
-| Netskope.Alert.managementID | String | Management ID. |
-| Netskope.Alert.netskope_pop | String | Netskope Point of Presence, related to network infrastructure. |
-| Netskope.Alert.notify_template | String | The template used for notifications or alerts. |
-| Netskope.Alert.nsdeviceuid | String | Device identifiers on macOS and Windows. |
-| Netskope.Alert.organization_unit | String | Organization units for which the event correlates to. This ties to user information extracted from Active Directory using the Directory Importer/AD Connector application. |
-| Netskope.Alert.os | String | Operating system of the host that generated the event. |
-| Netskope.Alert.os_version | String | Operating system version of the host. |
-| Netskope.Alert.other_categories | String | Additional categories or labels not specified elsewhere. |
-| Netskope.Alert.page | String | The URL of the originating page. |
-| Netskope.Alert.page_site | String | Information about the web page or site being accessed. |
-| Netskope.Alert.policy | String | Name of the policy configured by an admin. |
-| Netskope.Alert.policy_id | String | The Netskope internal ID for the policy created by an admin. |
-| Netskope.Alert.port | String | The network port used for communication. |
-| Netskope.Alert.protocol | String | The communication protocol or method used. |
-| Netskope.Alert.request_id | Number | Unique request ID for the event. |
-| Netskope.Alert.severity | String | Severity used by watchlist and malware alerts. |
-| Netskope.Alert.site | String | For traffic_type = CloudApp, site = app, and for traffic_type = Web, it will be the second-level domain name + top-level domain name. For example, in “www.cnn.com”, it is “cnn.com”. |
-| Netskope.Alert.src_country | String | User’s country’s two-letter country code as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.src_latitude | Number | Latitude of the user as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.src_location | String | User’s city as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.src_longitude | Number | Longitude of the user as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.src_region | String | Source state or region as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.src_time | Date | A timestamp associated with the source or event. |
-| Netskope.Alert.src_timezone | String | Source timezone. Shows the long-format timezone designation. |
-| Netskope.Alert.src_zipcode | String | Source zip code as determined by Maxmind or IP2Location Geodatabase. |
-| Netskope.Alert.srcip | String | IP address of the source/user. |
-| Netskope.Alert.telemetry_app | String | Typically, SaaS app websites use web analytics code within the pages to gather analytic data. When a SaaS app action or page is shown, there is subsequent traffic generated to tracking apps such as doubleclick.net, Optimizely, etc. These tracking apps are listed if applicable in the Telemetry App field. |
-| Netskope.Alert.timestamp | Number | Timestamp when the event/alert happened. Event timestamp in Unix epoch format. |
-| Netskope.Alert.traffic_type | String | "Type of the traffic: CloudApp or Web. CloudApp indicates CASB and web indicates HTTP traffic. Web traffic is only captured for inline access method. It is currently not captured for Risk Insights." |
-| Netskope.Alert.transaction_id | Number | Unique ID for a given request/response. |
-| Netskope.Alert.type | String | Shows if it is an application event or a connection event. Application events are recorded to track user events inside a cloud app. Connection events show the actual HTTP connection. |
-| Netskope.Alert.ur_normalized | String | All lowercase user email. |
-| Netskope.Alert.url | String | URL of the application that the user visited as provided by the log or data plane traffic. |
-| Netskope.Alert.user | String | User email. |
-| Netskope.Alert.useragent | String | Browser HTTP user agent header. |
-| Netskope.Alert.userip | String | IP address of the user. |
-| Netskope.Alert.userkey | String | User ID or email. |
-| Netskope.Alert._client_timeout | Number | Information related to client timeouts. |
-| Netskope.Alert._dlp_backup_profile | String | Information related to DLP (Data Loss Prevention) backup profiles. |
-| Netskope.Alert._nsp_dur_back | Number | Duration information for NSP (Network Security Platform) on the back end. |
-| Netskope.Alert._nsp_dur_front | Number | Duration information for NSP on the front end. |
-| Netskope.Alert._nsp_retrans_back | Number | Retransmission information for NSP on the back end. |
-| Netskope.Alert._nsp_retrans_front | Number | Retransmission information for NSP on the front end. |
-| Netskope.Alert._nsp_rtt_back | Number | Round-trip time information for NSP on the back end. |
-| Netskope.Alert._nsp_rtt_front | Number | Round-trip time information for NSP on the front end. |
-| Netskope.Alert._resource_name | String | The name associated with a resource. |
-| Netskope.Alert._scan_source | String | Information indicating the source of a scan. |
-| Netskope.Alert._tenant_max_file_size | Number | The maximum file size allowed for a tenant. |
-| Netskope.Alert.all_policy_matches | String | Information related to policy matches. |
-| Netskope.Alert.browser_version | String | Browser version. |
-| Netskope.Alert.file_size | Number | Size of the file in bytes. |
-| Netskope.Alert.file_type | String | File type. |
-| Netskope.Alert.md5 | String | MD5 of the file. |
-| Netskope.Alert.object | String | Name of the object which is being acted on. It could be a filename, folder name, report name, document name, etc. |
-| Netskope.Alert.object_type | String | Type of the object which is being acted on. Object type could be a file, folder, report, document, message, etc. |
-| Netskope.Alert.web_universal_connector | String | Universal web connector information. |
+| **Path**                                   | **Type** | **Description**                                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Netskope.Alert.\_appsession_start          | String   | The timestamp marking the start of an application session.                                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.\_category_id               | String   | The unique identifier for a category.                                                                                                                                                                                                                                                                                                                                         |
+| Netskope.Alert.\_category_name             | String   | The name or label associated with a category.                                                                                                                                                                                                                                                                                                                                 |
+| Netskope.Alert.\_category_tags             | Number   | Numeric tags or labels associated with the category.                                                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.\_content_version           | Number   | A numeric value representing the content version.                                                                                                                                                                                                                                                                                                                             |
+| Netskope.Alert.\_correlation_id            | String   | An identifier used for correlating events or data.                                                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.\_creation_timestamp        | Number   | The timestamp when the data or event was created.                                                                                                                                                                                                                                                                                                                             |
+| Netskope.Alert.\_ef_received_at            | Date     | The timestamp indicating when the event was received.                                                                                                                                                                                                                                                                                                                         |
+| Netskope.Alert.\_event_id                  | String   | A unique identifier for the event.                                                                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.\_forwarded_by              | String   | Information indicating the source responsible for forwarding the event.                                                                                                                                                                                                                                                                                                       |
+| Netskope.Alert.\_gef_src_dp                | String   | The source data path for the event.                                                                                                                                                                                                                                                                                                                                           |
+| Netskope.Alert.\_id                        | String   | A unique identifier for the event or data.                                                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.\_insertion_epoch_timestamp | Number   | Insertion timestamp.                                                                                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.\_nshostname                | String   | The hostname associated with Netskope.                                                                                                                                                                                                                                                                                                                                        |
+| Netskope.Alert.\_raw_event_inserted_at     | Date     | The timestamp indicating when the raw event was inserted.                                                                                                                                                                                                                                                                                                                     |
+| Netskope.Alert.\_service_identifier        | String   | An identifier associated with a specific service.                                                                                                                                                                                                                                                                                                                             |
+| Netskope.Alert.\_session_begin             | String   | The timestamp marking the beginning of a session.                                                                                                                                                                                                                                                                                                                             |
+| Netskope.Alert.\_skip_geoip_lookup         | String   | A flag indicating whether GeoIP lookup should be skipped.                                                                                                                                                                                                                                                                                                                     |
+| Netskope.Alert.\_src_epoch_now             | Number   | A numeric value representing the source epoch.                                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.access_method               | String   | Cloud app traffic can be steered to the Netskope cloud using different deployment methods such as Client (Netskope Client), Secure Forwarder etc. Administrators can also upload firewall and/or proxy logs for log analytics. This field shows the actual access method that triggered the event. For log uploads this shows the actual log type such as PAN, Websense, etc. |
+| Netskope.Alert.acked                       | String   | Whether the user acknowledged the alert or not.                                                                                                                                                                                                                                                                                                                               |
+| Netskope.Alert.action                      | String   | Action taken on the event for the policy.                                                                                                                                                                                                                                                                                                                                     |
+| Netskope.Alert.activity                    | String   | Description of the user-performed activity.                                                                                                                                                                                                                                                                                                                                   |
+| Netskope.Alert.alert                       | String   | Indicates whether the alert is generated or not. Populated as yes for all alerts.                                                                                                                                                                                                                                                                                             |
+| Netskope.Alert.alert_name                  | String   | Name of the alert.                                                                                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.alert_type                  | String   | Type of the alert.                                                                                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.app                         | String   | Specific cloud application used by the user (e.g., app = Dropbox).                                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.app_session_id              | Number   | Unique App/Site Session ID for traffic_type = CloudApp and Web. An app session starts when a user starts using a cloud app/site and ends once they have been inactive for a certain period of time (15 mins). Use app_session_id to check all the user activities in a single app session. app_session_id is unique for a user, device, browser, and domain.                  |
+| Netskope.Alert.appcategory                 | String   | Application category as designated by Netskope.                                                                                                                                                                                                                                                                                                                               |
+| Netskope.Alert.appsuite                    | String   | Information related to the suite of applications or software used.                                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.browser                     | String   | Shows the actual browser from where the cloud app was accessed.                                                                                                                                                                                                                                                                                                               |
+| Netskope.Alert.browser_session_id          | Number   | Browser session ID. If there is an idle timeout of 15 minutes, it will time out the session.                                                                                                                                                                                                                                                                                  |
+| Netskope.Alert.category                    | String   | A classification or grouping label for data or events.                                                                                                                                                                                                                                                                                                                        |
+| Netskope.Alert.cci                         | Number   | Cloud Confidence Index, indicating the readiness and security of cloud applications.                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.ccl                         | String   | "Cloud Confidence Level. CCL measures the enterprise readiness of the cloud apps taking into consideration those apps' security, auditability, and business continuity. Each app is assigned one of five cloud confidence levels: excellent, high, medium, low, or poor. Useful for querying if users are accessing a cloud app with a lower CCL."                            |
+| Netskope.Alert.connection_id               | Number   | Each connection has a unique ID. Shows the ID for the connection event.                                                                                                                                                                                                                                                                                                       |
+| Netskope.Alert.count                       | Number   | Number of raw log lines/events sessionized or suppressed during the suppressed interval.                                                                                                                                                                                                                                                                                      |
+| Netskope.Alert.device                      | String   | Device type from where the user accessed the cloud app. It could be a Macintosh, Windows device, iPad, etc.                                                                                                                                                                                                                                                                      |
+| Netskope.Alert.device_classification       | String   | Designation of the device as determined by the Netskope Client as to whether the device is managed or not.                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.domain                      | String   | Domain value. This will hold the host header value or SNI or extracted from an absolute URI.                                                                                                                                                                                                                                                                                  |
+| Netskope.Alert.dst_country                 | String   | Application’s two-letter country code as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.dst_latitude                | Number   | Latitude of the application as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                              |
+| Netskope.Alert.dst_location                | String   | Application’s city as determined by maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                                       |
+| Netskope.Alert.dst_longitude               | Number   | Longitude of the application as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                             |
+| Netskope.Alert.dst_region                  | String   | Application’s state or region as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.dst_timezone                | String   | Destination timezone.                                                                                                                                                                                                                                                                                                                                                         |
+| Netskope.Alert.dst_zipcode                 | String   | Application’s zip code as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                                   |
+| Netskope.Alert.dstip                       | String   | IP address where the destination app is hosted.                                                                                                                                                                                                                                                                                                                               |
+| Netskope.Alert.hostname                    | String   | Host name.                                                                                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.incident_id                 | Number   | A unique identifier for an incident or event.                                                                                                                                                                                                                                                                                                                                 |
+| Netskope.Alert.ja3                         | String   | A field indicating JA3 information.                                                                                                                                                                                                                                                                                                                                           |
+| Netskope.Alert.ja3s                        | String   | A field indicating JA3S information.                                                                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.managed_app                 | String   | Whether or not the app in question is managed.                                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.managementID                | String   | Management ID.                                                                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.netskope_pop                | String   | Netskope Point of Presence, related to network infrastructure.                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.notify_template             | String   | The template used for notifications or alerts.                                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.nsdeviceuid                 | String   | Device identifiers on macOS and Windows.                                                                                                                                                                                                                                                                                                                                      |
+| Netskope.Alert.organization_unit           | String   | Organization units for which the event correlates to. This ties to user information extracted from Active Directory using the Directory Importer/AD Connector application.                                                                                                                                                                                                    |
+| Netskope.Alert.os                          | String   | Operating system of the host that generated the event.                                                                                                                                                                                                                                                                                                                        |
+| Netskope.Alert.os_version                  | String   | Operating system version of the host.                                                                                                                                                                                                                                                                                                                                         |
+| Netskope.Alert.other_categories            | String   | Additional categories or labels not specified elsewhere.                                                                                                                                                                                                                                                                                                                      |
+| Netskope.Alert.page                        | String   | The URL of the originating page.                                                                                                                                                                                                                                                                                                                                              |
+| Netskope.Alert.page_site                   | String   | Information about the web page or site being accessed.                                                                                                                                                                                                                                                                                                                        |
+| Netskope.Alert.policy                      | String   | Name of the policy configured by an admin.                                                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.policy_id                   | String   | The Netskope internal ID for the policy created by an admin.                                                                                                                                                                                                                                                                                                                  |
+| Netskope.Alert.port                        | String   | The network port used for communication.                                                                                                                                                                                                                                                                                                                                      |
+| Netskope.Alert.protocol                    | String   | The communication protocol or method used.                                                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.request_id                  | Number   | Unique request ID for the event.                                                                                                                                                                                                                                                                                                                                              |
+| Netskope.Alert.severity                    | String   | Severity used by watchlist and malware alerts.                                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.site                        | String   | For traffic_type = CloudApp, site = app, and for traffic_type = Web, it will be the second-level domain name + top-level domain name. For example, in “www.cnn.com”, it is “cnn.com”.                                                                                                                                                                                         |
+| Netskope.Alert.src_country                 | String   | User’s country’s two-letter country code as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                 |
+| Netskope.Alert.src_latitude                | Number   | Latitude of the user as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                                     |
+| Netskope.Alert.src_location                | String   | User’s city as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                                              |
+| Netskope.Alert.src_longitude               | Number   | Longitude of the user as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.src_region                  | String   | Source state or region as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                                   |
+| Netskope.Alert.src_time                    | Date     | A timestamp associated with the source or event.                                                                                                                                                                                                                                                                                                                              |
+| Netskope.Alert.src_timezone                | String   | Source timezone. Shows the long-format timezone designation.                                                                                                                                                                                                                                                                                                                  |
+| Netskope.Alert.src_zipcode                 | String   | Source zip code as determined by Maxmind or IP2Location Geolocation database.                                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.srcip                       | String   | IP address of the source/user.                                                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.telemetry_app               | String   | Typically, SaaS app websites use web analytics code within the pages to gather analytic data. When a SaaS app action or page is shown, there is subsequent traffic generated to tracking apps such as doubleclick.net, Optimizely, etc. These tracking apps are listed if applicable in the Telemetry App field.                                                              |
+| Netskope.Alert.timestamp                   | Number   | Timestamp when the event/alert happened. Event timestamp in Unix epoch format.                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.traffic_type                | String   | "Type of the traffic: CloudApp or Web. CloudApp indicates CASB and web indicates HTTP traffic. Web traffic is only captured for inline access method. It is currently not captured for Risk Insights."                                                                                                                                                                        |
+| Netskope.Alert.transaction_id              | Number   | Unique ID for a given request/response.                                                                                                                                                                                                                                                                                                                                       |
+| Netskope.Alert.type                        | String   | Shows if it is an application event or a connection event. Application events are recorded to track user events inside a cloud app. Connection events show the actual HTTP connection.                                                                                                                                                                                        |
+| Netskope.Alert.ur_normalized               | String   | All lowercase user email.                                                                                                                                                                                                                                                                                                                                                     |
+| Netskope.Alert.url                         | String   | URL of the application that the user visited as provided by the log or data plane traffic.                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.user                        | String   | User email.                                                                                                                                                                                                                                                                                                                                                                   |
+| Netskope.Alert.useragent                   | String   | Browser HTTP user agent header.                                                                                                                                                                                                                                                                                                                                               |
+| Netskope.Alert.userip                      | String   | IP address of the user.                                                                                                                                                                                                                                                                                                                                                       |
+| Netskope.Alert.userkey                     | String   | User ID or email.                                                                                                                                                                                                                                                                                                                                                             |
+| Netskope.Alert.\_client_timeout            | Number   | Information related to client timeouts.                                                                                                                                                                                                                                                                                                                                       |
+| Netskope.Alert.\_dlp_backup_profile        | String   | Information related to DLP (Data Loss Prevention) backup profiles.                                                                                                                                                                                                                                                                                                            |
+| Netskope.Alert.\_nsp_dur_back              | Number   | Duration information for NSP (Network Security Platform) on the back end.                                                                                                                                                                                                                                                                                                     |
+| Netskope.Alert.\_nsp_dur_front             | Number   | Duration information for NSP on the front end.                                                                                                                                                                                                                                                                                                                                |
+| Netskope.Alert.\_nsp_retrans_back          | Number   | Retransmission information for NSP on the back end.                                                                                                                                                                                                                                                                                                                           |
+| Netskope.Alert.\_nsp_retrans_front         | Number   | Retransmission information for NSP on the front end.                                                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.\_nsp_rtt_back              | Number   | Round-trip time information for NSP on the back end.                                                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.\_nsp_rtt_front             | Number   | Round-trip time information for NSP on the front end.                                                                                                                                                                                                                                                                                                                         |
+| Netskope.Alert.\_resource_name             | String   | The name associated with a resource.                                                                                                                                                                                                                                                                                                                                          |
+| Netskope.Alert.\_scan_source               | String   | Information indicating the source of a scan.                                                                                                                                                                                                                                                                                                                                  |
+| Netskope.Alert.\_tenant_max_file_size      | Number   | The maximum file size allowed for a tenant.                                                                                                                                                                                                                                                                                                                                   |
+| Netskope.Alert.all_policy_matches          | String   | Information related to policy matches.                                                                                                                                                                                                                                                                                                                                        |
+| Netskope.Alert.browser_version             | String   | Browser version.                                                                                                                                                                                                                                                                                                                                                              |
+| Netskope.Alert.file_size                   | Number   | Size of the file in bytes.                                                                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.file_type                   | String   | File type.                                                                                                                                                                                                                                                                                                                                                                    |
+| Netskope.Alert.md5                         | String   | MD5 of the file.                                                                                                                                                                                                                                                                                                                                                              |
+| Netskope.Alert.object                      | String   | Name of the object which is being acted on. It could be a filename, folder name, report name, document name, etc.                                                                                                                                                                                                                                                             |
+| Netskope.Alert.object_type                 | String   | Type of the object which is being acted on. Object type could be a file, folder, report, document, message, etc.                                                                                                                                                                                                                                                              |
+| Netskope.Alert.web_universal_connector     | String   | Universal web connector information.                                                                                                                                                                                                                                                                                                                                          |
 
 #### Command example
-```!netskope-alert-list start_time="2023-05-05 11:06" alert_type=policy limit=2```
+
+`!netskope-alert-list start_time="2023-05-05 11:06" alert_type=policy limit=2`
+
 #### Context Example
+
 ```json
 {
     "Netskope": {
@@ -180,11 +179,7 @@ Retrieve alerts generated by Netskope. Select desired alerts using the alert_typ
                 "_appsession_start": "yes",
                 "_category_id": "8",
                 "_category_name": "Collaboration",
-                "_category_tags": [
-                    10001,
-                    564,
-                    8
-                ],
+                "_category_tags": [10001, 564, 8],
                 "_content_version": 1687272302,
                 "_correlation_id": "011c0f84-9938-460b-8cbe-dab38fa6cb31",
                 "_creation_timestamp": 1687656279,
@@ -242,11 +237,7 @@ Retrieve alerts generated by Netskope. Select desired alerts using the alert_typ
                 "organization_unit": "",
                 "os": "Windows 10",
                 "os_version": "Windows 10",
-                "other_categories": [
-                    "Test web Policy Beni",
-                    "Technology",
-                    "Collaboration"
-                ],
+                "other_categories": ["Test web Policy Beni", "Technology", "Collaboration"],
                 "page": "config.teams.microsoft.com",
                 "page_site": "Microsoft Teams",
                 "policy": "365 block",
@@ -281,11 +272,7 @@ Retrieve alerts generated by Netskope. Select desired alerts using the alert_typ
                 "_appsession_start": "yes",
                 "_category_id": "8",
                 "_category_name": "Collaboration",
-                "_category_tags": [
-                    10001,
-                    564,
-                    8
-                ],
+                "_category_tags": [10001, 564, 8],
                 "_content_version": 1687272302,
                 "_correlation_id": "46647142-2f24-4802-b8f5-22814e80353a",
                 "_creation_timestamp": 1687659879,
@@ -343,11 +330,7 @@ Retrieve alerts generated by Netskope. Select desired alerts using the alert_typ
                 "organization_unit": "",
                 "os": "Windows 10",
                 "os_version": "Windows 10",
-                "other_categories": [
-                    "Test web Policy Beni",
-                    "Technology",
-                    "Collaboration"
-                ],
+                "other_categories": ["Test web Policy Beni", "Technology", "Collaboration"],
                 "page": "config.teams.microsoft.com",
                 "page_site": "Microsoft Teams",
                 "policy": "365 block",
@@ -385,19 +368,20 @@ Retrieve alerts generated by Netskope. Select desired alerts using the alert_typ
 
 #### Human Readable Output
 
->### Alert List
->Showing page 1.
+> ### Alert List
+>
+> Showing page 1.
 > Current page size: 2.
->|Alert Id|Alert Name|Alert Type|Severity|Action|Activity|Type|Category Name|Event Id|Domain|Dst Country|Policy|Port|Protocol|Md5|Timestamp|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| c3c98336e9d6807dd821b8dc | 365 block | policy | unknown | block | Browse | nspolicy | Collaboration | 724d1174-d78c-4197-8243-4fbd3644b192 | config.teams.microsoft.com | US | 365 block | 443 | HTTPS/1.1 |  | 2023-06-25T01:24:36.000Z |
->| da711d311019f02d79ebc8f4 | 365 block | policy | unknown | block | Browse | nspolicy | Collaboration | 6827a5eb-de85-48af-8eae-6d3034084fd6 | config.teams.microsoft.com | AT | 365 block | 443 | HTTPS/1.1 |  | 2023-06-25T02:24:36.000Z |
-
+> |Alert Id|Alert Name|Alert Type|Severity|Action|Activity|Type|Category Name|Event Id|Domain|Dst Country|Policy|Port|Protocol|Md5|Timestamp|
+> |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+> | c3c98336e9d6807dd821b8dc | 365 block | policy | unknown | block | Browse | nspolicy | Collaboration | 724d1174-d78c-4197-8243-4fbd3644b192 | config.teams.microsoft.com | US | 365 block | 443 | HTTPS/1.1 | | 2023-06-25T01:24:36.000Z |
+> | da711d311019f02d79ebc8f4 | 365 block | policy | unknown | block | Browse | nspolicy | Collaboration | 6827a5eb-de85-48af-8eae-6d3034084fd6 | config.teams.microsoft.com | AT | 365 block | 443 | HTTPS/1.1 | | 2023-06-25T02:24:36.000Z |
 
 ### netskope-event-list
 
-***
-Get events extracted from SaaS traffic. You may choose what events to receive with the event_type parameter. You must provide start_time and end_time, or insertion_start_time and insertion_end_time (Note that if end_time or insertion_end_time don't provided - it would be set with the now date time). Also, you cannot provide a combination of the options mentioned above.
+---
+
+Get events extracted from SaaS traffic. You may choose what events to receive with the event_type parameter. You must provide start_time and end_time, or insertion_start_time and insertion_end_time (If end_time or insertion_end_time isn't provided - it defaults to the current date and time). Also, you cannot provide a combination of the options mentioned above.
 
 #### Base Command
 
@@ -405,122 +389,125 @@ Get events extracted from SaaS traffic. You may choose what events to receive wi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| event_type | Select events by their type. Available types: page,application,audit,infrastructure,network. Possible values are: page, application, audit, infrastructure, network. | Required |
-| query | Free query to filter the events. For example, "app eq Dropbox". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-events-data.html. | Optional |
-| start_time | Restrict events to those that have dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘end_time’ argument must be provided as well. | Optional |
-| end_time | Restrict events to those that have dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘start_time’ argument must be provided as well. If start_time argument is provided and this argument is not - the default value will be set for now. | Optional |
-| insertion_start_time | Restrict events to those that were inserted to the system after the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_end_time’ argument must be provided as well. | Optional |
-| insertion_end_time | Restrict events to those that were inserted to the system before the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_start_time’ argument must be provided as well. If insertion_start_time argument is provided and this argument is not - the default value will be set for now. | Optional |
-| page | Page number of paginated results. Minimum value: 1. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| **Argument Name**    | **Description**                                                                                                                                                                                                                                                                                                                                                      | **Required** |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| event_type           | Select events by their type. Available types: page,application,audit,infrastructure,network. Possible values are: page, application, audit, infrastructure, network.                                                                                                                                                                                                 | Required     |
+| query                | Free query to filter the events. For example, "app eq Dropbox". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-events-data.html.                                                                                                                                                                                        | Optional     |
+| start_time           | Restrict events to those that have dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘end_time’ argument must also be provided.                                                                                                                                       | Optional     |
+| end_time             | Restrict events to those that have dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘start_time’ argument must also be provided. If the start_time argument is provided and this argument is not - the default value will be set for now.                       | Optional     |
+| insertion_start_time | Restrict events to those that were inserted into the system after the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_end_time’ argument must also be provided.                                                                                                                   | Optional     |
+| insertion_end_time   | Restrict events to those that were inserted into the system before the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). When this argument is provided, the ‘insertion_start_time’ argument must also be provided. If the insertion_start_time argument is provided and this argument is not - the default value will be set for now. | Optional     |
+| page                 | Page number of paginated results. Minimum value: 1.                                                                                                                                                                                                                                                                                                                  | Optional     |
+| limit                | The maximum number of records to retrieve. Default is 50.                                                                                                                                                                                                                                                                                                            | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.Event._appsession_start | String | Netskope event application session start. |
-| Netskope.Event._category_id | String | Netskope event category ID. |
-| Netskope.Event._category_name | String | Netskope event category name. |
-| Netskope.Event._category_tags | Number | Netskope event category tags. |
-| Netskope.Event._content_version | Number | Netskope event content version. |
-| Netskope.Event._correlation_id | String | Netskope event correlation ID. |
-| Netskope.Event._creation_timestamp | Number | Netskope event creation timestamp. |
-| Netskope.Event._ef_received_at | Date | The timestamp indicating when the event was received. |
-| Netskope.Event._event_id | String | Netskope event event ID. |
-| Netskope.Event._forwarded_by | String | Netskope event forwarded by. |
-| Netskope.Event._gef_src_dp | String | The source data path for the event. |
-| Netskope.Event._id | String | Netskope event ID. |
-| Netskope.Event._insertion_epoch_timestamp | Number | Netskope event insertion epoch timestamp |
-| Netskope.Event._nshostname | String | The hostname associated with Netskope. |
-| Netskope.Event._raw_event_inserted_at | Date | The date the Netskope raw event was inserted. |
-| Netskope.Event._service_identifier | String | Netskope event service identifier. |
-| Netskope.Event._session_begin | String | The timestamp marking the beginning of a session. |
-| Netskope.Event._skip_geoip_lookup | String | Netskope event skip GeoIP lookup. |
-| Netskope.Event._src_epoch_now | Number | A numeric value representing the source epoch. |
-| Netskope.Event.access_method | String | Netskope event access method. |
-| Netskope.Event.action | String | Netskope event action. |
-| Netskope.Event.activity | String | Netskope event activity. |
-| Netskope.Event.alert | String | Netskope event alert. |
-| Netskope.Event.app | String | Netskope event app. |
-| Netskope.Event.app_session_id | Number | Netskope event app session ID. |
-| Netskope.Event.appcategory | String | Netskope event app category. |
-| Netskope.Event.appsuite | String | Netskope event app suite. |
-| Netskope.Event.browser | String | Netskope event browser. |
-| Netskope.Event.browser_session_id | Number | Netskope event browser session ID. |
-| Netskope.Event.category | String | Netskope event category. |
-| Netskope.Event.cci | Number | Netskope event Cloud Confidence Index. |
-| Netskope.Event.ccl | String | Netskope event Cloud Confidence Levels. |
-| Netskope.Event.connection_id | Number | Netskope event connection ID. |
-| Netskope.Event.count | Number | Netskope event count. |
-| Netskope.Event.device | String | Netskope event device. |
-| Netskope.Event.device_classification | String | Netskope event device classification. |
-| Netskope.Event.dom | String | Netskope event Document Object Model (DOM). |
-| Netskope.Event.dst_country | String | Netskope event destination country. |
-| Netskope.Event.dst_latitude | Number | Netskope event destination latitude. |
-| Netskope.Event.dst_location | String | Netskope event destination location. |
-| Netskope.Event.dst_longitude | Number | Netskope event destination longitude. |
-| Netskope.Event.dst_region | String | Netskope event destination region. |
-| Netskope.Event.dst_timezone | String | Netskope event destination timezone. |
-| Netskope.Event.dst_zipcode | String | Netskope event destination zip code. |
-| Netskope.Event.dstip | String | Netskope event destination IP. |
-| Netskope.Event.hostname | String | Netskope event host name. |
-| Netskope.Event.incident_id | Number | Netskope event incident ID. |
-| Netskope.Event.ja3 | String | A field indicating JA3 information. |
-| Netskope.Event.ja3s | String | A field indicating JA3S information. |
-| Netskope.Event.managed_app | String | Netskope event managed app. |
-| Netskope.Event.managementID | String | Netskope event management ID. |
-| Netskope.Event.netskope_pop | String | Netskope event Netskope POP. |
-| Netskope.Event.notify_template | String | Netskope event notify template. |
-| Netskope.Event.nsdeviceuid | String | Netskope event Netskope device UID. |
-| Netskope.Event.organization_unit | String | Netskope event organization unit. |
-| Netskope.Event.os | String | Netskope event operating system. |
-| Netskope.Event.os_version | String | Netskope event operating system version. |
-| Netskope.Event.other_categories | String | Netskope event other categories. |
-| Netskope.Event.page | String | Netskope event page. |
-| Netskope.Event.page_site | String | Netskope event page site. |
-| Netskope.Event.policy | String | Netskope event policy. |
-| Netskope.Event.policy_id | String | Netskope event policy ID. |
-| Netskope.Event.port | Number | Netskope event port. |
-| Netskope.Event.protocol | String | Netskope event protocol. |
-| Netskope.Event.request_id | Number | Netskope event request ID. |
-| Netskope.Event.severity | String | Netskope event severity. |
-| Netskope.Event.site | String | Netskope event site. |
-| Netskope.Event.src_country | String | Netskope event source country. |
-| Netskope.Event.src_latitude | Number | Netskope event source latitude. |
-| Netskope.Event.src_location | String | Netskope event source location. |
-| Netskope.Event.src_longitude | Number | Netskope event source longitude. |
-| Netskope.Event.src_region | String | Netskope event source region. |
-| Netskope.Event.src_time | Date | Netskope event source time. |
-| Netskope.Event.src_timezone | String | Netskope event source timezone. |
-| Netskope.Event.src_zipcode | String | Netskope event source zip code. |
-| Netskope.Event.srcip | String | Netskope event source IP. |
-| Netskope.Event.telemetry_app | String | Netskope event telemetry app. |
-| Netskope.Event.timestamp | Number | Netskope event timestamp. |
-| Netskope.Event.traffic_type | String | Netskope event traffic type. |
-| Netskope.Event.transaction_id | Number | Netskope event transaction ID. |
-| Netskope.Event.type | String | Netskope event type. |
-| Netskope.Event.ur_normalized | String | All lowercase user email. |
-| Netskope.Event.url | String | Netskope event URL. |
-| Netskope.Event.user | String | Netskope event user. |
-| Netskope.Event.useragent | String | Netskope event user agent. |
-| Netskope.Event.userip | String | Netskope event user IP. |
-| Netskope.Event.userkey | String | Netskope event user key. |
+| **Path**                                   | **Type** | **Description**                                       |
+| ------------------------------------------ | -------- | ----------------------------------------------------- |
+| Netskope.Event.\_appsession_start          | String   | Netskope event application session start.             |
+| Netskope.Event.\_category_id               | String   | Netskope event category ID.                           |
+| Netskope.Event.\_category_name             | String   | Netskope event category name.                         |
+| Netskope.Event.\_category_tags             | Number   | Netskope event category tags.                         |
+| Netskope.Event.\_content_version           | Number   | Netskope event content version.                       |
+| Netskope.Event.\_correlation_id            | String   | Netskope event correlation ID.                        |
+| Netskope.Event.\_creation_timestamp        | Number   | Netskope event creation timestamp.                    |
+| Netskope.Event.\_ef_received_at            | Date     | The timestamp indicating when the event was received. |
+| Netskope.Event.\_event_id                  | String   | Netskope event event ID.                              |
+| Netskope.Event.\_forwarded_by              | String   | Netskope event forwarded by.                          |
+| Netskope.Event.\_gef_src_dp                | String   | The source data path for the event.                   |
+| Netskope.Event.\_id                        | String   | Netskope event ID.                                    |
+| Netskope.Event.\_insertion_epoch_timestamp | Number   | Netskope event insertion epoch timestamp              |
+| Netskope.Event.\_nshostname                | String   | The hostname associated with Netskope.                |
+| Netskope.Event.\_raw_event_inserted_at     | Date     | The date the Netskope raw event was inserted.         |
+| Netskope.Event.\_service_identifier        | String   | Netskope event service identifier.                    |
+| Netskope.Event.\_session_begin             | String   | The timestamp marking the beginning of a session.     |
+| Netskope.Event.\_skip_geoip_lookup         | String   | Netskope event skip GeoIP lookup.                     |
+| Netskope.Event.\_src_epoch_now             | Number   | A numeric value representing the source epoch.        |
+| Netskope.Event.access_method               | String   | Netskope event access method.                         |
+| Netskope.Event.action                      | String   | Netskope event action.                                |
+| Netskope.Event.activity                    | String   | Netskope event activity.                              |
+| Netskope.Event.alert                       | String   | Netskope event alert.                                 |
+| Netskope.Event.app                         | String   | Netskope event app.                                   |
+| Netskope.Event.app_session_id              | Number   | Netskope event app session ID.                        |
+| Netskope.Event.appcategory                 | String   | Netskope event app category.                          |
+| Netskope.Event.appsuite                    | String   | Netskope event app suite.                             |
+| Netskope.Event.browser                     | String   | Netskope event browser.                               |
+| Netskope.Event.browser_session_id          | Number   | Netskope event browser session ID.                    |
+| Netskope.Event.category                    | String   | Netskope event category.                              |
+| Netskope.Event.cci                         | Number   | Netskope event Cloud Confidence Index.                |
+| Netskope.Event.ccl                         | String   | Netskope event Cloud Confidence Levels.               |
+| Netskope.Event.connection_id               | Number   | Netskope event connection ID.                         |
+| Netskope.Event.count                       | Number   | Netskope event count.                                 |
+| Netskope.Event.device                      | String   | Netskope event device.                                |
+| Netskope.Event.device_classification       | String   | Netskope event device classification.                 |
+| Netskope.Event.dom                         | String   | Netskope event Document Object Model (DOM).           |
+| Netskope.Event.dst_country                 | String   | Netskope event destination country.                   |
+| Netskope.Event.dst_latitude                | Number   | Netskope event destination latitude.                  |
+| Netskope.Event.dst_location                | String   | Netskope event destination location.                  |
+| Netskope.Event.dst_longitude               | Number   | Netskope event destination longitude.                 |
+| Netskope.Event.dst_region                  | String   | Netskope event destination region.                    |
+| Netskope.Event.dst_timezone                | String   | Netskope event destination timezone.                  |
+| Netskope.Event.dst_zipcode                 | String   | Netskope event destination zip code.                  |
+| Netskope.Event.dstip                       | String   | Netskope event destination IP.                        |
+| Netskope.Event.hostname                    | String   | Netskope event host name.                             |
+| Netskope.Event.incident_id                 | Number   | Netskope event incident ID.                           |
+| Netskope.Event.ja3                         | String   | A field indicating JA3 information.                   |
+| Netskope.Event.ja3s                        | String   | A field indicating JA3S information.                  |
+| Netskope.Event.managed_app                 | String   | Netskope event managed app.                           |
+| Netskope.Event.managementID                | String   | Netskope event management ID.                         |
+| Netskope.Event.netskope_pop                | String   | Netskope event Netskope POP.                          |
+| Netskope.Event.notify_template             | String   | Netskope event notify template.                       |
+| Netskope.Event.nsdeviceuid                 | String   | Netskope event Netskope device UID.                   |
+| Netskope.Event.organization_unit           | String   | Netskope event organization unit.                     |
+| Netskope.Event.os                          | String   | Netskope event operating system.                      |
+| Netskope.Event.os_version                  | String   | Netskope event operating system version.              |
+| Netskope.Event.other_categories            | String   | Netskope event other categories.                      |
+| Netskope.Event.page                        | String   | Netskope event page.                                  |
+| Netskope.Event.page_site                   | String   | Netskope event page site.                             |
+| Netskope.Event.policy                      | String   | Netskope event policy.                                |
+| Netskope.Event.policy_id                   | String   | Netskope event policy ID.                             |
+| Netskope.Event.port                        | Number   | Netskope event port.                                  |
+| Netskope.Event.protocol                    | String   | Netskope event protocol.                              |
+| Netskope.Event.request_id                  | Number   | Netskope event request ID.                            |
+| Netskope.Event.severity                    | String   | Netskope event severity.                              |
+| Netskope.Event.site                        | String   | Netskope event site.                                  |
+| Netskope.Event.src_country                 | String   | Netskope event source country.                        |
+| Netskope.Event.src_latitude                | Number   | Netskope event source latitude.                       |
+| Netskope.Event.src_location                | String   | Netskope event source location.                       |
+| Netskope.Event.src_longitude               | Number   | Netskope event source longitude.                      |
+| Netskope.Event.src_region                  | String   | Netskope event source region.                         |
+| Netskope.Event.src_time                    | Date     | Netskope event source time.                           |
+| Netskope.Event.src_timezone                | String   | Netskope event source timezone.                       |
+| Netskope.Event.src_zipcode                 | String   | Netskope event source zip code.                       |
+| Netskope.Event.srcip                       | String   | Netskope event source IP.                             |
+| Netskope.Event.telemetry_app               | String   | Netskope event telemetry app.                         |
+| Netskope.Event.timestamp                   | Number   | Netskope event timestamp.                             |
+| Netskope.Event.traffic_type                | String   | Netskope event traffic type.                          |
+| Netskope.Event.transaction_id              | Number   | Netskope event transaction ID.                        |
+| Netskope.Event.type                        | String   | Netskope event type.                                  |
+| Netskope.Event.ur_normalized               | String   | All lowercase user email.                             |
+| Netskope.Event.url                         | String   | Netskope event URL.                                   |
+| Netskope.Event.user                        | String   | Netskope event user.                                  |
+| Netskope.Event.useragent                   | String   | Netskope event user agent.                            |
+| Netskope.Event.userip                      | String   | Netskope event user IP.                               |
+| Netskope.Event.userkey                     | String   | Netskope event user key.                              |
 
 #### Command example
-```!netskope-event-list event_type=page start_time="10 days ago" limit=2```
+
+`!netskope-event-list event_type=page start_time="10 days ago" limit=2`
+
 #### Human Readable Output
 
->### Event List
->Showing page 1.
+> ### Event List
+>
+> Showing page 1.
 > Current page size: 2.
->**No entries.**
-
+> **No entries.**
 
 ### netskope-url-list-update
 
-***
+---
+
 Update the URL List with the values provided. please note that this command overrides the list.
 
 #### Base Command
@@ -529,31 +516,34 @@ Update the URL List with the values provided. please note that this command over
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| url_list_id | The URL list ID to update (use netskope-url-list-list command to get URL list ID). | Required |
-| name | The updated URL list name. | Required |
-| urls | The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line). | Required |
-| list_type | The updated URL list type. Possible values are: exact, regex. | Required |
-| deploy | Whether to deploy URL list changes or not. Default is False. Possible values are: True, False. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                  | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| url_list_id       | The URL list ID to update (use netskope-url-list-list command to get URL list ID).                                                                                                                                                               | Required     |
+| name              | The updated URL list name.                                                                                                                                                                                                                       | Required     |
+| urls              | The updated URL list items (For Exact - Enter URLs like _.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/._/netskope, or ^google.com, separated by a new line). | Required     |
+| list_type         | The updated URL list type. Possible values are: exact, regex.                                                                                                                                                                                    | Required     |
+| deploy            | Whether to deploy URL list changes or not. Default is False. Possible values are: True, False.                                                                                                                                                   | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.URLList.id | Number | Netskope URL list ID. |
-| Netskope.URLList.name | String | Netskope URL list name. |
-| Netskope.URLList.data.urls | String | Netskope URL list data URLs. |
-| Netskope.URLList.data.type | String | Netskope URL list data type. |
-| Netskope.URLList.data.json_version | Number | Netskope URL list data JSON version. |
-| Netskope.URLList.modify_by | String | Netskope URL list modify by. |
-| Netskope.URLList.modify_time | Date | Netskope URL list modify time. |
-| Netskope.URLList.modify_type | String | Netskope URL list modify type. |
-| Netskope.URLList.pending | String | Netskope URL list pending status. |
+| **Path**                           | **Type** | **Description**                      |
+| ---------------------------------- | -------- | ------------------------------------ |
+| Netskope.URLList.id                | Number   | Netskope URL list ID.                |
+| Netskope.URLList.name              | String   | Netskope URL list name.              |
+| Netskope.URLList.data.urls         | String   | Netskope URL list data URLs.         |
+| Netskope.URLList.data.type         | String   | Netskope URL list data type.         |
+| Netskope.URLList.data.json_version | Number   | Netskope URL list data JSON version. |
+| Netskope.URLList.modify_by         | String   | Netskope URL list modify by.         |
+| Netskope.URLList.modify_time       | Date     | Netskope URL list modify time.       |
+| Netskope.URLList.modify_type       | String   | Netskope URL list modify type.       |
+| Netskope.URLList.pending           | String   | Netskope URL list pending status.    |
 
 #### Command example
-```!netskope-url-list-update url_list_id=11 name="QMASTERS list" urls="google.com" list_type=regex deploy=false```
+
+`!netskope-url-list-update url_list_id=11 name="QMASTERS list" urls="google.com" list_type=regex deploy=false`
+
 #### Context Example
+
 ```json
 {
     "Netskope": {
@@ -566,9 +556,7 @@ Update the URL List with the values provided. please note that this command over
             "name": "QMASTERS list",
             "pending": "pending",
             "type": "regex",
-            "urls": [
-                "google.com"
-            ]
+            "urls": ["google.com"]
         }
     }
 }
@@ -576,15 +564,16 @@ Update the URL List with the values provided. please note that this command over
 
 #### Human Readable Output
 
->### URL List
->|Id|Json Version|Modify By|Modify Time|Modify Type|Name|Pending|Type|Urls|
->|---|---|---|---|---|---|---|---|---|
->| 11 | 2 | Tal New Token | 2023-07-18 | Edited | QMASTERS list | pending | regex | google.com |
-
+> ### URL List
+>
+> | Id  | Json Version | Modify By     | Modify Time | Modify Type | Name          | Pending | Type  | Urls       |
+> | --- | ------------ | ------------- | ----------- | ----------- | ------------- | ------- | ----- | ---------- |
+> | 11  | 2            | Tal New Token | 2023-07-18  | Edited      | QMASTERS list | pending | regex | google.com |
 
 ### netskope-url-list-create
 
-***
+---
+
 Create a new URL list.
 
 #### Base Command
@@ -593,30 +582,33 @@ Create a new URL list.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The unique name for the URL list. | Required |
-| urls | The URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line). | Required |
-| list_type | The URL list type. Possible values are: exact, regex. | Required |
-| deploy | Whether to deploy URL list changes or not. Default is False. Possible values are: True, False. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                          | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| name              | The unique name for the URL list.                                                                                                                                                                                                        | Required     |
+| urls              | The URL list items (For Exact - Enter URLs like _.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/._/netskope, or ^google.com, separated by a new line). | Required     |
+| list_type         | The URL list type. Possible values are: exact, regex.                                                                                                                                                                                    | Required     |
+| deploy            | Whether to deploy URL list changes or not. Default is False. Possible values are: True, False.                                                                                                                                           | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.URLList.id | Number | Netskope URL list ID. |
-| Netskope.URLList.name | String | Netskope URL list name. |
-| Netskope.URLList.data.urls | String | Netskope URL list data URLs. |
-| Netskope.URLList.data.type | String | Netskope URL list data type. |
-| Netskope.URLList.data.json_version | Number | Netskope URL list data JSON version. |
-| Netskope.URLList.modify_type | String | Netskope URL list modify type. |
-| Netskope.URLList.modify_by | String | Netskope URL list modify by. |
-| Netskope.URLList.modify_time | Date | Netskope URL list modify time. |
-| Netskope.URLList.pending | String | Netskope URL list pending status. |
+| **Path**                           | **Type** | **Description**                      |
+| ---------------------------------- | -------- | ------------------------------------ |
+| Netskope.URLList.id                | Number   | Netskope URL list ID.                |
+| Netskope.URLList.name              | String   | Netskope URL list name.              |
+| Netskope.URLList.data.urls         | String   | Netskope URL list data URLs.         |
+| Netskope.URLList.data.type         | String   | Netskope URL list data type.         |
+| Netskope.URLList.data.json_version | Number   | Netskope URL list data JSON version. |
+| Netskope.URLList.modify_type       | String   | Netskope URL list modify type.       |
+| Netskope.URLList.modify_by         | String   | Netskope URL list modify by.         |
+| Netskope.URLList.modify_time       | Date     | Netskope URL list modify time.       |
+| Netskope.URLList.pending           | String   | Netskope URL list pending status.    |
 
 #### Command example
-```!netskope-url-list-create name="New QMASTERS list" urls="xsoar.com,qmasters.com,google.com" list_type=regex deploy=false```
+
+`!netskope-url-list-create name="New QMASTERS list" urls="xsoar.com,qmasters.com,google.com" list_type=regex deploy=false`
+
 #### Context Example
+
 ```json
 {
     "Netskope": {
@@ -629,11 +621,7 @@ Create a new URL list.
             "name": "New QMASTERS list",
             "pending": "pending",
             "type": "regex",
-            "urls": [
-                "xsoar.com",
-                "qmasters.com",
-                "google.com"
-            ]
+            "urls": ["xsoar.com", "qmasters.com", "google.com"]
         }
     }
 }
@@ -641,15 +629,16 @@ Create a new URL list.
 
 #### Human Readable Output
 
->### URL List
->|Id|Json Version|Modify By|Modify Time|Modify Type|Name|Pending|Type|Urls|
->|---|---|---|---|---|---|---|---|---|
->| 12 | 2 | Tal New Token | 2023-07-18 | Created | New QMASTERS list | pending | regex | xsoar.com,<br/>qmasters.com,<br/>google.com |
-
+> ### URL List
+>
+> | Id  | Json Version | Modify By     | Modify Time | Modify Type | Name              | Pending | Type  | Urls                                        |
+> | --- | ------------ | ------------- | ----------- | ----------- | ----------------- | ------- | ----- | ------------------------------------------- |
+> | 12  | 2            | Tal New Token | 2023-07-18  | Created     | New QMASTERS list | pending | regex | xsoar.com,<br/>qmasters.com,<br/>google.com |
 
 ### netskope-url-lists-list
 
-***
+---
+
 Get all URL Lists or a specific by specifying the list ID.
 
 #### Base Command
@@ -658,29 +647,32 @@ Get all URL Lists or a specific by specifying the list ID.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| url_list_id | The URL list ID to get. | Optional |
-| pending | Get a list of only applied or pending URL lists. Possible values are: applied, pending. | Optional |
-| field | Comma separated data values to return in response call (for example: name, id, data, modify_by, modify_time, modify_type, pending). Defaults to all values. | Optional |
-| all_results | Whether to retrieve all results or not. Defaults is false. Possible values are: True, False. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| **Argument Name** | **Description**                                                                                                                                             | **Required** |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| url_list_id       | The URL list ID to get.                                                                                                                                     | Optional     |
+| pending           | Get a list of only applied or pending URL lists. Possible values are: applied, pending.                                                                     | Optional     |
+| field             | Comma separated data values to return in response call (for example: name, id, data, modify_by, modify_time, modify_type, pending). Defaults to all values. | Optional     |
+| all_results       | Whether to retrieve all results or not. Defaults is false. Possible values are: True, False.                                                                | Optional     |
+| limit             | The maximum number of records to retrieve. Default is 50.                                                                                                   | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.URLList.id | Number | Netskope URL list ID. |
-| Netskope.URLList.name | String | Netskope URL list name. |
-| Netskope.URLList.data.urls | String | Netskope URL list data URLs. |
-| Netskope.URLList.modify_by | String | Netskope URL list modify by. |
-| Netskope.URLList.modify_time | Date | Netskope URL list modify time. |
-| Netskope.URLList.modify_type | String | Netskope URL list modify type. |
-| Netskope.URLList.pending | String | Netskope URL list pending status. |
+| **Path**                     | **Type** | **Description**                   |
+| ---------------------------- | -------- | --------------------------------- |
+| Netskope.URLList.id          | Number   | Netskope URL list ID.             |
+| Netskope.URLList.name        | String   | Netskope URL list name.           |
+| Netskope.URLList.data.urls   | String   | Netskope URL list data URLs.      |
+| Netskope.URLList.modify_by   | String   | Netskope URL list modify by.      |
+| Netskope.URLList.modify_time | Date     | Netskope URL list modify time.    |
+| Netskope.URLList.modify_type | String   | Netskope URL list modify type.    |
+| Netskope.URLList.pending     | String   | Netskope URL list pending status. |
 
 #### Command example
-```!netskope-url-lists-list```
+
+`!netskope-url-lists-list`
+
 #### Context Example
+
 ```json
 {
     "Netskope": {
@@ -689,9 +681,7 @@ Get all URL Lists or a specific by specifying the list ID.
                 "data": {
                     "json_version": 2,
                     "type": "exact",
-                    "urls": [
-                        "g.g"
-                    ]
+                    "urls": ["g.g"]
                 },
                 "id": 1,
                 "modify_by": "example@qmasters.co",
@@ -704,9 +694,7 @@ Get all URL Lists or a specific by specifying the list ID.
                 "data": {
                     "json_version": 2,
                     "type": "regex",
-                    "urls": [
-                        "google.com"
-                    ]
+                    "urls": ["google.com"]
                 },
                 "id": 2,
                 "modify_by": "Tal New Token",
@@ -719,12 +707,7 @@ Get all URL Lists or a specific by specifying the list ID.
                 "data": {
                     "json_version": 2,
                     "type": "exact",
-                    "urls": [
-                        "google.com",
-                        "www.abc.com",
-                        "example.com",
-                        "lulu.com"
-                    ]
+                    "urls": ["google.com", "www.abc.com", "example.com", "lulu.com"]
                 },
                 "id": 4,
                 "modify_by": "Netskope REST API",
@@ -737,11 +720,7 @@ Get all URL Lists or a specific by specifying the list ID.
                 "data": {
                     "json_version": 2,
                     "type": "exact",
-                    "urls": [
-                        "google.com",
-                        "example.com",
-                        "lulu.com"
-                    ]
+                    "urls": ["google.com", "example.com", "lulu.com"]
                 },
                 "id": 5,
                 "modify_by": "Netskope REST API",
@@ -754,11 +733,7 @@ Get all URL Lists or a specific by specifying the list ID.
                 "data": {
                     "json_version": 2,
                     "type": "exact",
-                    "urls": [
-                        "google.com",
-                        "example.com",
-                        "lulu.com"
-                    ]
+                    "urls": ["google.com", "example.com", "lulu.com"]
                 },
                 "id": 6,
                 "modify_by": "Netskope REST API",
@@ -771,10 +746,7 @@ Get all URL Lists or a specific by specifying the list ID.
                 "data": {
                     "json_version": 2,
                     "type": "regex",
-                    "urls": [
-                        "xsoar.com",
-                        "qmasters.com"
-                    ]
+                    "urls": ["xsoar.com", "qmasters.com"]
                 },
                 "id": 8,
                 "modify_by": "Netskope REST API",
@@ -787,10 +759,7 @@ Get all URL Lists or a specific by specifying the list ID.
                 "data": {
                     "json_version": 2,
                     "type": "regex",
-                    "urls": [
-                        "xsoar.com",
-                        "qmasters.com"
-                    ]
+                    "urls": ["xsoar.com", "qmasters.com"]
                 },
                 "id": 9,
                 "modify_by": "Netskope REST API",
@@ -806,21 +775,22 @@ Get all URL Lists or a specific by specifying the list ID.
 
 #### Human Readable Output
 
->### URL List
->|Id|Json Version|Modify By|Modify Time|Modify Type|Name|Pending|Type|Urls|
->|---|---|---|---|---|---|---|---|---|
->| 1 | 2 | example@qmasters.co | 2023-07-16T00:00:00.000Z | Edited | myList | applied | exact | g.g |
->| 2 | 2 | Tal New Token | 2023-07-18T00:00:00.000Z | Edited | NewURLList | applied | regex | google.com |
->| 4 | 2 | Netskope REST API | 2023-07-05T10:24:57.000Z | Edited | Tal-newURLlist | applied | exact | google.com,<br/>www.abc.com,<br/>example.com,<br/>lulu.com |
->| 5 | 2 | Netskope REST API | 2023-07-05T00:00:00.000Z | Created | New URL list | applied | exact | google.com,<br/>example.com,<br/>lulu.com |
->| 6 | 2 | Netskope REST API | 2023-07-05T00:00:00.000Z | Created | New URL list 2 | applied | exact | google.com,<br/>example.com,<br/>lulu.com |
->| 8 | 2 | Netskope REST API | 2023-07-17T00:00:00.000Z | Created | NewNewURLlist | applied | regex | xsoar.com,<br/>qmasters.com |
->| 9 | 2 | Netskope REST API | 2023-07-17T00:00:00.000Z | Created | NewNewURLlist1 | applied | regex | xsoar.com,<br/>qmasters.com |
-
+> ### URL List
+>
+> | Id  | Json Version | Modify By           | Modify Time              | Modify Type | Name           | Pending | Type  | Urls                                                       |
+> | --- | ------------ | ------------------- | ------------------------ | ----------- | -------------- | ------- | ----- | ---------------------------------------------------------- |
+> | 1   | 2            | example@qmasters.co | 2023-07-16T00:00:00.000Z | Edited      | myList         | applied | exact | g.g                                                        |
+> | 2   | 2            | Tal New Token       | 2023-07-18T00:00:00.000Z | Edited      | NewURLList     | applied | regex | google.com                                                 |
+> | 4   | 2            | Netskope REST API   | 2023-07-05T10:24:57.000Z | Edited      | Tal-newURLlist | applied | exact | google.com,<br/>www.abc.com,<br/>example.com,<br/>lulu.com |
+> | 5   | 2            | Netskope REST API   | 2023-07-05T00:00:00.000Z | Created     | New URL list   | applied | exact | google.com,<br/>example.com,<br/>lulu.com                  |
+> | 6   | 2            | Netskope REST API   | 2023-07-05T00:00:00.000Z | Created     | New URL list 2 | applied | exact | google.com,<br/>example.com,<br/>lulu.com                  |
+> | 8   | 2            | Netskope REST API   | 2023-07-17T00:00:00.000Z | Created     | NewNewURLlist  | applied | regex | xsoar.com,<br/>qmasters.com                                |
+> | 9   | 2            | Netskope REST API   | 2023-07-17T00:00:00.000Z | Created     | NewNewURLlist1 | applied | regex | xsoar.com,<br/>qmasters.com                                |
 
 ### netskope-url-list-delete
 
-***
+---
+
 Delete a URL list by the list ID.
 
 #### Base Command
@@ -829,21 +799,24 @@ Delete a URL list by the list ID.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| url_list_id | The URL list ID to delete (use netskope-url-list-list to get the URL list ID). | Required |
-| deploy | Whether to deploy URL list changes or not. Default is False. Possible values are: True, False. | Optional |
+| **Argument Name** | **Description**                                                                                | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------- | ------------ |
+| url_list_id       | The URL list ID to delete (use netskope-url-list-list to get the URL list ID).                 | Required     |
+| deploy            | Whether to deploy URL list changes or not. Default is False. Possible values are: True, False. | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.URLList.id | Number | Netskope URL list ID. |
-| Netskope.URLList.name | String | Netskope URL list name. |
+| **Path**              | **Type** | **Description**         |
+| --------------------- | -------- | ----------------------- |
+| Netskope.URLList.id   | Number   | Netskope URL list ID.   |
+| Netskope.URLList.name | String   | Netskope URL list name. |
 
 #### Command example
-```!netskope-url-list-delete url_list_id=10```
+
+`!netskope-url-list-delete url_list_id=10`
+
 #### Context Example
+
 ```json
 {
     "Netskope": {
@@ -851,10 +824,7 @@ Delete a URL list by the list ID.
             "data": {
                 "json_version": 2,
                 "type": "regex",
-                "urls": [
-                    "xsoar.com",
-                    "qmasters.com"
-                ]
+                "urls": ["xsoar.com", "qmasters.com"]
             },
             "id": 10,
             "modify_by": "Netskope REST API",
@@ -869,11 +839,12 @@ Delete a URL list by the list ID.
 
 #### Human Readable Output
 
->The URL list 10 was deleted successfully
+> The URL list 10 was deleted successfully
 
 ### netskope-client-list
 
-***
+---
+
 Get information about Netskope SCIM users. The command provides a list of users who have been imported into the Netskope tenant through SCIM integration. Users imported through other methods, such as manual CSV import or manual creation, will not be included in the returned results.
 
 #### Base Command
@@ -882,26 +853,29 @@ Get information about Netskope SCIM users. The command provides a list of users 
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| filter | Filter the Netskope user by 'key eq value' template. For example: userName eq "someUserName" OR externalId eq "User-Ext_id". | Optional |
-| page | Page number of paginated results. Minimum value: 1. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| **Argument Name** | **Description**                                                                                                              | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| filter            | Filter the Netskope user by 'key eq value' template. For example: userName eq "someUserName" OR externalId eq "User-Ext_id". | Optional     |
+| page              | Page number of paginated results. Minimum value: 1.                                                                          | Optional     |
+| limit             | The maximum number of records to retrieve. Default is 50.                                                                    | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.Client.id | Number | Netskope client ID. |
-| Netskope.Client.name | String | Netskope client name. |
-| Netskope.Client.userName | String | Netskope client username. |
-| Netskope.Client.externalId | String | Netskope client external ID. |
-| Netskope.Client.active | Boolean | Netskope client activate. |
-| Netskope.Client.emails | String | Netskope client emails. |
+| **Path**                   | **Type** | **Description**              |
+| -------------------------- | -------- | ---------------------------- |
+| Netskope.Client.id         | Number   | Netskope client ID.          |
+| Netskope.Client.name       | String   | Netskope client name.        |
+| Netskope.Client.userName   | String   | Netskope client username.    |
+| Netskope.Client.externalId | String   | Netskope client external ID. |
+| Netskope.Client.active     | Boolean  | Netskope client activate.    |
+| Netskope.Client.emails     | String   | Netskope client emails.      |
 
 #### Command example
-```!netskope-client-list page=1 limit=2```
+
+`!netskope-client-list page=1 limit=2`
+
 #### Context Example
+
 ```json
 {
     "Netskope": {
@@ -909,9 +883,7 @@ Get information about Netskope SCIM users. The command provides a list of users 
             {
                 "active": true,
                 "client_id": "6a4dbb07-f465-4a6c-8af2-1c84ced65010",
-                "emails": [
-                    "email1@netskope.local"
-                ],
+                "emails": ["email1@netskope.local"],
                 "family_name": "last_name",
                 "given_name": "first_name",
                 "user_name": "upn1"
@@ -919,9 +891,7 @@ Get information about Netskope SCIM users. The command provides a list of users 
             {
                 "active": true,
                 "client_id": "f8d26597-e4a4-400d-a24b-40318a9e80e5",
-                "emails": [
-                    "email11@netskope.local"
-                ],
+                "emails": ["email11@netskope.local"],
                 "family_name": "last_name1",
                 "given_name": "first_name1",
                 "user_name": "upn2"
@@ -933,16 +903,19 @@ Get information about Netskope SCIM users. The command provides a list of users 
 
 #### Human Readable Output
 
->### Client List
->Showing page 1.
+> ### Client List
+>
+> Showing page 1.
 > Current page size: 2.
->|Client Id|User Name|Given Name|Family Name|Emails|Active|
->|---|---|---|---|---|---|
->| 6a4dbb07-f465-4a6c-8af2-1c84ced65010 | upn1 | first_name | last_name | email1@netskope.local | true |
->| f8d26597-e4a4-400d-a24b-40318a9e80e5 | upn2 | first_name1 | last_name1 | email11@netskope.local | true |
+> |Client Id|User Name|Given Name|Family Name|Emails|Active|
+> |---|---|---|---|---|---|
+> | 6a4dbb07-f465-4a6c-8af2-1c84ced65010 | upn1 | first_name | last_name | email1@netskope.local | true |
+> | f8d26597-e4a4-400d-a24b-40318a9e80e5 | upn2 | first_name1 | last_name1 | email11@netskope.local | true |
+
 ### netskope-url-list-add
 
-***
+---
+
 Update the URL list with the values provided. Note that this command appends the list.
 
 #### Base Command
@@ -951,24 +924,297 @@ Update the URL list with the values provided. Note that this command appends the
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| url_list_id | The URL list ID to update (use netskope-url-list-list command to get URL list ID). | Required | 
-| urls | The updated URL list items (For Exact - Enter URLs like  *.example.com, or IP addresses, separated by new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/.*/netskope, or ^google.com, separated by new line). | Required | 
-| list_type | The updated URL list type. Possible values are: exact, regex. | Required | 
-| deploy | Whether to deploy URL list changes or not. Possible values are: True, False. Default is false. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                  | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| url_list_id       | The URL list ID to update (use netskope-url-list-list command to get URL list ID).                                                                                                                                                               | Required     |
+| urls              | The updated URL list items (For Exact - Enter URLs like _.example.com, or IP addresses, separated by a new line. For Regex - Enter URLs like ^client[0-9]\\.google\\.com , ^app\\.slack\\.com/._/netskope, or ^google.com, separated by a new line). | Required     |
+| list_type         | The updated URL list type. Possible values are: exact, regex.                                                                                                                                                                                    | Required     |
+| deploy            | Whether to deploy URL list changes or not. Possible values are: True, False. Default is false.                                                                                                                                                   | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Netskope.URLList.id | Number | Netskope URL list ID. | 
-| Netskope.URLList.name | String | Netskope URL list name. | 
-| Netskope.URLList.data.urls | String | Netskope URL list data URLs. | 
-| Netskope.URLList.data.type | String | Netskope URL list data type. | 
-| Netskope.URLList.data.json_version | Number | Netskope URL list data JSON version. | 
-| Netskope.URLList.modify_by | String | Netskope URL list modify by. | 
-| Netskope.URLList.modify_time | Date | Netskope URL list modify time. | 
-| Netskope.URLList.modify_type | String | Netskope URL list modify type. | 
-| Netskope.URLList.pending | Number | Netskope URL list pending. | 
+| **Path**                           | **Type** | **Description**                      |
+| ---------------------------------- | -------- | ------------------------------------ |
+| Netskope.URLList.id                | Number   | Netskope URL list ID.                |
+| Netskope.URLList.name              | String   | Netskope URL list name.              |
+| Netskope.URLList.data.urls         | String   | Netskope URL list data URLs.         |
+| Netskope.URLList.data.type         | String   | Netskope URL list data type.         |
+| Netskope.URLList.data.json_version | Number   | Netskope URL list data JSON version. |
+| Netskope.URLList.modify_by         | String   | Netskope URL list modify by.         |
+| Netskope.URLList.modify_time       | Date     | Netskope URL list modify time.       |
+| Netskope.URLList.modify_type       | String   | Netskope URL list modify type.       |
+| Netskope.URLList.pending           | Number   | Netskope URL list pending.           |
 
+### netskope-incident-dlp-list
+
+---
+
+Fetch DLP incidents.
+
+#### Base Command
+
+`netskope-incident-dlp-list`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                         | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| start_time        | Restrict incidents to those that have updated dates greater than the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Default is ‘1 hour ago’. Default is 1 hour ago. | Optional     |
+| end_time          | Restrict incidents to those that have updated dates less than or equal to the provided date string (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago"). Default is ‘now’. Default is now.      | Optional     |
+
+#### Context Output
+
+| **Path**                                                           | **Type** | **Description** |
+| ------------------------------------------------------------------ | -------- | --------------- |
+| Netskope.Incident.\_id                                             | String   |                 |
+| Netskope.Incident.access_method                                    | String   |                 |
+| Netskope.Incident.acting_user                                      | String   |                 |
+| Netskope.Incident.activity                                         | String   |                 |
+| Netskope.Incident.app                                              | String   |                 |
+| Netskope.Incident.app_session_id                                   | Number   |                 |
+| Netskope.Incident.assignee                                         | String   |                 |
+| Netskope.Incident.connection_id                                    | Number   |                 |
+| Netskope.Incident.dlp_incident_id                                  | Number   |                 |
+| Netskope.Incident.dlp_match_info                                   | Unknown  |                 |
+| Netskope.Incident.dlp_match_info.dlp_action                        | String   |                 |
+| Netskope.Incident.dlp_match_info.dlp_forensic_id                   | Number   |                 |
+| Netskope.Incident.dlp_match_info.dlp_policy                        | String   |                 |
+| Netskope.Incident.dlp_match_info.dlp_profile_name                  | String   |                 |
+| Netskope.Incident.dlp_match_info.dlp_rules                         | Unknown  |                 |
+| Netskope.Incident.dlp_match_info.dlp_rules.dlp_incident_rule_count | Number   |                 |
+| Netskope.Incident.dlp_match_info.dlp_rules.dlp_match_type          | String   |                 |
+| Netskope.Incident.dlp_match_info.dlp_rules.dlp_rule_name           | String   |                 |
+| Netskope.Incident.dlp_match_info.dlp_rules.dlp_rule_severity       | String   |                 |
+| Netskope.Incident.dlp_parent_id                                    | Number   |                 |
+| Netskope.Incident.dst_location                                     | String   |                 |
+| Netskope.Incident.file_lang                                        | String   |                 |
+| Netskope.Incident.file_size                                        | Number   |                 |
+| Netskope.Incident.file_type                                        | String   |                 |
+| Netskope.Incident.from_user                                        | String   |                 |
+| Netskope.Incident.instance_id                                      | String   |                 |
+| Netskope.Incident.md5                                              | String   |                 |
+| Netskope.Incident.object                                           | String   |                 |
+| Netskope.Incident.object_id                                        | String   |                 |
+| Netskope.Incident.object_type                                      | String   |                 |
+| Netskope.Incident.severity                                         | String   |                 |
+| Netskope.Incident.site                                             | String   |                 |
+| Netskope.Incident.src_location                                     | String   |                 |
+| Netskope.Incident.status                                           | String   |                 |
+| Netskope.Incident.timestamp                                        | Number   |                 |
+| Netskope.Incident.title                                            | String   |                 |
+| Netskope.Incident.true_obj_category                                | String   |                 |
+| Netskope.Incident.true_obj_type                                    | String   |                 |
+| Netskope.Incident.url                                              | String   |                 |
+| Netskope.Incident.user                                             | String   |                 |
+| Netskope.Incident.owner_pdl                                        | String   |                 |
+| Netskope.Incident.classification                                   | String   |                 |
+| Netskope.Incident.to_user                                          | String   |                 |
+| Netskope.Incident.cc                                               | String   |                 |
+| Netskope.Incident.owner                                            | String   |                 |
+| Netskope.Incident.destination_site                                 | String   |                 |
+| Netskope.Incident.user_id                                          | String   |                 |
+| Netskope.Incident.instance                                         | String   |                 |
+| Netskope.Incident.channel                                          | String   |                 |
+| Netskope.Incident.bcc                                              | String   |                 |
+| Netskope.Incident.inline_dlp_match_info                            | Unknown  |                 |
+| Netskope.Incident.exposure                                         | String   |                 |
+| Netskope.Incident.file_path                                        | String   |                 |
+| Netskope.Incident.original_file_snapshot_id                        | String   |                 |
+| Netskope.Incident.destination_app                                  | String   |                 |
+| Netskope.Incident.latest_incident_id                               | Number   |                 |
+| Netskope.Incident.dlp_file                                         | String   |                 |
+| Netskope.Incident.zip_file_id                                      | String   |                 |
+| Netskope.Incident.referer                                          | String   |                 |
+| Netskope.Incident.destination_instance_id                          | String   |                 |
+
+#### Command example
+
+`!netskope-incident-dlp-list`
+
+#### Context Example
+
+```json
+{
+    "Netskope": {
+        "Incident": [
+            {
+                "_id": "dg",
+                "access_method": "Client",
+                "acting_user": "d@d.co",
+                "activity": "Upload",
+                "app": "Microsoft Office 365 OneDrive for Business",
+                "app_session_id": 6089117609268013425,
+                "assignee": "d@d.co",
+                "connection_id": 1888383367374049276,
+                "dlp_incident_id": 7061311227778495851,
+                "dlp_match_info": [
+                    {
+                        "dlp_action": "block",
+                        "dlp_forensic_id": 7061311227778495851,
+                        "dlp_policy": "DLP test policy - Beni",
+                        "dlp_profile_name": "test dlp profile -beni",
+                        "dlp_rules": [
+                            {
+                                "dlp_incident_rule_count": 1,
+                                "dlp_match_type": "FileFilter",
+                                "dlp_rule_name": "test dlp profile - beni",
+                                "dlp_rule_severity": "Medium"
+                            }
+                        ]
+                    }
+                ],
+                "dlp_parent_id": 7061311227778495851,
+                "dst_location": "Redmond",
+                "file_lang": "Unknown",
+                "file_size": 10,
+                "file_type": "text/plain",
+                "from_user": "d@d.co",
+                "instance_id": "d",
+                "md5": "fsd",
+                "object": "d.txt",
+                "object_id": "01",
+                "object_type": "File",
+                "severity": "Critical",
+                "site": "Microsoft Office 365 OneDrive for Business",
+                "src_location": "Tel Aviv",
+                "status": "in_progress",
+                "timestamp": 1710928898,
+                "title": "d.txt",
+                "true_obj_category": "Text",
+                "true_obj_type": "Plain Text file",
+                "url": "v1.g.f",
+                "user": "sdf",
+                "owner_pdl": "",
+                "classification": "",
+                "to_user": "",
+                "cc": "",
+                "owner": "",
+                "destination_site": "",
+                "user_id": "",
+                "instance": "",
+                "channel": "",
+                "bcc": "",
+                "inline_dlp_match_info": [],
+                "exposure": "",
+                "file_path": "",
+                "original_file_snapshot_id": "",
+                "destination_app": "",
+                "latest_incident_id": 0,
+                "dlp_file": "",
+                "zip_file_id": "",
+                "referer": "",
+                "destination_instance_id": ""
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Client List
+>
+> Showing page 1.
+> Current page size: 2.
+> |Object Id|Status|Severity|Activity|Assignee|Timestamp|Acting User|App|Instance Id|Object Type|
+> |---|---|---|---|---|---|---|---|---|---|
+> | 12 | new | High | FormPost | None | 1725903291 | None | Form |
+
+### get-mapping-fields
+
+---
+
+Returns the list of fields for an incident type.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| ----------------- | --------------- | ------------ |
+
+#### Context Output
+
+There is no context output for this command.
+
+### update-remote-system
+
+---
+
+Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+
+#### Base Command
+
+`update-remote-system`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| ----------------- | --------------- | ------------ |
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-remote-data
+
+---
+
+Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+
+#### Base Command
+
+`get-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description**                                       | **Required** |
+| ----------------- | ----------------------------------------------------- | ------------ |
+| id                | The ticket ID.                                        | Required     |
+| lastUpdate        | Retrieves entries that were created after lastUpdate. | Required     |
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-modified-remote-data
+
+---
+
+Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                               | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| lastUpdate        | A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time. | Optional     |
+
+#### Context Output
+
+There is no context output for this command.
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Netskope (API v2) LOCAL corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+
+1. Enable _Fetching incidents_ in your instance configuration.
+2. In the _Mirroring Direction_ integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option**            | **Description**                                                                                                        |
+    | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+    | None                  | Turns off incident mirroring.                                                                                          |
+    | Incoming              | Any changes in Netskope (API v2) LOCAL events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing              | Any changes in Cortex XSOAR incidents will be reflected in Netskope (API v2) LOCAL events (outgoing mirrored fields).  |
+    | Incoming and Outgoing |                                                                                                                        |
+
+3. Optional: Check the _Close Mirrored XSOAR Incident_ integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Netskope (API v2) LOCAL.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Netskope (API v2) LOCAL.

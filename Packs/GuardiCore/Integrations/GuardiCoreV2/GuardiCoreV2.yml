@@ -1192,7 +1192,7 @@ script:
     - contextPath: Endpoint.MACAddress
       description: The endpoint's MAC address.
       type: String
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: "-"

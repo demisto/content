@@ -33,8 +33,8 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | File object of the file to detonate. The file is taken from the context. | File | Optional |
-| Interval | The duration for executing the polling \(in minutes\). | 1 | Optional |
-| Timeout | The duration after which to stop polling and to resume the playbook. \(in minutes\) | 8 | Optional |
+| Interval | The duration for executing the polling \(in seconds\). | 1 | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook. \(in seconds\) | 8 | Optional |
 | ReportFileType | The resource type to download. |  | Optional |
 
 ## Playbook Outputs

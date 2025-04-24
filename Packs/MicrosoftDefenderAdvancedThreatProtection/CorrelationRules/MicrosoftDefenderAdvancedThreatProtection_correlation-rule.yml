@@ -1,24 +1,22 @@
 alert_category: EXECUTION
-alert_description: This alert will trigger in an event where Malware was detected by Microsoft Defender for Endpoints.
+alert_description: This alert will trigger when Malware is detected by Microsoft Defender for Endpoint.
 alert_fields:
-  actor_process_image_name:
-  actor_process_image_path: xdm.target.file.path
-  actor_process_command_line: xdm.target.process.command_line
-  agent_device_domain: xdm.source.user.domain
-  actor_process_image_sha256: xdm.target.file.sha256
-  agent_hostname: xdm.target.host.fqdn
   action_local_ip: xdm.target.ipv4
-  action_remote_ip:
-  action_remote_port:
   actor_effective_username: xdm.source.user.username
+  actor_process_command_line: xdm.target.process.command_line
+  actor_process_image_path: xdm.target.file.path
+  actor_process_image_sha256: xdm.target.file.sha256
+  agent_device_domain: xdm.source.user.domain
+  agent_hostname: xdm.target.host.fqdn
+  eventid: xdm.event.id
 alert_name: Malware detected by Microsoft Defender for Endpoints
 crontab: '*/10 * * * *'
 dataset: alerts
-description: This alert will trigger in an event where Malware was detected by Microsoft Defender for Endpoints.
+description: This alert will trigger when Malware is detected by Microsoft Defender for Endpoint.
 drilldown_query_timeframe: ALERT
 execution_mode: SCHEDULED
 global_rule_id: 6af7a4d0-498c-4d89-804c-655dd14c37ab
-investigation_query_link:
+investigation_query_link: ''
 mapping_strategy: CUSTOM
 mitre_defs: {}
 name: Microsoft Defender for Endpoint - Malware Detected

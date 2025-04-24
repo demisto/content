@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Arcanna-Generic-Investigation](https://user-images.githubusercontent.com/6702878/124025997-cdeede80-d9f9-11eb-8faa-e297c7cd3ca7.png)
+![Arcanna-Generic-Investigation](../doc_files/Arcanna-Generic-Investigation-V2-With-Feedback.png)

@@ -1,30 +1,26 @@
 Amazon Web Services Elastic Compute Cloud (EC2).
 
-## Configure AWS - EC2 on Cortex XSOAR
+## Configure AWS - EC2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - EC2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | AWS Default Region |  | False |
-    | Role Arn |  | False |
-    | Role Session Name |  | False |
-    | Role Session Duration |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | PrivateLink service URL |  | False |
-    | STS PrivateLink URL |  | False |
-    | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. This feature is explained below. | False |
-    | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. This feature is explained below. | False |
-    | Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts". | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AWS Default Region |  | False |
+| Role Arn |  | False |
+| Role Session Name |  | False |
+| Role Session Duration |  | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| PrivateLink service URL |  | False |
+| STS PrivateLink URL |  | False |
+| AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. This feature is explained below. | False |
+| Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. This feature is explained below. | False |
+| Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts". | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Run commands in multiple AWS accounts
 
@@ -53,7 +49,7 @@ The script ***AwsEC2SyncAccounts*** can be used to configure an AWS - EC2 instan
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-ec2-describe-instances

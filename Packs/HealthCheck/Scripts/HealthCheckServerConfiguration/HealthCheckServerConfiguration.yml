@@ -2,7 +2,7 @@ comment: Collect server configurations and save that into a table field.
 commonfields:
   id: HealthCheckServerConfiguration
   version: -1
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.111526
 enabled: true
 name: HealthCheckServerConfiguration
 outputs:

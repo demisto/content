@@ -56,7 +56,7 @@ parse_code_and_body_data = [
 
 # api_key, api_response, status_code, expected_output
 test_module_data = [
-    ("true_key", {"expiration": "2025-01-01", "message": "pong", "offering": "vip"}, 200, "ok"),
+    ("true_key", {"expiration": "2026-01-01", "message": "pong", "offering": "vip"}, 200, "ok"),
     ("dummy_key", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
     ("dummy_key", "", 429, "API Rate limit hit. Try after sometime."),
     ("dummy_key", "Dummy message", 405, "Failed to execute  command.\n Error: Dummy message"),
@@ -419,16 +419,22 @@ valid_riot_response = {
         "name": "Google Public DNS",
         "description": "Google's global domain name system (DNS) resolution service.",
         "explanation": "Public DNS services are used as alternatives to ISP's name servers. "
-                       "You may see devices on your network communicating with Google Public DNS over port "
-                       "53/TCP or 53/UDP to resolve DNS lookups.",
+        "You may see devices on your network communicating with Google Public DNS over port "
+        "53/TCP or 53/UDP to resolve DNS lookups.",
         "last_updated": "2021-04-12T09:55:37Z",
         "reference": "https://developers.google.com/speed/public-dns/docs/isp#alternative",
     },
-    "readable": "### IP: 8.8.8.8 found with RIOT Reputation: Unknown\nBelongs to Common Business Service: Google Public DNS\n### GreyNoise RIOT IP Lookup\n|IP|Category|Name|Trust Level|Description|Last Updated|\n|---|---|---|---|---|---|\n| [8.8.8.8](https://viz.greynoise.io/ip/8.8.8.8) | public_dns | Google Public DNS |  | Google's global domain name system (DNS) resolution service. | 2021-04-12T09:55:37Z |\n"
+    "readable": "### IP: 8.8.8.8 found with RIOT Reputation: Unknown\nBelongs to Common Business Service: "
+    "Google Public DNS\n### GreyNoise RIOT IP Lookup\n|IP|Category|Name|Trust Level|Description|Last Updated|\n"
+    "|---|---|---|---|---|---|\n| [8.8.8.8](https://viz.greynoise.io/ip/8.8.8.8) | public_dns | Google Public DNS "
+    "|  | Google's global domain name system (DNS) resolution service. | 2021-04-12T09:55:37Z |\n",
 }
 
-valid_riot_response_2 = {"output": {"ip": "114.119.130.178", "riot": False},
-                         "readable": "### IP: 114.119.130.178 Not Associated with Common Business Service\n### GreyNoise RIOT IP Lookup\n|IP|RIOT|\n|---|---|\n| 114.119.130.178 | false |\n"}
+valid_riot_response_2 = {
+    "output": {"ip": "114.119.130.178", "riot": False},
+    "readable": "### IP: 114.119.130.178 Not Associated with Common Business Service"
+    "\n### GreyNoise RIOT IP Lookup\n|IP|RIOT|\n|---|---|\n| 114.119.130.178 | false |\n",
+}
 invalid_riot_response = {
     "output": {"message": "IP provided is not a routable IPv4 address"},
     "error_message": "Invalid IP address: '{}'",
@@ -464,7 +470,7 @@ valid_similar_response = {
         "first_seen": "2023-05-29",
         "ip": "121.239.23.85",
         "last_seen": "2023-05-30",
-        "organization": "CHINANET-BACKBONE"
+        "organization": "CHINANET-BACKBONE",
     },
     "similar_ips": [
         {
@@ -474,42 +480,50 @@ valid_similar_response = {
             "classification": "unknown",
             "country": "Australia",
             "country_code": "AU",
-            "features": [
-                "ports",
-                "spoofable_bool"
-            ],
+            "features": ["ports", "spoofable_bool"],
             "first_seen": "2023-05-22",
             "ip": "1.145.159.157",
             "last_seen": "2023-05-23",
             "organization": "Telstra Corporation Ltd",
-            "score": 1
+            "score": 1,
         }
     ],
-    "total": 32368
+    "total": 32368,
 }
 
 valid_similar_response_expected = copy.deepcopy(valid_similar_response)
 
 similar_command_response_data = [
     ({"ip": "71.6.135.131"}, "positive", valid_similar_response, 200, valid_similar_response_expected),  # NOSONAR
-    ({"ip": "45.95.147.229"}, "positive", {
-        "ip": {
-            "actor": "unknown",
-            "asn": "AS49870",
-            "city": "Amsterdam",
-            "classification": "malicious",
-            "country": "Netherlands",
-            "country_code": "NL",
-            "first_seen": "2023-05-11",
-            "ip": "45.95.147.229",
-            "last_seen": "2023-05-30",
-            "organization": "Alsycon B.V."
+    (
+        {"ip": "45.95.147.229"},
+        "positive",
+        {
+            "ip": {
+                "actor": "unknown",
+                "asn": "AS49870",
+                "city": "Amsterdam",
+                "classification": "malicious",
+                "country": "Netherlands",
+                "country_code": "NL",
+                "first_seen": "2023-05-11",
+                "ip": "45.95.147.229",
+                "last_seen": "2023-05-30",
+                "organization": "Alsycon B.V.",
+            },
+            "similar_ips": [],
+            "total": 0,
         },
-        "similar_ips": [],
-        "total": 0
-    }, 200, valid_similar_response_expected),  # NOSONAR
-    ({"ip": "192.168.1.1"}, "negative", "Non-Routable IP address: '192.168.1.1'", 404, "Non-Routable IP address: "
-                                                                                       "'192.168.1.1'"),  # NOSONAR
+        200,
+        valid_similar_response_expected,
+    ),  # NOSONAR
+    (
+        {"ip": "192.168.1.1"},
+        "negative",
+        "Non-Routable IP address: '192.168.1.1'",
+        404,
+        "Non-Routable IP address: " "'192.168.1.1'",
+    ),  # NOSONAR
     ({"ip": "abc"}, "negative", "forbidden", 404, "Invalid IP address: 'abc'"),  # NOSONAR
 ]
 
@@ -522,35 +536,24 @@ valid_timeline_response = {
             "classification": "unknown",
             "country": "Netherlands",
             "country_code": "NL",
-            "destinations": [
-                    {
-                        "country": "Albania",
-                        "country_code": "AL"
-                    }
-            ],
+            "destinations": [{"country": "Albania", "country_code": "AL"}],
             "organization": "Alsycon B.V.",
-            "protocols": [
-                {
-                    "app_protocol": "TELNET",
-                    "port": 23,
-                    "transport_protocol": "TCP"
-                }
-            ],
+            "protocols": [{"app_protocol": "TELNET", "port": 23, "transport_protocol": "TCP"}],
             "rdns": "tittle.life",
             "region": "North Holland",
             "spoofable": "true",
             "tags": [
-                    {
-                        "category": "tool",
-                        "description": "IP addresses with this tag have been observed using the ZMap Internet scanner.",
-                        "intention": "unknown",
-                        "name": "ZMap Client"
-                    }
+                {
+                    "category": "tool",
+                    "description": "IP addresses with this tag have been observed using the ZMap Internet scanner.",
+                    "intention": "unknown",
+                    "name": "ZMap Client",
+                }
             ],
             "timestamp": "2023-05-29T00:00:00Z",
             "tor": "false",
             "vpn": "false",
-            "vpn_service": ""
+            "vpn_service": "",
         }
     ],
     "ip": "45.95.147.229",
@@ -559,26 +562,120 @@ valid_timeline_response = {
         "ip": "45.95.147.229",
         "limit": 50,
         "next_cursor": "",
-        "start_time": "2023-05-29T00:00:00Z"
-    }
+        "start_time": "2023-05-29T00:00:00Z",
+    },
 }
 
 valid_timeline_response_expected = copy.deepcopy(valid_timeline_response)
 
 timeline_command_response_data = [
     ({"ip": "45.95.147.229"}, "positive", valid_timeline_response, 200, valid_timeline_response_expected),  # NOSONAR
-    ({"ip": "61.30.129.190"}, "positive", {
-        "activity": [],
-        "ip": "61.30.129.190",
-        "metadata": {
-            "end_time": "2023-05-30T18:46:34.662311004Z",
+    (
+        {"ip": "61.30.129.190"},
+        "positive",
+        {
+            "activity": [],
             "ip": "61.30.129.190",
-            "limit": 50,
-            "next_cursor": "",
-            "start_time": "2023-05-29T00:00:00Z"
-        }
-    }, 200, valid_timeline_response_expected),  # NOSONAR
-    ({"ip": "192.168.1.1"}, "negative", "Non-Routable IP address: '192.168.1.1'", 404, "Non-Routable IP address: "
-                                                                                       "'192.168.1.1'"),  # NOSONAR
+            "metadata": {
+                "end_time": "2023-05-30T18:46:34.662311004Z",
+                "ip": "61.30.129.190",
+                "limit": 50,
+                "next_cursor": "",
+                "start_time": "2023-05-29T00:00:00Z",
+            },
+        },
+        200,
+        valid_timeline_response_expected,
+    ),  # NOSONAR
+    (
+        {"ip": "192.168.1.1"},
+        "negative",
+        "Non-Routable IP address: '192.168.1.1'",
+        404,
+        "Non-Routable IP address: " "'192.168.1.1'",
+    ),  # NOSONAR
     ({"ip": "abc"}, "negative", "forbidden", 404, "Invalid IP address: 'abc'"),  # NOSONAR
+]
+
+cve_command_response_data = [
+    (
+        {"cve": "CVE-1900-12345"},
+        "positive",
+        {
+            "id": "CVE-1900-12345",
+            "details": {
+                "vulnerability_name": "Test",
+                "vulnerability_description": "Test.",
+                "cve_cvss_score": 8.6,
+                "product": "Test",
+                "vendor": "test",
+                "published_to_nist_nvd": True,
+            },
+            "timeline": {
+                "cve_published_date": "2024-05-28T19:15:10Z",
+                "cve_last_updated_date": "2024-05-31T16:04:09Z",
+                "first_known_published_date": "2024-05-27T00:00:00Z",
+                "cisa_kev_date_added": "2024-05-30T00:00:00Z",
+            },
+            "exploitation_details": {
+                "attack_vector": "NETWORK",
+                "exploit_found": True,
+                "exploitation_registered_in_kev": True,
+                "epss_score": 0.94237,
+            },
+            "exploitation_stats": {
+                "number_of_available_exploits": 60,
+                "number_of_threat_actors_exploiting_vulnerability": 1,
+                "number_of_botnets_exploiting_vulnerability": 0,
+            },
+            "exploitation_activity": {
+                "activity_seen": True,
+                "benign_ip_count_1d": 0,
+                "benign_ip_count_10d": 0,
+                "benign_ip_count_30d": 0,
+                "threat_ip_count_1d": 4,
+                "threat_ip_count_10d": 10,
+                "threat_ip_count_30d": 18,
+            },
+        },
+        200,
+        {
+            "id": "CVE-1900-12345",
+            "details": {
+                "vulnerability_name": "Test",
+                "vulnerability_description": "Test.",
+                "cve_cvss_score": 8.6,
+                "product": "Test",
+                "vendor": "test",
+                "published_to_nist_nvd": True,
+            },
+            "timeline": {
+                "cve_published_date": "2024-05-28T19:15:10Z",
+                "cve_last_updated_date": "2024-05-31T16:04:09Z",
+                "first_known_published_date": "2024-05-27T00:00:00Z",
+                "cisa_kev_date_added": "2024-05-30T00:00:00Z",
+            },
+            "exploitation_details": {
+                "attack_vector": "NETWORK",
+                "exploit_found": True,
+                "exploitation_registered_in_kev": True,
+                "epss_score": 0.94237,
+            },
+            "exploitation_stats": {
+                "number_of_available_exploits": 60,
+                "number_of_threat_actors_exploiting_vulnerability": 1,
+                "number_of_botnets_exploiting_vulnerability": 0,
+            },
+            "exploitation_activity": {
+                "activity_seen": True,
+                "benign_ip_count_1d": 0,
+                "benign_ip_count_10d": 0,
+                "benign_ip_count_30d": 0,
+                "threat_ip_count_1d": 4,
+                "threat_ip_count_10d": 10,
+                "threat_ip_count_30d": 18,
+            },
+        },
+    ),
+    ({"cve": "abce"}, "negative", {}, 400, "The provided ID does not match the format: CVE-XXXX-YYYYY"),
 ]

@@ -3,23 +3,19 @@ This integration was integrated and tested with version 6.11.0 of ArcusTeam
 ## Get Your API Key
 Please visit our [dedicated page](https://arcusteam.com/pa-partnership/) to obtain your API key.
 
-## Configure ArcusTeam on Cortex XSOAR
+## Configure ArcusTeam in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ArcusTeam.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://web.prod.arcusteam.com) | The FQDN/IP the integration should connect to. | True |
-    | API Key |  The API Key required to authenticate to the service. | True |
-    | The client ID | The client ID from ArcusTeam dashboard | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://web.prod.arcusteam.com) | The FQDN/IP the integration should connect to. | True |
+| API Key |  The API Key required to authenticate to the service. | True |
+| The client ID | The client ID from ArcusTeam dashboard | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### arcusteam-get-devices
 ***
@@ -936,4 +932,3 @@ After you successfully execute a command, a DBot message appears in the War Room
 >| 75.0% | CVE-2019-1962 | CWE-20 | A vulnerability in the Cisco Fabric Services component of Cisco NX-OS Software could allow an unauthenticated, remote attacker to cause process crashes, which can result in a denial of service (DoS) condition on an affected system. The vulnerability is due to insufficient validation of TCP packets when processed by the Cisco Fabric Services over IP (CFSoIP) feature. An attacker could exploit this vulnerability by sending a malicious Cisco Fabric Services TCP packet to an affected device. A successful exploit could allow the attacker to cause process crashes, resulting in a device reload and a DoS condition. Note: There are three distribution methods that can be configured for Cisco Fabric Services. This vulnerability affects only distribution method CFSoIP, which is disabled by default. See the Details section for more information. |  |  | 1570664880 |
 >| 72.0% | CVE-2020-3454 | CWE-78 | A vulnerability in the Call Home feature of Cisco NX-OS Software could allow an authenticated, remote attacker to inject arbitrary commands that could be executed with root privileges on the underlying operating system (OS). The vulnerability is due to insufficient input validation of specific Call Home configuration parameters when the software is configured for transport method HTTP. An attacker could exploit this vulnerability by modifying parameters within the Call Home configuration on an affected device. A successful exploit could allow the attacker to execute arbitrary commands with root privileges on the underlying OS. |  |  | 1599182340 |
 >| 67.0% | CVE-2019-12662 | CWE-347 |  | false | false | 1569427200 |
-

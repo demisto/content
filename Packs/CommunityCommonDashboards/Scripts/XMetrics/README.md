@@ -15,9 +15,9 @@
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| listname | The XSOAR list with stored metrics |
-| efflistname | XSOAR list with manual and automated effort by incident type |
-| metrictype | Type of metric: "SLA Metrics", "Closed Incidents", "Incidents", "Incident Open Duration", "Effort Reduction" |
+| listname | The XSOAR list with stored metrics. |
+| efflistname | XSOAR list with manual and automated effort by incident type. |
+| metrictype | Type of metric: "SLA Metrics", "Closed Incidents", "Incidents", "Incident Open Duration", "Effort Reduction". |
 
 ## Outputs
 

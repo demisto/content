@@ -1,46 +1,45 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 import base64
 import zlib
 
+import demistomock as demisto
+from CommonServerPython import *
 
-def get_file_data(file_path, zip=False):
-    with open(file_path, 'rb') as f:
+from CommonServerUserPython import *
+
+
+def get_file_data(file_path: str, is_zip: bool = False):
+    with open(file_path, "rb") as f:
         data = f.read()
-        if zip:
-            data = zlib.compress(data)
-
-    return base64.b64encode(data).decode('utf-8')
+    if is_zip:
+        data = zlib.compress(data)
+    return base64.b64encode(data).decode("utf-8")
 
 
 def main():
-    LIST_NAME = demisto.args()['listName']
-    TO_ZIP = (demisto.args()['zipFile'] == 'true')
+    list_name = demisto.args()["listName"]
+    is_zip = demisto.args()["zipFile"] == "true"
+    entry_id = demisto.args()["entryId"]
 
-    entry_id = demisto.args()['entryId']
     res = demisto.getFilePath(entry_id)
     if not res:
-        return_error("Entry {} not found".format(entry_id))
-    file_path = res['path']
+        return_error(f"Entry {entry_id} not found")
+    file_path = res["path"]
 
-    file_base64 = get_file_data(file_path, TO_ZIP)
+    file_base64 = get_file_data(file_path, is_zip)
 
-    res = demisto.executeCommand("createList", {"listName": LIST_NAME, "listData": file_base64})
+    res = demisto.executeCommand("createList", {"listName": list_name, "listData": file_base64})
     if isError(res):
         return res
 
     return {
-        'Contents': file_base64,
-        'ContentsFormat': formats['text'],
-        'HumanReadable': tableToMarkdown('Success store file in list', {
-            'File Entry ID': entry_id,
-            'List Name': LIST_NAME,
-            'Size': len(file_base64)
-        }),
-        'HumanReadableFormat': formats['markdown'],
+        "Contents": file_base64,
+        "ContentsFormat": formats["text"],
+        "HumanReadable": tableToMarkdown(
+            "File successfully stored in list", {"File Entry ID": entry_id, "List Name": list_name, "Size": len(file_base64)}
+        ),
+        "HumanReadableFormat": formats["markdown"],
     }
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     demisto.results(main())

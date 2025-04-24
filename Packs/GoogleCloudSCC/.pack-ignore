@@ -13,3 +13,6 @@ ignore=IF100
 [file:incidentfield-GoogleCloudSCC_Finding_OrganizationID.json]
 ignore=IF115
 
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Google_Cloud_SCC_Finding.json]
+ignore=GR103

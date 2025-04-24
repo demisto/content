@@ -1,29 +1,25 @@
 Use Gem alerts as a trigger for Cortex XSOAR’s custom playbooks, to automate response to specific TTPs.
 
-## Configure Gem on Cortex XSOAR
+## Configure Gem in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Gem.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Incident type |  | False |
-    | API Endpoint | The API endpoint to use for connection \(US or EU\) | True |
-    | Service Account ID | The Service Account ID to use for connection | True |
-    | Service Account Secret | The Service Account Secret to use for connection | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Fetch incidents |  | False |
-    | Maximum number of alerts per fetch |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Incident type |  | False |
+| API Endpoint | The API endpoint to use for connection \(US or EU\) | True |
+| Service Account ID | The Service Account ID to use for connection | True |
+| Service Account Secret | The Service Account Secret to use for connection | True |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Fetch incidents |  | False |
+| Maximum number of alerts per fetch |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gem-list-threats

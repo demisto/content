@@ -32,6 +32,9 @@ script:
     - description: The maximum number of results to return.
       name: max_results
       defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
     description: Gather device info by saved query.
     name: axonius-get-devices-by-savedquery
     outputs:
@@ -72,6 +75,9 @@ script:
     - description: The maximum number of results to return.
       name: max_results
       defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
     description: Gather user info by saved query.
     name: axonius-get-users-by-savedquery
     outputs:
@@ -580,7 +586,108 @@ script:
     - contextPath: Axonius.tags
       description: Axonius Tags.
       type: Unknown
-  dockerimage: demisto/axonius:1.1.0.94077
+  - arguments:
+    - description: The AQL query to filter devices by.
+      name: query
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather devices info by AQL query.
+    name: axonius-get-devices-by-aql
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The AQL query to filter users by.
+      name: query
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather users info by AQL query.
+    name: axonius-get-users-by-aql
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Users.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Users.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Users.username
+      description: Username of the asset.
+      type: String
+    - contextPath: Axonius.Users.mail
+      description: Email address of the asset.
+      type: String
+    - contextPath: Axonius.Users.is_admin
+      description: If the asset has admin privileges.
+      type: Boolean
+    - contextPath: Axonius.Users.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Users.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The note to add.
+      name: note
+      required: true
+    - description: IDs of assets.
+      isArray: true
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: Type of Asset. Device or User.
+      name: type
+      predefined:
+      - devices
+      - users
+      required: true
+    description: Add note to assets.
+    name: axonius-add-note
+    outputs:
+    - contextPath: Axonius.assets.updates
+      description: Number of assets updated.
+      type: Number
+  dockerimage: demisto/axonius:1.1.0.1993107
   runonce: false
   script: '-'
   subtype: python3

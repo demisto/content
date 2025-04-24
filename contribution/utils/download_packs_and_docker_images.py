@@ -52,7 +52,9 @@ def get_docker_images_with_tag(pack_names: dict, id_set_json: dict) -> set:
         if pack_name not in id_set_json['Packs']:
             print(f"\tPack {pack_d_name} was not found in id_set.json.")
             continue
-        content_items = id_set_json['Packs'][pack_name]['ContentItems']
+        content_items = id_set_json['Packs'][pack_name].get('ContentItems', {})
+        if not content_items:
+            print(f"\tPack {pack_d_name} has no ContentItems - skipping pack.")
         integrations = content_items['integrations'] if 'integrations' in content_items else []
         scripts = content_items['scripts'] if 'scripts' in content_items else []
         if integrations:

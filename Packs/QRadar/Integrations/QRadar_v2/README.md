@@ -3,11 +3,8 @@ Supports API versions until 10.0.
 This integration was integrated and tested with version 7.3.2 of QRadar.
 
 
-## Configure QRadar v2 on Cortex XSOAR
+## Configure QRadar v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QRadar v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -26,7 +23,6 @@ This integration was integrated and tested with version 7.3.2 of QRadar.
 | events_limit | Max number of events per incident | False |
 | adv_params | Advanced Parameters | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Troubleshooting 
 This section provides information for troubleshooting performance and fetching issues.
@@ -58,7 +54,7 @@ Depending on the system load, **the initial fetch might take a long time**.
 
 #### Field (Schema) Mapping
 The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields, and Assets.
-For more details, see the [Classification & Mapping documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper).
+For more details, see the [Classification & Mapping documentation (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper) or [Classification & Mapping documentation (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-an-incident-mapper) or [Classification & Mapping documentation (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-an-incident-mapper).
 
 #### Query to fetch offenses
 You can apply additional (optional) filters for the fetch-incident query using the `Query to fetch offenses` integration parameter. For more information on how to use the filter syntax, see the [QRadar filter documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_rest_api_filtering.html) and [QRadar offense documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.2/com.ibm.qradar.doc/11.0--siem-offenses-GET.html).
@@ -79,7 +75,7 @@ To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetc
 * References (Read) - View Reference Data
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### qradar-offenses
 ***
@@ -1470,4 +1466,3 @@ Retrieves a list of event regex properties.
 >|---|---|---|---|---|---|---|---|---|---|
 >| false | 2012-07-04 17:05:02 |  | 213 | DEFAULT_ACF2_RULE_KEY | 2012-07-04 17:05:02 | ACF2 rule key | string | true | admin |
 >| false | 2012-07-04 17:05:02 | Rule name why Parity Agent blocked an access to a file. | 222 | DEFAULT_RULE_NAME | 2012-07-04 17:05:02 | Rule Name | string | true | admin |
-

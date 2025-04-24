@@ -1,4 +1,4 @@
-[INGEST:vendor="MSFT", product="Azure", target_dataset="msft_azure_raw", no_hit=keep]
+[INGEST:vendor="MSFT", product="Intune", target_dataset="msft_intune_raw", no_hit=keep]
 filter to_string(time) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]+"
 | alter 
     timestampModify = time

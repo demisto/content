@@ -16,7 +16,7 @@ outputs:
 - contextPath: ParseExcel
   description: ParseExcel.
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.96102
+dockerimage: demisto/py3-tools:1.0.0.114656
 tests:
 - ParseExcel-test
 fromversion: 5.0.0

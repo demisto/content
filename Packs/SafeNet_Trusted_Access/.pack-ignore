@@ -13,3 +13,8 @@ ignore=PR101
 [file:SafeNetTrustedAccessModelingRules.yml]
 ignore=MR108
 
+# GR103 is temporary, see CIAC-11656
+[file:classifier-SafeNet_Trusted_Access_–_Alert_Classifier.json]
+ignore=GR103
+[file:classifier-SafeNet_Trusted_Access_–_Push_Reject_Alert_Classifier.json]
+ignore=GR103

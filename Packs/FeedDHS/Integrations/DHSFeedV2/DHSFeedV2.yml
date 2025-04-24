@@ -76,7 +76,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   type: 17
   required: false
 - defaultvalue: '20160'
@@ -210,7 +209,7 @@ script:
     - contextPath: DHS.Collections.Name
       description: Collection name.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.88937
+  dockerimage: demisto/taxii2:1.0.0.117320
   feed: true
   runonce: false
   script: '-'

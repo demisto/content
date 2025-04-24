@@ -1,11 +1,14 @@
 """Axonius Integration for Cortex XSOAR - Unit Tests file."""
 
 import warnings
-from TestData.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_USER_IDS, DUMMY_DEVICES
-from TestData.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS, EXPECTED_DEVICE
+
 from Axonius import run_command
 from marshmallow.warnings import RemovedInMarshmallow4Warning
-warnings.filterwarnings('ignore', category=RemovedInMarshmallow4Warning)
+
+from TestData.Expected_data import EXPECTED_DEVICE, EXPECTED_DEVICE_TAGS, EXPECTED_USERS_SQS
+from TestData.Raw_data import DUMMY_DEVICES, DUMMY_DEVICES_IDS, DUMMY_TAGS, DUMMY_USER_IDS, USERS_SQS
+
+warnings.filterwarnings("ignore", category=RemovedInMarshmallow4Warning)
 
 
 class DummyDevices:
@@ -16,6 +19,10 @@ class DummyDevices:
 
     @staticmethod
     def get_by_hostname(value: str, max_rows: int, fields: list):
+        return DUMMY_DEVICES
+
+    @staticmethod
+    def get(query: str, max_rows: int, fields: list):
         return DUMMY_DEVICES
 
 
@@ -89,7 +96,7 @@ def test_get_tags():
     client = DummyConnect()
     args: dict = {"type": "devices"}
     result = run_command(client=client, args=args, command="axonius-get-tags")
-    assert EXPECTED_DEVICE_TAGS == result.outputs
+    assert result.outputs == EXPECTED_DEVICE_TAGS
 
 
 def test_add_tags():
@@ -111,3 +118,17 @@ def test_get_device():
     args: dict = {"value": "DESKTOP-Gary-Gaither"}
     result = run_command(client=client, args=args, command="axonius-get-devices-by-hostname")
     assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
+
+
+def test_get_by_aql():
+    client = DummyConnect()
+    args: dict = {"query": '("specific_data.data.name" == regex("john", "i"))'}
+    result = run_command(client=client, args=args, command="axonius-get-devices-by-aql")
+    assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
+
+
+def test_add_note():
+    client = DummyConnect()
+    args: dict = {"type": "devices", "ids": DUMMY_DEVICES_IDS, "note": "note1"}
+    result = run_command(client=client, args=args, command="axonius-add-note")
+    assert result.outputs == 0

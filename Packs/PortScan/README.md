@@ -15,4 +15,4 @@ As part of this pack, you will also get out-of-the-box incident fields, layouts 
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/port-scan---generic)_
 
-![Port_Scan_Generic](https://github.com/demisto/content/raw/5e428e8319dc849cefd284e8a25ccd7b527604a1/Packs/PortScan/doc_files/Port_Scan_-_Generic.png)
+![Port_Scan_Generic](doc_files/Port_Scan_-_Generic.png)

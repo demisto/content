@@ -1,0 +1,48 @@
+{
+    "test_cases": [
+      {
+        "last_run": {"last_fetch": "2023-01-01T00:00:00Z"},
+        "log_types": [],
+        "mock_initialize_start_timestamp": "2023-01-01T00:00:00Z",
+        "mock_fetch_events_side_effect": [],
+        "expected_last_run": {"last_fetch": "2023-01-01T00:00:00Z"},
+        "expected_all_events": []
+      },
+      {
+        "last_run": {},
+        "log_types": ["audit", "network_activities"],
+        "mock_initialize_start_timestamp": "FAKE_DATE",
+        "mock_fetch_events_side_effect": [
+          [
+            {"audit": {"last_fetch": "FIRSE_DATE"}},
+            [{"event_id": 1, "type": "Audit"}]
+          ],
+          [
+            {"audit": {"last_fetch": "FIRSE_DATE"}, "network_activities": {"last_fetch": "SECOND_DATE"}},
+            [{"event_id": 2, "type": "network_activities"}]
+          ]
+        ],
+        "expected_last_run": {"audit": {"last_fetch": "FIRSE_DATE"}, "network_activities": {"last_fetch": "SECOND_DATE"}},
+        "expected_all_events": [
+          {"event_id": 1, "type": "Audit"},
+          {"event_id": 2, "type": "network_activities"}
+        ]
+      },
+      {
+        "last_run": {"audit": {"last_fetch": "2023-01-01T00:00:00Z"}},
+        "log_types": ["network_activities"],
+        "mock_initialize_start_timestamp": "2023-01-01T00:00:00Z",
+        "mock_fetch_events_side_effect": [
+          [
+            {"audit": {"last_fetch": "2023-01-01T00:00:00Z"}, "network_activities": {"last_fetch": "New_fetch_time"}},
+            [{"event_id": 1, "type": "Audit"}]
+          ]
+        ],
+        "expected_last_run": {"audit": {"last_fetch": "2023-01-01T00:00:00Z"}, "network_activities": {"last_fetch": "New_fetch_time"}},
+        "expected_all_events": [
+          {"event_id": 1, "type": "Audit"}
+        ]
+      }
+    ]
+  }
+  

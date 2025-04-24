@@ -1,0 +1,1581 @@
+commonfields:
+  id: Team Cymru Scout
+  version: -1
+name: Team Cymru Scout
+display: Team Cymru Scout
+category: Data Enrichment & Threat Intelligence
+description: Team Cymru's Scout integration with Palo Alto XSOAR helps streamline incident triage and accelerate threat response by providing domain and threat intelligence data.
+configuration:
+- additionalinfo: The authentication type used for secure communication with the Team Cymru Scout platform.
+  defaultvalue: API Key
+  display: Authentication Type
+  name: authentication_type
+  options:
+  - API Key
+  - Basic Auth
+  type: 15
+  required: true
+- displaypassword: API Key
+  additionalinfo: "The API key used for secure communication with the Team Cymru Scout platform. Required if \"API Key\" as Authentication Type is selected."
+  name: api_key
+  hiddenusername: true
+  type: 9
+  required: false
+- display: Username
+  displaypassword: Password
+  additionalinfo: "The username and password used for secure communication with the Team Cymru Scout platform. Required if \"Basic Auth\" as Authentication Type is selected."
+  name: basic_auth
+  type: 9
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of enrichment.
+  display: Create relationships
+  name: create_relationships
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.10.115186
+  isfetch: false
+  commands:
+  - name: scout-api-usage
+    description: 'Returns all the information on used queries and remaining queries with the query limit.'
+    outputs:
+    - type: String
+      contextPath: TeamCymruScout.QueryUsage.command_name
+      description: 'The name of the Cortex XSOAR command that triggered the Foundation API.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.used_queries
+      description: 'The number of queries used.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.remaining_queries
+      description: 'The number of remaining queries.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.query_limit
+      description: 'The total number of queries allowed.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.used_queries
+      description: 'The number of queries used for the Foundation API.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries
+      description: 'The number of remaining queries for the Foundation API.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.query_limit
+      description: 'The total number of queries allowed for the Foundation API.'
+  - name: ip
+    description: Return all the detailed information available for the given IP address.
+    arguments:
+    - name: ip
+      description: The IP address for which to retrieve available IP details.
+      required: true
+      isArray: true
+      default: true
+    - name: start_date
+      defaultValue: '30 days'
+      description: "The start date for detailed information.\n\nSupported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.\n\nFor example: 01 June 2024, 2024-06-17."
+    - name: end_date
+      defaultValue: 'now'
+      description: "The end date for detailed information.\n\nSupported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.\n\nFor example: 01 June 2024, 2024-06-17."
+    - name: days
+      description: "Relative offset in days from the current time. It cannot exceed the maximum range of 30 days.\n\nNote: This will take priority over start_date and end_date if all three are passed."
+    - name: size
+      description: "The maximum number of records to return.\n\nNote: The maximum allowed size is 1000."
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Tags
+      description: (List) Tags of the IP address.
+      type: Unknown
+    - contextPath: IP.FeedRelatedIndicators.value
+      description: Indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP address.
+      type: String
+    - contextPath: IP.Organization.Name
+      description: The organization of the IP address.
+      type: String
+    - contextPath: IP.Organization.Type
+      description: The organization type of the IP address.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP address.
+      type: String
+    - contextPath: IP.Region
+      description: The region in which the IP address is located.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP address.
+      type: String
+    - contextPath: IP.Internal
+      description: Whether the IP address is internal or external.
+      type: Boolean
+    - contextPath: IP.UpdatedDate
+      description: The date that the IP address was last updated.
+      type: Date
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The name of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Address
+      description: The address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Country
+      description: The country of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The phone number of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Campaign
+      description: The campaign associated with the IP address.
+      type: String
+    - contextPath: IP.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the IP address.
+      type: String
+    - contextPath: IP.CommunityNotes.note
+      description: Notes on the IP address that were given by the community.
+      type: String
+    - contextPath: IP.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: IP.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: IP.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: IP.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: IP.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: IP.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: IP.ThreatTypes.threatcategoryconfidence
+      description: The confidence level provided by the vendor for the threat type category For example, a confidence of 90 for the threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: TeamCymruScout.QueryUsage.request_id
+      description: 'The request ID of the API call.'
+      type: String
+    - contextPath: TeamCymruScout.QueryUsage.size
+      description: 'The number of records returned.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.start_date
+      description: 'The earliest date for detailed information.'
+      type: Date
+    - contextPath: TeamCymruScout.QueryUsage.end_date
+      description: 'The latest date for detailed information.'
+      type: Date
+    - contextPath: TeamCymruScout.QueryUsage.used_queries
+      description: 'The number of queries used.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.remaining_queries
+      description: 'The number of remaining queries.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.query_limit
+      description: 'The maximum number of queries allowed.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.used_queries
+      description: 'The number of queries used by the Foundation API.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries
+      description: 'The number of remaining queries for the Foundation API.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.query_limit
+      description: 'The maximum number of queries allowed for the Foundation API.'
+      type: Numbe
+    - contextPath: TeamCymruScout.IP.ip
+      description: 'The IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.sections
+      description: 'The sections of data returned.'
+      type: String
+    - contextPath: TeamCymruScout.IP.identity.tags
+      description: 'The tags associated with the IP address.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.identity.reverse_hostnames
+      description: 'The reverse hostnames associated with the IP address.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.identity.asn
+      description: 'The autonomous system number associated with the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.identity.as_name
+      description: 'The name associated with the autonomous system number.'
+      type: String
+    - contextPath: TeamCymruScout.IP.identity.net_name
+      description: 'The name associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.identity.org_name
+      description: 'The name associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.modified
+      description: 'The date the WHOIS information was last modified.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.whois.asn
+      description: 'The autonomous system number associated with the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.whois.cidr
+      description: 'The network associated with the IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.as_name
+      description: 'The name associated with the autonomous system number.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.bgp_asn
+      description: 'The Border Gateway Protocol (BGP) autonomous system number (ASN) associated with the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.whois.bgp_asn_name
+      description: 'The name associated with the Border Gateway Protocol (BGP) autonomous system number (ASN).'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.net_name
+      description: 'The name associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.net_handle
+      description: 'The handle associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.description
+      description: 'The description associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.cc
+      description: 'The country code associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.city
+      description: 'The city associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.address
+      description: 'The address associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.abuse_contact_id
+      description: 'The abuse contact ID associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.about_contact_role
+      description: 'The role associated with the about contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.about_contact_person
+      description: 'The person associated with the about contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.about_contact_email
+      description: 'The email associated with the about contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.about_contact_phone
+      description: 'The phone number associated with the about contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.about_contact_country
+      description: 'The country associated with the about contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.about_contact_city
+      description: 'The city associated with the about contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.about_contact_address
+      description: 'The address associated with the about contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_id
+      description: 'The ID associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_role
+      description: 'The role associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_person
+      description: 'The person associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_email
+      description: 'The email associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_phone
+      description: 'The phone number associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_country
+      description: 'The country associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_city
+      description: 'The city associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.admin_contact_address
+      description: 'The address associated with the admin contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_id
+      description: 'The ID associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_role
+      description: 'The role associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_person
+      description: 'The person associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_email
+      description: 'The email associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_phone
+      description: 'The phone number associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_country
+      description: 'The country associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_city
+      description: 'The city associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.tech_contact_address
+      description: 'The address associated with the tech contact.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.org_id
+      description: 'The ID associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.org_name
+      description: 'The name associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.org_email
+      description: 'The email associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.org_phone
+      description: 'The phone number associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.org_country
+      description: 'The country associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.org_city
+      description: 'The city associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.org_address
+      description: 'The address associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.mnt_by_email
+      description: 'The email associated with the maintainer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.mnt_lower_email
+      description: 'The email associated with the lower maintenance router.'
+      type: String
+    - contextPath: TeamCymruScout.IP.whois.mnt_router_email
+      description: 'The email associated with the maintenance router.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.event_count
+      description: 'The count of events associated with the communication.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.proto
+      description: 'The protocol associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.proto_text
+      description: 'The text associated with the protocol of the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.local.ip
+      description: 'The IP address associated with the local peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.local.min_port
+      description: 'The minimum port associated with the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.max_port
+      description: 'The maximum port associated with the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.country_codes
+      description: 'The country codes associated with the local peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.local.as_info.asn
+      description: 'The autonomous system number associated with the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.as_info.as_name
+      description: 'The name associated with the autonomous system number of the local peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.local.tags.id
+      description: 'The ID of the tags associated with the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.tags.name
+      description: 'The name of the tags associated with the local peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.local.tags.children.id
+      description: 'The ID of the child tags associated with the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.tags.children.name
+      description: 'The name of the child tags associated with the local peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.local.tags.children.children
+      description: 'The children of the child tags associated with the local peer.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.communications.peers.local.unique_ports
+      description: 'The unique ports associated with the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.top_services.service_name
+      description: 'The name of the top service associated with the local peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.local.top_services.port
+      description: 'The port associated with the top service of the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.top_services.proto_number
+      description: 'The protocol number associated with the top service of the local peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.local.top_services.description
+      description: 'The description associated with the top service of the local peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.ip
+      description: 'The IP address associated with the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.min_port
+      description: 'The minimum port associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.max_port
+      description: 'The maximum port associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.country_codes
+      description: 'The country codes associated with the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.as_info.asn
+      description: 'The autonomous system number associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.as_info.as_name
+      description: 'The name associated with the autonomous system number of the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags
+      description: 'The tags associated with the peer.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.unique_ports
+      description: 'The unique ports associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.top_services.service_name
+      description: 'The name of the top service associated with the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.top_services.port
+      description: 'The port associated with the top service of the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.top_services.proto_number
+      description: 'The protocol number associated with the top service of the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.top_services.description
+      description: 'The description associated with the top service of the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.event_count
+      description: 'The number of events associated with the communication.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.first_seen
+      description: 'The first seen date associated with the communication.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.communications.peers.last_seen
+      description: 'The last seen date associated with the communication.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.id
+      description: 'The ID of the tags associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.name
+      description: 'The name of the tags associated with the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.children.id
+      description: 'The ID of the child tags associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.children.name
+      description: 'The name of the child tags associated with the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.children.children.id
+      description: 'The ID of the grandchild tags associated with the peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.children.children.name
+      description: 'The name of the grandchild tags associated with the peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.children.children.children
+      description: 'The children of the grandchild tags associated with the peer.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.children.children
+      description: 'The grandchild tags associated with the peer.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.communications.peers.peer.tags.children
+      description: 'The child tags associated with the peer.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.pdns.event_count
+      description: 'The number of events associated with the PDNS.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.pdns.pdns.ip
+      description: 'The IP address associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.domain
+      description: 'The domain associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.root
+      description: 'The root associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.tld
+      description: 'The top level domain (TLD) associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.type
+      description: 'The type associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.registrar
+      description: 'The registrar associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.domain_created
+      description: 'The creation date associated with the PDNS.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.pdns.pdns.domain_expires
+      description: 'The expiration date associated with the PDNS.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.pdns.pdns.nameservers.root
+      description: 'The root of the nameserver associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.nameservers.nameservers
+      description: 'The nameservers associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.country_codes
+      description: 'The country codes associated with the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.as_info.asn
+      description: 'The autonomous system number associated with the PDNS.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.pdns.pdns.as_info.as_name
+      description: 'The name associated with the autonomous system number of the PDNS.'
+      type: String
+    - contextPath: TeamCymruScout.IP.pdns.pdns.tags
+      description: 'The tags associated with the PDNS.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.pdns.pdns.distinct_ips
+      description: 'The number of distinct IP addresses associated with the PDNS.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.pdns.pdns.active_days
+      description: 'The number of active days associated with the PDNS.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.pdns.pdns.event_count
+      description: 'The count of events associated with the PDNS.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.pdns.pdns.first_seen
+      description: 'The first date the PDNS was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.pdns.pdns.last_seen
+      description: 'The last date the PDNS was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.pdns.pdns.nameservers
+      description: 'The nameservers of the PDNS.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.fingerprints.event_count
+      description: 'The number of events associated with the fingerprints.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.ip
+      description: 'The IP address of the fingerprint.'
+      type: String
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.type
+      description: 'The type of the fingerprint.'
+      type: String
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.fingerprint
+      description: 'The fingerprint of the host.'
+      type: String
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.port
+      description: 'The port of the fingerprint.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.first_seen
+      description: 'The first date the fingerprint was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.last_seen
+      description: 'The last date the fingerprint was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.distinct_ips
+      description: 'The number of distinct IP addresses associated with the fingerprints.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.active_days
+      description: 'The number of active days associated with the fingerprints.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.fingerprints.fingerprints.event_count
+      description: 'The number of events associated with the fingerprints.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.event_count
+      description: 'The number of events associated with the open ports.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.unique_ports
+      description: 'The number of unique ports in the open ports.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.ip
+      description: 'The IP address of the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.port
+      description: 'The port of the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.protocol
+      description: 'The protocol of the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.protocol_text
+      description: 'The protocol text of the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.service
+      description: 'The service of the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.banner
+      description: 'The banner of the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.banner_sha1
+      description: 'The SHA1 hash of the banner of the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.first_seen
+      description: 'The first date the open port was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.last_seen
+      description: 'The last date the open port was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.country_codes
+      description: 'The country codes of the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.as_info.asn
+      description: 'The autonomous system number of the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.as_info.as_name
+      description: 'The name of the autonomous system number of the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.tags.id
+      description: 'The ID of the tag associated with the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.tags.name
+      description: 'The name of the tag associated with the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.tags.children.id
+      description: 'The ID of the child tag associated with the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.tags.children.name
+      description: 'The name of the child tag associated with the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.tags.children.children
+      description: 'The child tags of the child tag associated with the open port.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.open_ports.open_ports.event_count
+      description: 'The number of events associated with the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.x509.event_count
+      description: 'The number of events associated with the x509 certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.x509.x509.ip
+      description: 'The IP address associated with the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.issuer
+      description: 'The issuer of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.issuer_common_name
+      description: 'The common name of the issuer of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.common_name
+      description: 'The common name of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.altnames
+      description: 'The alternative names associated with the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.serial
+      description: 'The serial number of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.subject
+      description: 'The subject of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.not_after
+      description: 'The expiration date of the x509 certificate.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.x509.x509.not_before
+      description: 'The start date of the x509 certificate.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.x509.x509.validity_period
+      description: 'The validity period of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.md5
+      description: 'The MD5 hash of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.sha1
+      description: 'The SHA1 hash of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.sha256
+      description: 'The SHA256 hash of the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.first_seen
+      description: 'The first date the x509 certificate was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.x509.x509.last_seen
+      description: 'The last date the x509 certificate was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.x509.x509.port
+      description: 'The port associated with the x509 certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.x509.x509.self_signed
+      description: 'Indicates whether the x509 certificate is self-signed.'
+      type: Boolean
+    - contextPath: TeamCymruScout.IP.x509.x509.country_codes
+      description: 'The country codes associated with the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.as_info.asn
+      description: 'The autonomous system number associated with the x509 certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.x509.x509.as_info.as_name
+      description: 'The autonomous system name associated with the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.tags.id
+      description: 'The ID of the tag associated with the x509 certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.x509.x509.tags.name
+      description: 'The name of the tag associated with the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.tags.children.id
+      description: 'The ID of the child tag associated with the x509 certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.x509.x509.tags.children.name
+      description: 'The name of the child tag associated with the x509 certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.x509.x509.tags.children.children
+      description: 'The children of the child tag associated with the x509 certificate.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.x509.x509.count
+      description: 'The count of the x509 certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.total
+      description: 'The total count of the summary.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.ip
+      description: 'The IP address associated with the summary.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.start_date
+      description: 'The start date of the summary.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.end_date
+      description: 'The end date of the summary.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.geo_ip_cc
+      description: 'The country code associated with the geographic IP.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tags.id
+      description: 'The ID of the tag associated with the summary.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.tags.name
+      description: 'The name of the tag associated with the summary.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tags.children.id
+      description: 'The ID of the child tag associated with the summary.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.tags.children.name
+      description: 'The name of the child tag associated with the summary.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tags.children.children
+      description: 'The children of the child tag associated with the summary.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.summary.reverse_hostnames
+      description: 'The reverse hostnames associated with the summary.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.summary.bgp_asn
+      description: 'The autonomous system number associated with the BGP.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.bgp_asname
+      description: 'The autonomous system name associated with the BGP.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.whois.asn
+      description: 'The autonomous system number associated with the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.whois.as_name
+      description: 'The name associated with the autonomous system number.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.whois.net_name
+      description: 'The name associated with the network.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.whois.org_name
+      description: 'The name associated with the organization.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.pdns.total
+      description: 'The total count of the DNS queries associated with the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.pdns.top_pdns.event_count
+      description: 'The number of events associated with the top DNS query.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.pdns.top_pdns.domain
+      description: 'The domain associated with the top DNS query.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.pdns.top_pdns.first_seen
+      description: 'The first date the top DNS query was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.pdns.top_pdns.last_seen
+      description: 'The last date the top DNS query was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.pdns.top_pdns.css_color
+      description: 'The CSS color associated with the top DNS query.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.open_ports.total
+      description: 'The total number of the open ports associated with the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.open_ports.unique_ports
+      description: 'The number of unique ports in the open ports.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.event_count
+      description: 'The number of events associated with the top open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.port
+      description: 'The port associated with the top open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.protocol
+      description: 'The protocol number associated with the top open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.protocol_text
+      description: 'The protocol text associated with the top open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.service
+      description: 'The service associated with the top open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.inferred_service_name
+      description: 'The inferred service name associated with the top open port.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.first_seen
+      description: 'The first date the top open port was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.last_seen
+      description: 'The last date the top open port was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.open_ports.top_open_ports.css_color
+      description: 'The CSS color associated with the top open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.issuer
+      description: 'The issuer of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.issuer_common_name
+      description: 'The common name of the issuer of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.common_name
+      description: 'The common name of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.subject
+      description: 'The subject of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.port
+      description: 'The port associated with the certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.first_seen
+      description: 'The first date the certificate was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.last_seen
+      description: 'The last date the certificate was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.self_signed
+      description: 'Indicates whether the certificate is self-signed.'
+      type: Boolean
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.not_before
+      description: 'The date before which the certificate is not valid.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.not_after
+      description: 'The date after which the certificate is not valid.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.valid_days
+      description: 'The number of valid days for the certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.md5
+      description: 'The MD5 hash of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.sha1
+      description: 'The SHA1 hash of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.sha256
+      description: 'The SHA256 hash of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.top_certs.css_color
+      description: 'The CSS color associated with the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.id
+      description: 'The ID of the tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.name
+      description: 'The name of the tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.description
+      description: 'The description of the tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parent_ids
+      description: 'The parent IDs of the tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.css_color
+      description: 'The CSS color associated with the tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parents
+      description: 'The parents of the tag.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.first_seen
+      description: 'The first date the tag was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.last_seen
+      description: 'The last date the tag was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parents.id
+      description: 'The ID of the parent tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parents.name
+      description: 'The name of the parent tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parents.description
+      description: 'The description of the parent tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parents.parent_ids
+      description: 'The parent IDs of the parent tag.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parents.css_color
+      description: 'The CSS color associated with the parent tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.tag_timeline.data.tag.parents.parents
+      description: 'The parents of the parent tag.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.summary.insights.overall_rating
+      description: 'The overall rating of the insights.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.insights.total
+      description: 'The total count of the insights.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.insights.insights.rating
+      description: 'The rating of the insight.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.insights.insights.message
+      description: 'The message of the insight.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.top_fingerprints.type
+      description: 'The type of the fingerprint.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.top_fingerprints.signature
+      description: 'The signature of the fingerprint.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.top_fingerprints.port
+      description: 'The port associated with the fingerprint.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.top_fingerprints.first_seen
+      description: 'The first date the fingerprint was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.top_fingerprints.last_seen
+      description: 'The last date the fingerprint was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.top_fingerprints.count
+      description: 'The count of the fingerprint.'
+      type: Number
+  - name: scout-indicator-search
+    description: Return the summary information available for the given domain or IP address using Scout query language.
+    arguments:
+    - name: query
+      description: "A simple or advanced Scout query which may contain the domain or IP address.\n\nFor example: comms.ip=\"0.0.0.1/24\"."
+      required: true
+    - name: start_date
+      description: "The start date to filter indicators.\n\nSupported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.\n\nFor example: 01 June 2024, 2024-06-17."
+      defaultValue: '30 days'
+    - name: end_date
+      description: "The end date to filter indicators.\n\nSupported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.\n\nFor example: 01 June 2024, 2024-06-17."
+      defaultValue: 'now'
+    - name: days
+      description: "Relative offset in days from current time. It cannot exceed the maximum range of 30 days.\n\nNote: This will take priority over start_date and end_date if all three are passed."
+    - name: size
+      description: "The maximum number of indicators to fetch.\n\nNote: The maximum allowed size is 5000."
+      defaultValue: '20'
+    outputs:
+    - contextPath: TeamCymruScout.IP.ip
+      description: 'The IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.country_codes
+      description: 'The country code(s).'
+      type: String
+    - contextPath: TeamCymruScout.IP.as_info.asn
+      description: 'The autonomous system number.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.as_info.as_name
+      description: 'The autonomous system name.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.id
+      description: 'The ID of the tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.tags.name
+      description: 'The name of the tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.children.id
+      description: 'The ID of the child tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.tags.children.name
+      description: 'The name of the child tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.children.children
+      description: 'The children of the child tag.'
+      type: Unknown
+    - contextPath: TeamCymruScout.IP.event_count
+      description: 'The number of events related to the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.last_seen
+      description: 'The last time the IP was seen.'
+      type: Date
+    - contextPath: TeamCymruScout.IP.summary.whois.asn
+      description: 'The autonomous system number associated with the IP.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.whois.as_name
+      description: 'The name of the autonomous system associated with the IP.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.whois.net_name
+      description: 'The network name associated with the IP.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.whois.org_name
+      description: 'The organization name associated with the IP.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.open_ports.ip
+      description: 'The IP address associated with the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.open_ports.port
+      description: 'The port number associated with the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.open_ports.protocol
+      description: 'The protocol number associated with the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.open_ports.protocol_text
+      description: 'The protocol name associated with the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.open_ports.service
+      description: 'The service name associated with the open port.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.open_ports.event_count
+      description: 'The number of events related to the open port.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.pdns.ip
+      description: 'The IP address associated with the domain.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.pdns.domain
+      description: 'The domain associated with the IP.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.pdns.event_count
+      description: 'The number of events related to the domain.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.top_peers.ip
+      description: 'The IP address of the top peer.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.top_peers.event_count
+      description: 'The number of events related to the top peer.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.comms_total
+      description: 'The total number of communications related to the IP address.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.service_counts.proto
+      description: 'The protocol number associated with the service count.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.service_counts.proto_text
+      description: 'The protocol name associated with the service count.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.service_counts.port
+      description: 'The port number associated with the service count.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.service_counts.event_count
+      description: 'The number of events related to the service count.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.service_counts.service.service_name
+      description: 'The service name associated with the service count.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.service_counts.service.port
+      description: 'The port number associated with the service count.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.service_counts.service.proto_number
+      description: 'The protocol number associated with the service count.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.service_counts.service.description
+      description: 'The description of the service associated with the service count.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.ip
+      description: 'The IP address associated with the fingerprint.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.type
+      description: 'The type of the fingerprint.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.signature
+      description: 'The signature of the fingerprint.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.fingerprints.event_count
+      description: 'The number of events related to the fingerprint.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.certs.ip
+      description: 'The IP address associated with the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.issuer
+      description: 'The issuer of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.issuer_common_name
+      description: 'The common name of the issuer of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.common_name
+      description: 'The common name of the certificate.'
+      type: String
+    - contextPath: TeamCymruScout.IP.summary.certs.port
+      description: 'The port number associated with the certificate.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.summary.certs.event_count
+      description: 'The number of events related to the certificate.'
+      type: Number
+    - type: String
+      contextPath: TeamCymruScout.QueryUsage.command_name
+      description: 'The name of the Cortex XSOAR command that triggered the Foundation API.'
+    - type: String
+      contextPath: TeamCymruScout.QueryUsage.request_id
+      description: 'The unique request ID of the Foundation API response.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.total
+      description: 'The total number of records available for provided filters.'
+    - type: String
+      contextPath: TeamCymruScout.QueryUsage.query
+      description: 'The query for which the search API was triggered.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.size
+      description: 'The number of records requested using parameters.'
+    - type: String
+      contextPath: TeamCymruScout.QueryUsage.start_date
+      description: 'The start date from which the indicators are returned.'
+    - type: String
+      contextPath: TeamCymruScout.QueryUsage.end_date
+      description: 'The end date from which the indicators are returned.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.used_queries
+      description: 'The number of queries used.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.remaining_queries
+      description: 'The number of remaining queries.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.query_limit
+      description: 'The total number of queries allowed.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.used_queries
+      description: 'The number of queries used for the Foundation API.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries
+      description: 'The number of remaining queries for the Foundation API.'
+    - type: Number
+      contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.query_limit
+      description: 'The total number of queries allowed for the Foundation API.'
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Tags
+      description: (List) Tags of the IP address.
+      type: Unknown
+    - contextPath: IP.FeedRelatedIndicators.value
+      description: Indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP address.
+      type: String
+    - contextPath: IP.Organization.Name
+      description: The organization of the IP address.
+      type: String
+    - contextPath: IP.Organization.Type
+      description: The organization type of the IP address.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP address.
+      type: String
+    - contextPath: IP.Region
+      description: The region in which the IP address is located.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP address.
+      type: String
+    - contextPath: IP.Internal
+      description: Whether the IP address is internal or external.
+      type: Boolean
+    - contextPath: IP.UpdatedDate
+      description: The date that the IP address was last updated.
+      type: Date
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The name of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Address
+      description: The address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Country
+      description: The country of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The phone number of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Campaign
+      description: The campaign associated with the IP address.
+      type: String
+    - contextPath: IP.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the IP address.
+      type: String
+    - contextPath: IP.CommunityNotes.note
+      description: Notes on the IP address that were given by the community.
+      type: String
+    - contextPath: IP.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: IP.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: IP.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: IP.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: IP.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: IP.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: IP.ThreatTypes.threatcategoryconfidence
+      description: The confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: "The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad)."
+      type: Number
+  - name: scout-ip-list
+    description: Returns the summary information available for the given list of IP addresses.
+    arguments:
+    - name: ip_addresses
+      description: 'A comma-separated list of IP addresses to retrieve available IP details. Note: Maximum of 10 IP addresses are allowed.'
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: TeamCymruScout.IP.ip
+      description: 'The IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.country_code
+      description: 'The country code.'
+      type: String
+    - contextPath: TeamCymruScout.IP.as_info.asn
+      description: 'The autonomous system number.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.as_info.as_name
+      description: 'The autonomous system name.'
+      type: String
+    - contextPath: TeamCymruScout.IP.insights.overall_rating
+      description: 'The overall rating for the IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.insights.insights.rating
+      description: 'The individual insight rating for the IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.insights.insights.message
+      description: 'The individual insight message for the IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.id
+      description: 'The ID of the tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.tags.name
+      description: 'The name of the tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.children.id
+      description: 'The ID of the child tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.tags.children.name
+      description: 'The name of the child tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.children.children
+      description: 'The children of the child tag.'
+      type: Unknown
+    - contextPath: TeamCymruScout.QueryUsage.command_name
+      description: 'The name of the Cortex XSOAR command that triggered the Foundation API.'
+      type: String
+    - contextPath: TeamCymruScout.QueryUsage.request_id
+      description: 'The unique request ID of the Foundation API response.'
+      type: String
+    - contextPath: TeamCymruScout.QueryUsage.ips
+      description: 'The list of IP addresses for which the Foundation API was triggered.'
+      type: Unknown
+    - contextPath: TeamCymruScout.QueryUsage.used_queries
+      description: 'The number of queries used.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.remaining_queries
+      description: 'The number of remaining queries.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.query_limit
+      description: 'The total number of queries allowed.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.used_queries
+      description: 'The number of queries used for the Foundation API.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries
+      description: 'The number of remaining queries for the Foundation API.'
+      type: Number
+    - contextPath: TeamCymruScout.QueryUsage.foundation_api_usage.query_limit
+      description: 'The total number of queries allowed for the Foundation API.'
+      type: Number
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Tags
+      description: (List) Tags of the IP address.
+      type: Unknown
+    - contextPath: IP.FeedRelatedIndicators.value
+      description: Indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP address.
+      type: String
+    - contextPath: IP.Organization.Name
+      description: The organization of the IP address.
+      type: String
+    - contextPath: IP.Organization.Type
+      description: The organization type of the IP address.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP address.
+      type: String
+    - contextPath: IP.Region
+      description: The region in which the IP address is located.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP address.
+      type: String
+    - contextPath: IP.Internal
+      description: Whether the IP address is internal or external.
+      type: Boolean
+    - contextPath: IP.UpdatedDate
+      description: The date that the IP address was last updated.
+      type: Date
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The name of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Address
+      description: The address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Country
+      description: The country of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The phone number of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Campaign
+      description: The campaign associated with the IP address.
+      type: String
+    - contextPath: IP.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the IP address.
+      type: String
+    - contextPath: IP.CommunityNotes.note
+      description: Notes on the IP address that were given by the community.
+      type: String
+    - contextPath: IP.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: IP.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: IP.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: IP.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: IP.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: IP.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: IP.ThreatTypes.threatcategoryconfidence
+      description: The confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: 'The indicator that was tested.'
+      type: String
+    - contextPath: DBotScore.Type
+      description: 'The indicator type.'
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: 'The vendor used to calculate the score.'
+      type: String
+    - contextPath: DBotScore.Score
+      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad).'
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+tests:
+- No tests
+fromversion: 6.10.0

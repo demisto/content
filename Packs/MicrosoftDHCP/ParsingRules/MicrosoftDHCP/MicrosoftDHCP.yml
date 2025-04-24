@@ -1,6 +1,6 @@
-name: Microsoft DHCP
-id: Microsoft_DHCP
-fromversion: 6.10.0
+name: Microsoft DHCP Parsing Rule
+id: Microsoft_DHCPParsingRule
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''

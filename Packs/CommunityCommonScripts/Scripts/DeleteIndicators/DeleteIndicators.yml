@@ -1,0 +1,34 @@
+args:
+- description: Query for indicators to delete.
+  name: indicator_query
+- description: Comma-separated list of indicator values to delete.
+  name: indicator_values
+- description: Comma-separated list of indicator IDs to delete.
+  name: indicator_ids
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Whether to add the deleted indicator to the Exclusion List.
+  name: exclude
+  predefined:
+  - "true"
+  - "false"
+- description: Reason for indicator exclusion.
+  name: exclusion_reason
+comment: Delete indicators based on query, values, or IDs.
+commonfields:
+  id: 'DeleteIndicators'
+  version: -1
+dockerimage: demisto/python3:3.11.10.115186
+enabled: true
+engineinfo: {}
+name: DeleteIndicators
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

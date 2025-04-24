@@ -107,7 +107,7 @@ script:
       name: indicator_type
     description: Gets the feed indicators.
     name: sslbl-get-indicators
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

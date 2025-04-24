@@ -15,3 +15,9 @@ ignore=BA101
 
 [file:Expanse_image.png]
 ignore=IM111
+
+[file:incidenttype-Expanse_Appearance.json]
+ignore=GR107
+
+[file:incidenttype-Expanse_Behavior.json]
+ignore=GR107

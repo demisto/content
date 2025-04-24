@@ -1472,6 +1472,8 @@ tasks:
                 value:
                   simple: Email.HeadersMap
                 iscontext: true
+          transformers:
+            - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {

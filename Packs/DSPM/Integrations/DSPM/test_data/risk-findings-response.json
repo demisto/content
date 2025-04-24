@@ -1,0 +1,270 @@
+[
+    {
+        "id": "7e9a3891-8970-4c08-961a-03f49e239d68",
+        "ruleName": "Sensitive asset without storage versioning",
+        "severity": "MEDIUM",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-04-25T17:08:11.020304Z",
+        "complianceStandards": {}
+    },
+    {
+        "id": "47160a0e-a8d9-498c-b915-dc02fc075d1e",
+        "ruleName": "Sensitive asset without automatic backups",
+        "severity": "LOW",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-04-25T17:08:10.72235Z",
+        "complianceStandards": {
+            "GDPR": [
+                "Art.32"
+            ],
+            "ISO27001": [
+                "A.17.1.2"
+            ],
+            "NIST": [
+                "CP-1",
+                "CP-2",
+                "CP-3",
+                "CP-4",
+                "CP-6",
+                "CP-7",
+                "CP-8",
+                "CP-9",
+                "CP-10",
+                "PE-17"
+            ],
+            "PCI_DSS_3_2": [
+                "12.9.1",
+                "12.9.3",
+                "12.9.4",
+                "12.9.6"
+            ],
+            "SOC2": [
+                "A3.3",
+                "A3.4"
+            ]
+        }
+    },
+    {
+        "id": "9a6d02be-6f99-4a4e-905c-cf464a662c9b",
+        "ruleName": "Sensitive asset without comprehensive logging",
+        "severity": "MEDIUM",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-04-25T17:08:10.544504Z",
+        "complianceStandards": {
+            "GDPR": [
+                "Art.30",
+                "Art.32"
+            ],
+            "ISO27001": [
+                "A.12.4.1",
+                "A.12.4.2",
+                "A.12.4.3",
+                "A.9.2.3",
+                "A.9.4.4",
+                "A.9.4.1",
+                "A.16.1.2",
+                "A.16.1.7",
+                "A.18.2.3",
+                "A.18.1.3"
+            ],
+            "NIST": [
+                "AU-1",
+                "AU-2",
+                "AU-3",
+                "AU-4",
+                "AU-5",
+                "AU-6",
+                "AU-7",
+                "AU-9",
+                "AU-11",
+                "AU-12",
+                "AU-14",
+                "SI-4"
+            ],
+            "PCI_DSS_3_2": [
+                "10.1",
+                "10.2",
+                "10.2.1",
+                "10.2.2",
+                "10.2.3",
+                "10.2.4",
+                "10.2.5",
+                "10.2.6",
+                "10.2.7",
+                "10.3",
+                "10.3.1",
+                "10.3.2",
+                "10.3.4",
+                "10.3.5",
+                "10.3.6",
+                "10.4",
+                "10.5",
+                "10.5.1",
+                "10.5.2",
+                "10.5.3",
+                "10.5.4",
+                "10.6",
+                "10.7",
+                "10.9",
+                "11.4",
+                "11.5",
+                "11.6",
+                "12.5.2"
+            ],
+            "SOC2": [
+                "S3.7"
+            ]
+        }
+    },
+    {
+        "id": "a231cf82-0961-4c51-a0b7-40bb6c699754",
+        "ruleName": "Empty storage asset",
+        "severity": "LOW",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AWS",
+        "cloudEnvironment": "PRODUCTION",
+        "firstDiscovered": "2024-03-22T14:06:01.442372Z",
+        "complianceStandards": {}
+    },
+    {
+        "id": "da657589-d4d8-4386-ab15-f58ef627f9a7",
+        "ruleName": "Sensitive asset without storage versioning",
+        "severity": "MEDIUM",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-03-21T17:50:21.389882Z",
+        "complianceStandards": {}
+    },
+    {
+        "id": "6bf67ddf-1924-4fd8-b49f-e911583064c0",
+        "ruleName": "Sensitive asset without automatic backups",
+        "severity": "LOW",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-03-21T17:50:21.005674Z",
+        "complianceStandards": {
+            "GDPR": [
+                "Art.32"
+            ],
+            "ISO27001": [
+                "A.17.1.2"
+            ],
+            "NIST": [
+                "CP-1",
+                "CP-2",
+                "CP-3",
+                "CP-4",
+                "CP-6",
+                "CP-7",
+                "CP-8",
+                "CP-9",
+                "CP-10",
+                "PE-17"
+            ],
+            "PCI_DSS_3_2": [
+                "12.9.1",
+                "12.9.3",
+                "12.9.4",
+                "12.9.6"
+            ],
+            "SOC2": [
+                "A3.3",
+                "A3.4"
+            ]
+        }
+    },
+    {
+        
+        "id": "ed2e8f30-ce00-49ae-8b0d-7827d519e3b6",
+        "ruleName": "Sensitive asset without comprehensive logging",
+        "severity": "MEDIUM",
+        "asset": {
+            "name": "****",
+            "assetId": "****"
+        },
+        "status": "OPEN",
+        "projectId": "****",
+        "cloudProvider": "AZURE",
+        "cloudEnvironment": "DEVELOPMENT",
+        "firstDiscovered": "2024-03-21T17:50:20.691231Z",
+        "complianceStandards": {
+            "GDPR": [
+                "Art.30",
+                "Art.32"
+            ],
+            "ISO27001": [
+                "A.12.4.1",
+                "A.12.4.2",
+                "A.12.4.3",
+                "A.9.2.3",
+                "A.9.4.4",
+                "A.9.4.1",
+                "A.16.1.2",
+                "A.16.1.7",
+                "A.18.2.3",
+                "A.18.1.3"
+            ],
+            "NIST": [
+                "AU-1",
+                "AU-2",
+                "AU-3",
+                "AU-4",
+                "AU-5",
+                "AU-6",
+                "AU-7",
+                "AU-9",
+                "AU-11",
+                "AU-12",
+                "AU-14",
+                "SI-4"
+            ],
+            "PCI_DSS_3_2": [
+                "10.1",
+                "10.2",
+                "10.2.1",
+                "10.2.2",
+                "10.2.3",
+                "10.2.4",
+                "10.2.5"
+            ]
+        }
+    }
+]

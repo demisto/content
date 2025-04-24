@@ -300,6 +300,12 @@ script:
     - contextPath: Securonix.ActivityData.Agentfilename
       description: Agent file name.
       type: String
+    - contextPath: Securonix.ActivityData.Baseeventid
+      description: Base event ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Categorizedtime
+      description: Categorized time.
+      type: String
     - contextPath: Securonix.ActivityData.Categorybehavior
       description: Category behavior.
       type: String
@@ -315,8 +321,44 @@ script:
     - contextPath: Securonix.ActivityData.Collectiontimestamp
       description: Collection timestamp.
       type: String
+    - contextPath: Securonix.ActivityData.Customnumber1
+      description: Custom number.
+      type: Number
+    - contextPath: Securonix.ActivityData.Customstring13
+      description: Custom string.
+      type: String
+    - contextPath: Securonix.ActivityData.Customstring17
+      description: Custom string.
+      type: String
+    - contextPath: Securonix.ActivityData.Customtime1
+      description: Custom time.
+      type: String
+    - contextPath: Securonix.ActivityData.Customtime2
+      description: Custom time.
+      type: String
+    - contextPath: Securonix.ActivityData.Datetime
+      description: Date time.
+      type: String
+    - contextPath: Securonix.ActivityData.Dayofmonth
+      description: Day of month.
+      type: String
+    - contextPath: Securonix.ActivityData.Dayofweek
+      description: Day of week.
+      type: String
+    - contextPath: Securonix.ActivityData.Dayofyear
+      description: Day of year.
+      type: String
+    - contextPath: Securonix.ActivityData.Destinationntdomain
+      description: Destination NT domain.
+      type: String
     - contextPath: Securonix.ActivityData.Destinationprocessname
       description: Destination process name.
+      type: String
+    - contextPath: Securonix.ActivityData.Destinationservicename
+      description: Destination service name.
+      type: String
+    - contextPath: Securonix.ActivityData.Destinationuserid
+      description: Destination user ID.
       type: String
     - contextPath: Securonix.ActivityData.Destinationusername
       description: Destination username.
@@ -324,11 +366,23 @@ script:
     - contextPath: Securonix.ActivityData.Deviceaddress
       description: Device address.
       type: String
+    - contextPath: Securonix.ActivityData.Destinationuserprivileges
+      description: Destination user privileges.
+      type: String
+    - contextPath: Securonix.ActivityData.Devicecustomstring4
+      description: Device custom string.
+      type: String
+    - contextPath: Securonix.ActivityData.Deviceeventcategory
+      description: Device event category.
+      type: String
     - contextPath: Securonix.ActivityData.Deviceexternalid
       description: Device external ID.
       type: String
     - contextPath: Securonix.ActivityData.Devicehostname
       description: Device hostname.
+      type: String
+    - contextPath: Securonix.ActivityData.Ehash
+      description: Event hash.
       type: String
     - contextPath: Securonix.ActivityData.EventID
       description: Event ID.
@@ -342,10 +396,28 @@ script:
     - contextPath: Securonix.ActivityData.Filepath
       description: File path.
       type: String
+    - contextPath: Securonix.ActivityData.Filepermission
+      description: File permission.
+      type: String
+    - contextPath: Securonix.ActivityData.Hour
+      description: Date time hour.
+      type: String
+    - contextPath: Securonix.ActivityData.ID
+      description: Activity ID.
+      type: String
     - contextPath: Securonix.ActivityData.Ingestionnodeid
       description: Ingestion node ID.
       type: String
+    - contextPath: Securonix.ActivityData.Ipaddress
+      description: IP address.
+      type: String
+    - contextPath: Securonix.ActivityData.Ipaddress_Long
+      description: IP address long.
+      type: String
     - contextPath: Securonix.ActivityData.JobID
+      description: Deprecated. Use the Securonix.ActivityData.Jobid field.
+      type: String
+    - contextPath: Securonix.ActivityData.Jobid
       description: Job ID.
       type: String
     - contextPath: Securonix.ActivityData.Jobstarttime
@@ -354,8 +426,32 @@ script:
     - contextPath: Securonix.ActivityData.Message
       description: Message.
       type: String
+    - contextPath: Securonix.ActivityData.Minute
+      description: Date time minute.
+      type: String
+    - contextPath: Securonix.ActivityData.Month
+      description: Month.
+      type: String
+    - contextPath: Securonix.ActivityData.Oldfileid
+      description: Old file ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Oldfilepath
+      description: Old file path.
+      type: String
+    - contextPath: Securonix.ActivityData.Others
+      description: Others.
+      type: String
+    - contextPath: Securonix.ActivityData.Poprocessedtime
+      description: PO processed time.
+      type: String
     - contextPath: Securonix.ActivityData.Publishedtime
       description: Published time.
+      type: String
+    - contextPath: Securonix.ActivityData.Rawevent
+      description: Raw event.
+      type: String
+    - contextPath: Securonix.ActivityData.Raweventsize
+      description: Raw event size.
       type: String
     - contextPath: Securonix.ActivityData.Receivedtime
       description: Received time.
@@ -375,14 +471,56 @@ script:
     - contextPath: Securonix.ActivityData.ResourceGroupName
       description: Resource group name.
       type: String
+    - contextPath: Securonix.ActivityData.ResourceGroupTimezoneoffset
+      description: Resource Group Timezone offset.
+      type: String
     - contextPath: Securonix.ActivityData.ResourceGroupTypeID
       description: Resource group resource type ID.
       type: String
     - contextPath: Securonix.ActivityData.ResourceGroupVendor
       description: Resource group vendor.
       type: String
+    - contextPath: Securonix.ActivityData.Resourcegroupid
+      description: Resource Group ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Resourcegroupname
+      description: Resource Group Name.
+      type: String
+    - contextPath: Securonix.ActivityData.Resourcehostname
+      description: Resource host name.
+      type: String
+    - contextPath: Securonix.ActivityData.Resourcehostname_Long
+      description: Resource host name long.
+      type: String
+    - contextPath: Securonix.ActivityData.Resourcename
+      description: Resource name.
+      type: String
+    - contextPath: Securonix.ActivityData.Resourcetype
+      description: Resource type.
+      type: String
+    - contextPath: Securonix.ActivityData.Sessionid
+      description: Session ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourceaddress
+      description: Source address.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourceaddress_Long
+      description: Source address long.
+      type: String
     - contextPath: Securonix.ActivityData.Sourcehostname
       description: Source hostname.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourcentdomain
+      description: Source domain.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourceport
+      description: Source port.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourceprocessname
+      description: Source process name.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourceuserid
+      description: Source user ID.
       type: String
     - contextPath: Securonix.ActivityData.Sourceusername
       description: Source username.
@@ -395,6 +533,39 @@ script:
       type: String
     - contextPath: Securonix.ActivityData.Timeline
       description: Time when the activity occurred, in Epoch time.
+      type: String
+    - contextPath: Securonix.ActivityData.Timeline_By_Hour
+      description: Timeline by hour.
+      type: String
+    - contextPath: Securonix.ActivityData.Timeline_By_Minute
+      description: Timeline by minute.
+      type: String
+    - contextPath: Securonix.ActivityData.Timeline_By_Month
+      description: Timeline by month.
+      type: String
+    - contextPath: Securonix.ActivityData.Timeline_By_Week
+      description: Timeline by week.
+      type: String
+    - contextPath: Securonix.ActivityData.Timestamp
+      description: Timestamp.
+      type: String
+    - contextPath: Securonix.ActivityData.Transactionstring1
+      description: Transaction string 1.
+      type: String
+    - contextPath: Securonix.ActivityData.Userid
+      description: User ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Week
+      description: Week.
+      type: String
+    - contextPath: Securonix.ActivityData.Year
+      description: Year.
+      type: String
+    - contextPath: Securonix.ActivityData._Indexed_At_Tdt
+      description: Indexed at TDT.
+      type: String
+    - contextPath: Securonix.ActivityData._Version_
+      description: Activity version.
       type: String
     - contextPath: Securonix.Activity.totalDocuments
       description: Total number of events.
@@ -1563,7 +1734,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   runonce: false
   script: '-'

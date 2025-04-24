@@ -29,6 +29,6 @@ type: python
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.113941
 marketplaces:
 - xsoar

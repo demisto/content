@@ -59,8 +59,7 @@ configuration:
   type: 16
   required: false
 - additionalinfo: This parameter supports comma separated list of values. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values.
-  defaultvalue: All
-  display: Risk Vector ('All' has been selected by default)
+  display: Risk Vector
   name: risk_vector
   options:
   - Web Application Headers
@@ -84,6 +83,8 @@ configuration:
   - SSL Certificates
   - SSL Configurations
   - Unsolicited Communications
+  - Web Application Security
+  - DMARC
   - All
   type: 16
   required: false
@@ -103,6 +104,11 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Use the "Bitsight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
 display: Bitsight for Security Performance Management
 name: BitSight for Security Performance Management
@@ -317,10 +323,16 @@ script:
       - moderate
       - material
       - severe
-    - auto: PREDEFINED
-      description: 'Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad and, neutral.'
+    - description: 'Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad and, neutral.'
       isArray: true
       name: grade
+      auto: PREDEFINED
+      predefined:
+      - 'good'
+      - 'fair'
+      - 'warn'
+      - 'bad'
+      - 'neutral'
     - auto: PREDEFINED
       description: |-
         Minimum Asset Category of the findings.
@@ -332,9 +344,34 @@ script:
       - medium
       - high
       - critical
-    - description: 'Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations and, Unsolicited Communications.'
+    - description: 'Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications, Web Application Security, DMARC.'
       isArray: true
       name: risk_vector_label
+      auto: PREDEFINED
+      predefined:
+      - 'Botnet Infections'
+      - 'Breaches'
+      - 'Desktop Software'
+      - 'DKIM'
+      - 'DMARC'
+      - 'DNSSEC'
+      - 'File Sharing'
+      - 'Insecure Systems'
+      - 'Malware Servers'
+      - 'Mobile App Publications'
+      - 'Mobile Application Security'
+      - 'Mobile Software'
+      - 'Open Ports'
+      - 'Patching Cadence'
+      - 'Potentially Exploited'
+      - 'Server Software'
+      - 'Spam Propagation'
+      - 'SPF'
+      - 'SSL Certificates'
+      - 'SSL Configurations'
+      - 'Unsolicited Communications'
+      - 'Web Application Headers'
+      - 'Web Application Security'
     - defaultValue: '100'
       description: |-
         Set the maximum number of results to be retrieved. The maximum value is 1000.
@@ -542,10 +579,10 @@ script:
     - contextPath: BitSight.MyCompany.guid
       description: The unique identifier of my company.
       type: String
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

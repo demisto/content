@@ -14,25 +14,21 @@ For more information see [the ThreatExchange API Overview](https://developers.fa
 
 For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the *password* field.
 
-## Configure ThreatExchange v2 on Cortex XSOAR
+## Configure ThreatExchange v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ThreatExchange v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | -- | --- |
-    | App ID |  | True |
-    | App Secret | | True |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Share Level Type | A designation of how the indicator may be shared based on the US-CERT's Traffic Light Protocol | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Malicious Threshold | If the percentage of 'Malicious' reported statuses is above this threshold the indicator will be defined as malicious, otherwise suspicious. | False |
-    | Suspicious Threshold | If the number of 'Suspicious' reported statuses is above this threshold the indicator will be defined as suspicious. | False |
-    | Non Malicious Threshold | If the percentage of 'Non Malicious' reported statuses is above this threshold the indicator will be defined as good, otherwise unknown. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | -- | --- |
+| App ID |  | True |
+| App Secret | | True |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Share Level Type | A designation of how the indicator may be shared based on the US-CERT's Traffic Light Protocol | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Malicious Threshold | If the percentage of 'Malicious' reported statuses is above this threshold the indicator will be defined as malicious, otherwise suspicious. | False |
+| Suspicious Threshold | If the number of 'Suspicious' reported statuses is above this threshold the indicator will be defined as suspicious. | False |
+| Non Malicious Threshold | If the percentage of 'Non Malicious' reported statuses is above this threshold the indicator will be defined as good, otherwise unknown. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
  
 ## Changes compared to previous version
 1. Dbot score calculation is different. See [DBot Score / Reputation scores](#dbot-score-/-Reputation-scores) for details. 
@@ -61,7 +57,7 @@ the indicator will be defined as good.
 Otherwise, the indicator will be defined as unknown.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### file
 ***

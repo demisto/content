@@ -25,23 +25,19 @@ You don't need to install the packages, they are included in the Docker image.
   - DXL Client [documentation](https://opendxl.github.io/opendxl-client-python/pydoc/dxlclient.client.html)
   - DXL TIE Client [documentation](https://opendxl.github.io/opendxl-tie-client-python/pydoc/dxltieclient.client.html)
 
-## Configure McAfee Threat Intelligence Exchange V2 on Cortex XSOAR
+## Configure McAfee Threat Intelligence Exchange V2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for McAfee Threat Intelligence Exchange V2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Broker CA certificates | From \`brokercerts.crt\` file. | True |
-    | Client certificates | From \`client.crt\` file. | True |
-    | Client private key | From \`client.key\` file. Make sure that the type of the field is not \`encrypted\` when filling it out. | True |
-    | Broker URLs | The format should be: `[ssl://]<hostname>[:port]`. Get the hostname and port from the \`brokerlist.properties\` file. The broker should be reachable from Cortex XSOAR server. | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Broker CA certificates | From \`brokercerts.crt\` file. | True |
+| Client certificates | From \`client.crt\` file. | True |
+| Client private key | From \`client.key\` file. Make sure that the type of the field is not \`encrypted\` when filling it out. | True |
+| Broker URLs | The format should be: `[ssl://]<hostname>[:port]`. Get the hostname and port from the \`brokerlist.properties\` file. The broker should be reachable from Cortex XSOAR server. | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### file
 ***
@@ -427,5 +423,4 @@ The following sections list the changes in this version.
 - Added additional context outputs to the following commands:
    - ***file***
    - ***tie-file-references***
-
 

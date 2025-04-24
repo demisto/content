@@ -8,3 +8,9 @@ CustomCVE
 acti
 getThreatIntelReport
 get-fundamentals-by-uuid
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-ACTI_Intelligence_Report.json]
+ignore=GR103
+[file:layoutscontainer-ACTI_Intelligence_Alert.json]
+ignore=GR103

@@ -1,10 +1,7 @@
 Ivanti Heat service manager
 This integration was integrated and tested with version 2020.1.0.20200313 of Ivanti Heat
-## Configure Ivanti Heat on Cortex XSOAR
+## Configure Ivanti Heat in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Ivanti Heat.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ This integration was integrated and tested with version 2020.1.0.20200313 of Iva
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\) | False |
 | incident_name_field | The object field to use for incident name | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ivanti-heat-objects-list
 ***

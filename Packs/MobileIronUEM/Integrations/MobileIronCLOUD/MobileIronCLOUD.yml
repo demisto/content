@@ -470,7 +470,7 @@ script:
     - contextPath: MobileIronCloud.Device.jailbroken
       description: Whether the device is jailbroken.
       type: Boolean
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

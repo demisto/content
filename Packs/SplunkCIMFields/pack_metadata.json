@@ -2,7 +2,7 @@
     "name": "SplunkScripts",
     "description": "Splunk helper scripts.",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.2",
     "author": "Farrukh Ahmed",
     "url": "",
     "email": "",
@@ -18,6 +18,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

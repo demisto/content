@@ -4,23 +4,19 @@ This integration was integrated and tested with version 3.0 of Cortex XDR - XQL 
 In order to access all of the datasets, make sure your api token role is set to at least 'investigator'. Investigation query view will provide you access to all of the datasets except endpoints and host_inventory.
 For additional information see [Predefined User Roles for Cortex XDR](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Predefined-User-Roles)
 
-## Configure Cortex XDR - XQL Query Engine on Cortex XSOAR
+## Configure Cortex XDR - XQL Query Engine in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cortex XDR - XQL Query Engine.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | API Key ID | False |
-    | API Key | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| API Key ID | False |
+| API Key | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xdr-xql-generic-query
 ***

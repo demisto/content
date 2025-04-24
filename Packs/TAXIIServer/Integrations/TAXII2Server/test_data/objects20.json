@@ -2,7 +2,7 @@
     "id": "bundle--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
     "objects": [
         {
-            "created": "2021-12-08T09:32:24.104143Z",
+            "created": "2021-12-08T07:32:24.104143Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "CustomFields": {
@@ -99,13 +99,13 @@
                 }
             },
             "id": "ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7",
-            "modified": "2021-12-08T12:05:28.617414Z",
+            "modified": "2021-12-08T10:05:28.617414Z",
             "spec_version": "2.0",
             "type": "ipv4-addr",
             "value": "8.8.8.8"
         },
         {
-            "created": "2021-12-08T09:32:24.102219Z",
+            "created": "2021-12-08T07:32:24.102219Z",
             "extensions": {
                 "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
                     "CustomFields": {
@@ -202,20 +202,20 @@
                 }
             },
             "id": "ipv4-addr--cbd67181-b9f8-595b-8bc3-3971e34fa1cc",
-            "modified": "2021-12-08T12:05:28.615431Z",
+            "modified": "2021-12-08T10:05:28.615431Z",
             "spec_version": "2.0",
             "type": "ipv4-addr",
             "value": "1.1.1.1"
         },
         {
-            "created": "2021-12-08T09:32:24.104143Z",
+            "created": "2021-12-08T07:32:24.104143Z",
             "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
             "description": "This schema adds TIM data to the object",
             "extension_types": [
                 "property-extension"
             ],
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
-            "modified": "2021-12-08T12:05:28.617414Z",
+            "modified": "2021-12-08T10:05:28.617414Z",
             "name": "Cortex XSOAR TIM IP",
             "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.0",

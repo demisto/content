@@ -2,7 +2,7 @@ Use McAfee Database Activity Monitoring (DAM) Integration to fetch Alerts (incid
 
 This integration was integrated and developed with version 4.6.x of McAfee DAM.
 
-## Configure McAfeeDAM on Cortex XSOAR
+## Configure McAfeeDAM in Cortex
 
 Make sure that the XML API interface is enabled on your McAfee DAM server (**Settings > Interfaces > XML API**), and that the configured user has read permissions to query DAM Alerts and Sensors (XML API).
 
@@ -10,9 +10,6 @@ Make sure that the XML API interface is enabled on your McAfee DAM server (**Set
 
 Instructions on how to configure and test the XML API for McAfee DAM are available [here](https://docs.mcafee.com/bundle/database-security-4.6.5-product-guide/page/GUID-E51275F4-B365-499B-879C-51FE6A6989BA.html).
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for McAfeeDAM.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -24,9 +21,8 @@ Instructions on how to configure and test the XML API for McAfee DAM are availab
 | secure | Validate ceritifacte | False |
 | ruleName | Rule Name, If fetch incident is checked, this field is mandatory and will be used to get DAM alerts only triggered by this rule | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### Get information for a single alert
 ***

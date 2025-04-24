@@ -15,7 +15,7 @@ dependson:
   - cb-alert
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.84405
+dockerimage: demisto/python3:3.11.10.116949
 tests:
 - No tests (auto formatted)
 

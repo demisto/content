@@ -1,0 +1,149 @@
+category: Vulnerability Management
+commonfields:
+  id: SSL Labs
+  version: -1
+configuration:
+- additionalinfo: 'The registered email address that will be used to access SSL Labs. '
+  display: Registered Email Address
+  name: email
+  required: false
+  type: 0
+description: 'Analyze a host or a URL. '
+display: SSL Labs
+name: SSL Labs
+script:
+  commands:
+  - arguments:
+    - description: Users First Name.
+      name: firstName
+      required: true
+    - description: Users Last Name.
+      name: lastName
+      required: true
+    - description: Users Email Address. Email services such as Gmail, Yahoo, or Hotmail are not allowed.
+      name: email
+      required: true
+    - description: Name of the organization using the service.
+      name: organization
+      required: true
+    description: Register for Scan API initiation and result fetching.
+    name: ssl-labs-register-email
+    outputs:
+    - contextPath: SslLabs.Registation.message
+      description: Registration message response.
+      type: string
+    - contextPath: SslLabs.Registation.status
+      description: Either success or failure.
+      type: string
+  - arguments: []
+    description: Check the availability of the SSL Labs servers, retrieve the engine and criteria version, and initialize the maximum number of concurrent assessments.
+    name: ssl-labs-info
+    outputs:
+    - contextPath: SslLabs.Info.criteriaVersion
+      description: Rating criteria version as a string (e.g., "2009f").
+      type: string
+    - contextPath: SslLabs.Info.currentAssessments
+      description: The number of ongoing assessments submitted by this client.
+      type: number
+    - contextPath: SslLabs.Info.engineVersion
+      description: SSL Labs software version as a string (e.g., "2.2.0").
+      type: string
+    - contextPath: SslLabs.Info.maxAssessments
+      description: The maximum number of concurrent assessments the client is allowed to initiate.
+      type: number
+    - contextPath: SslLabs.Info.newAssessmentCoolOff
+      description: The cool-off period after each new assessment, in milliseconds; you're not allowed to submit a new assessment before the cool-off expires, otherwise you'll get a 429.
+      type: number
+    - contextPath: SslLabs.Info.messages
+      description: A list of messages (strings). Messages can be public (sent to everyone) and private (sent only to the invoking client). Private messages are prefixed with "[Private]".
+      type: string
+  - arguments:
+    - description: Provide hostname or URL.
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: off
+      description: 'Set to on if assessment results needs to be published on the public results boards. Default: off.'
+      name: publish
+      predefined:
+      - off
+      - on
+    - auto: PREDEFINED
+      defaultValue: off
+      description: 'If on setting is enabled, a new assessment is started, even if there is a cached assessment in progress. However, if an assessment is in progress, its status is returned instead of starting a new assessment. Note: This parameter should only be used once to start a new assessment; any additional use may cause an assessment loop.'
+      name: startNew
+      predefined:
+      - off
+      - on
+    - auto: PREDEFINED
+      defaultValue: off
+      description: 'Delivers cached assessment reports if available. This parameter is intended for API consumers who do not wish to wait for assessment results and cannot be used simultaneously with the startNew parameter. Default: off.'
+      name: fromCache
+      predefined:
+      - off
+      - on
+    - description: Maximum report age in hours if retrieving from cache (fromCache parameter).
+      name: maxAge
+    - auto: PREDEFINED
+      defaultValue: on
+      description: When the parameter is set to on, full information will be returned. When the parameter is set to done, full information will be returned only if the assessment is complete (status is READY or ERROR).
+      name: all
+      predefined:
+      - off
+      - on
+    - auto: PREDEFINED
+      defaultValue: off
+      description: "Ignores the mismatch if server certificate doesn't match the assessment hostname and proceeds with assessments if set to on. Default: off Note: This parameter is ignored if a cached report is returned."
+      name: ignoreMismatch
+      predefined:
+      - off
+      - on
+    description: 'Invoke assessments. '
+    name: ssl-labs-analyze
+    outputs:
+    - contextPath: SslLabs.Analyze.host
+      description: Assessment host, which can be a hostname or an IP address.
+      type: string
+    - contextPath: SslLabs.Analyze.port
+      description: Assessment port (e.g., 443).
+      type: number
+    - contextPath: SslLabs.Analyze.protocol
+      description: Protocol (e.g., HTTP).
+      type: string
+    - contextPath: SslLabs.Analyze.isPublic
+      description: true if this assessment is publicly available (listed on the SSL Labs assessment boards).
+      type: boolean
+    - contextPath: SslLabs.Analyze.status
+      description: 'Assessment status; possible values: DNS, ERROR, IN_PROGRESS, and READY.'
+      type: string
+    - contextPath: SslLabs.Analyze.startTime
+      description: Assessment starting time, in milliseconds since 1970.
+      type: number
+    - contextPath: SslLabs.Analyze.testTime
+      description: Assessment completion time, in milliseconds since 1970.
+      type: number
+    - contextPath: SslLabs.Analyze.engineVersion
+      description: Assessment engine version (e.g., "2.2.0").
+      type: string
+    - contextPath: SslLabs.Analyze.criteriaVersion
+      description: Grading criteria version (e.g., "2009l").
+      type: string
+    - contextPath: SslLabs.Analyze.cacheExpiryTime
+      description: When will the assessment results expire from the cache (typically set only for assessment with errors; otherwise the results stay in the cache for as long as there's sufficient room).
+      type: number
+    - contextPath: SslLabs.Analyze.certHostnames
+      description: The list of certificate hostnames collected from the certificates seen during assessment. The hostnames may not be valid. This field is available only if the server certificate doesn't match the requested hostname. In that case, this field saves you some time as you don't have to inspect the certificates yourself to find out what valid hostnames might be.
+    - contextPath: SslLabs.Analyze.endpoints
+      description: list of Endpoint objects.
+    - contextPath: SslLabs.Analyze.certs
+      description: a list of Cert object, representing the chain certificates in the order in which they were retrieved from the server.
+    polling: true
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+system: true
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

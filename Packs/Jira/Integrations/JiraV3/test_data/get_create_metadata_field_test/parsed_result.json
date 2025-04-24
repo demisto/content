@@ -1,0 +1,48 @@
+{
+    "Contents": {
+        "isLast": true,
+        "maxResults": 50,
+        "startAt": 0,
+        "total": 1,
+        "values": [
+            {
+                "allowedValues": [],
+                "fieldId": "assignee",
+                "hasDefaultValue": false,
+                "key": "assignee",
+                "name": "Assignee",
+                "operations": [
+                    "set"
+                ],
+                "required": true,
+                "schema": {}
+            }
+        ]
+    },
+    "ContentsFormat": "json",
+    "Type": 1,
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": [],
+    "HumanReadable": "### Issue fields for project test_project_id and issue type 100\n|Field ID|Has Default Value|Key|Name|Operations|Required|\n|---|---|---|---|---|---|\n| assignee | false | assignee | Assignee | set | true |\n",
+    "EntryContext": {
+        "Jira.IssueField(val.FieldID && val.FieldID == obj.FieldID)": [
+            {
+                "AllowedValues": [],
+                "AutoCompleteURL": null,
+                "Configuration": null,
+                "DefaultValue": null,
+                "FieldID": "assignee",
+                "HasDefaultValue": false,
+                "Key": "assignee",
+                "Name": "Assignee",
+                "Operations": [
+                    "set"
+                ],
+                "Required": true,
+                "Schema": {}
+            }
+        ]
+    }
+}

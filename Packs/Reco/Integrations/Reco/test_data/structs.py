@@ -83,9 +83,7 @@ class GetIncidentTableResponse:
         self.getTableResponse = get_table_response
 
     def to_json(self):
-        return json.loads(
-            json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-        )
+        return json.loads(json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4))
 
 
 class TableData:

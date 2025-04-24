@@ -58,9 +58,9 @@
         },
         {
             "array": false,
-            "name": "inc_mtime",
+            "name": "dg_time",
             "type": "timestamp",
-            "display_name": "Modified Time",
+            "display_name": "Event Time",
             "tags": [],
             "encrypt": false
         },
@@ -106,7 +106,7 @@
             "This file outlook.exe was going to [demo.digitalg@gmail.com]",
             "230523-WIQHA",
             "-",
-            "2023-05-23 06:56:39",
+            "2023-05-23 11:49:32",
             "1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e",
             "Critical",
             "Incident",
@@ -121,11 +121,19 @@
             "230523-RG0AB",
             "-",
             "2023-05-23 11:53:11",
-            "c742c377-b429-428a-b0c9-515cbbf143be",
+            "2223c1fa-5474-4fc0-a7c3-74ff42d28e6b",
             "Critical",
             "Incident",
             "279b59f3-02f3-44ea-a7c3-9bac2eb0224d"
         ]
     ],
-    "total_hits": 2
+    "total_hits": 2,
+    "bookmark_values": [
+        123456789,
+        "11111111-2222-3333-4444-55555555"
+    ],
+    "search_after_values": [
+        22446688,
+        "aaaaaaaa-bbbb-cccc-dddd-eeeeeeee"
+    ]
 }

@@ -82,7 +82,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -143,17 +142,16 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
-                        "w": 3,
+                        "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 5
                     },
                     {
                         "displayType": "CARD",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
                         "items": [
@@ -247,7 +245,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 2,
                         "moved": false,
                         "name": "Rubrik Basic Information",
                         "static": false,
@@ -257,28 +254,10 @@
                     },
                     {
                         "h": 1,
-                        "i": "caseinfoid-ee9b7f20-a255-11eb-86d3-ed6ff0cf2050",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Files with Open Access Permissions (Windows Only)",
-                        "query": "RubrikSonarOpenAccessFiles",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 1,
-                        "x": 0,
-                        "y": 3
-                    },
-                    {
-                        "h": 1,
                         "i": "caseinfoid-fafdf7c0-a255-11eb-86d3-ed6ff0cf2050",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Data Classification Hits",
                         "query": "RubrikSonarTotalHits",
@@ -287,7 +266,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 3
+                        "y": 4
                     },
                     {
                         "h": 1,
@@ -295,7 +274,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "CDM Cluster Status",
                         "query": "RubrikCDMClusterConnectionState",
@@ -312,7 +290,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Files Added",
                         "query": "RubrikRadarFilesAdded",
@@ -321,7 +298,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 1,
-                        "y": 2
+                        "y": 3
                     },
                     {
                         "h": 1,
@@ -329,7 +306,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Files Modified",
                         "query": "RubrikRadarFilesModified",
@@ -338,7 +314,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 3
                     },
                     {
                         "h": 1,
@@ -346,7 +322,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Files Removed",
                         "query": "RubrikRadarFilesDeleted",
@@ -355,22 +330,21 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 1,
-                        "y": 3
+                        "y": 4
                     },
                     {
-                        "h": 2,
+                        "h": 3,
                         "i": "caseinfoid-f98cd270-a6b1-11eb-bada-87dc9a8c0b9b",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Work Plan",
                         "static": false,
                         "type": "workplan",
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
+                        "w": 2,
+                        "x": 1,
+                        "y": 5
                     },
                     {
                         "h": 2,
@@ -378,14 +352,101 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
                         "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "i": "caseinfoid-f72ff2b0-3f46-11ef-b346-cdbc4d18c742",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Sensitive Files with Open Access Permissions",
+                        "query": "RubrikSonarOpenAccessFileHits",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "i": "caseinfoid-1738c8c0-3f47-11ef-b346-cdbc4d18c742",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Total Number of Files with Sensitive Data",
+                        "query": "RubrikSonarFileHits",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-aa68ec80-5930-11ef-84f9-f1d4aee2db17",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
                         "w": 2,
                         "x": 1,
-                        "y": 4
+                        "y": 11
+                    },
+                    {
+                        "h": 4,
+                        "i": "caseinfoid-f1b18520-5930-11ef-84f9-f1d4aee2db17",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "h": 3,
+                        "i": "caseinfoid-b692ce70-c809-11ef-b02b-91540fae8b93",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 1,
+                        "y": 8
                     }
                 ],
                 "type": "custom"
@@ -404,7 +465,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "rubrikPolaris-35620770-a14e-11eb-a966-5fbb5aa7e80a",
+                        "i": "caseinfoid-rubrikPolaris-35620770-a14e-11eb-a966-5fbb5aa7e80a",
                         "items": [
                             {
                                 "endCol": 6,
@@ -418,7 +479,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Anomaly Detection Event Timeline",
                         "static": false,
@@ -428,11 +488,10 @@
                     },
                     {
                         "h": 4,
-                        "i": "rubrikPolaris-344948e0-9e37-11eb-ac95-f33fbce9c16e",
+                        "i": "caseinfoid-rubrikPolaris-344948e0-9e37-11eb-ac95-f33fbce9c16e",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Data Classification",
                         "query": "RubrikSonarSensitiveHits",

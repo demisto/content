@@ -19,3 +19,10 @@ ignore=MR108
 
 [file:SlackModelingRules.yml]
 ignore=MR108
+
+# GR103 is temporary, see CIAC-11705
+[file:classifier-Slack_Mapper.json]
+ignore=GR103
+
+[file:SlackV3.yml]
+ignore=IN124

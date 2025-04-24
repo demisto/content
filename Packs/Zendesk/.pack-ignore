@@ -4,6 +4,9 @@ ignore=IN126
 [file:Zendesk_image.png]
 ignore=IM111
 
+[file:README.md]
+ignore=RM106
+
 [known_words]
 requester
 

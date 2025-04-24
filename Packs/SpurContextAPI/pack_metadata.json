@@ -2,7 +2,7 @@
     "name": "Spur Context API",
     "description": "Enrich IP addresses with data from the Spur Context API",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.5",
     "author": "Spur Intelligence Corporation",
     "url": "https://spur.us/contact/",
     "email": "support@spur.us",
@@ -16,12 +16,19 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "engineering@spur.us"
     ],
     "githubUser": [
         "jjunqueira"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

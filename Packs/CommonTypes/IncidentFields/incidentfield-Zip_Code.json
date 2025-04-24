@@ -24,7 +24,8 @@
   "IAM - Update User",
   "User Profile",
   "IAM - Sync User",
-  "IAM - Rehire User"
+  "IAM - Rehire User",
+  "IBM QRadar SOAR Incident"
  ],
  "associatedToAll": false,
  "unmapped": false,

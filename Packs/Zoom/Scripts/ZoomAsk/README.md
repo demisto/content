@@ -1,6 +1,7 @@
 Sends a message (question) to either a user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,13 @@ Sends a message (question) to either a user (in a direct message) or to a channe
 | Version | 5.5.0 |
 
 ## Use Case
+
 ---
 This automation allows you to ask users in Zoom (including users who are external to Cortex XSOAR) questions, have them respond and 
 reflect the answer back to Cortex XSOAR.
 
 ## Dependencies
+
 ---
 Requires an instance of the Zoom integration with Long Running instance checked.
 
@@ -22,6 +25,7 @@ This script uses the following commands and scripts.
 send-notification
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -40,18 +44,33 @@ send-notification
 | defaultResponse | Default response in case the question expires. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Guide
+
 ---
 The automation is most useful in a playbook to determine the outcome of a conditional task - which will be one of the provided options.
 It uses a mechanism that allows external users to respond in Cortex XSOAR (per investigation) with entitlement strings embedded within the message contents.
-![SlackAsk](https://user-images.githubusercontent.com/35098543/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
+![SlackAsk](../../doc_files/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
 
 The automation can utilize the interactive capabilities of Zoom to send a form with buttons. 
-This requires the external endpoint for interactive responses to be available for connection. (See the Zoom integration documentation for more information).
+This requires the external endpoint for interactive responses to be available for connection. (See the [Zoom integration documentation](https://xsoar.pan.dev/docs/reference/integrations/zoom)).
 You can also utilize a dropdown list instead, by specifying the `responseType` argument.
 
+To use `ZoomAsk` via playbook:
+1. Add the `ZoomAsk` script to a playbook as a task.
+2. In the `message` argument, specify the message to be sent.
+3. Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').
+4. Either a user or a channel_id or channel_name must be specified.
+5. In the `ZoomAsk` task, pass a tag value to the `task` argument.
+
+All other inputs are optional.
+At some point at the playbook, after running `ZoomAsk`, add a manual conditional task, which holds up the playbook execution until the response is received from Zoom.
+The condition names must match the response options you passed in to `ZoomAsk`.
+In order to tie the conditional task back to `ZoomAsk`, add the same tag from the fifth step to the conditional task (under the "Details" tab of the task). The conditional task will be marked as completed when a user responds to the `ZoomAsk` form.
+
 ## Notes
+
 ---

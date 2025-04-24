@@ -1,3 +1,7 @@
 [INGEST:vendor="aws", product="guardduty", target_dataset="aws_guardduty_raw", no_hit=keep]
-filter to_string(UpdatedAt) ~= ".*\d{2}:\d{2}:\d{2}.*"
-| alter _time = UpdatedAt;
+alter tmp_updated_at = to_string(coalesce(UpdatedAt, updatedAt)) // support both pascal case & camel case field naming convention 
+| filter tmp_updated_at ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})"  // validate timestamp is compatible with RFC3339 / ISO8601 
+| alter _time = if(tmp_updated_at ~= "Z$", 
+    parse_timestamp("%FT%H:%M:%E*SZ", tmp_updated_at), // zulu time notation, e.g. "2024-09-24T16:41:59.698Z
+    parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_updated_at)) // numerical offset e.g. 2024-09-24T19:41:59.698+03:00
+| fields - tmp_updated_at;

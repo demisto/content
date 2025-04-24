@@ -561,7 +561,7 @@ script:
     - contextPath: Bonusly.Bonus.message
       description: Message
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

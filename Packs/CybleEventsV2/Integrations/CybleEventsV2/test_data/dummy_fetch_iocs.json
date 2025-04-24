@@ -1,64 +1,40 @@
 {
   "data": {
     "pagination": {
-      "count": 17381117,
-      "items_per_page": 10,
-      "page": 1
+      "total_count": 17381117,
+      "page": 1,
+      "limit": 10
     },
-    "result": [
-      {
-        "asn_id": null,
-        "attack_id": [
-          {
-            "created_at": "2023-01-05T04:09:37.034894Z",
-            "attack_id": "T1071.001",
-            "name": "sample protocol name",
-            "updated_at": "2023-01-05T04:09:37.034894Z",
-            "uuid": "00000000-0000-0000-0000-000000000000",
-            "pivot": {
-                "ioc_id": "00000000-0000-0000-0000-000000000000",
-                "ioc_attack_id": "8992fe13-010f-5863-b025-6c15c07d00a7"
-            }
-          }
-        ],
-        "confident_rating": "Some confident Rating",
-        "created_at": "2023-02-21T02:51:38.959289Z",
-        "created_by": null,
-        "first_seen": "2023-02-20 21:00:55",
-        "ioc": "Indicator",
-        "ioc_type": {
-          "created_at": "2023-01-05T03:00:46.918397Z",
-          "created_by": null,
-          "updated_at": "2023-01-05T03:00:46.918397Z",
-          "uuid": "00000000-0000-0000-0000-000000000000",
-          "name": "some indicator type"
-        },
-        "ioc_tags": [
-          {
-            "created_at": "2023-02-12T16:57:07.204597Z",
-            "name": "Tag Name",
-            "pivot": {
-              "ioc_id": "00000000-0000-0000-0000-000000000000",
-              "tag_id": "00000000-0000-0000-0000-000000000000"
-            },
-            "tag_type_id": "00000000-0000-0000-0000-000000000000",
-            "updated_at": "2023-02-12T16:57:07.204597Z",
-            "uuid": "00000000-0000-0000-0000-000000000000"
-          }
-        ],
-        "iocs_source_name": {
-          "created_at": "2023-02-10T06:20:56.328463Z",
-          "name": "Feed Name",
-          "updated_at": "2023-02-10T06:20:56.328463Z",
-          "uuid": "00000000-0000-0000-0000-000000000000"
-        },
-        "last_seen": "2023-02-20 21:00:55",
-        "reference_link": null,
-        "risk_rating": "Some Risk Rating",
-        "source_name_id": "00000000-0000-0000-0000-000000000000",
-        "updated_at": "2023-02-21T02:51:38.959289Z",
-        "uuid": "00000000-0000-0000-0000-000000000000"
-      }
+    "iocs": [
+        {
+            "ioc": "Indicator",
+            "ioc_type": "Some IOC Type",
+            "first_seen": 1722227702,
+            "last_seen": 1722472568,
+            "risk_score": 70,
+            "sources": [
+                "Some Source"
+            ],
+            "behaviour_tags": [
+                "Some Tags"
+            ],
+            "confidence_rating": "Some Rating",
+            "target_countries": [
+                "Some Countries"
+            ],
+            "target_regions": [
+                "Some Regions"
+            ],
+            "target_industries": [
+                "Some Industries"
+            ],
+            "related_malware": [
+                "Some Malware"
+            ],
+            "related_threat_actors": [
+                "Some Actors"
+            ]
+        }
     ]
   },
   "success": true

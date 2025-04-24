@@ -947,7 +947,7 @@ script:
       required: true
     description: Cancel operation by operation name.
     name: gcloud-operations-cancel
-  dockerimage: demisto/google-k8s-engine:1.0.0.101434
+  dockerimage: demisto/google-k8s-engine:1.0.0.117480
   runonce: false
   script: '-'
   subtype: python3

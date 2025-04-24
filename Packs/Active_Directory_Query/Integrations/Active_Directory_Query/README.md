@@ -39,31 +39,27 @@ Use Cases
 * Create or modify Active Directory users.
 * Manage user accounts and their status
 
-## Configure Active Directory Query v2 on Cortex XSOAR
+## Configure Active Directory Query v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Active Directory Query v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                                  | **Required** |
-    |--------------------------------------------------------------------------------------------------| --- | --- |
-    | Server IP address (for example, 192.168.0.1) | The Server IP that should be used to access Active Directory.                                    | True |
-    | Port  | Server port. If not specified, the default port is 389, or 636 for LDAPS.                        | False |
-    | Credentials | User credentials.                                                                                                 | True |
-    | Password |                                                                                                  | True |
-    | NTLM authentication | Indicates whether to use NTLM authentication.                                                                                                 | False |
-    | Base DN (for example "dc=company,dc=com") | The basic hierarchical path of objects in the active directory.                                                                                                 | True |
-    | Page size | The number of results to be returned, per page (page - response content from AD server), from a query. This may effect query run time.                                                                                                 | True |
-    | Secure Connection |  Use SSL or Start TLS for secure connection or ‘None’ for communication over clear-text.                                                                                                | True |
-    | SSL Version | The SSL\TLS version to use in SSL or Start TLS connections types. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: [ssl.PROTOCOLS](https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT)). | False |
-    | Trust any certificate (not secure) | Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to a missing CA certificate)                                                                                                 | False |
-    | Incoming Mapper | Used in the IAM commands.                                                                        | True |
-    | Outgoing Mapper | Used in the IAM commands.                                                                        | True |
-    | Group CN for terminated employees |                                                                                                  | False |
-    | Create user if does not exist | If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only. | False |
+| **Parameter** | **Description**                                                                                  | **Required** |
+|--------------------------------------------------------------------------------------------------| --- | --- |
+| Server IP address (for example, 192.168.0.1) | The Server IP that should be used to access Active Directory.                                    | True |
+| Port  | Server port. If not specified, the default port is 389 for LDAP, 636 for LDAPS, or 3268 for global catalog servers.                        | False |
+| Credentials | User credentials.                                                                                                 | True |
+| Password |                                                                                                  | True |
+| NTLM authentication | Indicates whether to use NTLM authentication.                                                                                                 | False |
+| Base DN (for example "dc=company,dc=com") | The basic hierarchical path of objects in the active directory.                                                                                                 | True |
+| Page size | The number of results to be returned, per page (page - response content from AD server), from a query. This may effect query run time.                                                                                                 | True |
+| Secure Connection |  Use SSL or Start TLS for secure connection or ‘None’ for communication over clear-text.                                                                                                | True |
+| SSL Version | The SSL\TLS version to use in SSL or Start TLS connections types. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: [ssl.PROTOCOLS](https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT)). | False |
+| Trust any certificate (not secure) | Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to a missing CA certificate)                                                                                                 | False |
+| Incoming Mapper | Used in the IAM commands.                                                                        | True |
+| Outgoing Mapper | Used in the IAM commands.                                                                        | True |
+| Group CN for terminated employees |                                                                                                  | False |
+| Create user if does not exist | If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
-
+> <i>Note:</i> For queries and operations across multiple domains within an Active Directory forest the server port should be 3268. This port is used for queries specifically targeted for the global catalog. LDAP requests sent to port 3268 can be used to search for objects in the entire Active Directory forest. For more information on global catalog see the [Microsoft documentation](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/planning-global-catalog-server-placement).
 
 ##### Identity Lifecycle Management premium pack configuration
 
@@ -78,7 +74,7 @@ To allow the integration to access the mapper from within the code, as required 
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ad-expire-password
 ***
@@ -243,41 +239,27 @@ ad-search filter="(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
 >| CN=Guest,CN=Users,DC=demisto,DC=int  |
 
 ### ad-add-to-group
+
 ***
 Adds an Active Directory user or computer to a group.
-
 
 #### Base Command
 
 `ad-add-to-group`
 
-##### Required Permissions
-Requires `Create, delete, and manage groups` permissions.
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified. | Optional | 
+| username | The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified.\n Supports single or comma delimited list of usernames. | Optional | 
 | computer-name | The name of the computer to add to the group. If this argument is not specified, the username argument must be specified. | Optional | 
 | group-cn | The name of the group to add the user to. | Required | 
 | base-dn | Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used. | Optional | 
-
+| nested_group_cn | The name of the group to add as a member of the group specified group-cn. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-##### Command Example
-```
-ad-add-to-group username="Jack" group-cn="Users"
-```
-
-##### Human Readable Output
-```
-Object with dn CN=jack,DC=demisto,DC=int was added to group Users
-```
-
 ### ad-remove-from-group
 ***
 Removes an Active Directory user or computer from a group.
@@ -1135,10 +1117,20 @@ Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 #### Input
 
+### iam-disable-user
+
+***
+Disables a user.
+
+#### Base Command
+
+`iam-disable-user`
+
+#### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator that contains user information, such as name and email address. | Required | 
-
 
 #### Context Output
 
@@ -1156,42 +1148,6 @@ Requires `Read userAccountControl` and `write userAccountControl` permissions.
 | IAM.Vendor.success | Boolean | If true, the command was executed successfully. | 
 | IAM.Vendor.username | String | The employee username in the app. | 
 | IAM.Vendor.action | String | The command name. | 
-
-#### Command Example
-
-```
-!iam-disable-user user-profile={\"email\":\"testdemisto2@paloaltonetworks.com\"}
-```
-
-#### Human Readable Output
-
-### Disable User Results
-|brand|instanceName|success|active|id|username|email|details|
-|---|---|---|---|---|---|---|---|
-| Active Directory Query | IAM_instance_1 | true | false |  | testdemisto2| testdemisto2@paloaltonetworks.com | status: PROVISIONED<br />created: 2020-10-18T17:54:30.000Z<br />activated: 2020-10-18T17:54:30.000Z<br />statusChanged: 2020-10-18T17:54:30.000Z<br />lastLogin: null<br />lastUpdated: 2020-10-18T17:54:30.000Z<br />passwordChanged: null<br />type: {"id": "oty8zfz6plq7b0r830h7"}<br />profile: {"firstName": "Demisto", "lastName": "Test", "mobilePhone": null, "secondEmail": null, "login": "testdemisto2@paloaltonetworks.com", "email": "testdemisto44@paloaltonetworks.com"}<br />credentials: {"provider": {"type": "Active Directory Query", "name": "Active Directory Query"}}}
-
-
-
-
-Additional Information
-----------------------
-
-* LDAP attributes: <https://msdn.microsoft.com/en-us/library/ms675090(v=vs.85).aspx>
-* Distinguished Names explanation and examples: <https://ldap.com/ldap-dns-and-rdns/>
-
-### get-mapping-fields
-***
-Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
-
-
-#### Base Command
-
-`get-mapping-fields`
-
-##### Required Permissions
-Requires `Read` and `Read and read all properties` permissions in `General` permissions.
-
-#### Input
 
 There are no input arguments for this command.
 
@@ -1219,14 +1175,20 @@ The following sections list the changes in this version.
 In the *ad-get-user* command:
 * *attributes-to-exclude*
 
-In the *ad-search* command, support pagination with the following arguments:
-* *page-size*
-* *page-cookie*
+### get-mapping-fields
 
-In the following commands: *ad-get-user*, *ad-get-computer*, *ad-get-group-members*,
-support pagination with the following arguments:
-* *limit*
-* *page-size*
-* *page-cookie*
+***
+Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
 
+#### Base Command
 
+`get-mapping-fields`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

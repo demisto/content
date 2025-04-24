@@ -1,0 +1,8 @@
+!hoxhunt-current-user-get
+!hoxhunt-incident-threats-get incident_id="12345" limit=5 sort="createdAt_DESC"
+!hoxhunt-incident-note-add incident_id="12345" note="Investigated and escalated to the SOC team."
+!hoxhunt-incident-threats-remove incident_id="12345"
+!hoxhunt-incident-soc-feedback-send incident_id="12345" custom_message="User reported a phishing email." threat_feedback_reported_at_limit="2024-09-01T00:00:00Z"
+!hoxhunt-incident-set-sensitive incident_id="12345" is_sensitive=true
+!hoxhunt-incident-set-soc-classification incident_id="12345" classification="Malware"
+!hoxhunt-incident-update-state incident_id="12345" state="RESOLVED"

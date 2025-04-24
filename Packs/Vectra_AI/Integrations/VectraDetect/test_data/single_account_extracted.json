@@ -7,13 +7,12 @@
         "State": "active",
         "Tags": [],
         "ThreatScore": 60,
-
-        "LastDetectionTimestamp" :  "2022-07-03T23:34:07.000Z",
+        "LastDetectionTimestamp": "2022-07-03T23:34:07.000Z",
         "PrivilegeLevel": null,
         "PrivilegeCategory": null,
-        "Severity":  "High",
+        "Severity": "High",
         "Type": "o365",
-        "URL": "https://vectra.test/accounts/36",
+        "URL": "https://vectra.test/accounts/36?pivot=Vectra_AI-XSOAR-2.0.0",
         "Username": "O365:darcy@corp.example.com"
     },
     "common_extract": {

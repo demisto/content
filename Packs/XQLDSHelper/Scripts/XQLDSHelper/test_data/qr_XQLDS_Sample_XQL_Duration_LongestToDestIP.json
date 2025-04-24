@@ -1,0 +1,15 @@
+{
+  "execution_id": "abcc2243142f45_99002_inv",
+  "number_of_results": 1,
+  "query_cost": {
+    "3204872200335": 0.00042305555555555553
+  },
+  "query_name": "",
+  "remaining_quota": 64.88520861111111,
+  "results": [
+    {
+      "_duration": 86388
+    }
+  ],
+  "status": "SUCCESS"
+}

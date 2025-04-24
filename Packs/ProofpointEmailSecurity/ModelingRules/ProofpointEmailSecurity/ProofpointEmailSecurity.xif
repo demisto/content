@@ -39,6 +39,7 @@ filter event_type = "message"
         xdm.email.attachment.sha256 = arraystring(arrayfilter(arraymap(msgParts_array, "@element" -> sha256), "@element" != "" and "@element" != null), ", "),
         xdm.observer.action = arraystring(arraymap(actions, if("@element" -> isFinal = "true", "@element" -> action, null)), ", "),
         xdm.alert.original_threat_name = arraystring(`filter` -> modules.av.virusNames[], ", ");
+
 // Modeling rule for Proofpoint email security "Mail" events
 filter event_type = "maillog"
 | alter
@@ -54,3 +55,27 @@ filter event_type = "maillog"
         xdm.email.recipients = arraymap(arraymap(arraymap(arraymap(sm -> to[], ltrim("@element", "\"")), rtrim("@element", "\"")), ltrim("@element", "<")), rtrim("@element", ">")),
         xdm.network.tls.cipher = if(lowercase(tls -> cipher) = "none", null, tls -> cipher),
         xdm.network.tls.protocol_version = if(lowercase(tls -> version) = "none", null, tls -> version);
+
+// Modeling rule for Proofpoint email security "Audit" events
+filter event_type = "audit"
+| alter source_ip = audit -> user.ipAddress, target_ip = metadata -> origin.data.agent
+| alter 
+        xdm.target.resource.type = audit -> resourceType,
+        xdm.source.user.identifier = audit -> user.id,
+        xdm.source.user.username = audit -> user.email,
+        xdm.source.ipv4 = if(source_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", source_ip, null),
+        xdm.source.ipv6 = if(source_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", source_ip, null),
+        xdm.target.ipv4 = if(target_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", target_ip, null),
+        xdm.target.ipv6 = if(target_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", target_ip, null),
+        xdm.event.operation_sub_type = audit -> action,
+        xdm.alert.severity = audit -> level,
+        xdm.alert.subcategory = parsed_fields -> eventSubCategory,
+        xdm.observer.unique_identifier = metadata -> customerId,
+        xdm.event.type = event_type,
+        xdm.event.id = guid,
+        xdm.event.description = parsed_fields,
+        xdm.alert.description = parsed_fields -> eventDetails,
+        xdm.observer.type = metadata -> origin.type,
+        xdm.observer.content_version = metadata -> origin.schemaVersion,
+        xdm.observer.version = metadata -> origin.data.version,
+        xdm.observer.name = metadata -> origin.data.cid;

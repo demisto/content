@@ -57,6 +57,55 @@ configuration:
   type: 8
   section: Connect
   required: false
+- additionalinfo: Select Chronicle Alert types to be considered for Fetch Incidents. Available options are Curated Rule Detection Alerts and Rule Detection Alerts (If not selected, fetches all detections).
+  display: Chronicle Alert Type
+  name: alert_type
+  options:
+  - Curated Rule Detection Alerts
+  - Rule Detection Alerts
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: Select the severity of detections to be considered for Fetch Incidents. Available options are 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' (If not selected, fetches all detections).
+  display: Severity of Detection
+  name: detection_severity
+  options:
+  - High
+  - Medium
+  - Low
+  - Informational
+  - Unspecified
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: Only detections with the given rule names will be allowed for ingestion.
+  display: Rule Names for Detection Ingestion
+  name: rule_names
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- display: If selected, detections with the above rule names will be denied for ingestion.
+  name: exclude_rule_names
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: Only the detections with the given rule IDs will be allowed for ingestion.
+  display: Rule IDs for Detection Ingestion
+  name: rule_ids
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+- display: If selected, detections with above rule IDs will be denied for ingestion.
+  name: exclude_rule_ids
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -73,7 +122,7 @@ description: Use the Google Chronicle Backstory Streaming API integration to ing
 display: Chronicle Streaming API
 name: Google Chronicle Backstory Streaming API
 script:
-  dockerimage: demisto/googleapi-python3:1.0.0.97032
+  dockerimage: demisto/googleapi-python3:1.0.0.117483
   longRunning: true
   isFetchSamples: true
   runonce: false

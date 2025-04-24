@@ -69,7 +69,7 @@ description: Provide a simple API proxy to restrict privileges or minimize the a
 display: Simple API Proxy
 name: Simple API Proxy
 script:
-  dockerimage: demisto/fastapi:1.0.0.76036
+  dockerimage: demisto/fastapi:0.115.4.115067
   longRunning: true
   longRunningPort: true
   runonce: true

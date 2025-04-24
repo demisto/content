@@ -17,12 +17,65 @@
     "default": false,
     "autorun": false,
     "disabled": false,
+    "playbookId": "Process Incident - Vectra Detect",
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
+    "layout": "Vectra Host",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
-        "fieldCliNameToExtractSettings": {}
+        "fieldCliNameToExtractSettings": {
+            "devicelocalip": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ipRep",
+                    "IPv6"
+                ]
+            },
+            "devicename": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "email": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "emailRep"
+                ]
+            },
+            "hostnames": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectradetectiondetails": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectrahostaccountaccesshistory": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectrahostartifactset": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectrahostpreviousips": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectraserviceaccesshistory": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
     },
     "fromVersion": "6.5.0"
 }

@@ -13,30 +13,26 @@ The general filtering syntax is as follows:
 
 To get the detailed information regarding the valid attributes for filtering user can refer to the [HackerOne API documentation](https://api.hackerone.com/customer-resources/#reports-get-all-reports).
 
-## Configure HackerOne on Cortex XSOAR
+## Configure HackerOne in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HackerOne.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL to connect to HackerOne. | True |
-    | Username | The username of the user. | True |
-    | Maximum number of incidents per fetch | The maximum limit is 100. | False |
-    | First fetch time interval | Date or relative timestamp to start fetching incidents from. <br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc | False |
-    | Program Handle | Fetches reports based on the specified program handle. Supports comma separated values.<br/><br/>Note: To get program handle, use the "hackerone-program-list" command. | True |
-    | State | Fetches reports based on the specified report state. <br/><br/>Note: Supports comma separated values. | False |
-    | Severity | Fetches reports based on severity ratings of the report. <br/><br/>Note: Supports comma separated values. | False |
-    | Advanced Filters | By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "Program Handle", "State" and "Severity".<br/><br/>Format accepted: \{"filter\[attribute1\]\[\]": "value1, value2", "filter\[attribute2\]" : "value3"\}<br/><br/>For example: \{"filter\[closed_at__gt\]" : "2020-10-26T10:48:16.834Z", "filter\[state\]\[\]" : "new, triaged"\}<br/><br/>To know more visit: https://api.hackerone.com/customer-resources/#reports-get-all-reports. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Server URL to connect to HackerOne. | True |
+| Username | The username of the user. | True |
+| Maximum number of incidents per fetch | The maximum limit is 100. | False |
+| First fetch time interval | Date or relative timestamp to start fetching incidents from. <br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc | False |
+| Program Handle | Fetches reports based on the specified program handle. Supports comma separated values.<br/><br/>Note: To get program handle, use the "hackerone-program-list" command. | True |
+| State | Fetches reports based on the specified report state. <br/><br/>Note: Supports comma separated values. | False |
+| Severity | Fetches reports based on severity ratings of the report. <br/><br/>Note: Supports comma separated values. | False |
+| Advanced Filters | By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "Program Handle", "State" and "Severity".<br/><br/>Format accepted: \{"filter\[attribute1\]\[\]": "value1, value2", "filter\[attribute2\]" : "value3"\}<br/><br/>For example: \{"filter\[closed_at__gt\]" : "2020-10-26T10:48:16.834Z", "filter\[state\]\[\]" : "new, triaged"\}<br/><br/>To know more visit: https://api.hackerone.com/customer-resources/#reports-get-all-reports. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### hackerone-report-list
 ***
@@ -480,4 +476,3 @@ Retrieves information about the programs in which the user is a member.
 >|---|---|---|---|
 >| 53994 | something_h1b | 2021-08-09T13:39:20.342Z | 2021-08-10T09:29:56.853Z |
 >| 53996 | checker_program_h1b | 2021-08-09T13:41:35.764Z | 2021-08-10T09:29:56.984Z |
-

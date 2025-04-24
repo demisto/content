@@ -6,8 +6,10 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"Netwitness Incident",
-		"Prisma Cloud - VM Alert Prioritization"
+		"NetWitness Incident",
+		"Prisma Cloud - VM Alert Prioritization",
+        "IBM QRadar SOAR Incident",
+        "Exabeam Platform Case"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

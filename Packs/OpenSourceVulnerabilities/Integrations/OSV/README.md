@@ -1,22 +1,18 @@
 OSV (Open Source Vulnerability) is a vulnerability database for open source projects. For each vulnerability, it perform bisects to figure out the exact commit that introduces the bug, as well the exact commit that fixes it. This is cross referenced against upstream repositories to figure out the affected tags and commit ranges
 
-## Configure OSV on Cortex XSOAR
+## Configure OSV in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OSV.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://api.osv.dev) | True |
-    | Trust any certificate (not secure) |  |
-    | Use system proxy settings |  |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://api.osv.dev) | True |
+| Trust any certificate (not secure) |  |
+| Use system proxy settings |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### osv-get-vuln-by-id

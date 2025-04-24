@@ -1,4 +1,6 @@
 category: Messaging and Conferencing
+sectionOrder:
+- Connect
 commonfields:
   id: Google Chat via Webhook
   version: -1
@@ -8,6 +10,7 @@ configuration:
   name: space_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Google Chat Space Key (found in Google Chat Webhook URL)
   display: Google Chat Space Key
   displaypassword: Google Chat Space Key
@@ -15,6 +18,7 @@ configuration:
   name: key
   required: true
   type: 9
+  section: Connect
 - additionalinfo: This is located in the Webhook URL as a query parameter
   display: Google Chat Space Token
   displaypassword: Google Chat Space Token
@@ -22,14 +26,19 @@ configuration:
   name: token
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Integration for sending notifications to a Google Chat space via Incoming Webhook.
 display: Google Chat via Webhook
 name: Google Chat via Webhook
@@ -98,7 +107,7 @@ script:
       description: Google Chat thread name.
     - contextPath: GoogleChatWebhook.CustomCard.SenderDisplayName
       description: Google Chat custom card sender display name.
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: ''
   subtype: python3

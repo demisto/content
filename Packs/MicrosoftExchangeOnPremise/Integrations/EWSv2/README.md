@@ -39,35 +39,33 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 - Send notifications to external users.
 - Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://xsoar.pan.dev/docs/reference/scripts/email-ask-user)
 
-## Configure EWS v2 on Cortex XSOAR
+## Configure EWS v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                                                                                 | **Required** |
-    |-----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | Email address                                                                                                                                 | True         |
-    | Password                                                                                                                                      | True         |
-    | Email address from which to fetch incidents                                                                                                   | True         |
-    | Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)                            | True         |
-    | Public Folder                                                                                                                                 | False        |
-    | Has impersonation rights                                                                                                                      | False        |
-    | Use system proxy settings                                                                                                                     | False        |
-    | Fetch incidents                                                                                                                               | False        |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)                                                              | False        |
-    | Mark fetched emails as read                                                                                                                   | False        |
-    | Incident type                                                                                                                                 | False        |
-    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address                 | False        |
-    | DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)                                                                                                      | False        |
-    | Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2016, and 2019)                                     | False        |
-    | Trust any certificate (not secure)                                                                                                            | False        |
-    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). | False        |
-    | Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
-    | Max incidents per fetch                                                                                                                       | False        |
-    | Run as a separate process (protects against memory depletion)                                                                                 | False        |
+| **Parameter**                                                                                                                                 | **Required** |
+|-----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Email address                                                                                                                                 | True         |
+| Password                                                                                                                                      | True         |
+| Email address from which to fetch incidents                                                                                                   | True         |
+| Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)                            | True         |
+| Public Folder                                                                                                                                 | False        |
+| Has impersonation rights                                                                                                                      | False        |
+| Use system proxy settings                                                                                                                     | False        |
+| Fetch incidents                                                                                                                               | False        |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)                                                              | False        |
+| Mark fetched emails as read                                                                                                                   | False        |
+| Incident type                                                                                                                                 | False        |
+| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address                 | False        |
+| DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)                                                                                                      | False        |
+| Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2016, and 2019)                                     | False        |
+| Trust any certificate (not secure)                                                                                                            | False        |
+| ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). | False        |
+| Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
+| Max incidents per fetch                                                                                                                       | False        |
+| Run as a separate process (protects against memory depletion)                                                                                 | False        |
+| Skip unparsable emails during fetch incidents                                                                                                 | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Fetched Incidents Data
 
@@ -93,7 +91,7 @@ Find more information on impersonation or delegation rights in the  [Additional 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ews-get-attachment
@@ -394,7 +392,7 @@ Move an item to different folder in the mailbox.
 ### ews-delete-items
 
 ***
-Delete items from mailbox.
+Delete items from mailbox. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
 
 
 #### Base Command
@@ -1308,234 +1306,6 @@ Retrieves a single folder.
 }
 ```
 
-### ews-o365-start-compliance-search
-
-***
-Starts a compliance search.
-
-
-#### Base Command
-
-`ews-o365-start-compliance-search`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | Query to use to find emails. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| EWS.ComplianceSearch.Name | string | The name of the compliance search. | 
-| EWS.ComplianceSearch.Status | string | The status of the compliance search. | 
-
-#### Command Example
-
-```!ews-o365-start-compliance-search query="subject:"Wanted Email""```
-
-#### Human Readable Output
-
-```Search started: DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
-
-#### Context Example
-
-```json
-{
-    "EWS": {
-        "ComplianceSearch": {
-            "Status": "Starting", 
-            "Name": "DemistoSearch67e67371d0004c46bebfa3219b5a14bf"
-        }
-    }
-}
-```
-
-### ews-o365-get-compliance-search
-
-***
-Returns the status and results of a compliance search.
-
-
-#### Base Command
-
-`ews-o365-get-compliance-search`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search-name | The name of the compliance search. | Required | 
-| show-only-recipients | Whether to return only mailboxes which contain the email. Default is "False". Possible values are: True, False. Default is False. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| EWS.ComplianceSearch.Status | Unknown | The status of the compliance search. | 
-| EWS.ComplianceSearch.Results.Location | String | The mailbox. | 
-| EWS.ComplianceSearch.Results.Item Count | Number | The number of emails found in the mailbox. | 
-| EWS.ComplianceSearch.Results.Total Size | Number | Total number of emails in the mailbox. | 
-
-#### Command Example
-
-```!ews-o365-get-compliance-search search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
-
-#### Human Readable Output
-
->|Location|Item Count|Total Size|
->|---|---|---|
->| test@demistodev.onmicrosoft.com |0|0|
-
-
-#### Context Example
-
-```json
-{
-    "EWS": {
-        "ComplianceSearch": {
-            "Status": "Completed", 
-            "Name": "DemistoSearch67e67371d0004c46bebfa3219b5a14bf"
-        }
-    }
-}
-```
-
-### ews-o365-purge-compliance-search-results
-
-***
-Purges the results found in the compliance search.
-
-
-#### Base Command
-
-`ews-o365-purge-compliance-search-results`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search-name | The name of the compliance search. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| EWS.ComplianceSearch.Status | string | The status of the compliance search. | 
-
-#### Command Example
-
-```!ews-o365-purge-compliance-search-results search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
-
-#### Human Readable Output
-
-```Search DemistoSearch67e67371d0004c46bebfa3219b5a14bf status: Purging```
-
-#### Context Example
-
-```json
-{
-    "EWS": {
-        "ComplianceSearch": {
-            "Status": "Purging", 
-            "Name": "DemistoSearch67e67371d0004c46bebfa3219b5a14bf"
-        }
-    }
-}
-```
-
-### ews-o365-remove-compliance-search
-
-***
-Removes the compliance search.
-
-
-#### Base Command
-
-`ews-o365-remove-compliance-search`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search-name | The name of the compliance search. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| EWS.ComplianceSearch.Status | string | The status of the compliance search. | 
-
-#### Command Example
-
-```!ews-o365-remove-compliance-search search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
-
-#### Human Readable Output
-
-```Search DemistoSearch67e67371d0004c46bebfa3219b5a14bf status: Removed```
-
-#### Context Example
-
-```json
-{
-    "EWS": {
-        "ComplianceSearch": {
-            "Status": "Removed", 
-            "Name": "DemistoSearch67e67371d0004c46bebfa3219b5a14bf"
-        }
-    }
-}
-```
-
-### ews-o365-get-compliance-search-purge-status
-
-***
-Checks the status of the purge operation on the compliance search.
-
-
-#### Base Command
-
-`ews-o365-get-compliance-search-purge-status`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search-name | The name of the compliance search. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| EWS.ComplianceSearch.Status | Unknown | The status of the compliance search. | 
-
-#### Command Example
-
-```!ews-o365-get-compliance-search-purge-status search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
-
-#### Human Readable Output
-
-```Search DemistoSearch67e67371d0004c46bebfa3219b5a14bf status: Purged```
-
-#### Context Example
-
-```json
-{
-    "EWS": {
-        "ComplianceSearch": {
-            "Status": "Purged", 
-            "Name": "DemistoSearch67e67371d0004c46bebfa3219b5a14bf"
-        }
-    }
-}
-```
-
 ### ews-get-autodiscovery-config
 
 ***
@@ -1705,7 +1475,6 @@ Retrieves items by item ID and uploads it's content as eml file.
 ***
 Sends an email using EWS.
 
-
 #### Base Command
 
 `send-mail`
@@ -1721,13 +1490,13 @@ Sends an email using EWS.
 | replyTo | The email address specified in the 'reply to' field. | Optional | 
 | body | The contents (body) of the email to send. This argument overrides the "htmlBody" argument if the "bodyType" argument is Text. | Optional | 
 | htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument if the "bodyType" argument is HTML. | Optional | 
+| bodyType | The message response body type. Possible values are: Text, HTML. Default is Text. | Optional | 
 | attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
 | attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | raw_message | Raw email message from MimeContent type. | Optional | 
-| from | The email address from which to reply. | Optional | 
-| bodyType | Whether message response body type is Text or HTML. Default is Text. | Required | 
-
+| from | The email address from which to send mail. | Optional | 
+| handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML and attached to the email as an inline attachment object. Note that in some cases, attaching the image as an object may cause the image to disappear when replying to the email. Additionally, sending the image in the html body as base64 data (inline image) may cause the image to disappear if the image is too large or recognized as malicious and subsequently deleted. Possible values are: True, False. Default is True. | Optional | 
 
 #### Context Output
 

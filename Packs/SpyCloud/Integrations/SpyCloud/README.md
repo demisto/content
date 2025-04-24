@@ -1,20 +1,16 @@
 With the SpyCloud integration, data from breaches can be pulled and further processed in Playbooks. Filtering parameters can be used to filter the data set
 This integration was integrated and tested with version 2 of SpyCloud
 
-## Configure SpyCloud on Cortex XSOAR
+## Configure SpyCloud in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SpyCloud.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL of SpyCloud | True |
-    | API Key of SpyCloud | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base URL of SpyCloud | True |
+| API Key of SpyCloud | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### spycloud-list-breaches
 ***
@@ -331,4 +327,3 @@ Get all the data from a watchlist.
 >|breach_id|document_id|domain|email|password|spycloud_publish_date|target_url|username|
 >|---|---|---|---|---|---|---|---|
 >| 38666 | 11111111-2222-3333-4444-555555555555 | hotmail.com | john.doe@hotmail.com | empty | 2020-03-03T00:00:00Z | empty | empty |
-

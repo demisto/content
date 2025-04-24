@@ -14,6 +14,9 @@ Depending on the authentication method that you use, the integration parameters 
 To use the **Cortex XSOAR application** and allow Cortex XSOAR access to Azure Log Analytics, an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-azure-log-analytics)**.
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 
+**Note**: These credentials are valid for a single instance only.
+
+
 #### Self-Deployed Azure App
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, go to the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 

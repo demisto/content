@@ -1,9 +1,9 @@
-import pytest
-
-
+import base64
 import json
-from freezegun import freeze_time
+
 import demistomock as demisto
+import pytest
+from freezegun import freeze_time
 
 
 def util_load_json(path):
@@ -48,12 +48,23 @@ def test_get_content_files_from_repo(mocker):
     client = mock_client()
     params = {"feedType": "IOCs", "extensions_to_fetch": ["txt"]}
     relevant_files = util_load_json("test_data/relevant-files.json")
-    return_data = util_load_json("test_data/content_files_from_repo.json")
+    return_data = {
+        "content": base64.b64encode(
+            b"2023-02-08 (WEDNESDAY) - COBALT STRIKE FROM ICEDID (BOKBOT) INFECTION\n\n"
+            b"REFERENCE:\n\n"
+            b"- https://twitter.com/Unit42_Intel/status/1623707361184477185\n\n"
+            b"NOTES:\n\n"
+            b"- IcedID infection generated using a OneNote file reported earlier today\n\n"
+            b"ICEDID TRAFFIC:\n\n"
+            b"- 80.66.88[.]143 port 80 - ehonlionetodo[.]com\n"
+            b"- GET /\n"
+            b"COBALT STRIKE TRAFFIC:\n\n"
+            b"- 167.172.154[.]189 port 80 - GET /36.ps1\n"
+        ).decode("utf-8")
+    }
     mocker.patch.object(client, "_http_request", return_value=return_data)
     content_files = get_content_files_from_repo(client, relevant_files, params)
-    assert content_files == util_load_json(
-        "test_data/get_content-files-from-repo-result.json"
-    )
+    assert content_files == util_load_json("test_data/get_content-files-from-repo-result.json")
 
 
 def test_get_commit_files(mocker):
@@ -79,16 +90,14 @@ def test_get_commit_files(mocker):
         "get_files_between_commits",
         return_value=(all_commits_files, current_repo_head_sha),
     )
-    relevant_files, current_repo_head_sha = get_commits_files(
-        client, base, head, is_first_fetch
-    )
+    relevant_files, current_repo_head_sha = get_commits_files(client, base, head, is_first_fetch)
     assert relevant_files == util_load_json("test_data/relevant-files.json")
 
 
 def test_filter_out_files_by_status():
     """
     Given:
-     - A list of dictionaries representing commit files, each containing a status and a raw_url.
+     - A list of dictionaries representing commit files, each containing a status and a filename.
     When:
      - Filtering out files by their status using the filter_out_files_by_status function.
     Then:
@@ -97,11 +106,11 @@ def test_filter_out_files_by_status():
     from FeedGitHub import filter_out_files_by_status
 
     commits_files = [
-        {"status": "added", "raw_url": "http://example.com/file1"},
-        {"status": "modified", "raw_url": "http://example.com/file2"},
-        {"status": "removed", "raw_url": "http://example.com/file3"},
-        {"status": "renamed", "raw_url": "http://example.com/file4"},
-        {"status": "added", "raw_url": "http://example.com/file5"},
+        {"status": "added", "filename": "http://example.com/file1"},
+        {"status": "modified", "filename": "http://example.com/file2"},
+        {"status": "removed", "filename": "http://example.com/file3"},
+        {"status": "renamed", "filename": "http://example.com/file4"},
+        {"status": "added", "filename": "http://example.com/file5"},
     ]
 
     expected_output = [
@@ -110,9 +119,7 @@ def test_filter_out_files_by_status():
         "http://example.com/file5",
     ]
     actual_output = filter_out_files_by_status(commits_files)
-    assert (
-        actual_output == expected_output
-    ), f"Expected {expected_output}, but got {actual_output}"
+    assert actual_output == expected_output, f"Expected {expected_output}, but got {actual_output}"
 
 
 @freeze_time("2024-05-12T15:30:49.330015")
@@ -161,9 +168,7 @@ def test_extract_text_indicators():
     """
     from FeedGitHub import extract_text_indicators
 
-    ioc_indicators_input = {
-        "example.com": util_load_txt("test_data/test-ioc-indicators.txt")
-    }
+    ioc_indicators_input = {"example.com": util_load_txt("test_data/test-ioc-indicators.txt")}
     params = {"owner": "example.owner", "repo": "example.repo"}
     res_indicators = extract_text_indicators(ioc_indicators_input, params)
     assert res_indicators == util_load_json("test_data/iocs-res.json")
@@ -202,10 +207,7 @@ def test_negative_limit(mocker):
 
     with pytest.raises(ValueError) as ve:
         get_indicators_command(client, {}, args)
-    assert (
-        ve.value.args[0]
-        == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
-    )
+    assert ve.value.args[0] == "get_indicators_command return with error. \n\nError massage: Limit must be a positive number."
 
 
 def test_fetch_indicators(mocker):
@@ -239,6 +241,45 @@ def test_fetch_indicators(mocker):
     )
     results = FeedGitHub.fetch_indicators(client, None, params)
     assert results == util_load_json("test_data/fetch-indicators-res.json")
+
+
+def test_fetch_indicators_enrichment_excluded(mocker):
+    """
+    Given:
+     - A mock client and parameters specifying the fetch time frame.
+     - Mocked responses for base and head commit SHAs, and indicators.
+     - Enrichment excluded marked as true
+    When:
+     - Calling fetch_indicators to retrieve indicators from the GitHub feed.
+    Then:
+     - Returns the list of indicators matching the expected results.
+     - All returned indicators have 'enrichmentExcluded' set to True
+    """
+    import FeedGitHub
+
+    client = mock_client()
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "setLastRun")
+    params = {"fetch_since": "15 days ago", "enrichmentExcluded": True}
+    mocker.patch.object(
+        client,
+        "get_commits_between_dates",
+        return_value="046a799ebe004e1bff686d6b774387b3bdb3d1ce",
+    )
+    mocker.patch.object(
+        FeedGitHub,
+        "get_indicators",
+        return_value=(
+            util_load_json("test_data/iterator-test.json"),
+            "9a611449423b9992c126c20e47c5de4f58fc1c0e",
+        ),
+    )
+    results = FeedGitHub.fetch_indicators_command(client, params, {})
+    expected: list = util_load_json("test_data/fetch-indicators-res.json")
+    for ind in expected:
+        ind["enrichmentExcluded"] = True
+
+    assert results == expected
 
 
 @freeze_time("2024-05-20T11:05:36.984413")
@@ -379,6 +420,7 @@ def test_identify_json_structure():
      - Returns the identified structure based on the provided JSON data.
     """
     from FeedGitHub import identify_json_structure
+
     json_data_bundle = {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}
     assert identify_json_structure(json_data_bundle) == "Bundle"
 
@@ -405,6 +447,7 @@ def test_filtering_stix_files():
      - Returns a list containing only the STIX files from the input list.
     """
     from FeedGitHub import filtering_stix_files
+
     content_files = [
         [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}],  # STIX format
         [{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}],  # STIX format
@@ -413,6 +456,43 @@ def test_filtering_stix_files():
     expected_result = [
         {"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"},
         {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}},
-        {'type': 'non-stix', 'id': 'non-stix--12345678-1234-5678-1234-567812345678'}
+        {"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"},
     ]
     assert filtering_stix_files(content_files) == expected_result
+
+
+def test_fetch_indicators_command_with_tlp_color_red(mocker):
+    """
+    Given: params with tlp_color set to RED and enrichmentExcluded set to False.
+    When: Calling fetch_indicators_command with the provided parameters.
+    Then: Verify that the fetch_indicators function is called with the expected parameters.
+    """
+    from FeedGitHub import fetch_indicators_command
+
+    client_mock = mock_client()
+    params = {"feedTags": "tag1,tag2", "tlp_color": "RED", "enrichmentExcluded": False, "limit": "50"}
+    args = {}
+    mocker.patch("FeedGitHub.is_xsiam_or_xsoar_saas", return_value=True)
+    mocker.patch.object(demisto, "params", return_value=params)
+    fetch_indicators_mock = mocker.patch("FeedGitHub.fetch_indicators")
+
+    # Call the function under test
+    fetch_indicators_command(client_mock, params, args)
+
+    # Assertion - verify the output
+    assert fetch_indicators_mock.call_args.kwargs.get("enrichment_excluded") is True
+
+
+def test_get_indicators_command_with_tlp_color_red(mocker):
+    from FeedGitHub import get_indicators_command
+
+    client_mock = mock_client()
+    params = {"feedTags": "tag1,tag2", "tlp_color": "RED", "enrichmentExcluded": False, "limit": "50"}
+    args = {}
+    mocker.patch("FeedGitHub.Client.get_commits_between_dates", return_value=["test_hash"])
+    mocker.patch("FeedGitHub.is_xsiam_or_xsoar_saas", return_value=True)
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch("FeedGitHub.get_indicators", return_value=([{"name": "test_ind"}], None))
+
+    command_res = get_indicators_command(client_mock, params, args)
+    assert command_res.outputs[0].get("enrichmentExcluded") is True

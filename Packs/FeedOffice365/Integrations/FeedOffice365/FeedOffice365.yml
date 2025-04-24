@@ -8,6 +8,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
+  section: Collect
 - defaultvalue: All
   display: Category
   name: category
@@ -18,6 +19,7 @@ configuration:
   - Default
   type: 16
   required: false
+  section: Connect
 - defaultvalue: All
   display: Regions
   name: regions
@@ -30,23 +32,27 @@ configuration:
   - Worldwide
   required: true
   type: 16
-- display: Allow Germany
-  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
-  name: allow_germany
-  defaultvalue: 'false'
-  type: 8
-  required: false
-- defaultvalue: All
-  display: Services
+  section: Connect
+- display: Services
   name: services
+  defaultvalue: 'All'
+  type: 16
+  required: true
   options:
   - Common
   - Exchange
   - Sharepoint
   - Skype
   - All
-  required: true
-  type: 16
+  - MEM
+  section: Connect
+- defaultvalue: 'false'
+  display: Allow Germany
+  name: allow_germany
+  required: false
+  type: 8
+  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
+  section: Connect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
   display: Indicator Reputation
@@ -58,6 +64,7 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -71,6 +78,7 @@ configuration:
   required: true
   type: 15
   defaultvalue: A - Completely reliable
+  section: Collect
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -81,6 +89,7 @@ configuration:
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   required: false
+  section: Collect
 - defaultvalue: suddenDeath
   display: ''
   name: feedExpirationPolicy
@@ -91,35 +100,58 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
+  advanced: true
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   defaultvalue: '30'
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'true'
   required: false
+  section: Collect
+  advanced: true
+- display: Enrichment Excluded
+  name: enrichmentExcluded
+  type: 8
+  required: false
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  defaultvalue: 'false'
+  hidden:
+  - xsoar_on_prem
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.
 display: Office 365 Feed
 name: Office 365 Feed
@@ -139,7 +171,7 @@ script:
       - Both
     description: Gets indicators from the feed.
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'
@@ -148,3 +180,6 @@ script:
 tests:
 - Office365_Feed_Test
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect

@@ -12,23 +12,19 @@ In order to obtain a HYAS Insight API key to use with Cortex XSOAR, please conta
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
     **Email:** support@hyas.com
     **URL:** https://support.hyas.com
-## Configure HYASInsight on Cortex XSOAR
+## Configure HYASInsight in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HYASInsight.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | HYAS Insight Api Key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| HYAS Insight Api Key | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### hyas-get-passive-dns-records-by-indicator
@@ -1255,4 +1251,3 @@ Returns associated Domain's for the provided hash value.
 >| qwertasdfg.sinip.es |
 >| butterfly.bigmoney.biz |
 >| butterfly.sinip.es |
-

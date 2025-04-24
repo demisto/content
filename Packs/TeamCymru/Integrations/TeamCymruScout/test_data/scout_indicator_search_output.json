@@ -1,0 +1,222 @@
+{
+    "query_usage": {
+        "request_id": "00000000-0000-0000-0000-000000000001",
+        "total": 1,
+        "query": "0.0.0.1",
+        "size": 5000,
+        "start_date": "2024-05-28",
+        "end_date": "2024-06-26",
+        "used_queries": 261,
+        "remaining_queries": 49739,
+        "query_limit": 50000,
+        "foundation_api_usage": {
+            "used_queries": 15,
+            "remaining_queries": 0,
+            "query_limit": 0
+        }
+    },
+    "entry_context": {
+        "IP(val.Address && val.Address == obj.Address)": [
+            {
+                "Address": "0.0.0.1",
+                "ASN": 15169,
+                "ASOwner": "DUMMY",
+                "Region": "US",
+                "Port": "53,443",
+                "UpdatedDate": "2024-06-27",
+                "Hostname": "dns.dummy",
+                "Geo": {
+                    "Country": "US"
+                },
+                "Organization": {
+                    "Name": "Dummy LLC"
+                },
+                "Tags": "cdn: (cloudflare)",
+                "Relationships": [
+                    {
+                        "Relationship": "communicated-with",
+                        "EntityA": "0.0.0.1",
+                        "EntityAType": "IP",
+                        "EntityB": "0.0.0.2",
+                        "EntityBType": "IP"
+                    },
+                    {
+                        "Relationship": "communicated-with",
+                        "EntityA": "0.0.0.1",
+                        "EntityAType": "IP",
+                        "EntityB": "0.0.0.3",
+                        "EntityBType": "IP"
+                    },
+                    {
+                        "Relationship": "resolves-to",
+                        "EntityA": "0.0.0.1",
+                        "EntityAType": "IP",
+                        "EntityB": "dns.dummy",
+                        "EntityBType": "Domain"
+                    },
+                    {
+                        "Relationship": "resolves-to",
+                        "EntityA": "0.0.0.1",
+                        "EntityAType": "IP",
+                        "EntityB": "dns.dummy.com",
+                        "EntityBType": "Domain"
+                    }
+                ]
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "0.0.0.1",
+                "Type": "ip",
+                "Vendor": "Team Cymru Scout",
+                "Score": 0,
+                "Reliability": "B - Usually reliable"
+            }
+        ],
+        "TeamCymruScout.IP(val.ip && val.ip == obj.ip)": {
+            "ip": "0.0.0.1",
+            "country_codes": [
+                "US"
+            ],
+            "as_info": [
+                {
+                    "asn": 15169,
+                    "as_name": "DUMMY, US"
+                }
+            ],
+            "tags": [
+                {
+                    "id": 176,
+                    "name": "cdn",
+                    "children": [
+                        {
+                            "id": 210,
+                            "name": "cloudflare"
+                        }
+                    ]
+                }
+            ],
+            "event_count": 164273621518,
+            "summary": {
+                "last_seen": "2024-06-27",
+                "whois": {
+                    "asn": 15169,
+                    "as_name": "DUMMY",
+                    "net_name": "DUMMY",
+                    "org_name": "Dummy LLC"
+                },
+                "open_ports": [
+                    {
+                        "ip": "0.0.0.1",
+                        "port": 53,
+                        "protocol": 17,
+                        "protocol_text": "UDP",
+                        "service": "domain",
+                        "event_count": 296728
+                    },
+                    {
+                        "ip": "0.0.0.1",
+                        "port": 443,
+                        "protocol": 6,
+                        "protocol_text": "TCP",
+                        "service": "https",
+                        "event_count": 257
+                    }
+                ],
+                "pdns": [
+                    {
+                        "ip": "0.0.0.1",
+                        "domain": "dns.dummy",
+                        "event_count": 53408038
+                    },
+                    {
+                        "ip": "0.0.0.1",
+                        "domain": "dns.dummy.com",
+                        "event_count": 2791811
+                    }
+                ],
+                "top_peers": [
+                    {
+                        "ip": "0.0.0.2",
+                        "event_count": 2784287448
+                    },
+                    {
+                        "ip": "0.0.0.3",
+                        "event_count": 1469283767
+                    }
+                ],
+                "comms_total": 166356036813,
+                "service_counts": [
+                    {
+                        "proto": 17,
+                        "proto_text": "",
+                        "port": 53,
+                        "event_count": 141248029324,
+                        "service": {
+                            "service_name": "domain",
+                            "port": 53,
+                            "proto_number": 17,
+                            "description": "Domain Name Server"
+                        }
+                    },
+                    {
+                        "proto": 17,
+                        "proto_text": "",
+                        "port": 443,
+                        "event_count": 7214447854,
+                        "service": {
+                            "service_name": "https",
+                            "port": 443,
+                            "proto_number": 17,
+                            "description": "http protocol over TLS/SSL"
+                        }
+                    },
+                    {
+                        "proto": 6,
+                        "proto_text": "",
+                        "port": 443,
+                        "event_count": 4130470538,
+                        "service": {
+                            "service_name": "https",
+                            "port": 443,
+                            "proto_number": 6,
+                            "description": "http protocol over TLS/SSL"
+                        }
+                    }
+                ],
+                "fingerprints": [
+                    {
+                        "ip": "0.0.0.1",
+                        "type": "ja3s",
+                        "signature": "00000000000000000000000000000001",
+                        "event_count": 144337
+                    },
+                    {
+                        "ip": "0.0.0.1",
+                        "type": "ja3",
+                        "signature": "00000000000000000000000000000001",
+                        "event_count": 40708
+                    }
+                ],
+                "certs": [
+                    {
+                        "ip": "0.0.0.1",
+                        "issuer": "CN=WR2, O=Dummy Trust Services, C=US",
+                        "issuer_common_name": "WR2",
+                        "common_name": "dns.dummy",
+                        "port": 853,
+                        "event_count": 418
+                    },
+                    {
+                        "ip": "0.0.0.1",
+                        "issuer": "CN=WR2, O=Dummy Trust Services, C=US",
+                        "issuer_common_name": "WR2",
+                        "common_name": "dns.dummy",
+                        "port": 443,
+                        "event_count": 372
+                    }
+                ]
+            }
+        }
+    }
+}

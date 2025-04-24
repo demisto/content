@@ -1,0 +1,2035 @@
+{
+    "get-audit-records-no-links": {
+        "results": [
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            }
+        ],
+        "start": 0,
+        "limit": 1000,
+        "size": 25,
+        "_links": {}
+    },
+    "get-audit-records-with-links": {
+        "results": [
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            },
+            {
+                "author": {
+                    "type": "user",
+                    "displayName": "<string>",
+                    "operations": {},
+                    "username": "<string>",
+                    "userKey": "<string>",
+                    "accountId": "<string>",
+                    "accountType": "<string>",
+                    "externalCollaborator": true,
+                    "isExternalCollaborator": true,
+                    "publicName": "<string>"
+                },
+                "remoteAddress": "<string>",
+                "creationDate": 59,
+                "summary": "<string>",
+                "description": "<string>",
+                "category": "<string>",
+                "sysAdmin": true,
+                "superAdmin": true,
+                "affectedObject": {
+                    "name": "<string>",
+                    "objectType": "<string>"
+                },
+                "changedValues": [
+                    {
+                        "name": "<string>",
+                        "oldValue": "<string>",
+                        "hiddenOldValue": "<string>",
+                        "newValue": "<string>",
+                        "hiddenNewValue": "<string>"
+                    }
+                ],
+                "associatedObjects": [
+                    {
+                        "name": "<string>",
+                        "objectType": "<string>"
+                    }
+                ]
+            }
+        ],
+        "start": 0,
+        "limit": 1000,
+        "size": 25,
+        "_links": {
+            "base": "https://tenant.atlassian.net/wiki",
+            "context": "/wiki",
+            "next": "/rest/api/audit/?end_date=1724658181290&next=true&limit=1000&start=2000&startDate=1724583600000",
+            "prev": "/rest/api/audit/?end_date=1724658181290&prev=true&limit=1000&start=0&startDate=1724583600000",
+            "self": "https://tenant.atlassian.net/wiki/rest/api/audit/?end_date=1724658181290&startDate=1724583600000"
+        }
+    },
+    "get-empty-audit-records": {
+        "results": [],
+        "start": 0,
+        "limit": 1000,
+        "size": 0,
+        "_links": {
+            "base": "https://tenant.atlassian.net/wiki",
+            "context": "/wiki",
+            "self": "https://tenant.atlassian.net/wiki/rest/api/audit/?end_date=1724658181290&startDate=1724583600000"
+        }
+    }
+}

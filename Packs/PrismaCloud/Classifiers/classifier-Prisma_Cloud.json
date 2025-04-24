@@ -87,6 +87,9 @@
         "Azure SQL Database with Auditing Retention less than 90 days": "Azure SQL Misconfiguration",
         "AWS IAM password policy does not have a symbol": "AWS IAM Policy Misconfiguration"
     },
+    "marketplaces": [
+        "xsoar"
+    ],
     "transformer": {
         "simple": "policy.name"
     },

@@ -3,17 +3,17 @@ commonfields:
   id: DeCYFIR Feed
   version: -1
 configuration:
-- display: DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com)
+- defaultvalue: https://decyfir.cyfirma.com
+  display: DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com)
   name: url
   required: true
   type: 0
-  defaultvalue: https://decyfir.cyfirma.com
 - displaypassword: DeCYFIR API Key
-  display: ''
   name: api_key
-  required: true
   type: 9
+  required: true
   hiddenusername: true
+  display: ''
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -22,27 +22,26 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
-  defaultvalue: 'true'
+  required: false
   type: 8
-  required: false
-- display: Indicator Reputation
-  name: feedReputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
+  display: Indicator Reputation
+  name: feedReputation
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
-- display: Source Reliability
-  name: feedReliability
+  required: false
+  type: 18
+- name: feedReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
+  display: Source Reliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -50,40 +49,38 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data.
-- display: ""
-  name: feedExpirationPolicy
-  defaultvalue: indicatorType
+  required: true
+  type: 15
+- display: ''
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
-  name: feedExpirationInterval
-  defaultvalue: "20160"
+  name: feedExpirationPolicy
+- display: ''
   type: 1
-  required: false
-- display: Feed Fetch Interval
+  name: feedExpirationInterval
+- defaultvalue: '240'
+  display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "240"
+  required: false
   type: 19
-  required: false
-- display: Bypass exclusion list
-  name: feedBypassExclusionList
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'true'
-  type: 8
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-- name: feedTags
+  type: 8
+- additionalinfo: Supports CSV values.
   display: Tags
+  name: feedTags
   required: false
   type: 0
-  additionalinfo: Supports CSV values.
-- name: tlp_color
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
+  name: tlp_color
   options:
   - RED
   - AMBER
@@ -91,24 +88,24 @@ configuration:
   - WHITE
   required: false
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+description: DeCYFIR API's provides External Threat Landscape Management insights.
+display: DeCYFIR Indicators & Threat Intelligence Feed
+name: DeCYFIR Feed
 script:
-  dockerimage: demisto/python3:3.10.13.84405
+  commands:
+  - deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: decyfir-get-indicators
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
   type: python
-  script: '-'
-  commands:
-  - arguments: []
-    description: Gets indicators from the feed.
-    name: decyfir-get-indicators
-description: DeCYFIR API's provides External Threat Landscape Management insights.
-display: DeCYFIR Indicators & Threat Intelligence Feed
-name: DeCYFIR Feed
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0

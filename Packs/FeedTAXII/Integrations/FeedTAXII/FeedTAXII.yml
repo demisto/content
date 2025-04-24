@@ -8,6 +8,7 @@ configuration:
   name: feed
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
@@ -18,6 +19,16 @@ configuration:
   - Bad
   type: 18
   required: false
+  section: Collect
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental feed
+  hidden: true
+  name: feedIncremental
+  type: 8
+  required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -30,6 +41,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -40,95 +52,131 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - display: ''
   name: feedExpirationPolicy
   options:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   type: 17
   required: false
+  section: Collect
+  advanced: true
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
+  advanced: true
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
-- additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
+  section: Collect
+  advanced: true
+- additionalinfo: TAXII discovery service endpoint. For example, http://example.com/taxii-discovery-service
   display: Discovery Service
   name: discovery_service
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Collection name to fetch indicators from.
   display: Collection
   name: collection
   type: 0
   required: false
+  section: Connect
 - additionalinfo: Subscription ID for the TAXII consumer.
   display: Subscription ID
   name: subscription_id
   type: 0
   required: false
+  section: Connect
+  advanced: true
 - display: Name (To use the API key click the "?" icon)
   name: credentials
   type: 9
   required: false
+  section: Connect
 - display: Certificate File as Text
   name: creds_certificate
   type: 9
   displaypassword: Key File as Text
   required: false
+  section: Connect
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: cert_text
   type: 12
   hidden: true
   required: false
+  section: Connect
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
   name: key_text
   type: 4
   hidden: true
   required: false
+  section: Connect
 - additionalinfo: Time (in seconds) before HTTP requests timeout.
   display: Request Timeout
   name: polling_timeout
   type: 0
   defaultvalue: '20'
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Used by a TAXII Client to request information from a TAXII Server.
   display: Poll Service
   name: poll_service
   type: 0
   required: false
+  section: Connect
+  advanced: true
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
   display: First Fetch Time
   name: initial_interval
   type: 0
   defaultvalue: 1 day
   required: false
+  section: Collect
 - display: Tags
   name: feedTags
   type: 0
   additionalinfo: Supports CSV values.
   required: false
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
+- display: Enrichment Excluded
+  name: enrichmentExcluded
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  hidden:
+  - xsoar_on_prem
+  section: Collect
 description: Ingests indicator feeds from TAXII 1.x servers.
 display: TAXII Feed
 name: TAXIIFeed
@@ -183,7 +231,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.80809
+  dockerimage: demisto/taxii:1.0.0.117607
   feed: true
   runonce: false
   script: ''
@@ -192,3 +240,6 @@ script:
 tests:
 - TAXII_Feed_Test
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect

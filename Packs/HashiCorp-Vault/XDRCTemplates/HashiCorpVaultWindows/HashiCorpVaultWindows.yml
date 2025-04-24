@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  id: hashicorp-vault
+  paths:       
+    - C:\\HashiCorp\\vault_1.17.5_windows_amd64\\vault_audit.log    # customize path as needed 
+  processors: 
+    - add_fields:       
+        fields:             
+          vendor: hashicorp
+          product: vault

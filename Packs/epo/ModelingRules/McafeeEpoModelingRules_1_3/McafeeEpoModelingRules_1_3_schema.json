@@ -1,30 +1,26 @@
 {
   "mcafee_epo_raw": {
-    "ThreatEventID": {
+    "AnalyzerContentVersion": {
       "type": "string",
       "is_array": false
     },
-    "ThreatCategory": {
+    "AgentGUID": {
       "type": "string",
       "is_array": false
     },
-    "TargetIPV4": {
-      "type": "int",
-      "is_array": false
-    },
-    "TargetIPV6": {
+    "AnalyzerHostName": {
       "type": "string",
       "is_array": false
     },
-    "TargetMAC": {
-      "type": "string",
-      "is_array": false
-    },                  
-    "ThreatSeverity": {
+    "AnalyzerMAC": {
       "type": "string",
       "is_array": false
     },
-    "ThreatName": {
+    "AnalyzerName": {
+      "type": "string",
+      "is_array": false
+    },
+    "AnalyzerRuleName": {
       "type": "string",
       "is_array": false
     },
@@ -32,16 +28,136 @@
       "type": "string",
       "is_array": false
     },
+    "AutoID": {
+      "type": "int",
+      "is_array": false
+    },
+    "FileMD5Hash": {
+      "type": "string",
+      "is_array": false
+    },
+    "IPAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "IPHostName": {
+      "type": "string",
+      "is_array": false
+    },
     "NodeName": {
       "type": "string",
       "is_array": false
     },
-    "ServerID": {
+    "OSPlatform": {
       "type": "string",
       "is_array": false
     },
-    "AnalyzerName": {
+    "OSType": {
       "type": "string",
+      "is_array": false
+    },
+    "SourceFilePath": {
+      "type": "string",
+      "is_array": false
+    },
+    "SourceHostName": {
+      "type": "string",
+      "is_array": false
+    },
+    "SourceMAC": {
+      "type": "string",
+      "is_array": false
+    },
+    "SourceParentProcessName": {
+      "type": "string",
+      "is_array": false
+    },
+    "SourcePort": {
+      "type": "int",
+      "is_array": false
+    },
+    "SourceProcessHash": {
+      "type": "string",
+      "is_array": false
+    },
+    "SourceProcessName": {
+      "type": "string",
+      "is_array": false
+    },
+    "SourceUserName": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetFileName": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetHash": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetHostName": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetMAC": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetName": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetPath": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetPort": {
+      "type": "int",
+      "is_array": false
+    },
+    "TargetProcessName": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetSigned": {
+      "type": "boolean",
+      "is_array": false
+    },
+    "TargetSigner": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetURL": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetUserName": {
+      "type": "string",
+      "is_array": false
+    },
+    "ThreatActionTaken": {
+      "type": "string",
+      "is_array": false
+    },
+    "ThreatCategory": {
+      "type": "string",
+      "is_array": false
+    },
+    "ThreatEventID": {
+      "type": "int",
+      "is_array": false
+    },
+    "ThreatHandled": {
+      "type": "boolean",
+      "is_array": false
+    },
+    "ThreatName": {
+      "type": "string",
+      "is_array": false
+    },
+    "ThreatSeverity": {
+      "type": "int",
       "is_array": false
     }
   }

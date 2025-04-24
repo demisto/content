@@ -120,7 +120,7 @@ script:
       name: begin_date
     description: Gets the indicators from AlienVault OTX.
     name: alienvaultotx-get-indicators
-  dockerimage: demisto/taxii:1.0.0.86676
+  dockerimage: demisto/taxii:1.0.0.116749
   feed: true
   runonce: false
   script: '-'

@@ -1,0 +1,32 @@
+{
+    "id": "incident_gatewatcherhttpresponsemimetype",
+    "version": -1,
+    "modified": "2024-11-28T11:10:58.514436772+01:00",
+    "name": "Gatewatcher AionIQ HTTP response MIME type",
+    "ownerOnly": false,
+    "cliName": "gatewatcherhttpresponsemimetype",
+    "type": "shortText",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Gatewatcher Incident",
+        "Gatewatcher Alert Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

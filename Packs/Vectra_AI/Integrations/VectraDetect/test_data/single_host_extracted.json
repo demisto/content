@@ -20,7 +20,7 @@
         "SensorLUID": "2x2ir6i9",
         "SensorName": "Sensor_A",
         "Severity": "Low",
-        "URL":  "https://vectra.test/hosts/472"
+        "URL": "https://vectra.test/hosts/472?pivot=Vectra_AI-XSOAR-2.0.0"
     },
     "common_extract": {
         "AssignedDate": null,

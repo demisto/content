@@ -7,25 +7,21 @@ This integration was integrated and tested with Alexa Rank Indicator V2.
 - If the domain doesn't exist, there is an error.
 - Default values changed: 1000 for *Top Domain Threshold* and unspecified for *Suspicous Domain Threshold*.
 
-## Configure Alexa Rank Indicator V2 on Cortex XSOAR
+## Configure Alexa Rank Indicator V2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Alexa Rank Indicator V2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Rank threshold for suspicious domain | If the domain's Alexa rank is over this threshold, the domain is marked as suspicious. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as *unknown*. | True |
-    | Base API URL |  | True |
-    | Rank threshold for top domains | If the domain's Alexa rank is under this threshold, the domain is considered trusted and marked as good. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as *unknown*. | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | API Key |  | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Rank threshold for suspicious domain | If the domain's Alexa rank is over this threshold, the domain is marked as suspicious. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as *unknown*. | True |
+| Base API URL |  | True |
+| Rank threshold for top domains | If the domain's Alexa rank is under this threshold, the domain is considered trusted and marked as good. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as *unknown*. | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| API Key |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### domain
 ***

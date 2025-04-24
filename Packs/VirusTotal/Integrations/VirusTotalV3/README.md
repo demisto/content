@@ -3,43 +3,39 @@
 This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
 The integration was integrated and tested with version v3 API of VirusTotal.
 
-## Configure VirusTotal (API v3) on Cortex XSOAR
+## Configure VirusTotal (API v3) in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-1. Search for VirusTotal (API v3).
-1. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data |  |
-    | Premium Subscription | Whether to use premium subscription. (For advanced reputation analyze. See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold)) | False |
-    | File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks. | False |
-    | URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the domain suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
-    | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS | See [Rules Threshold](#rules-threshold). | False |
-    | Crowdsourced Yara Rules Threshold | See [Rules Threshold](#rules-threshold). | False |
-    | Sigma and Intrusion Detection Rules Threshold |  See [Rules Threshold](#rules-threshold). | False |
-    | Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
-    | Premium Subscription Only: Relationship Malicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
-    | Premium Subscription Only: Relationship Suspicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Source Reliability | Reliability of the source providing the intelligence data |  |
+| Premium Subscription | Whether to use premium subscription. (For advanced reputation analyze. See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold)) | False |
+| File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks. | False |
+| URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the domain suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
+| Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  | See [Indicator Thresholds](#indicator-thresholds). | False |
+| Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS | See [Rules Threshold](#rules-threshold). | False |
+| Crowdsourced Yara Rules Threshold | See [Rules Threshold](#rules-threshold). | False |
+| Sigma and Intrusion Detection Rules Threshold |  See [Rules Threshold](#rules-threshold). | False |
+| Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
+| Premium Subscription Only: Relationship Malicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
+| Premium Subscription Only: Relationship Suspicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
 
-1. Click **Test** to validate the URLs, token, and connection.
 
 ### Acquiring your API key
 
 Your API key can be found in your VirusTotal account user menu:
-![how to get api key in virus total](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)
+![how to get api key in virus total](../../doc_files/ddeb298-Screen_Shot_2019-10-17_at_3_17_04_PM.png)
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## DBot Score / Reputation scores
@@ -395,7 +391,7 @@ Checks the file reputation of the specified hash.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ip
@@ -2488,7 +2484,7 @@ Submits a file for private scanning. Use the vt-privatescanning-analysis-get com
 ### vt-privatescanning-analysis-get
 
 ***
-Get analysis of a private file submitted to VirusTotal.
+Get analysis of a private file or URL submitted to VirusTotal.
 
 #### Base Command
 
@@ -2506,15 +2502,22 @@ Get analysis of a private file submitted to VirusTotal.
 | --- | --- | --- |
 | VirusTotal.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. |
 | VirusTotal.Analysis.data.attributes.status | String | Status of the analysis. |
-| VirusTotal.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file. |
-| VirusTotal.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file. |
-| VirusTotal.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file. |
+| VirusTotal.Analysis.data.attributes.sha256 | String | SHA-256 hash of the private file. |
+| VirusTotal.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.url | String | URL submitted. |
+| VirusTotal.Analysis.data.attributes.title | String | Title of the private URL \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.last_http_response_content_sha256 | String | Last HTTP response content SHA-256 hash of the private URL \(if analysis is completed\). |
+| VirusTotal.Analysis.data.attributes.positives | String | Ratio of malicious detections to the total number of engines that scanned the private URL \(if analysis is completed\). |
 | VirusTotal.Analysis.data.id | String | ID of the analysis. |
-| VirusTotal.Analysis.data.type | String | Type of object (analysis). |
-| VirusTotal.Analysis.meta.file_info.sha256 | String | SHA-256 hash of the file (if it is a file). |
-| VirusTotal.Analysis.meta.file_info.sha1 | String | SHA-1 hash of the file (if it is a file). |
-| VirusTotal.Analysis.meta.file_info.md5 | String | MD5 hash of the file (if it is a file). |
-| VirusTotal.Analysis.meta.file_info.size | Number | Size of the file (if it is a file). |
+| VirusTotal.Analysis.data.type | String | Type of object \(private_analysis\). |
+| VirusTotal.Analysis.meta.file_info.sha256 | String | SHA-256 hash of the file. |
+| VirusTotal.Analysis.meta.file_info.sha1 | String | SHA-1 hash of the file. |
+| VirusTotal.Analysis.meta.file_info.md5 | String | MD5 hash of the file. |
+| VirusTotal.Analysis.meta.file_info.size | Number | Size of the file. |
+| VirusTotal.Analysis.meta.url_info.id | String | ID of the URL. |
+| VirusTotal.Analysis.meta.url_info.url | String | URL submitted. |
 | VirusTotal.Analysis.id | String | The analysis ID. |
 
 #### Command Example
@@ -2578,3 +2581,67 @@ Note that the field will not automatically appear in the indicator's layout. To 
 1. Navigate to `Settings > Objects Setup > Indicators > Layouts`.
 2. Select the desired layout (e.g., `File Indicator`).
 3. Click `Detach` if needed, and then edit the layout to include the new field.
+
+
+### vt-privatescanning-url-scan
+
+***
+Submits an URL for private scanning. Use the vt-privatescanning-analysis-get command to get the scan results.
+
+#### Base Command
+
+`vt-privatescanning-url-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | The private URL to scan. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.Submission.Type | String | The type of the submission \(private_analysis\). | 
+| VirusTotal.Submission.id | String | The ID of the submission. | 
+
+### vt-privatescanning-url
+
+***
+Checks the reputation of a private URL.
+
+#### Base Command
+
+`vt-privatescanning-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Private URL to check. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.URL.attributes.favicon.raw_md5 | String | The MD5 hash of the URL. | 
+| VirusTotal.URL.attributes.favicon.dhash | String | Difference hash. | 
+| VirusTotal.URL.attributes.last_http_response_content_length | Number | The last HTTPS response length. | 
+| VirusTotal.URL.attributes.last_http_response_headers.date | Date | The last response header date. | 
+| VirusTotal.URL.attributes.last_http_response_headers.x-sinkhole | String | DNS sinkhole from last response. | 
+| VirusTotal.URL.attributes.last_http_response_headers.content-length | String | The content length of the last response. | 
+| VirusTotal.URL.attributes.last_http_response_headers.content-type | String | The content type of the last response. | 
+| VirusTotal.URL.attributes.last_http_response_content_sha256 | String | The SHA-256 hash of the content of the last response. | 
+| VirusTotal.URL.attributes.last_http_response_code | Number | Last response status code. | 
+| VirusTotal.URL.attributes.last_final_url | String | Last final URL. | 
+| VirusTotal.URL.attributes.url | String | The URL itself. | 
+| VirusTotal.URL.attributes.title | String | Title of the page. | 
+| VirusTotal.URL.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. | 
+| VirusTotal.URL.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| VirusTotal.URL.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| VirusTotal.URL.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| VirusTotal.URL.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| VirusTotal.URL.attributes.outgoing_links | String | Outgoing links of the URL page. | 
+| VirusTotal.URL.type | String | Type of the indicator \(private_url\). | 
+| VirusTotal.URL.id | String | ID of the indicator. | 
+| VirusTotal.URL.links.self | String | Link to the response. | 

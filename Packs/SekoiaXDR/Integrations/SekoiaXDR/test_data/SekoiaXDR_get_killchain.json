@@ -1,0 +1,8 @@
+{
+    "order_id": 1,
+    "uuid": "73708d4f-419f-44aa",
+    "short_id": "KCXKNfnJupq5",
+    "name": "Reconnaissance",
+    "description": "Intruder selects target, researches it, and attempts to identify vulnerabilities in the target network.",
+    "stix_name": "reconnaissance"
+}

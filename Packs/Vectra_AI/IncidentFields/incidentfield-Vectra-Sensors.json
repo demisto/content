@@ -1,0 +1,32 @@
+{
+    "id": "incident_vectrasensors",
+    "version": -1,
+    "modified": "2024-07-11T16:01:16.969945772+05:30",
+    "name": "Vectra Sensors",
+    "ownerOnly": false,
+    "cliName": "vectrasensors",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Vectra Account",
+        "Vectra Host"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

@@ -359,6 +359,21 @@ script:
     - contextPath: VisionOne.Endpoint_Info.installed_product_codes
       description: Product code of the Trend Micro product installed on the endpoint.
       type: string
+    - contextPath: VisionOne.Endpoint_Info.component_update_policy
+      description: The update policy for the module/pattern of the agent installed on the endpoint.
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.component_update_status
+      description: The status of the module/pattern updates of the agent installed on the endpoint.
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.component_version
+      description: The agent component version.
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.policy_name
+      description: The name of a policy for an event.
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.protection_manager
+      description: The name of your protection manager.
+      type: string
   - arguments:
     - description: 'Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of endpoint activity data e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
       name: fields
@@ -1051,6 +1066,30 @@ script:
     - contextPath: VisionOne.Alert_Details.alert.investigation_status
       description: Workbench alert status.
       type: string
+    - contextPath: VisionOne.Alert_Details.alert.first_investigated_date_time
+      description: The date and time the case status was changed to 'In progress' in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ, UTC).
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.incident_id
+      description: The unique identifier of an incident.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.case_id
+      description: The unique identifier of a case.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.owner_ids
+      description: The owners of the Workbench alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.model_id
+      description: ID of the detection model that triggered the alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.model_type
+      description: Type of the detection model that triggered the alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.status
+      description: The status of a case or investigation.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.investigation_result
+      description: The findings of a case or investigation.
+      type: string
     description: Fetches details for a specific alert.
     name: trendmicro-visionone-get-alert-details
   - arguments:
@@ -1187,17 +1226,36 @@ script:
     - description: Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details. e.g. if_match="d41d8cd98f00b204e9800998ecf8427e".
       name: if_match
       required: true
-    - description: Status to assign to the workbench alert. e.g. status="true_positive".
+    - description: Status to assign to the workbench alert. e.g. status="in_progress".
       name: status
-      required: true
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - open
+      - in_progress
+      - closed
+    - description: The status of an investigation, this field is deprecated. e.g. inv_status="in_progress".
+      name: inv_status
+      required: false
       auto: PREDEFINED
       predefined:
       - new
+      - closed
       - in_progress
       - true_positive
       - false_positive
       - benign_true_positive
-      - closed
+      hidden: true
+    - description: The findings of a case or investigation. e.g. inv_result="true_positive".
+      name: inv_result
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - no_findings
+      - noteworthy
+      - true_positive
+      - false_positive
+      - benign_true_positive
     outputs:
     - contextPath: VisionOne.Update_Status.Workbench_Id
       description: The ID of the workbench that had the status updated.
@@ -1372,7 +1430,7 @@ script:
       type: string
     description: Displays a list of Observed Attack Techniques events that match the specified criteria.
     name: trendmicro-visionone-get-observed-attack-techniques
-  dockerimage: demisto/pytmv1:0.8.7.104820
+  dockerimage: demisto/pytmv1:0.9.1.117354
   isFetchSamples: true
   isfetch: true
   script: ''

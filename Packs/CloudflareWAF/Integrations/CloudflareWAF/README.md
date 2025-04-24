@@ -1,30 +1,35 @@
 Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
 This integration was integrated and tested with version 4 of CloudflareWAF
 
-## Configure Cloudflare WAF on Cortex XSOAR
+## Configure Cloudflare WAF in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cloudflare WAF.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | User Token |  | True |
-    | Password |  | True |
-    | Account ID | Account identifier. | True |
-    | Password |  | True |
-    | Default Zone ID | The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands. | False |
-    | Password |  | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://api.cloudflare.com/client/v4/) |  | False |
+| API Token |  | False |
+| Global API Key |  | False |
+| Email |  | False |
+| Account ID | Account identifier. | True |
+| Default Zone ID | The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+
+
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cloudflare-waf-firewall-rule-create
 ***
+*will be as deprecated, available until 2025-06-15*
 Create a new firewall rule that create new filter or use an exist filter.
+Permissions required for the API token:
+Account: Account Firewall Access Rules:Edit
+Zone: Firewall Services:Edit
+Include all zones and accounts needed.
+
 
 
 #### Base Command
@@ -90,7 +95,13 @@ Create a new firewall rule that create new filter or use an exist filter.
 
 ### cloudflare-waf-firewall-rule-update
 ***
+*will be as deprecated, available until 2025-06-15*
 Update firewall rule by the specified rule ID. Can update rule action, paused, description, priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
+Permissions required for the API token:
+Account: Account Firewall Access Rules:Edit
+Zone: Firewall Services:Edit
+Include all zones and accounts needed.
+
 
 
 #### Base Command
@@ -116,7 +127,13 @@ Update firewall rule by the specified rule ID. Can update rule action, paused, d
 There is no context output for this command.
 ### cloudflare-waf-firewall-rule-delete
 ***
+*will be as deprecated, available until 2025-06-15*
 Delete firewall rule by the specified rule ID.
+Permissions required for the API token:
+Account: Account Firewall Access Rules:Edit
+Zone: Firewall Services:Edit
+Include all zones and accounts needed.
+
 
 
 #### Base Command
@@ -141,7 +158,13 @@ There is no context output for this command.
 
 ### cloudflare-waf-firewall-rule-list
 ***
+*will be as deprecated, available until 2025-06-15*
 List of firewall rules or details of individual rule by ID.
+Permissions required for the API token:
+Account: Account Firewall Access Rules:Read
+Zone: Firewall Services:Read
+Include all zones and accounts needed.
+
 
 
 #### Base Command
@@ -238,6 +261,10 @@ List of firewall rules or details of individual rule by ID.
 ### cloudflare-waf-filter-create
 ***
 Create a new filter which can be added to a firewall rule.
+Permissions required for the API token:
+Account: Account Filter Lists:Edit
+Zone: Firewall Services:Edit
+
 
 
 #### Base Command
@@ -296,6 +323,9 @@ Create a new filter which can be added to a firewall rule.
 ### cloudflare-waf-filter-update
 ***
 Update filter by the specified filter ID.
+Permissions required for the API token:
+Account: Account Filter Lists:Edit
+Zone: Firewall Services:Edit
 
 
 #### Base Command
@@ -319,7 +349,9 @@ There is no context output for this command.
 ### cloudflare-waf-filter-delete
 ***
 Delete an exist filter (Note that a filter linked to firewall rule cannot be deleted).
-
+Permissions required for the API token:
+Account: Account Filter Lists:Edit
+Zone: Firewall Services:Edit
 
 #### Base Command
 
@@ -344,7 +376,9 @@ There is no context output for this command.
 ### cloudflare-waf-filter-list
 ***
 List filters.
-
+Permissions required for the API token:
+Account: Account Filter Lists:Read
+Zone: Firewall Services:Read
 
 #### Base Command
 
@@ -425,6 +459,10 @@ List filters.
 ### cloudflare-waf-zone-list
 ***
 List all account zones.
+Permissions required for the API token:
+Zone: Zone Settings:Read
+Zone:Read
+
 
 
 #### Base Command
@@ -681,6 +719,9 @@ List all account zones.
 ### cloudflare-waf-ip-list-create
 ***
 Create a new IP-list. An IP-list is a list that includes IP addresses and CIDR. IP-list is used in the filter expression.
+Permissions required for the API token:
+Account: All accounts - Account WAF:Edit
+
 
 
 #### Base Command
@@ -710,6 +751,8 @@ Create a new IP-list. An IP-list is a list that includes IP addresses and CIDR. 
 ### cloudflare-waf-ip-list-delete
 ***
 Delete IP-list by the specified list ID.
+Permissions required for the API token:
+Account: All accounts - Account WAF:Edit
 
 
 #### Base Command
@@ -734,6 +777,8 @@ There is no context output for this command.
 ### cloudflare-waf-ip-lists-list
 ***
 List IP-lists.
+Permissions required for the API token:
+Account: All accounts - Account WAF:Read
 
 
 #### Base Command
@@ -863,6 +908,8 @@ List IP-lists.
 ### cloudflare-waf-ip-list-item-create
 ***
 Create new items for exist IP-list. 
+Permissions required for the API token:
+Account: All accounts - Account WAF:Edit
 
 
 #### Base Command
@@ -886,6 +933,8 @@ There is no context output for this command.
 ### cloudflare-waf-ip-list-item-update
 ***
 Replace the IP-list items with a new items
+Permissions required for the API token:
+Account: All accounts - Account WAF:Edit
 
 
 #### Base Command
@@ -909,7 +958,8 @@ There is no context output for this command.
 ### cloudflare-waf-ip-list-item-delete
 ***
 Delete item of a IP-list by the specified list ID and list item.
-
+Permissions required for the API token:
+Account: All accounts - Account WAF:Edit
 
 #### Base Command
 
@@ -932,7 +982,8 @@ There is no context output for this command.
 ### cloudflare-waf-ip-list-item-list
 ***
 List all items in the List or details of individual item by ID.
-
+Permissions required for the API token:
+Account: All accounts - Account WAF:Read
 
 #### Base Command
 
@@ -1032,4 +1083,3 @@ List all items in the List or details of individual item by ID.
 >| eab6abfa0d754c629a9bce69ab3cc5fb | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
 >| eccdf2f286804a988850accbaaeaa462 | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
 >| d3b69c4d7bc34384a7448498dd8d9b45 | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
-

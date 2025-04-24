@@ -1,0 +1,8 @@
+[INGEST:vendor="amazon", product="aws", target_dataset="amazon_aws_raw", no_hit = keep]
+// Cloud Trail Audit Logs: https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html
+filter _log_type = "Cloud Audit Log" and to_string(eventTime) ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z" 
+| alter _time = parse_timestamp("%FT%H:%M:%E*SZ", to_string(eventTime)); // zulu time notation, e.g. "2024-09-27T11:18:59Z 
+
+// Flow Log Records: https://docs.aws.amazon.com/vpc/latest/userguide/flow-log-records.html
+filter _log_type = "Cloud Flow Log" and len(to_string(start)) = 10 // The time, in Unix seconds, when the first packet of the flow was received within the aggregation interval.
+| alter _time = to_timestamp(to_integer(start), "SECONDS"); 

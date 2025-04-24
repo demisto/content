@@ -1,0 +1,62 @@
+{
+    "test_cases": [
+        {
+            "max_results": 2,
+            "limit": 2,
+            "last_run": {},
+            "expected_last_run": {"audit": {"last_fetch": 123457, "previous_ids": [2]}},
+            "expected_collected_events": [
+                {"id": 1, "timestamp": 123456, "_time": 123456, "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "_time": 123457, "source_log_type": "audit"}
+            ],
+            "start_timestamp": 1000
+        },
+        {
+            "max_results": 3,
+            "limit": 3,
+            "last_run": {},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3]}},
+            "expected_collected_events": [
+                {"id": 1, "timestamp": 123456, "_time": 123456, "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "_time": 123457, "source_log_type": "audit"},
+                {"id": 3, "timestamp": 12345678, "_time": 12345678, "source_log_type": "audit"}
+            ],
+            "start_timestamp": 1000
+        },
+        {
+            "max_results": 4,
+            "limit": 4,
+            "last_run": {},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3, 4]}},
+            "expected_collected_events": [
+                {"id": 1, "timestamp": 123456, "_time": 123456, "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "_time": 123457, "source_log_type": "audit"},
+                {"id": 3, "timestamp": 12345678, "_time": 12345678, "source_log_type": "audit"},
+                {"id": 4, "timestamp": 12345678, "_time": 12345678, "source_log_type": "audit"}
+            ],
+            "start_timestamp": 1000
+        },
+        {
+            "max_results": 3,
+            "limit": 3,
+            "last_run": {"audit": {"last_fetch": 123456, "previous_ids": [1]}},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3, 4]}},
+            "expected_collected_events": [
+                {"id": 2, "timestamp": 123457, "_time": 123457, "source_log_type": "audit"},
+                {"id": 3, "timestamp": 12345678, "_time": 12345678, "source_log_type": "audit"},
+                {"id": 4, "timestamp": 12345678, "_time": 12345678, "source_log_type": "audit"}
+            ],
+            "start_timestamp": 123456
+        },
+        {
+            "max_results": 3,
+            "limit": 3,
+            "last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3]}},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3, 4]}},
+            "expected_collected_events": [
+                {"id": 4, "timestamp": 12345678, "_time": 12345678, "source_log_type": "audit"}
+            ],
+            "start_timestamp": 12345678
+        }
+    ]
+}

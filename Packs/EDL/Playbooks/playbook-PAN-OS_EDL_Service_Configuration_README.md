@@ -54,4 +54,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![PAN-OS EDL Service Configuration](https://raw.githubusercontent.com/demisto/content/master/Packs/EDL/doc_files/PAN-OS_EDL_Service_Configuration.png)
+![PAN-OS EDL Service Configuration](../doc_files/PAN-OS_EDL_Service_Configuration.png)

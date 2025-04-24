@@ -1,10 +1,7 @@
 Zimperium is a mobile security platform that generates alerts based on anomalous or unauthorized activities detected on a user's mobile device.
 This integration was integrated and tested with version 4.24 of Zimperium
-## Configure Zimperium on Cortex XSOAR
+## Configure Zimperium in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zimperium.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,9 +15,8 @@ This integration was integrated and tested with version 4.24 of Zimperium
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### zimperium-events-search
 ***
@@ -8452,4 +8448,3 @@ Checks the reputation of an app in Zimperium.
 >|objectId|hash|name|version|classification|score|privacyEnum|securityEnum|
 >|---|---|---|---|---|---|---|---|
 >| ebdfed24-951e-45f5-845a-2c163c53fc47 | 85525e9c1fd30a20848812e417f3bb1a | Duo | 91.0.315322534.DR91_RC03 | Legitimate | 0.0 | 1 | 1 |
-

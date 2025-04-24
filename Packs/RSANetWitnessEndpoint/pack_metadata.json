@@ -2,7 +2,7 @@
     "name": "RSA NetWitness Endpoint",
     "description": "RSA NetWitness Endpoint provides deep visibility beyond basic endpoint security solutions by monitoring and collecting activity across all of your endpoints on and off your network. The RSA Demisto integration provides access to information about endpoints, modules and indicators. ",
     "support": "xsoar",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

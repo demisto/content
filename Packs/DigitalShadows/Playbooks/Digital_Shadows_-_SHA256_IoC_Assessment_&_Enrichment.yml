@@ -1,28 +1,32 @@
 id: Digital Shadows - SHA256_IoC Assessment & Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+fromversion: 6.0.0
 name: Digital Shadows - SHA256_IoC Assessment & Enrichment
-description: Enrichment of SHA256 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
-starttaskid: '0'
+description: Enrichment of SHA256 IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: ce30a4b0-11c4-434f-81bb-b008b6fe7aa5
     type: start
     task:
       id: ce30a4b0-11c4-434f-81bb-b008b6fe7aa5
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '54'
+      - "54"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 265,
           "y": 50
         }
       }
@@ -33,8 +37,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 32430028-be14-4b40-87c6-af5688499d03
     type: title
     task:
@@ -43,14 +47,15 @@ tasks:
       name: End
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1260
+          "x": 1340,
+          "y": 1960
         }
       }
     note: false
@@ -60,37 +65,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '44':
-    id: '44'
-    taskid: 280c6cc4-1448-4178-8a0d-c1c7754885d8
+  "44":
+    id: "44"
+    taskid: 441e54a5-3612-4648-83c2-0595618432f5
     type: regular
     task:
-      id: 280c6cc4-1448-4178-8a0d-c1c7754885d8
+      id: 441e54a5-3612-4648-83c2-0595618432f5
       version: -1
       name: ds-search - THREAT FEEDS
-      description: Perform a textual search against the available record types
-      script: Digital Shadows|||ds-search
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
-      brand: Digital Shadows
+      brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - '45'
+      - "45"
     scriptarguments:
       extend-context:
         simple: SHA256 Associated Indicators=content.entity.indicators.title
-      filter_types:
-        simple: INDICATOR_FEED
       query:
         simple: ${inputs.IoC_SHA256}
-      sort_property:
-        simple: sortDate
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 1125,
+          "y": 1595
         }
       }
     note: false
@@ -100,8 +102,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '45':
-    id: '45'
+  "45":
+    id: "45"
     taskid: 33159f83-17b5-4afe-8515-c6228340e3aa
     type: condition
     task:
@@ -110,34 +112,35 @@ tasks:
       name: is Associated Indicators blank?
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
+      description: ""
     nexttasks:
-      no:
-      - '56'
-      yes:
-      - '13'
+      "no":
+      - "56"
+      "yes":
+      - "13"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEmpty
           left:
             value:
               simple: ${SHA256 Associated Indicators}
             iscontext: true
-    - label: no
+    - label: "no"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: ${SHA256 Associated Indicators}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1070
+          "x": 1125,
+          "y": 1770
         }
       }
     note: false
@@ -147,38 +150,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '48':
-    id: '48'
-    taskid: 7e76cbc7-d71d-4329-85d9-55a87b214779
+  "48":
+    id: "48"
+    taskid: 8cbeba8f-d765-4330-8b75-20f4da6c2326
     type: regular
     task:
-      id: 7e76cbc7-d71d-4329-85d9-55a87b214779
+      id: 8cbeba8f-d765-4330-8b75-20f4da6c2326
       version: -1
       name: ds-search - INTEL UPDATES
-      description: Perform a textual search against the available record types
-      script: Digital Shadows|||ds-search
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
-      brand: Digital Shadows
+      brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - '49'
-      - '44'
+      - "49"
+      - "60"
     scriptarguments:
       extend-context:
         simple: SHA256 Intel Summary=content.entity.summary
-      filter_types:
-        simple: INTEL_INCIDENT
       query:
         simple: ${inputs.IoC_SHA256}
-      sort_property:
-        simple: sortDate
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 910,
+          "y": 1245
         }
       }
     note: false
@@ -188,8 +188,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '49':
-    id: '49'
+  "49":
+    id: "49"
     taskid: f46db2e9-5800-42ca-853c-ddf5a18dab29
     type: regular
     task:
@@ -201,13 +201,52 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     scriptarguments:
       desc:
         simple: Summary
       description:
         simple: ${SHA256 Intel Summary}
     separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 35cf04a8-1242-4dc7-8a27-094bc0f48429
+    type: regular
+    task:
+      id: 35cf04a8-1242-4dc7-8a27-094bc0f48429
+      version: -1
+      name: ds-search - PROFILE INTELLIGENCE
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
+      type: regular
+      iscommand: true
+      brand: ReliaQuest GreyMatter DRP Incidents
+    nexttasks:
+      '#none#':
+      - "51"
+      - "61"
+    scriptarguments:
+      extend-context:
+        simple: SHA256 Profile Name=content.entity.primaryTag.name
+      query:
+        simple: ${inputs.IoC_SHA256}
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -222,49 +261,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '50':
-    id: '50'
-    taskid: 460c60ee-87d5-4e50-80fb-4c337375bb5c
-    type: regular
-    task:
-      id: 460c60ee-87d5-4e50-80fb-4c337375bb5c
-      version: -1
-      name: ds-search - PROFILE INTELLIGENCE
-      description: Perform a textual search against the available record types
-      script: Digital Shadows|||ds-search
-      type: regular
-      iscommand: true
-      brand: Digital Shadows
-    nexttasks:
-      '#none#':
-      - '51'
-      - '48'
-    scriptarguments:
-      extend-context:
-        simple: SHA256 Profile Name=content.entity.primaryTag.name
-      filter_types:
-        simple: INTELLIGENCE
-      query:
-        simple: ${inputs.IoC_SHA256}
-      sort_property:
-        simple: sortDate
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '51':
-    id: '51'
+  "51":
+    id: "51"
     taskid: 3047f1f7-2072-423e-8f1d-2a8288bd8fa8
     type: regular
     task:
@@ -276,18 +274,19 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     scriptarguments:
       desc:
         simple: Profiles
       description:
         simple: ${SHA256 Profile Name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -297,38 +296,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '52':
-    id: '52'
-    taskid: 6e83bb77-05a5-4531-8d04-744f8cf343b3
+  "52":
+    id: "52"
+    taskid: 91c4d694-5c95-47bc-897f-1373d8266095
     type: regular
     task:
-      id: 6e83bb77-05a5-4531-8d04-744f8cf343b3
+      id: 91c4d694-5c95-47bc-897f-1373d8266095
       version: -1
       name: ds-search - MITRE TECHNIQUES
-      description: Perform a textual search against the available record types
-      script: Digital Shadows|||ds-search
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
-      brand: Digital Shadows
+      brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - '53'
-      - '50'
+      - "53"
+      - "58"
     scriptarguments:
       extend-context:
         simple: SHA256 TTP Profiles=content.entity.primaryTag.name
-      filter_types:
-        simple: TECHNIQUE
       query:
         simple: ${inputs.IoC_SHA256}
-      sort_property:
-        simple: sortDate
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -338,8 +334,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '53':
-    id: '53'
+  "53":
+    id: "53"
     taskid: a26ef204-bffa-4b30-8543-d6954ad1c422
     type: regular
     task:
@@ -351,18 +347,19 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     scriptarguments:
       desc:
         simple: Associated TTPs
       description:
         simple: ${SHA256 TTP Profiles}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 545
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -372,37 +369,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '54':
-    id: '54'
-    taskid: fcc9fe93-11ca-41c0-81f8-1d8fade7e758
+  "54":
+    id: "54"
+    taskid: d8b04056-3ecf-415d-8f1d-a1f29330ca3d
     type: regular
     task:
-      id: fcc9fe93-11ca-41c0-81f8-1d8fade7e758
+      id: d8b04056-3ecf-415d-8f1d-a1f29330ca3d
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
-      description: Perform a textual search against the available record types
-      script: Digital Shadows|||ds-search
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
-      brand: Digital Shadows
+      brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - '55'
-      - '52'
+      - "55"
+      - "57"
     scriptarguments:
       extend-context:
         simple: SHA256 Confirmed Activity=total
-      filter_types:
-        simple: INDICATOR_FEED
       query:
         simple: ${inputs.IoC_SHA256}
-      sort_property:
-        simple: sortDate
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 265,
           "y": 195
         }
       }
@@ -413,8 +407,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '55':
-    id: '55'
+  "55":
+    id: "55"
     taskid: a767afc2-9f5d-4c39-82cd-4d9772847917
     type: regular
     task:
@@ -426,17 +420,18 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     scriptarguments:
       desc:
         simple: Confirmed Malicious Activity Count
       description:
         simple: ${SHA256 Confirmed Activity}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 50,
           "y": 370
         }
       }
@@ -447,8 +442,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '56':
-    id: '56'
+  "56":
+    id: "56"
     taskid: 33138d93-9aa4-4e83-8da9-907f7679e243
     type: regular
     task:
@@ -459,16 +454,157 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     scriptarguments:
       value:
         simple: ${SHA256 Associated Indicators}
     separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 185b58f6-2a1f-4fe8-8985-9478da291aea
+    type: regular
+    task:
+      id: 185b58f6-2a1f-4fe8-8985-9478da291aea
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 9d733f8e-b499-478f-89fc-abcf59370944
+    type: regular
+    task:
+      id: 9d733f8e-b499-478f-89fc-abcf59370944
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: fb7b2f99-c1b7-410b-849b-2c67bf6c243e
+    type: regular
+    task:
+      id: fb7b2f99-c1b7-410b-849b-2c67bf6c243e
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 6a0a357f-35f0-41b0-8cef-74a56789dc69
+    type: regular
+    task:
+      id: 6a0a357f-35f0-41b0-8cef-74a56789dc69
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
         }
       }
     note: false
@@ -483,7 +619,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1990,
         "width": 1670,
         "x": 50,
         "y": 50
@@ -503,11 +639,10 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
-  description: Indicator Value
+  description: Indicator Value.
   type: string
 - contextPath: DBotScore.Type
-  description: Indicator Type
+  description: Indicator Type.
   type: string
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

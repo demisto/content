@@ -1,0 +1,616 @@
+id: Process Incident - Vectra Detect
+version: -1
+name: Process Incident - Vectra Detect
+description: This playbook is used to initiate the processing of an incident. This playbook runs when a pending incident is selected for investigation. It will change the state from pending to active and it will list the available users in Vectra and request the user ID to use for assignment. Once the data collection is complete, it will call the Dispatch Incident - Vectra Detect playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 871cee1f-f1c6-4ddb-838a-3cff9567db4f
+    type: start
+    task:
+      id: 871cee1f-f1c6-4ddb-838a-3cff9567db4f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1db53221-3b30-4991-8b16-9751f4de0333
+    type: title
+    task:
+      id: 1db53221-3b30-4991-8b16-9751f4de0333
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6fab6e2e-b58c-4996-82d3-4799cdd22da6
+    type: collection
+    task:
+      id: 6fab6e2e-b58c-4996-82d3-4799cdd22da6
+      version: -1
+      name: Get the Vectra username to assign the current entity.
+      description: "Provide the Vectra username to assign the current entity in Vectra.\n\nNote: If no username is selected or entered, or if an incorrect username is provided, it will use the first username from the list; if both a selection and a valid username are provided, it will use the selected username."
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Provide the Vectra username to assign the current entity in Vectra.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Enter the Vectra username to assign the current entity.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: Usernames
+            accessor: name
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Enter the username not mention in the list.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: GetUsername
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: dfc5b8b9-2dd0-4a52-8c40-ad21c8872bcc
+    type: regular
+    task:
+      id: dfc5b8b9-2dd0-4a52-8c40-ad21c8872bcc
+      version: -1
+      name: Delete the context of user ID.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: GetUsername, Usernames, UserID
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 15dd2ea9-b736-415d-8774-a5df852f0572
+    type: regular
+    task:
+      id: 15dd2ea9-b736-415d-8774-a5df852f0572
+      version: -1
+      name: List Available Users for Assignment.
+      description: Returns a list of Vectra Users. All search attributes will be cumulative.
+      script: '|||vectra-search-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: 'Usernames=results={"name": val.username,"id": val.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 628361b1-ad82-45c0-88b6-19a786ea4da1
+    type: regular
+    task:
+      id: 628361b1-ad82-45c0-88b6-19a786ea4da1
+      version: -1
+      name: Add entity notes to the layout.
+      description: This script allows to add Entity notes in the layout.
+      scriptName: VectraDetectAddNotesInLayouts
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 18d5a8d0-15f0-447f-8e86-ef3fadd34273
+    type: playbook
+    task:
+      id: 18d5a8d0-15f0-447f-8e86-ef3fadd34273
+      version: -1
+      name: Add Note - Vectra Detect
+      description: This playbook will add a note in Vectra for an entity based on its type.
+      playbookName: Add Note - Vectra Detect
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: inputs.entity_id
+      entity_type:
+        complex:
+          root: inputs.entity_type
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 67852ae9-6c4c-469c-8e61-6ff546f00bf3
+    type: condition
+    task:
+      id: 67852ae9-6c4c-469c-8e61-6ff546f00bf3
+      version: -1
+      name: Is VectraDetect Integration Enabled?
+      description: Check VectraDetect integration is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Vectra_Detect
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d994b977-6239-4b8b-88f5-16243ba5a03d
+    type: playbook
+    task:
+      id: d994b977-6239-4b8b-88f5-16243ba5a03d
+      version: -1
+      name: Dispatch Incident - Vectra Detect
+      description: This playbook is called from the Process Incident - Vectra Detect playbook. It will fetch all active detections for the entity under investigation. It will then assign the entity to a user; if an assignment already exists, it will update that assignment and add a note in Vectra.
+      playbookName: Dispatch Incident - Vectra Detect
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: inputs.entity_id
+      entity_type:
+        complex:
+          root: inputs.entity_type
+      user_id:
+        complex:
+          root: UserID
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Usernames.[0].id
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1ce22d6f-b1c2-42fa-8b45-0b7dee83f498
+    type: condition
+    task:
+      id: 1ce22d6f-b1c2-42fa-8b45-0b7dee83f498
+      version: -1
+      name: User selected a username from a given list.
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Other Username:
+      - "18"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GetUsername.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+    - label: Other Username
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GetUsername.Answers
+                accessor: "1"
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e70b4399-f8ed-4a69-87e7-39e4a3c3b784
+    type: regular
+    task:
+      id: e70b4399-f8ed-4a69-87e7-39e4a3c3b784
+      version: -1
+      name: Set the user ID.
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: UserID
+      value:
+        complex:
+          root: Usernames
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: GetUsername.Answers.0
+                iscontext: true
+              field:
+                value:
+                  simple: name
+              getField:
+                value:
+                  simple: id
+              stringify: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4720d839-372b-4008-86f0-22863985cd21
+    type: regular
+    task:
+      id: 4720d839-372b-4008-86f0-22863985cd21
+      version: -1
+      name: Get the user ID based on username.
+      description: Returns a list of Vectra Users. All search attributes will be cumulative.
+      script: '|||vectra-search-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      extend-context:
+        simple: UserID=results.[0].id
+      username:
+        complex:
+          root: GetUsername.Answers
+          accessor: "1"
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 505,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_4_#default#": 0.45,
+      "16_18_Other Username": 0.68
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1805,
+        "width": 1045,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: entity_id
+  value:
+    complex:
+      root: incident
+      accessor: accountid
+      transformers:
+      - operator: SetIfEmpty
+        args:
+          applyIfEmpty: {}
+          defaultValue:
+            value:
+              simple: incident.deviceid
+            iscontext: true
+  required: false
+  description: ID of the entity.
+  playbookInputQuery:
+- key: entity_type
+  value:
+    complex:
+      root: incident
+      accessor: vectraentitytype
+  required: false
+  description: Type of the entity.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

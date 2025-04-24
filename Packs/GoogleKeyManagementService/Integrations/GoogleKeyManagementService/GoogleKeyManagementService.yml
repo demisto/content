@@ -1237,7 +1237,7 @@ script:
     - contextPath: GoogleKMS.PublicKey.Algorithm
       description: The algorithm used in the CryptoKey.
       type: String
-  dockerimage: demisto/google-kms:1.0.0.89771
+  dockerimage: demisto/google-kms:1.0.0.1858186
   runonce: false
   script: '-'
   type: python

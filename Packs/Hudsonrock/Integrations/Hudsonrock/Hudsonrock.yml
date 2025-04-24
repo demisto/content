@@ -1,0 +1,111 @@
+commonfields:
+  id: Hudsonrock
+  version: -1
+name: Hudsonrock
+display: Hudsonrock
+category: Data Enrichment & Threat Intelligence
+description: "Enrichment from Hudsonrock OSINT tools at https://cavalier.hudsonrock.com/api/json/v2/osint-tools/ Supports: IP, Email and Username."
+configuration:
+- display: Server URL (e.g. https://cavalier.hudsonrock.com/)
+  name: url
+  defaultvalue: https://cavalier.hudsonrock.com/
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Source Reliability
+  name: integrationReliability
+  defaultvalue: D - Not usually reliable
+  type: 15
+  required: true
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: List of IPs.
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: Hudsonrock.IP
+      description: IP reputation.
+      type: string
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    description: Send IP reputation query.
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      description: List of emails.
+      isArray: true
+    outputs:
+    - contextPath: Hudsonrock.Email
+      description: Email reputation.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    description: Send Email reputation query.
+  - name: hudsonrock-get-username
+    arguments:
+    - name: username
+      required: true
+      description: Username to query.
+    outputs:
+    - contextPath: Hudsonrock.Username
+      description: Username reputation.
+      type: string
+    description: Send username reputation query.
+  dockerimage: demisto/python3:3.12.8.1983910
+  runonce: false
+  subtype: python3
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

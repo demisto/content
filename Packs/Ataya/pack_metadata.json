@@ -2,7 +2,7 @@
     "name": "Ataya",
     "description": "Integrate with Ataya Harmony for manage the 5G UE session",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.8",
     "author": "Ataya Inc.",
     "url": "https://ataya.io",
     "email": "",
@@ -16,7 +16,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "githubUser": "tony19911010"
+    "githubUser": "tony19911010",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

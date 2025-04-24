@@ -1,1929 +1,1809 @@
-<!-- HTML_DOC -->
-<p>Use the Cisco Umbrella integration to manage online threats.</p>
-<h2>Configure Cisco Umbrella Investigate - Python on Cortex XSOAR</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Cisco Umbrella Investigate - Python.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Cisco Umbrella API token</strong></li>
-<li><strong>Source Reliability.</strong></li>
-<li><strong>Use system proxy settings</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Base URL</strong></li>
-<li><strong>DBot Score Malicious Threshold</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
-</ol>
-<h2>How DBot Score Malicious Threshold is Calculated</h2>
-<p>The DBot Score Malicious Threshold is calculated by taking the lower of two Cisco scores: <a href="https://docs.umbrella.com/investigate-api/docs/security-information-for-a-domain-1" target="_blank" rel="noopener">secure rank</a> and <a href="https://docs.umbrella.com/investigate-api/docs/domain-status-and-categorization-1" target="_blank" rel="noopener">domain status</a>.  </p>
-<p>The DBot Score will be 3 (bad) in these cases:</p>
-<ul>
-<li>The secure rank score is lower than the threshold score</li>
-<li>The domain status is -1</li>
-</ul>
-<h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_95271207136361539669137295">Get a domain category: umbrella-domain-categorization/investigate-umbrella-domain-categorization</a></li>
-<li><a href="#h_12059469238361539669280611">Get co-occurences for a domain: umbrella-domain-co-occurrences/investigate-umbrella-domain-co-occurrences</a></li>
-<li><a href="#h_34403715040351539671521979">Get a list of domain names requested the same time as a specified domain: umbrella-domain-related/investigate-umbrella-domain-related</a></li>
-<li><a href="#h_12028812242331539672611449">Get domain security data: umbrella-domain-security/investigate-umbrella-domain-security</a></li>
-<li><a href="#h_68120690844301539672675764">Query the DNS database for domains: umbrella-domain-dns-history/investigate-umbrella-domain-dns-history</a></li>
-<li><a href="#h_36010770446261539672842125">Query the DNS database for IPs: umbrella-ip-dns-history/investigate-umbrella-ip-dns-history</a></li>
-<li><a href="#h_1511178348211539673078668">Get malicious domains associated with an IP address: umbrella-ip-malicious-domains/investigate-umbrella-ip-malicious-domains</a></li>
-<li><a href="#h_89573474650151539674030486">Get a list of domains that match a regular expression (regex): umbrella-domain-search/investigate-umbrella-domain-search</a></li>
-<li><a href="#h_51225163252081539674588524">Get the reputation for a domain: domain</a></li>
-<li><a href="#h_94733327855831539678097346">Get a list of domain names requested the same time as a specified domain and a list of co-occurrences: umbrella-get-related-domains</a></li>
-<li><a href="#h_37604647659561539678104926">List all classifiers for a domain: umbrella-get-domain-classifiers</a></li>
-<li><a href="#h_10552279861461539678186711">Get the number of DNS queries for a domain: umbrella-get-domain-queryvolume</a></li>
-<li><a href="#h_98718850465151539678482169">Get domain security data: umbrella-get-domain-details</a></li>
-<li><a href="#h_93157940570611539678559957">Get domains associated with registrar email addresses: umbrella-get-domains-for-email-registrar</a></li>
-<li><a href="#h_41869273074261539678731403">Get all domains for a nameserver: umbrella-get-domains-for-nameserver</a></li>
-<li><a href="#h_17814194977891539678785713">Get WHOIS data for a domain: umbrella-get-whois-for-domain</a></li>
-<li><a href="#h_3979943983261539679228550">Get malicious domains associated with an IP address: umbrella-get-malicious-domains-for-ip</a></li>
-<li><a href="#h_27395371286851539680187187">Get a list of domains that match a regular expressions (regex): umbrella-get-domains-using-regex</a></li>
-<li><a href="#h_67454363090421539680195481">Query when a domain was attributed to a security organization or as a threat type: umbrella-get-domain-timeline</a></li>
-<li><a href="#h_84751396693971539680297675">Query when an IP address was attributed to a security organization or as a threat type: umbrella-get-ip-timeline</a></li>
-<li><a href="#h_79786501397501539680422818">Query when a URL was attributed to a security organization or as a threat type: umbrella-get-url-timeline</a></li>
-</ol>
-<h3 id="h_95271207136361539669137295">1. Get a domain category</h3>
-<hr>
-<p>Returns the category of a domain, e.g., <code>domain=amazon.com</code> returns <code>Ecommerce/Shopping</code>.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-domain-categorization</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 147px;"><strong>Argument Name</strong></th>
-<th style="width: 484px;"><strong>Description</strong></th>
-<th style="width: 77px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 147px;">domain</td>
-<td style="width: 484px;">The domain to categorize (e.g., amazon.com)</td>
-<td style="width: 77px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 209px;"><strong>Path</strong></th>
-<th style="width: 439px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 209px;">Domain.Name</td>
-<td style="width: 439px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 209px;">Domain.SecurityCategories</td>
-<td style="width: 439px;">The Umbrella security category, or categories, that match this domain</td>
-</tr>
-<tr>
-<td style="width: 209px;">Domain.ContentCategories</td>
-<td style="width: 439px;">The Umbrella content category or categories that match this domain</td>
-</tr>
-<tr>
-<td style="width: 209px;">Domain.Malicious.Vendor</td>
-<td style="width: 439px;">For malicious domains, the vendor that made the decision</td>
-</tr>
-<tr>
-<td style="width: 209px;">Domain.Malicious.Description</td>
-<td style="width: 439px;">For malicious domains, the reason for the vendor to make the decision</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-domain-categorization domain=cnn.com</pre>
-<h5>Context Example</h5>
-<p>Domain:{} 2 items<br> ContentCategories:News/Media<br> Name:cnn.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915576-2665bf80-cfb6-11e8-97df-d16a5f63022a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915576-2665bf80-cfb6-11e8-97df-d16a5f63022a.png" alt="1 investigate-umbrella-domain-categorization" width="752" height="261"></a></p>
-<h3 id="h_12059469238361539669280611">2. Get co-occurences for a domain</h3>
-<hr>
-<p>Gets a list of related domains and returns a list of co-occurences for the specified domain. A co-occurrence is when two or more domains are being accessed by the same users within a short time frame. Co-occurrence are not necessarily negative. Legitimate sites co-occur with each other as a part of normal web activity. However, unusual or suspicious co-occurence can provide additional information regarding attacks.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-domain-co-occurrences</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 193px;"><strong>Argument Name</strong></th>
-<th style="width: 400px;"><strong>Description</strong></th>
-<th style="width: 115px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 193px;">domain</td>
-<td style="width: 400px;">Enter a domain (e.g., www.cnn.com)</td>
-<td style="width: 115px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 250px;"><strong>Path</strong></th>
-<th style="width: 72px;"><strong>Type</strong></th>
-<th style="width: 386px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 250px;">Domain.Name</td>
-<td style="width: 72px;">string</td>
-<td style="width: 386px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 250px;">Domain.CoOccurrences.Score</td>
-<td style="width: 72px;">number</td>
-<td style="width: 386px;">Domain score (between 0 and 1)</td>
-</tr>
-<tr>
-<td style="width: 250px;">Domain.CoOccurrences.Name</td>
-<td style="width: 72px;">string</td>
-<td style="width: 386px;">Domain name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-domain-co-occurrences domain=walla.com</pre>
-<h5>Context Example</h5>
-<p>Domain:{} 2 items<br> CoOccurrences:[] 1 item<br> 0:{} 2 items<br> Name:walla.co.il<br> Score:1<br> Name:walla.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915591-4f865000-cfb6-11e8-8996-d7a3a69d1123.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915591-4f865000-cfb6-11e8-8996-d7a3a69d1123.png" alt="2 investigate-umbrella-domain-co-occurrences" width="750" height="225"></a></p>
-<h3 id="h_34403715040351539671521979">3. Get a list of domain names requested the same time as a specified domain</h3>
-<hr>
-<p>Returns a list of domain names that are frequently seen requested around the same time  as the specified domain name (up to 60 seconds before or after). The returned domain names are ones that are not frequently associated with other domain names.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-domain-related</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 201px;"><strong>Argument Name</strong></th>
-<th style="width: 391px;"><strong>Description</strong></th>
-<th style="width: 116px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 201px;">domain</td>
-<td style="width: 391px;">Domain name (e.g., www.cnn.com)</td>
-<td style="width: 116px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 155px;"><strong>Path</strong></th>
-<th style="width: 58px;"><strong>Type</strong></th>
-<th style="width: 495px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 155px;">Domain.Name</td>
-<td style="width: 58px;">string</td>
-<td style="width: 495px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 155px;">Domain.Related.Score</td>
-<td style="width: 58px;">number</td>
-<td style="width: 495px;">This is a score reflecting the number of client IPs looking up related sites within 60 seconds of the original request</td>
-</tr>
-<tr>
-<td style="width: 155px;">Domain.Related.Name</td>
-<td style="width: 58px;">string</td>
-<td style="width: 495px;">Related domain name</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-domain-related domain=walla.com</pre>
-<h5>Context Example</h5>
-<p>Domain:{} 2 items<br> Name:walla.com<br> Related:[] 9 items<br> 0:{} 2 items<br> Name:c3s2.iphmx.com<br> Score:6<br> 1:{} 2 items<br> Name:google.co.ma<br> Score:6<br> 2:{} 2 items<br> Name:email.footsmart.com<br> Score:5<br> 3:{} 2 items<br> Name:link.expediamail.com<br> Score:4<br> 4:{} 2 items<br> Name:cdn.lemediavault.com<br> Score:4<br> 5:{} 2 items<br> Name:click.royalcaribbeanmarketing.com<br> Score:3<br> 6:{} 2 items<br> Name:e2.overtons.com<br> Score:3<br> 7:{} 2 items<br> Name:link.trustpilot.com<br> Score:3<br> 8:{} 2 items<br> Name:tr.subscribermail.com<br> Score:3</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915640-aa1fac00-cfb6-11e8-8add-fceff77d5063.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915640-aa1fac00-cfb6-11e8-8add-fceff77d5063.png" alt="3 investigate-umbrella-domain-related" width="751" height="419"></a></p>
-<h3 id="h_12028812242331539672611449">4. Get domain security data</h3>
-<hr>
-<p>This contains multiple scores or security features, each of which can be used to determine relevant datapoints to build insight on the reputation or security risk posed by the site. For more security information about this specific domain, see the Cisco Umbrella documentation.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-domain-security</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 198px;"><strong>Argument Name</strong></th>
-<th style="width: 394px;"><strong>Description</strong></th>
-<th style="width: 116px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 198px;">domain</td>
-<td style="width: 394px;">Domain name (e.g., www.cnn.com)</td>
-<td style="width: 116px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 251px;"><strong>Path</strong></th>
-<th style="width: 67px;"><strong>Type</strong></th>
-<th style="width: 390px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 251px;">Domain.Name</td>
-<td style="width: 67px;">string</td>
-<td style="width: 390px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.DGA</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">Domain Generation Algorithm. This score is generated based on the likeliness of the domain name being generated by an algorithm rather than a human</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.Perplexity</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">A second score on the likeliness of the name to be algorithmically generated, on a scale from 0 to 1</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.Entropy</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">The number of bits required to encode the domain name, as a score</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.SecureRank</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.PageRank</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">Popularity according to Google's pagerank algorithm</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.ASNScore</td>
-<td style="width: 67px;">unknown</td>
-<td style="width: 390px;">ASN reputation score, ranges from -100 to 0 with -100 being very suspicious</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.PrefixScore</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">Prefix ranks domains given their IP prefixes (an IP prefix is the first three octets in an IP address) and the reputation score of these prefixes. Ranges from -100 to 0, -100 being very suspicious</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.RipScore</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">RIP ranks domains given their IP addresses and the reputation score of these IP addresses. Ranges from -100 to 0, -100 being very suspicious</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.Popularity</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">The number of unique client IPs visiting this site, relative to the all requests to all sites</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.GeoScore</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">A score that represents how far the different physical locations serving this name are from each other</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.KolmoorovSmirnov</td>
-<td style="width: 67px;">number</td>
-<td style="width: 390px;">olmogorov–Smirnov test on geodiversity. 0 means that the client traffic matches what is expected for this TLD</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.AttackName</td>
-<td style="width: 67px;">string</td>
-<td style="width: 390px;">The name of any known attacks associated with this domain, or blank if no known threat</td>
-</tr>
-<tr>
-<td style="width: 251px;">Domain.Security.ThreatType</td>
-<td style="width: 67px;">string</td>
-<td style="width: 390px;">The type of the known attack, such as botnet or APT, or blank if no known threat</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-domain-security domain=cnn.com</pre>
-<h5>Context Example</h5>
-<p>Domain:{} 2 items<br> Name:cnn.com<br> Security:{} 13 items<br> PrefixScore:-0.008968782766875304<br> Geoscore:0<br> Perplexity:0.13991232622025684<br> Securerank:86.6441456065165<br> Entropy:0.9182958340544894<br> AttackName:<br> ThreatType:<br> Popularity:100<br> ASNScore:-0.009098667373339567<br> RIPScore:0<br> Pagerank:40.99643<br> KolmogorovSmirnovTest:0<br> DGA:0</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915645-d2a7a600-cfb6-11e8-97a6-839482fe5093.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915645-d2a7a600-cfb6-11e8-97a6-839482fe5093.png" alt="5 investigate-umbrella-domain-security" width="750" height="397"></a></p>
-<h3 id="h_68120690844301539672675764">5. Query the DNS database for domains</h3>
-<hr>
-<p>The DNS database can be used to query the history that Umbrella has seen for a given domain. The most common use case is to obtain the RRs (Resource Record) history for a given domain, passing in the record query type as a parameter, to help build intelligence around an domain.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-domain-dns-history</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 200px;"><strong>Argument Name</strong></th>
-<th style="width: 392px;"><strong>Description</strong></th>
-<th style="width: 116px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 200px;">domain</td>
-<td style="width: 392px;">Domain name (e.g., www.cnn.com)</td>
-<td style="width: 116px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 259px;"><strong>Path</strong></th>
-<th style="width: 462px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 259px;">Domain.Address</td>
-<td style="width: 462px;">IP address</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.Age</td>
-<td style="width: 462px;">The day in days between now and the last request for this domain. This value is only useful if present</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.TtlsMin</td>
-<td style="width: 462px;">Minimum amount of time set that DNS records should be cached</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.TtlsMax</td>
-<td style="width: 462px;">Maximum amount of time set that DNS records should be cached</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.TtlsMean</td>
-<td style="width: 462px;">Average amount of time set that DNS records should be cached</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.TtlsMedian</td>
-<td style="width: 462px;">Median amount of time set that DNS records should be cached</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.TtlsStddev</td>
-<td style="width: 462px;">Standard deviation of the amount of time set that DNS records should be cached</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.CountryCodes</td>
-<td style="width: 462px;">List of country codes (ex: US, FR, TW) for the IPs the name maps to</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.CountryCount</td>
-<td style="width: 462px;">Number of countries the IPs are hosted in</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.Asns</td>
-<td style="width: 462px;">List of ASN numbers the IPs are in</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.AsnsCount</td>
-<td style="width: 462px;">Number of ASNs the IPs map to</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.Prefixes</td>
-<td style="width: 462px;">List of network prefixes the IPs map to</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.PrefixesCount</td>
-<td style="width: 462px;">Number of network prefixes the IPs map to</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.Rips</td>
-<td style="width: 462px;">Number of IPs seen for the domain name</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.DivRips</td>
-<td style="width: 462px;">The number of prefixes over the number of IPs</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.Locations</td>
-<td style="width: 462px;">List of geo coordinates (WGS84 datum, decimal format) the IPs are mapping to</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.LocationsCount</td>
-<td style="width: 462px;">Number of distinct geo coordinates the IPs are mapping to</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.GeoDistanceSum</td>
-<td style="width: 462px;">Minimum sum of distance between locations, in kilometers</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.GeoDistancMean</td>
-<td style="width: 462px;">Mean distance between the geo median and each location, in kilometers</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.MailExchanger</td>
-<td style="width: 462px;">Boolean, If an MX query for this domain name has been seen</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.NonRoutable</td>
-<td style="width: 462px;">Boolean. If one of the IPs is in a reserved, non-routable IP range</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.FfCandidate</td>
-<td style="width: 462px;">Boolean. If the domain name looks like a candidate for fast flux. This does not necessarily mean the domain is in fast flux, but rather that the IP address the domain resolves to changes rapidly</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.RipsStability</td>
-<td style="width: 462px;">1.0 divided by the number of times the set of IP addresses changed</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.BaseDomain</td>
-<td style="width: 462px;">The base domain of the requested domain</td>
-</tr>
-<tr>
-<td style="width: 259px;">Domain.DNSHistory.IsSubdomain</td>
-<td style="width: 462px;">Boolean. True if the requested domain is a subdomain of another</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-domain-dns-history domain=cnn.com</pre>
-<h5>Context Example</h5>
-<p>Domain:{} 2 items<br> DNSHistory:{} 26 items<br> Prefixes:[] 1 item<br> 0:151.101.0.0<br> FfCandidate:false<br> NonRoutable:false<br> GeoDistanceSum:0<br> Ip:151.101.1.67<br> TtlsMin:60<br> DivRips:0.25<br> GeoDistanceMean:0<br> TtlsMean:60<br> Cname:false<br> PrefixesCount:1<br> RipsStability:1<br> CountryCodes:[] 1 item<br> 0:US<br> TtlsMedian:60<br> LocationsCount:1<br> BaseDomain:cnn.com<br> Asns:[] 1 item<br> 0:54113<br> AsnsCount:1<br> MailExchanger:true<br> TtlsStddev:0<br> CountryCount:1<br> IsSubdomain:false<br> Rips:4<br> TtlsMax:60<br> Locations:[] 1 item<br> 0:{} 2 items<br> lat:37.76969909667969<br> lon:-122.39329528808594<br> Age:92<br> Name:cnn.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915669-2dd99880-cfb7-11e8-9a99-9a1afef99b5a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915669-2dd99880-cfb7-11e8-9a99-9a1afef99b5a.png" alt="6 investigate-umbrella-domain-dns-history" width="751" height="602"></a></p>
-<h3 id="h_36010770446261539672842125">6. Query the DNS database for IPs</h3>
-<hr>
-<p>The DNS database can be used to query the history that Umbrella has seen for a given IP address. The most common use case is to obtain the DNS Resource Record (RR) history for a given IP, passing in the record query type as a parameter, to help build intelligence around an IP or a range of IPs. The information provided is from within the last 90 days.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-ip-dns-history</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 255px;"><strong>Argument Name</strong></th>
-<th style="width: 302px;"><strong>Description</strong></th>
-<th style="width: 151px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 255px;">ip</td>
-<td style="width: 302px;">IP address</td>
-<td style="width: 151px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 241px;"><strong>Path</strong></th>
-<th style="width: 480px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 241px;">IP.Address</td>
-<td style="width: 480px;">IP address</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.RRS.Name</td>
-<td style="width: 480px;">The looked-up IP address</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.RRS.Class</td>
-<td style="width: 480px;">DNS class type</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.RRS.Type</td>
-<td style="width: 480px;">Query type</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.RRS.RR</td>
-<td style="width: 480px;">Resource record owner</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.RRS.TTL</td>
-<td style="width: 480px;">Time to live for this record</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.RrCount</td>
-<td style="width: 480px;">Number of records of that type mapping to the given IP</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.Ld2Count</td>
-<td style="width: 480px;">Number of 2-level names mapping to the given IP</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.Ld3Count</td>
-<td style="width: 480px;">Number of 3-level names mapping to the given IP</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.Ld21Count</td>
-<td style="width: 480px;">Number of 2-level names, without the TLD, mapping to the given IP</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.Ld22Count</td>
-<td style="width: 480px;">Number of 3-level names, without the TLD, mapping to the given IP</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.DivLd2</td>
-<td style="width: 480px;">ld2_count divided by the number of records</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.DivLd3</td>
-<td style="width: 480px;">ld3_count divided by the number of records</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.DivLd21</td>
-<td style="width: 480px;">ld2_1_count divided by the number of records</td>
-</tr>
-<tr>
-<td style="width: 241px;">IP.DNSHistory.Feature.DivLd22</td>
-<td style="width: 480px;">ld2_2_count divided by the number of records</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-ip-dns-history ip=1.2.3.99</pre>
-<h5>Context Example</h5>
-<p>IP:{} 2 items<br> Address:1.2.3.99<br> DNSHistory:{} 2 items<br> Features:{} 9 items<br> DivLd21:1<br> DivLd22:1<br> DivLd2:1<br> DivLd3:1<br> RrCount:2<br> Ld3Count:2<br> Ld2Count:2<br> Ld22Count:2<br> Ld21Count:2<br> RRS:[] 2 items<br> 0:{} 5 items<br> Class:IN<br> Name:1.2.3.99<br> RR:dnstest-099.brightsignnetwork.com.<br> TTL:1800<br> Type:A<br> 1:{} 5 items<br> Class:IN<br> Name:1.2.3.99<br> RR:jp.rogers.com.<br> TTL:86400<br> Type:A</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915673-4649b300-cfb7-11e8-9ae2-0c7b8916a496.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915673-4649b300-cfb7-11e8-9ae2-0c7b8916a496.png" alt="7 investigate-umbrella-ip-dns-history" width="751" height="421"></a></p>
-<h3 id="h_1511178348211539673078668">7. Get malicious domains associated with an IP address</h3>
-<hr>
-<p>Determines whether the specified IP address has any known malicious domains associated with it. The domains that display when using this endpoint are those that currently exist in the Umbrella block list. This endpoint will return an array with a single domain name for each domain associated with the IP, along with an ID number, which you can ignore.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-ip-malicious-domains</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 297px;"><strong>Argument Name</strong></th>
-<th style="width: 237px;"><strong>Description</strong></th>
-<th style="width: 174px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 297px;">ip</td>
-<td style="width: 237px;">IP address</td>
-<td style="width: 174px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 211px;"><strong>Path</strong></th>
-<th style="width: 510px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 211px;">Domain.Name</td>
-<td style="width: 510px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 211px;">Domain.Malicious.Vendor</td>
-<td style="width: 510px;">For malicious domains, the vendor that made the decision</td>
-</tr>
-<tr>
-<td style="width: 211px;">Domain.Malicious.Description</td>
-<td style="width: 510px;">For malicious domains, the reason for the vendor to make the decision</td>
-</tr>
-<tr>
-<td style="width: 211px;">DBotScore.Indicator</td>
-<td style="width: 510px;">The Indicator</td>
-</tr>
-<tr>
-<td style="width: 211px;">DBotScore.Vendor</td>
-<td style="width: 510px;">The DBot score vendor</td>
-</tr>
-<tr>
-<td style="width: 211px;">DBotScore.Type</td>
-<td style="width: 510px;">The Indicator type</td>
-</tr>
-<tr>
-<td style="width: 211px;">DBotScore.Score</td>
-<td style="width: 510px;">The DBot score</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-ip-malicious-domains ip=1.2.3.4</pre>
-<h5>Context Example</h5>
-<p>Domain:{} 2 items<br> Malicious:{} 2 items<br> Description:For IP 1.2.3.4<br> Vendor:Cisco Umbrella<br> Name:summaryorder-qpc.serveftp.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915683-709b7080-cfb7-11e8-99c2-7824a6a4dde1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915683-709b7080-cfb7-11e8-99c2-7824a6a4dde1.png" alt="8 investigate-umbrella-ip-malicious-domains" width="747" height="137"></a></p>
-<h3 id="h_89573474650151539674030486">8. Get a list of domains that match a regular expression (regex)</h3>
-<hr>
-<p>Returns a list of domains that match a a regular expression. You can use this for domain squatting. The pattern search functionality in Investigate uses regular expressions (regex) to search against the Investigate database. For more information on regex, see online tools, such as <a href="http://regexr.com/" rel="nofollow">http://regexr.com</a>.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-domain-search</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 135px;"><strong>Argument Name</strong></th>
-<th style="width: 502px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 135px;">regex</td>
-<td style="width: 502px;">Enter a domain regular expression (e.g. "cn.*\\.com"). Note to use double backslash ("\\")</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 135px;">start</td>
-<td style="width: 502px;">Example: -2weeks, -1 day, -1000minutes, EPOCH unix time, MAX: -31days</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 299px;"><strong>Path</strong></th>
-<th style="width: 422px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 299px;">Domain.Name</td>
-<td style="width: 422px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 299px;">Domain.FirstSeen</td>
-<td style="width: 422px;">First seen time in Epoch format</td>
-</tr>
-<tr>
-<td style="width: 299px;">Domain.FirstSeenISO</td>
-<td style="width: 422px;">First seen time in ISO format</td>
-</tr>
-<tr>
-<td style="width: 299px;">Domain. SecurityCategories</td>
-<td style="width: 422px;">Matching Umbrella Security Categories</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-domain-search regex=googlem.*.com start=-1days</pre>
-<h5>Context Example</h5>
-<p>Domain:{} 4 items<br> FirstSeen:1535363700000<br> FirstSeenISO:2018-08-27T09:55:00.000Z<br> Name:googlemail.top-office.com<br> SecurityCategories:null</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915760-b1e05000-cfb8-11e8-918b-eac0ed61af53.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915760-b1e05000-cfb8-11e8-918b-eac0ed61af53.png" alt="9 investigate-umbrella-domain-search" width="752" height="313"></a></p>
-<h3 id="h_51225163252081539674588524">9. Get the reputation for a domain</h3>
-<hr>
-<p>Get Domain Reputation info using Cisco Umbrella Investigate.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
-<h5>Base Command</h5>
-<p><code>domain</code></p>
-<h5>Input</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 137px;"><strong>Argument Name</strong></th>
-<th style="width: 500px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 137px;">domain</td>
-<td style="width: 500px;">The domain name to categorize, supports comma-separated lists (e.g., www.amazon.com,www.facebook.com,www.yahoo.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 256px;"><strong>Path</strong></th>
-<th style="width: 59px;"><strong>Type</strong></th>
-<th style="width: 393px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 256px;">Domain.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 256px;">Domain.Umbrella.RiskScore</td>
-<td style="width: 59px;">number</td>
-<td style="width: 393px;">The status will be "-1" if the domain is believed to be malicious, "1" if the domain is believed to be benign, "0" if it hasn't been classified yet.</td>
-</tr>
-<tr>
-<td style="width: 256px;">Domain.Umbrella.SecureRank </td>
-<td style="width: 59px;">number</td>
-<td style="width: 393px;">Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign).</td>
-</tr>
-<tr>
-<td style="width: 256px;">Domain.Umbrella.FirstQueriedTime</td>
-<td style="width: 59px;">number</td>
-<td style="width: 393px;">The time when the attribution for this Domain was made.</td>
-</tr>
-<tr>
-<td style="width: 256px;">DBotScore.Indicator</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The Indicator</td>
-</tr>
-<tr>
-<td style="width: 256px;">DBotScore.Score</td>
-<td style="width: 59px;">number</td>
-<td style="width: 393px;">The DBot score</td>
-</tr>
-<tr>
-<td style="width: 256px;">DBotScore.Type</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The Indicator type</td>
-</tr>
-<tr>
-<td style="width: 256px;">DBotScore.Vendor</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The DBot score vendor</td>
-</tr>
-<tr>
-<td style="width: 256px;">Domain.Umbrella.ContentCategories</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The Umbrella content category or categories that match this domain. If none of them match, the return will be blank.</td>
-</tr>
-<tr>
-<td style="width: 256px;">Domain.Umbrella.MalwareCategories</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The Umbrella security category, or categories, that match this domain or that this domain is associated with. If none match, the return will be blank.</td>
-</tr>
-<tr>
-<td style="width: 256px;">Domain.Malicious.Vendor</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">For malicious domains, the vendor that made the decision</td>
-</tr>
-<tr>
-<td style="width: 256px;">Domain.Malicious.Description</td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">For malicious domains, the reason for the vendor to make the decision</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Country</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The country of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Email</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The email address of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Name</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The name of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Phone</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The phone number of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Country</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The country of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Email</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The email address of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Name</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The name of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Phone</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The phone number of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"> <span>Domain.CreationDate</span>
-</td>
-<td style="width: 59px;">date</td>
-<td style="width: 393px;"><span>The date on which the domain was created.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.DomainStatus</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The status of the domain.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.UpdatedDate</span></td>
-<td style="width: 59px;">date</td>
-<td style="width: 393px;"><span>The date on which the domain was last updated.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.ExpirationDate</span></td>
-<td style="width: 59px;">date</td>
-<td style="width: 393px;"><span>The expiration date of the domain.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrar.Name</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The name of the registrar, such as "GoDaddy".</span></td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!domain domain=cnn.com using-brand="Cisco Umbrella Investigate - Python"</pre>
-<h5>Context Example</h5>
-<p>DBotScore:{} 4 items<br> Indicator:cnn.com<br> Score:1<br> Type:Domain<br> Vendor:Cisco Umbrella<br> Domain:{} 2 items<br> Name:cnn.com<br> Umbrella:{} 5 items<br> ContentCategories:[] 1 item<br> 0:News/Media<br> FirstQueriedTime:1993-09-22<br> MalwareCategories:[] 0 items<br> RiskScore:1<br> SecureRank:86.5019890432578</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915875-e05f2a80-cfba-11e8-949a-4b76b7528cab.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915875-e05f2a80-cfba-11e8-949a-4b76b7528cab.png" alt="image" width="750" height="332"></a><br> <a href="https://user-images.githubusercontent.com/12241410/46915878-e9e89280-cfba-11e8-8eaf-24e1569f8d0d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915878-e9e89280-cfba-11e8-8eaf-24e1569f8d0d.png" alt="image" width="751" height="203"></a></p>
-<h3 id="h_94733327855831539678097346">10. Get a list of domain names requested the same time as a specified domain and a list of co-occurences</h3>
-<hr>
-<p>Returns a list of domain names that are frequently seen requested around the same time  as the specified domain name (up to 60 seconds before or after), and a list of co-occurences.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-related-domains</code></p>
-<h5>Input</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 135px;"><strong>Argument Name</strong></th>
-<th style="width: 502px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 135px;">domain</td>
-<td style="width: 502px;">The domain name to see related domains for (e.g., www.cnn.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 135px;">coOccurences</td>
-<td style="width: 502px;">Set to true to get a list of co-occurences. (A co-occurrence is when two or more domains are being accessed by the same users within a small window of time) By default, this value will be false.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 263px;"><strong>Path</strong></th>
-<th style="width: 59px;"><strong>Type</strong></th>
-<th style="width: 386px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 263px;">Umbrella.RelatedDomains.Domain</td>
-<td style="width: 59px;">string</td>
-<td style="width: 386px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 263px;">Umbrella.RelatedDomains.Data.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 386px;">Domain names that have been frequently seen requested around the same time (up to 60 seconds before or after) as the given domain name.</td>
-</tr>
-<tr>
-<td style="width: 263px;">Umbrella.CoOccurences.Data.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 386px;">All co-occurences of requests from client IPs are returned for the previous seven days whether the co-occurence is suspicious or not.</td>
-</tr>
-<tr>
-<td style="width: 263px;">Umbrella.CoOccurences.Data.Score</td>
-<td style="width: 59px;">number</td>
-<td style="width: 386px;">The values range between 0 and 1 and should not exceed 1.</td>
-</tr>
-<tr>
-<td style="width: 263px;">Umbrella.RelatedDomains.Data.Score</td>
-<td style="width: 59px;">number</td>
-<td style="width: 386px;">The score here is the number of client IP requests to the site around the same time as the site being looked up. This is a score reflecting the number of client IPs looking up related sites within 60 seconds of the original request</td>
-</tr>
-<tr>
-<td style="width: 263px;">Umbrella.CoOccurences.Domain</td>
-<td style="width: 59px;">string</td>
-<td style="width: 386px;">The domain's name.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-related-domains domain=walla.com coOccurences=true</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 2 items<br> CoOccurences:{} 2 items<br> Data:[] 3 items<br> 0:{} 2 items<br> Name:rgmkt.net<br> Score:0.9783944034610161<br> 1:{} 2 items<br> Name:ns43.domaincontrol.com<br> Score:0.013178370929884454<br> 2:{} 2 items<br> Name:ns44.domaincontrol.com<br> Score:0.008427225609099349<br> Domain:walla.com<br> RelatedDomains:{} 2 items<br> Data:[] 2 items<br> 0:{} 2 items<br> Name:c3s2.iphmx.com<br> Score:4<br> 1:{} 2 items<br> Name:rgmkt.net<br> Score:3<br> Domain:walla.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915887-17354080-cfbb-11e8-9b5e-7a019339293b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915887-17354080-cfbb-11e8-9b5e-7a019339293b.png" alt="image" width="750" height="504"></a></p>
-<h3 id="h_37604647659561539678104926">11. List all classifiers for a domain</h3>
-<hr>
-<p>List all the classifiers used for a particular domain to assign a particular security categorization or threat type (indicators of compromise).</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-domain-classifiers</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 141px;"><strong>Argument Name</strong></th>
-<th style="width: 496px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 141px;">domain</td>
-<td style="width: 496px;">The domain name to see classifiers for (e.g., www.cnn.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 369px;"><strong>Path</strong></th>
-<th style="width: 42px;"><strong>Type</strong></th>
-<th style="width: 297px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 369px;">Umbrella.DomainClassifiers.Domain</td>
-<td style="width: 42px;">string</td>
-<td style="width: 297px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 369px;">Umbrella.DomainClassifiers.Data.MalwareCategories</td>
-<td style="width: 42px;">string</td>
-<td style="width: 297px;">Which Umbrella security category, if any, matched the input</td>
-</tr>
-<tr>
-<td style="width: 369px;">Umbrella.DomainClassifiers.Data.AttackNames</td>
-<td style="width: 42px;">string</td>
-<td style="width: 297px;">Which named attacks, if any, matched the input</td>
-</tr>
-<tr>
-<td style="width: 369px;">Umbrella.DomainClassifiers.Data.ThreatTypes</td>
-<td style="width: 42px;">string</td>
-<td style="width: 297px;">Which threat type, if any, matched in the input.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-domain-classifiers domain=cosmos.furnipict.com</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> DomainClassifiers:{} 2 items<br> Data:{} 3 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> SecurityCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Domain:cosmos.furnipict.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915906-506db080-cfbb-11e8-9be4-8cae18d2de6a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915906-506db080-cfbb-11e8-9be4-8cae18d2de6a.png" alt="image" width="750" height="260"></a></p>
-<h3 id="h_10552279861461539678186711">12. Get the number of DNS queries for a domain</h3>
-<hr>
-<p>Returns the number of DNS queries made per hour to the specified domain by users of Umbrella's recursive DNS servers.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-domain-queryvolume</code></p>
-<h5>Input</h5>
-<table style="width: 742px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 141px;"><strong>Argument Name</strong></th>
-<th style="width: 496px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 141px;">domain</td>
-<td style="width: 496px;">The domain name to see the volume for (e.g., www.cnn.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 141px;">start</td>
-<td style="width: 496px;">Point in time in the past, expressed as a timestamp in the following format or relative time. Valid formats: start=-2days start=-2hours start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD Note the negative sign. The max is 30 days.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 141px;">stop</td>
-<td style="width: 496px;">Point in time in the past expressed as a timestamp in milliseconds or relative time. Also valid is 'now'. Valid formats: stop=-1days stop=now start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD Note the negative sign. The max is 30 days.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 141px;">match</td>
-<td style="width: 496px;">Valid options are: exact, component, or all (default).     1.Using "cisco.com" as an example, "exact" only gives results for cisco.com.    2. Component gives results for every component of cisco.com, but not cisco.com. Examples are <a href="http://www.cisco.com/" rel="nofollow">www.cisco.com</a>, mail.cisco.com, wwwin.cisco.com, something.else.cisco.com. 3.All returns the sum of component and exact, this is the default.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 366px;"><strong>Path</strong></th>
-<th style="width: 45px;"><strong>Type</strong></th>
-<th style="width: 297px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 366px;">Umbrella.QueryVolume.Domain</td>
-<td style="width: 45px;">string</td>
-<td style="width: 297px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 366px;">Umbrella.QueryVolume.Data.StartDate</td>
-<td style="width: 45px;">string</td>
-<td style="width: 297px;">Start date for which the volume data is returned.</td>
-</tr>
-<tr>
-<td style="width: 366px;">Umbrella.QueryVolume.Data.StopDate</td>
-<td style="width: 45px;">string</td>
-<td style="width: 297px;">Stop date for which the volume data is returned.</td>
-</tr>
-<tr>
-<td style="width: 366px;">Umbrella.QueryVolume.Data.QueriesInfo.QueryHour</td>
-<td style="width: 45px;">string</td>
-<td style="width: 297px;">Query hour for which the queries data is returned.</td>
-</tr>
-<tr>
-<td style="width: 366px;">Umbrella.QueryVolume.Data.QueriesInfo.Queries</td>
-<td style="width: 45px;">string</td>
-<td style="width: 297px;">Number of DNS queries per hour, in ascending order, to the specified domain.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-domain-queryvolume domain=walla.com match=all start=-6hours</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> QueryVolume:{} 2 items<br> Data:{} 3 items<br> QueriesInfo:[] 7 items<br> 0:{} 2 items<br> Queries:3021<br> QueryHour:2018-10-14T06:00:00<br> 1:{} 2 items<br> Queries:2924<br> QueryHour:2018-10-14T07:00:00<br> 2:{} 2 items<br> Queries:3086<br> QueryHour:2018-10-14T08:00:00<br> 3:{} 2 items<br> Queries:3189<br> QueryHour:2018-10-14T09:00:00<br> 4:{} 2 items<br> Queries:3068<br> QueryHour:2018-10-14T10:00:00<br> 5:{} 2 items<br> Queries:0<br> QueryHour:2018-10-14T11:00:00<br> 6:{} 2 items<br> Queries:0<br> QueryHour:2018-10-14T12:00:00<br> StartDate:2018-10-14T06:00:00<br> StopDate:2018-10-14T12:00:00<br> Domain:walla.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916493-28367f80-cfc4-11e8-83fb-e40dff0b3f07.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916493-28367f80-cfc4-11e8-83fb-e40dff0b3f07.png" alt="image" width="750" height="520"></a></p>
-<h3 id="h_98718850465151539678482169">13. Get domain security data</h3>
-<hr>
-<p>The security information API method contains multiple scores or security features, which can act as relevant datapoints to build insight on the reputation.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-domain-details</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 144px;"><strong>Argument Name</strong></th>
-<th style="width: 493px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 144px;">domain</td>
-<td style="width: 493px;">The domain name to see security information for (e.g., www.cnn.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 379px;"><strong>Path</strong></th>
-<th style="width: 60px;"><strong>Type</strong></th>
-<th style="width: 269px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Domain</td>
-<td style="width: 60px;">string</td>
-<td style="width: 269px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.DGA</td>
-<td style="width: 60px;">string</td>
-<td style="width: 269px;">Domain Generation Algorithm. This score is generated based on the likeliness of the domain name being generated by an algorithm rather than a human. This score ranges from -100 (suspicious) to 0 (benign).</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.Entropy</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">The number of bits required to encode the domain name, as a score. This score is to be used in conjunction with DGA and Perplexity.</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.SecureRank </td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign).</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.PrefixScore</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">Prefix ranks domains given their IP prefixes (an IP prefix is the first three octets in an IP address) and the reputation score of these prefixes. Ranges from -100 to 0, -100 being very suspicious.</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.RipScore</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">RIP ranks domains given their IP addresses and the reputation score of these IP addresses. Ranges from -100 to 0, -100 being very suspicious.</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.Popularity</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">The number of unique client IPs visiting this site, relative to the all requests to all sites. A score of how many different client/unique IPs go to this domain compared to others.</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.Geodiversity</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">A score representing the number of queries from clients visiting the domain, broken down by country. Score is a non-normalized ratio between 0 and 1.</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.TldGeodiversity</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">A score that represents the TLD country code geodiversity as a percentage of clients visiting the domain. Occurs most often with domains that have a ccTLD. Score is normalized ratio between 0 and 1.</td>
-</tr>
-<tr>
-<td style="width: 379px;">Umbrella.DomainDetails.Data.KolmogorovSmirnovTest</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">Kolmogorov–Smirnov test on geodiversity. 0 means that the client traffic matches what is expected for this TLD.</td>
-</tr>
-<tr>
-<td style="width: 379px;">DBotScore.Indicator</td>
-<td style="width: 60px;">string</td>
-<td style="width: 269px;">The Indicator</td>
-</tr>
-<tr>
-<td style="width: 379px;">DBotScore.Score</td>
-<td style="width: 60px;">number</td>
-<td style="width: 269px;">The DBot score</td>
-</tr>
-<tr>
-<td style="width: 379px;">DBotScore.Type</td>
-<td style="width: 60px;">string</td>
-<td style="width: 269px;">The Indicator type</td>
-</tr>
-<tr>
-<td style="width: 379px;">DBotScore.Vendor</td>
-<td style="width: 60px;">string</td>
-<td style="width: 269px;">The DBot score vendor</td>
-</tr>
-<tr>
-<td style="width: 379px;">Domain.Malicious.Vendor</td>
-<td style="width: 60px;">string</td>
-<td style="width: 269px;">For malicious domains, the vendor that made the decision</td>
-</tr>
-<tr>
-<td style="width: 379px;">Domain.Malicious.Description</td>
-<td style="width: 60px;">string</td>
-<td style="width: 269px;">For malicious domains, the reason for the vendor to make the decision</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-domain-details domain=cnn.com</pre>
-<h5>Context Example</h5>
-<p>DBotScore:{} 4 items<br> Indicator:cnn.com<br> Score:1<br> Type:Domain<br> Vendor:Cisco Umbrella<br> Umbrella:{} 1 item<br> DomainDetails:{} 2 items<br> Data:{} 13 items<br> PrefixScore:-0.01103978469603726<br> Geoscore:0<br> Perplexity:0.13991232622025684<br> Securerank:86.5019890432578<br> Entropy:0.9182958340544894<br> AttackName:<br> ThreatType:<br> Popularity:100<br> ASNScore:-0.033617132988484844<br> RIPScore:0<br> Pagerank:39.26072<br> KolmogorovSmirnovTest:0<br> DGA:0<br> Domain:cnn.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916516-7b103700-cfc4-11e8-9a66-9582910c62a4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916516-7b103700-cfc4-11e8-9a66-9582910c62a4.png" alt="image" width="751" height="293"></a></p>
-<h3 id="h_93157940570611539678559957">14. Get domains associated with registrar email addresses</h3>
-<hr>
-<p>Returns the domains associated with the email addresses of the registrar that are looked up.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-domains-for-email-registrar</code></p>
-<h5>Input</h5>
-<table style="width: 744px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 137px;"><strong>Argument Name</strong></th>
-<th style="width: 500px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 137px;">emails</td>
-<td style="width: 500px;">Email address following rfc5322 conventions. (e.g. : <a href="mailto:admin@google.com">admin@google.com</a>) Comma separated list allowed. (e.g. : <a href="mailto:admin@google.com">admin@google.com</a>, <a href="mailto:dns-admin@google.com">dns-admin@google.com</a>, <a href="mailto:hostmaster@charter.com">hostmaster@charter.com</a>)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 137px;">offset</td>
-<td style="width: 500px;">For paging with offset for domains with more than 500 results, set the url-param limit. Default value is 10.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 137px;">sort</td>
-<td style="width: 500px;">To sort the list of domains based on timestamp. By default, domains are simply sorted by name in alphabetical order. Possible values are: ""created"", ""updated"", and ""expired"", each of which sorts from the most recent date for the value of the WHOIS entry.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 137px;">limit</td>
-<td style="width: 500px;">To limit the total number of results (domains).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 487px;"><strong>Path</strong></th>
-<th style="width: 62px;"><strong>Type</strong></th>
-<th style="width: 159px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Email</td>
-<td style="width: 62px;">string</td>
-<td style="width: 159px;">Email address</td>
-</tr>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Data.TotalResults</td>
-<td style="width: 62px;">number</td>
-<td style="width: 159px;">Total number of results for this email.</td>
-</tr>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Data.MoreDataAvailable</td>
-<td style="width: 62px;">boolean</td>
-<td style="width: 159px;">Whether or not there are more than 500 results for this email, either yes or no.</td>
-</tr>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Data.ResultLimit</td>
-<td style="width: 62px;">number</td>
-<td style="width: 159px;">Total number of results for this page of results, default 500.</td>
-</tr>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Data.Domains.Name</td>
-<td style="width: 62px;">string</td>
-<td style="width: 159px;">Domains registered by this email</td>
-</tr>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Data.Domains.Name.SecurityCategories</td>
-<td style="width: 62px;">string</td>
-<td style="width: 159px;">Security Categories associated with the domain.</td>
-</tr>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Data.Domains.Name.ContentCategories</td>
-<td style="width: 62px;">string</td>
-<td style="width: 159px;">Content Categories associated with the domain.</td>
-</tr>
-<tr>
-<td style="width: 487px;">Umbrella.AssociatedDomains.Data.Domains.LastObserved</td>
-<td style="width: 62px;">string</td>
-<td style="width: 159px;">Whether the domain is current, meaning currently registered by this email address. Values : Past or Current</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-domains-for-email-registrar emails=<a href="mailto:dns@google.com">dns@google.com</a></pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> AssociatedDomains:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Domains:[] 2 items<br> 0:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:true<br> Name:careersgoogle.com<br> Security Categories:[] 0 items<br> 1:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:true<br> Name:chronweb.com<br> Security Categories:[] 0 items<br> MoreDataAvailable:false<br> ResultLimit:500<br> TotalResults:2<br> Email:<a href="mailto:dns@google.com">dns@google.com</a></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916546-be6aa580-cfc4-11e8-972e-6f65297b4dda.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916546-be6aa580-cfc4-11e8-972e-6f65297b4dda.png" alt="image" width="753" height="267"></a></p>
-<h3 id="h_41869273074261539678731403">15. Get all domains for a nameserver</h3>
-<hr>
-<p>Get all domains registered by a specified nameserver. In a query, you can search against a single nameserver or multiple nameservers.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-domains-for-nameserver</code></p>
-<h5>Input</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 131px;"><strong>Argument Name</strong></th>
-<th style="width: 506px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 131px;">nameservers</td>
-<td style="width: 506px;">Domain name of the Nameserver (e.g., ns2.google.com) Comma separated list allowed. (e.g. : ns2.google.com, ns1.google.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 131px;">offset</td>
-<td style="width: 506px;">For paging with offset for domains with more than 500 results, set the url-param limit. Default value is 10.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 131px;">sort</td>
-<td style="width: 506px;">"To sort the list of domains based on timestamp. By default, domains are simply sorted by name in alphabetical order. Possible values are: ""created"", ""updated"", and ""expired"", each of which sorts from the most recent date for the value of the WHOIS entry."</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 131px;">limit</td>
-<td style="width: 506px;">To limit the total number of results (domains).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 488px;"><strong>Path</strong></th>
-<th style="width: 61px;"><strong>Type</strong></th>
-<th style="width: 159px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Nameserver</td>
-<td style="width: 61px;">string</td>
-<td style="width: 159px;">Nameserver's domain name.</td>
-</tr>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Data.TotalResults</td>
-<td style="width: 61px;">string</td>
-<td style="width: 159px;">Total number of results for this nameserver domain name.</td>
-</tr>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Data.MoreDataAvailable</td>
-<td style="width: 61px;">boolean</td>
-<td style="width: 159px;">Whether or not there are more than 500 results for this email, either yes or no.</td>
-</tr>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Data.ResultLimit</td>
-<td style="width: 61px;">number</td>
-<td style="width: 159px;">Total number of results for this page of results, default 500.</td>
-</tr>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Data.Domains.Name</td>
-<td style="width: 61px;">string</td>
-<td style="width: 159px;">Domains registered by this nameserver.</td>
-</tr>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Data.Domains.Name.SecurityCategories</td>
-<td style="width: 61px;">string</td>
-<td style="width: 159px;">Security Categories associated with the domain.</td>
-</tr>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Data.Domains.Name.ContentCategories</td>
-<td style="width: 61px;">string</td>
-<td style="width: 159px;">Content Categories associated with the domain.</td>
-</tr>
-<tr>
-<td style="width: 488px;">Umbrella.AssociatedDomains.Data.Domains.LastObserved</td>
-<td style="width: 61px;">string</td>
-<td style="width: 159px;">Whether the domain is current, meaning currently registered by this email address. Values : Past or Current</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-domains-for-nameserver nameservers=ns1.google.com limit=2</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> AssociatedDomains:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Domains:[] 2 items<br> 0:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:false<br> Name:googlerightsflow.net<br> Security Categories:[] 0 items<br> 1:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:true<br> Name:mycloudaudit.net<br> Security Categories:[] 0 items<br> MoreDataAvailable:true<br> ResultLimit:2<br> TotalResults:2<br> Nameserver:ns1.google.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916586-5cf70680-cfc5-11e8-967f-5f62ad9f084f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916586-5cf70680-cfc5-11e8-967f-5f62ad9f084f.png" alt="image" width="750" height="271"></a></p>
-<h3 id="h_17814194977891539678785713">16. Get WHOIS data for a domain</h3>
-<hr>
-<p>Return a standard WHOIS response record for a single domain with all available WHOIS data returned. </p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-whois-for-domain</code></p>
-<h5>Input</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 164px;"><strong>Argument Name</strong></th>
-<th style="width: 473px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 164px;">domain</td>
-<td style="width: 473px;">Domain name, including TLD, and excluding wildcards (e.g., www.cnn.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 392px;"><strong>Path</strong></th>
-<th style="width: 63px;"><strong>Type</strong></th>
-<th style="width: 253px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Domain</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.RegistrarName</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain registrar name</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.LastRetrieved</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain last retrieved date</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.Created</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain created date</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.Updated</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain updated date</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.Expires</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain expiry date</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.IANAID</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">IANA ID</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.LastObserved</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain last observed</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.Nameservers.Name</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain's name servers</td>
-</tr>
-<tr>
-<td style="width: 392px;">Umbrella.WHOIS.Data.Emails.Name</td>
-<td style="width: 63px;">string</td>
-<td style="width: 253px;">Domain's email</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Country</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The country of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Email</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The email address of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Name</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The name of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Admin.Phone</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;">The phone number of the domain administrator.</td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Country</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The country of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Email</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The email address of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Name</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The name of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrant.Phone</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The phone number of the registrant.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"> <span>Domain.CreationDate</span>
-</td>
-<td style="width: 59px;">date</td>
-<td style="width: 393px;"><span>The date on which the domain was created.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.DomainStatus</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The status of the domain.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.UpdatedDate</span></td>
-<td style="width: 59px;">date</td>
-<td style="width: 393px;"><span>The date on which the domain was last updated.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.ExpirationDate</span></td>
-<td style="width: 59px;">date</td>
-<td style="width: 393px;"><span>The expiration date of the domain.</span></td>
-</tr>
-<tr>
-<td style="width: 256px;"><span>Domain.Registrar.Name</span></td>
-<td style="width: 59px;">string</td>
-<td style="width: 393px;"><span>The name of the registrar, such as "GoDaddy".</span></td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-whois-for-domain domain=cnn.com</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> WHOIS:{} 2 items<br> Data:{} 10 items<br> Nameservers:[] 4 items<br> 0:ns-1086.awsdns-07.org<br> 1:ns-1630.awsdns-11.co.uk<br> 2:ns-47.awsdns-05.com<br> 3:ns-576.awsdns-08.net<br> IANAID:299<br> Created:1993-09-22<br> Name:cnn.com<br> LastRetrieved:1537481654499<br> Expires:2026-09-21<br> Emails:[] 2 items<br> 0:<a href="mailto:example.gmail.com">example.gmail.com</a><br> 1:<a href="mailto:example.gmail.com">example.gmail.com</a><br> RegistrarName:CSC CORPORATE DOMAINS, INC.<br> Updated:2018-04-10<br> LastObserved:2018-09-20 16:53:49.000 UTC<br> Domain:cnn.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" alt="image" width="751" height="506"></a></p>
-<h3 id="h_3979943983261539679228550">17. Get malicious domains associated with an IP address</h3>
-<hr>
-<p>Returns a list of malicious domains associated with the specified IP address.</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-malicious-domains-for-ip</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 177px;"><strong>Argument Name</strong></th>
-<th style="width: 428px;"><strong>Description</strong></th>
-<th style="width: 103px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 177px;">ip</td>
-<td style="width: 428px;">IP address to check for malicious domains</td>
-<td style="width: 103px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 364px;"><strong>Path</strong></th>
-<th style="width: 47px;"><strong>Type</strong></th>
-<th style="width: 297px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 364px;">Umbrella.MaliciousDomains.IP</td>
-<td style="width: 47px;">string</td>
-<td style="width: 297px;">IP address</td>
-</tr>
-<tr>
-<td style="width: 364px;">Umbrella.MaliciousDomains.Data.Name</td>
-<td style="width: 47px;">string</td>
-<td style="width: 297px;">The block list domain associated with the IP</td>
-</tr>
-<tr>
-<td style="width: 364px;">Umbrella.MaliciousDomains.Data.LastObserved</td>
-<td style="width: 47px;">string</td>
-<td style="width: 297px;">Whether the domain is current, meaning currently registered by this email address (Values: <em><strong>Past</strong></em> or <em><strong>Current</strong></em>)</td>
-</tr>
-<tr>
-<td style="width: 364px;">Umbrella.MaliciousDomains.Data.MalwareCategories</td>
-<td style="width: 47px;">string</td>
-<td style="width: 297px;">Security categories associated with the domain.</td>
-</tr>
-<tr>
-<td style="width: 364px;">Umbrella.MaliciousDomains.Data.ContentCategories</td>
-<td style="width: 47px;">string</td>
-<td style="width: 297px;">Content categories associated with the domain</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-malicious-domains-for-ip ip=8.8.8.8</pre>
-<h5>Context Example</h5>
-<p>DBotScore:[] 52 items<br> 0:{} 4 items<br> Indicator:bo1aa21.com<br> Score:3<br> Type:Domain<br> Vendor:Cisco Umbrella<br> 1:{} 4 items<br> Indicator:z015.mypsx.net<br> Score:3<br> Type:Domain<br> Vendor:Cisco Umbrella<br> Domain:[] 52 items<br> 0:{} 2 items<br> Malicious:{} 2 items<br> Description:For IP 8.8.8.8<br> Vendor:Cisco Umbrella<br> Name:bo1aa21.com<br> 1:{} 2 items<br> Malicious:{} 2 items<br> Description:For IP 8.8.8.8<br> Vendor:Cisco Umbrella<br> Name:z015.mypsx.net<br> Umbrella:{} 1 item<br> MaliciousDomains:{} 2 items<br> Data:[] 52 items<br> 0:{} 3 items<br> ContentCategories:[] 0 items<br> MalwareCategories:[] 1 item<br> 0:Command and Control<br> Name:bo1aa21.com<br> 1:{} 3 items<br> ContentCategories:[] 1 item<br> 0:Infrastructure<br> MalwareCategories:[] 1 item<br> 0:Malware<br> Name:z015.mypsx.net</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916774-c0823380-cfc7-11e8-9c81-8668e9470600.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916774-c0823380-cfc7-11e8-9c81-8668e9470600.png" alt="image" width="750" height="507"></a></p>
-<h3 id="h_27395371286851539680187187">18. Get a list of domains that match a regular expression (regex)</h3>
-<hr>
-<p>Get a list of domains that match a regular expression (regex).</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-domains-using-regex</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 143px;"><strong>Argument Name</strong></th>
-<th style="width: 494px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 143px;">expression</td>
-<td style="width: 494px;">A standard RegEx search pattern, must be encoded in a double quoted bracket.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 143px;">start</td>
-<td style="width: 494px;">Can either be specified in relative or absolute time. Point in time in the past, expressed as a timestamp in the following format or relative time. Valid formats: start=-2days start=-2hours start=-1000minutes start=-3weeks start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD Note the negative sign for relative time. Max is -30days.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 143px;">includeCategory</td>
-<td style="width: 494px;">Default is false, if set to true this will include security categories in the results and may slow the return times.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 143px;">stop</td>
-<td style="width: 494px;">The exclusive end time in milliseconds absolute or relative time (eg: 'now', '-2days','1997-07-16T19:20:30+01:00') for a query.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 143px;">limit</td>
-<td style="width: 494px;">The maximum number of items to return - combine with offset for result pagination</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 143px;">type</td>
-<td style="width: 494px;">Search database node type (URL, IP, HOST).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 276px;"><strong>Path</strong></th>
-<th style="width: 59px;"><strong>Type</strong></th>
-<th style="width: 373px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 276px;">Umbrella.DomainSearch.TotalResults</td>
-<td style="width: 59px;">number</td>
-<td style="width: 373px;">Total results from this search string. The default number of results is 100 and can be expanded using the limit parameter. </td>
-</tr>
-<tr>
-<td style="width: 276px;">Umbrella.DomainSearch.Data.Name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 373px;">Name of the domain found</td>
-</tr>
-<tr>
-<td style="width: 276px;">Umbrella.DomainSearch.Data.FirstSeen</td>
-<td style="width: 59px;">string</td>
-<td style="width: 373px;">Date the first time the domain was first seen</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-domains-using-regex expression=googleapis.*.com limit=2</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> DomainSearch:{} 3 items<br> Data:[] 2 items<br> 0:{} 2 items<br> FirstSeen:1539042240000<br> Name:googleapis.com.nauticaintegral.com<br> 1:{} 2 items<br> FirstSeen:1539244920000<br> Name:googleapis.com.sanpada.com<br> Expression:googleapis.*.com<br> TotalResults:2</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917196-b6166880-cfcc-11e8-8e3d-ccc9dd2583d1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917196-b6166880-cfcc-11e8-8e3d-ccc9dd2583d1.png" alt="image" width="750" height="471"></a></p>
-<h3 id="h_67454363090421539680195481">19. Query when a domain was attributed to a security category or as a threat type</h3>
-<hr>
-<p>Shows when a domain was attributed to a particular security categorization or threat type (indicators of compromise).</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-domain-timeline</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 149px;"><strong>Argument Name</strong></th>
-<th style="width: 488px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 149px;">domain</td>
-<td style="width: 488px;">The domain name to see the timeline for (e.g., www.cnn.com)</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 296px;"><strong>Path</strong></th>
-<th style="width: 49px;"><strong>Type</strong></th>
-<th style="width: 363px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 296px;">Umbrella.Timeline.Domain</td>
-<td style="width: 49px;">string</td>
-<td style="width: 363px;">Domain name</td>
-</tr>
-<tr>
-<td style="width: 296px;">Umbrella.Timeline.Data.MalwareCategories</td>
-<td style="width: 49px;">string</td>
-<td style="width: 363px;">Which Umbrella security category, if any, matched the input</td>
-</tr>
-<tr>
-<td style="width: 296px;">Umbrella.Timeline.Data.Attacks</td>
-<td style="width: 49px;">string</td>
-<td style="width: 363px;">Which named attacks, if any, matched the input</td>
-</tr>
-<tr>
-<td style="width: 296px;">Umbrella.Timeline.Data.ThreatTypes</td>
-<td style="width: 49px;">string</td>
-<td style="width: 363px;">Which threat type, if any, matched in the input.</td>
-</tr>
-<tr>
-<td style="width: 296px;">Umbrella.Timeline.Data.Timestamp</td>
-<td style="width: 49px;">string</td>
-<td style="width: 363px;">The time when the attribution for this Domain changed. </td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-domain-timeline domain=cosmos.furnipict.com</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> Timeline:{} 2 items<br> Data:[] 4 items<br> 0:{} 4 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> MalwareCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Timestamp:2017-10-21T19:30:33<br> 1:{} 4 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> MalwareCategories:[] 2 items<br> 0:Dynamic DNS<br> 1:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Timestamp:2016-10-21T17:22:03<br> 2:{} 4 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> MalwareCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Timestamp:2016-07-11T18:12:06<br> 3:{} 4 items<br> Attacks:[] 0 items<br> MalwareCategories:[] 0 items<br> ThreatTypes:[] 0 items<br> Timestamp:2016-07-09T03:49:08<br> Domain:cosmos.furnipict.com</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917220-0f7e9780-cfcd-11e8-8b5e-4252c6a93a7e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917220-0f7e9780-cfcd-11e8-8b5e-4252c6a93a7e.png" alt="image" width="750" height="357"></a></p>
-<h3 id="h_84751396693971539680297675">20. Query when an IP address was attributed to a security organization or as a threat type</h3>
-<hr>
-<p>Shows when an IP was attributed to a particular security categorization or threat type (indicators of compromise).</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-ip-timeline</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 168px;"><strong>Argument Name</strong></th>
-<th style="width: 451px;"><strong>Description</strong></th>
-<th style="width: 89px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 168px;">ip</td>
-<td style="width: 451px;">The IP to see the timeline for (e.g., 8.8.8.8)</td>
-<td style="width: 89px;">Required</td>
-</tr>
-</tbody>
-</table>
-<h5> </h5>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 298px;"><strong>Path</strong></th>
-<th style="width: 47px;"><strong>Type</strong></th>
-<th style="width: 363px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 298px;">Umbrella.Timeline.IP</td>
-<td style="width: 47px;">string</td>
-<td style="width: 363px;">IP address</td>
-</tr>
-<tr>
-<td style="width: 298px;">Umbrella.Timeline.Data.MalwareCategories</td>
-<td style="width: 47px;">string</td>
-<td style="width: 363px;">Which Umbrella security category, if any, matched the input</td>
-</tr>
-<tr>
-<td style="width: 298px;">Umbrella.Timeline.Data.Attacks</td>
-<td style="width: 47px;">string</td>
-<td style="width: 363px;">Which named attacks, if any, matched the inputWhich threat type, if any, matched in the input.</td>
-</tr>
-<tr>
-<td style="width: 298px;">Umbrella.Timeline.Data.ThreatTypes</td>
-<td style="width: 47px;">string</td>
-<td style="width: 363px;">Which threat type, if any, matched in the input.</td>
-</tr>
-<tr>
-<td style="width: 298px;">Umbrella.Timeline.Data.Timestamp</td>
-<td style="width: 47px;">string</td>
-<td style="width: 363px;">The time when the attribution for this IP changed. </td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-ip-timeline ip=1.2.3.4</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> Timeline:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Attacks:[] 0 items<br> MalwareCategories:[] 0 items<br> ThreatTypes:[] 0 items<br> Timestamp:2018-05-31T20:48:59<br> IP:1.2.3.4</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917241-58cee700-cfcd-11e8-8d4b-91e9d49005f8.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917241-58cee700-cfcd-11e8-8d4b-91e9d49005f8.png" alt="image" width="749" height="251"></a></p>
-<h3 id="h_79786501397501539680422818">21. Query when a URL was attributed to a security organization or as a threat type</h3>
-<hr>
-<p>Shows when a URL was attributed to a particular security categorization or threat type (indicators of compromise).</p>
-<h5>Base Command</h5>
-<p><code>umbrella-get-url-timeline</code></p>
-<h5>Input</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 132px;"><strong>Argument Name</strong></th>
-<th style="width: 504px;"><strong>Description</strong></th>
-<th style="width: 72px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 132px;">url</td>
-<td style="width: 504px;">The URL to see the timeline for (e.g., www.aws.amazon.com)</td>
-<td style="width: 72px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 299px;"><strong>Path</strong></th>
-<th style="width: 46px;"><strong>Type</strong></th>
-<th style="width: 363px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 299px;">Umbrella.Timeline.URL</td>
-<td style="width: 46px;">string</td>
-<td style="width: 363px;">URL value</td>
-</tr>
-<tr>
-<td style="width: 299px;">Umbrella.Timeline.Data.MalwareCategories</td>
-<td style="width: 46px;">string</td>
-<td style="width: 363px;">Umbrella security category that matches the the URL</td>
-</tr>
-<tr>
-<td style="width: 299px;">Umbrella.Timeline.Data.Attacks</td>
-<td style="width: 46px;">string</td>
-<td style="width: 363px;">Which named attacks, if any, matched the input</td>
-</tr>
-<tr>
-<td style="width: 299px;">Umbrella.Timeline.Data.ThreatTypes</td>
-<td style="width: 46px;">string</td>
-<td style="width: 363px;">Which threat type, if any, matched in the input.</td>
-</tr>
-<tr>
-<td style="width: 299px;">Umbrella.Timeline.Data.Timestamp</td>
-<td style="width: 46px;">date</td>
-<td style="width: 363px;">The time when the attribution for this URL changed. </td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!umbrella-get-url-timeline url=httpx://gauttam.com/wp-includes/</pre>
-<h5>Context Example</h5>
-<p>Umbrella:{} 1 item<br> Timeline:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Attacks:[] 0 items<br> MalwareCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 0 items<br> Timestamp:2018-08-21T13:21:55<br> URL:httpx://gauttam.com/wp-includes/</p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917266-a64b5400-cfcd-11e8-9aaf-277c50fd8f02.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917266-a64b5400-cfcd-11e8-9aaf-277c50fd8f02.png" alt="image" width="750" height="288"></a></p>
+Cisco Umbrella Investigate enable you to research domains, IPs, and URLs observed by the Umbrella resolvers.
+This integration was integrated and tested with version 2.0.0 of Cisco Umbrella Investigate.
+
+## Configure Cisco Umbrella Investigate in Cortex
+
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | API key and Secret | True |
+| API Secret |  | True |
+| Source Reliability |  | True |
+| Trust any certificate (not secure) |  |  |
+| Use system proxy settings |  |  |
+| Base URL | Cisco Umbrella Investigate base URL. | True |
+| DBot Score Suspicious Threshold (-100 to 100) | Make sure the suspicious threshold is greater than the Malicious threshold. | True |
+| Score Malicious Threshold (-100 to 100) | Make sure the Malicious threshold is less than the suspicious threshold. | True |
+
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### umbrella-domain-categorization
+
+***
+Get the status, security, and content categories for the domain.
+
+#### Base Command
+
+`umbrella-domain-categorization`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The name of the domain. For example: cnn.com. | Required |
+| show_label | Whether to display the security and content category labels in the response. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The name of the domain. |
+| Domain.SecurityCategories | Unknown | The Umbrella security categories that match this domain. |
+| Domain.ContentCategories | Unknown | The Umbrella content categories that match this domain. |
+| DBotScore.Indicator | String | The name of the domain. |
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. |
+| DBotScore.Type | String | The type of the indicator. |
+| DBotScore.Score | Number | The domain score. |
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
+
+#### Command example
+```!umbrella-domain-categorization domain=cisco.com```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "cisco.com",
+        "Reliability": "A+ - 3rd party enrichment",
+        "Score": 1,
+        "Type": "domain",
+        "Vendor": "Cisco Umbrella Investigate"
+    },
+    "Domain": {
+        "ContentCategories": [
+            "Business Services",
+            "Computers and Internet",
+            "Software/Technology"
+        ],
+        "Name": "cisco.com",
+        "SecurityCategories": [],
+        "status": 1
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-domain-search
+
+***
+Search for newly seen domains that match a regular expression pattern.
+
+#### Base Command
+
+`umbrella-domain-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| regex | A standard regular expression pattern search. For example: exa[a-z]ple.com. | Required |
+| start | Filter for data that appears after this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is 1 week ago. | Optional |
+| stop | Filter for data that appears before this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
+| include_category | Whether to retrieve security categories in the response. Possible values are: true, false. | Optional |
+| type | Filter with the search database node type. Possible values are: URL, IP, HOST. | Optional |
+| page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The name of the query. |
+| Domain.FirstSeen | String | The first time Umbrella related the domain for the resource record, specified in Unix epoch time. |
+| Domain.FirstSeenISO | String | The first time Umbrella related the domain for the resource record, specified in ISO date and time format. |
+| Domain.SecurityCategories | Unknown | The list of Umbrella security categories that match the domain. |
+
+#### Command example
+```!umbrella-domain-search regex=exa[a-z]ple.com limit=1```
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-domain-co-occurrences
+
+***
+List the co-occurences for the specified domain. A co-occurrence is when two or more domains are accessed by the same users within a small window of time. Co-occurring domains are not necessarily problematic; legitimate sites co-occur with each other as a part of normal web activity. However, unusual or suspicious co-occurences can provide additional information regarding attacks. To determine co-occurrences for a domain, a small time window of traffic across all of our datacenters is taken. Umbrella Investigate checks the sites that end users visited before and after the domain was requested in the API call.
+
+#### Base Command
+
+`umbrella-domain-co-occurrences`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain name. For example: cnn.com. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The name of the domain. |
+| Domain.CoOccurrences.Name | String |  The name of the co-occurrence domain. |
+| Domain.CoOccurrences.Score | Number | The score of the co-occurrence domain. |
+
+#### Command example
+```!umbrella-domain-co-occurrences domain=cisco.com```
+#### Context Example
+```json
+{
+    "Domain": {
+        "CoOccurrences": [
+            {
+                "Name": "bankofamerica.com",
+                "Score": 0.9605992656904034
+            },
+            {
+                "Name": "www.bankofamerica.com",
+                "Score": 0.019189025631362176
+            }
+        ],
+        "Name": "cisco.com"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-domain-related
+
+***
+List domain names that are frequently requested around the same time (up to 60 seconds before or after) as the given domain name, but that are not frequently associated with other domain names.
+
+#### Base Command
+
+`umbrella-domain-related`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain name. For example: cnn.com. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The name of the domain. |
+| Domain.Related.Name | String | A related domain name. |
+| Domain.Related.Score | Number | The number of client IP requests to the site around the same time that the site is looked up. |
+
+#### Command example
+```!umbrella-domain-related domain=cisco.com```
+#### Context Example
+```json
+{
+    "Domain": {
+        "Name": "cisco.com",
+        "Related": [
+            {
+                "Name": "www.google.com.",
+                "Score": 74
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-domain-security
+
+***
+Get multiple scores or security features for a domain. You can use the scores or security features to determine relevant data points and build insights on the reputation or security risk posed by the site.
+
+#### Base Command
+
+`umbrella-domain-security`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain name. For example: cnn.com. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The name of the domain. |
+| Domain.Security.DGA | Number | A domain generation algorithm \(DGA\) is used by malware to generate large lists of domain names. This score is created based on the likeliness of the domain name being generated by an algorithm rather than a human. This algorithm is designed to identify domains that have been created using an automated randomization strategy, which is a common evasion technique in malware kits or botnets. This score ranges from -100 \(suspicious\) to 0 \(benign\). |
+| Domain.Security.Perplexity | Number | A second score on the likeliness of the name to be algorithmically generated, on a scale from 0 to 100. This score is used in conjunction with DGA. |
+| Domain.Security.Entropy | Number | The number of bits required to encode the domain name as a score. This score is used in conjunction with DGA and Perplexity. |
+| Domain.Security.SecureRank | Number | The suspicious rank for a domain that reviews are based on the lookup behavior of client IP for the domain. Secure rank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
+| Domain.Security.PageRank | Number | A popularity score according to Google's PageRank algorithm. |
+| Domain.Security.ASNScore | Number | The ASN reputation score ranges from -100 to 0 where -100 is very suspicious. |
+| Domain.Security.PrefixScore | Number | The prefix ranks domains given their IP prefixes \(an IP prefix is the first three octets in an IP address\) and the reputation score of these prefixes. The scores range from -100 to 0 where -100 is very suspicious. |
+| Domain.Security.RipScore | Number | The RIP ranks domains given their IP addresses and the reputation score of these IP addresses. The scores ranges from -100 to 0 where -100 is very suspicious. |
+| Domain.Security.Popularity | Number | The number of unique client IPs visiting this site, relative to all requests to all sites. A score of how many different client or unique IPs requested to this domain compared to others. |
+| Domain.Security.GeoScore | Number | A score that represents how far the different physical locations serving this name are from each other. |
+| Domain.Security.KolmoorovSmirnov | Number | A number that represents the Kolmogorov-Smirnov test on geo diversity. Zero indicates that the client traffic matches what is expected for this top-level domain. |
+| Domain.Security.AttackName | String | The name of any known attacks associated with this domain. |
+| Domain.Security.ThreatType | String | The type of the known attack, such as botnet or APT. |
+| Domain.tld_geodiversity | Unknown | The list of scores that represent the top-level domain country code geo diversity as a percentage of clients visiting the domain. |
+| Domain.GeodiversityNormalized.score | Number | Score that represents the amount of queries for clients visiting the domain \(by country\) |
+| Domain.GeodiversityNormalized.country_code | String | Country code for the score. |
+| Domain.Geodiversity.score | Number | Score that represents the amount of queries for clients visiting the domain \(by country\) |
+| Domain.Geodiversity.country_code | String | Country code for the score. |
+
+#### Command example
+```!umbrella-domain-security domain=cisco.com```
+#### Context Example
+```json
+{
+    "Domain": {
+        "Geodiversity": [
+            {
+                "country_code": "BM",
+                "score": 0.15136951091031767
+            }
+        ],
+        "Name": "cisco.com",
+        "Security": {
+            "ASNScore": 0,
+            "AttackName": "",
+            "DGA": 0,
+            "Entropy": 1.9219280948873625,
+            "GeoScore": 0,
+            "KolmoorovSmirnov": 0,
+            "PageRank": 0,
+            "Perplexity": 0.11194989638754399,
+            "Popularity": 100,
+            "PrefixScore": 0,
+            "RipScore": 0,
+            "SecureRank": 0,
+            "ThreatType": ""
+        },
+        "tld_geodiversity": []
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-domain-risk-score
+
+***
+Get the domain risk score. The Umbrella Investigate Risk Score is based on an analysis of the lexical characteristics of the domain name, patterns in queries and requests to the domain. The risk score is scaled from 0 to 100 where 100 is the highest risk and 0 represents no risk at all.
+
+#### Base Command
+
+`umbrella-get-domain-risk-score`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain name. For example: cnn.com. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The name of the domain. |
+| Umbrella.Domain.name | String | The name of the domain. |
+| Umbrella.Domain.risk_score | Number | The indicator risk score. |
+| Umbrella.Domain.Indicator.score | Number | The raw outcome score from the statistical algorithms. |
+| Umbrella.Domain.Indicator.normalized_score | Number | Normalized risk score. The risk score is scaled from 0 to 100 where 100 is the highest risk and 0 represents no risk at all. |
+| Umbrella.Domain.Indicator.indicator_id | String | The indicator ID. Each  is a behavioral or lexical feature that contributes to the calculation of the risk score. |
+| Umbrella.Domain.Indicator.indicator | String | The name of the indicator. |
+| DBotScore.Indicator | String | The name of the domain. |
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Score | Number | The domain score. |
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
+
+#### Command example
+```!umbrella-get-domain-risk-score domain=cisco.com```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "cisco.com",
+        "Reliability": "A+ - 3rd party enrichment",
+        "Score": 1,
+        "Type": "domain",
+        "Vendor": "Cisco Umbrella Investigate"
+    },
+    "Domain": {
+        "Name": "cisco.com"
+    },
+    "Umbrella": {
+        "Domain": {
+            "Indicator": [
+                {
+                    "indicator": "Geo Popularity Score",
+                    "indicator_id": "Geo Popularity Score",
+                    "normalized_score": 2,
+                    "score": -3.610878170000001
+                }
+            ],
+            "name": "cisco.com",
+            "risk_score": 5
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-list-resource-record
+
+***
+List the Resource Record (RR) data for DNS responses, and categorization data, where the answer (or rdata) is the inserted value or list historical data from the Umbrella resolvers for domains, IPs, and other resource records (by using the type name).
+
+#### Base Command
+
+`umbrella-list-resource-record`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The type of the inserted value. Possible values are: IP, Domain, Raw, Name. | Required |
+| value | The text representation of the data. For example, when type is raw - %22abc%22. When type is IP - 8.8.8.8. When type is Domain - cisco.com. When type is Name - test . . | Required |
+| sort_order | Sort records by ascending (asc) or descending (desc) order. Possible values are: asc, desc. Default is desc. | Optional |
+| sort_by | Sort records by one of the following fields. Possible values are: Min Ttl, Max Ttl, First Seen, Last Seen. | Optional |
+| record_type | Comma-separated list of types of records. For example: A,Cname. Possible values are: A, Cname, Ns, Mx. | Optional |
+| include_features | Whether to add the feature sections to the response. If set to true, the response will contain additional information about the IP address, such as record counts and diversity metrics. Possible values are: true, false. | Optional |
+| min_first_seen | Select records that are first seen after the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| max_first_seen | Select records that are first seen before the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| min_last_seen | Select records that were last seen after the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| max_last_seen | Select records that were last seen before the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| sort_categories | Comma-separated list of security categories to sort the results. For example, Mobile Threats,Malware. Possible values are: All, Drive-by Downloads/Exploits, Mobile Threats, Dynamic DNS, High Risk Sites and Locations, Command and Control, Malware, Phishing, Newly Seen Domains, Potentially Harmful, DNS Tunneling VPN, Cryptomining. | Optional |
+| required_categories | Comma-separated list of security categories to filter for records that are assigned the specified categories. For example, Malware,Phishing. Possible values are: Drive-by Downloads/Exploits, Mobile Threats, Dynamic DNS, High Risk Sites and Locations, Command and Control, Malware, Phishing, Newly Seen Domains, Potentially Harmful, DNS Tunneling VPN, Cryptomining. . | Optional |
+| page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.ResourceRecord.value | String | The text representation of the data. |
+| Umbrella.ResourceRecord.last_seen_iso | Date | The last time Umbrella related the domain for the resource record, specified in ISO date and time format. |
+| Umbrella.ResourceRecord.first_seen_iso | Date | The first time Umbrella related the domain for the resource record, specified in ISO date and time format. |
+| Umbrella.ResourceRecord.content_categories | Unknown | The Umbrella content categories. |
+| Umbrella.ResourceRecord.security_categories | Unknown | The Umbrella security categories. |
+| Umbrella.ResourceRecord.type | String | The DNS record type. |
+| Umbrella.ResourceRecord.name | String | The name of the query. |
+| Umbrella.ResourceRecord.rr | String | The Resource Records, if any that match the domain. |
+| Umbrella.ResourceRecord.last_seen | Number | The last time Umbrella related the domain for the resource record, specified in Unix epoch time. |
+| Umbrella.ResourceRecord.first_seen | Number | The first time Umbrella related the domain for the resource record, specified in Unix epoch time. |
+| Umbrella.ResourceRecord.max_ttl | Number | The maximum TTL for the record in seconds. |
+| Umbrella.ResourceRecord.min_ttl | Number | The minimum TTL for the record in seconds. |
+
+#### Command example
+```!umbrella-list-resource-record value=cisco.com type=Name limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "ResourceRecord": {
+            "content_categories": [
+                "Business Services",
+                "Computers and Internet",
+                "Software/Technology"
+            ],
+            "first_seen": 1408040040,
+            "first_seen_iso": "2014-08-14T18:14Z",
+            "last_seen": 1722850932,
+            "last_seen_iso": "2024-08-05T09:42Z",
+            "max_ttl": 86400,
+            "min_ttl": 1,
+            "name": "cisco.com",
+            "rr": "ns1.cisco.com.",
+            "security_categories": [],
+            "type": "NS",
+            "value": "cisco.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-list-domain-subdomain
+
+***
+List sub-domains of a given domain.
+
+#### Base Command
+
+`umbrella-list-domain-subdomain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain name. For example: cnn.com. | Required |
+| offset_name | Specify the subdomain to filter the collection. For example api.cisco.com when domain is cisco.com. The default value is the target domain. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.Domain.name | String | The name of the domain. |
+| Umbrella.Domain.SubDomain.name | String | The name of the sub-domain. |
+| Umbrella.Domain.SubDomain.first_seen | String | The first time Umbrella related the domain for the resource record, specified in Unix epoch time. |
+| Umbrella.Domain.SubDomain.security_categories | Unknown | The list of security categories that are tagged on this sub-domain. |
+
+#### Command example
+```!umbrella-list-domain-subdomain domain=cisco.com limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "Domain": {
+            "SubDomain": [
+                {
+                    "first_seen": "1463632560",
+                    "name": "00-0f-44-00-9e-3b-lobby-dmp.cisco.com",
+                    "security_categories": []
+                }
+            ],
+            "name": "cisco.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-ip-bgp
+
+***
+Get data about ASN and IP relationships, showing how IP addresses are related to each other and to the regional registries. You can find out more about the IP space associated with an AS and correlate BGP routing information between AS.
+
+#### Base Command
+
+`umbrella-get-ip-bgp`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The IPv4 IP address where to obtain the AS information. For example: 1.2.3.4. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.BGPInformation.ip | String | The IP address. |
+| Umbrella.BGPInformation.creation_date | String | The date when the AS was first created. |
+| Umbrella.BGPInformation.ir | Number | The IR number corresponds to one of the 5 Regional Internet Registries \(RIR\). 1 - AfriNIC: Africa2 - APNIC: Asia, Australia, New Zealand, and neighboring countries.3 - ARIN: United States, Canada, several parts of the Caribbean region, and Antarctica.4 - LACNIC: Latin America and parts of the Caribbean region.5 - RIPE NCC: Europe, Russia, the Middle East, and Central Asia.0 - Unknown / Not Available. |
+| Umbrella.BGPInformation.description | String | Network owner description as provided by the network owner. |
+| Umbrella.BGPInformation.asn | String | The autonomous system number \(ASN\) associated with the IP address. |
+| Umbrella.BGPInformation.cidr | String | The IP CIDR for the ASN. |
+
+#### Command example
+```!umbrella-get-ip-bgp ip=8.8.8.8```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "BGPInformation": [
+            {
+                "asn": 3356,
+                "cidr": "8.8.8.8/12",
+                "creation_date": "2000-03-10",
+                "description": "LEVEL3, US 86400",
+                "ip": "8.8.8.8",
+                "ir": 3
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-asn-bgp
+
+***
+Get BGP Route Information for ASN. Each hash reference contains two keys: `geo` and `cidr`. Geo is a hash reference with the country name and country code (the code corresponds to the country code list for ISO-3166-1 alpha-2). CIDR contains the IP prefix for this ASN.
+
+#### Base Command
+
+`umbrella-get-asn-bgp`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asn | Autonomous System Number (ASN) for the AS. For example: 4134. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.BGPInformation.asn | String | The ASN. |
+| Umbrella.BGPInformation.cidr | String | A list of the CIDR range of IP addresses associated with this AS.The CIDR contains the IP prefix for the ASN. |
+| Umbrella.BGPInformation.Geo.country_name | Number | The country name of the geolocation. |
+| Umbrella.BGPInformation.Geo.country_code | String | The country code of the geolocation. |
+
+#### Command example
+```!umbrella-get-asn-bgp asn=3356```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "BGPInformation": [
+            {
+                "Geo": {
+                    "country_code": "US",
+                    "country_name": "United States"
+                },
+                "asn": "3356",
+                "cidr": "8.8.8.8/9"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### domain
+
+***
+Get the WHOIS information for the specified domains.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain name. For example: cnn.com. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The domain name. |
+| Domain.Umbrella.RiskScore | String | Suspicious rank for a domain that has reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
+| Domain.Umbrella.SecureRank | String | Suspicious rank for a domain that has reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
+| Domain.Umbrella.FirstQueriedTime | String | The time when the attribution for this domain was made. |
+| DBotScore.Indicator | String | The Indicator name. |
+| DBotScore.Score | String | The DBot score. |
+| DBotScore.Type | String | The domain type. |
+| DBotScore.Vendor | String | The DBot score vendor. |
+| Domain.Umbrella.ContentCategories | String | The Umbrella content category or categories that match this domain. If none of them match, the return will be blank. |
+| Domain.Umbrella.MalwareCategories | String | string |
+| Domain.Malicious.Vendor | String | string |
+| Domain.Malicious.Description | String | string |
+| Domain.Admin.Country | String | string |
+| Domain.Admin.Email | String | string |
+| Domain.Admin.Name | String | string |
+| Domain.Admin.Phone | String | string |
+| Domain.Registrant.Country | String | string |
+| Domain.Registrant.Email | String | string |
+| Domain.Registrant.Name | String | string |
+| Domain.Registrant.Phone | String | string |
+| Domain.CreationDate | String | date |
+| Domain.DomainStatus | String | string |
+| Domain.UpdatedDate | String | date |
+| Domain.ExpirationDate | String | date |
+| Domain.Registrar.Name | String | string |
+
+#### Command example
+```!domain domain=cisco.com```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "cisco.com",
+        "Reliability": "A+ - 3rd party enrichment",
+        "Score": 0,
+        "Type": "domain",
+        "Vendor": "Cisco Umbrella Investigate"
+    },
+    "Domain": {
+        "Admin": {
+            "Country": "UNITED STATES",
+            "Email": "infosec@cisco.com",
+            "Name": "Domain Administrator",
+            "Phone": "14085273842"
+        },
+        "CreationDate": "1987-05-14",
+        "DomainStatus": [
+            "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited"
+        ],
+        "ExpirationDate": "2025-05-15",
+        "Name": "cisco.com",
+        "Registrant": {
+            "Country": "UNITED STATES",
+            "Email": "infosec@cisco.com",
+            "Name": "Domain Administrator",
+            "Phone": "14085273842"
+        },
+        "Registrar": {
+            "Name": "MarkMonitor, Inc."
+        },
+        "Umbrella": {
+            "ContentCategories": [
+                "32",
+                "167",
+                "25"
+            ],
+            "FirstQueriedTime": "1987-05-14",
+            "MalwareCategories": [],
+            "RiskScore": 5,
+            "SecureRank": 0
+        },
+        "UpdatedDate": "2024-04-13"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-whois-for-domain
+
+***
+Get the WHOIS information for the specified domains. You can search by multiple email addresses or multiple nameservers.
+
+#### Base Command
+
+`umbrella-get-whois-for-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain name. For example: cnn.com. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.WHOIS.name | String | The domain name. |
+| Umbrella.WHOIS.Domain | String | The domain name. |
+| Umbrella.WHOIS.Data.RegistrarName | String | The domain registrar name. |
+| Umbrella.WHOIS.Data.LastRetrieved | String | Domain last retrieved date |
+| Umbrella.WHOIS.Data.Created | String | The domain created date. |
+| Umbrella.WHOIS.Data.Updated | String | The domain updated date. |
+| Umbrella.WHOIS.Data.Expires | String | The domain expiry date. |
+| Umbrella.WHOIS.Data.IANAID | String | The registrar IANA ID. |
+| Umbrella.WHOIS.Data.LastObserved | String | The domain last observed time. |
+| Umbrella.WHOIS.Data.Nameservers.Name | String | The domain’s name servers. |
+| Umbrella.WHOIS.Data.Emails.Name | String | The domain’s email. |
+| Domain.Admin.Country | String | The country of the domain administrator. |
+| Domain.name | String | The domain name. |
+| Domain.CreationDate | String | The date on which the domain was created. |
+| Domain.UpdatedDate | String | The date on which the domain was last updated. |
+| Domain.ExpirationDate | String | The expiration date of the domain. |
+| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. |
+| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. |
+| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. |
+| Domain.WHOIS.Registrant.Country | String | The country of the registrant. |
+| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. |
+| Domain.WHOIS.Registrant.Name | String | The phone number of the registrant. |
+| Domain.WHOIS.Registrant.Phone | String | The phone number of the registrant. |
+| Domain.WHOIS.DomainStatus | String | The status of the domain. |
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar. |
+| Domain.Admin.Email | String | The email address of the domain administrator. |
+| Domain.Admin.Name | String | The name of the domain administrator. |
+| Domain.Admin.Phone | String | The phone number of the domain administrator. |
+| Domain.Registrant.Country | String | The country of the registrant. |
+| Domain.Registrant.Email | String | The email address of the registrant. |
+| Domain.Registrant.Name | String | The phone number of the registrant. |
+| Domain.Registrant.Phone | String | The phone number of the registrant. |
+| Domain.DomainStatus | String | The status of the domain. |
+| Domain.Registrar.Name | String | The name of the registrar. |
+
+#### Command example
+```!umbrella-get-whois-for-domain domain=cisco.com limit=1```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "cisco.com",
+        "Reliability": "A+ - 3rd party enrichment",
+        "Score": 0,
+        "Type": "domain",
+        "Vendor": "Cisco Umbrella Investigate"
+    },
+    "Domain": {
+        "Admin": {
+            "Country": "UNITED STATES",
+            "Email": "infosec@cisco.com",
+            "Name": "Domain Administrator",
+            "Phone": "14085273842"
+        },
+        "CreationDate": "1987-05-14",
+        "DomainStatus": [
+            "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited"
+        ],
+        "ExpirationDate": "2025-05-15",
+        "Name": "cisco.com",
+        "Registrant": {
+            "Country": "UNITED STATES",
+            "Email": "infosec@cisco.com",
+            "Name": "Domain Administrator",
+            "Phone": "14085273842"
+        },
+        "Registrar": {
+            "AbuseEmail": null,
+            "AbusePhone": null,
+            "Name": "MarkMonitor, Inc."
+        },
+        "UpdatedDate": "2024-04-13",
+        "WHOIS": {
+            "Admin": {
+                "Country": "UNITED STATES",
+                "Email": "infosec@cisco.com",
+                "Name": "Domain Administrator",
+                "Phone": "14085273842"
+            },
+            "CreationDate": "1987-05-14",
+            "DomainStatus": [
+                "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited"
+            ],
+            "ExpirationDate": "2025-05-15",
+            "Registrant": {
+                "Country": "UNITED STATES",
+                "Email": "infosec@cisco.com",
+                "Name": "Domain Administrator",
+                "Phone": "14085273842"
+            },
+            "Registrar": {
+                "AbuseEmail": null,
+                "AbusePhone": null,
+                "Name": "MarkMonitor, Inc."
+            },
+            "UpdatedDate": "2024-04-13"
+        }
+    },
+    "Umbrella": {
+        "WHOIS": {
+            "Data": {
+                "Created": "1987-05-14",
+                "Emails": [
+                    {
+                        "Name": "infosec@cisco.com"
+                    }
+                ],
+                "Expires": "2025-05-15",
+                "IANAID": "292",
+                "LastObserved": "2024-06-19 23:56:41 UTC",
+                "LastRetrieved": 1718896344930,
+                "Nameservers": [
+                    {
+                        "Name": "ns1.cisco.com"
+                    },
+                    {
+                        "Name": "ns2.cisco.com"
+                    },
+                    {
+                        "Name": "ns3.cisco.com"
+                    }
+                ],
+                "RegistrarName": "Domain Administrator",
+                "Updated": "2024-04-13"
+            },
+            "Domain": "cisco.com",
+            "name": "cisco.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-domain-whois-history
+
+***
+Get a WHOIS response record for a single domain with available historical WHOIS data returned in an object. The information displayed varies by registrant.
+
+#### Base Command
+
+`umbrella-get-domain-whois-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain name. For example: cnn.com. | Required |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.WHOIS.name | String | The name of the domain. |
+| Umbrella.WHOIS.DomainHistory.addresses | String | Addresses related to the domain. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_city | String | City of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_country | String | Country of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_email | String | Email of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_fax | String | Fax number of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_fax_ext | String | Fax extension of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_name | String | Name of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_organization | String | Organization of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_postal_code | String | Postal code of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_state | String | State of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_street | String | Street address of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_telephone | String | Telephone number of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.administrative_contact_telephone_ext | String | Telephone extension of the administrative contact. |
+| Umbrella.WHOIS.DomainHistory.audit_updated_date | String | Audit update date. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_city | String | City of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_country | String | Country of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_email | String | Email of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_fax | String | Fax number of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_fax_ext | String | Fax extension of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_name | String | Name of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_organization | String | Organization of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_postal_code | String | Postal code of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_state | String | State of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_street | String | Street address of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_telephone | String | Telephone number of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.billing_contact_telephone_ext | String | Telephone extension of the billing contact. |
+| Umbrella.WHOIS.DomainHistory.created | String | The domain created date. |
+| Umbrella.WHOIS.DomainHistory.domain_name | String | The domain name. |
+| Umbrella.WHOIS.DomainHistory.emails | String | Emails associated with the domain. |
+| Umbrella.WHOIS.DomainHistory.expires | String | The domain expiry date. |
+| Umbrella.WHOIS.DomainHistory.has_raw_text | String | Indicates if there is raw text. |
+| Umbrella.WHOIS.DomainHistory.name_servers | String | The domain’s name servers. |
+| Umbrella.WHOIS.DomainHistory.record_expired | String | Record expired status. |
+| Umbrella.WHOIS.DomainHistory.registrant_city | String | City of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_country | String | Country of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_email | String | Email of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_fax | String | Fax number of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_fax_ext | String | Fax extension of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_name | String | Name of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_organization | String | Organization of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_postal_code | String | Postal code of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_state | String | State of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_street | String | Street address of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_telephone | String | Telephone number of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrant_telephone_ext | String | Telephone extension of the registrant. |
+| Umbrella.WHOIS.DomainHistory.registrar_ianad | String | Registrar IANA ID. |
+| Umbrella.WHOIS.DomainHistory.registrar_name | String | Name of the registrar. |
+| Umbrella.WHOIS.DomainHistory.status | String | Domain status. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_city | String | City of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_country | String | Country of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_email | String | Email of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_fax | String | Fax number of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_fax_ext | String | Fax extension of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_name | String | Name of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_organization | String | Organization of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_postal_code | String | Postal code of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_state | String | State of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_street | String | Street address of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_telephone | String | Telephone number of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.technical_contact_telephone_ext | String | Telephone extension of the technical contact. |
+| Umbrella.WHOIS.DomainHistory.time_of_latest_realtime_check | String | Time of the latest realtime check. |
+| Umbrella.WHOIS.DomainHistory.timestamp | String | Timestamp of the record. |
+| Umbrella.WHOIS.DomainHistory.updated | String | The domain updated date. |
+| Umbrella.WHOIS.DomainHistory.whois_servers | String | WHOIS servers associated with the domain. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_city | String | City of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_country | String | Country of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_email | String | Email of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_fax | String | Fax number of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_fax_ext | String | Fax extension of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_name | String | Name of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_organization | String | Organization of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_postal_code | String | Postal code of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_state | String | State of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_street | String | Street address of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_telephone | String | Telephone number of the zone contact. |
+| Umbrella.WHOIS.DomainHistory.zone_contact_telephone_ext | String | Telephone extension of the zone contact. |
+
+#### Command example
+```!umbrella-get-domain-whois-history domain=cisco.com limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "WHOIS": {
+            "DomainHistory": [
+                {
+                    "addresses": [
+                        "170 w. tasman dr."
+                    ],
+                    "administrative_contact_city": "San Jose",
+                    "administrative_contact_country": "UNITED STATES",
+                    "administrative_contact_email": "infosec@cisco.com",
+                    "administrative_contact_fax": null,
+                    "administrative_contact_fax_ext": null,
+                    "administrative_contact_name": "Domain Administrator",
+                    "administrative_contact_organization": "Cisco Technology Inc.",
+                    "administrative_contact_postal_code": "95134",
+                    "administrative_contact_state": "CA",
+                    "administrative_contact_street": [
+                        "170 w. tasman dr."
+                    ],
+                    "administrative_contact_telephone": "14085273842",
+                    "administrative_contact_telephone_ext": null,
+                    "audit_updated_date": "2024-06-19 23:56:41 UTC",
+                    "billing_contact_city": null,
+                    "billing_contact_country": null,
+                    "billing_contact_email": null,
+                    "billing_contact_fax": null,
+                    "billing_contact_fax_ext": null,
+                    "billing_contact_name": null,
+                    "billing_contact_organization": null,
+                    "billing_contact_postal_code": null,
+                    "billing_contact_state": null,
+                    "billing_contact_street": [],
+                    "billing_contact_telephone": null,
+                    "billing_contact_telephone_ext": null,
+                    "created": "1987-05-14",
+                    "domain_name": "cisco.com",
+                    "emails": [
+                        "infosec@cisco.com"
+                    ],
+                    "expires": "2025-05-15",
+                    "has_raw_text": true,
+                    "name_servers": [
+                        "ns1.cisco.com",
+                        "ns2.cisco.com",
+                        "ns3.cisco.com"
+                    ],
+                    "record_expired": false,
+                    "registrant_city": "San Jose",
+                    "registrant_country": "UNITED STATES",
+                    "registrant_email": "infosec@cisco.com",
+                    "registrant_fax": "14085264575",
+                    "registrant_fax_ext": null,
+                    "registrant_name": "Domain Administrator",
+                    "registrant_organization": "Cisco Technology Inc.",
+                    "registrant_postal_code": "95134",
+                    "registrant_state": "CA",
+                    "registrant_street": [
+                        "170 w. tasman dr."
+                    ],
+                    "registrant_telephone": "14085273842",
+                    "registrant_telephone_ext": null,
+                    "registrar_ianaid": "292",
+                    "registrar_name": "MarkMonitor, Inc.",
+                    "status": [
+                        "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited serverDeleteProhibited serverTransferProhibited serverUpdateProhibited"
+                    ],
+                    "technical_contact_city": "San Jose",
+                    "technical_contact_country": "UNITED STATES",
+                    "technical_contact_email": "infosec@cisco.com",
+                    "technical_contact_fax": "14085264575",
+                    "technical_contact_fax_ext": null,
+                    "technical_contact_name": "Domain Administrator",
+                    "technical_contact_organization": "Cisco Technology Inc.",
+                    "technical_contact_postal_code": "95134",
+                    "technical_contact_state": "CA",
+                    "technical_contact_street": [
+                        "170 w. tasman dr."
+                    ],
+                    "technical_contact_telephone": "14085273842",
+                    "technical_contact_telephone_ext": null,
+                    "time_of_latest_realtime_check": 1718896344930,
+                    "timestamp": null,
+                    "updated": "2024-04-13",
+                    "whois_servers": "whois.markmonitor.com",
+                    "zone_contact_city": null,
+                    "zone_contact_country": null,
+                    "zone_contact_email": null,
+                    "zone_contact_fax": null,
+                    "zone_contact_fax_ext": null,
+                    "zone_contact_name": null,
+                    "zone_contact_organization": null,
+                    "zone_contact_postal_code": null,
+                    "zone_contact_state": null,
+                    "zone_contact_street": [],
+                    "zone_contact_telephone": null,
+                    "zone_contact_telephone_ext": null
+                }
+            ],
+            "name": "cisco.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-nameserver-whois
+
+***
+Get WHOIS information for the nameserver. A nameserver can potentially register hundreds or thousands of domains.
+
+#### Base Command
+
+`umbrella-get-nameserver-whois`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| nameserver | The nameserver's domain name or comma-separated list of nameservers. For example ns1.google.com or ns1.google.com,ns2.google.com. | Required |
+| sort | Sort the results by. Possible values are: Created, Updated, Expires, Domain name. | Optional |
+| page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.WHOIS.Nameserver.name | String | The nameserver's domain name. |
+| Umbrella.WHOIS.Nameserver.Domain.current | Boolean | Whether the domain name is current. |
+| Umbrella.WHOIS.Nameserver.Domain.domain | String | The domain name. |
+
+#### Command example
+```!umbrella-get-nameserver-whois nameserver=nameserver1.com limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "WHOIS": {
+            "Nameserver": {
+                "Domain": [
+                    {
+                        "current": false,
+                        "domain": "choicehotels.link"
+                    }
+                ],
+                "name": "nameserver1.com"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-email-whois
+
+***
+Get WHOIS information for the email address. Returns the email address or addresses of the registrar for the domain or domains. The results include the total number of results for domains registered by this email address and a list of the first 500 domains associated with this email.
+
+#### Base Command
+
+`umbrella-get-email-whois`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | An email address that follows the RFC5322 conventions. For example, test@test.com. | Required |
+| sort | Sort the results by. Possible values are: Created, Updated, Expires, Domain name. | Optional |
+| page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.WHOIS.Email.name | String | The email name. |
+| Umbrella.WHOIS.Email.Domain.current | Boolean | Whether the domain name is current. |
+| Umbrella.WHOIS.Email.Domain.domain | String | The domain name. |
+
+#### Command example
+```!umbrella-get-email-whois email=test@test.com limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "WHOIS": {
+            "Email": {
+                "Domain": [
+                    {
+                        "current": false,
+                        "domain": "hswv.org"
+                    }
+                ],
+                "name": "test@test.com"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-regex-whois
+
+***
+Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserver, and email fields) that was updated or created in the specified time range. Returns a list of ten WHOIS records that match the specified RegEx expression.
+
+#### Base Command
+
+`umbrella-get-regex-whois`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| regex | A standard regular expression pattern search. For example, exa[a-z]ple.com. | Required |
+| search_field | Specifies the field name to use in the RegEx search. Possible values are: Domain, Nameserver, Email. | Required |
+| start | Filter for data that appears after this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is 1 week ago. | Optional |
+| stop | Filter for data that appears before this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
+| sort | Sort the results by. Possible values are: Created, Updated, Expires, Domain name. Default is Updated. | Optional |
+| page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.WHOIS.Regex.domain_name | String | The domain name. |
+| Umbrella.WHOIS.Regex.registrant_name | String | The domain registrar name. |
+| Umbrella.WHOIS.Regex.created | String | The domain created date. |
+| Umbrella.WHOIS.Regex.updated | String | The domain updated date. |
+| Umbrella.WHOIS.Regex.expires | String | The domain expiry date. |
+| Umbrella.WHOIS.Regex.registrar_ianad | String | Registrar IANA ID. |
+| Umbrella.WHOIS.Regex.name_servers | String | The domain’s name servers. |
+| Umbrella.WHOIS.Regex.emails | String | The domain’s email. |
+| Umbrella.WHOIS.Regex.administrative_contact_fax | String | Administrative contact fax number. |
+| Umbrella.WHOIS.Regex.whois_servers | String | WHOIS servers associated with the domain. |
+| Umbrella.WHOIS.Regex.addresses | String | Addresses related to the domain. |
+| Umbrella.WHOIS.Regex.administrative_contact_name | String | Name of the administrative contact. |
+| Umbrella.WHOIS.Regex.zone_contact_email | String | Zone contact email. |
+| Umbrella.WHOIS.Regex.billing_contact_fax | String | Billing contact fax number. |
+| Umbrella.WHOIS.Regex.administrative_contact_telephone_ext | String | Administrative contact telephone extension. |
+| Umbrella.WHOIS.Regex.administrative_contact_email | String | Administrative contact email. |
+| Umbrella.WHOIS.Regex.technical_contact_email | String | Technical contact email. |
+| Umbrella.WHOIS.Regex.technical_contact_fax | String | Technical contact fax number. |
+| Umbrella.WHOIS.Regex.zone_contact_name | String | Name of the zone contact. |
+| Umbrella.WHOIS.Regex.billing_contact_postal_code | String | Billing contact postal code. |
+| Umbrella.WHOIS.Regex.zone_contact_fax | String | Zone contact fax number. |
+| Umbrella.WHOIS.Regex.registrant_telephone_ext | String | Registrant telephone extension. |
+| Umbrella.WHOIS.Regex.zone_contact_fax_ext | String | Zone contact fax extension. |
+| Umbrella.WHOIS.Regex.technical_contact_telephone_ext | String | Technical contact telephone extension. |
+| Umbrella.WHOIS.Regex.billing_contact_city | String | Billing contact city. |
+| Umbrella.WHOIS.Regex.zone_contact_street | String | Street address of the zone contact. |
+| Umbrella.WHOIS.Regex.administrative_contact_city | String | City of the administrative contact. |
+| Umbrella.WHOIS.Regex.zone_contact_city | String | City of the zone contact. |
+| Umbrella.WHOIS.Regex.zone_contact_postal_code | String | Postal code of the zone contact. |
+| Umbrella.WHOIS.Regex.administrative_contact_fax_ext | String | Administrative contact fax extension. |
+| Umbrella.WHOIS.Regex.technical_contact_country | String | Country of the technical contact. |
+| Umbrella.WHOIS.Regex.administrative_contact_street | String | Street address of the administrative contact. |
+| Umbrella.WHOIS.Regex.status | String | Domain status. |
+| Umbrella.WHOIS.Regex.registrant_city | String | City of the registrant. |
+| Umbrella.WHOIS.Regex.billing_contact_country | String | Country of the billing contact. |
+| Umbrella.WHOIS.Regex.technical_contact_street | String | Street address of the technical contact. |
+| Umbrella.WHOIS.Regex.registrant_organization | String | Organization of the registrant. |
+| Umbrella.WHOIS.Regex.billing_contact_street | String | Street address of the billing contact. |
+| Umbrella.WHOIS.Regex.registrar_name | String | Name of the registrar. |
+| Umbrella.WHOIS.Regex.registrant_postal_code | String | Postal code of the registrant. |
+| Umbrella.WHOIS.Regex.zone_contact_telephone | String | Telephone number of the zone contact. |
+| Umbrella.WHOIS.Regex.registrant_email | String | Email of the registrant. |
+| Umbrella.WHOIS.Regex.technical_contact_fax_ext | String | Technical contact fax extension. |
+| Umbrella.WHOIS.Regex.technical_contact_organization | String | Organization of the technical contact. |
+| Umbrella.WHOIS.Regex.registrant_street | String | Street address of the registrant. |
+| Umbrella.WHOIS.Regex.technical_contact_telephone | String | Telephone number of the technical contact. |
+| Umbrella.WHOIS.Regex.technical_contact_state | String | State of the technical contact. |
+| Umbrella.WHOIS.Regex.technical_contact_city | String | City of the technical contact. |
+| Umbrella.WHOIS.Regex.registrant_fax | String | Fax number of the registrant. |
+| Umbrella.WHOIS.Regex.registrant_country | String | Country of the registrant. |
+| Umbrella.WHOIS.Regex.billing_contact_fax_ext | String | Billing contact fax extension. |
+| Umbrella.WHOIS.Regex.timestamp | String | Timestamp of the record. |
+| Umbrella.WHOIS.Regex.zone_contact_organization | String | Organization of the zone contact. |
+| Umbrella.WHOIS.Regex.administrative_contact_country | String | Country of the administrative contact. |
+| Umbrella.WHOIS.Regex.billing_contact_name | String | Name of the billing contact. |
+| Umbrella.WHOIS.Regex.registrant_state | String | State of the registrant. |
+| Umbrella.WHOIS.Regex.registrant_telephone | String | Telephone number of the registrant. |
+| Umbrella.WHOIS.Regex.administrative_contact_state | String | State of the administrative contact. |
+| Umbrella.WHOIS.Regex.registrant_fax_ext | String | Fax extension of the registrant. |
+| Umbrella.WHOIS.Regex.technical_contact_postal_code | String | Postal code of the technical contact. |
+| Umbrella.WHOIS.Regex.zone_contact_telephone_ext | String | Telephone extension of the zone contact. |
+| Umbrella.WHOIS.Regex.administrative_contact_organization | String | Organization of the administrative contact. |
+| Umbrella.WHOIS.Regex.billing_contact_telephone | String | Telephone number of the billing contact. |
+| Umbrella.WHOIS.Regex.billing_contact_telephone_ext | String | Telephone extension of the billing contact. |
+| Umbrella.WHOIS.Regex.zone_contact_state | String | State of the zone contact. |
+| Umbrella.WHOIS.Regex.administrative_contact_telephone | String | Telephone number of the administrative contact. |
+| Umbrella.WHOIS.Regex.billing_contact_organization | String | Organization of the billing contact. |
+| Umbrella.WHOIS.Regex.technical_contact_name | String | Name of the technical contact. |
+| Umbrella.WHOIS.Regex.administrative_contact_postal_code | String | Postal code of the administrative contact. |
+| Umbrella.WHOIS.Regex.zone_contact_country | String | Country of the zone contact. |
+| Umbrella.WHOIS.Regex.billing_contact_state | String | State of the billing contact. |
+| Umbrella.WHOIS.Regex.audit_updated_date | String | Audit update date. |
+| Umbrella.WHOIS.Regex.record_expired | String | Record expired status. |
+| Umbrella.WHOIS.Regex.time_of_latest_realtime_check | String | Time of the latest realtime check. |
+| Umbrella.WHOIS.Regex.has_raw_text | String | Indicates if there is raw text. |
+
+#### Command example
+```!umbrella-get-regex-whois search_field=Email regex=t[a-z]@test.com start="20 days ago"```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "WHOIS": {
+            "Regex": [
+                {
+                    "addresses": [
+                        "105 adelaide street west, suite 700",
+                        "5335 gate parkway",
+                        "105 adelaide st. west"
+                    ],
+                    "administrative_contact_city": "Toronto",
+                    "administrative_contact_country": "CANADA",
+                    "administrative_contact_email": "test@test.com",
+                    "administrative_contact_fax": null,
+                    "administrative_contact_fax_ext": "",
+                    "administrative_contact_name": "Manish Handa",
+                    "administrative_contact_organization": "Northbridge Financial Corporation",
+                    "administrative_contact_postal_code": "M5H1P9",
+                    "administrative_contact_state": "ON",
+                    "administrative_contact_street": [
+                        "105 adelaide street west, suite 700"
+                    ],
+                    "administrative_contact_telephone": "14167861659",
+                    "administrative_contact_telephone_ext": "",
+                    "audit_updated_date": "2024-07-28 05:58:15 UTC",
+                    "billing_contact_city": "Jacksonville",
+                    "billing_contact_country": "UNITED STATES",
+                    "billing_contact_email": "test@test.com",
+                    "billing_contact_fax": "",
+                    "billing_contact_fax_ext": "",
+                    "billing_contact_name": "Default Contact",
+                    "billing_contact_organization": "Network Solutions, LLC",
+                    "billing_contact_postal_code": "32256",
+                    "billing_contact_state": "FL",
+                    "billing_contact_street": [
+                        "5335 gate parkway"
+                    ],
+                    "billing_contact_telephone": "15707088780",
+                    "billing_contact_telephone_ext": "",
+                    "created": "2024-05-24",
+                    "domain_name": "weclaimdifferently.ca",
+                    "emails": [
+                        "test@test.com",
+                        "test@test.com",
+                        "test@test.com"
+                    ],
+                    "expires": "2027-05-24",
+                    "has_raw_text": false,
+                    "name_servers": [
+                        "elias.ns.cloudflare.com",
+                        "keira.ns.cloudflare.com"
+                    ],
+                    "record_expired": false,
+                    "registrant_city": "Toronto",
+                    "registrant_country": "CANADA",
+                    "registrant_email": "test@test.com",
+                    "registrant_fax": "18886429675",
+                    "registrant_fax_ext": "",
+                    "registrant_name": "Northbridge Financial Corporation",
+                    "registrant_organization": "Northbridge Financial Corporation",
+                    "registrant_postal_code": "M5H1P9",
+                    "registrant_state": "ON",
+                    "registrant_street": [
+                        "105 adelaide st. west"
+                    ],
+                    "registrant_telephone": "14163504001",
+                    "registrant_telephone_ext": "",
+                    "registrar_ianaid": "not applicable",
+                    "registrar_name": "Network Solutions Canada ULC",
+                    "status": [
+                        "clientTransferProhibited"
+                    ],
+                    "technical_contact_city": "Toronto",
+                    "technical_contact_country": "CANADA",
+                    "technical_contact_email": "test@test.com",
+                    "technical_contact_fax": "18886429675",
+                    "technical_contact_fax_ext": "",
+                    "technical_contact_name": "Manish Handa",
+                    "technical_contact_organization": "Northbridge Financial Corporation",
+                    "technical_contact_postal_code": "M5H1P9",
+                    "technical_contact_state": "ON",
+                    "technical_contact_street": [
+                        "105 adelaide street west, suite 700"
+                    ],
+                    "technical_contact_telephone": "14167861659",
+                    "technical_contact_telephone_ext": "",
+                    "time_of_latest_realtime_check": null,
+                    "timestamp": null,
+                    "updated": "2024-07-25",
+                    "whois_servers": null,
+                    "zone_contact_city": "",
+                    "zone_contact_country": "",
+                    "zone_contact_email": "",
+                    "zone_contact_fax": "",
+                    "zone_contact_fax_ext": "",
+                    "zone_contact_name": "",
+                    "zone_contact_organization": "",
+                    "zone_contact_postal_code": "",
+                    "zone_contact_state": "",
+                    "zone_contact_street": [],
+                    "zone_contact_telephone": "",
+                    "zone_contact_telephone_ext": ""
+                },
+                {
+                    "addresses": [
+                        "4431 80th st",
+                        "5335 gate parkway",
+                        "4431 80th street"
+                    ],
+                    "administrative_contact_city": "Delta",
+                    "administrative_contact_country": "CANADA",
+                    "administrative_contact_email": "network@puresunfarms.com",
+                    "administrative_contact_fax": null,
+                    "administrative_contact_fax_ext": "",
+                    "administrative_contact_name": "Marcelo Campos",
+                    "administrative_contact_organization": "Pure Sunfarms Corp.",
+                    "administrative_contact_postal_code": "V4K3N3",
+                    "administrative_contact_state": "BC",
+                    "administrative_contact_street": [
+                        "4431 80th street"
+                    ],
+                    "administrative_contact_telephone": "17787148702",
+                    "administrative_contact_telephone_ext": "",
+                    "audit_updated_date": "2024-07-23 05:03:03 UTC",
+                    "billing_contact_city": "Jacksonville",
+                    "billing_contact_country": "UNITED STATES",
+                    "billing_contact_email": "test@test.com",
+                    "billing_contact_fax": "",
+                    "billing_contact_fax_ext": "",
+                    "billing_contact_name": "Default Contact",
+                    "billing_contact_organization": "Network Solutions, LLC",
+                    "billing_contact_postal_code": "32256",
+                    "billing_contact_state": "FL",
+                    "billing_contact_street": [
+                        "5335 gate parkway"
+                    ],
+                    "billing_contact_telephone": "15707088780",
+                    "billing_contact_telephone_ext": "",
+                    "created": "2024-07-18",
+                    "domain_name": "teamhiatus.ca",
+                    "emails": [
+                        "network@puresunfarms.com",
+                        "test@test.com"
+                    ],
+                    "expires": "2025-07-18",
+                    "has_raw_text": false,
+                    "name_servers": [
+                        "ns49.worldnic.com",
+                        "ns50.worldnic.com"
+                    ],
+                    "record_expired": false,
+                    "registrant_city": "Delta",
+                    "registrant_country": "CANADA",
+                    "registrant_email": "network@puresunfarms.com",
+                    "registrant_fax": "18886429675",
+                    "registrant_fax_ext": "",
+                    "registrant_name": "Michael Stenner",
+                    "registrant_organization": "Pure SunFarms Corp.",
+                    "registrant_postal_code": "V4K3N3",
+                    "registrant_state": "BC",
+                    "registrant_street": [
+                        "4431 80th st"
+                    ],
+                    "registrant_telephone": "17787143650",
+                    "registrant_telephone_ext": "",
+                    "registrar_ianaid": "not applicable",
+                    "registrar_name": "Network Solutions Canada ULC",
+                    "status": [
+                        "addPeriod clientTransferProhibited serverTransferProhibited"
+                    ],
+                    "technical_contact_city": "Delta",
+                    "technical_contact_country": "CANADA",
+                    "technical_contact_email": "network@puresunfarms.com",
+                    "technical_contact_fax": "18886429675",
+                    "technical_contact_fax_ext": "",
+                    "technical_contact_name": "Marcelo Campos",
+                    "technical_contact_organization": "Pure Sunfarms Corp.",
+                    "technical_contact_postal_code": "V4K3N3",
+                    "technical_contact_state": "BC",
+                    "technical_contact_street": [
+                        "4431 80th street"
+                    ],
+                    "technical_contact_telephone": "17787148702",
+                    "technical_contact_telephone_ext": "",
+                    "time_of_latest_realtime_check": null,
+                    "timestamp": null,
+                    "updated": "2024-07-18",
+                    "whois_servers": null,
+                    "zone_contact_city": "",
+                    "zone_contact_country": "",
+                    "zone_contact_email": "",
+                    "zone_contact_fax": "",
+                    "zone_contact_fax_ext": "",
+                    "zone_contact_name": "",
+                    "zone_contact_organization": "",
+                    "zone_contact_postal_code": "",
+                    "zone_contact_state": "",
+                    "zone_contact_street": [],
+                    "zone_contact_telephone": "",
+                    "zone_contact_telephone_ext": ""
+                },
+                {
+                    "addresses": [
+                        "for sale at domaincollection.com"
+                    ],
+                    "administrative_contact_city": "",
+                    "administrative_contact_country": "",
+                    "administrative_contact_email": "",
+                    "administrative_contact_fax": null,
+                    "administrative_contact_fax_ext": "",
+                    "administrative_contact_name": "",
+                    "administrative_contact_organization": "",
+                    "administrative_contact_postal_code": "",
+                    "administrative_contact_state": "",
+                    "administrative_contact_street": [],
+                    "administrative_contact_telephone": "",
+                    "administrative_contact_telephone_ext": "",
+                    "audit_updated_date": "2024-07-17 20:10:18 UTC",
+                    "billing_contact_city": "",
+                    "billing_contact_country": "",
+                    "billing_contact_email": "",
+                    "billing_contact_fax": "",
+                    "billing_contact_fax_ext": "",
+                    "billing_contact_name": "",
+                    "billing_contact_organization": "",
+                    "billing_contact_postal_code": "",
+                    "billing_contact_state": "",
+                    "billing_contact_street": [],
+                    "billing_contact_telephone": "",
+                    "billing_contact_telephone_ext": "",
+                    "created": "2024-07-16",
+                    "domain_name": "imaxen.com",
+                    "emails": [
+                        "test@test.com"
+                    ],
+                    "expires": "2025-07-16",
+                    "has_raw_text": true,
+                    "name_servers": [
+                        "a.share-dns.com",
+                        "b.share-dns.net"
+                    ],
+                    "record_expired": false,
+                    "registrant_city": "CORAL GABLES",
+                    "registrant_country": "UNITED STATES",
+                    "registrant_email": "test@test.com",
+                    "registrant_fax": "",
+                    "registrant_fax_ext": "",
+                    "registrant_name": "CAMBRIDGE CAPITAL INVESTMENT LTD.",
+                    "registrant_organization": "CAMBRIDGE CAPITAL INVESTMENT LTD.",
+                    "registrant_postal_code": "33146",
+                    "registrant_state": "FL",
+                    "registrant_street": [
+                        "for sale at domaincollection.com"
+                    ],
+                    "registrant_telephone": "13054639709",
+                    "registrant_telephone_ext": "",
+                    "registrar_ianaid": "3807",
+                    "registrar_name": "Alboran Domains LLC",
+                    "status": [
+                        "ok"
+                    ],
+                    "technical_contact_city": "",
+                    "technical_contact_country": "",
+                    "technical_contact_email": "",
+                    "technical_contact_fax": "",
+                    "technical_contact_fax_ext": "",
+                    "technical_contact_name": "",
+                    "technical_contact_organization": "",
+                    "technical_contact_postal_code": "",
+                    "technical_contact_state": "",
+                    "technical_contact_street": [],
+                    "technical_contact_telephone": "",
+                    "technical_contact_telephone_ext": "",
+                    "time_of_latest_realtime_check": null,
+                    "timestamp": null,
+                    "updated": "2024-07-17",
+                    "whois_servers": null,
+                    "zone_contact_city": "",
+                    "zone_contact_country": "",
+                    "zone_contact_email": "",
+                    "zone_contact_fax": "",
+                    "zone_contact_fax_ext": "",
+                    "zone_contact_name": "",
+                    "zone_contact_organization": "",
+                    "zone_contact_postal_code": "",
+                    "zone_contact_state": "",
+                    "zone_contact_street": [],
+                    "zone_contact_telephone": "",
+                    "zone_contact_telephone_ext": ""
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-top-most-seen-domain
+
+***
+List the most seen domains in Umbrella. The popularity list contains Cisco Umbrella most queried domains based on passive DNS usage across Umbrella global network. The metric does not only consist of browser-based http requests from users but also takes into account the number of unique client IPs invoking this domain relative to the sum of all requests to all domains. The ranking reflects the domain's relative internet activity agnostic to the invocation protocols and applications where as site ranking models (such as Alexa) focus on the web activity over port 80 (primarily from browsers). In addition, the Umbrella popularity algorithm also applies data normalization techniques to smooth potential biases that may occur due to sampling of DNS usage data.
+
+#### Base Command
+
+`umbrella-get-top-most-seen-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.MostSeenDomain.domain | str | A domain name. |
+
+#### Command example
+```!umbrella-get-top-most-seen-domain limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "MostSeenDomain": {
+            "domain": "google.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-domain-queryvolume
+
+***
+List the query volume for a domain over the last 30 days. If there is no information about the domain, Umbrella Investigate returns an empty array. As the query takes time to generate, the last two hours may be blank.
+
+#### Base Command
+
+`umbrella-get-domain-queryvolume`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain name. | Required |
+| start | Filter for data that appears after this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is 1 week ago. | Optional |
+| stop | Filter for data that appears before this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
+| match | The type of the query volume for the domain. Possible values are: exact, component, all. Default is all. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.QueryVolume.name | Umbrella.QueryVolume.Domain | String |
+| Umbrella.QueryVolume.Domain | String | String |
+| Umbrella.QueryVolume.Data.StartDate | String | String |
+| Umbrella.QueryVolume.Data.StopDate | String | String |
+| Umbrella.QueryVolume.QueriesInfo.QueryHour | Umbrella.QueryVolume.Data.QueriesInfo.QueryHour | String |
+| Umbrella.QueryVolume.QueriesInfo.Queries | Umbrella.QueryVolume.Data.QueriesInfo.Queries | String |
+
+#### Command example
+```!umbrella-get-domain-queryvolume domain=cisco.com```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "QueryVolume": {
+            "Data": {
+                "StartDate": "1 week ago",
+                "StopDate": "now"
+            },
+            "Domain": "cisco.com",
+            "QueriesInfo": [
+                {
+                    "Queries": 25222268,
+                    "QueryHour": 1722247200000
+                }
+            ],
+            "name": "cisco.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-domain-timeline
+
+***
+List the historical tagging timeline for a given domain. Each timeline item includes lists of security category, attack, or threat type associated with the destination. Use the Tagging Timeline endpoint to verify when Umbrella assigned or removed a security category, attack, or threat type. If the current timeline item contains the security category, type of attack, or threat type not found in the previous timeline item, Umbrella updated the current timeline item. If the current timeline item does not contain the security category, attack, or threat type found in the previous timeline item, Umbrella removed the security category, type of attack, or threat type.
+
+#### Base Command
+
+`umbrella-get-domain-timeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A domain. For example, cisco.com. | Required |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.Timeline.Domain | String | An IP, a domain, or a URL. |
+| Umbrella.Timeline.Data.MalwareCategories | Unknown | The list of security categories assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Attacks | Unknown | The list of threats assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.ThreatTypes | Unknown | The list of threat types assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
+
+#### Command example
+```!umbrella-get-domain-timeline name=maliciouswebsitetest.com limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "Timeline": {
+            "Data": [
+                {
+                    "Attacks": [],
+                    "MalwareCategories": [],
+                    "ThreatTypes": [],
+                    "Timestamp": 1722693276390
+                }
+            ],
+            "Domain": "maliciouswebsitetest.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-url-timeline
+
+***
+List the historical tagging timeline for RL. Each timeline item includes lists of security category, attack, or threat type associated with the destination. Use the Tagging Timeline endpoint to verify when Umbrella assigned or removed a security category, attack, or threat type. If the current timeline item contains the security category, type of attack, or threat type not found in the previous timeline item, Umbrella updated the current timeline item. If the current timeline item does not contain the security category, attack, or threat type found in the previous timeline item, Umbrella removed the security category, type of attack, or threat type.
+
+#### Base Command
+
+`umbrella-get-url-timeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | An URL. For example www.cisco.com. | Required |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.Timeline.URL | String | An URL.  |
+| Umbrella.Timeline.Data.MalwareCategories | Unknown | The list of security categories assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Attacks | Unknown | The list of threats assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.ThreatTypes | Unknown | The list of threat types assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
+
+#### Command example
+```!umbrella-get-domain-timeline name=www.maliciouswebsitetest.com limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "Timeline": {
+            "Data": [
+                {
+                    "Attacks": [],
+                    "MalwareCategories": [],
+                    "ThreatTypes": [],
+                    "Timestamp": 1722693276390
+                }
+            ],
+            "URL": "www.maliciouswebsitetest.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-ip-timeline
+
+***
+List the historical tagging timeline for a given IP address. Each timeline item includes lists of security category, attack, or threat type associated with the destination. Use the Tagging Timeline endpoint to verify when Umbrella assigned or removed a security category, attack, or threat type. If the current timeline item contains the security category, type of attack, or threat type not found in the previous timeline item, Umbrella updated the current timeline item. If the current timeline item does not contain the security category, attack, or threat type found in the previous timeline item, Umbrella removed the security category, type of attack, or threat type.
+
+#### Base Command
+
+`umbrella-get-domain-timeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | An IP address. For example, 8.8.8.8. | Required |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.Timeline.IP | String | An IP address. For example, 8.8.8.8. |
+| Umbrella.Timeline.Data.MalwareCategories | Unknown | The list of security categories assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Attacks | Unknown | The list of threats assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.ThreatTypes | Unknown | The list of threat types assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
+
+#### Command example
+```!umbrella-get-ip-timeline name=8.8.8.8 limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "Timeline": {
+            "Data": [
+                {
+                    "Attacks": [],
+                    "MalwareCategories": [],
+                    "ThreatTypes": [],
+                    "Timestamp": 1722693276390
+                }
+            ],
+            "IP": "8.8.8.8"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.

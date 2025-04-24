@@ -1,8 +1,9 @@
 import json
 import os
 from typing import Any
-import pytest
 from unittest.mock import patch
+
+import pytest
 from freezegun import freeze_time
 
 """MOCK PARAMETERS"""
@@ -24,9 +25,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(
-        os.path.join("test_data/outputs", file_name), encoding="utf-8"
-    ) as mock_file:
+    with open(os.path.join("test_data/outputs", file_name), encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -326,9 +325,7 @@ def test_list_entry_get_command(
         )
     ],
 )
-def test_list_entry_add_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_add_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry add.
     Given:
@@ -365,9 +362,7 @@ def test_list_entry_add_command(
         )
     ],
 )
-def test_list_entry_append_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_append_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry append.
     Given:
@@ -404,9 +399,7 @@ def test_list_entry_append_command(
         )
     ],
 )
-def test_list_entry_edit_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_edit_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry edit.
     Given:
@@ -442,9 +435,7 @@ def test_list_entry_edit_command(
         )
     ],
 )
-def test_list_entry_delete_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_delete_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry delete.
     Given:
@@ -800,9 +791,7 @@ def test_message_report_get_command(
         )
     ],
 )
-def test_format_number_list_argument(
-    number_list_argument: str, expected_result: list[int]
-):
+def test_format_number_list_argument(number_list_argument: str, expected_result: list[int]):
     """
     Scenario: Format number list argument.
     Given:
@@ -828,9 +817,7 @@ def test_format_number_list_argument(
         )
     ],
 )
-def test_format_custom_query_args(
-    custom_query_argument: str, expected_result: dict[str, Any]
-):
+def test_format_custom_query_args(custom_query_argument: str, expected_result: dict[str, Any]):
     """
     Scenario: Format custom query arguments for tracking message advanced filters.
     Given:
@@ -907,23 +894,15 @@ data_test_fetch_incidents = [
 ]
 
 
-@pytest.mark.parametrize(
-    "previous_run, fetch_size, expected_last_run", data_test_fetch_incidents
-)
+@pytest.mark.parametrize("previous_run, fetch_size, expected_last_run", data_test_fetch_incidents)
 @freeze_time("2023-06-29T00:00:00Z")
-def test_fetch_incidents(
-    mock_client, mocker, previous_run, fetch_size, expected_last_run
-):
+def test_fetch_incidents(mock_client, mocker, previous_run, fetch_size, expected_last_run):
     from CiscoEmailSecurityApplianceIronPortV2 import fetch_incidents
 
     mocker.patch.object(
         mock_client,
         "spam_quarantine_message_search_request",
-        return_value={
-            "data": [
-                {"attributes": {"date": "now"}, "mid": i + 1} for i in range(fetch_size)
-            ]
-        },
+        return_value={"data": [{"attributes": {"date": "now"}, "mid": i + 1} for i in range(fetch_size)]},
     )
     incidents = [{"mid": i + 1} for i in range(fetch_size)]
     mocker.patch.object(
@@ -939,3 +918,193 @@ def test_fetch_incidents(
         last_run=previous_run,
     )
     assert last_run == expected_last_run
+
+
+def test_check_dictionary_mode_args():
+    """
+    Given:
+     - A mode type ("group" or "machine") and respective arguments (`host_name` and `group_name`).
+    When:
+     - The check_dictionary_mode_args function is called with these arguments.
+    Then:
+     - Ensure the function correctly returns a tuple with the appropriate host name and group name based on the mode.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        check_dictionary_mode_args,
+    )
+
+    assert check_dictionary_mode_args("group", host_name="", group_name="group1") == (None, "group1")
+    assert check_dictionary_mode_args("machine", host_name="host1", group_name="") == ("host1", None)
+
+
+def test_convert_words_to_list():
+    """
+    Given:
+     - A string representing a list of lists containing words, numbers, or both.
+    When:
+     - The convert_words_to_list function is called with the input string.
+    Then:
+     - Ensure the function correctly converts the input string to a list of lists, preserving the order and data types.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        convert_words_to_list,
+    )
+
+    assert convert_words_to_list("['test']") == [["test"]]
+    assert convert_words_to_list("['test1'],['test2']") == [["test1"], ["test2"]]
+    assert convert_words_to_list("['test1',5],['test2',7]") == [["test1", 5], ["test2", 7]]
+    assert convert_words_to_list("['test1',5,'prefix'],['test2',7]") == [["test1", 5, "prefix"], ["test2", 7]]
+
+
+def test_dictionary_list_command(mocker, mock_client):
+    """
+    Given:
+     - A dictionary name as input.
+    When:
+     - The dictionary_list_command is called.
+    Then:
+     - Ensure the command returns the correct information about the dictionary.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        dictionary_list_command,
+    )
+
+    mock_response = {
+        "data": [
+            {
+                "name": "example_dictionary",
+                "encoding": "UTF-8",
+                "ignorecase": 1,
+                "words": ["example", "test", "demo"],
+                "words_count": {
+                    "term_count": 3,
+                    "smart_identifier_count": 1,
+                },
+                "wholewords": 0,
+            }
+        ]
+    }
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_list_request", return_value=mock_response)
+
+    args = {"dictionary_name": "example_dictionary"}
+    result = dictionary_list_command(mock_client, args)
+
+    assert "Information for Dictionary: example_dictionary" in result.readable_output
+
+    outputs = result.outputs
+    assert outputs == mock_response["data"]
+
+    dictionary_output = outputs[0]
+    assert dictionary_output["name"] == "example_dictionary"
+    assert dictionary_output["encoding"] == "UTF-8"
+    assert dictionary_output["ignorecase"] == 1
+    assert dictionary_output["words"] == ["example", "test", "demo"]
+    assert dictionary_output["words_count"]["term_count"] == 3
+    assert dictionary_output["words_count"]["smart_identifier_count"] == 1
+    assert dictionary_output["wholewords"] == 0
+
+
+def test_dictionary_add_command(mocker, mock_client):
+    """
+    Given:
+     - A dictionary name and words to add.
+    When:
+     - The dictionary_add_command is called.
+    Then:
+     - Ensure the dictionary is added successfully with the correct output message.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        dictionary_add_command,
+    )
+
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_add_request", return_value={"status": "success"})
+
+    args = {"dictionary_name": "TestDict", "words": "[['word1'],['word2']]"}
+    result = dictionary_add_command(mock_client, args)
+
+    assert "TestDict was added successfully." in result.readable_output
+
+
+def test_dictionary_edit_command(mocker, mock_client):
+    """
+    Given:
+     - A dictionary name, updated name, and new words.
+    When:
+     - The dictionary_edit_command is called.
+    Then:
+     - Ensure the dictionary is updated successfully with the correct output message.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        dictionary_edit_command,
+    )
+
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_edit_request", return_value={"status": "success"})
+
+    args = {"dictionary_name": "TestDict", "updated_name": "NewTestDict", "words": "[['word1'],['word2']]"}
+    result = dictionary_edit_command(mock_client, args)
+
+    assert "TestDict has been successfully updated." in result.readable_output
+
+
+def test_dictionary_delete_command(mocker, mock_client):
+    """
+    Given:
+     - A dictionary name to delete.
+    When:
+     - The dictionary_delete_command is called.
+    Then:
+     - Ensure the dictionary is deleted successfully with the correct output message.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        dictionary_delete_command,
+    )
+
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_delete_request", return_value={"status": "success"})
+
+    args = {"dictionary_name": "TestDict"}
+    result = dictionary_delete_command(mock_client, args)
+    assert "TestDict deleted successfully." in result.readable_output
+
+
+def test_dictionary_words_add_command(mocker, mock_client):
+    """
+    Given:
+     - A dictionary name and words to add to it.
+    When:
+     - The dictionary_words_add_command is called.
+    Then:
+     - Ensure the words are added successfully with the correct output message.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        dictionary_words_add_command,
+    )
+
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_add_request", return_value={"status": "success"})
+
+    args = {"dictionary_name": "TestDict", "words": "['word1', 'word2']"}
+    result = dictionary_words_add_command(mock_client, args)
+
+    assert "Added successfully to TestDict." in result.readable_output
+
+
+def test_dictionary_words_delete_command(mocker, mock_client):
+    """
+    Given:
+     - A dictionary name and words to delete from it.
+    When:
+     - The dictionary_words_delete_command is called.
+    Then:
+     - Ensure the words are deleted successfully with the correct output message and result type.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import (
+        dictionary_words_delete_command,
+    )
+
+    mocker.patch(
+        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_delete_request", return_value={"status": "success"}
+    )
+
+    args = {"dictionary_name": "TestDict", "words": "['word1', 'word2']"}
+    result = dictionary_words_delete_command(mock_client, args)
+
+    assert "Words deleted successfully from TestDict." in result.readable_output

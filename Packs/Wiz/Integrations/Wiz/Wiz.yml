@@ -45,9 +45,11 @@ display: Wiz
 name: Wiz
 script:
   commands:
-  - arguments:
-    - description: Type of Issue to get.
-      name: issue_type
+  - name: wiz-get-issues
+    description: Get the Issues on cloud resources.
+    arguments:
+    - description: Type of entity to get issues for.
+      name: entity_type
       predefined:
       - ACCESS_ROLE
       - ACCESS_ROLE_BINDING
@@ -148,8 +150,13 @@ script:
       - LOW
       - INFORMATIONAL
       description: Get Issues of a specific severity and above.
-    description: Get the Issues on cloud resources.
-    name: wiz-get-issues
+    - name: issue_type
+      auto: PREDEFINED
+      predefined:
+      - TOXIC_COMBINATION
+      - THREAT_DETECTION
+      - CLOUD_CONFIGURATION
+      description: Get Issues of a specific type.
     outputs:
     - contextPath: Wiz.Manager.Issues.entitySnapshot
       description: All resource details.
@@ -172,12 +179,15 @@ script:
     - contextPath: Wiz.Manager.Issues.note
       description: Wiz Issue note.
       type: String
-  - arguments:
-    - description: resource external id.
-      name: resource_id
-      required: true
+  - name: wiz-get-resource
+    arguments:
+      - description: resource provider unique id.
+        name: resource_id
+        required: false
+      - description: search by name or external ID.
+        name: resource_name
+        required: false
     description: Get details of a resource.
-    name: wiz-get-resource
     outputs:
     - contextPath: Wiz.Manager.Resource.id
       description: Resource ID in Wiz.
@@ -303,12 +313,19 @@ script:
       description: project name.
       required: true
   - name: wiz-rescan-machine-disk
-    description: Rescan a VM disk in Wiz.
+    description: DEPRECATED
+    deprecated: true
     arguments:
     - name: vm_id
       description: vm cloud provider id.
       required: true
-  dockerimage: demisto/python3:3.10.14.91134
+  - name: wiz-copy-to-forensics-account
+    description: Copy VM's Volumes to a Forensics Account.
+    arguments:
+      - name: resource_id
+        description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
+        required: true
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

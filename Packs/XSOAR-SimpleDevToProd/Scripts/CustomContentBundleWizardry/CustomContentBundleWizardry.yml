@@ -16,7 +16,7 @@ comment: This automation accepts an XSOAR custom content bundle, and either retu
 commonfields:
   id: CustomContentBundleWizardry
   version: -1
-dockerimage: demisto/python3:3.10.13.80014
+dockerimage: demisto/python3:3.11.10.116439
 enabled: true
 name: CustomContentBundleWizardry
 outputs:

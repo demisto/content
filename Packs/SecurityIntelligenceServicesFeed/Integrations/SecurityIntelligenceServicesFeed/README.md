@@ -4,11 +4,8 @@ This integration was integrated and tested with version 1.0 of Security Intellig
 The XSOAR instance with **ElasticSearch** is required as this integration would ingest large amount of indicators from SIS to XSOAR.
 
 For that same reason, in case this integration fails to fetch indicators with timeout error, the `feedIntegrationScript.timeout` configuration should be configured with value 45 or more.
-## Configure Security Intelligence Services Feed on Cortex XSOAR
+## Configure Security Intelligence Services Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Security Intelligence Services Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -29,9 +26,8 @@ For that same reason, in case this integration fails to fetch indicators with ti
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the S3 Access Key, S3 Secret Key, Feed Types, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### sis-get-indicators
 ***
@@ -65,4 +61,3 @@ There is no context output for this command.
 >|---|---|
 >| 0363059571.online | Domain |
 >| 0363059571.xyz | Domain |
-

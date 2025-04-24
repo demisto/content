@@ -1,0 +1,9 @@
+[
+    {
+        "cidr": "secret",
+        "asn": 3356,
+        "ir": 3,
+        "description": "LEVEL3, US 86400",
+        "creation_date": "2000-03-10"
+    }
+]

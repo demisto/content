@@ -1,0 +1,19 @@
+!umbrella-reporting-activity-list limit=2
+!umbrella-reporting-activity-list from=-1days to=now categories="61,65,66,68"
+!umbrella-reporting-activity-get traffic_type=dns limit=2
+!umbrella-reporting-activity-get traffic_type=dns from=-1days to=now categories="61,65,66,68" 
+!umbrella-reporting-activity-get traffic_type=amp limit=2
+!umbrella-reporting-activity-get traffic_type=proxy limit=2
+!umbrella-reporting-activity-get traffic_type=firewall limit=2
+!umbrella-reporting-activity-get traffic_type=intrusion limit=2
+!umbrella-reporting-activity-get traffic_type=ip limit=2
+!umbrella-reporting-destination-list limit=2
+!umbrella-reporting-category-list limit=2
+!umbrella-reporting-identity-list limit=2
+!umbrella-reporting-threat-list limit=1
+!umbrella-reporting-event-type-list
+!umbrella-reporting-file-list limit=2
+!umbrella-reporting-summary-list domains=api.tunnels.cdfw.umbrella.com
+!umbrella-reporting-summary-list summary_type=category limit=1
+!umbrella-reporting-summary-list summary_type=destination limit=1
+!umbrella-reporting-summary-list summary_type=intrusion_rule limit=1

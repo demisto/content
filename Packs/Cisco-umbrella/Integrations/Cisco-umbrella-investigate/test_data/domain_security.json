@@ -1,0 +1,38 @@
+{
+    "asn_score": 0,
+    "attack": "",
+    "dga_score": 0,
+    "entropy": 0.9182958340544894,
+    "fastflux": false,
+    "found": true,
+    "geodiversity": [
+        [
+            "US",
+            0.7524
+        ],
+        [
+            "CA",
+            0.0904
+        ]
+    ],
+    "geodiversity_normalized": [
+        [
+            "BM",
+            0.32264508060031094
+        ],
+        [
+            "TC",
+            0.04774694206309799
+        ]
+    ],
+    "geoscore": 0,
+    "ks_test": 0,
+    "pagerank": 0,
+    "perplexity": 0.13991232622025684,
+    "popularity": 100,
+    "prefix_score": 0,
+    "rip_score": 0,
+    "securerank2": 0,
+    "threat_type": "",
+    "tld_geodiversity": []
+}

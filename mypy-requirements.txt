@@ -1,0 +1,35 @@
+# This file specifies the stub lib dependencies required for the mypy-in-docker hook.
+# These dependencies will be installed in the Docker container, see `installation_scripts/python_image.sh` in the SDK.
+cachetools
+cffi
+cryptography
+dateparser
+paramiko
+protobuf
+pycparser
+PyMySQL
+pyOpenSSL
+python-dateutil
+PyYAML
+pytz
+requests
+setuptools
+six
+types-cachetools
+types-cffi
+types-dateparser
+types-Deprecated
+types-Markdown
+types-paramiko
+types-protobuf
+types-pyOpenSSL
+types-PyMySQL
+types-python-dateutil
+types-PyYAML
+types-pytz
+types-requests
+types-setuptools
+types-six
+types-tabulate
+types-ujson
+ujson

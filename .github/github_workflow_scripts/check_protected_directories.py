@@ -9,7 +9,6 @@ assert CONTENT_ROOT.name == "content" or (os.getenv("CIRCLECI") and CONTENT_ROOT
 PROTECTED_DIRECTORY_PATHS: set[Path] = {
     Path(CONTENT_ROOT, dir_name)
     for dir_name in (
-        ".circleci",
         ".devcontainer",
         ".github",
         ".gitlab",

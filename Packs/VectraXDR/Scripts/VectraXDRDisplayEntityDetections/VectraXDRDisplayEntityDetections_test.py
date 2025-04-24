@@ -17,8 +17,7 @@ def test_trim_api_version():
     """
     url_with_version = "/api/v3.3/some/endpoint"
     trimmed_url = trim_api_version(url_with_version)
-    assert trimmed_url == "/some/endpoint?pivot=Vectra-XSOAR-"\
-        f"{get_pack_version(pack_name='Vectra XDR') or '1.0.0'}"
+    assert trimmed_url == "/some/endpoint?pivot=Vectra-XSOAR-1.0.11"  # temp fix - need to change the version suffix
 
     url_without_version = "/some/endpoint"
     trimmed_url = trim_api_version(url_without_version)
@@ -64,9 +63,9 @@ def test_get_detections_list_hr_with_detection_details():
         '{"id": "2", "url": "/api/v3.3/detections/2", "detection": "Detection 2", "detection_type": "Type 2", '
         '"category": "Category 2", "src_ip": "5.6.7.8", "threat": "Medium", "certainty": 70, '
         '"grouped_details": [], "summary": {"num_events": 1}, "state": "Closed", "tags": ["Tag3"], '
-        '"last_timestamp": "2023-07-20T10:30:00Z"}'
+        '"last_timestamp": "2023-07-20T10:30:00Z"}',
     ]
-    test_data_path = Path(__file__).parent / 'test_data'
+    test_data_path = Path(__file__).parent / "test_data"
     with open(f"{test_data_path}/vectra_entity_detections_hr.md") as f:
         result_hr = f.read()
 

@@ -1,0 +1,173 @@
+{
+    "dtm": {},
+    "cm": {
+        "unassigneds": [
+            {
+                "geo": 1000,
+                "count": 0
+            },
+            {
+                "geo": 1001,
+                "count": 0
+            }
+        ],
+        "total": 0,
+        "geo_counts": {}
+    },
+    "regulators": {
+        "ids": [
+            149
+        ]
+    },
+    "hipaa": {
+        "hipaa_adverse": null,
+        "hipaa_misused": null,
+        "hipaa_acquired": null,
+        "hipaa_additional_misuse": null,
+        "hipaa_breach": null,
+        "hipaa_adverse_comment": "",
+        "hipaa_misused_comment": "",
+        "hipaa_acquired_comment": "",
+        "hipaa_additional_misuse_comment": "",
+        "hipaa_breach_comment": ""
+    },
+    "tasks": null,
+    "artifacts": null,
+    "name": "incident_name",
+    "description": "1111 2222 3333",
+    "phase_id": 1002,
+    "inc_training": false,
+    "vers": 19,
+    "addr": null,
+    "city": null,
+    "creator": {
+        "id": 9,
+        "fname": "Demisto",
+        "lname": "Resilient",
+        "display_name": "Demisto Resilient",
+        "status": "A",
+        "email": "",
+        "phone": "",
+        "cell": "",
+        "title": "",
+        "locked": false,
+        "password_changed": false,
+        "is_external": false,
+        "ui_theme": "darkmode"
+    },
+    "creator_principal": {
+        "id": 9,
+        "type": "user",
+        "name": "",
+        "display_name": "Demisto Resilient"
+    },
+    "exposure_type_id": 2,
+    "incident_type_ids": [
+        21,
+        19,
+        17,
+        6
+    ],
+    "reporter": null,
+    "state": null,
+    "country": 1064,
+    "zip": null,
+    "workspace": 1,
+    "exposure": 0,
+    "org_handle": 201,
+    "members": [],
+    "negative_pr_likely": true,
+    "perms": {
+        "read": true,
+        "write": true,
+        "comment": true,
+        "assign": true,
+        "close": true,
+        "change_members": true,
+        "attach_file": true,
+        "read_attachments": true,
+        "delete_attachments": true,
+        "create_milestones": true,
+        "list_milestones": true,
+        "create_artifacts": true,
+        "list_artifacts": true,
+        "delete": true,
+        "change_workspace": true
+    },
+    "confirmed": true,
+    "task_changes": {
+        "added": [],
+        "removed": []
+    },
+    "assessment": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<assessment>\n    <rollups/>\n    <optional>There are 1 required and 0 optional tasks from 1 regulators.</optional>\n</assessment>\n",
+    "data_compromised": null,
+    "draft": false,
+    "properties": {},
+    "resolution_id": 9,
+    "resolution_summary": "This is a test incident.",
+    "pii": {
+        "data_compromised": null,
+        "determined_date": 1722252717607,
+        "harmstatus_id": 2,
+        "data_encrypted": null,
+        "data_contained": null,
+        "impact_likely": null,
+        "ny_impact_likely": null,
+        "or_impact_likely": null,
+        "wa_impact_likely": null,
+        "dc_impact_likely": null,
+        "data_source_ids": [],
+        "data_format": null,
+        "assessment": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<assessment>\n    <rollups/>\n    <optional>There are 1 required and 0 optional tasks from 1 regulators.</optional>\n</assessment>\n",
+        "exposure": 0,
+        "gdpr_harm_risk": null,
+        "gdpr_lawful_data_processing_categories": [],
+        "alberta_health_risk_assessment": null
+    },
+    "gdpr": {
+        "gdpr_breach_circumstances": [],
+        "gdpr_breach_type": null,
+        "gdpr_personal_data": null,
+        "gdpr_identification": null,
+        "gdpr_consequences": null,
+        "gdpr_final_assessment": null,
+        "gdpr_breach_type_comment": null,
+        "gdpr_personal_data_comment": null,
+        "gdpr_identification_comment": null,
+        "gdpr_consequences_comment": null,
+        "gdpr_final_assessment_comment": null,
+        "gdpr_subsequent_notification": null
+    },
+    "regulator_risk": {},
+    "inc_last_modified_date": 1725204327227,
+    "comments": null,
+    "actions": [],
+    "timer_field_summarized_incident_data": [],
+    "admin_id": null,
+    "creator_id": 9,
+    "crimestatus_id": 3,
+    "employee_involved": null,
+    "end_date": null,
+    "exposure_dept_id": null,
+    "exposure_individual_name": null,
+    "exposure_vendor_id": null,
+    "jurisdiction_name": null,
+    "jurisdiction_reg_id": null,
+    "start_date": null,
+    "inc_start": null,
+    "org_id": 0,
+    "is_scenario": false,
+    "hard_liability": 0,
+    "nist_attack_vectors": [
+        4,
+        2
+    ],
+    "id": 1000,
+    "sequence_code": "E777-142",
+    "discovered_date": 1722252717607,
+    "due_date": null,
+    "create_date": 1722252756736,
+    "owner_id": 9,
+    "severity_code": 6,
+    "plan_status": "A"
+}

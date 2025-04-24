@@ -1,6 +1,6 @@
-name: Cisco ISR
-id: Cisco_ISR
-fromversion: 8.2.0
+name: Cisco ISR Parsing Rule
+id: Cisco_ISR_ParsingRule
+fromversion: 8.4.0
 tags: []
 rules: ''
 samples: ''

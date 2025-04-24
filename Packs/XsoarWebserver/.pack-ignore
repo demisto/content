@@ -1,0 +1,7 @@
+# GR103 is temporary, see CIAC-11656
+[file:playbook-xsoarwebserver-email-data-collection.yml]
+ignore=GR103
+[file:playbook-xsoarwebserver-data-collection-response-tracking.yml]
+ignore=GR103
+[file:playbook-xsoarwebserver-email-acknowledgement.yml]
+ignore=GR103

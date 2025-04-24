@@ -1,4 +1,4 @@
-Nozomi Networks sensor integration
+Nozomi Networks integration
 ==================================
 
 The Nozomi Networks platform is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution. 

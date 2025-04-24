@@ -1,2 +1,5 @@
 [known_words]
 Mandiant
+
+[file:FeedMandiantThreatIntelligence.yml]
+ignore=IN122

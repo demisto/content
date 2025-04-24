@@ -1,0 +1,23 @@
+{
+    "Accounts": {
+        "id": 1,
+        "last_created_events": [
+            "Accounts_1"
+        ],
+        "last_timestamp": "2024-07-08T19:43:32+00:00"
+    },
+    "Hosts": {
+        "id": 1,
+        "last_created_events": [
+            "Hosts_1"
+        ],
+        "last_timestamp": "2024-07-09T01:28:57+00:00"
+    },
+    "Detections": {
+        "id": 1,
+        "last_created_events": [
+            "Detections_1"
+        ],
+        "last_timestamp": "2024-07-01T12:07:29+00:00"
+    }
+}

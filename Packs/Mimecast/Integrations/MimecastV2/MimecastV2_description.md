@@ -11,7 +11,7 @@ Make sure you have provided the Client ID and Client Secret, and that the BaseUr
 ### API 1.0 Authentication
 
 1. In order to refresh token / discover auth types of the account / create new access & secret keys, 
-you are required to provide: App ID, Account email address & password, and BaseUrl is https://developer.mimecast.com/apis.
+you are required to provide: App ID, Account email address & password, and BaseUrl is set to `https://<region>-api.mimecast.com`, based on your [region](https://integrations.mimecast.com/documentation/api-overview/global-base-urls/).
 These parameters support the following integration commands: 
 mimecast-login -> fetches new access key & secret key
 mimecast-discover -> lists supported auth types of user

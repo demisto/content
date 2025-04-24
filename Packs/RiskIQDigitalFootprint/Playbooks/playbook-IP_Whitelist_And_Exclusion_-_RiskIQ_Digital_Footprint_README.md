@@ -43,4 +43,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![IP Whitelist And Exclusion - RiskIQ Digital Footprint](https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/IP_Whitelist_And_Exclusion_-_RiskIQ_Digital_Footprint.png)
+![IP Whitelist And Exclusion - RiskIQ Digital Footprint](../doc_files/IP_Whitelist_And_Exclusion_-_RiskIQ_Digital_Footprint.png)

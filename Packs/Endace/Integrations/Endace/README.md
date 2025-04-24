@@ -3,11 +3,8 @@ The EndaceProbe Analytics Platform provides 100% accurate, continuous packet cap
 This integration uses Endace APIs to search, archive and download PCAP file from either a single EndaceProbe or many via the InvestigationManager and enables integration of full historical packet capture into security automation workflows.
 This integration was integrated and tested with version 6.5.7 & 7.0.0 of Endace
 
-## Configure Endace on Cortex XSOAR 
+## Configure Endace in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Endace.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -17,9 +14,8 @@ This integration was integrated and tested with version 6.5.7 & 7.0.0 of Endace
 | proxy | Use system proxy settings | False |
 | hostname | EndaceProbe System Hostname | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### endace-create-search
 ***
@@ -469,4 +465,3 @@ Delete an archived file from EndaceProbe.
 |Task|FileName|Status|Error|
 |---|---|---|---|
 | DeleteArchivedFile | event-1586976861 | FileDeleted | NoError |
-

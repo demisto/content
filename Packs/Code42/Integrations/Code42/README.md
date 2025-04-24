@@ -1,30 +1,26 @@
 Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 
-## Configure Code42 on Cortex XSOAR
+## Configure Code42 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Code42.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Code42 Console URL for your Code42 environment | True |
-    | API Client ID | True |
-    | API Client Secret | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Alert severities to fetch when fetching incidents | False |
-    | First fetch time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes) | False |
-    | Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once | False |
-    | Include the list of files in returned incidents. | False |
-    | Incidents Fetch Interval | False |
-    | Use v2 file events | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Code42 Console URL for your Code42 environment | True |
+| API Client ID | True |
+| API Client Secret | True |
+| Fetch incidents | False |
+| Incident type | False |
+| Alert severities to fetch when fetching incidents | False |
+| First fetch time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes) | False |
+| Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once | False |
+| Include the list of files in returned incidents. | False |
+| Incidents Fetch Interval | False |
+| Use v2 file events | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### code42-file-events-search
@@ -88,13 +84,34 @@ Retrieve alert details by alert ID
 | Code42.SecurityAlert.ID | string | The alert ID. | 
 | Code42.SecurityAlert.Name | string | The alert rule name that generated the alert. | 
 | Code42.SecurityAlert.State | string | The alert state. | 
-| Code42.SecurityAlert.Type | string | The alert type. | 
 | Code42.SecurityAlert.Severity | string | The severity of the alert. | 
+
+### code42-alert-update
+
+***
+Updates a Code42 Alert Session
+
+#### Base Command
+
+`code42-alert-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The alert ID to update. Alert IDs are associated with alerts that are fetched via fetch-incidents. | Required | 
+| state | The state to which the session will be updated. Permissible values are OPEN, CLOSED_TP, or CLOSED_FP | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.SecurityAlert.ID | string | The alert ID of the resolved alert. | 
 
 ### code42-alert-resolve
 
 ***
-Resolves a Code42 Security alert.
+DEPRECATED. Use `code42-alert-update` instead.
 
 #### Base Command
 
@@ -112,199 +129,6 @@ Resolves a Code42 Security alert.
 | --- | --- | --- |
 | Code42.SecurityAlert.ID | string | The alert ID of the resolved alert. | 
 
-### code42-departingemployee-add
-
-***
-Adds a user to the Departing Employee List.
-
-#### Base Command
-
-`code42-departingemployee-add`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username to add to the Departing Employee List. | Required | 
-| departuredate | The departure date for the employee, in the format YYYY-MM-DD. | Optional | 
-| note | Note to attach to the Departing Employee. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
-| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
-
-### code42-departingemployee-remove
-
-***
-Removes a user from the Departing Employee List.
-
-#### Base Command
-
-`code42-departingemployee-remove`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username to remove from the Departing Employee List. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.DepartingEmployee.CaseID | string | Internal Code42 Case ID for the Departing Employee. Deprecated. Use Code42.DepartingEmployee.UserID. | 
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
-
-### code42-departingemployee-get-all
-
-***
-Get all employees on the Departing Employee List.
-
-#### Base Command
-
-`code42-departingemployee-get-all`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| results | The number of items to return. | Optional | 
-| filtertype | Filters the results based on specific filters. Possible values are: EXFILTRATION_30_DAYS, EXFILTRATION_24_HOURS, OPEN, LEAVING_TODAY. Default is OPEN. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
-| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
-
-### code42-highriskemployee-add
-
-***
-Adds a user to the High Risk Employee List.
-
-#### Base Command
-
-`code42-highriskemployee-add`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username to add to the High Risk Employee List. | Required | 
-| note | Note to attach to the High Risk Employee. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. | 
-
-### code42-highriskemployee-remove
-
-***
-Removes a user from the High Risk Employee List.
-
-#### Base Command
-
-`code42-highriskemployee-remove`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username to remove from the High Risk Employee List. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | Unknown | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | Unknown | The username of the High Risk Employee. | 
-
-### code42-highriskemployee-get-all
-
-***
-Get all employees on the High Risk Employee List.
-
-#### Base Command
-
-`code42-highriskemployee-get-all`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| risktags | To filter results by employees who have these risk tags. Comma delimited. Possible values are: PERFORMANCE_CONCERNS, PERFORMANCE_CONCERNS, POOR_SECURITY_PRACTICES, HIGH_IMPACT_EMPLOYEE, ELEVATED_ACCESS_PRIVILEGES, FLIGHT_RISK, CONTRACT_EMPLOYEE. | Optional | 
-| results | The number of items to return. | Optional | 
-| filtertype | Filters the results based on specific filters. Possible values are: EXFILTRATION_30_DAYS, EXFILTRATION_24_HOURS, OPEN. Default is OPEN. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. | 
-
-### code42-highriskemployee-add-risk-tags
-
-***
-Associates risk tags with the employee with the given username.
-
-#### Base Command
-
-`code42-highriskemployee-add-risk-tags`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username of the High Risk Employee. | Required | 
-| risktags | Comma-delimited risk tags to associate with the High Risk Employee. Possible values are: PERFORMANCE_CONCERNS, PERFORMANCE_CONCERNS, POOR_SECURITY_PRACTICES, HIGH_IMPACT_EMPLOYEE, ELEVATED_ACCESS_PRIVILEGES, FLIGHT_RISK, CONTRACT_EMPLOYEE. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to associate with the High Risk Employee. | 
-
-### code42-highriskemployee-remove-risk-tags
-
-***
-Disassociates risk tags from the user with the given username.
-
-#### Base Command
-
-`code42-highriskemployee-remove-risk-tags`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username of the High Risk Employee. | Required | 
-| risktags | Comma-delimited risk tags to disassociate from the High Risk Employee. Possible values are: PERFORMANCE_CONCERNS, PERFORMANCE_CONCERNS, POOR_SECURITY_PRACTICES, HIGH_IMPACT_EMPLOYEE, ELEVATED_ACCESS_PRIVILEGES, FLIGHT_RISK, CONTRACT_EMPLOYEE. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.RiskTags | Unknown | Risk tags to disassociate from the High Risk Employee. | 
 
 ### code42-user-create
 
@@ -495,53 +319,6 @@ Downloads a file from Code42.
 | File.Type | String | The file type. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The file extension. | 
-
-### code42-highriskemployee-get
-
-***
-Retrieve high risk employee details.
-
-#### Base Command
-
-`code42-highriskemployee-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | Email id of the user. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.HighRiskEmployee.UserID | string | Internal Code42 User ID for the High Risk Employee. | 
-| Code42.HighRiskEmployee.Username | string | The username of the High Risk Employee. | 
-| Code42.HighRiskEmployee.Note | string | Note associated with the High Risk Employee. | 
-
-### code42-departingemployee-get
-
-***
-Retrieve departing employee details.
-
-#### Base Command
-
-`code42-departingemployee-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | Email id of the departing employee. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Code42.DepartingEmployee.UserID | string | Internal Code42 User ID for the Departing Employee. | 
-| Code42.DepartingEmployee.Username | string | The username of the Departing Employee. | 
-| Code42.DepartingEmployee.Note | string | Note associated with the Departing Employee. | 
-| Code42.DepartingEmployee.DepartureDate | Unknown | The departure date for the Departing Employee. | 
 
 ### code42-watchlists-list
 

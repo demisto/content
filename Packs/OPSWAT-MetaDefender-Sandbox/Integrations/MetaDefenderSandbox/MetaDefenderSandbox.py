@@ -47,17 +47,13 @@ class Client(BaseClient):
         if url := args.get("url"):
             data["url"] = url
 
-            return self._http_request(
-                method="POST", url_suffix="/scan/url", ok_codes=([200]), data=data
-            )
+            return self._http_request(method="POST", url_suffix="/scan/url", ok_codes=([200]), data=data)
 
         elif entry_id := args.get("entry_id"):
             try:
                 file_entry = demisto.getFilePath(entry_id)
             except Exception as e:
-                raise DemistoException(
-                    f'Failed to find file entry with id:"{entry_id}". got error: {e}'
-                )
+                raise DemistoException(f'Failed to find file entry with id:"{entry_id}". got error: {e}')
 
             with open(file_entry["path"], "rb") as file:
                 return self._http_request(
@@ -71,7 +67,6 @@ class Client(BaseClient):
             raise DemistoException("No file or URL was provided.")
 
     def get_scan_result(self, flow_id: str) -> dict[str, Any]:
-
         filters = [
             "filter=general",
             "filter=finalVerdict",
@@ -111,7 +106,7 @@ def build_one_reputation_result(report: dict[str, Any]):
 
     final_verdict = report.get("finalVerdict", {})
     verdict = final_verdict.get("verdict")
-    if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL":
+    if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL" or verdict.upper() == "NO_THREAT":
         score = Common.DBotScore.GOOD
     elif verdict.upper() == "MALICIOUS" or verdict.upper() == "LIKELY_MALICIOUS":
         score = Common.DBotScore.BAD
@@ -128,9 +123,7 @@ def build_one_reputation_result(report: dict[str, Any]):
         score=score,
     )
 
-    file = Common.File(
-        name=report_file.get("name"), sha256=report_hash, dbot_score=dbot_score
-    )
+    file = Common.File(name=report_file.get("name"), sha256=report_hash, dbot_score=dbot_score)
 
     tags = [tag.get("tag", {}).get("name") for tag in report.get("allTags", [])]
     subtasks = [subtask.get("name") for subtask in report.get("subtaskReferences", [])]
@@ -175,7 +168,7 @@ def build_serach_query_result(analyses: list[dict]) -> CommandResults:
         score = Common.DBotScore.NONE
 
         verdict = analysis.get("verdict", "UNKNOWN")
-        if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL":
+        if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL" or verdict.upper() == "NO_THREAT":
             score = Common.DBotScore.GOOD
         elif verdict.upper() == "MALICIOUS" or verdict.upper() == "LIKELY_MALICIOUS":
             score = Common.DBotScore.BAD
@@ -231,9 +224,7 @@ def build_serach_query_result(analyses: list[dict]) -> CommandResults:
 
 def sample_submission(client: Client, args: dict[str, Any]) -> PollResult:
     res = client.post_sample(args)
-    partial_res = CommandResults(
-        readable_output=f'Waiting for submission "{res.get("flow_id")}" to finish...'
-    )
+    partial_res = CommandResults(readable_output=f'Waiting for submission "{res.get("flow_id")}" to finish...')
     return PollResult(
         response=CommandResults(
             outputs=res,
@@ -268,7 +259,6 @@ def is_valid_pass(api_response: dict[str, Any]):
     requires_polling_arg=False,
 )
 def polling_submit_command(args: dict[str, Any], client: Client):
-
     if flow_id := args.get("flow_id"):
         api_response = client.get_scan_result(flow_id)
         successful_response = False
@@ -280,9 +270,7 @@ def polling_submit_command(args: dict[str, Any], client: Client):
             if not is_valid_pass(api_response):
                 raise DemistoException("Invalid password!")
 
-            return PollResult(
-                response=build_reputation_result(api_response), continue_to_poll=False
-            )
+            return PollResult(response=build_reputation_result(api_response), continue_to_poll=False)
 
         return PollResult(
             response=[
@@ -363,10 +351,9 @@ def search_query_command(client: Client, args: dict[str, Any]):
 
 
 def main():
-
     params = demisto.params()
     base_url = params.get("url", "")
-    api_key = params.get('api_key', {}).get('password')
+    api_key = params.get("api_key", {}).get("password")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

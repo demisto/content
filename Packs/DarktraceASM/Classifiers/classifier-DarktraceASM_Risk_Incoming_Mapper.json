@@ -57,6 +57,14 @@
 						"transformers": []
 					}
 				},
+                "DarktraceASM Asset URL": {
+					"complex": {
+						"accessor": "asset_url",
+						"filters": [],
+						"root": "asset",
+						"transformers": []
+					}
+				},
 				"DarktraceASM Asset Updated Time": {
 					"complex": {
 						"filters": [],
@@ -164,6 +172,13 @@
 					"complex": {
 						"filters": [],
 						"root": "type",
+						"transformers": []
+					}
+				},
+                "DarktraceASM Risk URL": {
+					"complex": {
+						"filters": [],
+						"root": "risk_url",
 						"transformers": []
 					}
 				}

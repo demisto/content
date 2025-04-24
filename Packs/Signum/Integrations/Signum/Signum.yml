@@ -1,0 +1,52 @@
+category: Identity and Access Management
+commonfields:
+  id: Signum
+  version: -1
+configuration:
+- display: Signum URL, in the format https://signmum.keyfactorsaas.com
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: 'Use system proxy settings'
+  name: proxy
+  required: false
+  type: 8
+description: Signum password expiry notification.
+display: Signum
+name: Signum
+script:
+  commands:
+  - arguments:
+    - defaultValue: '1'
+      description: 'Identification of the domain for which to list the users.'
+      name: domain_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'True'
+      description: If "True", strip off prefixes, such as "{urn:.*}" and "{http://.*}", from each dictionary key name.
+      name: simple_view
+      predefined:
+      - 'True'
+      - 'False'
+    description: 'List all the users for a given domain ID.'
+    name: signum-list-domain-users
+    outputs:
+    - contextPath: Signum.ListDomainUsers
+      description: The result of the signum-list-domain-users command.
+  dockerimage: demisto/python3:3.11.10.115186
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

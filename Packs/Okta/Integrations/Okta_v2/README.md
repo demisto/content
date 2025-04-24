@@ -1,6 +1,6 @@
 Integration with Okta's cloud-based identity management service.
 
-## Configure Okta v2 on Cortex XSOAR
+## Configure Okta v2 in Cortex
 ### API Token Authentication Prerequisites
 1. Sign in to your Okta organization as a user with administrator privileges.
 2. On the **Admin Console**, select **Security** > **API** from the menu, and then select the **Tokens** tab.
@@ -9,6 +9,8 @@ Integration with Okta's cloud-based identity management service.
 
 #### Notes
 - API tokens have the same permissions as the user who creates them, and if the permissions of a user change, so do the permissions of the API token.
+- If more than one certificate is assigned to the application, the Key ID parameter is required to specify which
+  certificate to use for signing the JWT token.
 
 For more information, see the '[Create an API token](https://developer.okta.com/docs/guides/create-an-api-token/main/)' official documentation article.
 
@@ -49,26 +51,24 @@ For more information, see the '[Implement OAuth for Okta](https://developer.okta
 
 
 ### Instance Configuration
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Okta v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Okta URL (https://&lt;domain&gt;.okta.com) |  | True |
-    | API Token |  | False |
-    | Use OAuth 2.0 Authentication | See detailed instructions on the 'Help' tab. | False |
-    | Client ID | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
-    | Private Key | In PEM format. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
-    | JWT Signing Algorithm | Algorithm to sign generated JWT tokens with. Doesn't affect integration's functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter**                              | **Description**                                                                                                                                                                                  | **Required** |
+|--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Okta URL (https://&lt;domain&gt;.okta.com) |                                                                                                                                                                                                  | True         |
+| API Token                                  |                                                                                                                                                                                                  | False        |
+| Use OAuth 2.0 Authentication               | See detailed instructions on the 'Help' tab.                                                                                                                                                     | False        |
+| Client ID                                  | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.                                                                                          | False        |
+| Private Key                                | In PEM format. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.                                                                           | False        |
+| JWT Signing Algorithm                      | Algorithm to sign generated JWT tokens with. Doesn't affect integration's functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False        |
+| Key ID                                     | Required and used if more than one key is used for signing JWT tokens.                                                                                                                           | False        |
+| Trust any certificate (not secure)         |                                                                                                                                                                                                  | False        |
+| Use system proxy settings                  |                                                                                                                                                                                                  | False        |
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### okta-unlock-user
@@ -2144,12 +2144,13 @@ Update an Okta Zone.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| zoneID | Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7. | Required | 
-| zoneName | Updates the zone name. | Optional | 
-| gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
-| proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+| **Argument Name** | **Description**                                                                                                                                         | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| zoneID | Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.                                                                                                          | Required | 
+| zoneName | Updates the zone name.                                                                                                                                  | Optional | 
+| gatewayIPs | Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                   | Optional | 
+| proxyIPs | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).                                                                      | Optional | 
+| updateType | Indicate the action of adding an IP to an existing zone or overriding the existing IPs. Possible values are: "APPEND", "OVERRIDE". Default is "OVERRIDE". | Optional | 
 
 #### Context Output
 
@@ -2506,6 +2507,8 @@ Expires a password for an existing Okta user.
 | --- | --- | --- |
 | username | Okta username for which to expire the password. | Required | 
 | temporary_password | When true, you'll need to change the password in the next login. Possible values are: true, false. Default is false. | Optional | 
+| revoke_session | When true, revokes the user's existing sessions. | Optional |
+| hide_password | When true, prevents the password from being saved in the war room. | Optional |
 
 #### Context Output
 

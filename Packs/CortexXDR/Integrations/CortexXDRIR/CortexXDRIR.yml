@@ -18,38 +18,6 @@ configuration:
   section: Connect
   required: false
   defaultvalue: 'Cortex XDR - Lite'
-- defaultvalue: 'false'
-  display: Remove legacy incident fields
-  name: dont_format_sublists
-  type: 8
-  section: Collect
-  required: false
-  additionalinfo: Not selected for backwards compatibility. Recommended to select. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
-- display: Incident Mirroring Direction
-  name: mirror_direction
-  required: false
-  type: 15
-  section: Collect
-  defaultvalue: None
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Both
-- display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
-  section: Collect
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
-  name: custom_xsoar_to_xdr_close_reason_mapping
-  defaultvalue: ''
-  type: 0
-  required: false
-- display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
-  section: Collect
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
-  name: custom_xdr_to_xsoar_close_reason_mapping
-  defaultvalue: ''
-  type: 0
-  required: false
 - name: url
   type: 0
   display: 'Server URL (copy URL from XDR)'
@@ -69,6 +37,64 @@ configuration:
   required: false
   displaypassword: API Key
   hiddenusername: true
+- defaultvalue: 'false'
+  display: Remove legacy incident fields
+  name: dont_format_sublists
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Not selected for backwards compatibility. Recommended to select. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  required: false
+  type: 15
+  section: Collect
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+- additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
+  defaultvalue: 'true'
+  display: Close Mirrored XSOAR Incident
+  name: close_xsoar_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: "When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR."
+  defaultvalue: 'true'
+  display: Close Mirrored Cortex XDR Incident
+  name: close_xdr_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '1'
+  display: XDR mirroring delay in minutes
+  name: xdr_delay
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: "In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents."
+- display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+  section: Collect
+  advanced: true
+  additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
+  name: custom_xsoar_to_xdr_close_reason_mapping
+  defaultvalue: ''
+  type: 0
+  required: false
+- display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+  section: Collect
+  advanced: true
+  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
+  name: custom_xdr_to_xsoar_close_reason_mapping
+  defaultvalue: ''
+  type: 0
+  required: false
 - display: API Key ID
   name: apikey_id
   type: 4
@@ -166,6 +192,14 @@ configuration:
   section: Collect
   defaultvalue: 'true'
   advanced: true
+- additionalinfo: "Whether to fetch only the essential alert fields in order to minimize the incident's information. Possible values: null_values to remove all null values from alerts data, or any other field of an alert."
+  display: Minimize Alert Information
+  name: excluded_alert_fields
+  required: false
+  type: 16
+  section: Collect
+  advanced: true
+  defaultvalue: 'null_values'
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false
@@ -907,6 +941,20 @@ script:
     - name: username
       description: The usernames to query for. Accepts a single user, or comma-separated list of usernames.
       isArray: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return all endpoints. If true, will override the 'limit' and 'page' arguments.
+      name: all_results
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to return timestamp or date string values.
+      name: convert_timestamp_to_datestring
+      predefined:
+      - "false"
+      - "true"
     description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set. (Start by counting from 0).
     name: xdr-get-endpoints
     outputs:
@@ -1182,6 +1230,13 @@ script:
       - x86
       - x64
       required: true
+    - name: download_package
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Supported only for package_type x64 or x86. Whether to actually download the installation package file.
+      defaultValue: "false"
     description: Gets the distribution URL for downloading the installation package.
     name: xdr-get-distribution-url
     outputs:
@@ -1565,6 +1620,34 @@ script:
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: xdr-file-quarantine
     polling: true
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - deprecated: true
     description: Deprecated. Use `xdr-file-quarantine` instead.
     name: xdr-quarantine-files
@@ -1612,6 +1695,34 @@ script:
     description: Restores a quarantined file on requested endpoints.
     name: xdr-file-restore
     polling: true
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows to link the response action to the incident that triggered it.
       name: incident_id
@@ -1692,6 +1803,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
       description: Was the scan aborted?
       type: Boolean
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
     polling: true
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -2062,6 +2200,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.status
       description: The action status. Added only when the operation is unsuccessful.
       type: string
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
     polling: true
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -2226,8 +2391,9 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: This command will soon be deprecated; run xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+    description: Deprecated. Run xdr-script-run instead.
     name: xdr-run-script
+    deprecated: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
       description: ID of the action initiated.
@@ -2327,6 +2493,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
     polling: true
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
@@ -2488,9 +2681,20 @@ script:
     - description: A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: A comma-separated list of shell commands to execute.
+    - description: A comma-separated list of shell commands to execute. Set the `is_raw_command` argument to `true` to prevent splitting by commas. (Useful when using `||`, `&&`, `;` separators for controlling the flow of multiple commands).
       name: commands
       required: true
+    - description: Whether to pass the command as-is. When false, the command is split by commas and sent as a list of commands, that are run independently.
+      name: is_raw_command
+      type: Boolean
+      required: false
+    - description: Type of shell command.
+      auto: PREDEFINED
+      name: command_type
+      predefined:
+      - 'powershell'
+      - 'native'
+      required: false
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
@@ -2512,6 +2716,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2552,7 +2783,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: The acton IDs for polling use.
+    - description: The action IDs for polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2566,6 +2797,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2622,6 +2880,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2678,6 +2963,33 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.bucket
+      description: The bucket in which the error occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_name
+      description: The name of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_path
+      description: The path of the file that caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.file_size
+      description: The size of the file that caused the error.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.missing_files
+      description: The missing files that caused the error.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorData
+      description: The error reason data.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminated_by
+      description: The instance ID which terminated the action and caused the error.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.errorDescription
+      description: The error reason description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.GetActionStatus.ErrorReasons.terminate_result
+      description: The error reason terminate result.
+      type: Unknown
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
@@ -2776,6 +3088,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
+      name: events_from_decider_format
+      auto: PREDEFINED
+      defaultValue: 'dict'
+      predefined:
+      - 'list'
+      - 'dict'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
@@ -3371,7 +3690,7 @@ script:
       name: user_id
     - description: Limit the number of users that will appear in the list. (Use limit when no specific host is requested.)
       name: limit
-      defaultValue: '50'
+      defaultValue: '10'
     name: xdr-list-risky-users
     description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -3400,11 +3719,11 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: The name of the host.
+    - description: The host name of a specific host.
       name: host_id
     - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.)
       name: limit
-      defaultValue: '50'
+      defaultValue: '10'
     name: xdr-list-risky-hosts
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
@@ -3545,7 +3864,7 @@ script:
       Update one or more alerts with the provided arguments.
       Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.11.9.103842
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   isfetch:xpanse: false
   script: ''

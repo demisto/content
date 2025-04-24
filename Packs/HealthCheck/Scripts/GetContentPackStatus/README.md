@@ -1,4 +1,4 @@
-Get the count of Marketplace content packs update status
+Get the count of Marketplace content packs update status.
 
 ## Script Data
 

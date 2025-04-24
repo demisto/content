@@ -1,27 +1,23 @@
 This integration was integrated and tested with Picus NG
 
-## Configure PicusNG on Cortex XSOAR
+## Configure PicusNG in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PicusNG.
 
 ![image](./../../doc_files/search_integration.png)
 
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Picus Manager URL | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Picus Refresh Token | True |
+| **Parameter** | **Required** |
+| --- | --- |
+| Picus Manager URL | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Picus Refresh Token | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ![image](./../../doc_files/test_integration.png)
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### picus-get-access-token
 ***

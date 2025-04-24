@@ -1,28 +1,24 @@
 This is example Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 This integration was integrated and tested with version 3.0.0 of CTIX
 
-## Configure CTIX on Cortex XSOAR
+## Configure CTIX in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CTIX.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Endpoint URL | Enter the endpoint URL of your CTIX Instance. | True |
-    | Access Key | Enter the Access Key from the CTIX application. | True |
-    | Secret Key | Enter the Secret Key from the CTIX application. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Endpoint URL | Enter the endpoint URL of your CTIX Instance. | True |
+| Access Key | Enter the Access Key from the CTIX application. | True |
+| Secret Key | Enter the Secret Key from the CTIX application. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ctix-create-tag

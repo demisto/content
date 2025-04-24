@@ -1,24 +1,20 @@
 This integration allow to interact with the Gatewatcher LastInfoSec product via API.
 This integration was integrated and tested with version 2 of LastInfoSec.
 
-## Configure LastInfoSec on Cortex XSOAR
+## Configure LastInfoSec in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for LastInfoSec.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | LastInfoSec API token | The API Key to use for connection | True |
-    | Check the TLS certificate |  | False |
-    | Use system proxy settings |  | False |
-    | Integration Reliability | Reliability of the source providing the intelligence data | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| LastInfoSec API token | The API Key to use for connection | True |
+| Check the TLS certificate |  | False |
+| Use system proxy settings |  | False |
+| Integration Reliability | Reliability of the source providing the intelligence data | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### gw-lis-get-by-minute

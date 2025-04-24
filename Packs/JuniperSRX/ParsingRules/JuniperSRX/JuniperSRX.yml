@@ -1,5 +1,5 @@
 name: JuniperSRX Parsing Rule
-id: JuniperSRX Parsing Rule
+id: JuniperSRX_ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''

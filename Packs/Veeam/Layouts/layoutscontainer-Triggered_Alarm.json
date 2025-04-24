@@ -1,0 +1,565 @@
+{
+	"close": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_numberoffoundrelatedalerts",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamalarmstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamalarmtemplateid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamalarmtemplatename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamassignedobject",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamtriggeredtime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamnumberoftriggeredalarms",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "59bfcb70-2d50-11ef-86ee-514a94cf9780",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "5e6c8aa0-2d50-11ef-86ee-514a94cf9780",
+								"index": 4,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "eventid",
+								"height": 22,
+								"id": "5f9285c0-3df3-11ef-87d9-7db03ef9d8fb",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alertid",
+								"height": 22,
+								"id": "ebe1da40-39f6-11ef-93f6-39990e2712e6",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "veeamalarmtemplatename",
+								"height": 22,
+								"id": "f481a590-39f6-11ef-93f6-39990e2712e6",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "veeamalarmtemplateid",
+								"height": 22,
+								"id": "f2cfd6e0-39f6-11ef-93f6-39990e2712e6",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "description",
+								"height": 22,
+								"id": "61f522e0-2d55-11ef-86ee-514a94cf9780",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 53,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "veeamtriggeredtime",
+								"height": 53,
+								"id": "144d4b90-39f7-11ef-93f6-39990e2712e6",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "veeamnumberoftriggeredalarms",
+								"height": 53,
+								"id": "04decb70-39f7-11ef-93f6-39990e2712e6",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "veeamalarmstatus",
+								"height": 53,
+								"id": "00855c60-39f7-11ef-93f6-39990e2712e6",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 53,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "CARD",
+						"h": 6,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "veeamassignedobject",
+								"height": 106,
+								"id": "2c7f99c0-39f7-11ef-93f6-39990e2712e6",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "veeamremediation",
+								"height": 106,
+								"id": "1b407850-39f7-11ef-93f6-39990e2712e6",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "numberoffoundrelatedalerts",
+								"height": 53,
+								"id": "0a6dfb60-39f7-11ef-93f6-39990e2712e6",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 22,
+								"id": "81c9a3f0-3de7-11ef-87d9-7db03ef9d8fb",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_veeamassignedobject",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamtriggeredtime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamnumberoftriggeredalarms",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamalarmstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamalarmtemplateid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_veeamalarmtemplatename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_numberoffoundrelatedalerts",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_reminder",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_attachment",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"group": "incident",
+    "id": "Triggered Alarm",
+    "name": "Triggered Alarm",
+	"quickView": {
+		"sections": [
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
+			}
+		]
+	},
+	"system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "Triggered Alarm",
+    "marketplaces": ["xsoar"]
+}

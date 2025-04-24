@@ -16,7 +16,7 @@ tags:
 - transformer
 type: python
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.10.14.90585
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

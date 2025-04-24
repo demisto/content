@@ -22,4 +22,3 @@ fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 runonce: false
-engineinfo: {}

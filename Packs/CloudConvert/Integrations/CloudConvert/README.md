@@ -1,11 +1,8 @@
 Use the CloudConvert integration to convert your files to the required format.
 This integration was integrated and tested with version v2 of CloudConvert.
 
-## Configure CloudConvert on Cortex XSOAR
+## Configure CloudConvert in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CloudConvert.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,11 +10,10 @@ This integration was integrated and tested with version v2 of CloudConvert.
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cloudconvert-upload
@@ -200,5 +196,4 @@ Downloads a converted file as a URL or a War Room entry.
 `cloudconvert-download task_id=1 download_as=url`
 
 #### Human Readable Output
-
 

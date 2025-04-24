@@ -10,14 +10,14 @@ This integration enables the following investigative tasks and workflows in Cort
 
 The following figures show an example of an ExtraHop Reveal(x) detection and the resulting playbook workflows in Cortex XSOAR.
 
-![ExtraHop detection card](https://github.com/demisto/content/raw/master/Packs/ExtraHop/doc_files/ExtraHop_Detection_CVE-2019-0708_BlueKeep.png)
+![ExtraHop detection card](doc_files/ExtraHop_Detection_CVE-2019-0708_BlueKeep.png)
 
 *Figure 1. Reveal(x) detection card for CVE-2019-0708 RDP Exploit Attempt*
 
-![Cortex XSOAR playbook: ExtraHop Default](https://github.com/demisto/content/raw/master/Packs/ExtraHop/doc_files/ExtraHop_Default.png)
+![Cortex XSOAR playbook: ExtraHop Default](doc_files/ExtraHop_-_Default.png)
 
 *Figure 2. Reveal(x) Default playbook to set up ticket tracking and run the BlueKeep playbook*
 
-![Cortex XSOAR playbook: ExtraHop CVE-2019-0708 BlueKeep](https://github.com/demisto/content/raw/master/Packs/ExtraHop/doc_files/ExtraHop_CVE-2019-0708_BlueKeep.png)
+![Cortex XSOAR playbook: ExtraHop CVE-2019-0708 BlueKeep](doc_files/ExtraHop_-_CVE-2019-0708_BlueKeep.png)
 
 *Figure 3. Reveal(x) CVE-2019-0708 BlueKeep playbook to automate detailed network investigation*

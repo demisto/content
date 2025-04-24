@@ -37,7 +37,7 @@ When unmatched or the input value is structured (dict or list), it will simply r
 | algorithm | The default algorithm for pattern match. Available algorithm: `literal`, `wildcard`, `regex`, `regmatch` and `dt`. |
 | caseless | Set to true for caseless comparison, false otherwise. |
 | priority | The option to choose which value matched to return. Available options: `first_match` (default) and `last_match`. |
-| context | \`demisto\` context: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
+| context | The context: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
 | flags | The comma separated flags for pattern matching in regex. `dotall` (s), `multiline` (m), `ignorecase` (i) and `unicode` (u) are supported. This will apply to all the algorithms. |
 | compare_fields | Set to true if you want pattern matching for each field, otherwise false. |
 | wildcards | The list of the special patterns which match to any values regardless of algorithm. |

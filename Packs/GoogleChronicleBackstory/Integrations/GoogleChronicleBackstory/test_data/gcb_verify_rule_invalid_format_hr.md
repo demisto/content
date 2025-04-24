@@ -1,0 +1,1 @@
+### Error: generic::invalid_argument: semantic analysis: event variable e and its child variables not used in condition section

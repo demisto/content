@@ -78,8 +78,47 @@
                     "simple": "closeNotes"
                 },
                 "classificationReason": {
-                    "simple": "closingreason"
-                },
+					"complex": {
+						"filters": [],
+						"root": "microsoftsentinelclassificationreason",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"simple": "Incorrect Alert Logic"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"simple": "IncorrectAlertLogic"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							},
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"simple": "Inaccurate Data"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"simple": "InaccurateData"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				},
                 "description": {
                     "simple": "description"
                 },

@@ -1,611 +1,419 @@
-<p>
 Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
+This integration was integrated and tested with version 0.40.1 of M2Crypto.
 
-</p>
-<h2>Use Cases</h2>
-<ul>
-<li>Send an S/MIME-signed message.</li>
-<li>Send an S/MIME-encrypted message.</li>
-<li>Send an S/MIME-signed and encrypted message.</li>
-<li>Decrypt an S/MIME message</li>
-</ul>
+## Use Cases
 
-<h2>Usage</h2>
-<p>
-In order to send signed/encrypted messages using the S/MIME Messaging and Mail Sender (New) perform the following steps.
-  
-1. Run the required command in the S/MIME Messaging integration (e.g., `smime-sign-and-encrypt`).
-2. Enter the output of the command executed from step 1 as the input for the `raw_message` argument of the `send-mail` command in the Mail Sender (New) integration (e.g. the value stored in the Context Data under `SMIME.SignedAndEncrypted.Message`).
-3. Run the `send-mail` command with the `raw_message` argument (as described in step 2), with any of the optional arguments `to`, `cc` and `bcc` (e.g., `!send-mail to=user@email.com raw_message=${SMIME.SignedAndEncrypted.Message}`).
-</p>
+- Send an S/MIME-signed message.
+- Send an S/MIME-encrypted message.
+- Send an S/MIME-signed and encrypted message.
+- Decrypt an S/MIME message.
 
-<h2>Configure SMIME Messaging on Cortex XSOAR</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for SMIME Messaging.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>Public Key</strong></li>
-   <li><strong>Private Key</strong></li>
-    </ul>
-  </li>
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
-<h2>Commands</h2>
-<p>
-  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-  After you successfully execute a command, a DBot message appears in the War Room with the command details.
-</p>
-<ol>
-  <li>smime-sign-email: smime-sign-email</li>
-  <li>smime-encrypt-email-body: smime-encrypt-email-body</li>
-  <li>smime-verify-sign: smime-verify-sign</li>
-  <li>smime-decrypt-email-body: smime-decrypt-email-body</li>
-  <li>smime-sign-and-encrypt: smime-sign-and-encrypt</li>
-</ol>
-<h3>1. smime-sign-email</h3>
-<hr>
-<p>Retrieves items from the service.</p>
-<h5>Base Command</h5>
-<p>
-  <code>smime-sign-email</code>
-</p>
+## Usage
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>message_body</td>
-      <td>The message body to send.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>use_transport_encoding</td>
-      <td>Set 'true' to use content transfer encoding.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+- In order to send signed/encrypted messages using the S/MIME Messaging and Mail Sender (New) perform the following steps:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>SMIME.Signed.Message</td>
-      <td>String</td>
-      <td>The signed message body.</td>
-    </tr>
-    <tr>
-      <td>SMIME.Signed.Headers</td>
-      <td>String</td>
-      <td>The S/MIME signing headers.</td>
-    </tr>
-  </tbody>
-</table>
+    1. Run the `smime-sign-and-encrypt` command with the required parameters.
+    2. Enter the output message from step 1 as the input for the `raw_message` argument of the `send-mail` command in the Mail Sender (New) integration (e.g., the value stored in the Context Data under `SMIME.SignedAndEncrypted.Message`).
+    3. Run the `send-mail` command with the `raw_message` argument (as described in step 2), with any of the optional arguments `to`, `cc` and `bcc` (e.g., `!send-mail to=user@email.com raw_message=${SMIME.SignedAndEncrypted.Message}`).
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!smime-sign-email message_body="Hello World"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+- While decrypting or verifying a message, S/MIME Messaging will attempt to parse the message into readable text, as well as extract any attachments and images if present. If you wish to get the raw message instead, use the raw_output argument.
+
+## Configure SMIME Messaging in Cortex
+
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Public Key | Sender public key required for signing emails. | True |
+| Private Key | Sender private key required for decrypting and signing emails. | True |
+
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### smime-verify-sign
+
+***
+Verifies the signature.
+
+Warning: This function does not check the CA chain. Ensure the certificate chain is validated separately to avoid security risks.
+
+#### Base Command
+
+`smime-verify-sign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| signed_message | Entity ID of the file with a .p7 extension containing the signed message. | Required | 
+| public_key | Sender's public key to verify. Default is instancePublicKey. | Optional | 
+| raw_output | Whether to get the full raw output of the email. Possible values are: false, true. | Optional | 
+| tag | A comma-separated list of tags to be included in the War Room output. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SMIME.Verified.Message | String | The decoded signed message. | 
+
+#### Command example
+
+```!smime-verify-sign signed_message=454@6cc2adad-6d3b-4fec-8b98-99b1b1770bc5```
+
+#### Context Example
+
+```json
 {
-    "SMIME.Signed": {
-        "Headers": "MIME-Version=1.0,Content-Type=multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha1\"; boundary=\"----5DAD2A4AC7C108E6B3D263AADB9D2BDB\"",
-        "Message": "MIME-Version: 1.0\nContent-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha1\"; boundary=\"----5DAD2A4AC7C108E6B3D263AADB9D2BDB\"\n\nThis is an S/MIME signed message\n\n------5DAD2A4AC7C108E6B3D263AADB9D2BDB\nContent-Type: text/plain\r\n\r\nHello World\n------5DAD2A4AC7C108E6B3D263AADB9D2BDB\nContent-Type: application/x-pkcs7-signature; name=\"smime.p7s\"\nContent-Transfer-Encoding: base64\nContent-Disposition: attachment; filename=\"smime.p7s\"\n\nMIIGEQYJKoZIhvcNAQcCoIIGAjCCBf4CAQExCzAJBgUrDgMCGgUAMAsGCSqGSIb3\nDQEHAaCCA1wwggNYMIICQAIJAO117pJfuoxMMA0GCSqGSIb3DQEBCwUAMG4xCzAJ\nBgNVBAYTAklMMQ8wDQYDVQQIDAZJc3JhZWwxGzAZBgNVBAoMElBhbG8gYWx0byBu\nZXR3b3JrczExMC8GCSqGSIb3DQEJARYiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWlj\ncm9zb2Z0LmNvbTAeFw0xOTEwMTcxOTMxMThaFw0yMDEwMTYxOTMxMThaMG4xCzAJ\nBgNVBAYTAklMMQ8wDQYDVQQIDAZJc3JhZWwxGzAZBgNVBAoMElBhbG8gYWx0byBu\nZXR3b3JrczExMC8GCSqGSIb3DQEJARYiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWlj\ncm9zb2Z0LmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKOg9k/f\noKdoYZpVwxy6vdFEy7Bo7DLBHUf5WSmyO88kjtv2HGTZKPwCDbuZfi4643nkEtFp\nbPWFwIBbfICsOxdL6P4Oj1IOcVnIN0ohT7DEsgb69R5cD/p9n98P6R7DSws8fX1G\naXMExRazoVYFYmvLGrZT8bCXoqPsyuRSPiluxaQ15UILA9R0/ss5/P2tNZRZdsAT\naetY4hlktw1QR3Hv2LlbC0Sibni+6ZaaB5LR8gWF2J71Vb1YznV988FZwUZBTx2u\n0+Y1loKtEVQ1pf6T7wtLlJjoka97LP/53/UcLs7bihrKCVMpcr2noS4/HRM1aDf8\nyCpxEiZFXU2L6DMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAoUN9fLxDgwfHl+NF\nRsYuRU+vOT9zi6s82onsWbbyCzCpx0VH2casluOf/6591xVZjhhqOM/+/qYThp41\n79mq98Mu4jVuU/xumaP82KnBrORu8jTa3ZncUAQMiMeIY5lDcnpoF9QW4Lp55D3X\ncS8y+vlw9NB/4NG6C8+VOgvEaWzMlsRbrVQ5bb4/oz5TK2isLDQSK6p0bw54Lxwh\noZcUnORDd0c7kSlkzB3/E/u3h59WQ4nuPC0weOIQFdqRoqgqKLmwa4Ucw4FjU8eR\nMVhPj6DZc6qnPath2ynCJBwJlOXYh2Sy89eGGiKbFCveWYqV2f2XxXiCpvJOwQt8\nkgaddTGCAn0wggJ5AgEBMHswbjELMAkGA1UEBhMCSUwxDzANBgNVBAgMBklzcmFl\nbDEbMBkGA1UECgwSUGFsbyBhbHRvIG5ldHdvcmtzMTEwLwYJKoZIhvcNAQkBFiJh\ndmlzaGFpQGRlbWlzdG9kZXYub25taWNyb3NvZnQuY29tAgkA7XXukl+6jEwwCQYF\nKw4DAhoFAKCB2DAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ\nBTEPFw0xOTEwMjkwOTA0NTRaMCMGCSqGSIb3DQEJBDEWBBRTe/xmyOR/ymt0oatw\npHauxOm1STB5BgkqhkiG9w0BCQ8xbDBqMAsGCWCGSAFlAwQBKjALBglghkgBZQME\nARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggq\nhkiG9w0DAgIBQDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDANBgkqhkiG9w0BAQEF\nAASCAQCSXAiT+9rmR964OgTOWgebTU2KooxChBAoKUOWXJDi1/25uTjs8OJcrfDy\nN4OAGaP/mjfDEYbkEXMYC6lDcSErYdGGegACNURJlh+fIh3ZBrbdWnh8B672g9Zx\nFIDM7MxtDEdt9ScNAaqKiZCKsZlk4bcXGLK6oI8PUUsLupgUhdTiKHplKbrsUBC8\nJckJ+xSbRHP2dQTAYr0LW87lvVQgi05hmKecICuTDU3/qSqTZbh/ajQk7HHB9XtI\nPmizUK2s+F3OazeJx0IFpeEeK4YIVxV+tbYQkNrZTxwe7sKFkcyfiJ2QGcw8hzly\nfRciC1z2msLtmgPUH81DqLx+B+pY\n\n------5DAD2A4AC7C108E6B3D263AADB9D2BDB--\n\n"
+    "SMIME": {
+        "Verified": {
+            "Message": "This is a message to sign"
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha1"; boundary="----5DAD2A4AC7C108E6B3D263AADB9D2BDB"
+```
 
-This is an S/MIME signed message
+#### Human Readable Output
 
-------5DAD2A4AC7C108E6B3D263AADB9D2BDB
-Content-Type: text/plain
+>### The signature verified, message is: 
+>
+>***
+> This is a message to sign
 
-Hello World
-------5DAD2A4AC7C108E6B3D263AADB9D2BDB
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
+### smime-decrypt-email-body
 
-MIIGEQYJKoZIhvcNAQcCoIIGAjCCBf4CAQExCzAJBgUrDgMCGgUAMAsGCSqGSIb3
-DQEHAaCCA1wwggNYMIICQAIJAO117pJfuoxMMA0GCSqGSIb3DQEBCwUAMG4xCzAJ
-BgNVBAYTAklMMQ8wDQYDVQQIDAZJc3JhZWwxGzAZBgNVBAoMElBhbG8gYWx0byBu
-ZXR3b3JrczExMC8GCSqGSIb3DQEJARYiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWlj
-cm9zb2Z0LmNvbTAeFw0xOTEwMTcxOTMxMThaFw0yMDEwMTYxOTMxMThaMG4xCzAJ
-BgNVBAYTAklMMQ8wDQYDVQQIDAZJc3JhZWwxGzAZBgNVBAoMElBhbG8gYWx0byBu
-ZXR3b3JrczExMC8GCSqGSIb3DQEJARYiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWlj
-cm9zb2Z0LmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKOg9k/f
-oKdoYZpVwxy6vdFEy7Bo7DLBHUf5WSmyO88kjtv2HGTZKPwCDbuZfi4643nkEtFp
-bPWFwIBbfICsOxdL6P4Oj1IOcVnIN0ohT7DEsgb69R5cD/p9n98P6R7DSws8fX1G
-aXMExRazoVYFYmvLGrZT8bCXoqPsyuRSPiluxaQ15UILA9R0/ss5/P2tNZRZdsAT
-aetY4hlktw1QR3Hv2LlbC0Sibni+6ZaaB5LR8gWF2J71Vb1YznV988FZwUZBTx2u
-0+Y1loKtEVQ1pf6T7wtLlJjoka97LP/53/UcLs7bihrKCVMpcr2noS4/HRM1aDf8
-yCpxEiZFXU2L6DMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAoUN9fLxDgwfHl+NF
-RsYuRU+vOT9zi6s82onsWbbyCzCpx0VH2casluOf/6591xVZjhhqOM/+/qYThp41
-79mq98Mu4jVuU/xumaP82KnBrORu8jTa3ZncUAQMiMeIY5lDcnpoF9QW4Lp55D3X
-cS8y+vlw9NB/4NG6C8+VOgvEaWzMlsRbrVQ5bb4/oz5TK2isLDQSK6p0bw54Lxwh
-oZcUnORDd0c7kSlkzB3/E/u3h59WQ4nuPC0weOIQFdqRoqgqKLmwa4Ucw4FjU8eR
-MVhPj6DZc6qnPath2ynCJBwJlOXYh2Sy89eGGiKbFCveWYqV2f2XxXiCpvJOwQt8
-kgaddTGCAn0wggJ5AgEBMHswbjELMAkGA1UEBhMCSUwxDzANBgNVBAgMBklzcmFl
-bDEbMBkGA1UECgwSUGFsbyBhbHRvIG5ldHdvcmtzMTEwLwYJKoZIhvcNAQkBFiJh
-dmlzaGFpQGRlbWlzdG9kZXYub25taWNyb3NvZnQuY29tAgkA7XXukl+6jEwwCQYF
-Kw4DAhoFAKCB2DAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0xOTEwMjkwOTA0NTRaMCMGCSqGSIb3DQEJBDEWBBRTe/xmyOR/ymt0oatw
-pHauxOm1STB5BgkqhkiG9w0BCQ8xbDBqMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggq
-hkiG9w0DAgIBQDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDANBgkqhkiG9w0BAQEF
-AASCAQCSXAiT+9rmR964OgTOWgebTU2KooxChBAoKUOWXJDi1/25uTjs8OJcrfDy
-N4OAGaP/mjfDEYbkEXMYC6lDcSErYdGGegACNURJlh+fIh3ZBrbdWnh8B672g9Zx
-FIDM7MxtDEdt9ScNAaqKiZCKsZlk4bcXGLK6oI8PUUsLupgUhdTiKHplKbrsUBC8
-JckJ+xSbRHP2dQTAYr0LW87lvVQgi05hmKecICuTDU3/qSqTZbh/ajQk7HHB9XtI
-PmizUK2s+F3OazeJx0IFpeEeK4YIVxV+tbYQkNrZTxwe7sKFkcyfiJ2QGcw8hzly
-fRciC1z2msLtmgPUH81DqLx+B+pY
+***
+Decrypts the message body.
 
-------5DAD2A4AC7C108E6B3D263AADB9D2BDB--
-</p>
-</p>
+#### Base Command
 
-<h3>2. smime-encrypt-email-body</h3>
-<hr>
-<p>Encrypts an email message with S/MIME protocol by using a public RSA certificate.</p>
-<h5>Base Command</h5>
-<p>
-  <code>smime-encrypt-email-body</code>
-</p>
+`smime-decrypt-email-body`
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>message</td>
-      <td>The message body to encrypt.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+#### Input
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>SMIME.Encrypted.Message</td>
-      <td>String</td>
-      <td>The encrypted message.</td>
-    </tr>
-    <tr>
-      <td>SMIME.Encrypted.Headers</td>
-      <td>String</td>
-      <td>The encryption headers.</td>
-    </tr>
-  </tbody>
-</table>
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| encrypt_message | Entity ID of the file with a .p7 extension containing the encrypted email. | Required | 
+| encoding | The encoding code to use when decoding the message body, e.g., 'ISO-8859-2''. | Optional | 
+| raw_output | Whether to get the full raw output of the email. Possible values are: false, true. | Optional | 
+| tag | A comma-separated list of tags to be included in the War Room output. | Optional | 
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!smime-encrypt-email-body message="Hello World"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SMIME.Decrypted.Message | String | The decrypted message. | 
+
+#### Command example
+
+```!smime-decrypt-email-body encrypt_message=451@6cc2adad-6d3b-4fec-8b98-99b1b1770bc5```
+
+#### Context Example
+
+```json
 {
-    "SMIME.Encrypted": {
-        "Headers": "MIME-Version=1.0,Content-Disposition=attachment; filename=\"smime.p7m\",Content-Type=application/x-pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\",Content-Transfer-Encoding=base64",
-        "Message": "MIME-Version: 1.0\nContent-Disposition: attachment; filename=\"smime.p7m\"\nContent-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"\nContent-Transfer-Encoding: base64\n\nMIIB5gYJKoZIhvcNAQcDoIIB1zCCAdMCAQAxggGXMIIBkwIBADB7MG4xCzAJBgNV\nBAYTAklMMQ8wDQYDVQQIDAZJc3JhZWwxGzAZBgNVBAoMElBhbG8gYWx0byBuZXR3\nb3JrczExMC8GCSqGSIb3DQEJARYiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWljcm9z\nb2Z0LmNvbQIJAO117pJfuoxMMA0GCSqGSIb3DQEBAQUABIIBAHIauLY6zZviXMfo\ngiAH00ugmMrOf8kWXyXzTtY8ujb0q3FWCLjm3SQvozuiyH+hfpFAaCqq2WLviHx7\ne1f+NtdDuaJuoANHl0WfYUNW2UUhzQkRFUVJZRnsr9W8uhhRNYPv5SD/g7G/xWMs\n+cfrJOAd2q3AwRHvcEVFW+xNNHoQDCk2KcjLiE5Vr2q5Fly2Gyxhs1iZ5Yq1bq2O\nczqUdgV8Uh6pxJ8t+n31GvrBSLA3xo1MwV6Nvj1AGYTQx53jDp9H0NSjqw8/LURP\n6jeH8uuF7/0flJmPfJigx/fYXfg2tCRdI75UMIm+0zywG0NDCk4l3PLM3iqi+sej\nNG8dZ3YwMwYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAhJHDbFpz5R94AQ6QST/8pU\nijTpyt7V40F8Pg==\n\n"
+    "SMIME": {
+        "Decrypted": {
+            "Message": "This is a message to encrypt"
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-MIME-Version: 1.0
-Content-Disposition: attachment; filename="smime.p7m"
-Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"
-Content-Transfer-Encoding: base64
+```
 
-MIIB5gYJKoZIhvcNAQcDoIIB1zCCAdMCAQAxggGXMIIBkwIBADB7MG4xCzAJBgNV
-BAYTAklMMQ8wDQYDVQQIDAZJc3JhZWwxGzAZBgNVBAoMElBhbG8gYWx0byBuZXR3
-b3JrczExMC8GCSqGSIb3DQEJARYiYXZpc2hhaUBkZW1pc3RvZGV2Lm9ubWljcm9z
-b2Z0LmNvbQIJAO117pJfuoxMMA0GCSqGSIb3DQEBAQUABIIBAHIauLY6zZviXMfo
-giAH00ugmMrOf8kWXyXzTtY8ujb0q3FWCLjm3SQvozuiyH+hfpFAaCqq2WLviHx7
-e1f+NtdDuaJuoANHl0WfYUNW2UUhzQkRFUVJZRnsr9W8uhhRNYPv5SD/g7G/xWMs
-+cfrJOAd2q3AwRHvcEVFW+xNNHoQDCk2KcjLiE5Vr2q5Fly2Gyxhs1iZ5Yq1bq2O
-czqUdgV8Uh6pxJ8t+n31GvrBSLA3xo1MwV6Nvj1AGYTQx53jDp9H0NSjqw8/LURP
-6jeH8uuF7/0flJmPfJigx/fYXfg2tCRdI75UMIm+0zywG0NDCk4l3PLM3iqi+sej
-NG8dZ3YwMwYJKoZIhvcNAQcBMBQGCCqGSIb3DQMHBAhJHDbFpz5R94AQ6QST/8pU
-ijTpyt7V40F8Pg==
-</p>
-</p>
+#### Human Readable Output
 
-<h3>3. smime-verify-sign</h3>
-<hr>
-<p>Verifies the signature.</p>
-<h5>Base Command</h5>
-<p>
-  <code>smime-verify-sign</code>
-</p>
+>### The decrypted message is: 
+>
+>***
+> This is a message to encrypt
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>signed_message</td>
-      <td>The signed email with .p7 extension.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### smime-sign-and-encrypt
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!smime-verify-sign signed_message=3828@09847cac-04e1-459f-8b56-9385b4fcb06e</code>
-</p>
-<h5>Context Example</h5>
-<pre>
-{}
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-The signature verified
-b'a sign of our times'
-</p>
-</p>
+***
+Encrypts and signs an email message with S/MIME protocol by using a public RSA certificate.
 
-<h3>4. smime-decrypt-email-body</h3>
-<hr>
-<p>Decrypts the message body. Please note we are using chardet module to find the correct encoding for the given text. Detected types are shown <a href="https://pypi.org/project/chardet/">here</a>.
-    If you need to use different encoding to decode the message body, you can use the <code>encoding</code> argument when executing command. 
-</p>
-<h5>Base Command</h5>
-<p>
-  <code>smime-decrypt-email-body</code>
-</p>
+#### Base Command
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>encrypt_message</td>
-      <td>The encrypted message with .p7 extension.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>encoding</td>
-      <td>The encoding code to use when decode the message body, e.g 'ISO-8859-2'. You can find description of the different encoding types <a href="https://docs.python.org/3/library/codecs.html#standard-encodings">here</a>.</td>
-      <td> </td>
-    </tr>
-  </tbody>
-</table>
+`smime-sign-and-encrypt`
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>SMIME.Decrypted.Message</td>
-      <td>String</td>
-      <td>The decrypted message.</td>
-    </tr>
-  </tbody>
-</table>
+#### Input
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!smime-decrypt-email-body encrypt_message=3833@09847cac-04e1-459f-8b56-9385b4fcb06e</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message | The message body to encrypt and sign. | Required | 
+| recipients | JSON dict of recipients and their public keys<br/>Format: {"recipient@email":"cert", "other@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional | 
+| cc | JSON dict of cc recipients and their public keys<br/>Format: {"cc@email":"cert", "othercc@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional | 
+| bcc | JSON dict of bcc recipients and their public keys<br/>Format: {"bcc@email":"cert", "otherbcc@email":"cert"}<br/>Use "instancePublicKey" in the cert field to use the instance certificate. | Optional | 
+| attachment_entry_id | List of War Room entry IDs of files to attach to the mail. | Optional | 
+| signed | Whether the mail should be signed. Possible values are: true, false. Default is true. | Optional | 
+| encrypted | Whether the mail should be encrypted. Possible values are: true, false. Default is true. | Optional | 
+| sender | Sender email address. | Optional | 
+| subject | Email subject. | Optional | 
+| create_file_p7 | Whether to create a file with the encrypted/signed content. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SMIME.SignedAndEncrypted.Message | String | The raw message to send. | 
+| SMIME.SignedAndEncrypted.RecipientIds | String | Address of the recipient. | 
+| SMIME.SignedAndEncrypted.FileName | String | Name of the file output if create_file_p7 is used. | 
+
+#### Command example
+
+```!smime-sign-and-encrypt message="This is a message to sign" encrypted=false```
+
+#### Context Example
+
+```json
 {
-    "SMIME.Decrypted": {
-        "Message": "Hello World"
+    "SMIME": {
+        "SignedAndEncrypted": {
+            "FileName": "",
+            "Message": "Date: Mon, 05 Aug 2024 08:56:00 +0000\r\nMIME-Version: 1.0\nContent-Disposition: attachment; filename=\"smime.p7m\"\nContent-Type: application/x-pkcs7-mime; smime-type=signed-data; name=\"smime.p7m\"\nContent-Transfer-Encoding: base64\n\nMIIJ4gYJKoZIhvcNAQcCoIIJ0zCCCc8CAQExDzANBglghkgBZQMEAgEFADCCAUkG\nCSqGSIb3DQEHAaCCAToEggE2Q29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7\nIGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0wNTEzMzU2NzMxMDg3NTk4NjkxPT0i\nDQpNSU1FLVZlcnNpb246IDEuMA0KDQotLT09PT09PT09PT09PT09PTA1MTMzNTY3\nMzEwODc1OTg2OTE9PQ0KQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0\nPSJ1cy1hc2NpaSINCk1JTUUtVmVyc2lvbjogMS4wDQpDb250ZW50LVRyYW5zZmVy\nLUVuY29kaW5nOiA3Yml0DQoNClRoaXMgaXMgYSBtZXNzYWdlIHRvIHNpZ24NCi0t\nPT09PT09PT09PT09PT09MDUxMzM1NjczMTA4NzU5ODY5MT09LS0NCqCCBb0wggW5\nMIIDoaADAgECAhAWjRiNCtW2fdBrguq+Q6aTMA0GCSqGSIb3DQEBCwUAMIGBMQsw\nCQYDVQQGEwJJVDEQMA4GA1UECAwHQmVyZ2FtbzEZMBcGA1UEBwwQUG9udGUgU2Fu\nIFBpZXRybzEXMBUGA1UECgwOQWN0YWxpcyBTLnAuQS4xLDAqBgNVBAMMI0FjdGFs\naXMgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIENBIEczMB4XDTI0MDcyMTA4MzkwMFoX\nDTI1MDcyMTA4MzkwMFowJDEiMCAGA1UEAwwZc20uc21pbWUudGVzdGVyQGdtYWls\nLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOcJHez4H953XJAG\nSRzfh+/HtTvqC0cu+KEeiGK/WYXuYZtjNb3Z7P++/DCZkWZ6FAMKZyMJqEwNiYsd\ndvirSdOHpfgPSKtTILiFXtTogGjPydAZvxri9x8Kg1AnyKwk4WJi3ftfgaIFpo8i\nF7BKS36IDpdb3O43mlLwXfOdWQBPlY0ndYPIWS+elbSHbHH+s8ai6CGcFoB3Akyb\nvIbSjVj5YFKky0wYVeXtJpgYlZoOFUmkCI5jpSTlCFIUm2bwIFwCeXt/hl0xHaXM\nfCPpX7B+EYLd2wUei2ZeEaDMi5Gnd9ANBlP9c8xe+KXQQ3vy1OT1ptd0YscOMz6E\nyhZLut0CAwEAAaOCAYcwggGDMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUvpep\nqoS/gL8QU30JMvnhLjIbz3cwfgYIKwYBBQUHAQEEcjBwMDsGCCsGAQUFBzAChi9o\ndHRwOi8vY2FjZXJ0LmFjdGFsaXMuaXQvY2VydHMvYWN0YWxpcy1hdXRjbGlnMzAx\nBggrBgEFBQcwAYYlaHR0cDovL29jc3AwOS5hY3RhbGlzLml0L1ZBL0FVVEhDTC1H\nMzAkBgNVHREEHTAbgRlzbS5zbWltZS50ZXN0ZXJAZ21haWwuY29tMBQGA1UdIAQN\nMAswCQYHZ4EMAQUBATAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwSAYD\nVR0fBEEwPzA9oDugOYY3aHR0cDovL2NybDA5LmFjdGFsaXMuaXQvUmVwb3NpdG9y\neS9BVVRIQ0wtRzMvZ2V0TGFzdENSTDAdBgNVHQ4EFgQUq8xlmZF/uLyAf3JUU1Bc\nXr+QRKMwDgYDVR0PAQH/BAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQCwNi6XtZwt\ne/mwEAswIi9OSHLAT7ruUNksl+RP8LdZQ9gyVxv5kER5mfdOF5ATO2OQ7Z/Y+ahs\n2Fk69tNckmq6tf4yhBGlWsHyYOLo+Njg0UVxah0NtDrbZfwqY6PeE5rcH7evYbpn\nfP25wf/5hZlqokpe+WwBTpxJLC6uRVQIdMpUKjRhpGJlRMUy7VZhzKzTqlkwAFID\nCaYAItFJ8DsVroZxq2A7g+jlrwc5tAaYglydn96HD4DOKmLPtHN3HkUrKuoXYDiN\n/ccZZ8wYRBB3zP1FjNyK8FHhjJpn70DY6sOvPn3ShzSL4vPEKYG1qABwTdToRh8v\ndZ4FlM4apSSRhZyaKGvfRzT1XlAE1zRlUWd2krNV+WXrLrs6NF0RKRtSR+IP5QmH\nKhgZJeUv2cgiOD+7Gx+7QTi0rERj9nH+jvvX1dn8kncT/PYuLBkHg1c1Xyv1o5vW\nNHfiIsqZMVUW+aZPm92k77+/AcgOaHcvqTP8vxbZBOgf959VSLma/n7NDprhjNg6\nO7pHh/cAB35gu9Q7acZE9NEwc+J0vl4LVx7YlP0aEaR8BOaFufQyOwD+2JV2f0bQ\nXwltX2Gr77xsOZKI/2pVn9Oj6xyW3h7ZrlA7Me/l4H9VAHoi6epON8r9wI+UDJKo\nIz3nxuKNFYDgnjtIaYrX5xjprYVX3fJlAzGCAqkwggKlAgEBMIGWMIGBMQswCQYD\nVQQGEwJJVDEQMA4GA1UECAwHQmVyZ2FtbzEZMBcGA1UEBwwQUG9udGUgU2FuIFBp\nZXRybzEXMBUGA1UECgwOQWN0YWxpcyBTLnAuQS4xLDAqBgNVBAMMI0FjdGFsaXMg\nQ2xpZW50IEF1dGhlbnRpY2F0aW9uIENBIEczAhAWjRiNCtW2fdBrguq+Q6aTMA0G\nCWCGSAFlAwQCAQUAoIHkMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZI\nhvcNAQkFMQ8XDTI0MDgwNTA4NTYwMFowLwYJKoZIhvcNAQkEMSIEIJxfZpuZLFhT\n/xN2gZGCKzEPOnGX6uuyA5byB32PPlsqMHkGCSqGSIb3DQEJDzFsMGowCwYJYIZI\nAWUDBAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYI\nKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMC\nAgEoMA0GCSqGSIb3DQEBAQUABIIBAFZZ5ExsKfb+hCgY5YQcVodYC74CmcCaN6fc\nJG6jL0yDNUV7wzuUNMT/DoxhKFI/2MNNJQ54KeyOYWMB0O6WreRnmFulJ3baEgAz\nYgsTPC3QBbdpngcO33dFDXg/TJkeGY9mT5HI1rBonYF1dB+AMbbCUdK5W8bA8+Ow\nhumygMscmnweEFwXT4/MvaAlelVhB0iWoAo/F4X9fEOm5dMVHzjYxTA0R0+Dzny4\nSmKlkzd3gUH4kEtgTBo8slRkO5dfg8Ik64qnQNvSidLWp9PmKkGb2069czQCyKIj\nme4sPRRl8TJQ12xVuOmlRpQ4+rUxhMfZKyyYZ0isoVNYsmeFPQ8=\n\n",
+            "RecipientIds": {
+                "bcc": [],
+                "cc": [],
+                "to": []
+            }
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-The decrypted message is: 
-Hello World
-</p>
-</p>
+```
 
-<h3>5. smime-sign-and-encrypt</h3>
-<hr>
-<p>Encrypts and signs an email message with S/MIME protocol by using a public RSA certificate.</p>
-<h5>Base Command</h5>
-<p>
-  <code>smime-sign-and-encrypt</code>
-</p>
+#### Human Readable Output
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>message</td>
-      <td>The message body to encrypt and sign.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+>Date: Mon, 05 Aug 2024 08:56:00 +0000
+>MIME-Version: 1.0
+>Content-Disposition: attachment; filename="smime.p7m"
+>Content-Type: application/x-pkcs7-mime; smime-type=signed-data; name="smime.p7m"
+>Content-Transfer-Encoding: base64
+>
+>MIIJ4gYJKoZIhvcNAQcCoIIJ0zCCCc8CAQExDzANBglghkgBZQMEAgEFADCCAUkG
+>CSqGSIb3DQEHAaCCAToEggE2Q29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7
+>IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0wNTEzMzU2NzMxMDg3NTk4NjkxPT0i
+>DQpNSU1FLVZlcnNpb246IDEuMA0KDQotLT09PT09PT09PT09PT09PTA1MTMzNTY3
+>MzEwODc1OTg2OTE9PQ0KQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0
+>PSJ1cy1hc2NpaSINCk1JTUUtVmVyc2lvbjogMS4wDQpDb250ZW50LVRyYW5zZmVy
+>LUVuY29kaW5nOiA3Yml0DQoNClRoaXMgaXMgYSBtZXNzYWdlIHRvIHNpZ24NCi0t
+>PT09PT09PT09PT09PT09MDUxMzM1NjczMTA4NzU5ODY5MT09LS0NCqCCBb0wggW5
+>MIIDoaADAgECAhAWjRiNCtW2fdBrguq+Q6aTMA0GCSqGSIb3DQEBCwUAMIGBMQsw
+>CQYDVQQGEwJJVDEQMA4GA1UECAwHQmVyZ2FtbzEZMBcGA1UEBwwQUG9udGUgU2Fu
+>IFBpZXRybzEXMBUGA1UECgwOQWN0YWxpcyBTLnAuQS4xLDAqBgNVBAMMI0FjdGFs
+>aXMgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIENBIEczMB4XDTI0MDcyMTA4MzkwMFoX
+>DTI1MDcyMTA4MzkwMFowJDEiMCAGA1UEAwwZc20uc21pbWUudGVzdGVyQGdtYWls
+>LmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOcJHez4H953XJAG
+>SRzfh+/HtTvqC0cu+KEeiGK/WYXuYZtjNb3Z7P++/DCZkWZ6FAMKZyMJqEwNiYsd
+>dvirSdOHpfgPSKtTILiFXtTogGjPydAZvxri9x8Kg1AnyKwk4WJi3ftfgaIFpo8i
+>F7BKS36IDpdb3O43mlLwXfOdWQBPlY0ndYPIWS+elbSHbHH+s8ai6CGcFoB3Akyb
+>vIbSjVj5YFKky0wYVeXtJpgYlZoOFUmkCI5jpSTlCFIUm2bwIFwCeXt/hl0xHaXM
+>fCPpX7B+EYLd2wUei2ZeEaDMi5Gnd9ANBlP9c8xe+KXQQ3vy1OT1ptd0YscOMz6E
+>yhZLut0CAwEAAaOCAYcwggGDMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUvpep
+>qoS/gL8QU30JMvnhLjIbz3cwfgYIKwYBBQUHAQEEcjBwMDsGCCsGAQUFBzAChi9o
+>dHRwOi8vY2FjZXJ0LmFjdGFsaXMuaXQvY2VydHMvYWN0YWxpcy1hdXRjbGlnMzAx
+>BggrBgEFBQcwAYYlaHR0cDovL29jc3AwOS5hY3RhbGlzLml0L1ZBL0FVVEhDTC1H
+>MzAkBgNVHREEHTAbgRlzbS5zbWltZS50ZXN0ZXJAZ21haWwuY29tMBQGA1UdIAQN
+>MAswCQYHZ4EMAQUBATAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwSAYD
+>VR0fBEEwPzA9oDugOYY3aHR0cDovL2NybDA5LmFjdGFsaXMuaXQvUmVwb3NpdG9y
+>eS9BVVRIQ0wtRzMvZ2V0TGFzdENSTDAdBgNVHQ4EFgQUq8xlmZF/uLyAf3JUU1Bc
+>Xr+QRKMwDgYDVR0PAQH/BAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQCwNi6XtZwt
+>e/mwEAswIi9OSHLAT7ruUNksl+RP8LdZQ9gyVxv5kER5mfdOF5ATO2OQ7Z/Y+ahs
+>2Fk69tNckmq6tf4yhBGlWsHyYOLo+Njg0UVxah0NtDrbZfwqY6PeE5rcH7evYbpn
+>fP25wf/5hZlqokpe+WwBTpxJLC6uRVQIdMpUKjRhpGJlRMUy7VZhzKzTqlkwAFID
+>CaYAItFJ8DsVroZxq2A7g+jlrwc5tAaYglydn96HD4DOKmLPtHN3HkUrKuoXYDiN
+>/ccZZ8wYRBB3zP1FjNyK8FHhjJpn70DY6sOvPn3ShzSL4vPEKYG1qABwTdToRh8v
+>dZ4FlM4apSSRhZyaKGvfRzT1XlAE1zRlUWd2krNV+WXrLrs6NF0RKRtSR+IP5QmH
+>KhgZJeUv2cgiOD+7Gx+7QTi0rERj9nH+jvvX1dn8kncT/PYuLBkHg1c1Xyv1o5vW
+>NHfiIsqZMVUW+aZPm92k77+/AcgOaHcvqTP8vxbZBOgf959VSLma/n7NDprhjNg6
+>O7pHh/cAB35gu9Q7acZE9NEwc+J0vl4LVx7YlP0aEaR8BOaFufQyOwD+2JV2f0bQ
+>XwltX2Gr77xsOZKI/2pVn9Oj6xyW3h7ZrlA7Me/l4H9VAHoi6epON8r9wI+UDJKo
+>Iz3nxuKNFYDgnjtIaYrX5xjprYVX3fJlAzGCAqkwggKlAgEBMIGWMIGBMQswCQYD
+>VQQGEwJJVDEQMA4GA1UECAwHQmVyZ2FtbzEZMBcGA1UEBwwQUG9udGUgU2FuIFBp
+>ZXRybzEXMBUGA1UECgwOQWN0YWxpcyBTLnAuQS4xLDAqBgNVBAMMI0FjdGFsaXMg
+>Q2xpZW50IEF1dGhlbnRpY2F0aW9uIENBIEczAhAWjRiNCtW2fdBrguq+Q6aTMA0G
+>CWCGSAFlAwQCAQUAoIHkMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZI
+>hvcNAQkFMQ8XDTI0MDgwNTA4NTYwMFowLwYJKoZIhvcNAQkEMSIEIJxfZpuZLFhT
+>/xN2gZGCKzEPOnGX6uuyA5byB32PPlsqMHkGCSqGSIb3DQEJDzFsMGowCwYJYIZI
+>AWUDBAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYI
+>KoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMC
+>AgEoMA0GCSqGSIb3DQEBAQUABIIBAFZZ5ExsKfb+hCgY5YQcVodYC74CmcCaN6fc
+>JG6jL0yDNUV7wzuUNMT/DoxhKFI/2MNNJQ54KeyOYWMB0O6WreRnmFulJ3baEgAz
+>YgsTPC3QBbdpngcO33dFDXg/TJkeGY9mT5HI1rBonYF1dB+AMbbCUdK5W8bA8+Ow
+>humygMscmnweEFwXT4/MvaAlelVhB0iWoAo/F4X9fEOm5dMVHzjYxTA0R0+Dzny4
+>SmKlkzd3gUH4kEtgTBo8slRkO5dfg8Ik64qnQNvSidLWp9PmKkGb2069czQCyKIj
+>me4sPRRl8TJQ12xVuOmlRpQ4+rUxhMfZKyyYZ0isoVNYsmeFPQ8=
+>
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>SMIME.SignedAndEncrypted.Message</td>
-      <td>String</td>
-      <td>The raw message to send.</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!smime-sign-and-encrypt message="Hello"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+#### Command example
+
+```!smime-sign-and-encrypt message="This is a message to encrypt" signed=false```
+
+#### Context Example
+
+```json
 {
-    "SMIME.SignedAndEncrypted": {
-        "Message": "MIME-Version: 1.0\nContent-Disposition: attachment; filename=\"smime.p7m\"\nContent-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"\nContent-Transfer-Encoding: base64\n\n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\n\n"
+    "SMIME": {
+        "SignedAndEncrypted": {
+            "FileName": "",
+            "Message": "Date: Mon, 05 Aug 2024 08:56:03 +0000\r\nMIME-Version: 1.0\nContent-Disposition: attachment; filename=\"smime.p7m\"\nContent-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"\nContent-Transfer-Encoding: base64\n\nMIIDPwYJKoZIhvcNAQcDoIIDMDCCAywCAQAxggGzMIIBrwIBADCBljCBgTELMAkG\nA1UEBhMCSVQxEDAOBgNVBAgMB0JlcmdhbW8xGTAXBgNVBAcMEFBvbnRlIFNhbiBQ\naWV0cm8xFzAVBgNVBAoMDkFjdGFsaXMgUy5wLkEuMSwwKgYDVQQDDCNBY3RhbGlz\nIENsaWVudCBBdXRoZW50aWNhdGlvbiBDQSBHMwIQFo0YjQrVtn3Qa4LqvkOmkzAN\nBgkqhkiG9w0BAQEFAASCAQDFnrTvu16smUFbTBoLJLdM+0hIcsMq66ssFc0BtihR\n6+XQXkE+VRJ6Zn1L+qfUWVUYuZvWwT9TV8CpJV4zJftqcGpyrHSsdA9HNPYMsO/c\nbnWWPfrWeqxcJrnfABIk2f8G+Tar2PcPLRn/DEs10j1ZtKGW0b6veBQowi6zHvto\nc+jY3lRqTLFxBJlvL5PpHItV3GrEorAKN+pR/nwey/xYApdQeIMOF2zt/X5sRaM0\nzaxJ7q+rlfRboxKoQIROsJGP3f7vlcKZx6VF5A3VH0B4/Wu82PNQO7NGXZymCwTo\ntz+twA72J0Dt5wRKY2NDZZnunWGnfSkrX78q9ygdLfuAMIIBbgYJKoZIhvcNAQcB\nMB0GCWCGSAFlAwQBKgQQDnYKpZW9arvx/5zUCivAq4CCAUBM+/9WJMmbRGW6btBo\nIe4S2Yp+RVOWjMSXwJF3I8ugZJ5XMsUUhssmOpIpBrGnDDq/5bn74j+tIIO9UjQm\nODnV2mxradfmh4Xpw215SY+6UcgtvhwoYkqK8X3de+jca07ER8ig0ubzXke1HPd5\n0/qYPL8FmvI2HWML1rx95Z/n07h8KRNcjKX/u5c9kaBa+CayS6T2JqWPXsjCgiuL\nZa1plhvecAWwW4RllCyiyBSQNaOV5PyMZWAd7VOqK7wD3mp9Qo9pffcOzGhB9PMr\nQZzXsSyB78JxSkXCQA+fU7E+EL4B/U04iPjaj9IxrrEN4m3Pxi8i5xG8YrzfMHE0\nKJu33MeFXApz/qZ3OwmmdYl7l8zs12LArs813yMhOpu2vicjrZ+S5BYygM1oOvr+\n+Mmk+dI+iwm16cO4MWhY6szJRQ==\n\n",
+            "RecipientIds": {
+                "bcc": [],
+                "cc": [],
+                "to": []
+            }
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-MIME-Version: 1.0
-Content-Disposition: attachment; filename="smime.p7m"
-Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"
-Content-Transfer-Encoding: base64
+```
 
-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
-</p>
+#### Human Readable Output
 
-</p>
-<h2>Additional Information</h2>
-<p>For the S/MIME Messaging integration, you will need an RSA key pair
-(this consists of a public key and a private key) and an X.509 certificate of said public key.</p>
-<p>The public key parameter will start and end as the following:
+>Date: Mon, 05 Aug 2024 08:56:03 +0000
+>MIME-Version: 1.0
+>Content-Disposition: attachment; filename="smime.p7m"
+>Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"
+>Content-Transfer-Encoding: base64
+>
+>MIIDPwYJKoZIhvcNAQcDoIIDMDCCAywCAQAxggGzMIIBrwIBADCBljCBgTELMAkG
+>A1UEBhMCSVQxEDAOBgNVBAgMB0JlcmdhbW8xGTAXBgNVBAcMEFBvbnRlIFNhbiBQ
+>aWV0cm8xFzAVBgNVBAoMDkFjdGFsaXMgUy5wLkEuMSwwKgYDVQQDDCNBY3RhbGlz
+>IENsaWVudCBBdXRoZW50aWNhdGlvbiBDQSBHMwIQFo0YjQrVtn3Qa4LqvkOmkzAN
+>BgkqhkiG9w0BAQEFAASCAQDFnrTvu16smUFbTBoLJLdM+0hIcsMq66ssFc0BtihR
+>6+XQXkE+VRJ6Zn1L+qfUWVUYuZvWwT9TV8CpJV4zJftqcGpyrHSsdA9HNPYMsO/c
+>bnWWPfrWeqxcJrnfABIk2f8G+Tar2PcPLRn/DEs10j1ZtKGW0b6veBQowi6zHvto
+>c+jY3lRqTLFxBJlvL5PpHItV3GrEorAKN+pR/nwey/xYApdQeIMOF2zt/X5sRaM0
+>zaxJ7q+rlfRboxKoQIROsJGP3f7vlcKZx6VF5A3VH0B4/Wu82PNQO7NGXZymCwTo
+>tz+twA72J0Dt5wRKY2NDZZnunWGnfSkrX78q9ygdLfuAMIIBbgYJKoZIhvcNAQcB
+>MB0GCWCGSAFlAwQBKgQQDnYKpZW9arvx/5zUCivAq4CCAUBM+/9WJMmbRGW6btBo
+>Ie4S2Yp+RVOWjMSXwJF3I8ugZJ5XMsUUhssmOpIpBrGnDDq/5bn74j+tIIO9UjQm
+>ODnV2mxradfmh4Xpw215SY+6UcgtvhwoYkqK8X3de+jca07ER8ig0ubzXke1HPd5
+>0/qYPL8FmvI2HWML1rx95Z/n07h8KRNcjKX/u5c9kaBa+CayS6T2JqWPXsjCgiuL
+>Za1plhvecAWwW4RllCyiyBSQNaOV5PyMZWAd7VOqK7wD3mp9Qo9pffcOzGhB9PMr
+>QZzXsSyB78JxSkXCQA+fU7E+EL4B/U04iPjaj9IxrrEN4m3Pxi8i5xG8YrzfMHE0
+>KJu33MeFXApz/qZ3OwmmdYl7l8zs12LArs813yMhOpu2vicjrZ+S5BYygM1oOvr+
+>+Mmk+dI+iwm16cO4MWhY6szJRQ==
+>
 
------BEGIN CERTIFICATE-----
 
-key
+#### Command example
 
------END CERTIFICATE-----</p>
+```!smime-sign-and-encrypt message="This is a message to sign and encrypt"```
 
-The private key parameter will start and end as the following:
+#### Context Example
 
------BEGIN RSA PRIVATE KEY-----
+```json
+{
+    "SMIME": {
+        "SignedAndEncrypted": {
+            "FileName": "",
+            "Message": "Date: Mon, 05 Aug 2024 08:56:06 +0000\r\nMIME-Version: 1.0\nContent-Disposition: attachment; filename=\"smime.p7m\"\nContent-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"\nContent-Transfer-Encoding: base64\n\n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\nkuj3\n\n",
+            "RecipientIds": {
+                "bcc": [],
+                "cc": [],
+                "to": []
+            }
+        }
+    }
+}
+```
 
-key
+#### Human Readable Output
 
------END RSA PRIVATE KEY-----
-</p>
+>Date: Mon, 05 Aug 2024 08:56:06 +0000
+>MIME-Version: 1.0
+>Content-Disposition: attachment; filename="smime.p7m"
+>Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"
+>Content-Transfer-Encoding: base64
+>
+>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
+>kuj3
+>

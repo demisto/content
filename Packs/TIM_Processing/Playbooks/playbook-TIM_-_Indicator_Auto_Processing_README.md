@@ -31,7 +31,7 @@ There are no inputs for this playbook.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| ProcessedIndicators | The outputs of this playbook are tagged for manual review in the parent playbook or tagged using approved black, approved white etc. | string |
+| ProcessedIndicators | The outputs of this playbook are tagged for manual review in the parent playbook or tagged using approved_block, approved_allow etc. | string |
 
 ## Playbook Image
 ---

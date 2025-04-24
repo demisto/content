@@ -1,10 +1,39 @@
-[INGEST:vendor="Google", product="Workspace Chrome", target_dataset="google_workspace_chrome_raw", no_hit = keep]
-// Creating json fields with the value of the events field, organized in a key - value format.
-alter events = events -> []
-| arrayexpand events
-| alter parameters = events -> parameters[]
-| alter parameters = arraymap(parameters ,concat("{","\"",json_extract_scalar("@element", "$.name"),"\"", ":", "\"",json_extract_scalar("@element", "$.value"),"\"", "}"))
-| alter parameters = replace(arraystring(parameters, ","),"},{", ",") -> {}
-| alter parametersint = events -> parameters[]
-| alter parametersint = arraymap(parametersint ,concat("{","\"",json_extract_scalar("@element", "$.name"),"\"", ":", "\"",json_extract_scalar("@element", "$.intValue"),"\"", "}"))
-| alter parametersint = replace(arraystring(parametersint, ","),"},{", ",") -> {};
+[INGEST:vendor="Google", product="Workspace Chrome", target_dataset="google_workspace_chrome_raw", no_hit=keep]
+call GOOGLE_WORKSPACE_CHROME_PARSING_RULE;
+[INGEST:vendor="Google", product="Workspace_Chrome", target_dataset="google_workspace_chrome_raw", no_hit=keep]
+call GOOGLE_WORKSPACE_CHROME_PARSING_RULE;
+
+
+[RULE: GOOGLE_WORKSPACE_CHROME_PARSING_RULE]
+alter
+// Getting the JSON from either event OR events.
+    tmp_get_events_json = if(events = null, null, to_string(events) !~= "^\[", to_string(events) -> parameters[]),
+    tmp_get_events_jsonarray = if(events = null, null, to_string(events) ~= "^\[", arrayindex(to_string(events) -> [], 0) -> parameters[])
+| alter
+    tmp_get_field = coalesce(tmp_get_events_json, tmp_get_events_jsonarray)
+| alter
+// Get all of the keys and values.
+    // Get all of the object names to a regex format.
+    tmp_get_keys = rtrim(arraystring(arraymap(tmp_get_field, concat("(?P<", lowercase("@element" -> name), ">[^|]+)?\|")), ""), "\|"),
+    // Get all of the object values to a String format.
+    tmp_get_values = arraystring(arraymap(tmp_get_field, if("@element" ~= "intValue", "@element" -> intValue, "@element" ~= "value", "@element" -> value, "")), "|")
+| alter 
+    // Only work in Parsing Rules, use the regexcapture function to display the data in an organized JSON format.
+    parameters = if(event =null, to_string(regexcapture(tmp_get_values, tmp_get_keys)), event)
+
+// -------------- TIME --------------
+| alter
+    tmp_get_timestamp_afterdot = arrayindex(regextract(coalesce(parameters -> timestamp, parameters -> time), "\.(\d+)"), 0),
+    tmp_get_timestamp_clean = replace(coalesce(parameters -> timestamp, parameters -> time), ".", "")
+| alter
+    tmp_check_afterdot = if(tmp_get_timestamp_afterdot = null, "", tmp_get_timestamp_afterdot ~= "^\d$", "00", tmp_get_timestamp_afterdot ~= "^\d{2}$", "0", tmp_get_timestamp_afterdot ~= "^\d{3}$", "")
+| alter
+    tmp_updated_timestamp_format = to_integer(concat(tmp_get_timestamp_clean, tmp_check_afterdot)),
+    tmp_updated_timestamp_len = len(concat(tmp_get_timestamp_clean, tmp_check_afterdot))
+// convert epoch representation to a datetime type timestamp
+// in_case of nanoseconds, we convert them to microseconds since to_timestamp does not support nanoseconds
+| alter _time = if( 
+    tmp_updated_timestamp_len = 10, to_timestamp(tmp_updated_timestamp_format, "SECONDS"), 
+    tmp_updated_timestamp_len = 13, to_timestamp(tmp_updated_timestamp_format, "MILLIS"),  
+    tmp_updated_timestamp_len = 16, to_timestamp(tmp_updated_timestamp_format, "MICROS"),  
+    tmp_updated_timestamp_len = 19, to_timestamp(to_integer(divide(tmp_updated_timestamp_format, 1000)), "MICROS"));

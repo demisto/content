@@ -1,3 +1,6 @@
 [file:ExodusVulnerabilityEnrichment.yml]
 ignore=RM110
 
+# GR103 is temporary, see CIAC-11656
+[file:ExodusIntelligence.json]
+ignore=GR103

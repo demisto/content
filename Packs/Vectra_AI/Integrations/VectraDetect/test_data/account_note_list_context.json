@@ -1,0 +1,20 @@
+{
+    "Vectra.Account.Notes(val.note_id && val.note_id == obj.note_id)": [
+        {
+            "date_created": "2024-07-10T05:40:31Z",
+            "date_modified": "2024-07-16T12:56:30Z",
+            "created_by": "xsoar",
+            "modified_by": "xsoar",
+            "note": "updated_note",
+            "note_id": 1959,
+            "account_id": 2
+        },
+        {
+            "date_created": "2024-07-08T07:11:49Z",
+            "created_by": "xsoar",
+            "note": "Here comes your note TEST",
+            "note_id": 1906,
+            "account_id": 2
+        }
+    ]
+}

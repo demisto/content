@@ -23,7 +23,7 @@ This script is used in the following playbooks and scripts.
 | entity_a_type | The source type of the relationship, for example IP. The value must be an accepted indicator type. Only a single value is acceptable. |
 | entity_b | A comma-separated list of destinations or second entity values, for example 3.3.3.3,2.2.2.2. This argument must be used with the entity_b_type argument and cannot be used in conjunction with the entity_b_query argument. |
 | entity_b_type | The destination type of the relationship, for example IP. Only a single value is acceptable. This argument must be used with the entity_b argument and cannot be used in conjunction with the entity_b_query argument. |
-| entity_b_query | The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicators This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument. |
+| entity_b_query | The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see [Cortex XSOAR 6.13](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicators) or [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-concepts) or [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-concepts) This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument. |
 | relationship | The name of relationship to be created. |
 | reverse_relationship | The reverse name of relationship to be created. If the argument isn't provided by the user, the default reverse relation will be created. |
 | source_reliability | Reliability of the source providing the intelligence data. |
@@ -34,3 +34,5 @@ This script is used in the following playbooks and scripts.
 ## Outputs
 ---
 There are no outputs for this script.
+
+[filter (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Indicators) or [filter (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Indicator-concepts) or [Cortex XSOAR 8.7 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Indicator-concepts).

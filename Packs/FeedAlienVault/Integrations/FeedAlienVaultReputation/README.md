@@ -1,11 +1,8 @@
 Use the AlienVault Reputation feed integration to fetch indicators from the feed.
 
-## Configure AlienVault Reputation Feed on Cortex XSOAR
+## Configure AlienVault Reputation Feed in Cortex
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for AlienVault Reputation Feed.
-3. Click __Add instance__ to create and configure a new integration instance.
 
    | Parameter | Description | Example |
    | --- | --- | ---| 
@@ -18,12 +15,11 @@ Use the AlienVault Reputation feed integration to fetch indicators from the feed
    | feedExpirationInterval | How often to expire the indicators from this integration instance (in minutes). Only applies if the feedExpirationPolicy is "interval". The default value is 20160 (two weeks). | N/A |
    | Feed Fetch Interval | How often to fetch indicators from the feed for this integration instance (in minutes). The default value is 60. | N/A | 
    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | N/A |
-4. Click __Test__ to validate the URLs and connection.
 
 
 ## Commands
 ---
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed: alienvault-get-indicators

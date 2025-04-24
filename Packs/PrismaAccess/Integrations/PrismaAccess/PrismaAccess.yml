@@ -60,7 +60,7 @@ script:
     - name: user
       required: true
       default: true
-      description: Username to logout. (Without domain name - e.g. jsmith)
+      description: Username to logout. (Without domain name - e.g. jsmith).
     - name: domain
       description: Domain name of the user to logout. For some users, this field is required.
     - name: computer
@@ -70,24 +70,24 @@ script:
       description: The tenant name.
     outputs:
     - contextPath: PrismaAccess.LogoutUser
-      description: LogoutUser command results
-    description: Force logout a specific user from Prisma Access
+      description: LogoutUser command results.
+    description: Force logout a specific user from Prisma Access.
   - name: prisma-access-query
     arguments:
     - name: query
       required: true
-      description: 'Query to run. Example input: querystring limit=2000 action getGPaaSLast90DaysUniqueUsers'
+      description: 'Query to run. Example input: querystring limit=2000 action getGPaaSLast90DaysUniqueUsers.'
     outputs:
     - contextPath: PrismaAccess.QueryResults
-      description: Query results
-    description: Run a query via the Prisma Access CLI
+      description: Query results.
+    description: Run a query via the Prisma Access CLI.
     deprecated: true
   - name: prisma-access-cli-command
     arguments:
     - name: cmd
       required: true
-      description: CLI command to run (e.g. debug plugins cloud_services gpcs query querystring limit=9000 action getGPaaSLast90DaysUniqueUsers)
-    description: Run a custom CLI command on Prisma Access
+      description: CLI command to run (e.g. debug plugins cloud_services gpcs query querystring limit=9000 action getGPaaSLast90DaysUniqueUsers).
+    description: Run a custom CLI command on Prisma Access.
     deprecated: true
   - name: prisma-access-active-users
     arguments:
@@ -96,10 +96,10 @@ script:
       defaultValue: '20'
     outputs:
     - contextPath: PrismaAccess.ActiveUsers
-      description: Active Users on Prisma Access
+      description: Active Users on Prisma Access.
     description: Query currently active users.
     deprecated: true
-  dockerimage: demisto/netmiko:1.0.0.91280
+  dockerimage: demisto/netmiko:1.0.0.117495
   subtype: python3
 fromversion: 5.0.0
 tests:

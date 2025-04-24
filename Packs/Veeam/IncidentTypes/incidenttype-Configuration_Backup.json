@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#229D80",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Configuration Backup",
+    "layout": "Configuration Backup",
+    "locked": false,
+    "name": "Configuration Backup",
+    "onChangeRepAlg": 1,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "weeks": 0,
+    "weeksR": 0
+}

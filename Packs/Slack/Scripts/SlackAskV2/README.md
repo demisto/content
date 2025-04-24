@@ -3,6 +3,7 @@ Sends a message (question) to either user (in a direct message) or to a channel.
 SlackAskV2 was added to support the release of SlackV3 is only compatible with SlackV3.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,18 +13,22 @@ SlackAskV2 was added to support the release of SlackV3 is only compatible with S
 | Demisto Version | 5.5.0 |
 
 ## Use Case
+
 ---
 This automation allows you to ask users in Slack (including external to Cortex XSOAR) questions, have them respond and 
 reflect the answer back to Cortex XSOAR.
 
 ## Dependencies
+
 ---
 Requires an instance of the SlackV3 integration.
 
 This script uses the following commands and scripts.
+
 * send-notification
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -45,20 +50,24 @@ This script uses the following commands and scripts.
 | slackVersion | The version of Slack to use. SlackV3 is configured by default. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Guide
+
 ---
 The automation is most useful in a playbook to determine the outcome of a conditional task - which will be one of the provided options.
 It uses a mechanism that allows external users to respond in Cortex XSOAR (per investigation) with entitlement strings embedded within the message contents.
-![SlackAsk](https://user-images.githubusercontent.com/35098543/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
+![SlackAsk](../../doc_files/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
 
 The automation can utilize the interactive capabilities of Slack to send a form with buttons - 
 this requires the external endpoint for interactive responses to be available for connection (See the SlackV3 integration documentation for more information).
 You can also utilize threads instead, simply by specifying the `responseType` argument.
 
 ## Notes
+
 ---
-- When using the `replyEntriesTag` argument, the `persistent` argument must be set to `True`.
-- `SlackAskV2` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.
+
+* When using the `replyEntriesTag` argument, the `persistent` argument must be set to `True`.
+* `SlackAskV2` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.

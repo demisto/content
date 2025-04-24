@@ -1,22 +1,27 @@
-from CommonServerPython import *
-from SecurityScorecard import \
-    SecurityScorecardClient, \
-    incidents_to_import, \
-    get_last_run, \
-    portfolios_list_command, \
-    portfolio_list_companies_command, \
-    company_score_get_command, \
-    company_factor_score_get_command, \
-    company_history_score_get_command, \
-    company_history_factor_score_get_command, \
-    alert_grade_change_create_command, \
-    alert_score_threshold_create_command, \
-    company_services_get_command
-
 import json
-import io
-import pytest
+from unittest.mock import MagicMock
 
+import pytest
+from CommonServerPython import *
+from SecurityScorecard import (
+    SecurityScorecardClient,
+    alert_grade_change_create_command,
+    alert_rules_list_command,
+    alert_score_threshold_create_command,
+    company_event_findings_get_command,
+    company_events_get_command,
+    company_factor_score_get_command,
+    company_history_factor_score_get_command,
+    company_history_score_get_command,
+    company_score_get_command,
+    company_services_get_command,
+    get_last_run,
+    incidents_to_import,
+    issue_details_get_command,
+    issue_metadata_get_command,
+    portfolio_list_companies_command,
+    portfolios_list_command,
+)
 
 """ TEST CONSTANTS """
 
@@ -32,7 +37,7 @@ DOMAIN_NE = "domain2.com"
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -46,13 +51,7 @@ FROZEN_DATE = "2021-10-09T22:38:02.560Z"
 
 @pytest.mark.freeze_time(FROZEN_DATE)
 @pytest.mark.parametrize(
-    'last_run, first_fetch',
-    [
-        (FROZEN_DATE, None),
-        (None, "3 days"),
-        (None, "7 days"),
-        (FROZEN_DATE, "7 days")
-    ]
+    "last_run, first_fetch", [(FROZEN_DATE, None), (None, "3 days"), (None, "7 days"), (FROZEN_DATE, "7 days")]
 )
 def test_get_last_run(last_run, first_fetch):
     """
@@ -76,16 +75,15 @@ def test_get_last_run(last_run, first_fetch):
     last_run_dt = get_last_run(last_run=last_run, first_fetch=first_fetch)
 
     if last_run:
-        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0) == \
-            arg_to_datetime(arg_name="last_run", arg=last_run).replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None)
+        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0) == arg_to_datetime(
+            arg_name="last_run", arg=last_run
+        ).replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None)
     else:
         # resetting microsecond as causes failure:
         # E             +datetime.datetime(2021, 10, 3, 14, 50, 3, 242595)
         # E             -datetime.datetime(2021, 10, 3, 14, 50, 3, 244008)
-        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None) == \
-            arg_to_datetime(
-                arg_name="first_fetch",
-                arg=first_fetch
+        assert last_run_dt.replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None) == arg_to_datetime(
+            arg_name="first_fetch", arg=first_fetch
         ).replace(microsecond=0, second=0, minute=0, hour=0, tzinfo=None)
 
 
@@ -97,7 +95,7 @@ incidents_to_import_test_inputs = [
 ]
 
 
-@pytest.mark.parametrize('alerts', incidents_to_import_test_inputs)
+@pytest.mark.parametrize("alerts", incidents_to_import_test_inputs)
 def test_incidents_to_import(alerts: list):
     """
     Given:
@@ -116,7 +114,7 @@ def test_incidents_to_import(alerts: list):
     # Need to remove tz info to deal with tz awareness with arg_to_datetime
     incidents = incidents_to_import(
         alerts=alerts,
-        last_run=arg_to_datetime("2021-07-25T00:00:00.000Z").replace(tzinfo=None)  # type: ignore
+        last_run=arg_to_datetime("2021-07-25T00:00:00.000Z").replace(tzinfo=None),  # type: ignore
     )
     if not alerts:
         assert not incidents
@@ -130,13 +128,7 @@ def test_incidents_to_import(alerts: list):
 MOCK_URL = "mock://securityscorecard-mock-url"
 
 client = SecurityScorecardClient(
-    base_url=MOCK_URL,
-    verify=False,
-    proxy=False,
-    headers={},
-    username=USERNAME,
-    api_key="API_KEY",
-    max_fetch=100
+    base_url=MOCK_URL, verify=False, proxy=False, headers={}, username=USERNAME, api_key="API_KEY", max_fetch=100
 )
 
 
@@ -177,7 +169,7 @@ companies_list_test_inputs = [
             "industry": None,
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": None
+            "had_breach_within_last_days": None,
         }
     ),
     (
@@ -187,7 +179,7 @@ companies_list_test_inputs = [
             "industry": None,
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": None
+            "had_breach_within_last_days": None,
         }
     ),
     (
@@ -197,7 +189,7 @@ companies_list_test_inputs = [
             "industry": "food",
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": None
+            "had_breach_within_last_days": None,
         }
     ),
     (
@@ -207,9 +199,9 @@ companies_list_test_inputs = [
             "industry": None,
             "vulnerability": None,
             "issue_type": None,
-            "had_breach_within_last_days": "7"
+            "had_breach_within_last_days": "7",
         }
-    )
+    ),
 ]
 
 
@@ -274,7 +266,7 @@ def test_portfolio_list_companies_portfolio_not_found(mocker):
             industry_arg=None,
             vulnerability=None,
             issue_type=None,
-            had_breach_within_last_days=None
+            had_breach_within_last_days=None,
         )
 
 
@@ -282,7 +274,7 @@ company_score_test_input = [
     ({"domain": DOMAIN}),
     ({"domain": "google.com"}),
     ({"domain": "GOOGLE.COM"}),
-    ({"domain": "nonexistantdomain.com"})
+    ({"domain": "nonexistantdomain.com"}),
 ]
 
 
@@ -340,7 +332,7 @@ def test_get_company_score_not_found(mocker):
 factor_score_test_inputs = [
     ({"domain": DOMAIN, "severity": None}),
     ({"domain": DOMAIN, "severity": "positive"}),
-    ({"domain": DOMAIN, "severity": "high,low"})
+    ({"domain": DOMAIN, "severity": "high,low"}),
 ]
 
 
@@ -378,7 +370,7 @@ company_historical_scores_test_inputs = [
     ({"domain": DOMAIN, "from": None, "to": None, "timing": None}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "daily"}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": None}),
-    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"})
+    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"}),
 ]
 
 
@@ -410,10 +402,7 @@ def test_get_company_historical_scores(mocker, args):
 
     mocker.patch.object(client, "get_company_historical_scores", return_value=historical_score_mock)
 
-    response: CommandResults = company_history_score_get_command(
-        client=client,
-        args=args
-    )
+    response: CommandResults = company_history_score_get_command(client=client, args=args)
 
     cmd_output = response.outputs
 
@@ -424,7 +413,7 @@ company_historical_factor_scores_test_inputs = [
     ({"domain": DOMAIN, "from": None, "to": None, "timing": None}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "daily"}),
     ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": None}),
-    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"})
+    ({"domain": DOMAIN, "from": "2021-07-01", "to": "2021-07-31", "timing": "weekly"}),
 ]
 
 
@@ -463,10 +452,92 @@ def test_get_company_historical_factor_scores(mocker, args):
     assert factor_scores == historical_factor_score_mock.get("entries")
 
 
+alert_creation_inputs = [
+    ({"change_direction": "drops", "score_types": "overall", "target": "my_scorecard", "portfolio": None}),
+    ({"change_direction": "drops", "score_types": ["application_security"], "target": None, "portfolio": "1"}),
+    ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolio": "1"}),
+    ({"change_direction": "rises", "score_types": ["overall"], "target": "any_followed_company", "portfolio": None}),
+]
+
+
+@pytest.mark.parametrize("args, expected_delivery", zip(alert_creation_inputs, test_data.get("delivery_objects").get("entries")))
+def test_create_grade_alert_subscription_delivery_object(mocker, args, expected_delivery):
+    """
+    Test the creation of a grade alert subscription delivery object.
+    This test mocks the `create_alert_subscription` method of the `client` object
+    to return a predefined alert subscription. It then verifies that the delivery
+    object created by the `alert_grade_change_create_command` function matches the
+    expected delivery structure and that the result outputs the correct alert ID.
+    Args:
+        mocker (MockerFixture): The mocker fixture used to patch methods.
+        args (dict): The arguments for the alert creation.
+        expected_delivery (dict): The expected delivery object.
+    Raises:
+        AssertionError: If the delivery object or result outputs do not match the expected values.
+    """
+
+    create_grade_alert_mock = {"id": "test_alert_id"}
+    mocker.patch.object(client, "create_alert_subscription", return_value=create_grade_alert_mock)
+
+    result = alert_grade_change_create_command(client, args)
+
+    actual_delivery = client.create_alert_subscription.call_args[1]["delivery"]
+
+    assert actual_delivery == expected_delivery
+    assert result.outputs == "test_alert_id"
+
+
+# Define the test data for score threshold alert creation tests
+threshold_alert_creation_inputs = [
+    {
+        "change_direction": "drops_below",
+        "threshold": 85,
+        "score_types": ["overall"],
+        "target": "any_followed_company",
+        "portfolio": None,
+    },
+    {
+        "change_direction": "rises_above",
+        "threshold": 70,
+        "score_types": ["application_security", "test_factor"],
+        "target": None,
+        "portfolio": "1",
+    },
+]
+
+
+@pytest.mark.parametrize(
+    "args, expected_delivery", zip(threshold_alert_creation_inputs, test_data.get("threshold_delivery_objects").get("entries"))
+)
+def test_create_score_threshold_alert_subscription_delivery_object(mocker, args, expected_delivery):
+    """
+    Test the creation of a score threshold alert subscription delivery object.
+    This test mocks the `create_alert_subscription` method of the `client` object
+    to return a predefined alert subscription. It then verifies that the delivery
+    object created by the `alert_score_threshold_create_command` function matches the
+    expected delivery structure and that the result outputs the correct alert ID.
+    Args:
+        mocker (MockerFixture): The mocker fixture used to patch methods.
+        args (dict): The arguments for the alert creation.
+        expected_delivery (dict): The expected delivery object.
+    Raises:
+        AssertionError: If the delivery object or result outputs do not match the expected values.
+    """
+
+    create_score_threshold_alert_mock = {"id": "test_alert_id"}
+    mocker.patch.object(client, "create_alert_subscription", return_value=create_score_threshold_alert_mock)
+
+    result = alert_score_threshold_create_command(client, args)
+    actual_delivery = client.create_alert_subscription.call_args[1]["delivery"]
+
+    assert actual_delivery == expected_delivery
+    assert result.outputs == "test_alert_id"
+
+
 grade_alert_test_input = [
-    ({"change_direction": "rises", "score_types": "overall", "target": None, "portfolios": PORTFOLIO_ID}),
-    ({"change_direction": "rises", "score_types": "application_security", "target": "my_scorecard", "portfolios": "1"}),
-    ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolios": None})
+    ({"change_direction": "rises", "score_types": "overall", "target": None, "portfolio": PORTFOLIO_ID}),
+    ({"change_direction": "rises", "score_types": "application_security", "target": "my_scorecard", "portfolio": "1"}),
+    ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolio": None}),
 ]
 
 
@@ -476,7 +547,7 @@ def test_create_grade_change_alert(mocker, args):
     Given:
         - Direction change
         - Score type(s)
-        - Target or Portfolio(s)
+        - Target or Portfolio
     When:
         - Case A: rising grade, overall score type, to portfolio
         - Case B: Both portfolio and target are specified
@@ -488,41 +559,37 @@ def test_create_grade_change_alert(mocker, args):
     """
 
     create_grade_alert_mock = test_data.get("create_grade_alert")
-    mocker.patch.object(client, "create_grade_change_alert", return_value=create_grade_alert_mock)
+    mocker.patch.object(client, "create_alert_subscription", return_value=create_grade_alert_mock)
 
-    if args.get("target") and args.get("portfolios"):
+    if args.get("target") and args.get("portfolio"):
         with pytest.raises(DemistoException) as exc:
-            alert_grade_change_create_command(
-                client=client,
-                args=args
-            )
+            alert_grade_change_create_command(client=client, args=args)
 
         assert "Both 'portfolio' and 'target' argument have been set" in str(exc.value)
-    elif not args.get("target") and not args.get("portfolios"):
+    elif not args.get("target") and not args.get("portfolio"):
         with pytest.raises(DemistoException) as exc:
-            alert_grade_change_create_command(
-                client=client,
-                args=args
-            )
+            alert_grade_change_create_command(client=client, args=args)
 
         assert "Either 'portfolio' or 'target' argument must be given" in str(exc.value)
     else:
-
-        cmd_res: CommandResults = alert_grade_change_create_command(
-            client=client,
-            args=args
-        )
+        cmd_res: CommandResults = alert_grade_change_create_command(client=client, args=args)
 
         assert cmd_res.outputs == create_grade_alert_mock.get("id")
 
 
 score_alert_test_input = [
-    ({"change_direction": "rises", "threshold": 90, "score_types": "overall", "target": None, "portfolios": PORTFOLIO_ID}),
-    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": "my_scorecard",
-        "portfolios": "1"}),
-    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": None,
-        "portfolios": None}),
-    ({"change_direction": "rises", "threshold": "A", "score_types": "application_security", "target": None, "portfolios": None}),
+    ({"change_direction": "rises", "threshold": 90, "score_types": "overall", "target": None, "portfolio": PORTFOLIO_ID}),
+    (
+        {
+            "change_direction": "rises",
+            "threshold": 90,
+            "score_types": "application_security",
+            "target": "my_scorecard",
+            "portfolio": "1",
+        }
+    ),
+    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": None, "portfolio": None}),
+    ({"change_direction": "rises", "threshold": "A", "score_types": "application_security", "target": None, "portfolio": None}),
 ]
 
 
@@ -534,7 +601,7 @@ def test_create_score_change_alert(mocker, args):
         - Direction change
         - Score type(s)
         - A threshold
-        - Target or Portfolio(s)
+        - Target or Portfolio
     When:
         - Case A: Username is valid, rising grade, overall score type, to portfolio
         - Case B: Both portfolio and target are specified
@@ -548,34 +615,30 @@ def test_create_score_change_alert(mocker, args):
     """
 
     create_score_alert_mock = test_data.get("create_score_alert")
-    mocker.patch.object(client, "create_score_threshold_alert", return_value=create_score_alert_mock)
+    mocker.patch.object(client, "create_alert_subscription", return_value=create_score_alert_mock)
 
     if not isinstance(args.get("threshold"), int):
         with pytest.raises(ValueError) as exc:
             alert_score_threshold_create_command(client=client, args=args)
 
         assert "is not a valid number" in str(exc.value)
-    elif args.get("target") and args.get("portfolios"):
+    elif args.get("target") and args.get("portfolio"):
         with pytest.raises(DemistoException) as exc:
             alert_score_threshold_create_command(client=client, args=args)
 
         assert "Both 'portfolio' and 'target' argument have been set" in str(exc.value)
-    elif not args.get("target") and not args.get("portfolios"):
+    elif not args.get("target") and not args.get("portfolio"):
         with pytest.raises(DemistoException) as exc:
             alert_score_threshold_create_command(client=client, args=args)
 
         assert "Either 'portfolio' or 'target' argument must be given" in str(exc.value)
     else:
-
         cmd_res: CommandResults = alert_score_threshold_create_command(client=client, args=args)
 
         assert cmd_res.outputs == create_score_alert_mock.get("id")
 
 
-services_test_input = (
-    ({"domain": DOMAIN}),
-    ({"domain": DOMAIN_NE})
-)
+services_test_input = (({"domain": DOMAIN}), ({"domain": DOMAIN_NE}))
 
 
 @pytest.mark.parametrize("args", services_test_input)
@@ -609,3 +672,275 @@ def test_get_domain_services(mocker, args):
         services = cmd_res.outputs
 
         assert services == services_mock.get("entries")
+
+
+def test_incidents_to_import_empty_alerts_future_last_run():
+    """
+    Given:
+        - An empty list of alerts
+        - A last run date in the future
+    When:
+        - incidents_to_import is called
+    Then:
+        - An empty list of incidents is returned
+    """
+    alerts = []
+    last_run = arg_to_datetime("2022-01-01T00:00:00.000Z").replace(tzinfo=None)
+    incidents = incidents_to_import(alerts=alerts, last_run=last_run)
+    assert isinstance(incidents, list)
+    assert len(incidents) == 0
+
+
+@pytest.mark.parametrize("limit", ["0"])
+def test_portfolios_list_limit_zero(mocker, limit):
+    """
+    Given:
+        - A limit of 0
+    When:
+        - portfolios_list is called
+    Then:
+        - An empty list of portfolios is returned
+    """
+    mocker.patch.object(client, "get_portfolios", return_value=[])
+    portfolios = client.get_portfolios(limit=limit)
+    assert isinstance(portfolios, list)
+    assert len(portfolios) == 0
+
+
+def test_incidents_to_import_alerts_last_run_in_past():
+    """
+    Given:
+        - A list of alerts
+        - A last run date in the past
+    When:
+        - incidents_to_import is called
+    Then:
+        - A list of incidents is returned
+    """
+    mock = [
+        {
+            "id": "27",
+            "username": "user@domain.com",
+            "change_type": "score_change",
+            "domain": "domain1.co.il",
+            "company_name": "Domain1",
+            "portfolios": [{"id": "a", "name": "test_portfolio"}],
+            "my_scorecard": False,  # corrected false to False
+            "created_at": "2021-07-27T00:00:00.000Z",
+            "change_data": [
+                {"score": 77, "factor": "network_security", "direction": "drops", "grade_letter": "C", "score_impact": -3},
+                {"score": 69, "factor": "ip_reputation", "direction": "drops", "grade_letter": "D", "score_impact": -3},
+            ],
+        }
+    ]
+    last_run = arg_to_datetime("2020-01-01T00:00:00.000Z").replace(tzinfo=None)
+    incidents = incidents_to_import(alerts=mock, last_run=last_run)
+    assert isinstance(incidents, list)
+    assert len(incidents) > 0
+
+
+@pytest.fixture
+def mocked_security_scorecard_client():
+    mocked_security_scorecard_client = SecurityScorecardClient(
+        base_url="https://api.securityscorecard.io",
+        verify=True,
+        proxy=None,
+        headers={"Content-Type": "application/json"},
+        username="your_username",
+        api_key="your_api_key",
+    )
+    mocked_security_scorecard_client.get_issue_metadata = MagicMock(
+        return_value={
+            "key": "issue_type",
+            "severity": "high",
+            "factor": "network_security",
+            "title": "Issue Title",
+            "short_description": "Short description",
+            "long_description": "Long description",
+            "recommendation": "Recommendation",
+        }
+    )
+    mocked_security_scorecard_client.get_company_events = MagicMock(
+        return_value={
+            "entries": [
+                {
+                    "id": "1",
+                }
+            ]
+        }
+    )
+    mocked_security_scorecard_client.get_company_event_findings = MagicMock(
+        return_value={
+            "entries": [
+                {
+                    "id": "1",
+                }
+            ]
+        }
+    )
+    return mocked_security_scorecard_client
+
+
+def test_issue_metadata_get_command_success(mocked_security_scorecard_client):
+    # Call the issue_metadata_get_command function with a valid issue type
+    args = {"issue_type": "issue_type"}
+    result = issue_metadata_get_command(mocked_security_scorecard_client, args)
+
+    # Assert that the result is a CommandResults object with the expected attributes
+    assert isinstance(result, CommandResults)
+    assert result.readable_output.startswith("### Issue Type issue_type")
+    assert "key|severity|factor|title|short_description|long_description|recommendation" in result.readable_output
+    assert (
+        "| issue_type | high | network_security | Issue Title | Short description | Long description | Recommendation"
+        in result.readable_output
+    )  # noqa: E501
+    assert result.outputs == {
+        "key": "issue_type",
+        "severity": "high",
+        "factor": "network_security",
+        "title": "Issue Title",
+        "short_description": "Short description",
+        "long_description": "Long description",
+        "recommendation": "Recommendation",
+    }
+    assert result.raw_response == {
+        "key": "issue_type",
+        "severity": "high",
+        "factor": "network_security",
+        "title": "Issue Title",
+        "short_description": "Short description",
+        "long_description": "Long description",
+        "recommendation": "Recommendation",
+    }
+    assert result.outputs_key_field == "key"
+
+    # Assert that the client's get_issue_metadata method was called with the expected arguments
+    mocked_security_scorecard_client.get_issue_metadata.assert_called_with(issue_type="issue_type")
+
+
+def test_company_events_get_command_success(mocked_security_scorecard_client):
+    # Call the company_events_get_command function with valid arguments
+    args = {"domain": "example.com"}
+    result = company_events_get_command(mocked_security_scorecard_client, args)
+
+    # Assert that the result is a CommandResults object with the expected attributes
+    assert isinstance(result, CommandResults)
+    # assert result.outputs == output.COMPANY_EVENTS_GET_OUTPUTS
+    # assert result.raw_response == output.COMPANY_EVENTS_GET_RAW_RESPONSE
+    assert result.outputs_prefix == "SecurityScorecard.Company.Events"
+    assert result.outputs_key_field == "ssc_event_id"
+
+    # Assert that the mocked_security_scorecard_client's get_company_events method was called with the expected arguments
+    mocked_security_scorecard_client.get_company_events.assert_called_with(domain="example.com", date_to=None, date_from=None)
+
+
+def test_company_event_findings_get_command_success(mocked_security_scorecard_client):
+    # Call the company_event_findings_get_command function with valid arguments
+    args = {"domain": "example.com", "event_id": "example_event_id"}
+    result = company_event_findings_get_command(mocked_security_scorecard_client, args)
+
+    # Assert that the result is a CommandResults object with the expected attributes
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SecurityScorecard.Company.Findings"
+    assert result.outputs_key_field == "issue_id"
+
+    # Assert that the mocked_security_scorecard_client's get_company_event_findings method was called with the expected arguments
+    mocked_security_scorecard_client.get_company_event_findings.assert_called()
+
+
+def test_alert_rules_list_command(mocker):
+    """
+    Given:
+        - No specific arguments
+    When:
+        - Retrieving alert rules
+    Then:
+        - Ensure the alert rules are returned correctly
+    """
+
+    alert_rules_mock = test_data.get("alert_rules")
+    mocker.patch.object(client, "http_request_wrapper", return_value=alert_rules_mock)
+
+    response_cmd_res: CommandResults = alert_rules_list_command(client=client, args={})
+
+    alert_rules = response_cmd_res.raw_response.get("entries")
+
+    assert alert_rules == alert_rules_mock.get("entries")
+    assert response_cmd_res.outputs_prefix == "SecurityScorecard.AlertRules.Rule"
+    assert response_cmd_res.outputs_key_field == "id"
+
+
+def test_issue_details_get_command_success(mocker):
+    """
+    Given:
+        - A domain and issue type
+    When:
+        - Retrieving issue details for the specified domain and issue type
+    Then:
+        - Ensure the issue details are returned correctly
+    """
+    mock_response = {
+        "entries": [
+            {
+                "domain": "example.com",
+                "issue_id": "1",
+                "issue_type": "spf_record_missing",
+                "count": "2",
+                "status": "active",
+                "first_seen_time": "2023-01-01T00:00:00Z",
+                "last_seen_time": "2023-01-02T00:00:00Z",
+                "description": "SPF record is missing",
+                "recommendation": "Add SPF record",
+            }
+        ]
+    }
+
+    mocker.patch.object(client, "get_company_issue_findings", return_value=mock_response)
+
+    args = {"domain": "example.com", "issue_type": "spf_record_missing"}
+    result = issue_details_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == mock_response["entries"]
+    assert result.outputs_prefix == "SecurityScorecard.IssueDetails"
+    assert result.outputs_key_field == "issue_id"
+    assert result.readable_output.startswith("### Domain example.com -- Findings for spf_record_missing")
+
+
+def test_issue_details_get_command_no_results(mocker):
+    """
+    Given:
+        - A domain and issue type
+    When:
+        - No issue details are found for the specified domain and issue type
+    Then:
+        - Ensure an empty result is returned
+    """
+    mock_response = {"entries": []}
+
+    mocker.patch.object(client, "get_company_issue_findings", return_value=mock_response)
+
+    args = {"domain": "example.com", "issue_type": "spf_record_missing"}
+    result = issue_details_get_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert result.outputs_prefix == "SecurityScorecard.IssueDetails"
+    assert result.outputs_key_field == "issue_id"
+    assert "No findings were found" in result.readable_output
+
+
+def test_issue_details_get_command_invalid_domain(mocker):
+    """
+    Given:
+        - An invalid domain and issue type
+    When:
+        - Retrieving issue details for the specified domain and issue type
+    Then:
+        - Ensure an error is raised
+    """
+    mocker.patch.object(client, "get_company_issue_findings", side_effect=DemistoException("Invalid domain"))
+
+    args = {"domain": "invalid.com", "issue_type": "spf_record_missing"}
+    with pytest.raises(DemistoException, match="Invalid domain"):
+        issue_details_get_command(client, args)

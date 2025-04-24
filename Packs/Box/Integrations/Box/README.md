@@ -1,15 +1,11 @@
 Deprecated. Use the Box v2 integration instead.
 
-## Configure Box on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Box.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure Box in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | insecure | Trust any certificate \(not secure\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## How to initialize the Box integration:
 
@@ -29,7 +25,7 @@ Deprecated. Use the Box v2 integration instead.
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### box_get_current_user
 ***
@@ -533,4 +529,3 @@ Getting file info of provided ID
 >| Sha1 | fc9ed186f1e2b4b5a93cf8d0f698a86d396b7b2f |
 >| Size | 959 |
 >| Type | file |
-

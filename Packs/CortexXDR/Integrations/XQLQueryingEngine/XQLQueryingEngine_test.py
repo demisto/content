@@ -1,18 +1,19 @@
 import gzip
 import json
-import io
-from freezegun import freeze_time
-import XQLQueryingEngine
-import pytest
-from CommonServerPython import *
+from unittest.mock import MagicMock, patch
 
-CLIENT = XQLQueryingEngine.Client(base_url='some_mock_url', verify=False)
+import pytest
+import XQLQueryingEngine
+from CommonServerPython import *
+from freezegun import freeze_time
+
+CLIENT = XQLQueryingEngine.Client(headers={}, base_url="some_mock_url", verify=False, is_core=False)
 ENDPOINT_IDS = '"test1","test2"'
 INTEGRATION_CONTEXT = {}
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -29,12 +30,13 @@ def set_integration_context(integration_context):
 
 
 @pytest.mark.parametrize(
-    'input_arg, expected',
-    [('12345678,87654321', '"12345678","87654321"'),
-     ('[12345678, 87654321]', '"12345678","87654321"'),
-     ("12345678", '"12345678"'),
-     ("", '""'),
-     ]
+    "input_arg, expected",
+    [
+        ("12345678,87654321", '"12345678","87654321"'),
+        ("[12345678, 87654321]", '"12345678","87654321"'),
+        ("12345678", '"12345678"'),
+        ("", '""'),
+    ],
 )
 def test_wrap_list_items_in_double_quotes(input_arg, expected):
     """
@@ -61,14 +63,15 @@ def test_get_file_event_query():
     - Ensure the returned query is correct.
     """
 
-    args = {
-        'file_sha256': 'testSHA1,testSHA2'
-    }
+    args = {"file_sha256": "testSHA1,testSHA2"}
     response = XQLQueryingEngine.get_file_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = FILE and action_file_sha256
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = FILE and action_file_sha256
  in ("testSHA1","testSHA2")| fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, action_file_sha256,
- actor_process_file_create_time'''
+ actor_process_file_create_time"""
+    )
 
 
 def test_get_process_event_query():
@@ -83,17 +86,18 @@ def test_get_process_event_query():
     - Ensure the returned query is correct.
     """
 
-    args = {
-        'process_sha256': 'testSHA1,testSHA2'
-    }
+    args = {"process_sha256": "testSHA1,testSHA2"}
     response = XQLQueryingEngine.get_process_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = PROCESS and
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = PROCESS and
  action_process_image_sha256 in ("testSHA1","testSHA2") | fields agent_hostname, agent_ip_addresses, agent_id,
  action_process_image_sha256, action_process_image_name,action_process_image_path, action_process_instance_id,
  action_process_causality_id, action_process_signature_vendor, action_process_signature_product,
  action_process_image_command_line, actor_process_image_name, actor_process_image_path, actor_process_instance_id,
- actor_process_causality_id'''
+ actor_process_causality_id"""
+    )
 
 
 def test_get_dll_module_query():
@@ -108,16 +112,17 @@ def test_get_dll_module_query():
     - Ensure the returned query is correct.
     """
 
-    args = {
-        'loaded_module_sha256': 'testSHA1,testSHA2'
-    }
+    args = {"loaded_module_sha256": "testSHA1,testSHA2"}
     response = XQLQueryingEngine.get_dll_module_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = LOAD_IMAGE and
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = LOAD_IMAGE and
  action_module_sha256 in ("testSHA1","testSHA2")| fields agent_hostname, agent_ip_addresses, agent_id,
  actor_effective_username, action_module_sha256, action_module_path, action_module_file_info,
  action_module_file_create_time, actor_process_image_name, actor_process_image_path, actor_process_command_line,
- actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
+ actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id"""
+    )
 
 
 def test_get_network_connection_query():
@@ -132,18 +137,17 @@ def test_get_network_connection_query():
     - Ensure the returned query is correct.
     """
 
-    args = {
-        'local_ip': '1.1.1.1,2.2.2.2',
-        'remote_ip': '3.3.3.3,4.4.4.4',
-        'port': '7777,8888'
-    }
+    args = {"local_ip": "1.1.1.1,2.2.2.2", "remote_ip": "3.3.3.3,4.4.4.4", "port": "7777,8888"}
     response = XQLQueryingEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
  and action_local_ip in("1.1.1.1","2.2.2.2") and action_remote_ip in("3.3.3.3","4.4.4.4") and action_remote_port in(7777,8888)|
  fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path,
- actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
+ actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id"""
+    )
 
 
 def test_get_network_connection_query_only_remote_ip():
@@ -159,15 +163,18 @@ def test_get_network_connection_query_only_remote_ip():
     """
 
     args = {
-        'remote_ip': '3.3.3.3,4.4.4.4',
+        "remote_ip": "3.3.3.3,4.4.4.4",
     }
     response = XQLQueryingEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
   and action_remote_ip in("3.3.3.3","4.4.4.4") |
  fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path,
- actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
+ actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id"""
+    )
 
 
 def test_get_registry_query():
@@ -182,15 +189,16 @@ def test_get_registry_query():
     - Ensure the returned query is correct.
     """
 
-    args = {
-        'reg_key_name': 'testARG1,testARG2'
-    }
+    args = {"reg_key_name": "testARG1,testARG2"}
     response = XQLQueryingEngine.get_registry_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = REGISTRY and
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = REGISTRY and
  action_registry_key_name in ("testARG1","testARG2") | fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type,
  agent_os_sub_type, event_type, event_sub_type, action_registry_key_name, action_registry_value_name,
- action_registry_data'''
+ action_registry_data"""
+    )
 
 
 def test_get_event_log_query():
@@ -205,15 +213,16 @@ def test_get_event_log_query():
     - Ensure the returned query is correct.
     """
 
-    args = {
-        'event_id': '1234,4321'
-    }
+    args = {"event_id": "1234,4321"}
     response = XQLQueryingEngine.get_event_log_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = EVENT_LOG and
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = EVENT_LOG and
  action_evtlog_event_id in (1234,4321) | fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type,
  agent_os_sub_type, action_evtlog_event_id, event_type, event_sub_type, action_evtlog_message,
- action_evtlog_provider_name'''
+ action_evtlog_provider_name"""
+    )
 
 
 def test_get_dns_query():
@@ -229,17 +238,20 @@ def test_get_dns_query():
     """
 
     args = {
-        'external_domain': 'testARG1,testARG2',
-        'dns_query': 'testARG3,testARG4',
+        "external_domain": "testARG1,testARG2",
+        "dns_query": "testARG3,testARG4",
     }
     response = XQLQueryingEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
+    assert (
+        response
+        == """dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
  (dst_action_external_hostname in ("testARG1","testARG2") or dns_query_name in ("testARG3","testARG4"))| fields
  agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, action_total_download,
  action_total_upload, action_country, action_as_data, os_actor_process_image_path, os_actor_process_command_line,
- os_actor_process_instance_id, os_actor_process_causality_id'''
+ os_actor_process_instance_id, os_actor_process_causality_id"""
+    )
 
 
 def test_get_dns_query_no_external_domain_arg():
@@ -255,16 +267,19 @@ def test_get_dns_query_no_external_domain_arg():
     """
 
     args = {
-        'dns_query': 'testARG3,testARG4',
+        "dns_query": "testARG3,testARG4",
     }
     response = XQLQueryingEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
+    assert (
+        response
+        == """dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
  (dst_action_external_hostname in ("") or dns_query_name in ("testARG3","testARG4"))| fields
  agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, action_total_download,
  action_total_upload, action_country, action_as_data, os_actor_process_image_path, os_actor_process_command_line,
- os_actor_process_instance_id, os_actor_process_causality_id'''
+ os_actor_process_instance_id, os_actor_process_causality_id"""
+    )
 
 
 def test_get_file_dropper_query():
@@ -280,19 +295,22 @@ def test_get_file_dropper_query():
     """
 
     args = {
-        'file_path': 'testARG1,testARG2',
-        'file_sha256': 'testARG3,testARG4',
+        "file_path": "testARG1,testARG2",
+        "file_sha256": "testARG3,testARG4",
     }
     response = XQLQueryingEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
+    assert (
+        response
+        == """dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
  FILE_WRITE, FILE_RENAME)) and (action_file_path in ("testARG1","testARG2") or action_file_sha256 in ("testARG3","testARG4")) |
  fields agent_hostname, agent_ip_addresses, agent_id, action_file_sha256, action_file_path, actor_process_image_name,
  actor_process_image_path, actor_process_image_path, actor_process_command_line, actor_process_signature_vendor,
  actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user,
  os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor,
  os_actor_process_signature_product, os_actor_process_image_sha256, os_actor_effective_username,
- causality_actor_remote_host,causality_actor_remote_ip'''
+ causality_actor_remote_host,causality_actor_remote_ip"""
+    )
 
 
 def test_get_file_dropper_query_no_file_path_arg():
@@ -308,18 +326,21 @@ def test_get_file_dropper_query_no_file_path_arg():
     """
 
     args = {
-        'file_sha256': 'testARG3,testARG4',
+        "file_sha256": "testARG3,testARG4",
     }
     response = XQLQueryingEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
+    assert (
+        response
+        == """dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
  FILE_WRITE, FILE_RENAME)) and (action_file_path in ("") or action_file_sha256 in ("testARG3","testARG4")) |
  fields agent_hostname, agent_ip_addresses, agent_id, action_file_sha256, action_file_path, actor_process_image_name,
  actor_process_image_path, actor_process_image_path, actor_process_command_line, actor_process_signature_vendor,
  actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user,
  os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor,
  os_actor_process_signature_product, os_actor_process_image_sha256, os_actor_effective_username,
- causality_actor_remote_host,causality_actor_remote_ip'''
+ causality_actor_remote_host,causality_actor_remote_ip"""
+    )
 
 
 def test_get_process_instance_network_activity_query():
@@ -335,16 +356,19 @@ def test_get_process_instance_network_activity_query():
     """
 
     args = {
-        'process_instance_id': 'testARG1,testARG2',
+        "process_instance_id": "testARG1,testARG2",
     }
     response = XQLQueryingEngine.get_process_instance_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK and
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK and
  actor_process_instance_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses, agent_id,
  action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, dns_query_name,
  action_app_id_transitions, action_total_download, action_total_upload, action_country, action_as_data,
  actor_process_image_sha256, actor_process_image_name , actor_process_image_path, actor_process_signature_vendor,
- actor_process_signature_product, actor_causality_id, actor_process_image_command_line, actor_process_instance_id'''
+ actor_process_signature_product, actor_causality_id, actor_process_image_command_line, actor_process_instance_id"""
+    )
 
 
 def test_get_process_causality_network_activity_query():
@@ -360,31 +384,36 @@ def test_get_process_causality_network_activity_query():
     """
 
     args = {
-        'process_causality_id': 'testARG1,testARG2',
+        "process_causality_id": "testARG1,testARG2",
     }
     response = XQLQueryingEngine.get_process_causality_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK
+    assert (
+        response
+        == """dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK
  and actor_process_causality_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses,agent_id,
  action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,dns_query_name,
  action_app_id_transitions, action_total_download, action_total_upload, action_country,action_as_data,
  actor_process_image_sha256, actor_process_image_name , actor_process_image_path,actor_process_signature_vendor,
- actor_process_signature_product, actor_causality_id,actor_process_image_command_line, actor_process_instance_id'''
+ actor_process_signature_product, actor_causality_id,actor_process_image_command_line, actor_process_instance_id"""
+    )
 
 
 # =========================================== TEST Helper Functions ===========================================#
 
+
 @pytest.mark.parametrize(
-    'time_to_convert,expected',
-    [("3 seconds", {'relativeTime': 3000}),
-     ("7 minutes", {'relativeTime': 420000}),
-     ("5 hours", {'relativeTime': 18000000}),
-     ("7 months", {'relativeTime': 18316800000}),
-     ("2 years", {'relativeTime': 63158400000}),
-     ("between 2021-01-01 00:00:00Z and 2021-02-01 12:34:56Z", {'from': 1609459200000, 'to': 1612182896000}),
-     ]
+    "time_to_convert,expected",
+    [
+        ("3 seconds", {"relativeTime": 3000}),
+        ("7 minutes", {"relativeTime": 420000}),
+        ("5 hours", {"relativeTime": 18000000}),
+        ("7 months", {"relativeTime": 18316800000}),
+        ("2 years", {"relativeTime": 63158400000}),
+        ("between 2021-01-01 00:00:00Z and 2021-02-01 12:34:56Z", {"from": 1609459200000, "to": 1612182896000}),
+    ],
 )
-@freeze_time('2021-08-26')
+@freeze_time("2021-08-26")
 def test_convert_timeframe_string_to_json(time_to_convert, expected):
     """
     Given:
@@ -413,19 +442,20 @@ def test_start_xql_query_valid(mocker):
     Then:
     - Ensure the returned execution_id is correct.
     """
-    args = {
-        'query': 'test_query',
-        'time_frame': '1 year'
-    }
-    mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
+    args = {"query": "test_query", "time_frame": "1 year"}
+    mocker.patch.object(CLIENT, "start_xql_query", return_value="execution_id")
     response = XQLQueryingEngine.start_xql_query(CLIENT, args=args)
-    assert response == 'execution_id'
+    assert response == "execution_id"
 
 
-@pytest.mark.parametrize('tenant_id,expected', [
-    ({'tenant_id': 'test_tenant_1'}, 'test_tenant_1'),
-    ({'tenant_ids': 'test_tenants_2'}, 'test_tenants_2'),
-    ({'tenant_id': 'test_tenant_3', 'tenant_ids': 'test_tenants_4'}, 'test_tenant_3')])
+@pytest.mark.parametrize(
+    "tenant_id,expected",
+    [
+        ({"tenant_id": "test_tenant_1"}, "test_tenant_1"),
+        ({"tenant_ids": "test_tenants_2"}, "test_tenants_2"),
+        ({"tenant_id": "test_tenant_3", "tenant_ids": "test_tenants_4"}, "test_tenant_3"),
+    ],
+)
 def test_start_xql_query_with_tenant_id_and_tenant_ids(mocker, tenant_id, expected):
     """
     This test is to ensure a fix of a bug will not be removed in the future.
@@ -444,14 +474,14 @@ def test_start_xql_query_with_tenant_id_and_tenant_ids(mocker, tenant_id, expect
     - Ensure the call to start_xql_query is sent with the correct tenant_id.
     """
     args = {
-        'query': 'test_query',
-        'time_frame': '1 year',
+        "query": "test_query",
+        "time_frame": "1 year",
     }
     args |= tenant_id
 
-    res = mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
+    res = mocker.patch.object(CLIENT, "start_xql_query", return_value="execution_id")
     XQLQueryingEngine.start_xql_query(CLIENT, args=args)
-    assert res.call_args[0][0].get('request_data').get('tenants')[0] == expected
+    assert res.call_args[0][0].get("request_data").get("tenants")[0] == expected
 
 
 def test_get_xql_query_results_success_under_1000(mocker):
@@ -465,29 +495,24 @@ def test_get_xql_query_results_success_under_1000(mocker):
     Then:
     - Ensure the results were retrieved properly.
     """
-    args = {
-        'query_id': 'query_id_mock',
-        'time_frame': '1 year'
-    }
+    args = {"query_id": "query_id_mock", "time_frame": "1 year"}
     mock_response = {
-        'status': 'SUCCESS',
-        'number_of_results': 1,
-        'query_cost': {
-            "376699223": 0.0031591666666666665
-        },
-        'remaining_quota': 1000.0,
-        'results': {
-            'data': [{'x': 'test1'}]
-        }
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": {"data": [{"x": "test1"}]},
     }
-    mocker.patch.object(CLIENT, 'get_xql_query_results', return_value=mock_response)
+    mocker.patch.object(CLIENT, "get_xql_query_results", return_value=mock_response)
     response, file_data = XQLQueryingEngine.get_xql_query_results(CLIENT, args=args)
-    assert response == {'status': 'SUCCESS',
-                        'number_of_results': 1,
-                        'query_cost': {'376699223': 0.0031591666666666665},
-                        'remaining_quota': 1000.0,
-                        'results': [{'x': 'test1'}],
-                        'execution_id': 'query_id_mock'}
+    assert response == {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": [{"x": "test1"}],
+        "execution_id": "query_id_mock",
+    }
     assert file_data is None
 
 
@@ -502,31 +527,26 @@ def test_get_xql_query_results_success_more_than_1000(mocker):
     Then:
     - Ensure the results were retrieved properly and a stream ID was returned.
     """
-    args = {
-        'query_id': 'query_id_mock',
-        'time_frame': '1 year'
-    }
+    args = {"query_id": "query_id_mock", "time_frame": "1 year"}
     mock_response = {
-        'status': 'SUCCESS',
-        'number_of_results': 1500,
-        'query_cost': {
-            "376699223": 0.0031591666666666665
-        },
-        'remaining_quota': 1000.0,
-        'results': {
-            "stream_id": "test_stream_id"
-        }
+        "status": "SUCCESS",
+        "number_of_results": 1500,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": {"stream_id": "test_stream_id"},
     }
-    mocker.patch.object(CLIENT, 'get_xql_query_results', return_value=mock_response)
-    mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='FILE DATA')
+    mocker.patch.object(CLIENT, "get_xql_query_results", return_value=mock_response)
+    mocker.patch.object(CLIENT, "get_query_result_stream", return_value="FILE DATA")
     response, file_data = XQLQueryingEngine.get_xql_query_results(CLIENT, args=args)
-    assert response == {'status': 'SUCCESS',
-                        'number_of_results': 1500,
-                        'query_cost': {'376699223': 0.0031591666666666665},
-                        'remaining_quota': 1000.0,
-                        'results': {'stream_id': 'test_stream_id'},
-                        'execution_id': 'query_id_mock'}
-    assert file_data == 'FILE DATA'
+    assert response == {
+        "status": "SUCCESS",
+        "number_of_results": 1500,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": {"stream_id": "test_stream_id"},
+        "execution_id": "query_id_mock",
+    }
+    assert file_data == "FILE DATA"
 
 
 def test_get_xql_query_results_pending(mocker):
@@ -540,18 +560,11 @@ def test_get_xql_query_results_pending(mocker):
     Then:
     - Ensure the results were retrieved properly.
     """
-    args = {
-        'query_id': 'query_id_mock',
-        'time_frame': '1 year'
-    }
-    mock_response = {
-        "status": "PENDING"
-    }
-    mocker.patch.object(CLIENT, 'get_xql_query_results', return_value=mock_response)
+    args = {"query_id": "query_id_mock", "time_frame": "1 year"}
+    mock_response = {"status": "PENDING"}
+    mocker.patch.object(CLIENT, "get_xql_query_results", return_value=mock_response)
     response, _ = XQLQueryingEngine.get_xql_query_results(CLIENT, args=args)
-    assert response == {'status': 'PENDING',
-                        'execution_id': 'query_id_mock',
-                        'results': None}
+    assert response == {"status": "PENDING", "execution_id": "query_id_mock", "results": None}
 
 
 def test_get_query_result_stream(mocker):
@@ -565,10 +578,10 @@ def test_get_query_result_stream(mocker):
     Then:
     - Ensure the results were retrieved properly.
     """
-    stream_id = 'mock_stream_id'
-    mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='Raw Data')
+    stream_id = "mock_stream_id"
+    mocker.patch.object(CLIENT, "get_query_result_stream", return_value="Raw Data")
     response = XQLQueryingEngine.get_query_result_stream(CLIENT, stream_id=stream_id)
-    assert response == 'Raw Data'
+    assert response == "Raw Data"
 
 
 def test_format_results_remove_empty_fields():
@@ -583,39 +596,19 @@ def test_format_results_remove_empty_fields():
     - Ensure the list was formatted properly.
     """
     list_to_format = [
-        {'h': 4},
-        {'x': 1,
-         'e': None,
-         'y': 'FALSE',
-         'z': {
-             'w': 'NULL',
-             'x': None,
-         },
-         's': {
-             'a': 5,
-             'b': None,
-             'c': {
-                 'time': 1629619736000,
-                 'd': 3,
-                 'v': 'TRUE'
-             }
-         }
-         }
+        {"h": 4},
+        {
+            "x": 1,
+            "e": None,
+            "y": "FALSE",
+            "z": {
+                "w": "NULL",
+                "x": None,
+            },
+            "s": {"a": 5, "b": None, "c": {"time": 1629619736000, "d": 3, "v": "TRUE"}},
+        },
     ]
-    expected = [
-        {'h': 4},
-        {'x': 1,
-         'y': False,
-         's': {
-             'a': 5,
-             'c': {
-                 'time': '2021-08-22T08:08:56.000Z',
-                 'd': 3,
-                 'v': True
-             }
-         }
-         }
-    ]
+    expected = [{"h": 4}, {"x": 1, "y": False, "s": {"a": 5, "c": {"time": "2021-08-22T08:08:56.000Z", "d": 3, "v": True}}}]
     response = XQLQueryingEngine.format_results(list_to_format, remove_empty_fields=True)
     assert expected == response
 
@@ -632,44 +625,30 @@ def test_format_results_do_not_remove_empty_fields():
     - Ensure the list was formatted properly.
     """
     list_to_format = [
-        {'h': 4},
-        {'x': 1,
-         'e': None,
-         'y': 'FALSE',
-         'z': {
-             'w': 'NULL',
-             'x': None,
-         },
-         's': {
-             'a': 5,
-             'b': None,
-             'c': {
-                 'time': 1629619736000,
-                 'd': 3,
-                 'v': 'TRUE'
-             }
-         }
-         }
+        {"h": 4},
+        {
+            "x": 1,
+            "e": None,
+            "y": "FALSE",
+            "z": {
+                "w": "NULL",
+                "x": None,
+            },
+            "s": {"a": 5, "b": None, "c": {"time": 1629619736000, "d": 3, "v": "TRUE"}},
+        },
     ]
     expected = [
-        {'h': 4},
-        {'x': 1,
-         'e': None,
-         'y': False,
-         'z': {
-             'w': None,
-             'x': None,
-         },
-         's': {
-             'a': 5,
-             'b': None,
-             'c': {
-                 'time': '2021-08-22T08:08:56.000Z',
-                 'd': 3,
-                 'v': True
-             }
-         }
-         }
+        {"h": 4},
+        {
+            "x": 1,
+            "e": None,
+            "y": False,
+            "z": {
+                "w": None,
+                "x": None,
+            },
+            "s": {"a": 5, "b": None, "c": {"time": "2021-08-22T08:08:56.000Z", "d": 3, "v": True}},
+        },
     ]
     response = XQLQueryingEngine.format_results(list_to_format, remove_empty_fields=False)
     assert expected == response
@@ -687,19 +666,20 @@ def test_start_xql_query_polling_not_supported(mocker):
     - Ensure returned command results are correct.
 
     """
-    query = 'MOCK_QUERY'
-    mock_response = {'status': 'PENDING',
-                     'execution_id': 'query_id_mock',
-                     'results': None}
-    mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch('XQLQueryingEngine.is_demisto_version_ge', return_value=False)
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
-    assert command_results.outputs == {'status': 'PENDING',
-                                       'execution_id': 'query_id_mock',
-                                       'results': None,
-                                       'query_name': 'mock_name'}
+    query = "MOCK_QUERY"
+    mock_response = {"status": "PENDING", "execution_id": "query_id_mock", "results": None}
+    mocker.patch.object(CLIENT, "start_xql_query", return_value="1234")
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch("CoreXQLApiModule.is_demisto_version_ge", return_value=False)
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {"query": query, "query_name": "mock_name"})
+    assert command_results.outputs == {
+        "status": "PENDING",
+        "execution_id": "query_id_mock",
+        "results": None,
+        "query_name": "mock_name",
+    }
+
 
 # ================================ TEST Generic Query Functions version 6.2 and above ================================#
 
@@ -716,34 +696,44 @@ def test_start_xql_query_polling_command(mocker):
     - Ensure returned command results are correct and integration_context was cleared.
 
     """
-    query = 'MOCK_QUERY'
+    query = "MOCK_QUERY"
     context = {
-        'mock_id': {
-            'query': 'mock_query',
-            'time_frame': '3 days',
-            'command_name': 'previous command',
-            'query_name': 'mock_name',
+        "mock_id": {
+            "query": "mock_query",
+            "time_frame": "3 days",
+            "command_name": "previous command",
+            "query_name": "mock_name",
         }
     }
     set_integration_context(context)
-    mock_response = {'status': 'SUCCESS',
-                     'number_of_results': 1,
-                     'query_cost': {'376699223': 0.0031591666666666665},
-                     'remaining_quota': 1000.0,
-                     'results': [{'x': 'test1', 'y': None}],
-                     'execution_id': 'query_id_mock'}
-    mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
-    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': 'mock_name',
-                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
-                                       'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
-    assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | mock_name | 1000.0 | SUCCESS |' in \
-           command_results.readable_output
-    assert 'y' in command_results.raw_response['results'][0]
+    mock_response = {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": [{"x": "test1", "y": None}],
+        "execution_id": "query_id_mock",
+    }
+    mocker.patch.object(CLIENT, "start_xql_query", return_value="1234")
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    mocker.patch.object(demisto, "getIntegrationContext", side_effect=get_integration_context)
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=set_integration_context)
+    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {"query": query, "query_name": "mock_name"})
+    assert command_results.outputs == {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_name": "mock_name",
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "execution_id": "query_id_mock",
+        "results": [{"x": "test1"}],
+    }
+    assert (
+        "| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | mock_name | 1000.0 | SUCCESS |"
+        in command_results.readable_output
+    )
+    assert "y" in command_results.raw_response["results"][0]
     assert get_integration_context() == context
 
 
@@ -759,22 +749,37 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
     - Ensure returned command results are correct and integration_context was cleared.
 
     """
-    query = 'MOCK_QUERY'
-    mock_response = {'status': 'SUCCESS',
-                     'number_of_results': 1,
-                     'query_cost': {'376699223': 0.0031591666666666665},
-                     'remaining_quota': 1000.0,
-                     'results': [{'x': 'test1', 'y': None}],
-                     'execution_id': 'query_id_mock'}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query, })
-    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
-                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
-                                       'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
-    assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |' in \
-           command_results.readable_output
-    assert 'y' in command_results.raw_response['results'][0]
+    query = "MOCK_QUERY"
+    mock_response = {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": [{"x": "test1", "y": None}],
+        "execution_id": "query_id_mock",
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(
+        CLIENT,
+        {
+            "query": query,
+        },
+    )
+    assert command_results.outputs == {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_name": "",
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "execution_id": "query_id_mock",
+        "results": [{"x": "test1"}],
+    }
+    assert (
+        "| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |"
+        in command_results.readable_output
+    )
+    assert "y" in command_results.raw_response["results"][0]
 
 
 def test_get_xql_query_results_clear_integration_context_on_success(mocker):
@@ -789,22 +794,32 @@ def test_get_xql_query_results_clear_integration_context_on_success(mocker):
     - Ensure the integration context was cleared.
 
     """
-    query = 'MOCK_QUERY'
-    mock_response = {'status': 'SUCCESS',
-                     'number_of_results': 1,
-                     'query_cost': {'376699223': 0.0031591666666666665},
-                     'remaining_quota': 1000.0,
-                     'results': [{'x': 'test1', 'y': None}],
-                     'execution_id': 'query_id_mock'}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
-    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
-                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
-                                       'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
-    assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |' in \
-           command_results.readable_output
-    assert 'y' in command_results.raw_response['results'][0]
+    query = "MOCK_QUERY"
+    mock_response = {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": [{"x": "test1", "y": None}],
+        "execution_id": "query_id_mock",
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {"query": query})
+    assert command_results.outputs == {
+        "status": "SUCCESS",
+        "number_of_results": 1,
+        "query_name": "",
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "execution_id": "query_id_mock",
+        "results": [{"x": "test1"}],
+    }
+    assert (
+        "| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |"
+        in command_results.readable_output
+    )
+    assert "y" in command_results.raw_response["results"][0]
 
 
 def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
@@ -819,24 +834,33 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
     - Ensure returned command results are correct.
 
     """
-    query = 'MOCK_QUERY'
-    mock_response = {'status': 'SUCCESS',
-                     'number_of_results': 1500,
-                     'query_cost': {'376699223': 0.0031591666666666665},
-                     'remaining_quota': 1000.0,
-                     'results': {'stream_id': 'test_stream_id'},
-                     'execution_id': 'query_id_mock'}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, 'File Data'))
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    mocker.patch('XQLQueryingEngine.fileResult',
-                 return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz',
-                               'FileID': '12345'})
-    results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
-    assert results[0] == {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz', 'FileID': '12345'}
+    query = "MOCK_QUERY"
+    mock_response = {
+        "status": "SUCCESS",
+        "number_of_results": 1500,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": {"stream_id": "test_stream_id"},
+        "execution_id": "query_id_mock",
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, "File Data"))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    mocker.patch(
+        "CoreXQLApiModule.fileResult",
+        return_value={"Contents": "", "ContentsFormat": "text", "Type": 3, "File": "results.gz", "FileID": "12345"},
+    )
+    results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {"query": query})
+    assert results[0] == {"Contents": "", "ContentsFormat": "text", "Type": 3, "File": "results.gz", "FileID": "12345"}
     command_result = results[1]
-    assert command_result.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
-                                      'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
-                                      'results': {'stream_id': 'test_stream_id'}, 'execution_id': 'query_id_mock'}
+    assert command_result.outputs == {
+        "status": "SUCCESS",
+        "number_of_results": 1500,
+        "query_name": "",
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": {"stream_id": "test_stream_id"},
+        "execution_id": "query_id_mock",
+    }
 
 
 def test_get_xql_query_results_polling_command_success_more_than_1000_results_parse_to_context(mocker):
@@ -852,41 +876,71 @@ def test_get_xql_query_results_polling_command_success_more_than_1000_results_pa
     - Ensure the results were parsed to context instead of being extracted to a file.
 
     """
-    query = 'MOCK_QUERY'
-    mock_response = {'status': 'SUCCESS',
-                     'number_of_results': 1500,
-                     'query_cost': {'376699223': 0.0031591666666666665},
-                     'remaining_quota': 1000.0,
-                     'results': {'stream_id': 'test_stream_id'},
-                     'execution_id': 'query_id_mock'}
+    query = "MOCK_QUERY"
+    mock_response = {
+        "status": "SUCCESS",
+        "number_of_results": 1500,
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": {"stream_id": "test_stream_id"},
+        "execution_id": "query_id_mock",
+    }
     # The results that should be parsed to context instead of being extracted to a file:
     expected_results_in_context = [
-        {"_time": "2021-10-14 03:59:09.793 UTC", "event_id": "123", "_vendor": "PANW", "_product": "XDR agent",
-         "insert_timestamp": "2021-10-14 04:02:12.883114 UTC"},
-        {"_time": "2021-10-14 03:59:09.809 UTC", "event_id": "234", "_vendor": "PANW", "_product": "XDR agent",
-         "insert_timestamp": "2021-10-14 04:02:12.883114 UTC"},
-        {"_time": "2021-10-14 04:00:27.78 UTC", "event_id": "456", "_vendor": "PANW", "_product": "XDR agent",
-         "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"},
-        {"_time": "2021-10-14 04:00:27.797 UTC", "event_id": "567", "_vendor": "PANW", "_product": "XDR agent",
-         "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"}
+        {
+            "_time": "2021-10-14 03:59:09.793 UTC",
+            "event_id": "123",
+            "_vendor": "PANW",
+            "_product": "XDR agent",
+            "insert_timestamp": "2021-10-14 04:02:12.883114 UTC",
+        },
+        {
+            "_time": "2021-10-14 03:59:09.809 UTC",
+            "event_id": "234",
+            "_vendor": "PANW",
+            "_product": "XDR agent",
+            "insert_timestamp": "2021-10-14 04:02:12.883114 UTC",
+        },
+        {
+            "_time": "2021-10-14 04:00:27.78 UTC",
+            "event_id": "456",
+            "_vendor": "PANW",
+            "_product": "XDR agent",
+            "insert_timestamp": "2021-10-14 04:04:34.332563 UTC",
+        },
+        {
+            "_time": "2021-10-14 04:00:27.797 UTC",
+            "event_id": "567",
+            "_vendor": "PANW",
+            "_product": "XDR agent",
+            "insert_timestamp": "2021-10-14 04:04:34.332563 UTC",
+        },
     ]
-    # Creates the mocked data which returns from 'XQLQueryingEngine.get_xql_query_results' command:
-    mock_file_data = b''
+    # Creates the mocked data which returns from 'CoreXQLApiModule.get_xql_query_results' command:
+    mock_file_data = b""
     for item in expected_results_in_context:
-        mock_file_data += json.dumps(item).encode('utf-8')
-        mock_file_data += b'\n'
+        mock_file_data += json.dumps(item).encode("utf-8")
+        mock_file_data += b"\n"
     compressed_mock_file_data = gzip.compress(mock_file_data)
 
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
-                                                                               'parse_result_file_to_context': True})
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, compressed_mock_file_data))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    results = XQLQueryingEngine.get_xql_query_results_polling_command(
+        CLIENT, {"query": query, "parse_result_file_to_context": True}
+    )
 
-    assert results.outputs.get('results', []) == expected_results_in_context, \
-        'There might be a problem in parsing the results into the context'
-    assert results.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
-                               'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
-                               'results': expected_results_in_context, 'execution_id': 'query_id_mock'}
+    assert (
+        results.outputs.get("results", []) == expected_results_in_context
+    ), "There might be a problem in parsing the results into the context"
+    assert results.outputs == {
+        "status": "SUCCESS",
+        "number_of_results": 1500,
+        "query_name": "",
+        "query_cost": {"376699223": 0.0031591666666666665},
+        "remaining_quota": 1000.0,
+        "results": expected_results_in_context,
+        "execution_id": "query_id_mock",
+    }
 
 
 def test_get_xql_query_results_polling_command_pending(mocker):
@@ -901,17 +955,15 @@ def test_get_xql_query_results_polling_command_pending(mocker):
     - Ensure returned command results are correct and the scheduled_command is set properly.
 
     """
-    query = 'MOCK_QUERY'
-    mock_response = {'status': 'PENDING',
-                     'execution_id': 'query_id_mock',
-                     'results': None}
-    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch('XQLQueryingEngine.is_demisto_version_ge', return_value=True)
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    mocker.patch('XQLQueryingEngine.ScheduledCommand', return_value=None)
-    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
-    assert command_results.readable_output == 'Query is still running, it may take a little while...'
-    assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None, 'query_name': ''}
+    query = "MOCK_QUERY"
+    mock_response = {"status": "PENDING", "execution_id": "query_id_mock", "results": None}
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch("CoreXQLApiModule.is_demisto_version_ge", return_value=True)
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    mocker.patch("CoreXQLApiModule.ScheduledCommand", return_value=None)
+    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {"query": query})
+    assert command_results.readable_output == "Query is still running, it may take a little while..."
+    assert command_results.outputs == {"status": "PENDING", "execution_id": "query_id_mock", "results": None, "query_name": ""}
 
 
 def test_get_xql_quota_command(mocker):
@@ -926,17 +978,11 @@ def test_get_xql_quota_command(mocker):
     - Ensure returned command results are correct.
 
     """
-    mock_response = {
-        "reply": {
-            "license_quota": 1000,
-            "additional_purchased_quota": 0,
-            "used_quota": 0.0
-        }
-    }
-    mocker.patch.object(CLIENT, 'get_xql_quota', return_value=mock_response)
+    mock_response = {"reply": {"license_quota": 1000, "additional_purchased_quota": 0, "used_quota": 0.0}}
+    mocker.patch.object(CLIENT, "get_xql_quota", return_value=mock_response)
     response = XQLQueryingEngine.get_xql_quota_command(CLIENT, {})
-    assert '|Additional Purchased Quota|License Quota|Used Quota|' in response.readable_output
-    assert response.outputs == {'license_quota': 1000, 'additional_purchased_quota': 0, 'used_quota': 0.0}
+    assert "|Additional Purchased Quota|License Quota|Used Quota|" in response.readable_output
+    assert response.outputs == {"license_quota": 1000, "additional_purchased_quota": 0, "used_quota": 0.0}
 
 
 # =========================================== TEST Built-In Queries ===========================================#
@@ -955,15 +1001,15 @@ def test_get_built_in_query_results_polling_command(mocker):
 
     """
     args = {
-        'endpoint_id': '123456,654321',
-        'file_sha256': 'abcde,edcba,p1p2p3',
-        'extra_fields': 'EXTRA1, EXTRA2',
-        'limit': '400',
-        'tenants': "tenantID,tenantID",
-        'time_frame': '7 days'
+        "endpoint_id": "123456,654321",
+        "file_sha256": "abcde,edcba,p1p2p3",
+        "extra_fields": "EXTRA1, EXTRA2",
+        "limit": "400",
+        "tenants": "tenantID,tenantID",
+        "time_frame": "7 days",
     }
-    res = mocker.patch('XQLQueryingEngine.start_xql_query_polling_command')
-    mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
+    res = mocker.patch("CoreXQLApiModule.start_xql_query_polling_command")
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-file-event-query")
     XQLQueryingEngine.get_built_in_query_results_polling_command(CLIENT, args)
     assert (
         res.call_args.args[1]["query"]
@@ -971,5 +1017,101 @@ def test_get_built_in_query_results_polling_command(mocker):
  in ("abcde","edcba","p1p2p3")| fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, action_file_sha256,
  actor_process_file_create_time, EXTRA1, EXTRA2 | limit 400"""
     )
-    assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
-    assert res.call_args.args[1]['time_frame'] == '7 days'
+    assert res.call_args.args[1]["tenants"] == ["tenantID", "tenantID"]
+    assert res.call_args.args[1]["time_frame"] == "7 days"
+
+
+@patch("XQLQueryingEngine.Client")
+@patch("CoreXQLApiModule.demisto.params")
+@patch("XQLQueryingEngine.get_nonce")
+@patch("CoreXQLApiModule.demisto.debug")
+@patch("CoreXQLApiModule.demisto.command")
+@patch("CoreXQLApiModule.demisto.args")
+@patch("CoreXQLApiModule.return_results")
+@patch("CoreXQLApiModule.return_error")
+def test_main_success(
+    mock_return_error,
+    mock_return_results,
+    mock_demisto_args,
+    mock_demisto_command,
+    mock_demisto_debug,
+    mock_get_nonce,
+    mock_demisto_params,
+    mock_Client,
+):
+    """
+    Given:
+    - demisto.params().
+    - Calling main().
+    When:
+    - main() is called.
+    Then:
+    - Ensure the main() is called properly.
+    """
+    from XQLQueryingEngine import main
+
+    mock_demisto_params.return_value = {
+        "apikey": {"password": "test_apikey"},
+        "apikey_id": {"password": "test_apikey_id"},
+        "url": "http://example.com",
+        "insecure": False,
+        "proxy": False,
+    }
+    mock_demisto_command.return_value = "some_command"
+    mock_demisto_args.return_value = {"arg1": "value1"}
+    mock_get_nonce.return_value = "random_nonce"
+    mock_Client.return_value = MagicMock()
+    mock_demisto_command.return_value = "test-module"
+    mock_return_results.return_value = None
+
+    main()
+
+    mock_demisto_debug.assert_called_once_with("Command being called is test-module")
+    actual_call = mock_Client.call_args
+    filtered_kwargs = {k: v for k, v in actual_call.kwargs.items() if k != "headers"}
+    expected_kwargs = {
+        "base_url": "http://example.com/public_api/v1",
+        "verify": True,
+        "proxy": False,
+        "is_core": False,
+    }
+    assert filtered_kwargs == expected_kwargs
+    mock_return_error.assert_not_called()
+
+
+@patch("CoreXQLApiModule.IS_CORE_AVAILABLE", False)
+@patch("CoreXQLApiModule.BaseClient._http_request")
+def test_get_xql_quota_is_core_available_false(mock_http_request):
+    """
+    Given:
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
+
+    When:
+    - Calling get_xql_quota function.
+
+    Then:
+    - Ensure the request for get_xql_quota use the _http_request.
+
+    """
+    mock_http_request.return_value = {
+        "name": "/api/webapp/public_api/v1/xql/get_quota",
+        "status": 200,
+        "data": '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0, "eval_quota": 0.0}}',
+    }
+    CLIENT.get_xql_quota({})
+    mock_http_request.assert_called_once_with(
+        CLIENT,
+        method="POST",
+        url_suffix="/xql/get_quota",
+        full_url=None,
+        headers=None,
+        json_data={},
+        params=None,
+        data=None,
+        timeout=None,
+        raise_on_status=False,
+        ok_codes=None,
+        error_handler=None,
+        with_metrics=False,
+        resp_type="json",
+    )

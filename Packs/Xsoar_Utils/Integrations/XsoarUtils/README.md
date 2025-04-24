@@ -7,22 +7,18 @@ python3  Xsoar_Utils.py  xsoar-create-entry  '{"data":"# testapi4","inv_id":"122
 
 Read the code to understand more.
 
-## Configure Xsoar_Utils on Cortex XSOAR
+## Configure Xsoar_Utils in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Xsoar_Utils.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | XSOAR Server URL  |  | True |
-    | XSOAR Server API_Key |  | True |
-    | XSOAR Server playground-id |  | True |
-    | Allow Insecure connections to the server | Check this to ignore certificate signature | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| XSOAR Server URL  |  | True |
+| XSOAR Server API_Key |  | True |
+| XSOAR Server playground-id |  | True |
+| Allow Insecure connections to the server | Check this to ignore certificate signature | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xsoar-create-entry
 ***
@@ -48,5 +44,4 @@ There is no context output for this command.
 ``` ```
 
 #### Human Readable Output
-
 

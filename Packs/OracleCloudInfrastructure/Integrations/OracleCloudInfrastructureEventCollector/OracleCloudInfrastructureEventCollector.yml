@@ -79,13 +79,14 @@ script:
       required: true
     description: Manual command to fetch and display events.
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.91708
+  dockerimage: demisto/oci:1.0.0.117259
   isfetchevents: true
   script: '-'
   subtype: python3
   type: python
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,32 @@
+{
+    "celonis_celonis_raw": {
+      "success": {
+        "type": "string",
+        "is_array": false
+      },
+      "email": {
+        "type": "string",
+        "is_array": false
+      },
+      "event": {
+        "type": "string",
+        "is_array": false
+      },
+      "authenticationEventType": {
+        "type": "string",
+        "is_array": false
+      },
+      "message": {
+        "type": "string",
+        "is_array": false
+      },
+      "userRole": {
+        "type": "string",
+        "is_array": false
+      },
+      "userId": {
+        "type": "string",
+        "is_array": false
+      } 
+    }
+  }

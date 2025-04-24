@@ -1,8 +1,8 @@
 args:
-- description: Date value to check - Can be any non-timezone aware time format. ex. "2020-01-01T00:00:00"
+- description: Date value to check - Can be any time format. ex. "2020-01-01T00:00:00".
   name: left
   required: true
-- description: Relative time ex. "6 months ago"
+- description: Relative time ex. "6 months ago".
   name: right
   required: true
 comment: Checks the given datetime has occured after the provided relative time.
@@ -19,7 +19,7 @@ tags:
 - Condition
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

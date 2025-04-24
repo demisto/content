@@ -155,7 +155,7 @@ script:
       name: score_end
     description: Gets indicators from the feed.
     name: opencti-get-indicators
-  dockerimage: demisto/vendors-sdk:1.0.0.92984
+  dockerimage: demisto/vendors-sdk:1.0.0.115493
   feed: true
   runonce: false
   script: '-'

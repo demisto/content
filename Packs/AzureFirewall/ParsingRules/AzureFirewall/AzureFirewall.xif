@@ -1,0 +1,12 @@
+[INGEST:vendor="msft", product="azure", target_dataset="msft_azure_firewall_raw", no_hit = drop]
+// assert log record is an Azure Firewall log
+filter category = "AZFW*"
+| alter _time = if( // parse RFC 3339 compatible timestamps
+    // numerical offset e.g. 2024-09-24T19:41:59.698+03:00
+    to_string(time) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?[+-]\d{2}:\d{2}", parse_timestamp("%FT%H:%M:%E*S%Ez", to_string(time)),
+
+    // zulu time suffix notation, e.g. "2024-09-24T16:41:59.698Z
+    to_string(time) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z", parse_timestamp("%FT%H:%M:%E*SZ", to_string(time)),
+
+    // default fallback
+    _insert_time);

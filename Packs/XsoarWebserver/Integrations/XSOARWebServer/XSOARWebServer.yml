@@ -98,7 +98,7 @@ script:
       name: xsoarproxy
     description: setup a form submission job that can take multiple values from multiple users.
     name: xsoar-ws-setup-form-submission
-  dockerimage: demisto/bottle:1.0.0.76007
+  dockerimage: demisto/bottle:1.0.0.2057122
   longRunning: true
   longRunningPort: true
   script: ''

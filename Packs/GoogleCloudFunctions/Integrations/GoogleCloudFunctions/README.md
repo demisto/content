@@ -1,10 +1,7 @@
 Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
 This integration was integrated and tested with API version 1 of Google Cloud Functions
-## Configure Google Cloud Functions on Cortex XSOAR
+## Configure Google Cloud Functions in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Cloud Functions.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -14,9 +11,8 @@ This integration was integrated and tested with API version 1 of Google Cloud Fu
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-cloud-functions-list
 ***
@@ -300,4 +296,3 @@ Executes a Google Cloud function.
 |executionId|result|
 |---|---|
 | xp9hifb4y996 | hell"oThere |
-

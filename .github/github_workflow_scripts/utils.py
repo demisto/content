@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from logging import Logger
+import logging
 import os
 import sys
 import json
@@ -22,6 +24,7 @@ CONTENT_ROLES_FILENAME = "content_roles.json"
 GITHUB_HIDDEN_DIR = ".github"
 CONTENT_ROLES_BLOB_MASTER_URL = f"https://raw.githubusercontent.com/demisto/content/master/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
 
+LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
 # override print so we have a timestamp with each print
 org_print = print
@@ -351,3 +354,34 @@ def get_metadata(pack_dirs: set[str]) -> list[dict]:
             print(f'Could not find pack support level for pack {pack_dir}')  # noqa: T201
 
     return pack_metadata_list
+
+
+def get_logger(file_name: str) -> Logger:
+    """
+    Return a logger.
+
+    Arguments:
+    - `file_name` (``str``): The name of the log file.
+
+    Returns:
+    - `Logger` instance.
+    """
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)  # Set the lowest level to capture all messages
+
+    # Create file handle and set level to DEBUG
+    file_handler = logging.FileHandler(f"{file_name}.log")
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+
+    # Create stdout handler and set level to INFO
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+
+    # Add handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
+
+    return logger

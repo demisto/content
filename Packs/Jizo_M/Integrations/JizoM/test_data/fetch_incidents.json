@@ -1,0 +1,75 @@
+{
+    "alerts_flows": {
+        "data": [
+            {
+                "idx": 295,
+                "ip_probe": "Probe_02",
+                "port": 0,
+                "sid": 95324,
+                "rev": 0,
+                "category": "Web Application Attack",
+                "severity": 1,
+                "id_flow": 2404026829082543,
+                "id_vlan": 827,
+                "ip_src": "45",
+                "port_src": 528,
+                "ip_dest": "77",
+                "port_dest": 45,
+                "proto": "SSH",
+                "app_proto": "SSL",
+                "flow_bits": "918435115",
+                "date": {
+                    "date": "2024-03-14 17:20:10.000000",
+                    "timezone_type": 3,
+                    "timezone": "Europe/Berlin"
+                }
+            },
+            {
+                "idx": 294,
+                "ip_probe": "Probe_01",
+                "port": 0,
+                "sid": 33595,
+                "rev": 5,
+                "category": "Abusive Content",
+                "severity": 4,
+                "id_flow": 8781960055960305,
+                "id_vlan": 870,
+                "ip_src": "71",
+                "port_src": 334,
+                "ip_dest": "56",
+                "port_dest": 377,
+                "proto": "UDP",
+                "app_proto": "HTTPS",
+                "flow_bits": "166173522",
+                "date": {
+                    "date": "2024-03-14 19:44:10.000000",
+                    "timezone_type": 3,
+                    "timezone": "Europe/Berlin"
+                }
+            },
+            {
+                "idx": 293,
+                "ip_probe": "Probe_02",
+                "port": 0,
+                "sid": 33595,
+                "rev": 5,
+                "category": "Fraud",
+                "severity": 4,
+                "id_flow": 5985215454305,
+                "id_vlan": 870,
+                "ip_src": "71",
+                "port_src": 334,
+                "ip_dest": "44",
+                "port_dest": 377,
+                "proto": "UDP",
+                "app_proto": "SMB",
+                "flow_bits": "166173522",
+                "date": {
+                    "date": "2024-03-14 19:20:10.000000",
+                    "timezone_type": 3,
+                    "timezone": "Europe/Berlin"
+                }
+            }
+        ]
+    }
+}

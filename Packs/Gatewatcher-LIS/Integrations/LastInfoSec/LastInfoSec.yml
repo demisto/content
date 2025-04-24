@@ -322,7 +322,7 @@ script:
     - contextPath: LIS.Domain.Vulnerabilities
       description: Vulnerabilities associated to this domain.
       type: String
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.11.10.116439
   runonce: false
   script: '-'
   subtype: python3

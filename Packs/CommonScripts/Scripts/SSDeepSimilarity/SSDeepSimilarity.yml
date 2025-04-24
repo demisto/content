@@ -30,7 +30,7 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/ssdeep:1.0.0.93570
+dockerimage: demisto/ssdeep:1.0.0.114703
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

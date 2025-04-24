@@ -1,11 +1,8 @@
 Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
 
 This integration was integrated and tested with version 2019 hotfix 5449 of Trend Micro Apex One Central
-## Configure Trend Micro Apex One on Cortex XSOAR
+## Configure Trend Micro Apex One in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Micro Apex One.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,9 +12,8 @@ This integration was integrated and tested with version 2019 hotfix 5449 of Tren
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trendmicro-apex-udso-list
 ***
@@ -776,4 +772,3 @@ Retrieves a list of all investigation results.
 >|name|scanSummaryId|scanSummaryGuid|submitTime|serverGuidList|creator|
 >|---|---|---|---|---|---|
 >| this is a test | 3 | 6161bf10-f073-4762-bd10-088b0f68ad1d | 2020-09-13T12:24:05+00:00 | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | Cortex XSOAR-PANW |
-

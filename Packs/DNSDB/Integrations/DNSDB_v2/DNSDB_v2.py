@@ -1,16 +1,14 @@
 import inspect
+import json
 import locale
-from collections.abc import Iterator, Callable, Iterable  # noqa: F401
+import re
 import urllib
 import urllib.parse
-
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-
-import datetime  # type: ignore[no-redef]
-import json
-import re
+from collections.abc import Iterable, Iterator
+from datetime import datetime
 
 import urllib3
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -492,9 +490,7 @@ def _handle_saf(i: Iterable[str]):
         try:
             saf_msg = json.loads(line)
         except json.JSONDecodeError as e:
-            raise DemistoException(
-                f"saf protocol error: could not decode json: {line}"
-            ) from e
+            raise DemistoException(f"saf protocol error: could not decode json: {line}") from e
 
         cond = saf_msg.get("cond")
         obj = saf_msg.get("obj")
@@ -532,7 +528,7 @@ def _run_query(f, args):
     for name, p in sig.parameters.items():
         if name in args:
             if p.annotation != p.empty:
-                if p.annotation == bool:
+                if p.annotation is bool:
                     if FALSE_REGEX.match(args[name]):
                         kwargs[name] = False
                     else:
@@ -602,7 +598,7 @@ def parse_rate_limit_int(i):
 
 def parse_unix_time(ts) -> str:
     try:
-        return datetime.datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore[attr-defined]
+        return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ")
     except TypeError:
         return ts
 

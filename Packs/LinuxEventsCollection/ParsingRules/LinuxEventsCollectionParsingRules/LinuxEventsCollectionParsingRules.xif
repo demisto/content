@@ -1,31 +1,31 @@
 [INGEST:vendor="linux", product="linux", target_dataset="linux_linux_raw", no_hit=keep]
-// Filter to apply the parsing rule only on logs ingested via syslog and not xdrc.
-filter _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and  _collector_type != "XDR Collector"
-| alter
-// Get the current year and timestamp.
-    tmp_get_current_year = arrayindex(regextract(to_string(_insert_time), "\d{4}"), 0),
-    tmp_get_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
-| alter 
-// Unifies the year and timestamp as String.
-    tmp_timestamp1 = concat(tmp_get_current_year, " ", tmp_get_timestamp)
-| alter 
-// Converts the full timestamp to datetime format (First option).
-    tmp_timestamp_format1 = parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp1)
-| alter 
-// Check the days difference between the current and extracted time.
-    tmp_timeDiff = timestamp_diff(tmp_timestamp_format1, current_time(), "MILLISECOND")
-| alter 
-// If the number of days between extracted and current time is positive, reduce the current year by 1.
-    tmp_verify_year = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_get_current_year),1)),null)
-| alter
-// If the year was reduced by 1, unifies the reduced year and extracted timestamp as String.
-    tmp_timestamp2 = if(tmp_verify_year != null, concat(tmp_verify_year, " ", tmp_get_timestamp), null)
-| alter
-// Converts the full timestamp to datetime format (Second option).
-    tmp_timestamp_format2 = if(tmp_timestamp2 != null, parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp2), null)
-| alter
-    tmp_check_which_timestamp = coalesce(tmp_timestamp_format2, tmp_timestamp_format1, _insert_time) 
-| alter
-// Check if the second option is null, if not, use the first option.
-    _time = tmp_check_which_timestamp
-| fields -tmp_get_current_year, tmp_get_timestamp, tmp_timestamp1, tmp_timestamp_format1, tmp_timeDiff, tmp_verify_year, tmp_timestamp2, tmp_timestamp_format2, tmp_check_which_timestamp;
+// Filter applies to log records which contain a full RFC 3339 / ISO 8601 style timestamp with an explicit timezone offset or Zulu time suffix (UTC)
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)" and _raw_log not contains "kubelet-serving: Certificate expiration"
+| alter tmp_json_payload = arrayindex(regextract(_raw_log, "({.+})"), 0) // extract inner json payload from _raw_log if such exists
+| alter tmp_timestamp = coalesce( // extract timestamp field from json payload if it exists or the raw text if it does not
+    tmp_json_payload -> time,
+    tmp_json_payload -> Data.Client.CurrentDateTime, 
+    arrayindex(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z))"), 0))
+| alter // extract the different timestamp components: date, time & timezone offset from UTC 
+    tmp_date = arrayindex(regextract(tmp_timestamp, "(\d{4}\-\d{2}\-\d{2})"), 0), 
+    tmp_time = arrayindex(regextract(tmp_timestamp, "(\d{2}:\d{2}:\d{2}(?:\.\d+)?)"), 0), 
+    tmp_timezone_offset = arrayindex(regextract(tmp_timestamp, "((?:[+-]\d{2}:?\d{2}|Z$))"), 0) 
+// format the components to an RFC3339 compatible-like timestamp notation: <date>T<time><timezone_offset>
+| alter tmp_formatted_timestamp = format_string("%sT%s%s", tmp_date, tmp_time, tmp_timezone_offset)
+| alter _time = if( // initialize _time according to timezone offset format 
+    tmp_timezone_offset = "Z", parse_timestamp("%FT%H:%M:%E*SZ", tmp_formatted_timestamp), // Zulu time notation (UTC) e.g., 2024-10-28T14:30:55.123Z
+    tmp_timezone_offset ~= "[+-]\d{4}", parse_timestamp("%FT%H:%M:%E*S%z", tmp_formatted_timestamp), // [+-HHMM], e.g, 2024-10-28T14:30:55.123+0200
+    tmp_timezone_offset ~= "[+-]\d{2}:\d{2}", parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_formatted_timestamp)) // [+-HH:MM], e.g, 2024-10-28T14:30:55.123+02:00
+| fields - tmp*;
+
+/* Filter applies to RFC 3164 style syslog records (logs timestamp does not contain an explicit timezone nor year), which are ingested via the Broker VM syslog applet 
+   Log records which are ingested via the XDR Filebeat collector or excluded since their timestamp assignment is handled in the backend within the XDRC based on the Filebeat @timestamp entity. */
+filter _collector_type != "XDR Collector" and _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and _raw_log !~= "\d{4}\-\d{2}\-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?\s*(?:[+-]\d{2}:?\d{2}|Z)"
+| alter // construct timestamp basted on log timestamp and current year, assuming timestamp is given in UTC 
+    tmp_current_year = format_timestamp("%Y", _insert_time), 
+    tmp_rfc_3164_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0) // RFC 3164 compatible timestamp, e.g., Oct 28 14:30:55
+| alter tmp_current_year_timestamp = parse_timestamp("%Y %b %e %H:%M:%S", concat(tmp_current_year, " ", tmp_rfc_3164_timestamp), "UTC") 
+| alter _time = if( // validate the evaluated timestamp with current year is not in the future due to year transition during ingestion. If so, fallback to previous year. 
+    timestamp_diff(tmp_current_year_timestamp, current_time(), "MILLISECOND") <= 0, tmp_current_year_timestamp, // current (ingestion time) year 
+    parse_timestamp("%Y %b %e %H:%M:%S", concat(to_string(subtract(to_integer(tmp_current_year), 1)), " ", tmp_rfc_3164_timestamp), "UTC")) // previous year 
+| fields - tmp*;

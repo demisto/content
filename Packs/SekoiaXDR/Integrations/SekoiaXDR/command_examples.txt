@@ -1,0 +1,19 @@
+!sekoia-xdr-list-assets limit=5 assets_type="computer"
+!sekoia-xdr-get-asset asset_uuid="e553efc7-ab91-48f6-8c79-efd18ada9916"
+!sekoia-xdr-add-attributes-asset asset_uuid="e553efc7-ab91-48f6-8c79-efd18ada9916" name="Test" value="Test2" 
+!sekoia-xdr-remove-attribute-asset asset_uuid=e553efc7-ab91-48f6-8c79-efd18ada9916 attribute_uuid=95733049-4ffb-434e-9036-742a01871fc4
+!sekoia-xdr-add-keys-asset asset_uuid=e553efc7-ab91-48f6-8c79-efd18ada9916 name="MyKey" value="MyValue"
+!sekoia-xdr-remove-key-asset key_uuid=32dc9f1d-0e7b-4550-a042-eeb52c4a537e asset_uuid=e553efc7-ab91-48f6-8c79-efd18ada9916
+!sekoia-xdr-events-execute-query earliest_time=-1d lastest_time=+1d query=alert_short_ids:ALUnyZCYZ9Ga 
+!sekoia-xdr-events-status-query uuid=127@cd3435a4-5937-46ed-8163-ffdd5e7ab95b
+!sekoia-xdr-events-results-query uuid=127@cd3435a4-5937-46ed-8163-ffdd5e7ab95b 
+!sekoia-xdr-search-events earliest_time=-1d lastest_time=+1d query=alert_short_ids:ALVDPAcN6MYo
+!sekoia-xdr-list-alerts limit="5" sort_by="created_at"
+!sekoia-xdr-get-alert id=AL3qRBWfoveP
+!sekoia-xdr-get-workflow-alert id=AL3qRBWfoveP
+!sekoia-xdr-update-status-alert id=50314bd2-5493-4518-a242-71d405877e22
+!sekoia-xdr-get-cases-alert
+!sekoia-xdr-get-kill-chain kill_chain_uuid=KCYDJkEpzMot
+!sekoia-xdr-get-comments id=d444aa87-1408-49d0-9946-86bbc8d740f3
+!sekoia-xdr-get-user user_uuid=b57d2513-7037-4fe3-b1f7-9126e52dcc32
+!sekoia-xdr-http-request method=GET url_sufix=/sic/alerts/

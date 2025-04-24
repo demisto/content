@@ -978,7 +978,9 @@ script:
       description: Current status of anomaly.
       type: String
     description: Retrieve anomalies for specified case id.
-  dockerimage: demisto/python3:3.10.14.95956
+  - name: gra-validate-api
+    description: Verifies the Gurucul platform's operational status by assessing system health, reviewing logs, and checking key performance indicators for any errors.
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

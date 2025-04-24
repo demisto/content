@@ -22,7 +22,17 @@ Once the Lambda function execution is completed, the playbook deletes all of the
     - Workload Suspension: If the mining activity is widespread or poses a significant threat, the AWS Lambda function suspends the entire workload within the K8S environment.
 4. Cleanup: This action initiates the complete removal of all objects created for the Lambda execution for security and hardening purposes.
 
-### Required Integration
+## Dependencies
+
+This playbook uses the following sub-playbooks, integrations, and scripts.
+
+### Sub-playbooks
+
+* GenericPolling
+* Function Deployment - AWS
+* Function Removal - AWS
+
+### Integrations
 
 #### AWS IAM (Identity and Access Management)
 - [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)
@@ -38,25 +48,8 @@ Once the Lambda function execution is completed, the playbook deletes all of the
 
 #### AWS Lambda
 - [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
-- [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSLambda/).
+- [Cortex XSOAR AWS Lambda Integration](https://xsoar.pan.dev/docs/reference/integrations/aws---lambda)
 
-## Dependencies
-
-This playbook uses the following sub-playbooks, integrations, and scripts.
-
-### Sub-playbooks
-
-* GenericPolling
-* Function Deployment - AWS
-* Function Removal - AWS
-
-### Integrations
-
-This playbook does not use any integrations.
-
-### Scripts
-
-* Set
 
 ### Commands
 

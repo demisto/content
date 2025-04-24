@@ -49,6 +49,11 @@
             "cliName": "digitalguardianemailrecipient",
             "type": "shortText",
             "name": "Digital Guardian Email Recipient"
+        },
+        {
+            "cliName": "symantecescemailrecipient",
+            "type": "shortText",
+            "name": "Symantec ESC Email Recipient"
         }
     ]
 }

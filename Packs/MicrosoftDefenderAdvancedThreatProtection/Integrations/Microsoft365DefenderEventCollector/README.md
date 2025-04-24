@@ -1,11 +1,18 @@
-Microsoft 365 Defender event collector integration for Cortex XSIAM.
+Microsoft Defender for Endpoint Alerts integration for Cortex XSIAM (Deprecated).
 
+## Deprecation Announcement
+Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, this Event Collector is now deprecated.
+
+### Replacement Option:
+In XSIAM `Office 365` Data Source, select `Microsoft Graph API` -> `Alerts`, and select `Use Microsoft Graph API V2`.
+
+***
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Microsoft 365 Defender Event Collector on Cortex XSIAM
+## Configure Microsoft Defender for Endpoint Alerts on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft 365 Defender Event Collector.
+2. Search for Microsoft Defender for Endpoint Alerts.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                                                                          | **Description**                                                                                                                                                        | **Required** |

@@ -1,32 +1,28 @@
 Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
 This integration was integrated and tested with version 2023.34.0 of Reco.
 
-## Configure Reco on Cortex XSOAR
+## Configure Reco in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Reco.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://host.reco.ai/api/v1) |  | True |
-    | JWT app token |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | Max fetch |  | False |
-    | Source | Incidents SaaS Source | False |
-    | Before | Created At time before which incidents will be fetched | False |
-    | After | Created At time after which incidents will be fetched | False |
-    | Risk level | Risk level of the incidents to fetch | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://host.reco.ai/api/v1) |  | True |
+| JWT app token |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incident type |  | False |
+| Fetch incidents |  | False |
+| Max fetch |  | False |
+| Source | Incidents SaaS Source | False |
+| Before | Created At time before which incidents will be fetched | False |
+| After | Created At time after which incidents will be fetched | False |
+| Risk level | Risk level of the incidents to fetch | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### reco-add-exclusion-filter
@@ -438,3 +434,52 @@ Get private email list with access
 | Reco.privateEmails.user_category | String   | The category of the user  | 
 
 
+
+### reco-get-assets-by-id
+
+***
+Get all assets from Reco by id
+
+#### Base Command
+
+`reco-get-assets-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Asset id to search for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.SensitiveAssets.file_name | String | The name of the asset | 
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset | 
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name | 
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users | 
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset | 
+| Reco.SensitiveAssets.location | String | The path of the asset | 
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset | 
+
+### reco-get-alert-ai-summary
+
+***
+Get alert AI summary
+
+#### Base Command
+
+`reco-get-alert-ai-summary`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert id to get. | Required |
+
+#### Context Output
+
+| **Path**                   | **Type** | **Description**   |
+|----------------------------| --- |-------------------|
+| Reco.AlertSummary.markdown         | String | The alert summary |

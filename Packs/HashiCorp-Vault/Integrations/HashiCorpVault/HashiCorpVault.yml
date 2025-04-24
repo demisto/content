@@ -338,7 +338,40 @@ script:
       description: Authentication lease duration in seconds, 0 if indefinitely.
       type: number
     description: Creates a new authentication token.
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  - name: hashicorp-generate-role-secret
+    arguments:
+    - name: role_name
+      required: true
+      description: The name of the AppRole.
+    - name: meta_data
+      description: Metadata to be tied to the SecretID. 
+    - name: cidr_list
+      description: Comma separated string or list of CIDR blocks enforcing secret IDs to be used from specific set of IP addresses.
+      isArray: true
+    - name: token_bound_cidrs
+      description: Comma-separated string or list of CIDR blocks.
+      isArray: true
+    - name: num_uses
+      description: Number of times this SecretID can be used, after which the SecretID expires. A value of zero will allow unlimited uses.
+      type: number
+    - name: ttl_seconds
+      description: Duration in seconds after which this SecretID expires. A value of zero will allow the SecretID to not expire.
+      type: number
+    description: Generates and issues a new SecretID on an existing AppRole.
+  - name: hashicorp-get-role-id
+    arguments:
+    - name: role_name
+      required: true
+      description: The name of the AppRole.
+    outputs:
+    - contextPath: HashiCorp.AppRole.Id
+      description: AppRole ID.
+      type: string
+    - contextPath: HashiCorp.AppRole.Name
+      description: AppRole Name.
+      type: string
+    description: Retrieves the AppRole ID for a specified role.
+  dockerimage: demisto/vendors-sdk:1.0.0.1876031
 tests:
 - hashicorp_test
 fromversion: 5.0.0

@@ -2,13 +2,17 @@ args:
 - description: The entry ID of the word document to be parsed for indicators. The document can be either in DOC or DOCX format.
   name: entryID
   required: true
-comment: |-
-  Used to extract indicators from Word files (DOC, DOCX).
+comment: 'Used to extract indicators from Word files (DOC, DOCX).
+
   The script does not extract data from macros (e.g., embedded code).
 
+
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script'
 commonfields:
   id: ExtractIndicatorsFromWordFile
   version: -1
@@ -25,7 +29,7 @@ timeout: '0'
 type: python
 subtype: python3
 runas: DBotRole
-dockerimage: demisto/office-utils:2.0.0.93886
+dockerimage: demisto/office-utils:2.0.0.2020302
 fromversion: 5.0.0
 tests:
 - Extract Indicators From File - Generic v2 - Test

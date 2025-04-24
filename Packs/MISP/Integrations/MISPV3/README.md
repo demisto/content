@@ -3,32 +3,30 @@ Malware information sharing platform and threat sharing.
 Some changes have been made that might affect your existing content.
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---misp-v3).
 
-## Configure MISP V3 on Cortex XSOAR
+## Configure MISP V3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MISP V3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | MISP server URL (e.g., <https://192.168.0.1>) |  | True |
-    | API Key |  | False |
-    | Client Certificate |  | False |
-    | Private Key |  | False |
-    | Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
-    | ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Malicious tag IDs | Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
-    | Suspicious tag IDs | Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| MISP server URL (e.g., <https://192.168.0.1>) |  | True |
+| API Key |  | False |
+| Client Certificate |  | False |
+| Private Key |  | False |
+| Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
+| ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Malicious tag IDs | Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
+| Suspicious tag IDs | Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
+| Benign tag IDs | Comma-separated list of event's or attribute's benign tag IDs. Malicious and suspicious tags are stronger than benign tags. | False |
+| Search warninglists | Should the warninglists be considered when searching for an attribute.` | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### misp-search-events
@@ -4189,6 +4187,7 @@ is calculated by the event's threat level ID.
 
 * Indicators of attributes and events that have tags that are configured as malicious will be scored 3 (i.e., malicious).
 * Indicators of attributes and events that have tags that are configured as suspicious will be scored 2 (i.e., suspicious).
+* Indicators of attributes and events that have tags that are configured as benign will be scored 1 (i.e., benign).
 * Indicators of attributes and events that don't have any tags that are configured as suspicious nor malicious will be scored by their events' threat level ID.
 * Threat level ID with a value of 1, 2, or 3 will be scored 3 (i.e., malicious).
 * Threat level ID with a value of 4 will be scored 0 (i.e., unknown).
@@ -4197,6 +4196,7 @@ When configuring an instance, you should set:
 
 * Malicious tag IDs with tag IDs that would be calculated as malicious.
 * Suspicious tag IDs with tag IDs that would be calculated as suspicious.
+* Benign tag IDs with tag IDs that would be calculated as benign.
 
 ### misp-update-attribute
 

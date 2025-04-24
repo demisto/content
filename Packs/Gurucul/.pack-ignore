@@ -7,3 +7,6 @@ ignore=RM102
 [file:GRAAnomaliesDisplay.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-GRACaseLayout.json]
+ignore=GR103

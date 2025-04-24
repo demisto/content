@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Arcanna-Generic-Investigation](https://github.com/demisto/content/assets/24822739/96220ef5-a3af-4ff7-bd0f-29336f8e1e02)
+![Arcanna-Generic-Investigation](../doc_files/Arcanna-Generic-Investigation.png)

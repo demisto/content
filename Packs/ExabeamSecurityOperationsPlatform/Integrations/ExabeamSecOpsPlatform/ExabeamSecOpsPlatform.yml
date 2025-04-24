@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ExabeamSecOpsPlatform
   version: -1
@@ -8,6 +11,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   name: credentials
   required: true
@@ -18,10 +22,38 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  section: Collect
+  advanced: true
+- display: Maximum Incidents Per Fetch
+  name: max_fetch
+  defaultvalue: 50
+  type: 0
+  section: Collect
+  advanced: true
+- display: Fetch query
+  name: fetch_query
+  type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: For example key:value
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
 description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 display: Exabeam Security Operations Platform
 name: ExabeamSecOpsPlatform
@@ -35,7 +67,7 @@ script:
       description: The ending date for the search range.
       name: end_time
     - defaultValue: ""
-      description: Query, using Lucene syntax, filters log data for precise analysis.
+      description: 'Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. e.g., query="product: Correlation Rule AND rule_severity: High".'
       name: query
       required: false
     - description: Comma-separated list of fields to be returned from the search.
@@ -67,11 +99,433 @@ script:
     - contextPath: ExabeamPlatform.Event.rawLogs
       description: The raw logs associated with the event.
       type: String
+  - name: exabeam-platform-case-search
+    description: Search for cases that match one or more search criteria. For example, you can search for cases that are associated with a specific case ID and that reference specific rules.
+    arguments:
+    - name: case_id
+      description: An optional case ID parameter to get a specific case.
+    - name: start_time
+      description: Timestamp to start the search.
+      defaultValue: "7 days ago"
+    - name: end_time
+      description: Timestamp to end the search.
+      defaultValue: today
+    - name: query
+      description: Query, using Lucene syntax, filters log data for precise analysis. For example 'priority:LOW AND NOT stage:NEW'.
+      defaultValue: ""
+    - name: fields
+      description: List of fields to be returned from the search.
+      isArray: true
+      defaultValue: ""
+    - name: order_by
+      description: Order results by a specified field. The default ordering is ascending (ASC). To sort in descending order, use "DESC" after the field, for example, "riskScore DESC"."
+      isArray: true
+    - name: limit
+      defaultValue: 50
+      description: Limit the number of results returned from the search request.
+    - name: all_results
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      description: If set to 'True', retrieves all available results, ignoring the limit parameter.
+    - name: include_related_rules
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      description: If set to 'True', filters the context to include the "rules" array related to the cases in the results.
+    outputs:
+    - contextPath: ExabeamPlatform.Case.alertId
+      description: Unique identifier for the alert associated with the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.alertName
+      description: Name of the alert associated with the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.approxLogTime
+      description: Approximate log time of the event that generated the case.
+      type: Number
+    - contextPath: ExabeamPlatform.Case.assignee
+      description: User assigned to the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.caseCreationTimestamp
+      description: Timestamp when the case was created.
+      type: Number
+    - contextPath: ExabeamPlatform.Case.caseId
+      description: Unique identifier for the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.destHosts
+      description: Destination hosts involved in the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.destIps
+      description: Destination IP addresses involved in the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.groupedbyKey
+      description: Key by which the case was grouped.
+      type: String
+    - contextPath: ExabeamPlatform.Case.groupedbyValue
+      description: Value by which the case was grouped.
+      type: String
+    - contextPath: ExabeamPlatform.Case.hasAttachments
+      description: Indicates if the case has attachments.
+      type: Boolean
+    - contextPath: ExabeamPlatform.Case.ingestTimestamp
+      description: Timestamp when the case was ingested.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.lastModifiedTimestamp
+      description: Timestamp when the case was last modified.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.mitres
+      description: MITRE tactics and techniques associated with the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.priority
+      description: Priority level of the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.products
+      description: Products involved in the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.queue
+      description: Queue to which the case is assigned.
+      type: String
+    - contextPath: ExabeamPlatform.Case.riskScore
+      description: Risk score of the case.
+      type: Number
+    - contextPath: ExabeamPlatform.Case.rules.approxLogTime
+      description: Approximate log time of the rule that triggered the case.
+      type: Number
+    - contextPath: ExabeamPlatform.Case.rules.ruleId
+      description: Unique identifier for the rule.
+      type: String
+    - contextPath: ExabeamPlatform.Case.rules.ruleName
+      description: Name of the rule that triggered the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.rules.ruleReason
+      description: Reason for the rule triggering the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.rules.ruleSeverity
+      description: Severity level of the rule.
+      type: String
+    - contextPath: ExabeamPlatform.Case.rules.ruleSource
+      description: Source of the rule.
+      type: String
+    - contextPath: ExabeamPlatform.Case.rules.ruleType
+      description: Type of the rule.
+      type: String
+    - contextPath: ExabeamPlatform.Case.srcHosts
+      description: Source hosts involved in the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.srcIps
+      description: Source IP addresses involved in the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.stage
+      description: Current stage of the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.subscriptionCode
+      description: Subscription code associated with the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.tags
+      description: Tags associated with the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.useCases
+      description: Use cases associated with the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.users
+      description: Users involved in the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.vendors
+      description: Vendors involved in the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.alertCreationTimestamp
+      description: Timestamp when the alert was created.
+      type: Date
+    - contextPath: ExabeamPlatform.Case.alertDescriptionRt
+      description: Description of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Case.creationBy
+      description: User who created the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.creationTimestamp
+      description: Timestamp when the case was created.
+      type: Date
+    - contextPath: ExabeamPlatform.Case.destEndpoints
+      description: Destination endpoints involved in the case.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Case.mitres.tacticKey
+      description: Key of the MITRE tactic associated with the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.mitres.technique
+      description: MITRE technique associated with the case.
+      type: String
+    - contextPath: ExabeamPlatform.Case.mitres.techniqueKey
+      description: Key of the MITRE technique associated with the case.
+      type: String
+  - name: exabeam-platform-alert-search
+    description: Search for alerts that match one or more search criteria.
+    arguments:
+    - name: alert_id
+      description: Unique ID that identifies an alert.
+    - name: start_time
+      description: Timestamp to start the search.
+      defaultValue: "7 days ago"
+    - name: end_time
+      description: Timestamp to end the search.
+      defaultValue: today
+    - name: query
+      description: Query, using Lucene syntax, filters log data for precise analysis. For example 'priority:LOW'.
+      defaultValue: ""
+    - name: fields
+      description: List of fields to be returned from the search.
+      isArray: true
+      defaultValue: ""
+    - name: order_by
+      description: Order results by a specified field. The default ordering is ascending (ASC). To sort in descending order, use "DESC" after the field, for example, "riskScore DESC"."
+      isArray: true
+    - name: limit
+      defaultValue: 50
+      description: Limit the number of results returned from the search request.
+    - name: all_results
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      description: If set to 'True', retrieves all available results, ignoring the limit parameter.
+    - name: include_related_rules
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      description: If set to 'True', filters the context to include the "rules" array related to the cases in the results.
+    outputs:
+    - contextPath: ExabeamPlatform.Alert.alertDescriptionRt
+      description: The description of the alert in real-time.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.alertId
+      description: The unique identifier of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.alertName
+      description: The name or title of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.approxLogTime
+      description: The approximate log time of the alert.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.assignee
+      description: The person assigned to the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.caseCreationTimestamp
+      description: The timestamp when the case was created.
+      type: Number
+    - contextPath: ExabeamPlatform.Alert.caseId
+      description: The unique identifier of the case associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.creationBy
+      description: The user who created the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.creationTimestamp
+      description: The timestamp when the alert was created.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.destEndpoints
+      description: The destination endpoints involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.destHosts
+      description: The destination hosts involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.destIps
+      description: The destination IP addresses involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.groupedbyKey
+      description: The key used for grouping the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.groupedbyValue
+      description: The value used for grouping the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.groupingRuleId
+      description: The ID of the rule used for grouping the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.hasAttachments
+      description: Indicates if the alert has attachments.
+      type: Boolean
+    - contextPath: ExabeamPlatform.Alert.ingestTimestamp
+      description: The timestamp when the alert was ingested into the system.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.lastModifiedBy
+      description: The user who last modified the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.lastModifiedTimestamp
+      description: The timestamp when the alert was last modified.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.mitres.tactic
+      description: The MITRE tactic associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.mitres.tacticKey
+      description: The MITRE tactic key associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.mitres.technique
+      description: The MITRE technique associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.mitres.techniqueKey
+      description: The MITRE technique key associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.priority
+      description: The priority level of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.products
+      description: The products involved in the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.queue
+      description: The queue in which the alert is placed.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.riskScore
+      description: The risk score associated with the alert.
+      type: Number
+    - contextPath: ExabeamPlatform.Alert.srcEndpoints.ip
+      description: The IP addresses of the source endpoints involved in the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.srcHosts
+      description: The source hosts involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.srcIps
+      description: The source IP addresses involved in the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.stage
+      description: The stage of the alert in the investigation process.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.status
+      description: The status of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.subscriptionCode
+      description: The subscription code associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.tags
+      description: The tags associated with the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.useCases
+      description: The use cases related to the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.users
+      description: The users involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.vendors
+      description: The vendors associated with the alert.
+      type: String
+  - name: exabeam-platform-context-table-list
+    description: Retrieve metadata for all existing context tables, including source, operational status, and attribute mapping.
+    arguments:
+    - name: table_id
+      description: Specify the ID of an existing context table.
+    - name: limit
+      defaultValue: 50
+      description: Limit the number of results returned from the request.
+    - name: include_attributes
+      description: If set to 'True', filters the context to include the "attributes" array related to the cases in the results.
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - contextPath: ExabeamPlatform.ContextTable.attributeMapping
+      description: The attribute mapping of the context table.
+      type: Unknown
+    - contextPath: ExabeamPlatform.ContextTable.attributes.displayName
+      description: The display name of the attribute.
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.attributes.id
+      description: The unique identifier of the attribute.
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.attributes.isKey
+      description: 'Indicates if the attribute is a key attribute.'
+      type: Boolean
+    - contextPath: ExabeamPlatform.ContextTable.attributes.type
+      description: The type of the attribute.
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.contextType
+      description: 'The type of context the table represents.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.id
+      description: The unique identifier of the context table.
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.lastUpdated
+      description: The timestamp of the last update to the context table.
+      type: Number
+    - contextPath: ExabeamPlatform.ContextTable.name
+      description: The name of the context table.
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.source
+      description: The source of the context table data.
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.status
+      description: The status of the context table.
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.totalItems
+      description: The total number of items in the context table.
+      type: Number
+  - name: exabeam-platform-context-table-delete
+    description: Delete a specific context table, including records and attributes.
+    arguments:
+    - name: table_id
+      description: Specify the ID of an existing context table.
+      required: true
+    - name: delete_unused_custom_attributes
+      description: Delete any custom attributes in this table that are not used in another context table.
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+  - name: exabeam-platform-table-record-list
+    description: Retrieve the records for a specific context table.
+    arguments:
+    - name: table_id
+      description: ID of the table. Obtain this value by running `exabeam-platform-context-table-list`.
+      required: true
+    - name: limit
+      defaultValue: 50
+      description: The number of records to return.
+    - name: page
+      description: The page number to retrieve.
+    - name: page_size
+      description: The number of records per page, maximum value is '3000'. Default value is '50'.
+  - name: exabeam-platform-table-record-create
+    description: Add one or more context records directly to an existing table.
+    arguments:
+    - name: table_id
+      description: ID of the table. Obtain this value by running `exabeam-platform-context-table-list`.
+      required: true
+    - name: attributes
+      description: A dictionary mapping attribute names to their values, for example:`{"attributeName":["val1", "val2"]}`.
+      required: true
+      type: keyValue
+    - name: operation
+      description: Options for how data should be uploaded to an existing table.
+      defaultValue: Append
+      auto: PREDEFINED
+      predefined:
+      - Append
+      - Replace
+    - name: interval_in_seconds
+      description: The interval in seconds between each poll.
+      defaultValue: 30
+    - name: timeout
+      description: The timeout in seconds until polling ends.
+      defaultValue: 600
+    - name: tracker_id
+      description: Specify the tracker ID from an upload request whose progress you want to track.
+      hidden: true
+    - name: hide_polling_output
+      hidden: true
+      description: Suppresses the output of polling operations to reduce clutter in logs.
+    polling: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.12.8.1983910
+  isfetch: true
 fromversion: 6.10.0
 tests:
 - ExabeamSecurityOperationsPlatform-test
+defaultmapperin: "Exabeam Platform - Incoming Mapper"

@@ -13,6 +13,20 @@ configuration:
   name: credentials
   required: true
   type: 9
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -75,11 +89,104 @@ script:
     - contextPath: SpurContextAPI.Context.client_types
       type: array
       description: The different type of client devices that we have observed on this IP address.
+  - name: ip
+    description: 'IP reputation command using the Spur Context API.'
+    arguments:
+    - name: ip
+      required: true
+      description: IP address to enrich.
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: string
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: string
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP.
+      type: String
+    - contextPath: IP.ClientTypes
+      description: The organization name.
+      type: array
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: string
+    - contextPath: IP.Organization.Name
+      description: The organization name.
+      type: string
+    - contextPath: IP.Risks
+      description: Risks that we have determined based on our collection of data.
+      type: array
+    - contextPath: IP.Tunnels
+      description: The different types of proxy or VPN services that are running on this IP address.
+      type: array
+    - contextPath: SpurContextAPI.Context.ip
+      type: string
+      description: IP that was enriched.
+    - contextPath: SpurContextAPI.Context.as
+      type: object
+      description: Autonomous System details for an IP Address.
+    - contextPath: SpurContextAPI.Context.organization
+      type: string
+      description: The organization using this IP address.
+    - contextPath: SpurContextAPI.Context.infrastructure
+      type: string
+      description: The primary infracstructure type that this IP address supports. Common tags are MOBILE and DATACENTER.
+    - contextPath: SpurContextAPI.Context.location
+      type: object
+      description: Data-center or IP Hosting location based on MaxMind GeoLite.
+    - contextPath: SpurContextAPI.Context.services
+      type: array
+      description: The different types of proxy or VPN services that are running on this IP address.
+    - contextPath: SpurContextAPI.Context.tunnels
+      type: array
+      description: Different VPN or proxy tunnels that are currently in-use on this IP address.
+    - contextPath: SpurContextAPI.Context.risks
+      type: array
+      description: Risks that we have determined based on our collection of data.
+    - contextPath: SpurContextAPI.Context.client_concentration
+      type: object
+      description: The strongest location concentration for clients using this IP address.
+    - contextPath: SpurContextAPI.Context.client_countries
+      type: number
+      description: The number of countries that we have observed clients located in for this IP address.
+    - contextPath: SpurContextAPI.Context.client_spread
+      type: number
+      description: The total geographic area in kilometers where we have observed users.
+    - contextPath: SpurContextAPI.Context.client_proxies
+      type: array
+      description: The different types of callback proxies we have observed on clients using this IP address.
+    - contextPath: SpurContextAPI.Context.client_count
+      type: number
+      description: The average number of clients we observe on this IP address.
+    - contextPath: SpurContextAPI.Context.client_behaviors
+      type: array
+      description: An array of behavior tags for an IP Address.
+    - contextPath: SpurContextAPI.Context.client_types
+      type: array
+      description: The different type of client devices that we have observed on this IP address.
   runonce: false
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.89873
+  dockerimage: demisto/python3:3.11.10.116949
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

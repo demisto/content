@@ -1,0 +1,333 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7313c050-532e-11ef-98f5-4f7930fa584a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "riskscore",
+                                "height": 53,
+                                "id": "3e8ab550-5333-11ef-8e57-93329e0f873a",
+                                "index": 0,
+                                "listId": "caseinfoid-7313c050-532e-11ef-98f5-4f7930fa584a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcepriority",
+                                "height": 53,
+                                "id": "63c81830-5333-11ef-8e57-93329e0f873a",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Risk Score",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-90d18c90-533c-11ef-b3a2-6d2c4e3b6981",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "externalstarttime",
+                                "height": 53,
+                                "id": "1d883170-533d-11ef-b3a2-6d2c4e3b6981",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcecreatetime",
+                                "height": 53,
+                                "id": "5553cb00-533d-11ef-b3a2-6d2c4e3b6981",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "7be5e870-533d-11ef-b3a2-6d2c4e3b6981",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastmodifiedon",
+                                "height": 53,
+                                "id": "5b30ccd0-533d-11ef-b3a2-6d2c4e3b6981",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeframe",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-a221c500-533c-11ef-b3a2-6d2c4e3b6981",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "users",
+                                "height": 53,
+                                "id": "0345e310-556e-11ef-8b44-4b15ae1ba7d8",
+                                "index": 0,
+                                "listId": "caseinfoid-a221c500-533c-11ef-b3a2-6d2c4e3b6981",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "assigneduser",
+                                "height": 53,
+                                "id": "11323000-556e-11ef-8b44-4b15ae1ba7d8",
+                                "index": 1,
+                                "listId": "caseinfoid-a221c500-533c-11ef-b3a2-6d2c4e3b6981",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Users",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-acde55d0-533c-11ef-b3a2-6d2c4e3b6981",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "exabeamrules",
+                                "height": 106,
+                                "id": "ee6494a0-556d-11ef-8b44-4b15ae1ba7d8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Rules",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-867352f0-533d-11ef-b3a2-6d2c4e3b6981",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertname",
+                                "height": 22,
+                                "id": "8e2d2b10-533d-11ef-b3a2-6d2c4e3b6981",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "externalid",
+                                "height": 22,
+                                "id": "9855d2c0-5f92-11ef-803f-07549a0c14ce",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "826f9710-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "8943a310-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "8d346540-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "90ef9880-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "info",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-252ca0e0-556e-11ef-8b44-4b15ae1ba7d8",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitretacticid",
+                                "height": 22,
+                                "id": "304b75f0-556e-11ef-8b44-4b15ae1ba7d8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitretacticname",
+                                "height": 22,
+                                "id": "310290f0-556e-11ef-8b44-4b15ae1ba7d8",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitretechniqueid",
+                                "height": 22,
+                                "id": "32694ce0-556e-11ef-8b44-4b15ae1ba7d8",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mitretechniquename",
+                                "height": 22,
+                                "id": "348f1310-556e-11ef-8b44-4b15ae1ba7d8",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "MITRE TTPs",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-1d0db6a0-5574-11ef-8b44-4b15ae1ba7d8",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "2152da60-5574-11ef-8b44-4b15ae1ba7d8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tags",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Exabeam Platform Case",
+    "name": "Exabeam Platform Case",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": ""
+}

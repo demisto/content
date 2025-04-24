@@ -1,32 +1,28 @@
 SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, https://lumu.io/
 This integration was integrated and tested with version 20230215 of Lumu
 
-## Configure Lumu on Cortex XSOAR
+## Configure Lumu in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Lumu.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Maximum number of incidents to fetch every time |  | False |
-    | First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years\). Default is 3 days. | False |
-    | Server URL |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | API Key |  | True |
-    | Incident Offset |  | False |
-    | Total Incident per fetching using lumu endpoint |  | False |
-    | Max time in seconds per fetching using lumu endpoint |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Lumu to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Lumu\), or both \*\*Incoming And Outgoing\*\*. | False |
-    | Mirror tags | Comment and files that will be marked with this tag will be pushed into Lumu. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Maximum number of incidents to fetch every time |  | False |
+| First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years\). Default is 3 days. | False |
+| Server URL |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| API Key |  | True |
+| Incident Offset |  | False |
+| Total Incident per fetching using lumu endpoint |  | False |
+| Max time in seconds per fetching using lumu endpoint |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Lumu to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Lumu\), or both \*\*Incoming And Outgoing\*\*. | False |
+| Mirror tags | Comment and files that will be marked with this tag will be pushed into Lumu. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lumu-retrieve-labels
 ***

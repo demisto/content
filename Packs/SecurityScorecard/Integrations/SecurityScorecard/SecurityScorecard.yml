@@ -12,72 +12,86 @@ configuration:
   required: true
   defaultvalue: https://api.securityscorecard.io/
   type: 0
+  section: Connect
 - name: username
   display: Username/Email
   additionalinfo: The SecurityScorecard username/email.
   required: true
   type: 9
   displaypassword: API Token
+  section: Connect
 - name: isFetch
   display: Fetch incidents
   type: 8
   required: false
+  section: Collect
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
   defaultvalue: "1440"
   type: 19
   required: false
+  section: Collect
 - name: max_fetch
   display: Fetch Limit
   defaultvalue: '50'
   type: 0
   additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
   required: false
+  section: Collect
 - name: first_fetch
   display: First fetch
   defaultvalue: 2 days
   type: 0
   additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
   required: false
+  section: Collect
 - name: incidentType
   display: Incident type
   defaultvalue: SecurityScorecard Alert
   type: 13
   required: false
+  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   required: false
+  section: Connect
+- display: Portfolio ID
+  name: portfolio_id
+  type: 0
+  required: false
+  section: Connect
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 script:
-  script: '-'
+  script: ''
   type: python
   subtype: python3
   isFetchSamples: true
   isfetch: true
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.11.1940698
   commands:
   - name: securityscorecard-portfolios-list
-    description: List all Portfolios
+    description: List all Portfolios.
     arguments:
     - name: limit
       description: Limit the amount of Portfolios to return. Defaults to 50.
     outputs:
     - contextPath: SecurityScorecard.Portfolio.id
-      description: Portfolio ID
+      description: Portfolio ID.
       type: String
     - contextPath: SecurityScorecard.Portfolio.name
-      description: Portfolio name
+      description: Portfolio name.
       type: String
     - contextPath: SecurityScorecard.Portfolio.description
-      description: Portfolio description
+      description: Portfolio description.
       type: String
     - contextPath: SecurityScorecard.Portfolio.privacy
       description: Portfolio privacy. Can be either private, shared or team.
@@ -102,7 +116,7 @@ script:
       - "E"
       - "F"
     - name: industry
-      description: Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services
+      description: Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services.
       auto: PREDEFINED
       predefined:
       - "education"
@@ -115,9 +129,9 @@ script:
       - "retail"
       - "technology"
     - name: vulnerability
-      description: Vulnerability filter. #TODO NEED TO CHECK POSSIBLE VALUES.
+      description: Vulnerability filter.
     - name: issue_type
-      description: "Comma-separated list of issue types. Possible values are: adware_installation_trail, adware_installation, alleged_breach_incident, chatter, anonymous_proxy, service_cassandra, service_couchdb, attack_detected, attack_feed, new_booter_shell, spa_browser, cdn_hosting, tlscert_expired, tlscert_revoked, tlscert_self_signed, tlscert_excessive_expiration, tlscert_weak_signature, tlscert_no_revocation, service_cloud_provider, csp_no_policy_v2, csp_unsafe_policy_v2, csp_too_broad_v2, marketing_site, cookie_missing_secure_attribute, short_term_lending_site, leaked_credentials, leaked_credentials_info, service_dns, new_defacement, ransomware_victim, domain_uses_hsts_preloading, service_elasticsearch, employee_satisfaction, service_end_of_life, service_end_of_service, exposed_personal_information, exposed_personal_information_info, admin_subdomain_v2, tlscert_extended_validation, service_ftp, patching_cadence_high, web_vuln_host_high, service_vuln_host_high, service_imap, iot_camera, industrial_control_device, insecure_https_redirect_pattern_v2, service_ldap, service_ldap_anonymous, social_network_issues, patching_cadence_low, web_vuln_host_low, service_vuln_host_low, spf_record_malformed, malware_controller, malware_1_day, malware_30_day, malware_365_day, malware_infection, malware_infection_trail, patching_cadence_medium, web_vuln_host_medium, service_vuln_host_medium, service_microsoft_sql, minecraft_server, service_mongodb, no_browser_policy, service_mysql, service_neo4j, service_networking, object_storage_bucket_with_risky_acl, open_resolver, exposed_ports, service_open_vpn, service_oracle_db, outdated_os, outdated_browser, non_malware_events_last_month, service_pop3, service_pptp, phishing, typosquat, service_postgresql, exploited_product, public_text_credit_cards, public_text_database_dump, public_text_hashes, public_text_mention, public_text_password_dump, service_pulse_vpn, service_rdp, ransomware_association, redirect_chain_contains_http_v2, service_redis, remote_access, service_smb, mail_server_unusual_port, service_soap, spf_record_wildcard, spf_record_softfail, spf_record_missing, ssh_weak_protocol, ssh_weak_cipher, ssh_weak_mac, tls_weak_protocol, github_information_leak_disclosure, google_information_leak_disclosure, cookie_missing_http_only, domain_missing_https_v2, suspicious_traffic, tls_ocsp_stapling, tls_weak_cipher, telephony, service_telnet, tor_node_events_last_month, upnp_accessible, unsafe_sri_v2, uce, service_vnc, dnssec_detected, waf_detected_v2, hsts_incorrect_v2, hosted_on_object_storage_v2, references_object_storage_v2, x_content_type_options_incorrect_v2, x_frame_options_incorrect_v2, x_xss_protection_incorrect_v2, service_rsync"
+      description: Comma-separated list of issue types. Possible values as listed in the API documentation, e.g. api_key_exposed, patching_cadence_medium, etc.
     - name: had_breach_within_last_days
       description: Domains with breaches in the last X days. Possible values are numbers, e.g. 1000.
     outputs:
@@ -143,7 +157,7 @@ script:
       description: Industry category of the domain.
       type: String
     - contextPath: SecurityScorecard.Portfolio.Company.size
-      description: Company size, e.g. 'size_more_than_10000'
+      description: Company size, e.g. 'size_more_than_10000'.
       type: String
     - contextPath: SecurityScorecard.Portfolio.Company.is_custom_vendor
       description: Whether the company is a custom vendor.
@@ -177,7 +191,7 @@ script:
       description: ndustry category of the domain.
       type: String
     - contextPath: SecurityScorecard.Company.Score.size
-      description: Company size, e.g. 'size_more_than_10000'
+      description: Company size, e.g. 'size_more_than_10000'.
       type: String
   - name: securityscorecard-company-factor-score-get
     description: Retrieve company factor score.
@@ -193,39 +207,39 @@ script:
       description: Factor name.
       type: String
     - contextPath: SecurityScorecard.Company.Factor.score
-      description: Factor score in numeric form (55-100)
+      description: Factor score in numeric form (55-100).
       type: Number
     - contextPath: SecurityScorecard.Company.Factor.grade
-      description: Factor score in letter grade form (A-F)
+      description: Factor score in letter grade form (A-F).
       type: String
     - contextPath: SecurityScorecard.Company.Factor.Issue.type
-      description: Type of issue found
+      description: Type of issue found.
       type: String
     - contextPath: SecurityScorecard.Company.Factor.Issue.count
-      description: How many times the issue was found
+      description: How many times the issue was found.
       type: Number
     - contextPath: SecurityScorecard.Company.Factor.Issue.severity
-      description: Severity of the issue
+      description: Severity of the issue.
       type: String
     - contextPath: SecurityScorecard.Company.Factor.Issue.total_score_impact
-      description: Contribution of issue on overall score
+      description: Contribution of issue on overall score.
       type: Number
     - contextPath: SecurityScorecard.Company.Factor.Issue.detail_url
-      description: URL to the details of the issue
+      description: URL to the details of the issue.
       type: String
     - contextPath: SecurityScorecard.Company.Factor.total
-      description: Number of factors returned
+      description: Number of factors returned.
       type: Number
   - name: securityscorecard-company-history-score-get
-    description: Retrieve company historical scores
+    description: Retrieve company historical scores.
     arguments:
     - name: domain
-      description: Company domain, e.g. `google.com`
+      description: Company domain, e.g. `google.com`.
       required: true
     - name: from
-      description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
+      description: Initial date for historical data. Value should be in format `YYYY-MM-DD`.
     - name: to
-      description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
+      description: End date for historical data. Value should be in format `YYYY-MM-DD`.
     - name: timing
       description: Timing granularity.
       auto: PREDEFINED
@@ -240,20 +254,20 @@ script:
       description: Score date.
       type: Date
     - contextPath: SecurityScorecard.Company.ScoreHistory.score
-      description: Company historical security score in numeric form (55-100)
+      description: Company historical security score in numeric form (55-100).
       type: Number
   - name: securityscorecard-company-history-factor-score-get
-    description: Retrieve company historical factor scores
+    description: Retrieve company historical factor scores.
     arguments:
     - name: domain
       description: Company domain, e.g. google.com
       required: true
     - name: from
-      description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
+      description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'.
     - name: to
-      description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
+      description: End date for historical data. Value should be in format 'YYYY-MM-DD'.
     - name: timing
-      description: Timing granularity. or "monthly"
+      description: Timing granularity. or "monthly".
       auto: PREDEFINED
       predefined:
       - "daily"
@@ -270,10 +284,10 @@ script:
       description: Factor name.
       type: Number
     - contextPath: SecurityScorecard.Company.FactorHistory.score
-      description: Company historical security score in numeric form (55-100)
+      description: Company historical security score in numeric form (55-100).
       type: Number
   - name: securityscorecard-alert-grade-change-create
-    description: Create alert based on grade
+    description: Create alert based on grade.
     arguments:
     - name: change_direction
       description: Direction of change.
@@ -292,15 +306,14 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-    - name: portfolios
-      isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
+    - name: portfolio
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
-      description: Alert ID
+      description: Alert ID.
       type: String
   - name: securityscorecard-alert-score-threshold-create
-    description: Create alert based threshold met
+    description: Create alert based threshold met.
     arguments:
     - name: change_direction
       description: Direction of change.
@@ -310,7 +323,7 @@ script:
       - "rises_above"
       - "drops_below"
     - name: threshold
-      description: The numeric score used as the threshold to trigger the alert
+      description: The numeric score used as the threshold to trigger the alert.
       required: true
     - name: score_types
       isArray: true
@@ -322,69 +335,212 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-    - name: portfolios
-      isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
+    - name: portfolio
+      description: A portfolio_id to use as a target for the alert. This argument is required if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
-      description: Alert ID
+      description: Alert ID.
       type: String
   - name: securityscorecard-alert-delete
-    description: Delete an alert
+    description: Delete an alert.
     arguments:
     - name: alert_id
       description: Alert ID.
       required: true
-    - name: alert_type
-      description: Type of Alert to delete.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "score"
-      - "grade"
   - name: securityscorecard-alerts-list
-    description: List alerts triggered in the last week
+    description: List alerts triggered in the last week.
     arguments:
     - name: portfolio_id
-      description: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`
+      description: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`.
     outputs:
     - contextPath: SecurityScorecard.Alerts.Alert.id
-      description: Alert ID
+      description: Alert ID.
       type: String
     - contextPath: SecurityScorecard.Alerts.Alert.email
       description: Alert email recipient.
       type: String
     - contextPath: SecurityScorecard.Alerts.Alert.change_type
-      description: Alert change type configured (score or threshold)
+      description: Alert change type configured (score or threshold).
       type: String
     - contextPath: SecurityScorecard.Alerts.Alert.domain
-      description: Alert domain
+      description: Alert domain.
       type: String
     - contextPath: SecurityScorecard.Alerts.Alert.company_name
-      description: Alert company name
+      description: Alert company name.
       type: String
     - contextPath: SecurityScorecard.Alerts.Alert.Portfolio.id
-      description: Alert Portfolio ID
+      description: Alert Portfolio ID.
       type: array
     - contextPath: SecurityScorecard.Alerts.Alert.my_scorecard
       description: Whether the alert was triggered on private scorecard. This depends on whether 'my_scorecard' was added to the optional argument 'target' when creating alerts using the 'securityscorecard-alert-score-threshold-create' and 'securityscorecard-alert-grade-change-create' commands.
       type: Boolean
     - contextPath: SecurityScorecard.Alerts.Alert.created_at
-      description: Timestamp of when the alert was triggered
+      description: Timestamp of when the alert was triggered.
       type: Date
   - name: securityscorecard-company-services-get
-    description: Retrieve the service providers of a domain
+    description: Retrieve the service providers of a domain.
     arguments:
     - name: domain
-      description: Company domain
+      description: Company domain.
       required: true
     outputs:
     - contextPath: SecurityScorecard.Service.vendor_domain
-      description: Vendor domain, e.g. Google, Amazon
+      description: Vendor domain, e.g. Google, Amazon.
       type: String
     - contextPath: SecurityScorecard.Service.client_domain
-      description: Client domain. This value is identical to the input of the domain argument
+      description: Client domain. This value is identical to the input of the domain argument.
       type: String
     - contextPath: SecurityScorecard.Service.categories
-      description: Vendor service provider, e.g. mail_provider, nameserver_provider
+      description: Vendor service provider, e.g. mail_provider, nameserver_provider.
       type: array
+  - name: securityscorecard-company-events-get
+    description: Retrieve a company's historical events.
+    arguments:
+    - name: domain
+      description: Company domain, e.g. google.com
+      required: true
+    - name: date_from
+      type: datetime
+      description: Initial date for historical data. Value should be in format `2020-01-30T00:00:00.000Z`.
+    - name: date_to
+      type: datetime
+      description: End date for historical data. Value should be in format `2020-01-30T00:00:00.000Z`.
+    outputs:
+    - contextPath: SecurityScorecard.Events.Event.ssc_event_id
+      type: string
+      description: event id.
+    - contextPath: SecurityScorecard.Events.Event.date
+      type: date
+      description: event date.
+    - contextPath: SecurityScorecard.Events.Event.status
+      description: event status.
+    - contextPath: SecurityScorecard.Events.Event.issue_count
+      type: number
+      description: event issue count.
+    - contextPath: SecurityScorecard.Events.Event.score_impact
+      type: number
+      description: event score impact.
+    - contextPath: SecurityScorecard.Events.Event.issue_type
+      type: string
+      description: event issue type.
+    - contextPath: SecurityScorecard.Events.Event.severity
+      type: string
+      description: event severity.
+    - contextPath: SecurityScorecard.Events.Event.factor
+      type: string
+      description: event factor.
+    - contextPath: SecurityScorecard.Events.Event.ssc_detail_url
+      type: string
+      description: event detail url.
+  - name: securityscorecard-company-findings-get
+    description: Retrieve an issue_type's historical findings in a scorecard.
+    arguments:
+    - name: domain
+      description: Retrieve the service providers of a domain.
+      required: true
+    - name: date
+      type: date
+      description: The effective_date for historical data. Value should be in format 'YYYY-MM-DD'.
+      required: true
+    - name: issue_type
+      description: Key representing issue type, e.g. api_key_exposed.
+      required: true
+    - name: status
+      description: "group_status filter. Comma-separated list of the following values: 'active', 'inactive', 'all'."
+  - name: securityscorecard-issue-metadata
+    description: Retrieve metadata for an issue type, including description and recommendation.
+    arguments:
+    - name: issue_type
+      required: true
+      description: Key representing issue type, e.g. api_key_exposed.
+    outputs:
+    - contextPath: SecurityScorecard.Metadata.Issues.key
+      type: string
+      description: Key representing issue type, e.g. api_key_exposed.
+    - contextPath: SecurityScorecard.Metadata.Issues.severity
+      type: string
+      description: issue severity.
+    - contextPath: SecurityScorecard.Metadata.Issues.factor
+      type: string
+      description: issue factor.
+    - contextPath: SecurityScorecard.Metadata.Issues.title
+      type: string
+      description: issue title.
+    - contextPath: SecurityScorecard.Metadata.Issues.short_description
+      type: string
+      description: issue short description.
+    - contextPath: SecurityScorecard.Metadata.Issues.long_description
+      type: string
+      description: issue long description.
+    - contextPath: SecurityScorecard.Metadata.Issues.recommendation
+      type: string
+      description: issue recommendation.
+  - name: securityscorecard-alert-rules-list
+    description: List alert subscriptions for the user.
+    arguments: []
+    outputs:
+    - contextPath: SecurityScorecard.AlertRules.Rule.id
+      description: Alert Rule ID.
+      type: String
+    - contextPath: SecurityScorecard.AlertRules.Rule.name
+      description: Alert Rule name.
+      type: String
+    - contextPath: SecurityScorecard.AlertRules.Rule.target
+      description: Target of the Rule.
+      type: String
+    - contextPath: SecurityScorecard.AlertRules.Rule.updated_at
+      description: Timestamp when the alert rule was last updated.
+      type: Date
+    - contextPath: SecurityScorecard.AlertRules.Rule.paused_at
+      description: Timestamp when the alert rule was paused.
+      type: Date
+  - name: securityscorecard-issue-details-get
+    description: Retrieve issue details for a specific issue type and domain.
+    arguments:
+    - name: domain
+      description: The domain to get the issue details for.
+      required: true
+    - name: issue_type
+      description: The issue type to get the details for.
+      required: true
+    outputs:
+    - contextPath: SecurityScorecard.IssueDetails.issue_id
+      description: Unique UUID for this measurement.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.parent_domain
+      description: Parent domain aka vendor.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.issue_type
+      description: issue_type of the findings.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.count
+      description: The number of findings.
+      type: Number
+    - contextPath: SecurityScorecard.IssueDetails.group_status
+      description: If findings are active or not.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.first_seen_time
+      description: Epoch of observation in nanoseconds.
+      type: Date
+    - contextPath: SecurityScorecard.IssueDetails.last_seen_time
+      description: Epoch of observation in nanoseconds.
+      type: Date
+    - contextPath: SecurityScorecard.IssueDetails.port
+      description: Port number of the observation if applicable.
+      type: Number
+    - contextPath: SecurityScorecard.IssueDetails.domain
+      description: Domain of the observation if applicable.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.ip
+      description: IP address of the observation if applicable.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.protocol
+      description: Protocol of the observation if applicable.
+      type: String
+    - contextPath: SecurityScorecard.IssueDetails.observations
+      description: Observation data in raw JSON format.
+      type: String
+  runonce: false
+sectionorder:
+- Connect
+- Collect

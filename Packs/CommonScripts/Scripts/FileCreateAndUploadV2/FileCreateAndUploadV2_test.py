@@ -2,18 +2,17 @@ import json
 import sys
 from pathlib import Path
 
+import demistomock as demisto
 import pytest
+from CommonServerPython import DemistoException
 from FileCreateAndUploadV2 import (
     EntryType,
     decode_data,
+    get_data_entry,
     get_data_from_file,
     main,
-    get_data_entry,
 )
 from pytest_mock import MockerFixture
-
-import demistomock as demisto
-from CommonServerPython import DemistoException
 
 
 def side_effect_sys_exit(code):
@@ -21,24 +20,27 @@ def side_effect_sys_exit(code):
 
 
 def test_main(mocker):
+    mocker.patch.object(sys, "exit", side_effect=side_effect_sys_exit)
 
-    mocker.patch.object(sys, 'exit', side_effect=side_effect_sys_exit)
-
-    with open('./test_data/test-1.json') as f:
+    with open("./test_data/test-1.json") as f:
         test_list = json.load(f)
 
     for eval in test_list:
-        mocker.patch.object(demisto, 'args', return_value={
-            'filename': eval['filename'],
-            'data': eval.get('data'),
-            'data_encoding': eval.get('data_encoding'),
-            'entryId': eval.get('entryId')
-        })
-        mocker.patch.object(demisto, 'results')
+        mocker.patch.object(
+            demisto,
+            "args",
+            return_value={
+                "filename": eval["filename"],
+                "data": eval.get("data"),
+                "data_encoding": eval.get("data_encoding"),
+                "entryId": eval.get("entryId"),
+            },
+        )
+        mocker.patch.object(demisto, "results")
         main()
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0][0]
-        assert (eval['ok'] and results['Type'] == 3) or ((not eval['ok']) and results['Type'] != 3)
+        assert (eval["ok"] and results["Type"] == 3) or ((not eval["ok"]) and results["Type"] != 3)
 
 
 def test_main_with_entry_id(mocker):
@@ -47,17 +49,22 @@ def test_main_with_entry_id(mocker):
     When the main function is called,
     Then it should fetch the entry metadata, get the data associated with the entry, decode the data, and return the result.
     """
-    mocker.patch.object(demisto, "args", return_value={
-        "filename": "test.txt",
-        "data": "test_file_data",
-        "data_encoding": "raw_encoding",
-        "entryId": "1234",
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "filename": "test.txt",
+            "data": "test_file_data",
+            "data_encoding": "raw_encoding",
+            "entryId": "1234",
+        },
+    )
     mock_file_data = b"test_file_data"
-    mock_get_entry_metadata = mocker.patch('FileCreateAndUploadV2.get_entry_metadata',
-                                           return_value={"Type": EntryType.FILE, "ID": "1234"})
-    mock_get_data_entry = mocker.patch('FileCreateAndUploadV2.get_data_entry', return_value=mock_file_data)
-    mock_decode_data = mocker.patch('FileCreateAndUploadV2.decode_data', return_value=mock_file_data)
+    mock_get_entry_metadata = mocker.patch(
+        "FileCreateAndUploadV2.get_entry_metadata", return_value={"Type": EntryType.FILE, "ID": "1234"}
+    )
+    mock_get_data_entry = mocker.patch("FileCreateAndUploadV2.get_data_entry", return_value=mock_file_data)
+    mock_decode_data = mocker.patch("FileCreateAndUploadV2.decode_data", return_value=mock_file_data)
 
     mocker.patch.object(demisto, "results")
     main()
@@ -74,11 +81,15 @@ def test_main_without_entry_id(mocker: MockerFixture) -> None:
     When the main function is called,
     Then it should not raise any exceptions.
     """
-    mocker.patch.object(demisto, "args", return_value={
-        "filename": "test_file",
-        "data": "test_data",
-        "data_encoding": "raw",
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "filename": "test_file",
+            "data": "test_data",
+            "data_encoding": "raw",
+        },
+    )
     mocker.patch("FileCreateAndUploadV2.decode_data", return_value=b"test_data")
     mocker.patch.object(demisto, "results")
     main()
@@ -149,9 +160,7 @@ def test_get_data_entry_with_various_file_types(mocker: MockerFixture, entry_typ
     When the entry type is one of the file types (FILE, IMAGE, ENTRY_INFO_FILE, VIDEO_FILE),
     Then the function should return the data from the file associated with the entry ID.
     """
-    mock_get_data_from_file = mocker.patch(
-        "FileCreateAndUploadV2.get_data_from_file", return_value=b"test file data"
-    )
+    mock_get_data_from_file = mocker.patch("FileCreateAndUploadV2.get_data_from_file", return_value=b"test file data")
     entry_metadata = {"Type": entry_type, "ID": "1234"}
     result = get_data_entry(entry_metadata)
     assert result == b"test file data"

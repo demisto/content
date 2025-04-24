@@ -11,3 +11,7 @@ ignore=IM111
 ArcSight
 ESM
 params
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Arcsight_-_Get_events_related_to_the_Case.yml]
+ignore=GR103

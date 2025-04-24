@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#443663",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Job Duration Deviation (Veeam Backup for Microsoft 365)",
+    "layout": "Triggered Alarm",
+    "locked": false,
+    "name": "Job Duration Deviation (Veeam Backup for Microsoft 365)",
+    "onChangeRepAlg": 1,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "weeks": 0,
+    "weeksR": 0
+}

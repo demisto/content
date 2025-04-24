@@ -3,26 +3,22 @@ This integration was integrated and tested with API V.1.8 of Armis API.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Armis Event Collector on Cortex XSOAR
+## Configure Armis Event Collector in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Armis Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | URL of the Armis instance the event collector should connect to. | True |
-    | API Secret Key | The API Secret Key allows you to programmatically integrate with the Armis ecosystem. | True |
-    | Maximum number of events per fetch | Alerts and activity events. |  |
-    | Maximum number of device events per fetch | Devices events. |  |
-    | Trust any certificate (not secure) |  |  |
-    | Use system proxy settings |  |  |
-    | Event types to fetch |  | True |
-    | Events Fetch Interval | Alerts and activity events. | False |
-    | Minutes to delay | Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). Default is 10 minutes but note a higher value might be needed for users with heavier traffic. | False |
-    | Device Fetch Interval | Time between fetch of devices \(for example 12 hours, 60 minutes, etc.\). | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | URL of the Armis instance the event collector should connect to. | True |
+| API Secret Key | The API Secret Key allows you to programmatically integrate with the Armis ecosystem. | True |
+| Maximum number of events per fetch | Alerts and activity events. |  |
+| Maximum number of device events per fetch | Devices events. |  |
+| Trust any certificate (not secure) |  |  |
+| Use system proxy settings |  |  |
+| Event types to fetch |  | True |
+| Events Fetch Interval | Alerts and activity events. | False |
+| Minutes to delay | Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). Default is 10 minutes but note a higher value might be needed for users with heavier traffic. | False |
+| Device Fetch Interval | Time between fetch of devices \(for example 12 hours, 60 minutes, etc.\). | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 

@@ -1,0 +1,53 @@
+{
+    "request_id": "00000000-0000-0000-0000-000000000001",
+    "ips": [
+        "0.0.0.1"
+    ],
+    "data": [
+        {
+            "ip": "0.0.0.1",
+            "country_code": "US",
+            "as_info": [
+                {
+                    "asn": 13335,
+                    "as_name": "NET, US"
+                }
+            ],
+            "insights": {
+                "overall_rating": "suspicious",
+                "insights": [
+                    {
+                        "rating": "suspicious",
+                        "message": "Test data Insight Message."
+                    },
+                    {
+                        "rating": "suspicious",
+                        "message": "0.0.0.1 has been identified as a \"cdn\", indicating private and reserved addresses defined by RFC 1918, RFC 5735, and RFC 6598, as well as net that have not been allocated to a Regional Internet Registry (RIR) by the Internet Assigned Numbers Authority."
+                    }
+                ]
+            },
+            "tags": [
+                {
+                    "id": 81,
+                    "name": "cdn",
+                    "children": [
+                        {
+                            "id": 210,
+                            "name": "cloudflare"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "usage": {
+        "used_queries": 261,
+        "remaining_queries": 49739,
+        "query_limit": 50000,
+        "foundation_api_usage": {
+            "used_queries": 15,
+            "remaining_queries": 0,
+            "query_limit": 0
+        }
+    }
+}

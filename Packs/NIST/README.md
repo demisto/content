@@ -26,4 +26,4 @@ As part of this pack, you will also get out-of-the-box “NIST” incident type 
 
 _For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/nist---handling-an-incident-template)_
 
-![NIST_-_Handling_an_Incident_Template](https://github.com/demisto/content/raw/1971c1eed1a8e54f79bbcb3a276add4a14d796d5/Packs/NIST/doc_files/NIST_-_Handling_an_Incident_Template_2.png)
+![NIST_-_Handling_an_Incident_Template](doc_files/NIST_-_Handling_an_Incident_Template_2.png)

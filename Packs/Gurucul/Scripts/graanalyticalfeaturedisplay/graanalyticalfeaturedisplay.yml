@@ -6,12 +6,12 @@ script: |
 type: python
 tags:
 - dynamic-section
-comment: Display GRA analytical feature on the layout
+comment: Display GRA analytical feature on the layout.
 enabled: true
 scripttarget: 0
 subtype: python3
 timeout: 900ns
-dockerimage: demisto/python3:3.10.14.90585
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

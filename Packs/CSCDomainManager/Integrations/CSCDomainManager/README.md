@@ -1,22 +1,18 @@
 CSCDomainManager uses rules-based technology, customizable reporting, granular user management, and more—and is the world's first multilingual domain management tool, available in English, French, and German.
 This integration was integrated and tested with version 2.0.0 of CSCDomainManager.
 
-## Configure CSCDomainManager on Cortex XSOAR
+## Configure CSCDomainManager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CSCDomainManager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL | The endpoint URL | True |
-    | Token | The token to use for connection | True |
-    | API Key | The API Key to use for connection | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL | The endpoint URL | True |
+| Token | The token to use for connection | True |
+| API Key | The API Key to use for connection | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Access and Security
  Customers request access through their CSC service team.  Their service team will gather the details for
@@ -34,7 +30,7 @@ Token will expire after 30 consecutive days of no activity, you can reactive it 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### csc-domains-search
@@ -763,3 +759,88 @@ Get domain data by qualified domain name
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| csc-panw.biz | csc-panw |  | false | ACTIVE | 22-Apr-2024 UTC | 22-Apr-2025 UTC | 22-Apr-2025 UTC |  |  | false |  | dns1.cscdns.net,<br/>dns2.cscdns.net | CSC_BASIC | Domain | Administrator | admin@internationaladmin.com |
 
+
+### csc-domains-configuration-search
+
+***
+Get configuration information for owned domains with optional filtering.
+
+#### Base Command
+
+`csc-domains-configuration-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_name | Domain name to filter by. Can start with like=, in=. | Optional | 
+| registration_date | Registration date to filter by. Can start with gt=, ge=, lt=, le=. Date example: 22-Apr-2024, 22/4/24, 22-4-24. | Optional | 
+| domain_email | Email to filter by. Can start with like=, in=. | Optional | 
+| filter | Create a filter using selectors such as: accountName, accountNumber, brandName, businessUnit, city, country, countryCode, criticalDomain, dnssecActivated, dnsType, domain, email, extension, fax, firstName, idnReferenceName, lastModifiedDate, lastModifiedDescription, lastModifiedReason, lastName, localAgent, managedStatus, nameServers, newGtld, organization, paidThroughDate, phone, phoneExtn, postalCode, qualifiedDomainName, redirectType, registrationDate, registryExpiryDate, serverDeleteProhibited, serverTransferProhibited, serverUpdateProhibited, stateProvince, street1, street2, urlForwarding, whoisPrivacy. For example: filter=lastName==Administrator. | Optional | 
+| page | Page number. | Optional | 
+| page_size | The number of rows in a page. | Optional | 
+| limit | The maximum number of rows to present. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description**   |
+| --- | --- |-------------------|
+| CSCDomainManager.Domain.Configuration.domain | String | The domain. |
+| CSCDomainManager.Domain.Configuration.domainLabel | String | The domain label. |
+| CSCDomainManager.Domain.Configuration.domainStatusCode | String | The domain status code. |
+| CSCDomainManager.Domain.Configuration.domainExtension | String | The domain extension. |
+| CSCDomainManager.Domain.Configuration.country | String | Country associated with the domain. |
+| CSCDomainManager.Domain.Configuration.adminEmail | String | Domain email. |
+| CSCDomainManager.Domain.Configuration.adminName | String | Admin name associated with the domain. |
+| CSCDomainManager.Domain.Configuration.accountNumber | String | The account number associated with the domain. |
+| CSCDomainManager.Domain.Configuration.accountName | String | The account name associated with the domain. |
+| CSCDomainManager.Domain.Configuration.account.accountName | String | The name of the account associated with the domain. |
+| CSCDomainManager.Domain.Configuration.account.accountNumber | String | The account number associated with the domain. |
+| CSCDomainManager.Domain.Configuration.adminOrg | String | The administrative organization managing the domain. |
+| CSCDomainManager.Domain.Configuration.businessUnit | String | The business unit associated with the domain. |
+| CSCDomainManager.Domain.Configuration.dnsData.dnsDomain | String | The DNS domain information. |
+| CSCDomainManager.Domain.Configuration.dnsData.dnsProvider | String | The DNS provider for the domain. |
+| CSCDomainManager.Domain.Configuration.dnsHostingType | String | The type of DNS hosting used for the domain. |
+| CSCDomainManager.Domain.Configuration.dnsTraffic12moAve | Number | The average DNS traffic over the last 12 months. |
+| CSCDomainManager.Domain.Configuration.extension | String | The extension of the domain, such as .com, .net, etc. |
+| CSCDomainManager.Domain.Configuration.hasCscUrlf | Boolean | Indicates if the domain has CSC URL forwarding enabled. |
+| CSCDomainManager.Domain.Configuration.hasDkim | Boolean | Indicates if DKIM is configured for the domain. |
+| CSCDomainManager.Domain.Configuration.hasDmarc | Boolean | Indicates if DMARC is configured for the domain. |
+| CSCDomainManager.Domain.Configuration.hasDnssecDs | Boolean | Indicates if the domain has DNSSEC DS records. |
+| CSCDomainManager.Domain.Configuration.hasSpf | Boolean | Indicates if SPF is configured for the domain. |
+| CSCDomainManager.Domain.Configuration.hasWww | Boolean | Indicates if the domain has a WWW record. |
+| CSCDomainManager.Domain.Configuration.isGtld | Boolean | Indicates if the domain is a gTLD (Generic Top-Level Domain). |
+| CSCDomainManager.Domain.Configuration.isLive | Boolean | Indicates if the domain is live. |
+| CSCDomainManager.Domain.Configuration.isLiveType | String | The type of live status for the domain. |
+| CSCDomainManager.Domain.Configuration.isMultilockEligible | Boolean | Indicates if the domain is eligible for multilock. |
+| CSCDomainManager.Domain.Configuration.isVital | Boolean | Indicates if the domain is considered vital. |
+| CSCDomainManager.Domain.Configuration.multiLocked | Boolean | Indicates if the domain is multilocked. |
+| CSCDomainManager.Domain.Configuration.numLiveMx | Number | The number of live MX records for the domain. |
+| CSCDomainManager.Domain.Configuration.numRootA | Number | The number of root A records for the domain. |
+| CSCDomainManager.Domain.Configuration.numRootTxt | Number | The number of root TXT records for the domain. |
+| CSCDomainManager.Domain.Configuration.numSslNetcraft | Number | The number of SSL certificates detected by Netcraft for the domain. |
+| CSCDomainManager.Domain.Configuration.numWwwA | Number | The number of WWW A records for the domain. |
+| CSCDomainManager.Domain.Configuration.numWwwCname | Number | The number of WWW CNAME records for the domain. |
+| CSCDomainManager.Domain.Configuration.regEmail | String | The registration email address for the domain. |
+| CSCDomainManager.Domain.Configuration.regName | String | The registration name for the domain. |
+| CSCDomainManager.Domain.Configuration.regOrg | String | The registration organization for the domain. |
+| CSCDomainManager.Domain.Configuration.registryExpiryDate | Date | The expiration date of the domain registration in the registry. |
+| CSCDomainManager.Domain.Configuration.rootHttpCode | Number | The HTTP response code for the root domain. |
+| CSCDomainManager.Domain.Configuration.rootHttpUrl | Unknown | The HTTP URL for the root domain. |
+| CSCDomainManager.Domain.Configuration.rootIsUrlf | Boolean | Indicates if the root domain is URL forwarding enabled. |
+| CSCDomainManager.Domain.Configuration.serverDeleteProhibited | Unknown | Indicates if the domain is prohibited from deletion by the server. |
+| CSCDomainManager.Domain.Configuration.serverTransferProhibited | Boolean | Indicates if the domain is prohibited from transfer by the server. |
+| CSCDomainManager.Domain.Configuration.serverUpdateProhibited | Boolean | Indicates if the domain is prohibited from updates by the server. |
+| CSCDomainManager.Domain.Configuration.techEmail | String | The technical contact email address for the domain. |
+| CSCDomainManager.Domain.Configuration.techName | String | The technical contact name for the domain. |
+| CSCDomainManager.Domain.Configuration.techOrg | String | The technical contact organization for the domain. |
+| CSCDomainManager.Domain.Configuration.tld | String | The top-level domain (TLD) of the domain. |
+| CSCDomainManager.Domain.Configuration.urlfTraffic12moAve | Number | The average URL forwarding traffic over the last 12 months. |
+| CSCDomainManager.Domain.Configuration.valueRootA | Number | The value of root A records for the domain. |
+| CSCDomainManager.Domain.Configuration.valueRootMx | Number | The value of root MX records for the domain. |
+| CSCDomainManager.Domain.Configuration.valueRootTxt | Number | The value of root TXT records for the domain. |
+| CSCDomainManager.Domain.Configuration.valueWwwA | Number | The value of WWW A records for the domain. |
+| CSCDomainManager.Domain.Configuration.valueWwwCname | Number | The value of WWW CNAME records for the domain. |
+| CSCDomainManager.Domain.Configuration.wwwHttpCode | String | The HTTP response code for the WWW domain. |
+| CSCDomainManager.Domain.Configuration.wwwHttpUrl | String | The HTTP URL for the WWW domain. |
+| CSCDomainManager.Domain.Configuration.wwwIsUrlf | Boolean | Indicates if the WWW domain is URL forwarding enabled. |

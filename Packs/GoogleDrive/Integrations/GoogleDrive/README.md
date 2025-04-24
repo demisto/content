@@ -1,33 +1,29 @@
 Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
 This integration was integrated and tested with version 1.31.0 of GoogleDrive
 
-## Configure Google Drive on Cortex XSOAR
+## Configure Google Drive in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Drive.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | User's Service Account JSON |  | False |
-    | User ID | The primary email address of the user to fetch the incident\(s\). | False |
-    | User ID |  | False |
-    | User's Service Account JSON |  | False |
-    | Action Detail Case Include | Action types to include for fetching the incident. | False |
-    | Drive Item Search Field | itemName - Fetch activities for this drive item. The format is "items/ITEM_ID". folderName - Fetch activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". | False |
-    | Drive Item Search Value | itemName or folderName for fetching the incident. | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Max Incidents | The maximum number of incidents to fetch each time. | False |
-    | First Fetch Time Interval | The time range to consider for the initial data fetch in the format &lt;number&gt; &lt;unit&gt; e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| User's Service Account JSON |  | False |
+| User ID | The primary email address of the user to fetch the incident\(s\). | False |
+| User ID |  | False |
+| User's Service Account JSON |  | False |
+| Action Detail Case Include | Action types to include for fetching the incident. | False |
+| Drive Item Search Field | itemName - Fetch activities for this drive item. The format is "items/ITEM_ID". folderName - Fetch activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". | False |
+| Drive Item Search Value | itemName or folderName for fetching the incident. | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Max Incidents | The maximum number of incidents to fetch each time. | False |
+| First Fetch Time Interval | The time range to consider for the initial data fetch in the format &lt;number&gt; &lt;unit&gt; e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### google-drive-create

@@ -1,29 +1,25 @@
 Custom integration designed to pull in reports from the Dragos Worldview API as incidents 
 This integration was integrated and tested with version 1.0 of Dragos Worldview 
 
-## Configure Dragos Worldview  on Cortex XSOAR
+## Configure Dragos Worldview  in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Dragos Worldview .
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://portal.dragos.com) | The Dragos server URL | True |
-    | API Token | The API token  | True |
-    | API Key | The key for the API Token | True |
-    | First fetch time | The first time to run a fetch request | False |
-    | Trust any certificate (not secure) | If true trust any certicicate | False |
-    | Use system proxy settings | If true use system proxy settings | False |
-    | Incidents Fetch Interval | How often to fetch incidents | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators | False |
-    | Fetch incidents | If true fetch incidents in a feed | False |
-    | Incident type | The incident type | False |
-    | Fetch Limit | The fetch limit | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://portal.dragos.com) | The Dragos server URL | True |
+| API Token | The API token  | True |
+| API Key | The key for the API Token | True |
+| First fetch time | The first time to run a fetch request | False |
+| Trust any certificate (not secure) | If true trust any certicicate | False |
+| Use system proxy settings | If true use system proxy settings | False |
+| Incidents Fetch Interval | How often to fetch incidents | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators | False |
+| Fetch incidents | If true fetch incidents in a feed | False |
+| Incident type | The incident type | False |
+| Fetch Limit | The fetch limit | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### dragos-get-indicators
 ***

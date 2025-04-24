@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3273ee33-b96a-46bb-8c97-7a09dd56ea79
+    taskid: 0abf3f04-3340-4369-870d-40ddb1232207
     type: start
     task:
-      id: 3273ee33-b96a-46bb-8c97-7a09dd56ea79
+      id: 0abf3f04-3340-4369-870d-40ddb1232207
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 2695.5,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: fe8307d2-52bb-448c-80e8-c6e9decf9235
+    taskid: 60ab4dbe-b7a8-4da1-b00b-a201769241ff
     type: regular
     task:
-      id: fe8307d2-52bb-448c-80e8-c6e9decf9235
+      id: 60ab4dbe-b7a8-4da1-b00b-a201769241ff
       version: -1
       name: Set valid URLs
       description: Sets a value into the context with the given context key
@@ -53,14 +53,14 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that" "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())", "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3", "(http://www.foo.bar/taz?())","http://öevil.com/","http://öevil.com:5000/","http://öevil.com/anypath", "www.evilö.com/evil.aspx","https://www.evöl.com/","https://www.evöl.com/anypath", "hxxps://www.xn--e1v2i3l4.com","www.evil.com:443/path/to/resource.html", "https://www.evil.com:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path", "ftp://foo.bar/resource","ftp://foo.bar/","http://nam12.safelinks.protection.outlook.com/?url=http%3A%2F%2Ftest.net%2Fsubscribe%3Fserver_action%3DUnsubscribe%26list%3Dvalintry2%26sublist%3D*%26msgid%3D1703700099.20966%26email_address%3Dtest%2540test.com&data=05%7C02%7Ctest%40test.com%7C93f0eea20f1c47350eb508dc07b40542%7C2dc14abb79414377a7d259f436e42867%7C1%7C0%7C638393716982915257%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C","https://www.test.com/home/0,7340,L-8,00.html"'
+        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that" "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())", "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3", "(http://www.foo.bar/taz?())","http://öevil.com/","http://öevil.com:5000/","http://öevil.com/anypath", "www.evilö.com/evil.aspx","https://www.evöl.com/","https://www.evöl.com/anypath", "hxxps://www.xn--e1v2i3l4.com","www.evil.com:443/path/to/resource.html", "https://www.evil.com:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path", "ftp://foo.bar/resource","ftp://foo.bar/","http://nam12.safelinks.protection.outlook.com/?url=http%3A%2F%2Ftest.net%2Fsubscribe%3Fserver_action%3DUnsubscribe%26list%3Dvalintry2%26sublist%3D*%26msgid%3D1703700099.20966%26email_address%3Dtest%2540test.com&data=05%7C02%7Ctest%40test.com%7C93f0eea20f1c47350eb508dc07b40542%7C2dc14abb79414377a7d259f436e42867%7C1%7C0%7C638393716982915257%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C","https://www.test.com/home/0,7340,L-8,00.html","https://user:pass@test.com/test", "https://0xC0.0250.257/test"' 
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1985,
-          "y": 370
+          "x": 2695.5,
+          "y": 380
         }
       }
     note: false
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0155c010-6b9e-425d-8cef-781b14285018
+    taskid: 6f726df7-8d3a-4d1a-8eb1-dbb7f00b353f
     type: regular
     task:
-      id: 0155c010-6b9e-425d-8cef-781b14285018
+      id: 6f726df7-8d3a-4d1a-8eb1-dbb7f00b353f
       version: -1
       name: Print valid URLs
       description: Prints text to war room (Markdown supported)
@@ -95,6 +95,8 @@ tasks:
       - "15"
       - "21"
       - "22"
+      - "23"
+      - "24"
     scriptarguments:
       value:
         simple: ${valid_urls}
@@ -104,8 +106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
-          "y": 545
+          "x": 2695.5,
+          "y": 550
         }
       }
     note: false
@@ -117,10 +119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 407a44c2-6cc3-4710-8adb-7f9796d1889d
+    taskid: b4bbf5dd-1488-4e9d-827f-d293c7f54918
     type: condition
     task:
-      id: 407a44c2-6cc3-4710-8adb-7f9796d1889d
+      id: b4bbf5dd-1488-4e9d-827f-d293c7f54918
       version: -1
       name: Check URL case
       type: condition
@@ -158,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ea757ed8-d1bf-4746-8e0c-6f95772d99e8
+    taskid: 9bca18ec-51f5-47b4-8d8d-09140a8daabe
     type: regular
     task:
-      id: ea757ed8-d1bf-4746-8e0c-6f95772d99e8
+      id: 9bca18ec-51f5-47b4-8d8d-09140a8daabe
       version: -1
       name: Set invalid URLs
       description: Sets a value into the context with the given context key
@@ -182,8 +184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
-          "y": 895
+          "x": 2695.5,
+          "y": 890
         }
       }
     note: false
@@ -195,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 8d35c7df-9386-467b-86a0-2897856dc1b8
+    taskid: 2ec04905-c83c-4348-8abb-5bb14810e691
     type: regular
     task:
-      id: 8d35c7df-9386-467b-86a0-2897856dc1b8
+      id: 2ec04905-c83c-4348-8abb-5bb14810e691
       version: -1
       name: Print invalid URLs
       description: Prints text to war room (Markdown supported)
@@ -221,8 +223,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
-          "y": 1070
+          "x": 2695.5,
+          "y": 1060
         }
       }
     note: false
@@ -234,10 +236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d6169b91-01d1-41ae-83d8-8e3a8c6a15c7
+    taskid: 8203c9b6-581e-4455-8ca2-51a105151359
     type: condition
     task:
-      id: d6169b91-01d1-41ae-83d8-8e3a8c6a15c7
+      id: 8203c9b6-581e-4455-8ca2-51a105151359
       version: -1
       name: Check non extraction of invalid URLs - Numbers
       type: condition
@@ -262,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1245
+          "x": 1974,
+          "y": 1230
         }
       }
     note: false
@@ -275,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8d3709dd-ff13-4493-8bc4-e208f3818078
+    taskid: 27ad7ab2-b497-4e0a-8ac5-9155b02419bf
     type: regular
     task:
-      id: 8d3709dd-ff13-4493-8bc4-e208f3818078
+      id: 27ad7ab2-b497-4e0a-8ac5-9155b02419bf
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -294,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
-          "y": 1420
+          "x": 2695.5,
+          "y": 1400
         }
       }
     note: false
@@ -307,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 764c5c90-1137-47a5-8589-d714fe7c75a4
+    taskid: fad72a03-b2ca-46b6-82f9-816b71184023
     type: condition
     task:
-      id: 764c5c90-1137-47a5-8589-d714fe7c75a4
+      id: fad72a03-b2ca-46b6-82f9-816b71184023
       version: -1
       name: Check URL with port
       type: condition
@@ -335,7 +337,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 531,
           "y": 720
         }
       }
@@ -348,10 +350,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 83fb4625-f637-44b4-8abf-9af38412f337
+    taskid: 1ce2246e-c98d-4084-8dad-8fe72be425ac
     type: condition
     task:
-      id: 83fb4625-f637-44b4-8abf-9af38412f337
+      id: 1ce2246e-c98d-4084-8dad-8fe72be425ac
       version: -1
       name: URL with port and path
       type: condition
@@ -376,7 +378,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1012,
           "y": 720
         }
       }
@@ -389,10 +391,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: fafe72aa-767c-46e4-861d-4bccc6a43e26
+    taskid: 99abec9d-75a3-4d4c-85b2-28a8501bdd96
     type: condition
     task:
-      id: fafe72aa-767c-46e4-861d-4bccc6a43e26
+      id: 99abec9d-75a3-4d4c-85b2-28a8501bdd96
       version: -1
       name: Check URL with non ASCII
       type: condition
@@ -417,7 +419,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1493,
           "y": 720
         }
       }
@@ -430,10 +432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f53ac65a-a483-4e1d-8cc2-dd3f299fb283
+    taskid: ea305321-d8a6-41f7-8008-732edd6cc82e
     type: condition
     task:
-      id: f53ac65a-a483-4e1d-8cc2-dd3f299fb283
+      id: ea305321-d8a6-41f7-8008-732edd6cc82e
       version: -1
       name: Check URL with path
       type: condition
@@ -458,7 +460,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1974,
           "y": 720
         }
       }
@@ -471,10 +473,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6c5da797-1f98-4ac9-82a6-3554b1ec5378
+    taskid: 6a585cce-d8cf-49a2-8cbb-5c57e818b418
     type: condition
     task:
-      id: 6c5da797-1f98-4ac9-82a6-3554b1ec5378
+      id: 6a585cce-d8cf-49a2-8cbb-5c57e818b418
       version: -1
       name: IP as a URL
       type: condition
@@ -499,7 +501,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 2455,
           "y": 720
         }
       }
@@ -512,10 +514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 9846c940-d09c-475f-893c-a2aa9ce0eab7
+    taskid: 133eedaf-a44f-4c3b-89c8-25a6d7a7b010
     type: condition
     task:
-      id: 9846c940-d09c-475f-893c-a2aa9ce0eab7
+      id: 133eedaf-a44f-4c3b-89c8-25a6d7a7b010
       version: -1
       name: Check URL Query
       type: condition
@@ -540,7 +542,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 2936,
           "y": 720
         }
       }
@@ -553,10 +555,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 13ebdb5b-949a-4b5d-8979-e378068fdf73
+    taskid: fadb7570-00af-41c7-86a1-ba6d71642448
     type: condition
     task:
-      id: 13ebdb5b-949a-4b5d-8979-e378068fdf73
+      id: fadb7570-00af-41c7-86a1-ba6d71642448
       version: -1
       name: Check URL fragment
       type: condition
@@ -581,7 +583,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 3417,
           "y": 720
         }
       }
@@ -594,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 49ef5662-f6ba-4989-8072-ce1f6bf8cbd0
+    taskid: 54369234-76f0-4e06-8bfd-6a289799433e
     type: condition
     task:
-      id: 49ef5662-f6ba-4989-8072-ce1f6bf8cbd0
+      id: 54369234-76f0-4e06-8bfd-6a289799433e
       version: -1
       name: Check non extraction of invalid URLs - invalid path
       type: condition
@@ -622,8 +624,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 1245
+          "x": 2455,
+          "y": 1230
         }
       }
     note: false
@@ -635,10 +637,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: ae0a92a8-7cb5-46d0-8b85-420bddd56f3e
+    taskid: 8c4e2d64-9e81-46fb-8c6e-4c719ab25adb
     type: condition
     task:
-      id: ae0a92a8-7cb5-46d0-8b85-420bddd56f3e
+      id: 8c4e2d64-9e81-46fb-8c6e-4c719ab25adb
       version: -1
       name: Check non extraction of invalid URLs - space in sub domain
       type: condition
@@ -663,8 +665,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 1245
+          "x": 2936,
+          "y": 1230
         }
       }
     note: false
@@ -676,10 +678,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 573528cd-f0cd-40e8-84aa-bab50fe3ae71
+    taskid: 7d74483b-a02c-43ce-83c6-48f7c57d853b
     type: condition
     task:
-      id: 573528cd-f0cd-40e8-84aa-bab50fe3ae71
+      id: 7d74483b-a02c-43ce-83c6-48f7c57d853b
       version: -1
       name: Check non extraction of invalid URLs - invalid subdomain
       type: condition
@@ -704,8 +706,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 1245
+          "x": 3417,
+          "y": 1230
         }
       }
     note: false
@@ -717,10 +719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 8e5c7e46-23be-4da1-863a-a804c97a4b1e
+    taskid: 3219d12b-4fed-408c-85aa-d66e8f92b825
     type: regular
     task:
-      id: 8e5c7e46-23be-4da1-863a-a804c97a4b1e
+      id: 3219d12b-4fed-408c-85aa-d66e8f92b825
       version: -1
       name: DeleteContext
       description: |-
@@ -728,7 +730,9 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -744,8 +748,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
-          "y": 195
+          "x": 2695.5,
+          "y": 210
         }
       }
     note: false
@@ -757,10 +761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 028c3588-5f23-41ce-8e22-86186e1490c1
+    taskid: 2b27e706-d356-429f-8e42-d34f47764259
     type: condition
     task:
-      id: 028c3588-5f23-41ce-8e22-86186e1490c1
+      id: 2b27e706-d356-429f-8e42-d34f47764259
       version: -1
       name: Double quoted
       type: condition
@@ -785,7 +789,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3490,
+          "x": 3898,
           "y": 720
         }
       }
@@ -798,10 +802,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 7ff7fdf6-645d-4eaf-821d-8de242270490
+    taskid: cbb146c6-42a8-4a59-8dff-47dacf29d0ee
     type: condition
     task:
-      id: 7ff7fdf6-645d-4eaf-821d-8de242270490
+      id: cbb146c6-42a8-4a59-8dff-47dacf29d0ee
       version: -1
       name: Commas
       type: condition
@@ -826,7 +830,89 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3920,
+          "x": 4379,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 5d40a5b8-f5cb-4ee1-8196-3598248a7d5e
+    type: condition
+    task:
+      id: 5d40a5b8-f5cb-4ee1-8196-3598248a7d5e
+      version: -1
+      name: user:pass
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://user:pass@test.com/test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4860,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 8514b2b9-fd58-4ff3-a255-99a28f67f590
+    type: condition
+    task:
+      id: 8514b2b9-fd58-4ff3-a255-99a28f67f590
+      version: -1
+      name: Numerical IP
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://192.168.1.1/test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5341,
           "y": 720
         }
       }
@@ -842,8 +928,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 4250,
+        "height": 1420,
+        "width": 5672,
         "x": 50,
         "y": 50
       }

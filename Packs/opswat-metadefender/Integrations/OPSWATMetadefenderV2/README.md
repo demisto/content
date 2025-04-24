@@ -1,28 +1,24 @@
 multi-scanning engine uses 30+ anti-malware engines to scan files for threats, significantly increasing malware detection.
 This integration was integrated and tested with version 5.0.0 of OPSWAT-Metadefender V2.
 
-## Configure OPSWAT-Metadefender v2 on Cortex XSOAR
+## Configure OPSWAT-Metadefender v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OPSWAT-Metadefender v2.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. http://localhost:8008/metascan_rest/) | True |
-    | API Key - Needed in cloud based solutions | False |
-    | API Key - Needed in cloud based solutions | False |
-    | Cloud based | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | The high threshold | False |
-    | The low threshold | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. http://localhost:8008/metascan_rest/) | True |
+| API Key - Needed in cloud based solutions | False |
+| API Key - Needed in cloud based solutions | False |
+| Cloud based | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| The high threshold | False |
+| The low threshold | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### opswat-scan-file

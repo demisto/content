@@ -1,29 +1,25 @@
 Manage Amazon Web Services accounts and their resources.
 For AWS Organizations quotas, guidelines and restrictions, see the [AWS Organizations Quotas](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html) page.
 
-## Configure AWS - Organizations on Cortex XSOAR
+## Configure AWS - Organizations in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS-Organizations.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Role Arn | The Amazon Resource Name (ARN) of the role to assume. | False | 
-    | Role Session Name | An identifier for the assumed role session. | False | 
-    | Role Session Duration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | False | 
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Role Arn | The Amazon Resource Name (ARN) of the role to assume. | False | 
+| Role Session Name | An identifier for the assumed role session. | False | 
+| Role Session Duration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | False | 
+| Access Key |  | False |
+| Secret Key |  | False |
+| Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-org-root-list
@@ -342,7 +338,7 @@ Lists all the accounts in the organization or a specific account by ID.
                     "Id": "111222333444",
                     "JoinedMethod": "INVITED",
                     "JoinedTimestamp": "2022-07-25 09:11:23.528000+00:00",
-                    "Name": "ferrum-techs",
+                    "Name": "John Doe",
                     "Status": "SUSPENDED"
                 }
             ],
@@ -358,7 +354,7 @@ Lists all the accounts in the organization or a specific account by ID.
 >|Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
 >|---|---|---|---|---|---|---|
 >| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Name | user@xsoar.com | CREATED | 2023-09-04 09:17:14.299000+00:00 | ACTIVE |
->| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | ferrum-techs | user@xsoar.com | INVITED | 2022-07-25 09:11:23.528000+00:00 | SUSPENDED |
+>| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | john-doe | user@xsoar.com | INVITED | 2022-07-25 09:11:23.528000+00:00 | SUSPENDED |
 
 
 ### aws-org-organization-get

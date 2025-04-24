@@ -103,7 +103,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.99474
+  dockerimage: demisto/python3:3.11.10.111039
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset.
@@ -243,10 +243,10 @@ script:
     description: Search playbook alerts based on filters.
     arguments:
     - name: limit
-      description: Limits the number of alerts to fetch.
+      description: The maximum number of alerts to fetch.
       defaultValue: 50
     - name: time_since_update
-      description: Time between now and e.g. "2 hours" or "7 days" ago.
+      description: The amount of time since the last update. E.g., "2 hours" or "7 days" ago.
       defaultValue: "24 hours"
     - name: playbook_alert_status
       auto: PREDEFINED
@@ -255,7 +255,7 @@ script:
       - in-progress
       - dismissed
       - resolved
-      description: Filter what statuses are fetched, defaults to only new status if not specified.
+      description: The statuses to retrieve. Defaults to only new status if not specified.
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -268,7 +268,7 @@ script:
       predefined:
       - updated
       - created
-      description: Sort search result by field.
+      description: The order by which to search for playbook alerts.
     outputs:
     - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert.
@@ -735,7 +735,7 @@ script:
       description: Add comment to all alerts in alert_ids.
       required: false
     - name: add_actions_taken
-      description: Add 'actions taken' to all alerts in alert_ids. Can be used only with new_status=resolved or new_status=dismissed. You can specify multiple values by providing a quoted string with values separated by comma.
+      description: Add 'actions taken' to all alerts in alert_ids. Can only be used with new_status=resolved or new_status=dismissed. You can specify multiple values by providing a quoted string with values separated by comma.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -758,6 +758,13 @@ script:
       - account_disabled_or_terminated
       - account_remediated
       - other
+    - name: reopen
+      description: 'Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - never
+        - significant_updates
     outputs:
     - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert in Recorded Future.

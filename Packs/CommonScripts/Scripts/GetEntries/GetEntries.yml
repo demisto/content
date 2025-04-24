@@ -6,33 +6,54 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Collect entries matching to the conditions in the war room
+comment: Collect entries matching to the conditions in the war room.
 enabled: true
 args:
 - name: id
   description: Optional incident ID to fetch entries from. If not specified, current incident is used.
 - name: tags
-  description: The list of tags
+  description: The list of tags.
   isArray: true
 - name: categories
-  description: The list of categories
+  description: The list of categories. (commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments).
   isArray: true
+- name: page_size
+  description: The number of entries to return. Maximum is 1000.
+- name: last_id
+  description: Return entries starting from the specified entry ID and backward.
+- name: first_id
+  description: Return entries starting from the specified entry ID and forward.
+- name: selected_entry_id
+  description: Return entries before and after the specified entry ID.
+- name: users
+  description: Return entries with the specified users.
+  isArray: true
+- name: tags_and_operator
+  description: Whether to return entries that include all specified tags.
+  defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
+- name: from_time
+  description: Return entries from this time and forward. Format is ISO8601 (i.e., '2020-04-30T10:35:00.000Z').
+- name: parent_id
+  description: The ID of the parent entry.
 outputs:
 - contextPath: Entry.ID
-  description: Entry ID
+  description: Entry ID.
 - contextPath: Entry.Type
-  description: Entry Type
+  description: Entry Type.
 - contextPath: Entry.Tags
-  description: Tags associated with the entry
+  description: Tags associated with the entry.
 - contextPath: Entry.Category
-  description: Entry categories
+  description: Entry categories.
 - contextPath: Entry.Created
-  description: Creation time of the entry
+  description: Creation time of the entry.
 - contextPath: Entry.Modified
-  description: Last modified time of the entry
+  description: Last modified time of the entry.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

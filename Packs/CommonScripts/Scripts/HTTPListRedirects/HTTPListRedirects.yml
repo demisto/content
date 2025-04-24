@@ -40,6 +40,6 @@ outputs:
   description: The URL redirects from the given URL
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - No tests (auto formatted)
