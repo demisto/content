@@ -6,8 +6,8 @@ import demistomock as demisto
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-WIZ_API_LIMIT = 1  # limit number of returned records from the Wiz API
-WIZ = 'wiz'
+WIZ_API_LIMIT = 200  # limit number of returned records from the Wiz API
+WIZ_DEFEND = 'wiz_defend'
 
 WIZ_VERSION = '1.0.0'
 INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
@@ -780,25 +780,25 @@ def validate_detection_platform(platform):
     if not platform:
         return ValidationResponse.create_success()
 
-    # Convert to list if single string
-    if isinstance(platform, str):
-        platform = [platform]
+    # Handle case where platform is a comma-separated string
+    if isinstance(platform, str) and ',' in platform:
+        platforms = [p.strip() for p in platform.split(',')]
+    elif isinstance(platform, str):
+        platforms = [platform]
+    elif isinstance(platform, list):
+        platforms = platform
+    else:
+        platforms = [platform]
 
     valid_platforms = CloudPlatform.values()
-
-    # Validate each platform in the list
-    invalid_platforms = []
-    for plat in platform:
-        if plat not in valid_platforms:
-            invalid_platforms.append(plat)
+    invalid_platforms = [p for p in platforms if p not in valid_platforms]
 
     if invalid_platforms:
-        error_msg = f"Invalid platform(s): {', '.join(invalid_platforms)}. " \
-                    f"Valid platforms are: {', '.join(valid_platforms)}"
+        error_msg = f"Invalid platform(s): {', '.join(invalid_platforms)}. Valid platforms are: {', '.join(valid_platforms)}"
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
 
-    return ValidationResponse.create_success(platform)
+    return ValidationResponse.create_success(platforms)
 
 
 def validate_creation_days_back(days_back):
@@ -1100,29 +1100,31 @@ def apply_detection_type_filter(variables, detection_type):
     return variables
 
 
-def apply_platform_filter(variables, platform):
+def apply_platform_filter(variables, platforms):
     """
     Adds the platform filter to the query variables
 
     Args:
         variables (dict): The query variables
-        platform (str or list): The cloud platform(s)
+        platforms (list or str): The cloud platform(s)
 
     Returns:
         dict: Updated variables with the filter
     """
-    if not platform:
+    if not platforms:
         return variables
 
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    # Handle both single value and list
-    if isinstance(platform, str):
-        platform = [platform]
+    # Handle both single platform (str) and multiple platforms (list)
+    if isinstance(platforms, str):
+        platform_list = [platforms]
+    else:
+        platform_list = platforms
 
     variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_PLATFORM] = {
-        WizApiVariables.EQUALS: platform
+        WizApiVariables.EQUALS: platform_list
     }
 
     return variables

@@ -1,0 +1,18 @@
+!wiz-get-detection detection_id="12345678-1234-1234-1234-cc0a24716e0b"
+!wiz-get-detection issue_id="98765432-4321-4321-4321-ff5fa2ff7f78"
+!wiz-get-detection detection_id="12345678-1234-1234-1234-cc0a24716e0b" issue_id="98765432-4321-4321-4321-ff5fa2ff7f78"
+
+!wiz-get-detections
+!wiz-get-detections creation_days_back="5"
+!wiz-get-detections detection_type="GENERATED_THREAT"
+!wiz-get-detections detection_platform="AWS"
+!wiz-get-detections detection_platform="ACK, GCP"
+!wiz-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098/i-0g03j4h5gd123d456"
+!wiz-get-detections severity="CRITICAL"
+!wiz-get-detections rule_match_id="12345678-1234-1234-1234-cc0a24716e0b"
+!wiz-get-detections rule_match_name="Suspicious EC2 Activity"
+!wiz-get-detections project="production_project"
+
+!wiz-get-detections detection_type="GENERATED_THREAT" detection_platform="AWS" severity="HIGH" creation_days_back="7"
+!wiz-get-detections detection_platform="Kubernetes" resource_id="cluster-123" rule_match_name="Privilege Escalation"
+!wiz-get-detections detection_platform=ACK,GCP creation_days_back=1 severity=CRITICAL
