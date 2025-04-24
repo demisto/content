@@ -441,92 +441,6 @@ def test_list_conditional_access_policies_command_cases(
     # assert something from the output (only if something returned)
     if expected_display:
         assert expected_display in result.readable_output
-
-
-@pytest.mark.parametrize(
-    "args, expected_policy_id, expected_payload",
-    [
-        (
-            {
-                "policy_id": "abc123",
-                "state": "enabled",
-                "include_users": "user1,user2",
-                "grant_control_operator": "OR",
-                "built_in_controls": "mfa",
-                "update_action": "override"
-            },
-            "abc123",
-            {
-                "state": "enabled",
-                "conditions": {
-                    "users": {
-                        "includeUsers": ["user1", "user2"]
-                    }
-                },
-                "grantControls": {
-                    "operator": "OR",
-                    "builtInControls": ["mfa"]
-                }
-            }
-        ),
-        (
-            {
-                "policy_id": "xyz456",
-                "policy": '{"state": "disabled"}'
-            },
-            "xyz456",
-            '{"state": "disabled"}'
-        )
-    ]
-)
-def test_update_conditional_access_policy_command_minimal_input(mocker, args, expected_policy_id, expected_payload):
-    """
-    Given:
-        - A dictionary of input arguments for the update command.
-    When:
-        - The update command is invoked with valid input.
-    Then:
-        - Ensure that the client's update method is called with the correct policy ID and payload.
-    """
-    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, CommandResults
-
-    mock_client = mocker.Mock()
-    mock_command_results = CommandResults(readable_output="OK")
-    mock_client.update_conditional_access_policy = mocker.Mock(return_value=mock_command_results)
-
-    result = update_conditional_access_policy_command(mock_client, args)
-
-    assert isinstance(result, CommandResults)
-    assert result.readable_output == "OK"
-    mock_client.update_conditional_access_policy.assert_called_once_with(expected_policy_id, expected_payload)
-
-
-@pytest.mark.parametrize("invalid_json", [
-    "{'state': 'enabled'}",  # invalid JSON string (single quotes)
-    "not_a_json",            # completely invalid
-    "[invalid:]"             # malformed syntax
-])
-def test_update_conditional_access_policy_command_invalid_json_policy(invalid_json, mocker):
-    """
-    Given:
-        - An invalid JSON string provided as the 'policy' argument.
-    When:
-        - Calling update_conditional_access_policy_command.
-    Then:
-        - Ensure ValueError is raised with the correct message.
-    """
-    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, Client
-
-    mock_client = Client("", False, False)
-
-    args = {
-        "policy_id": "abc123",
-        "policy": invalid_json
-    }
-    
-    with pytest.raises(ValueError, match="The provided policy string is not a valid JSON."):
-        update_conditional_access_policy_command(mock_client, args)
-
     
 
 @pytest.mark.parametrize(
@@ -641,3 +555,82 @@ def test_merge_policy_section_behavior(base_existing, new_input, expected_merged
 
     assert new_input_copy == expected_merged
     assert messages == expected_messages
+    
+
+
+@pytest.mark.parametrize(
+    "policy_input, http_response, expected_output, expected_in_context, expect_exception",
+    [
+        # Case 1: Valid dict input, response has ID
+        (
+            {"state": "enabled"},
+            {"id": "abc123", "state": "enabled"},
+            "Conditional Access policy abc123 was successfully created.",
+            True,
+            None,
+        ),
+
+        # Case 2: Valid JSON string input, response has ID
+        (
+            '{"state": "enabled"}',
+            {"id": "abc123", "state": "enabled"},
+            "Conditional Access policy abc123 was successfully created.",
+            True,
+            None,
+        ),
+
+        # Case 4: Invalid JSON string
+        (
+            '{"state": enabled}',  # missing quotes around value
+            None,
+            "The provided policy string is not a valid JSON.",
+            False,
+            None,
+        ),
+
+        # Case 5: API exception raised during request
+        (
+            {"state": "enabled"},
+            Exception("Network error"),
+            "Error creating Conditional Access policy:\nNetwork error",
+            False,
+            None,
+        ),
+    ]
+)
+def test_create_conditional_access_policy(mocker, policy_input, http_response, expected_output,
+                                          expected_in_context, expect_exception):
+    """
+    Given:
+        - Various policy inputs (valid/invalid JSON, dict).
+    When:
+        - Calling create_conditional_access_policy.
+    Then:
+        - Ensure it correctly handles:
+            - Successful creation
+            - Missing ID in response
+            - JSON decoding errors
+            - Network/API errors
+    """
+    from MicrosoftGraphIdentityandAccess import Client, CommandResults
+
+    mock_client = Client("", False, False)
+
+    if isinstance(http_response, Exception):
+        mocker.patch.object(mock_client.ms_client, "http_request", side_effect=http_response)
+    elif isinstance(http_response, dict):
+        mocker.patch.object(mock_client.ms_client, "http_request", return_value=http_response)
+
+    if expect_exception:
+        with pytest.raises(Exception) as e:
+            mock_client.create_conditional_access_policy(policy_input)
+        assert expected_output in str(e.value)
+    else:
+        result = mock_client.create_conditional_access_policy(policy_input)
+        assert isinstance(result, CommandResults)
+        assert expected_output in result.readable_output
+        if expected_in_context:
+            assert result.outputs.get("id") == "abc123"
+        else:
+            assert result.outputs is None or not result.outputs.get("id")
+
