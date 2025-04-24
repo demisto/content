@@ -70,10 +70,11 @@ def put_public_access_block(aws_client: AWSClient, args: Dict[str, Any]) -> Comm
         return CommandResults(readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket")
             
     command_args: dict[str, Union[bool, None]] = {
-        'BlockPublicAcls': argToBoolean(args.get('block_public_acls')),
-        'IgnorePublicAcls': argToBoolean(args.get('ignore_public_acls')),
-        'BlockPublicPolicy': argToBoolean(args.get('block_public_policy')),
-        'RestrictPublicBuckets': argToBoolean(args.get('restrict_public_buckets'))
+        'BlockPublicAcls': argToBoolean(args.get('block_public_acls')) if args.get('block_public_acls') else None,
+        'IgnorePublicAcls': argToBoolean(args.get('ignore_public_acls')) if args.get('ignore_public_acls') else None,
+        'BlockPublicPolicy': argToBoolean(args.get('block_public_policy')) if args.get('block_public_policy') else None,
+        'RestrictPublicBuckets':
+            argToBoolean(args.get('restrict_public_buckets')) if args.get('restrict_public_buckets') else None
     }
     
     remove_nulls_from_dictionary(command_args)
@@ -118,14 +119,17 @@ def update_account_password_policy(aws_client: AWSClient, args: Dict[str, Any]) 
         
     command_args: dict[str, Union[int, bool, None]] = {
         'MinimumPasswordLength': arg_to_number(args.get('minimum_password_length')),
-        'RequireSymbols': argToBoolean(args.get('require_symbols')),
-        'RequireNumbers': argToBoolean(args.get('require_numbers')),
-        'RequireUppercaseCharacters': argToBoolean(args.get('require_uppercase_characters')),
-        'RequireLowercaseCharacters': argToBoolean(args.get('require_lowercase_characters')),
-        'AllowUsersToChangePassword': argToBoolean(args.get('allow_users_to_change_password')),
+        'RequireSymbols': argToBoolean(args.get('require_symbols')) if args.get('require_symbols') else None,
+        'RequireNumbers': argToBoolean(args.get('require_numbers')) if args.get('require_numbers') else None,
+        'RequireUppercaseCharacters':
+            argToBoolean(args.get('require_uppercase_characters')) if args.get('require_uppercase_characters') else None,
+        'RequireLowercaseCharacters':
+            argToBoolean(args.get('require_lowercase_characters')) if args.get('require_lowercase_characters') else None,
+        'AllowUsersToChangePassword':
+            argToBoolean(args.get('allow_users_to_change_password')) if args.get('allow_users_to_change_password') else None,
         'MaxPasswordAge': arg_to_number(args.get('max_password_age')),
         'PasswordReusePrevention': arg_to_number(args.get('password_reuse_prevention')),
-        'HardExpiry': argToBoolean(args.get('hard_expiry'))
+        'HardExpiry': argToBoolean(args.get('hard_expiry')) if args.get('hard_expiry') else None,
     }
     
     remove_nulls_from_dictionary(command_args)

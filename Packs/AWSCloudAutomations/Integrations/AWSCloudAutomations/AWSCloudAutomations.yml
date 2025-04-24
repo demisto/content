@@ -266,8 +266,6 @@ script:
       required: true
     - description: The minimum number of characters allowed in an IAM user password.
       name: minimum_password_length
-      predefined:
-      - ''
     - auto: PREDEFINED
       description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
       name: require_symbols
@@ -300,12 +298,8 @@ script:
       - 'false'
     - description: The number of days that an IAM user password is valid.
       name: max_password_age
-      predefined:
-      - ''
     - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
       name: password_reuse_prevention
-      predefined:
-      - ''
     - auto: PREDEFINED
       description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
       name: hard_expiry
