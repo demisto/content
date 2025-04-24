@@ -614,17 +614,18 @@ script:
     arguments:
     - name: policy
       description: |
-        JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,
-        other required arguments like `policy_name`, `state`, `sign_in_risk_levels`, `user_risk_levels`, etc. must be included.
+        JSON object containing the policy details. Ensure a valid policy object is passed. 
       required: false
       isArray: false
     - name: policy_name
       description: The name of the Conditional Access policy to be created.
+                   required if policy argument not present.
       required: false
       isArray: false
     - name: state
       description: |
-        The state of the policy. Can be `enabled` or `disabled`. Default is `enabled`.
+        The state of the policy. Can be `enabled` or `disabled`.
+        required if policy argument not present.
       auto: PREDEFINED
       predefined:
         - 'enabled'
@@ -633,17 +634,20 @@ script:
       isArray: false
     - name: sign_in_risk_levels
       description: |
-        List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
+        List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.
+        required if policy argument not present.
       required: false
       isArray: true
     - name: user_risk_levels
       description: |
-        List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
+        List of user risk levels for the policy. Options: `low`, `medium`, `high`.
+        required if policy argument not present.
       required: false
       isArray: true
     - name: client_app_types
       description: |
         Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.
+        required if policy argument not present.
       required: false
       isArray: true
     - name: include_applications
@@ -850,7 +854,9 @@ script:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
       description: Whether sign-in frequency control is enabled.
       type: boolean
-  - description: Updates a Conditional Access policy.
+  - description: Updates a Conditional Access policy.  
+                By default, the command attempts to **append** values to existing list-based fields (e.g., `include_users`, `include_groups`, etc.).  
+                If a field does not support appending (i.e., it's not a list), the command **overrides** the existing value with the new one.
     name: msgraph-identity-ca-policy-update
     arguments:
     - name: policy_id
@@ -877,12 +883,12 @@ script:
         - disabled
     - name: sign_in_risk_levels
       description: |
-        List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
+        List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.
       required: false
       isArray: true
     - name: user_risk_levels
       description: |
-        List of user risk levels for the policy. Options: `low`, `medium`, `high`, `hidden`, `none`.
+        List of user risk levels for the policy. Options: `low`, `medium`, `high`.
       required: false
       isArray: true
     - name: client_app_types

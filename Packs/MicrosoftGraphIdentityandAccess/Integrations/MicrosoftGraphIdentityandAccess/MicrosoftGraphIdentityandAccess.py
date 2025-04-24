@@ -1247,8 +1247,8 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
         "conditions": {
             "clientAppTypes": argToList(args.get('client_app_types')),
             "applications": {
-                "includeApplications": argToList(args.get('include_applications')),
-                "excludeApplications": argToList(args.get('exclude_applications')),
+                "includeApplications": argToList(args.get('include_applications', 'none')),
+                "excludeApplications": argToList(args.get('exclude_applications', 'none')),
                 "includeUserActions": argToList(args.get('include_user_actions')),
             },
             "users": {
