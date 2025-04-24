@@ -40,7 +40,7 @@ SERVER = PARAMS["url"].removesuffix("/")
 # Should we use SSL
 USE_SSL = not PARAMS.get("insecure", False)
 # How many time before the first fetch to retrieve incidents
-FETCH_TIME = PARAMS.get("fetch_time", "3 days") if not is_xsiam() else 'now'
+FETCH_TIME = 'now' if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
 MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000
 MAX_FETCH_INCIDENT_PER_API_CALL = 500
@@ -368,6 +368,15 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 """ HELPER FUNCTIONS """
+
+def is_fetch_events():
+    """
+    Determines whether or not the command is fetch_events.
+
+    Returns:
+        bool: True if the command is fetch-events.
+    """
+    return demisto.command() == "fetch-events"
 
 def disable_for_xsiam():
     """Validates if command is not running on an unsupported Cortex platform.
@@ -772,7 +781,7 @@ def detection_to_incident(detection):
         "rawJSON": json.dumps(detection),
         "severity": severity_string_to_int(severity),
     }
-    if is_xsiam():
+    if is_fetch_events():
         incident["_source_log_type"] = detection.get("incident_type")
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
@@ -805,10 +814,10 @@ def incident_to_incident_context(incident):
         "occurred": str(incident.get("start")),
         "rawJSON": json.dumps(incident),
     }
-    if is_xsiam():
+    if is_fetch_events():
         incident_context["_source_log_type"] = incident.get("incident_type")
         # new incident
-        if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created_timestamp")):
+        if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created")):
             incident_context["_time"] = incident.get("created_timestamp")
             incident_context['_entry_status'] = "new"
         # updated detection
@@ -864,7 +873,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
     
-    if is_xsiam():
+    if is_fetch_events():
         incident_context["_source_log_type"] = "detection"
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
@@ -2924,7 +2933,7 @@ def fetch_incidents():
     
     fetch_incidents_or_detections = params.get("fetch_incidents_or_detections", "")
         
-    look_back = int(params.get("look_back") or 2) if not is_xsiam() else int(params.get("look_back_xsiam") or 2)
+    look_back = int(params.get("look_back") or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -3242,7 +3251,7 @@ def fetch_events():
     
     fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
         
-    look_back = int(params.get("look_back") or 2) if not is_xsiam() else int(params.get("look_back_xsiam") or 2)
+    look_back = int(params.get("look_back_xsiam") or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -3566,7 +3575,11 @@ def fetch_detections_by_product_type(
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-    fetch_limit = current_fetch_info.get("limit") or INCIDENTS_PER_FETCH
+    if is_fetch_events():
+        fetch_limit = current_fetch_info.get("limit") or MAX_FETCH_DETECTION_PER_API_CALL
+    else:
+        fetch_limit = current_fetch_info.get("limit") or INCIDENTS_PER_FETCH
+        
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
     if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
         filter = filter.replace("product:", "type:")
