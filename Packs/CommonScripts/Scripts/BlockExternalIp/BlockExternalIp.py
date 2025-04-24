@@ -6,6 +6,139 @@ from CommonServerPython import *
 
 POLLING = False
 
+
+""" CLIENT CLASS """
+
+
+class PrismaSase:
+    def __init__(self, args: dict, responses: list):
+        self.args = args
+        self.responses = responses
+
+    def prisma_sase_candidate_config_push(self) -> CommandResults | None:
+        """ Execute the command prisma-sase-candidate-config-push if needed.
+        Returns:
+            A tuple of
+            1. The response of the execution of the command prisma-sase-candidate-config-push or None if wasn't executed
+            2. None or the command result created in case the auto_commit == false.
+        """
+        auto_commit_message = None
+        auto_commit = self.args.get('auto_commit', True)
+        if auto_commit:
+            command_name = "prisma-sase-candidate-config-push"
+            res_auto_commit = run_execute_command(command_name, {"folders": "Remote Networks, Mobile Users, Service Connections"})
+            self.responses.append(res_auto_commit)
+        else:
+            auto_commit_message = CommandResults(
+                readable_output=f"Not commiting the changes in Palo Alto Networks - Prisma SASE, "
+                                f"since {auto_commit=}. Please do so manually for the changes to take affect.")
+        return auto_commit_message
+
+    def prisma_sase_security_rule_update(self, res_rule_list: list) -> list:
+        """ Execute the command prisma-sase-security-rule-update if needed.
+        Args:
+            res_rule_list (list): The response from prisma-sase-security-rule-list.
+        Returns:
+            The response of prisma-sase-security-rule-update if it was executed, else an empty list.
+        """
+        rule_name = self.args['rule_name']
+        address_group = self.args['address_group']
+        demisto.debug(f"The rule {rule_name} exists.")
+        context_rule_list = get_relevant_context(res_rule_list[0].get('EntryContext', {}), 'PrismaSase.SecurityRule')
+        rule_id = context_rule_list.get('id', '')  # type: ignore
+        rule_destination = context_rule_list.get('destination', [])  # type: ignore
+        if address_group not in rule_destination:
+            command_name = "prisma-sase-security-rule-update"
+            res_rule_update = run_execute_command(command_name,
+                                                  {'rule_id': rule_id, 'action': 'deny', 'destination': address_group})
+            self.responses.append(res_rule_update)
+            return res_rule_update
+        return []
+
+    def prisma_sase_block_ip(self) -> list[CommandResults]:
+        """ Execute the flow of prisma sase.
+        Returns:
+            A list of CommandResults.
+        """
+        demisto.debug(f"The arguments to prisma_sase_block_ip are {self.args=}")
+        ip = self.args['ip']
+        address_group = self.args['address_group']
+        rule_name = self.args['rule_name']
+        auto_commit_message = None
+        verbose = self.args.get('verbose', False)
+
+        command_name_address_object_list = "prisma-sase-address-object-list"
+        res_address_object_list = run_execute_command(command_name_address_object_list, {'name': ip})
+        self.responses.append(res_address_object_list)
+        contents_address_object_list = res_address_object_list[0].get('Contents')
+
+        if isinstance(contents_address_object_list, str) and "does not exist" in contents_address_object_list:
+            demisto.debug(f"The {ip} does not exist in the address-object list. Hence we are creating an address object.")
+            command_name_address_object_create = "prisma-sase-address-object-create"
+            res_add_obj_create = run_execute_command(command_name_address_object_create,
+                                                     {'name': ip, 'type': 'ip_netmask', 'address_value': ip})
+            self.responses.append(res_add_obj_create)
+            if is_error(res_add_obj_create):
+                return prepare_context_and_hr_multiple_executions(self.responses, verbose, '', [ip])
+            auto_commit_message = self.prisma_sase_candidate_config_push()
+
+        command_name_address_group_list = "prisma-sase-address-group-list"
+        res_add_group_list = run_execute_command(command_name_address_group_list, {'name': address_group})
+        self.responses.append(res_add_group_list)
+        contents_add_group_list = res_add_group_list[0].get('Contents', '')
+        if isinstance(contents_add_group_list, str) and "does not exist" in contents_add_group_list:
+            demisto.debug(f"The {address_group=} doesn't exist, creating it.")
+            command_name_group_create = "prisma-sase-address-group-create"
+            res_address_group_create = run_execute_command(command_name_group_create,
+                                                           {"name": address_group,
+                                                            "type": "static",
+                                                            "static_addresses": ip})
+            self.responses.append(res_address_group_create)
+            if is_error(res_address_group_create):
+                return prepare_context_and_hr_multiple_executions(self.responses, verbose, '', [ip])
+
+            command_name_security_rule_list = "prisma-sase-security-rule-list"
+            res_rule_list = run_execute_command(command_name_security_rule_list, {"name": rule_name})
+            contents_rule_list = res_rule_list[0].get('Contents', '')
+            self.responses.append(res_rule_list)
+            if isinstance(contents_rule_list, str) and "does not exist" in contents_rule_list:
+                demisto.debug(f"The security rule doesn't exist. Creating a new rule {rule_name}")
+                command_name_rule_create = "prisma-sase-security-rule-create"
+                res_rule_create = run_execute_command(command_name_rule_create,
+                                                      {"action": "deny", "name": rule_name, 'destination': address_group})
+                self.responses.append(res_rule_create)
+                if is_error(res_rule_create):
+                    return prepare_context_and_hr_multiple_executions(self.responses, verbose, '', [ip])
+            else:
+                # The security rule exist, check whether to update it.
+                res_rule_update = self.prisma_sase_security_rule_update(res_rule_list)
+                if res_rule_update and is_error(res_rule_update):
+                    return prepare_context_and_hr_multiple_executions(self.responses, verbose, rule_name, [ip])
+
+            auto_commit_message = self.prisma_sase_candidate_config_push()
+        else:
+            demisto.debug(f"The {address_group=} exists, editing it.")
+            context_add_group_list = get_relevant_context(res_add_group_list[0].get('EntryContext', {}),
+                                                          'PrismaSase.AddressGroup')
+            addresses_group_ip_list = context_add_group_list.get('addresses', [])  # type: ignore
+            if ip not in addresses_group_ip_list:
+                demisto.debug(
+                    f"The {address_group=} exists, but the {ip=} isn't in the {addresses_group_ip_list=} of {address_group=}")
+                group_id = context_add_group_list.get('id')  # type: ignore
+                command_name_address_group_update = "prisma-sase-address-group-update"
+                res_add_group_update = run_execute_command(command_name_address_group_update,
+                                                           {'group_id': group_id, 'static_addresses': ip})
+                self.responses.append(res_add_group_update)
+                if is_error(res_add_group_update):
+                    return prepare_context_and_hr_multiple_executions(self.responses, verbose, '', [ip])
+                auto_commit_message = self.prisma_sase_candidate_config_push()
+
+        command_results_list = prepare_context_and_hr_multiple_executions(self.responses, verbose, rule_name, [ip])
+        if auto_commit_message:
+            command_results_list.append(auto_commit_message)
+        return command_results_list
+
+
 """ STANDALONE FUNCTION """
 
 
@@ -244,136 +377,6 @@ def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
 
 
 """ COMMAND FUNCTION """
-
-
-def prisma_sase_candidate_config_push(auto_commit: bool, responses: list) -> CommandResults | None:
-    """ Execute the command prisma-sase-candidate-config-push if needed.
-    Args:
-        auto_commit (bool): Whether to execute the command prisma-sase-candidate-config-push.
-        responses (list): The list of current responses from the previous execute command executions of prisma-sase.
-    Returns:
-        A tuple of
-        1. The response of the execution of the command prisma-sase-candidate-config-push or None if wasn't executed
-        2. None or the command result created in case the auto_commit == false.
-    """
-    auto_commit_message = None
-    if auto_commit:
-        command_name = "prisma-sase-candidate-config-push"
-        res_auto_commit = run_execute_command(command_name,{"folders": "Remote Networks, Mobile Users, Service Connections"})
-        responses.append(res_auto_commit)
-    else:
-        auto_commit_message = CommandResults(readable_output=f"Not commiting the changes in Palo Alto Networks - Prisma SASE, "
-                                       f"since {auto_commit=}. Please do so manually for the changes to take affect.")
-    return auto_commit_message
-
-
-def prisma_sase_security_rule_update(rule_name: str, address_group: str, res_rule_list: list, responses: list) -> list:
-    """ Execute the command prisma-sase-security-rule-update if needed.
-    Args:
-        rule_name (str): The name of the rule.
-        address_group (list[dict]): The address group name.
-        res_rule_list (list): The response from prisma-sase-security-rule-list.
-        responses (list): The list of current responses from the previous execute command executions of prisma-sase.
-    Returns:
-        The response of prisma-sase-security-rule-update if it was executed, else an empty list.
-    """
-    demisto.debug(f"The rule {rule_name} exists.")
-    context_rule_list = get_relevant_context(res_rule_list[0].get('EntryContext', {}), 'PrismaSase.SecurityRule')
-    rule_id = context_rule_list.get('id', '')  # type: ignore
-    rule_destination = context_rule_list.get('destination', [])  # type: ignore
-    if address_group not in rule_destination:
-        command_name = "prisma-sase-security-rule-update"
-        res_rule_update = run_execute_command(command_name,
-                                              {'rule_id': rule_id, 'action': 'deny', 'destination': address_group})
-        responses.append(res_rule_update)
-        return res_rule_update
-    return []
-
-
-def prisma_sase_block_ip(brand_args: dict) -> list[CommandResults]:
-    """ Execute the flow of prisma sase.
-    Args:
-        brand_args (dict): The flow arguments.
-    Returns:
-        A list of CommandResults.
-    """
-    demisto.debug(f"The arguments to prisma_sase_block_ip are {brand_args=}")
-    responses = []
-    ip = brand_args['ip']
-    address_group = brand_args['address_group']
-    rule_name = brand_args['rule_name']
-    auto_commit_message = None
-
-    command_name_address_object_list = "prisma-sase-address-object-list"
-    res_address_object_list = run_execute_command(command_name_address_object_list, {'name': ip})
-    responses.append(res_address_object_list)
-    contents_address_object_list = res_address_object_list[0].get('Contents')
-
-    if isinstance(contents_address_object_list, str) and "does not exist" in contents_address_object_list:
-        demisto.debug(f"The {ip} does not exist in the address-object list. Hence we are creating an address object.")
-        command_name_address_object_create = "prisma-sase-address-object-create"
-        res_add_obj_create = run_execute_command(command_name_address_object_create,
-                                                 {'name': ip, 'type': 'ip_netmask', 'address_value': ip})
-        responses.append(res_add_obj_create)
-        if is_error(res_add_obj_create):
-            return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], '', [ip])
-        auto_commit_message = prisma_sase_candidate_config_push(brand_args['auto_commit'], responses)
-
-    command_name_address_group_list = "prisma-sase-address-group-list"
-    res_add_group_list = run_execute_command(command_name_address_group_list, {'name': address_group})
-    responses.append(res_add_group_list)
-    contents_add_group_list = res_add_group_list[0].get('Contents', '')
-    if isinstance(contents_add_group_list, str) and "does not exist" in contents_add_group_list:
-        demisto.debug(f"The {address_group=} doesn't exist, creating it.")
-        command_name_group_create = "prisma-sase-address-group-create"
-        res_address_group_create = run_execute_command(command_name_group_create,
-                                                       {"name": address_group,
-                                                        "type": "static",
-                                                        "static_addresses": ip})
-        responses.append(res_address_group_create)
-        if is_error(res_address_group_create):
-            return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], '', [ip])
-
-        command_name_security_rule_list = "prisma-sase-security-rule-list"
-        res_rule_list = run_execute_command(command_name_security_rule_list, {"name": rule_name})
-        contents_rule_list = res_rule_list[0].get('Contents', '')
-        responses.append(res_rule_list)
-        if isinstance(contents_rule_list, str) and "does not exist" in contents_rule_list:
-            demisto.debug(f"The security rule doesn't exist. Creating a new rule {rule_name}")
-            command_name_rule_create = "prisma-sase-security-rule-create"
-            res_rule_create = run_execute_command(command_name_rule_create,
-                                                  {"action": "deny", "name": rule_name, 'destination': address_group})
-            responses.append(res_rule_create)
-            if is_error(res_rule_create):
-                return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], '', [ip])
-        else:
-            # The security rule exist, check whether to update it.
-            res_rule_update = prisma_sase_security_rule_update(rule_name, address_group, res_rule_list, responses)
-            if res_rule_update and is_error(res_rule_update):
-                return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], rule_name, [ip])
-
-        auto_commit_message = prisma_sase_candidate_config_push(brand_args['auto_commit'], responses)
-    else:
-        demisto.debug(f"The {address_group=} exists, editing it.")
-        context_add_group_list = get_relevant_context(res_add_group_list[0].get('EntryContext', {}),
-                                                            'PrismaSase.AddressGroup')
-        addresses_group_ip_list = context_add_group_list.get('addresses', [])  # type: ignore
-        if ip not in addresses_group_ip_list:
-            demisto.debug(
-                f"The {address_group=} exists, but the {ip=} isn't in the {addresses_group_ip_list=} of {address_group=}")
-            group_id = context_add_group_list.get('id')  # type: ignore
-            command_name_address_group_update = "prisma-sase-address-group-update"
-            res_add_group_update = run_execute_command(command_name_address_group_update,
-                                                       {'group_id': group_id, 'static_addresses': ip})
-            responses.append(res_add_group_update)
-            if is_error(res_add_group_update):
-                return prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], '', [ip])
-            auto_commit_message = prisma_sase_candidate_config_push(brand_args['auto_commit'], responses)
-
-    command_results_list = prepare_context_and_hr_multiple_executions(responses, brand_args['verbose'], rule_name, [ip])
-    if auto_commit_message:
-        command_results_list.append(auto_commit_message)
-    return  command_results_list
 
 
 @polling_function(
@@ -882,7 +885,8 @@ def main():  # pragma: no cover
                             'rule_name': rule_name,
                             'auto_commit': auto_commit,
                         }
-                        results.append(prisma_sase_block_ip(brand_args))
+                        prisma_sase = PrismaSase(brand_args, [])
+                        results.append(prisma_sase.prisma_sase_block_ip())
                     executed_brands.append(brand)
 
                 elif brand == "Panorama":
