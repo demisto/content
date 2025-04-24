@@ -69,7 +69,7 @@ ignore=BA101,PB121
 ignore=PB105
 
 [file:playbook-Extract_Indicators_From_File_-_Generic_v2_4_5.yml]
-ignore=PB114
+ignore=PB114,GR107
 
 [file:README.md]
 ignore=RM104
@@ -136,7 +136,3 @@ ignore=GR107
 
 [file:playbook-Isolate_Endpoint_-_Generic_V2.yml]
 ignore=GR107
-
-[file:playbook-Extract_Indicators_From_File_-_Generic_v2_4_5.yml]
-ignore=GR107
-
