@@ -336,7 +336,6 @@ def test_delete_conditional_access_policy_command(mocker, args, should_raise, de
     """
     Given:
         - Different cases of policy deletion including:
-            - Missing 'policy_id'
             - Valid 'policy_id' but API error
             - Valid 'policy_id' and successful deletion
     When:
@@ -530,44 +529,3 @@ def test_update_conditional_access_policy_command_invalid_json_policy(invalid_js
     with pytest.raises(ValueError, match="The provided policy string is not a valid JSON."):
         update_conditional_access_policy_command(client, args)
         
-'''
-def test_update_conditional_access_policy_command_append_mode(mocker):
-    """
-    Given:
-        - An existing policy from the API.
-        - New args with update_action=append and partial fields.
-    When:
-        - Calling update_conditional_access_policy_command.
-    Then:
-        - Ensure merge_field is called.
-        - Ensure merged result is passed to client.update_conditional_access_policy.
-    """
-    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, CommandResults
-
-    args = {
-        "policy_id": "abc123",
-        "update_action": "append",
-        "include_users": "user2,user3",
-        "state": "enabled"
-    }
-
-    # Mock existing policy returned from the list_conditional_access_policies
-    existing_policy = {
-        "state": "enabled",
-        "conditions": {
-            "users": {
-                "includeUsers": ["user1"]
-            }
-        }
-    }
-
-    expected_merged_policy = {
-        "state": "enabled",
-        "conditions": {
-            "users": {
-                "includeUsers": ["user1", "user2", "user3"]
-            }
-        }
-    }
-'''
-

@@ -350,9 +350,16 @@ class Client:  # pragma: no cover
 
         Args:
             policy_id (str, optional): The ID of the policy to retrieve. If not provided, lists all.
+            filter_query (str, optional]): An OData filter query to apply when listing policies
+                                            (only relevant when policy_id is not provided).
 
         Returns:
-            dict: The retrieved policy, or list of policies.
+            list: The retrieved policy, or list of policies.
+            
+        Union[List[Dict[str, Any]], CommandResults]:
+            - If `policy_id` is given and found, returns a single policy as a dictionary.
+            - If no `policy_id` is given, returns a list of policies.
+            - If an error occurs (e.g., network failure, invalid response), returns a CommandResults object with error details.
         """
         if policy_id:
             url_suffix = f"v1.0/identity/conditionalAccess/policies/{policy_id}"
@@ -379,7 +386,7 @@ class Client:  # pragma: no cover
         
     
         
-    def delete_conditional_access_policy(self, policy_id: str) -> CommandResults:
+    def delete_conditional_access_policy(self, policy_id) -> CommandResults:
         """
         Delete specific Conditional Access policy by ID.
 
@@ -387,7 +394,7 @@ class Client:  # pragma: no cover
             policy_id (str, required): The ID of the policy to delete.
 
         Returns:
-            dict: The retrieved policy, or list of policies.
+            CommandResults: Success message or error information.
         """
         url_suffix = f"v1.0/identity/conditionalAccess/policies/{policy_id}"
 
@@ -418,6 +425,16 @@ class Client:  # pragma: no cover
                 f"{str(e)}"),)
             
     def create_conditional_access_policy(self, policy) -> CommandResults:
+        """
+        Sends a request to create a new Conditional Access policy in Microsoft Graph API.
+
+        Args:
+            policy (str | dict): The policy definition as a JSON string or dictionary.
+
+        Returns:
+            CommandResults: Results containing the created policy (context) and
+            success message or error information.
+        """
         try:
             # in case user send json policy
             if isinstance(policy, str):
@@ -450,7 +467,17 @@ class Client:  # pragma: no cover
             return CommandResults(readable_output=(f"Error creating Conditional Access policy:\n"
                 f"{str(e)}"),)
 
-    def update_conditional_access_policy(self, policy_id: Union[str, None], policy: Union[dict, str]) -> CommandResults:
+    def update_conditional_access_policy(self, policy_id, policy: Union[dict, str]) -> CommandResults:
+        """
+        Updates a Conditional Access policy using its ID and the provided policy data.
+
+        Args:
+            policy_id (str): The ID of the policy to update.
+            policy (dict | str): The policy data to update with. Can be a dictionary or a JSON string.
+
+        Returns:
+            CommandResults: Object containing the operation outcome.
+        """
         try:
             if isinstance(policy, str):
                 policy = json.loads(policy)
@@ -525,8 +552,13 @@ def resolve_merge_value(field: str, existing_list: List[str], new_list: List[str
 
 def merge_policy_section(base_existing: dict, new: dict, messages: List[str]) -> None:
     """
-    Iteratively merges fields from new policy into existing policy using resolve_merge_value logic.
-    Works non-recursively.
+    Iteratively merges list-based fields from a new policy into an existing policy using resolve_merge_value logic.
+    Only fields with list values are merged. Others are ignored with a warning message.
+    
+    Args:
+        base_existing (dict): The existing full policy from the system.
+        new (dict): The user-supplied partial policy to be merged in-place.
+        messages (List[str]): A log list to capture warnings or actions.
     """
     stack: List[tuple[dict, dict, List[str]]] = [(base_existing, new, [])]
 
@@ -1161,6 +1193,7 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
         ),
         raw_response=policies
     )
+    
 def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Deletes a Conditional Access policy by its ID.
@@ -1179,8 +1212,6 @@ def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any
     """
     policy_id = args.get('policy_id')
     
-    if not policy_id:
-        return CommandResults(readable_output="Policy id is required")
     return client.delete_conditional_access_policy(policy_id)
     
 
@@ -1197,7 +1228,8 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
         args (dict): Command arguments containing policy details.
 
     Returns:
-        CommandResults: Results to return to Cortex XSOAR.
+        CommandResults: In case of success created policy data for Context and
+                        and success message for the user, otherwise error message
     """
     
     policy = args.get('policy', {})
@@ -1250,6 +1282,25 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
 
 
 def update_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update an existing Conditional Access policy using either full override or append logic.
+
+    Required Microsoft Graph API Permissions:
+        - Policy.Read.All (Delegated or Application)
+        - Policy.ReadWrite.ConditionalAccess (Delegated or Application)
+
+    Args:
+        client (Client): An authenticated Microsoft Graph API client.
+        args (Dict[str, Any]): Command arguments including:
+            - policy_id (str): ID of the policy to update.
+            - policy (str or dict, optional): A complete policy in JSON format (used if provided).
+            - update_action (str, optional): 'override' (default) or 'append'.
+            - Other individual fields like include_users, state, etc., depending on mode.
+
+    Returns:
+        CommandResults: A result object indicating success or failure, along with messages.
+    """
+    
     policy_id = args.get('policy_id')
     update_action = args.get("update_action", "append").lower()
     messages: list[str] = []
