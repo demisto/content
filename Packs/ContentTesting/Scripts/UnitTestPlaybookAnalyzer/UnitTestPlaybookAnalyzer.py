@@ -122,7 +122,8 @@ def TaskStats(task: list, taskstat: dict) -> dict:
 
 
 def GetTaskStats(playbookname, subplaybookname, firstday, lastday, maxinc):
-    argument = {"size": maxinc, "query": f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
+    argument = {"size": maxinc,
+                "query": f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
     response = execute_command("getIncidents", argument)
     taskstat: dict = {}
     taskstats: dict = {}
