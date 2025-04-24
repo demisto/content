@@ -465,8 +465,7 @@ tasks:
       id: d9040a9e-9c36-4208-8e51-36748b9e0e1e
       version: -1
       name: 'Is DarktraceEmail integration enabled? '
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
