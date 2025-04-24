@@ -266,4 +266,3 @@ filter logName !~= "cloudaudit.googleapis.com|dns.googleapis.com|vpc_flows"
     xdm.target.ipv6 = if(http_request_server_ip !~= "(?:\d{1,3}\.){3}\d{1,3}", http_request_server_ip),
     xdm.target.port = to_integer(arrayindex(regextract(http_request_server_ip, "(?:\d{1,3}\.){3}\d{1,3}:(\d{1,5})$"), 0)),
     xdm.target.sent_bytes = to_integer(httpRequest -> responseSize);
-    
