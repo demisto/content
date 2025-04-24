@@ -53,6 +53,7 @@ FIELDS_TO_COPY_FROM_REMOTE_INCIDENT = [
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MIRROR_RESET = "XSOARMirror_mirror_reset"
+INTEGRATION_NAME = "XSUP-47861/XSOARMirror"
 
 """ CLIENT CLASS """
 
@@ -96,6 +97,7 @@ class Client(BaseClient):
             "tags": tags,
             "tagsAndOperator": tags_and_operator,
         }
+        demisto.debug(f"{INTEGRATION_NAME}: get_incident_entries for incident id {incident_id}, {data}")
         inv_with_entries = self._http_request(method="POST", url_suffix=f"/investigation/{incident_id}", json_data=data)
         return inv_with_entries.get("entries", [])
 
@@ -380,6 +382,7 @@ def fetch_incidents(
             and len(incident.get("attachment", [])) > 0
             and incident.get("investigationId")
         ):
+            demisto.debug(f"{INTEGRATION_NAME}: for incident {incident['investigationId']} getting attachments")
             entries = client.get_incident_entries(
                 incident_id=incident["investigationId"],  # type: ignore
                 from_date=0,
@@ -388,18 +391,19 @@ def fetch_incidents(
                 tags=None,
                 tags_and_operator=False,
             )
-
             for entry in entries:
+                demisto.debug(f"{INTEGRATION_NAME}: for incident {incident['investigationId']} entries: {entry.keys()}")
                 if "file" in entry and entry.get("file"):
                     file_entry_content = client.get_file_entry(entry.get("id"))  # type: ignore
                     file_result = fileResult(entry["file"], file_entry_content)
                     if any(attachment.get("name") == entry["file"] for attachment in incident.get("attachment", [])):
                         if file_result["Type"] == EntryType.ERROR:
                             raise Exception(f"Error getting attachment: {file_result.get('Contents', '')!s}")
-
+                        demisto.debug(f"{INTEGRATION_NAME}: add file_attachments for incident {incident['investigationId']}")
                         file_attachments.append({"path": file_result.get("FileID", ""), "name": file_result.get("File", "")})
 
         incident_result["attachment"] = file_attachments
+        demisto.debug(f"{INTEGRATION_NAME}: add file_attachments for incident {incident['investigationId']}")
         incidents_result.append(incident_result)
         incident_created_time = dateparser.parse(incident.get("created"), settings={"TIMEZONE": "Z"})  # type: ignore[arg-type]
         # Update last run and add incident if the incident is newer than last fetch
@@ -610,6 +614,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
         )
         remote_args = GetRemoteDataArgs(args)
         demisto_debug(f"Getting update for remote [{remote_args.remote_incident_id}]")
+        demisto.debug(f"{INTEGRATION_NAME}: remote_args {remote_args}")
 
         categories = argToList(params.get("categories", None))
         tags = argToList(params.get("tags", None))
@@ -631,17 +636,20 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
             remote_args.last_update
         ) - datetime.fromtimestamp(modified) < timedelta(minutes=1):
             remote_args.last_update = occurred + 1
+            demisto.debug(f"{INTEGRATION_NAME}: {remote_args.last_update}")
             # in case new entries created less than a minute after incident creation
 
-        demisto_debug(f"tags: {tags}")
-        demisto_debug(f"categories: {categories}")
+        demisto_debug(f"{INTEGRATION_NAME}: tags: {tags}")
+        demisto_debug(f"{INTEGRATION_NAME}: categories: {categories}")
         integration_context = get_integration_context()
         XSOARMirror_mirror_reset: dict = json.loads(integration_context.get(MIRROR_RESET, "{}"))
         is_incident_update_after_reset = False
         if XSOARMirror_mirror_reset:
+            demisto.debug(f"{INTEGRATION_NAME}: XSOARMirror_mirror_reset")
             is_incident_update_after_reset = XSOARMirror_mirror_reset.get(remote_args.remote_incident_id, None)
         from_date = 0 if is_incident_update_after_reset else remote_args.last_update * 1000
         demisto.debug(f"Requesting update for incident id {remote_args.remote_incident_id} from date: {from_date}")
+        demisto.debug(f"{INTEGRATION_NAME}: get_incident_entries for incident id {remote_args.remote_incident_id}")
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
             from_date=from_date,
@@ -659,17 +667,20 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
 
         formatted_entries = []
         # file_attachments = []
-
         if entries:
-            demisto.debug(f"Got entries: {entries} for incident id {remote_args.remote_incident_id}")
+            demisto.debug(f"{INTEGRATION_NAME}: Got entries: {entries} for incident id {remote_args.remote_incident_id}")
             for entry in entries:
-                demisto.debug(f"Got entry {entry}")
+                demisto.debug(f"{INTEGRATION_NAME}: Got entry {entry} for incident id {remote_args.remote_incident_id}")
                 if "file" in entry and entry.get("file"):
                     file_entry_content = client.get_file_entry(entry.get("id"))  # type: ignore
                     file_result = fileResult(entry["file"], file_entry_content)
 
                     formatted_entries.append(file_result)
+                    demisto.debug(f"{INTEGRATION_NAME}: add file results for incident id {remote_args.remote_incident_id}")
                 else:
+                    demisto.debug(
+                        f"{INTEGRATION_NAME}: add tags and notes results for incident id {remote_args.remote_incident_id}"
+                    )
                     formatted_entries.append(
                         {
                             "Type": entry.get("type"),
@@ -683,7 +694,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
 
         # Handle if the incident closed remotely
         if incident.get("status") == IncidentStatus.DONE:
-            demisto.debug("incident was closed remotely, adding note")
+            demisto.debug(f"{INTEGRATION_NAME}: incident {remote_args.remote_incident_id} was closed remotely, adding note")
             formatted_entries.append(
                 {
                     "Type": EntryType.NOTE,
@@ -699,7 +710,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
         incident["in_mirror_error"] = ""
 
         if remote_args.last_update >= modified and not formatted_entries:
-            demisto.debug(f"Nothing new in the incident, incident id {remote_args.remote_incident_id}")
+            demisto.debug(f"{INTEGRATION_NAME}: Nothing new in the incident, incident id {remote_args.remote_incident_id}")
             incident = {}  # this empties out the incident, which will result in not updating the local one
 
         incident["dbotMirrorInstance"] = demisto.integrationInstance()
@@ -740,48 +751,56 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f"Got the following delta keys {list(parsed_args.delta.keys())!s}")
+        demisto.debug(f"{INTEGRATION_NAME}: Got the following delta keys {list(parsed_args.delta.keys())}")
 
-    demisto.debug(f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n")
+    demisto.debug(f"{INTEGRATION_NAME}: Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n")
 
     new_incident_id: str = parsed_args.remote_incident_id  # type: ignore
     updated_incident = {}
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:
+        demisto.debug(f"{INTEGRATION_NAME}: we have not {parsed_args.remote_incident_id} or {parsed_args.incident_changed}")
         if parsed_args.remote_incident_id:
+            demisto.debug(f"{INTEGRATION_NAME}: we have remote_incident_id")
             # First, get the incident as we need the version
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
+            demisto.debug(f"{INTEGRATION_NAME}: we got {parsed_args.remote_incident_id}")
             for changed_key in parsed_args.delta:
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
                 if changed_key in old_incident.get("CustomFields", {}):
+                    demisto.debug(f"{INTEGRATION_NAME}: change CustomFields")
                     old_incident["CustomFields"][changed_key] = parsed_args.delta[changed_key]
-
+            demisto.debug(f"{INTEGRATION_NAME}: finish to change old_incident")
             parsed_args.data = old_incident
 
         else:
+            demisto.debug(f"{INTEGRATION_NAME}: set createInvestigation and CustomFields")
             parsed_args.data["createInvestigation"] = True
             # This is used to identify the custom field, so that we will know the source of the incident
             # and will not mirror it in afterwards
             parsed_args.data["CustomFields"] = {"frompong": "true"}
 
         updated_incident = client.update_incident(incident=parsed_args.data)
+        demisto.debug(f"{INTEGRATION_NAME}: update incident")
         new_incident_id = updated_incident["id"]
         demisto.debug(f"Got back ID [{new_incident_id}]")
 
     else:
         demisto.debug(
-            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is not new nor changed."
+            f"{INTEGRATION_NAME}: Skipping updating remote incident fields [{parsed_args.remote_incident_id}]"
+            " as it is not new nor changed."
         )
 
     if parsed_args.entries:
+        demisto.debug(f"{INTEGRATION_NAME}: we have parsed_args.entries")
         for entry in parsed_args.entries:
-            demisto.info(f"this is the tag {entry.get('tags', [])}")
+            demisto.info(f"{INTEGRATION_NAME}: this is the tag {entry.get('tags', [])}")
             if mirror_tags.intersection(set(entry.get("tags", []))):
-                demisto.debug(f'Sending entry {entry.get("id")}')
+                demisto.debug(f'{INTEGRATION_NAME}: Sending entry {entry.get("id")}')
                 client.add_incident_entry(incident_id=new_incident_id, entry=entry)
 
     # Close incident if relevant
     if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
-        demisto.debug(f"Closing remote incident {new_incident_id}")
+        demisto.debug(f"{INTEGRATION_NAME}: Closing remote incident {new_incident_id}")
         client.close_incident(
             new_incident_id,
             updated_incident.get("version"),  # type: ignore
@@ -829,7 +848,7 @@ def get_and_dedup_incidents(
             field="created",
             page=page,
         )
-        demisto.debug(f"incidents: {incidents}")
+        demisto.debug(f"{INTEGRATION_NAME}: incidents: {incidents} for page: {page}")
         # Case 1: Empty response.
         if len(incidents) == 0:
             break
@@ -838,19 +857,23 @@ def get_and_dedup_incidents(
                 break
             incident_id = incident.get("id")
             created = incident.get("created", last_fetched_incident_time)
-            demisto.debug(f"before incident_creation_time with timezone: {created}")
+            demisto.debug(f"{INTEGRATION_NAME}: before incident_creation_time with timezone: {created}")
             incident_creation_time = dateparser.parse(
                 incident.get("created", last_fetched_incident_time), settings={"TIMEZONE": "Z"}
             )
-            demisto.debug(f"{incident_id} incident_creation_time: {incident_creation_time}")
+            demisto.debug(f"{INTEGRATION_NAME}: {incident_id} incident_creation_time: {incident_creation_time}")
             if incident_id not in last_fetched_incidents:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
                 if last_fetched_incident_time and incident_creation_time and last_fetched_incident_time < incident_creation_time:
-                    demisto.debug(f"XSOAR Mirroring: reset the last_fetched_incidents list with id {incident_id}")
+                    demisto.debug(
+                        f"{INTEGRATION_NAME}: XSOAR Mirroring: reset the last_fetched_incidents list with id {incident_id}"
+                    )
                     last_fetched_incidents = [incident_id]
                 # Case 2: The last fetched incident with the same timestamp as the previous incident.
                 else:
-                    demisto.debug(f"XSOAR Mirroring: attached id {incident_id} to the last_fetched_incidents list")
+                    demisto.debug(
+                        f"{INTEGRATION_NAME}: XSOAR Mirroring: attached id {incident_id} to the last_fetched_incidents list"
+                    )
                     last_fetched_incidents.append(incident_id)
                 new_incidents.append(incident)
                 last_fetched_incident_time = incident_creation_time
@@ -870,8 +893,10 @@ def main() -> None:  # pragma: no cover
     proxy = demisto.params().get("proxy", False)
     demisto.debug(f"Command being called is {demisto.command()}")
     mirror_tags = set(demisto.params().get("mirror_tag", "").split(",")) if demisto.params().get("mirror_tag") else set()
+    demisto.debug(f"{INTEGRATION_NAME}: mirror tags: {mirror_tags}")
 
     query = demisto.params().get("query", "") or ""
+    demisto.debug(f"{INTEGRATION_NAME}: query: {query}")
     disable_from_same_integration = demisto.params().get("disable_from_same_integration")
     if disable_from_same_integration:
         query += ' -sourceBrand:"XSOAR Mirroring"'
