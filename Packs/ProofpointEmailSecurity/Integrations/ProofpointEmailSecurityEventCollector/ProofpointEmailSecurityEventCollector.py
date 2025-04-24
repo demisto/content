@@ -126,6 +126,7 @@ def websocket_connections(
         since_time (str): Start time to fetch events from.
         to_time (str): End time for fetch, leave empty for real-time streaming.
         fetch_interval (int): Time between fetch iterations, used for estimating message receive times for idle heartbeat.
+        event_types: (list[str]): The list of event types to collect.
 
     Yields:
         list[EventConnection]: List containing an eventConnection for every event type

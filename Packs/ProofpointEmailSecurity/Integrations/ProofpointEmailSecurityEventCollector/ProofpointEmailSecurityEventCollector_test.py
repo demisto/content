@@ -229,7 +229,8 @@ def test_heartbeat(mocker, connection):
     idle_timeout = 3
 
     @contextmanager
-    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None, fetch_interval=60, event_types=["audit"]):
+    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None,
+                                   fetch_interval=60, event_types=["audit"]):
         with ExitStack():
             yield [
                 EventConnection(
