@@ -1630,7 +1630,7 @@ def prepare_context_hr_async_result(response, request_id, ip_address):
         link = data.get("href", "")
         rel = data.get("rel", "")
         if "DOWNLOAD_SNAPPABLE_FILE" in request_id and response.get("status") == "SUCCEEDED" and rel == "result":
-            link = urljoin(f"https://{ip_address}", link)
+            link = urljoin(f"https://{ip_address}", link)  # noqa: E231
         hyper_link += f"[{rel}]({urllib3.util.parse_url(link)})\n"
     hr = {"ID": response.get("id"), "Status": response.get("status"), "Node ID": response.get("nodeId"), "Links": hyper_link}
 
@@ -1956,7 +1956,7 @@ def prepare_context_hr_user_access_list(
     hr = tableToMarkdown(
         f"User Access (Showing Records {record_start}-{record_end} out of {total_records})",
         hr_content,
-        headers=[
+        headers=[  # noqa: E225
             USER_ID,
             USER_FULL_NAME,
             USER_PRINCIPAL_NAME,
@@ -1965,7 +1965,7 @@ def prepare_context_hr_user_access_list(
             TOTAL_SENSITIVE_FILES,
             TOTAL_SENSITIVE_HITS,
         ],
-        removeNull=True,
+        removeNull=True,  # noqa: E225
     )
 
     return context, hr, pages, risk_levels
@@ -4642,7 +4642,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")  # noqa: E231
 
 
 """ ENTRY POINT """
