@@ -73,11 +73,11 @@ script:
   type: python
   isFetchSamples: true
 triggers:
-  - conditions:   # maybe change the name to 'dependentFields' ?
+  - conditions:
       - name: engine
-        method: not_exists    # maybe change the name to 'operator'?
+        operator: not_exists
       - name: isEngineGroup
-        method: not_exists
+        operator: not_exists
     effects:
       - name: longRunningPort
         hidden: true
