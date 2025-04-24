@@ -446,8 +446,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1480
+          "x": 180,
+          "y": 1490
         }
       }
     note: false
@@ -471,6 +471,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "22"
       "yes":
       - "19"
     scriptarguments:
