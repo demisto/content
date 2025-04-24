@@ -2553,7 +2553,7 @@ script:
       description: Blueprint name
       type: string
     description: Retrieves POC invitations sent.
-  dockerimage: demisto/cloudshare:1.0.0.73056
+  dockerimage: demisto/py3-tools:1.0.0.3205634
   subtype: python3
 beta: true
 fromversion: 6.0.0
