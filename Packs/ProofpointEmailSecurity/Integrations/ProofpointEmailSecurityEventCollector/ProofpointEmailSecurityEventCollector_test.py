@@ -229,7 +229,7 @@ def test_heartbeat(mocker, connection):
     idle_timeout = 3
 
     @contextmanager
-    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None, fetch_interval=60):
+    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None, fetch_interval=60, event_types=["audit"]):
         with ExitStack():
             yield [
                 EventConnection(
@@ -237,7 +237,7 @@ def test_heartbeat(mocker, connection):
                 )
             ]
 
-    def mock_perform_long_running_loop(connections, interval):
+    def mock_perform_long_running_loop(connections, interval, should_skip_sleeping):
         # This mock will raise exceptions to stop the long running loop
         # StopIteration exception marks success
         connection = connections[0].connection
@@ -253,8 +253,9 @@ def test_heartbeat(mocker, connection):
     )
     mocker.patch.object(EventConnection, "connect", return_value=connection)
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "support_multithreading")
+    mocker.patch.object(demisto, "error", side_effect=StopIteration("Interrupted execution"))  # to break endless loop.
 
     with pytest.raises(StopIteration):
-        long_running_execution_command("host", "cid", "key", 60, EVENT_TYPES)
+        long_running_execution_command("host", "cid", "key", 60, ["audit"])
 
     assert connection.pongs > 0

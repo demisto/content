@@ -299,7 +299,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         fetch_interval (int): Total time allocated per fetch cycle.
     """
     support_multithreading()
-    demisto.info("[test] starting long running execution.")
+    demisto.info("starting long running execution.")
     while True:
         try:
             with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval,
