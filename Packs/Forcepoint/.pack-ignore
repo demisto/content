@@ -4,5 +4,8 @@ ignore=IM111
 [file:Forcepoint.yml]
 ignore=MR108
 
+[file:README.md]
+ignore=RM110
+
 [known_words]
 NGFW
