@@ -330,8 +330,8 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
     Fetch audit-logs & file-events
     """
     file_events, file_events_last_run = fetch_file_events(client, last_run=last_run, max_fetch_file_events=max_fetch_file_events)
-    if file_events:
-        file_events_last_run["nextTrigger"] = "30"
+    # if file_events:
+    #     file_events_last_run["nextTrigger"] = "30"
 
     last_run.update(file_events_last_run)
     futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
@@ -341,7 +341,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
     demisto.debug(
         f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
     )
-    demisto.setLastRun(last_run)
+    # demisto.setLastRun(last_run)
     demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.FILE} events")
 
     audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
@@ -349,14 +349,14 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
     for log in audit_logs:
         log.pop("id", None)
 
-    if audit_logs:
-        audit_logs_last_run["nextTrigger"] = "30"
+    # if audit_logs:
+    #     audit_logs_last_run["nextTrigger"] = "30"
 
     last_run.update(audit_logs_last_run)
     send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
     demisto.debug(f"Fetched the following {EventType.AUDIT} events event IDs {audit_log_ids}")
-    demisto.setLastRun(last_run)
 
+    demisto.setLastRun(last_run)
     demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.AUDIT} logs")
 
 
