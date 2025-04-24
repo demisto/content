@@ -260,3 +260,47 @@ def test_heartbeat(mocker, connection):
         long_running_execution_command("host", "cid", "key", 60, ["audit"])
 
     assert connection.pongs > 0
+
+
+def test_recovering_execution(mocker, connection):
+    """
+    Running long_running_execution_command and throwing error every time mock_perform_long_running_loop is
+    called to ensure it is being called more than once (i.e, can recover from the failure)
+    """
+    idle_timeout = 3
+
+    execution_count = 0
+    
+    def count_iterations(msg):
+        nonlocal execution_count
+        execution_count += 1
+        if execution_count > 1:
+            raise StopIteration("Interrupted execution")
+        
+    @contextmanager
+    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None,
+                                   fetch_interval=60, event_types=["audit"]):
+        with ExitStack():
+            yield [
+                EventConnection(
+                    "audit", url="wss://test", headers={}, fetch_interval=fetch_interval, idle_timeout=idle_timeout
+                )
+            ]
+
+    def mock_perform_long_running_loop(connections, interval, should_skip_sleeping):
+        # This mock will raise exceptions to stop the long running loop
+        # StopIteration exception marks success
+        raise StopIteration(f"Sent {connections[0].connection.pongs} pongs")
+
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "websocket_connections", side_effect=mock_websocket_connections)
+    mocker.patch.object(
+        ProofpointEmailSecurityEventCollector, "perform_long_running_loop", side_effect=mock_perform_long_running_loop
+    )
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "support_multithreading")
+    demisto_error_mocker = mocker.patch.object(demisto, "error", side_effect=count_iterations)  # to break endless loop.
+
+    with pytest.raises(StopIteration):
+        long_running_execution_command("host", "cid", "key", 60, ["audit"])
+
+    assert demisto_error_mocker.call_count > 1

@@ -32,4 +32,4 @@ The API does not allow use of the same token for more than one session at the sa
 
 ## Troubleshooting
 
-If you seem to have delays between the events being fetched and the current time / not seeing new events in general, it's recommended to split the instances to have one instance per event type to speed up the ingestion speed.
+If there are ingestion delays or events are missing, it's recommended to configure separate instances per event type.

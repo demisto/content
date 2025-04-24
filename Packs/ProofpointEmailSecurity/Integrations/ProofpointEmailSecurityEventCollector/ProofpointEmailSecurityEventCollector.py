@@ -175,7 +175,8 @@ def fetch_events(connection: EventConnection, fetch_interval: int, integration_c
         connection (EventConnection): the connection to the event type
         fetch_interval (int): Total time to keep fetching before stopping
         integration_context (dict) The integration context dict.
-        should_skip_sleeping (List[bool])
+        should_skip_sleeping (List[bool]): a list to update all execution results -
+        False if timeout occurred, otherwise will append True.
 
     Returns:
         list[dict]: A list of events
@@ -261,6 +262,8 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
     Args:
         connections (list[EventConnection]): List of connection objects to fetch events from.
         fetch_interval (int): Fetch time per cycle allocated for each event type in seconds.
+        should_skip_sleeping (List[bool]): a list to update all execution results -
+        False if timeout occurred, otherwise will append True.
     """
     integration_context = demisto.getIntegrationContext()
     events_to_send = []
@@ -298,6 +301,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
         cluster_id (str): Proofpoint cluster ID to connect to.
         api_key (str): Proofpoint API key.
         fetch_interval (int): Total time allocated per fetch cycle.
+        event_types (List[str]): The list of event types to collect.
     """
     support_multithreading()
     demisto.info("starting long running execution.")
@@ -320,7 +324,9 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
                         time.sleep(FETCH_SLEEP)
                         demisto.info(f"Finished sleeping {FETCH_SLEEP} seconds.")
         except Exception as e:
-            demisto.error(f"Got an error while running in long running {e}")
+            err = f"Got an error while running in long running {e}"
+            demisto.updateModuleHealth(err, is_error=True)
+            demisto.error(err)
 
 
 def main():  # pragma: no cover
