@@ -1112,7 +1112,7 @@ tasks:
           transformers:
           - operator: RemoveEmpty
             args:
-              empty_values: { }
+              empty_values: {}
               remove_keys:
                 value:
                   simple: "true"
@@ -1456,12 +1456,12 @@ tasks:
         complex:
           root: inputs.Commandline
           transformers:
-            - operator: RemoveEmpty
-              args:
-                empty_values: { }
-                remove_keys:
-                  value:
-                    simple: "true"
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2099,5 +2099,5 @@ outputs:
   description: Command line verdict SuspiciousCmdPathAndArguments found. True/False
   type: unknown
 tests:
-  - no tests
+- no tests
 fromversion: 6.0.0
