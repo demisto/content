@@ -195,27 +195,27 @@
     "MAR": {
         "Services": [
             {
-                "status": "Running", 
-                "description": "Base Filtering Engine", 
-                "startuptype": "Automatic", 
-                "created_at": "2019-02-06T17:16:25.193Z", 
-                "user": "NT AUTHORITY\\LocalService", 
+                "status": "Running",
+                "description": "Base Filtering Engine",
+                "startuptype": "Automatic",
+                "created_at": "2019-02-06T17:16:25.193Z",
+                "user": "NT AUTHORITY\\LocalService",
                 "name": "BFE"
-            }, 
+            },
             {
-                "status": "Running", 
-                "description": "Diagnostic Policy Service", 
-                "startuptype": "Automatic (Delayed Start)", 
-                "created_at": "2019-02-06T17:16:25.193Z", 
-                "user": "NT AUTHORITY\\LocalService", 
+                "status": "Running",
+                "description": "Diagnostic Policy Service",
+                "startuptype": "Automatic (Delayed Start)",
+                "created_at": "2019-02-06T17:16:25.193Z",
+                "user": "NT AUTHORITY\\LocalService",
                 "name": "DPS"
-            }, 
+            },
             {
-                "status": "Stopped", 
-                "description": "Encrypting File System (EFS)", 
-                "startuptype": "Manual", 
-                "created_at": "2019-02-06T17:16:25.193Z", 
-                "user": "LocalSystem", 
+                "status": "Stopped",
+                "description": "Encrypting File System (EFS)",
+                "startuptype": "Manual",
+                "created_at": "2019-02-06T17:16:25.193Z",
+                "user": "LocalSystem",
                 "name": "EFS"
             }
         ]
@@ -361,25 +361,25 @@
     "MAR": {
         "SearchMultiple": [
             {
-                "status": "Stopped", 
-                "description": "Volume Shadow Copy", 
-                "startuptype": "Manual", 
-                "ip_address": "192.168.1.156", 
-                "created_at": "2019-02-06T17:20:57.204Z", 
-                "hostname": "WIN-AQ0LQQOG4Q7", 
-                "user": "LocalSystem", 
-                "os": "Microsoft Windows [Version 6.3.9600]", 
+                "status": "Stopped",
+                "description": "Volume Shadow Copy",
+                "startuptype": "Manual",
+                "ip_address": "192.168.1.156",
+                "created_at": "2019-02-06T17:20:57.204Z",
+                "hostname": "WIN-AQ0LQQOG4Q7",
+                "user": "LocalSystem",
+                "os": "Microsoft Windows [Version 6.3.9600]",
                 "name": "VSS"
-            }, 
+            },
             {
-                "status": "Running", 
-                "description": "Network Store Interface Service", 
-                "startuptype": "Automatic", 
-                "ip_address": "192.168.1.156", 
-                "created_at": "2019-02-06T17:20:57.204Z", 
-                "hostname": "WIN-AQ0LQQOG4Q7", 
-                "user": "NT Authority\\LocalService", 
-                "os": "Microsoft Windows [Version 6.3.9600]", 
+                "status": "Running",
+                "description": "Network Store Interface Service",
+                "startuptype": "Automatic",
+                "ip_address": "192.168.1.156",
+                "created_at": "2019-02-06T17:20:57.204Z",
+                "hostname": "WIN-AQ0LQQOG4Q7",
+                "user": "NT Authority\\LocalService",
+                "os": "Microsoft Windows [Version 6.3.9600]",
                 "name": "nsi"
             }
         ]
@@ -498,27 +498,27 @@
     "MAR": {
         "Services": [
             {
-                "Status": "Running", 
-                "Description": "Base Filtering Engine", 
-                "Startuptype": "Automatic", 
-                "created_at": "2019-03-06T15:04:16.193Z", 
-                "User": "NT AUTHORITY\\LocalService", 
+                "Status": "Running",
+                "Description": "Base Filtering Engine",
+                "Startuptype": "Automatic",
+                "created_at": "2019-03-06T15:04:16.193Z",
+                "User": "NT AUTHORITY\\LocalService",
                 "Name": "BFE"
-            }, 
+            },
             {
-                "Status": "Running", 
-                "Description": "Diagnostic Policy Service", 
-                "Startuptype": "Automatic (Delayed Start)", 
-                "created_at": "2019-03-06T15:04:16.193Z", 
-                "User": "NT AUTHORITY\\LocalService", 
+                "Status": "Running",
+                "Description": "Diagnostic Policy Service",
+                "Startuptype": "Automatic (Delayed Start)",
+                "created_at": "2019-03-06T15:04:16.193Z",
+                "User": "NT AUTHORITY\\LocalService",
                 "Name": "DPS"
-            }, 
+            },
             {
-                "Status": "Stopped", 
-                "Description": "Encrypting File System (EFS)", 
-                "Startuptype": "Manual", 
-                "created_at": "2019-03-06T15:04:16.193Z", 
-                "User": "LocalSystem", 
+                "Status": "Stopped",
+                "Description": "Encrypting File System (EFS)",
+                "Startuptype": "Manual",
+                "created_at": "2019-03-06T15:04:16.193Z",
+                "User": "LocalSystem",
                 "Name": "EFS"
             }
         ]
@@ -677,35 +677,35 @@
     "MAR": {
         "Processes": [
             {
-                "Uptime": 8468384, 
-                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\CSRSS.EXE", 
-                "User_id": "S-1-5-18", 
-                "Name": "CSRSS.EXE", 
-                "Usertime": 3, 
-                "created_at": "2019-02-07T09:16:39.195Z", 
-                "Parentname": "-", 
-                "Cmdline": "-", 
-                "Sha1": "C79E4586989EBB8E8F8084B5EB49AFBFD243A625", 
-                "User": "NT AUTHORITY\\SYSTEM", 
-                "Kerneltime": 16, 
-                "Size": 2048, 
-                "Id": 336, 
+                "Uptime": 8468384,
+                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\CSRSS.EXE",
+                "User_id": "S-1-5-18",
+                "Name": "CSRSS.EXE",
+                "Usertime": 3,
+                "created_at": "2019-02-07T09:16:39.195Z",
+                "Parentname": "-",
+                "Cmdline": "-",
+                "Sha1": "C79E4586989EBB8E8F8084B5EB49AFBFD243A625",
+                "User": "NT AUTHORITY\\SYSTEM",
+                "Kerneltime": 16,
+                "Size": 2048,
+                "Id": 336,
                 "Md5": "B2D3F07F5E8A13AF988A8B3C0A800880"
-            }, 
+            },
             {
-                "Uptime": 8468383, 
-                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\WININIT.EXE", 
-                "User_id": "S-1-5-18", 
-                "Name": "WININIT.EXE", 
-                "Usertime": "-", 
-                "created_at": "2019-02-07T09:16:39.195Z", 
-                "Parentname": "-", 
-                "Cmdline": "wininit.exe", 
-                "Sha1": "83D158A31A41C3FC37DB569F187108C754C629C8", 
-                "User": "NT AUTHORITY\\SYSTEM", 
-                "Kerneltime": "-", 
-                "Size": 840, 
-                "Id": 388, 
+                "Uptime": 8468383,
+                "Imagepath": "C:\\WINDOWS\\SYSTEM32\\WININIT.EXE",
+                "User_id": "S-1-5-18",
+                "Name": "WININIT.EXE",
+                "Usertime": "-",
+                "created_at": "2019-02-07T09:16:39.195Z",
+                "Parentname": "-",
+                "Cmdline": "wininit.exe",
+                "Sha1": "83D158A31A41C3FC37DB569F187108C754C629C8",
+                "User": "NT AUTHORITY\\SYSTEM",
+                "Kerneltime": "-",
+                "Size": 840,
+                "Id": 388,
                 "Md5": "D9516405E05F24EDCD90B1988FAF3948"
             }
         ]
@@ -1165,39 +1165,39 @@
     "MAR": {
        "UserProfiles": [
             {
-                "Domain": "-", 
-                "Installdate": "2017-10-02T06:15:20.000Z", 
-                "Localaccount": "False", 
-                "created_at": "2019-03-06T15:39:44.193Z", 
-                "Sid": "S-1-5-80-3880006512-4290199581-1648723128-3569869737-3631323133", 
-                "Accountname": "MSSQL$SQLEXPRESS", 
-                "Lockedout": "-", 
-                "Fullname": "-", 
-                "Accountdisabled": "-", 
+                "Domain": "-",
+                "Installdate": "2017-10-02T06:15:20.000Z",
+                "Localaccount": "False",
+                "created_at": "2019-03-06T15:39:44.193Z",
+                "Sid": "S-1-5-80-3880006512-4290199581-1648723128-3569869737-3631323133",
+                "Accountname": "MSSQL$SQLEXPRESS",
+                "Lockedout": "-",
+                "Fullname": "-",
+                "Accountdisabled": "-",
                 "Passwordexpires": "-"
-            }, 
+            },
             {
-                "Domain": "WIN-AQ0LQQOG4Q7", 
-                "Installdate": "2017-09-17T02:20:46.000Z", 
-                "Localaccount": "True", 
-                "created_at": "2019-03-06T15:39:44.193Z", 
-                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-500", 
-                "Accountname": "Administrator", 
-                "Lockedout": "False", 
-                "Fullname": "-", 
-                "Accountdisabled": "False", 
+                "Domain": "WIN-AQ0LQQOG4Q7",
+                "Installdate": "2017-09-17T02:20:46.000Z",
+                "Localaccount": "True",
+                "created_at": "2019-03-06T15:39:44.193Z",
+                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-500",
+                "Accountname": "Administrator",
+                "Lockedout": "False",
+                "Fullname": "-",
+                "Accountdisabled": "False",
                 "Passwordexpires": "False"
-            }, 
+            },
             {
-                "Domain": "WIN-AQ0LQQOG4Q7", 
-                "Installdate": "-", 
-                "Localaccount": "True", 
-                "created_at": "2019-03-06T15:39:44.193Z", 
-                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-501", 
-                "Accountname": "Guest", 
-                "Lockedout": "False", 
-                "Fullname": "-", 
-                "Accountdisabled": "True", 
+                "Domain": "WIN-AQ0LQQOG4Q7",
+                "Installdate": "-",
+                "Localaccount": "True",
+                "created_at": "2019-03-06T15:39:44.193Z",
+                "Sid": "S-1-5-21-2851129524-1971544412-1620677069-501",
+                "Accountname": "Guest",
+                "Lockedout": "False",
+                "Fullname": "-",
+                "Accountdisabled": "True",
                 "Passwordexpires": "False"
             }
         ]
@@ -1321,21 +1321,21 @@
     "MAR": {
        "ScheduledTasks": [
             {
-                "Status": "Ready", 
-                "Username": "SYSTEM", 
-                "created_at": "2019-03-06T15:41:29.195Z", 
-                "Schedule_on": "Log On, Daily", 
-                "Last_run": "2019-03-05T16:54:08.000Z", 
-                "Taskname": "GoogleUpdateTaskMachineCore", 
+                "Status": "Ready",
+                "Username": "SYSTEM",
+                "created_at": "2019-03-06T15:41:29.195Z",
+                "Schedule_on": "Log On, Daily",
+                "Last_run": "2019-03-05T16:54:08.000Z",
+                "Taskname": "GoogleUpdateTaskMachineCore",
                 "Folder": "/"
-            }, 
+            },
             {
-                "Status": "Disabled", 
-                "Username": "SYSTEM", 
-                "created_at": "2019-03-06T15:41:29.195Z", 
-                "Schedule_on": "Idle", 
-                "Last_run": "2017-09-17T02:32:59.000Z", 
-                "Taskname": ".NET Framework NGEN v4.0.30319 64 Critical", 
+                "Status": "Disabled",
+                "Username": "SYSTEM",
+                "created_at": "2019-03-06T15:41:29.195Z",
+                "Schedule_on": "Idle",
+                "Last_run": "2017-09-17T02:32:59.000Z",
+                "Taskname": ".NET Framework NGEN v4.0.30319 64 Critical",
                 "Folder": "/Microsoft/Windows/.NET Framework"
             }
         ]
@@ -1444,9 +1444,9 @@
     "MAR": {
        "HostInfo": [
             {
-                "Os": "Microsoft Windows [Version 6.3.9600]", 
-                "created_at": "2019-03-06T15:44:10.192Z", 
-                "Hostname": "WIN-AQ0LQQOG4Q7", 
+                "Os": "Microsoft Windows [Version 6.3.9600]",
+                "created_at": "2019-03-06T15:44:10.192Z",
+                "Hostname": "WIN-AQ0LQQOG4Q7",
                 "Ip_address": "192.168.1.156"
             }
         ]
