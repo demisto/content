@@ -1370,6 +1370,7 @@ def main():
         else:
             new_attachment_names = "None"
         demisto.debug(f"New thread: {new_thread}")
+        demisto.debug(f"[Temp] The server version is:{get_demisto_version()}")
         if new_thread == "n/a":
             # This case is run when replying to an email from the 'Email Communication' layout
             single_thread_reply(
