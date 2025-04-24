@@ -27,7 +27,7 @@ client = Client(
     has_kev=False,
     feed_tags=[],
     first_fetch="1 day",
-    cvssv3severity=[],
+    cvssv4severity=[],
     keyword_search="",
 )
 
@@ -71,10 +71,12 @@ def test_calculate_dbotscore(cvss_score, expected_result):
 @pytest.mark.parametrize(
     "input_metrics, expected_version, expected_score",
     [
+        ({"cvssMetricV40": [{"cvssData": {"version": "4.0", "baseScore": 6.0}}]}, "4.0", 6.0),
         ({"cvssMetricV31": [{"cvssData": {"version": "3.1", "baseScore": 7.5}}]}, "3.1", 7.5),
         ({"cvssMetricV30": [{"cvssData": {"version": "3.0", "baseScore": 8.0}}]}, "3.0", 8.0),
         ({"cvssMetricV2": [{"cvssData": {"version": "2.0", "baseScore": 5.0}}]}, "2.0", 5.0),
         ({}, "", ""),
+        ({"cvssMetricV40": [{}]}, "", ""),
         ({"cvssMetricV31": [{}]}, "", ""),
         ({"cvssMetricV30": [{}]}, "", ""),
         ({"cvssMetricV2": [{}]}, "", ""),
@@ -133,13 +135,13 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
 @pytest.mark.parametrize(
     "input_params, expected_param_string",
     [
-        ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
-        ({"noRejected": "None"}, "noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
-        ({"hasKev": "True"}, "hasKev&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
+        ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected&cvssV4Severity=LOW&cvssV4Severity=MEDIUM"),
+        ({"noRejected": "None"}, "noRejected&cvssV4Severity=LOW&cvssV4Severity=MEDIUM"),
+        ({"hasKev": "True"}, "hasKev&cvssV4Severity=LOW&cvssV4Severity=MEDIUM"),
     ],
 )
 def test_build_param_string(input_params, expected_param_string):
-    client.cvssv3severity = ["LOW", "MEDIUM"]
+    client.cvssv4severity = ["LOW", "MEDIUM"]
     result = client.build_param_string(input_params)
     assert result == expected_param_string
 
