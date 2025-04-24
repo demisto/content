@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - "23"
     separatecontext: false
     view: |-
       {
@@ -448,6 +448,41 @@ tasks:
         "position": {
           "x": 900,
           "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d9040a9e-9c36-4208-8e51-36748b9e0e1e
+    type: condition
+    task:
+      id: d9040a9e-9c36-4208-8e51-36748b9e0e1e
+      version: -1
+      name: 'Is DarktraceEmail integration enabled? '
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    scriptarguments:
+      brandname:
+        simple: DarktraceEmail
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": -820
         }
       }
     note: false
