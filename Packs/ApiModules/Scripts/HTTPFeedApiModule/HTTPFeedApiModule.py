@@ -462,8 +462,8 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
                 if cidr_list := ip_range_to_cidr(ip_start, ip_end):
                     extracted_indicator = cidr_list
 
-            if not isinstance(extracted_indicator, list):
-                extracted_indicator = [extracted_indicator]
+        if not isinstance(extracted_indicator, list):
+            extracted_indicator = [extracted_indicator]
 
         attributes = {}
         for field in fields_to_extract:
