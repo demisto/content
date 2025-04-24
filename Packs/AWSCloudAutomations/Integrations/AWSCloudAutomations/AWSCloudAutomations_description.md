@@ -39,4 +39,4 @@ EC2 instance should have `sts:AssumeRole` permission over target AWS roles.
 | aws-s3-public-access-block-update  | s3:PutBucketPublicAccessBlock  |
 | aws-iam-account-password-policy-get  | iam:GetAccountPasswordPolicy  |
 | aws-iam-account-password-policy-update  | iam:GetAccountPasswordPolicy <br> iam:UpdateAccountPasswordPolicy  |
-| aws-ec2-instance-metadata-options-modify  | s3:PutBucketPublicAccessBlock  |
+| aws-ec2-instance-metadata-options-modify  | ec2:ModifyInstanceMetadataOptions  |

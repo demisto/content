@@ -91,7 +91,7 @@ configuration:
 script:
   commands:
   - name: aws-s3-public-access-block-update
-    description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
+    description: Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -161,7 +161,7 @@ script:
       - 'true'
       - 'false'
   - name: aws-iam-account-password-policy-get
-    description: Get AWS account's password policy.
+    description: Get AWS account password policy.
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -258,7 +258,7 @@ script:
       - 'enabled'
 
   - name: aws-iam-account-password-policy-update
-    description: Create/update password policy.
+    description: Create or Update AWS account password policy.
     execution: true
     arguments:
     - description: The AWS account ID.

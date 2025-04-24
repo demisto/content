@@ -3,7 +3,6 @@ from AWSApiModule import *  # noqa: E402
 from CommonServerPython import *
 from http import HTTPStatus
 from datetime import date
-from collections.abc import Callable
 
 def test_module(params, command_args) -> str:
     if test_account_id := params.get('test_account_id'):
@@ -69,19 +68,17 @@ def put_public_access_block(aws_client: AWSClient, args: Dict[str, Any]) -> Comm
         }
     except Exception:
         return CommandResults(readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket")
-
-    command_args: Dict[str, tuple[str, Callable[[Any], Any]]] = {
-        'block_public_acls': ('BlockPublicAcls', argToBoolean),
-        'ignore_public_acls': ('IgnorePublicAcls', argToBoolean),
-        'block_public_policy': ('BlockPublicPolicy', argToBoolean),
-        'restrict_public_buckets': ('RestrictPublicBuckets', argToBoolean)
+            
+    command_args: dict[str, Union[bool, None]] = {
+        'BlockPublicAcls': argToBoolean(args.get('block_public_acls')),
+        'IgnorePublicAcls': argToBoolean(args.get('ignore_public_acls')),
+        'BlockPublicPolicy': argToBoolean(args.get('block_public_policy')),
+        'RestrictPublicBuckets': argToBoolean(args.get('restrict_public_buckets'))
     }
     
-    remove_nulls_from_dictionary(args)
-    for arg_key, (kwarg_key, converter_func) in command_args.items():
-        if arg_key in args:
-            kwargs[kwarg_key] = converter_func(args[arg_key])
-
+    remove_nulls_from_dictionary(command_args)
+    for arg_key, arg_value in command_args.items():
+        kwargs[arg_key] = arg_value
 
     response = client_session.put_public_access_block(Bucket=args.get('bucket'),
                                                       PublicAccessBlockConfiguration=kwargs)
@@ -118,23 +115,22 @@ def update_account_password_policy(aws_client: AWSClient, args: Dict[str, Any]) 
     # ExpirePasswords is part of the response but cannot be included in the request
     if 'ExpirePasswords' in kwargs:
         kwargs.pop('ExpirePasswords')
-    
-    command_args: Dict[str, tuple[str, Callable[[Any], Any]]] = {
-        'minimum_password_length': ('MinimumPasswordLength', arg_to_number),
-        'require_symbols': ('RequireSymbols', argToBoolean),
-        'require_numbers': ('RequireNumbers', argToBoolean),
-        'require_uppercase_characters': ('RequireUppercaseCharacters', argToBoolean),
-        'require_lowercase_characters': ('RequireLowercaseCharacters', argToBoolean),
-        'allow_users_to_change_password': ('AllowUsersToChangePassword', argToBoolean),
-        'max_password_age': ('MaxPasswordAge', arg_to_number),
-        'password_reuse_prevention': ('PasswordReusePrevention', arg_to_number),
-        'hard_expiry': ('HardExpiry', argToBoolean),
+        
+    command_args: dict[str, Union[int, bool, None]] = {
+        'MinimumPasswordLength': arg_to_number(args.get('minimum_password_length')),
+        'RequireSymbols': argToBoolean(args.get('require_symbols')),
+        'RequireNumbers': argToBoolean(args.get('require_numbers')),
+        'RequireUppercaseCharacters': argToBoolean(args.get('require_uppercase_characters')),
+        'RequireLowercaseCharacters': argToBoolean(args.get('require_lowercase_characters')),
+        'AllowUsersToChangePassword': argToBoolean(args.get('allow_users_to_change_password')),
+        'MaxPasswordAge': arg_to_number(args.get('max_password_age')),
+        'PasswordReusePrevention': arg_to_number(args.get('password_reuse_prevention')),
+        'HardExpiry': argToBoolean(args.get('hard_expiry'))
     }
     
-    remove_nulls_from_dictionary(args)
-    for arg_key, (kwarg_key, converter_func) in command_args.items():
-        if arg_key in args:
-            kwargs[kwarg_key] = converter_func(args[arg_key])
+    remove_nulls_from_dictionary(command_args)
+    for arg_key, arg_value in command_args.items():
+        kwargs[arg_key] = arg_value
         
     response = client_session.update_account_password_policy(**kwargs)
     
