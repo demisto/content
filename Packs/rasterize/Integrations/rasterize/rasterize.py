@@ -955,7 +955,7 @@ def rasterize_thread(
             )
 
         elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
-            demisto.debug(f"Executing screenshot_pdf, {path=}, {tab.id=}")
+            demisto.debug(f"Executing screenshot_pdf for PDF, {path=}, {tab.id=}")
             return screenshot_pdf(
                 browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout, include_url=include_url
             )
