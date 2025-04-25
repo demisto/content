@@ -1,5 +1,5 @@
 category: Cloud Services
-description: 'Support for AWS cloud'
+description: Support for AWS cloud.
 display: AWS Cloud Automations
 name: AWS Cloud Automations
 commonfields:
@@ -314,3 +314,8 @@ script:
   subtype: python3
   dockerimage: demisto/boto3py3:1.0.0.115129
 fromversion: 5.5.0
+tests:
+- No test - No playbook part of this release.
+sectionOrder:
+- Connect
+- Collect
