@@ -1,44 +1,44 @@
 from CommonServerPython import *
 
-''' IMPORTS '''
 
-import json
-import requests
+class Client(BaseClient):
 
-# Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
+    def send_signl4_alert(self, **kwargs):
 
-''' GLOBALS/PARAMS '''
+        payload = {
+            "Title": kwargs.get('json_data').get('title'),
+            "Message": kwargs.get('json_data').get('message'),
+            "X-S4-ExternalID": kwargs.get('json_data').get('s4_external_id'),
+            "X-S4-Status": "new",
+            "X-S4-Service": kwargs.get('json_data').get('s4_service'),
+            "X-S4-Location": kwargs.get('json_data').get('s4_location'),
+            "X-S4-AlertingScenario": kwargs.get('json_data').get('s4_alerting_scenario'),
+            "X-S4-Filtering": kwargs.get('json_data').get('s4_filtering'),
+            "X-S4-SourceSystem": "CortexXSOAR"
+        }
 
-SECRET = demisto.params().get('secret')
-BASE_URL = 'https://connect.signl4.com/webhook/{}'.format(SECRET)
+        return self._http_request(method='POST', json_data=payload)
 
-''' HELPER FUNCTIONS '''
+    def close_signl4_alert(self, **kwargs):
 
+        payload = {
+            "X-S4-ExternalID": kwargs.get('json_data').get('s4_external_id'),
+            "X-S4-Status": "resolved",
+            "X-S4-SourceSystem": "CortexXSOAR"
+        }
 
-def http_request(method, params=None, data=None):
-    result = requests.request(
-        method,
-        BASE_URL,
-        verify=False,
-        params=params,
-        data=data
-    )
-    if result.status_code not in {200, 201}:
-        return_error('Error in API call to SIGNL4 integration [%d] - %s' % (result.status_code, result.reason))
-
-    return result.json()
-
-
-''' COMMANDS + REQUESTS FUNCTIONS '''
+        return self._http_request(method='POST', json_data=payload)
 
 
-def test_module():
+def test_module(client):
     """
     Performs basic get request to get item samples
     """
-    result = send_signl4_alert()
+    payload = {
+        "title": "Test Alert from Cortex XSOAR",
+        "X-S4-SourceSystem": "CortexXSOAR"
+    }
+    result = client.send_signl4_alert(method='POST', json_data=payload)
     if 'eventId' in result:
         demisto.results("ok")
     else:
@@ -47,56 +47,44 @@ def test_module():
         demisto.results(f'{error_code} {description}')
 
 
-def send_signl4_alert():
-    """
-    Sent HTTP post request
-    """
-    payload = {
-        "Title": demisto.args().get('title'),
-        "Message": demisto.args().get('message'),
-        "X-S4-ExternalID": demisto.args().get('s4_external_id'),
-        "X-S4-Status": "new",
-        "X-S4-Service": demisto.args().get('s4_service'),
-        "X-S4-Location": demisto.args().get('s4_location'),
-        "X-S4-AlertingScenario": demisto.args().get('s4_alerting_scenario'),
-        "X-S4-Filtering": demisto.args().get('s4_filtering'),
-        "X-S4-SourceSystem": "CortexXSOAR"
-    }
-
-    return http_request("POST", data=json.dumps(payload))
-
-def close_signl4_alert():
-    """
-    Sent HTTP post request
-    """
-
-    payload = {
-        "X-S4-ExternalID": demisto.args().get('s4_external_id'),
-        "X-S4-Status": "resolved",
-        "X-S4-SourceSystem": "CortexXSOAR"
-    }
-
-    return http_request("POST", data=json.dumps(payload))
+def send_signl4_alert(client, **kwargs):
+    result = client.send_signl4_alert(**kwargs)
+    return result
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def close_signl4_alert(client, **kwargs):
+    result = client.close_signl4_alert(**kwargs)
+    return result
 
 
 def main():
-    if not SECRET:
+
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
+    secret = params.get('secret')
+
+    if not secret:
         raise DemistoException('Team or integration secret must be provided.')
-    LOG(f'SECRET is {demisto.command()}')
+    LOG(f'Command is {demisto.command()}')
 
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
+        proxy = params.get('proxy', False)
 
-        if demisto.command() == 'test-module':
-            test_module()
-        elif demisto.command() == 'signl4_alert':
-            send_signl4_alert()
-        elif demisto.command() == 'signl4_close':
-            close_signl4_alert()
+        client = Client(
+            base_url='https://connect.signl4.com/webhook/{}'.format(secret),
+            proxy=proxy
+        )
+
+        if command == 'test-module':
+            test_module(client)
+        elif command == 'signl4_alert':
+            return_results(send_signl4_alert(client, method='POST', json_data=args))
+        elif command == 'signl4_close':
+            return_results(close_signl4_alert(client, method='POST', json_data=args))
 
     except Exception as ex:
         return_error(str(ex))
@@ -104,3 +92,4 @@ def main():
 
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
+

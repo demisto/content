@@ -1,11 +1,11 @@
 {
     "name": "SIGNL4",
     "description": "SIGNL4 integration",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "SIGNL4",
     "url": "https://www.signl4.com/",
-    "email": "",
+    "email": "hello@signl4.com",
     "created": "2025-04-04T00:00:00Z",
     "categories": [
         "Messaging and Conferencing"
