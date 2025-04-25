@@ -2441,7 +2441,6 @@ def format_certificate_info(cert: Dict[str, Any]) -> Dict[str, str]:
 
     Args:
         cert (Dict[str, Any]): Certificate details from the API response.
-        client (Client): API client used for parsing the subject.
 
     Returns:
         Dict[str, str]: Formatted certificate details.
