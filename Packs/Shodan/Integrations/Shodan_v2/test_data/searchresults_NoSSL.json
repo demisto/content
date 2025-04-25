@@ -1,0 +1,53 @@
+{
+    "matches": [
+        {
+            "product": "Test Product",
+            "hash": -123456789,
+            "os": "Test OS",
+            "transport": "tcp",
+            "timestamp": "2025-04-02T12:21:25.747042",
+            "isp": "Test ISP",
+            "cpe23": [
+                "cpe:2.3:h:company:device_model",
+                "cpe:2.3:o:company:os_type:3"
+            ],
+            "cpe": [
+                "cpe:/h:company:device_model",
+                "cpe:/o:company:os_type:3"
+            ],
+            "_shodan": {
+                "region": "na",
+                "ptr": true,
+                "module": "auto",
+                "id": "12345678-abcd-1234-1234-1234a5bb5678",
+                "options": {
+                    "scan": "WWStLR7PTc7hhz61"
+                },
+                "crawler": "96tn5k5ERbrZEETCdPyw0wGytPqu3rr7pLiTLKUA"
+            },
+            "asn": "AS12345",
+            "hostnames": [
+                "test-host.example.com"
+            ],
+            "devicetype": "router",
+            "location": {
+                "city": "Test City",
+                "region_code": "CA",
+                "area_code": null,
+                "longitude": -12.34567,
+                "latitude": 12.34567,
+                "country_code": "US",
+                "country_name": "United States"
+            },
+            "ip": 167904004,
+            "domains": [
+                "example.com"
+            ],
+            "org": "Test Org",
+            "data": "\\xff\\xfd\\x18\\xff\\xfd \\xff\\xfd#\\xff\\xfd\\'\\xff\\xfd$\\xff\\xfd!",
+            "port": 23,
+            "ip_str": "10.2.3.4"
+        }
+    ],
+    "total": 1
+}
