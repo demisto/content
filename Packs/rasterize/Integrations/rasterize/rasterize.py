@@ -283,8 +283,8 @@ class PychromeEventHandler:
 
         self.is_mailto = documentURL.lower().startswith("mailto:")
         self.is_private_network_url = is_private_network(documentURL)
-        demisto.debug(f"Private network URL check: {self.is_private_network_url}")
-        demisto.debug(f"mailto URL check: {self.is_mailto}")
+        demisto.debug(f"Private network URL check for {documentURL=}: {self.is_private_network_url}")
+        demisto.debug(f"mailto URL check for {documentURL=}: {self.is_mailto}")
         request_url = kwargs.get("request", {}).get("url", "")
 
         if any(value in request_url for value in BLOCKED_URLS):
