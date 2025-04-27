@@ -36,10 +36,12 @@ class Client(BaseClient):  # pragma: no cover
         api_key: str,
         scopes: List[str],
         all_incident:bool,
+        max_fetch: int,
     ) -> None:
         self.company_id = company_id
         super().__init__(base_url, verify_certificate, proxy)
         self.all_incident = all_incident
+        self.max_fetch = max_fetch
         self._headers = {"Authorization": f"JWT {self.get_jwt_token(api_key, scopes)}"}
 
     def client_error_handler(self, res) -> Any:
@@ -91,23 +93,34 @@ class Client(BaseClient):  # pragma: no cover
         return time_encoded
         
     def get_all_incident_ids(self, start_time:datetime) -> List[int]:
-        until = datetime.now(timezone.utc) # Get the current datetime with UTC timezone
-        until  = self.convert_time(until)
+        curr_time = datetime.now(timezone.utc) # Get the current datetime with UTC timezone
+        curr_time  = self.convert_time(curr_time)
         start = self.convert_time(start_time)
-
+        
+        page = 1
         params = {
             "reportType": "all",
             "state": "all",
-            "page": 1,
             "created_start_time": start,
-            "created_end_time": until
+            "created_end_time": curr_time,
+            "order": "asc" # need to be checked
                 }
-        
-        incidents = self._http_request(
-            method="GET",url_suffix=f"/incident/{self.company_id}/list/",params=params).get("incidents") or []
+        incidents : List[int] = []
+        # handle paging
+        while len(incidents) < self.max_fetch:
+            params["page"]= str(page)
+            response = self._http_request(
+                method="GET",url_suffix=f"/incident/{self.company_id}/list/",params=params)
+            total_pages = response.get("total_pages")
+            new_incidents = response.get("incidents").get("incidentID") or []
+            incidents.extend(new_incidents)
+            if not new_incidents or page >= total_pages:
+                break
+            page+=1
+            
         if not incidents:
             return []
-        return [incident.get("incidentID") for incident in incidents]
+        return incidents
 
 """ HELPER FUNCTIONS """
 
@@ -234,6 +247,9 @@ def fetch_events_command(
             - ID of the most recent incident ingested in the current run.
     """
     events: List[dict[str, Any]] = []
+    if isinstance(last_id, int):
+        first_fetch = arg_to_datetime(client.get_incident(last_id).get("first_reported_date")) \
+            or first_fetch
     incident_ids: List[int] = get_incident_ids_to_fetch(
         client=client,
         first_fetch=first_fetch,
@@ -274,6 +290,7 @@ def main():
             api_key=params.get("apikey", {}).get("password"),
             scopes=argToList(params.get("scopes")),
             all_incident = params.get("collect_all_incidents"),
+            max_fetch = max_fetch,
         )
         if command == "test-module":
             return_results(test_module_command(client, first_fetch))
