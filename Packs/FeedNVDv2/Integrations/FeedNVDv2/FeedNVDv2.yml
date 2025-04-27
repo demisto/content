@@ -38,7 +38,7 @@ configuration:
   type: 16
   section: Connect
   hidden: true
-- name: severity
+- name: cvss_severity
   display: CVSS Severity Filter
   additionalinfo: Select the severities you wish to get back from the feed.
   options:

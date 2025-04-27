@@ -28,7 +28,7 @@ class Client(BaseClient):
         has_kev: bool,
         first_fetch: str,
         feed_tags: list[str],
-        severity: list[str],
+        cvss_severity: list[str],
         keyword_search: str,
     ):
         super().__init__(base_url=base_url, proxy=proxy)
@@ -39,7 +39,7 @@ class Client(BaseClient):
         self.has_kev = has_kev
         self.feed_tags = feed_tags
         self.first_fetch = first_fetch
-        self.severity = severity
+        self.cvss_severity = cvss_severity
         self.keyword_search = keyword_search
 
     def get_cves(self, path: str, params: dict):  # pragma: no cover
@@ -75,7 +75,7 @@ class Client(BaseClient):
         param_string = param_string.replace("noRejected=None", "noRejected")
         param_string = param_string.replace("hasKev=True", "hasKev")
 
-        for value in self.severity:
+        for value in self.cvss_severity:
             param_string += f"&{LATEST_CVSS_VERSION_SEVERITY}={value}"
 
         return param_string
@@ -502,7 +502,7 @@ def main():  # pragma: no cover
             has_kev=has_kev,
             first_fetch=first_fetch,
             feed_tags=feed_tags,
-            severity=params.get("severity", []),
+            cvss_severity=params.get("cvss_severity", []),
             keyword_search=params.get("keyword_search", ""),
         )
 

@@ -28,7 +28,7 @@ client = Client(
     has_kev=False,
     feed_tags=[],
     first_fetch="1 day",
-    severity=[],
+    cvss_severity=[],
     keyword_search="",
 )
 
@@ -143,7 +143,7 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
     ],
 )
 def test_build_param_string(input_params, expected_param_string):
-    client.severity = ["LOW", "MEDIUM"]
+    client.cvss_severity = ["LOW", "MEDIUM"]
     result = client.build_param_string(input_params)
     assert result == expected_param_string
 
