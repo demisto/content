@@ -2755,6 +2755,49 @@ def test_get_url_category_multiple_categories_for_url(mocker):
     # category with highest dbot-score
     assert return_results_mock.call_args[0][0][1].indicator.dbot_score.score == 1
 
+def test_get_url_category_multiple_categories_for_url_missing_categories(mocker):
+    """
+    Given:
+        - response indicating the url has multiple categories.
+    When:
+        - Run panorama_get_url_category function
+    Then:
+        - Validate all the expected categories are present
+    """
+    # prepare
+    import Panorama
+    import requests
+    from Panorama import panorama_get_url_category
+
+    Panorama.DEVICE_GROUP = ""
+    mocked_res_dict = {
+        "response": {
+            "@cmd": "status",
+            "@status": "success",
+            "result": "https://someURL.com not-resolved (Base db) expires in 5 seconds\n"
+            "https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db) artificial-intelligence encrypted-dns",  # noqa: E501
+        }
+    }
+    mocked_res_obj = requests.Response()
+    mocked_res_obj.status_code = 200
+    mocked_res_obj._content = json.dumps(mocked_res_dict).encode("utf-8")
+    mocker.patch.object(Panorama, "xml2json", return_value=mocked_res_obj._content)
+    mocker.patch.object(requests, "request", return_value=mocked_res_obj)
+
+    # run
+    results = panorama_get_url_category(url_cmd="url", url="test_url")
+
+    expected_results = [
+        "shareware-and-freeware",
+        "online-storage-and-backup",
+        "low-risk",
+        "encrypted-dns",
+        "artificial-intelligence",
+    ]
+
+    # validate
+    for category in expected_results:
+        assert category in results
 
 class TestDevices:
     def test_with_fw(self):
