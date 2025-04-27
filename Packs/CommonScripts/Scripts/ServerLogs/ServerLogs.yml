@@ -1,10 +1,10 @@
-comment: Uses the ssh integration to grab the host server logs.
+comment: Uses the ssh integration to grab the host server logs. Can be used only on XSOAR 6.
 commonfields:
-  id: ServerLogs
+  id: ServerLogs-modified
   version: -1
 dockerimage: demisto/python3:3.11.10.115186
 enabled: true
-name: ServerLogs
+name: ServerLogs-modified
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
@@ -18,7 +18,5 @@ type: python
 fromversion: 6.0.0
 marketplaces:
 - xsoar
-- marketplacev2
-- platform
 tests:
 - No tests (auto formatted)
