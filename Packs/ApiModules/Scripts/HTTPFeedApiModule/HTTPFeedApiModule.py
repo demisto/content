@@ -429,6 +429,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     """
     attributes = None
     indicator = None
+    extracted_indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
     if feed_config and 'indicator' in feed_config:
