@@ -2,7 +2,7 @@
     "name": "Google Chat via Webhook",
     "description": "Integration for sending notifications to a Google Chat Space via incoming webhook",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Rich Fontaine, Brandon Parmely",
     "url": "",
     "email": "",
