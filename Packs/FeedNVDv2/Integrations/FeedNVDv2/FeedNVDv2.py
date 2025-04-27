@@ -297,7 +297,9 @@ def cves_to_war_room(raw_cves):
 
 
 def get_cvss_version_and_score(metrics):
-    cvss_metrics = metrics.get("cvssMetricV40", metrics.get("cvssMetricV31", metrics.get("cvssMetricV30", metrics.get("cvssMetricV2", []))))
+    cvss_metrics = metrics.get("cvssMetricV40", metrics.get("cvssMetricV31",
+                                                metrics.get("cvssMetricV30",
+                                                metrics.get("cvssMetricV2", []))))
 
     if cvss_metrics and cvss_metrics[0]:
         return cvss_metrics[0]["cvssData"]["version"], cvss_metrics[0]["cvssData"]["baseScore"]
