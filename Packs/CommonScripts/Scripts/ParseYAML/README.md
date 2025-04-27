@@ -1,6 +1,7 @@
 Parses a YAML string
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Parses a YAML string
 | Tags | Utilities |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ Parses a YAML string
 | string | YAML formatted string |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -3,6 +3,7 @@ inputArray: the context array/list data
 listName: the XSOAR system list
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ listName: the XSOAR system list
 | Tags | Condition |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ listName: the XSOAR system list
 | listName | the XSOAR system list name. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -1,8 +1,6 @@
 ReversingLabs A1000 advanced Malware Analysis Platform.
 
-
 ## Configure ReversingLabs A1000 v2 in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -18,8 +16,6 @@ ReversingLabs A1000 advanced Malware Analysis Platform.
 | HTTPS proxy address with the protocol and port number. | False |
 | HTTPS proxy username | False |
 | HTTPS proxy password | False |
-    
-
 
 ## Commands
 
@@ -39,29 +35,32 @@ Retrieve sample analysis results
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | file hash. | Required | 
+| hash | file hash. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.EntryID | String | The Entry ID. | 
-| File.Info | String | Information about the file. | 
-| File.Type | String | The type of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| ReversingLabs.a1000_report | Unknown | A1000 report | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.EntryID | String | The Entry ID. |
+| File.Info | String | Information about the file. |
+| File.Type | String | The type of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| ReversingLabs.a1000_report | Unknown | A1000 report |
 
 #### Command example
+
 ```!reversinglabs-a1000-get-results hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -423,28 +422,29 @@ Retrieve sample analysis results
 #### Human Readable Output
 
 >## ReversingLabs A1000 results for: a94775deb818a4d68635eeed3d16abc7f7b8bdd6
->    **Type:** Binary/Archive  
->    **Size:** 607237 bytes  
+>
+> **Type:** Binary/Archive  
+> **Size:** 607237 bytes  
 >**MD5:** a322205db6c3b1c451725b84f1d010cc  
 >**SHA1:** a94775deb818a4d68635eeed3d16abc7f7b8bdd6  
 >**SHA256:** d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2  
 >**SHA512:** d1fd72d5a52d75f23836016772e8895d901fa5a1cb1f9b25ba455db6cccbd97e9daf43fde4f8bb77b43c0b5c4937405d51dece20cda7fa7db7600715c7769554  
 >**ID:** 3065  
->    **Malware status:** malicious  
->    **Local first seen:** 2022-12-19T11:39:10.929115Z  
->    **Local last seen:** 2022-12-20T17:37:24.670052Z  
->    **First seen:** 2022-12-19T11:39:11Z  
->    **Last seen:** 2022-12-20T17:37:29Z  
->    **DBot score:** 3  
->    **Risk score:** 10  
+> **Malware status:** malicious  
+> **Local first seen:** 2022-12-19T11:39:10.929115Z  
+> **Local last seen:** 2022-12-20T17:37:24.670052Z  
+> **First seen:** 2022-12-19T11:39:11Z  
+> **Last seen:** 2022-12-20T17:37:29Z  
+> **DBot score:** 3  
+> **Risk score:** 10  
 >**Threat name:** Win32.Trojan.Delf  
 > **Category:** archive  
->    **Classification origin:** {'sha1': 'aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad', 'sha256': '43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1', 'sha512': '8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221', 'md5': '8521e64c683e47c1db64d80577513016', 'imphash': 'c57e34b759dff2e57f71960b2fdb93da'}  
->    **Classification reason:** antivirus  
->    **Aliases:** aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl.zip  
->    **Extracted file count:** 85  
->    **Identification name:** ZIP  
->    **Identification version:** Generic  
+> **Classification origin:** {'sha1': 'aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad', 'sha256': '43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1', 'sha512': '8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221', 'md5': '8521e64c683e47c1db64d80577513016', 'imphash': 'c57e34b759dff2e57f71960b2fdb93da'}  
+> **Classification reason:** antivirus  
+> **Aliases:** aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl.zip  
+> **Extracted file count:** 85  
+> **Identification name:** ZIP  
+> **Identification version:** Generic  
 
 ### reversinglabs-a1000-upload-sample
 
@@ -459,19 +459,22 @@ Upload sample to A1000 for analysis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | The file entry to upload. | Required | 
-| comment | A comment to add to the file. | Optional | 
-| tags | List of tags for the file. | Optional | 
+| entryId | The file entry to upload. | Required |
+| comment | A comment to add to the file. | Optional |
+| tags | List of tags for the file. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_upload_report | Unknown | A1000 report | 
+| ReversingLabs.a1000_upload_report | Unknown | A1000 report |
 
 #### Command example
+
 ```!reversinglabs-a1000-upload-sample entryId="7469@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59" comment="this_is_a_comment" tags="one_tag"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -501,10 +504,11 @@ Upload sample to A1000 for analysis
 #### Human Readable Output
 
 >## ReversingLabs A1000 upload sample
+>
 > **Message:** Done.
->    **ID:** 150
->    **SHA1:** 0000a0a549be5b7a95b782d31f73d8f608c4a440
->    **Created:** 2023-06-06T16:40:33.541071Z
+> **ID:** 150
+> **SHA1:** 0000a0a549be5b7a95b782d31f73d8f608c4a440
+> **Created:** 2023-06-06T16:40:33.541071Z
 
 ### reversinglabs-a1000-upload-sample-and-get-results
 
@@ -519,31 +523,34 @@ Upload sample to A1000 and retrieve analysis results
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | The file entry to upload. | Required | 
-| comment | A comment to add to the file. | Optional | 
-| tags | List of tags for the file. | Optional | 
+| entryId | The file entry to upload. | Required |
+| comment | A comment to add to the file. | Optional |
+| tags | List of tags for the file. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.EntryID | String | The Entry ID. | 
-| File.Info | String | Information about the file. | 
-| File.Type | String | The type of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| ReversingLabs.a1000_report | Unknown | A1000 report | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.EntryID | String | The Entry ID. |
+| File.Info | String | Information about the file. |
+| File.Type | String | The type of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| ReversingLabs.a1000_report | Unknown | A1000 report |
 
 #### Command example
+
 ```!reversinglabs-a1000-upload-sample-and-get-results entryId="7469@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59" comment="this_is_a_comment" tags="one_tag"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -5314,29 +5321,32 @@ Upload sample to A1000 and retrieve analysis results
 #### Human Readable Output
 
 >## ReversingLabs A1000 results for: 0000a0a549be5b7a95b782d31f73d8f608c4a440
+>
 > **Type:** PE/Exe
->    **Size:** 385774 bytes 
+> **Size:** 385774 bytes
 >**MD5:** 96d17cad51f2b7c817481e5a724c9b3f
 >**SHA1:** 0000a0a549be5b7a95b782d31f73d8f608c4a440
 >**SHA256:** 0b40fb0cef3b557a34a3d7a9cd75d5180099205ccdceb8a73e1dfe73dbd282fd
 >**SHA512:** 4546796ffd5075fc317549f6522df808f03d0d9e97398243259ed3d1bfb0b108083a2200fff49e4de25c5521eaef751d420763c089327b384feea27dc36d316a
 >**ID:** 5722
->    **Malware status:** malicious
->    **Local first seen:** 2023-06-06T16:40:34.604510Z
->    **Local last seen:** 2023-06-06T16:40:34.604510Z
->    **First seen:** 2014-02-10T18:16:00Z
->    **Last seen:** 2023-03-06T12:17:51Z
->    **DBot score:** 3
->    **Risk score:** 9 
+> **Malware status:** malicious
+> **Local first seen:** 2023-06-06T16:40:34.604510Z
+> **Local last seen:** 2023-06-06T16:40:34.604510Z
+> **First seen:** 2014-02-10T18:16:00Z
+> **Last seen:** 2023-03-06T12:17:51Z
+> **DBot score:** 3
+> **Risk score:** 9
 >**Threat name:** Win32.Browser.StartPage
 > **Category:** application
->    **Classification origin:** None
->    **Classification reason:** antivirus
->    **Aliases:** 0000a0a549be5b7a95b782d31f73d8f608c4a440
->    **Extracted file count:** 6
->    **Identification name:** NSIS
->    **Identification version:** Generic
+> **Classification origin:** None
+> **Classification reason:** antivirus
+> **Aliases:** 0000a0a549be5b7a95b782d31f73d8f608c4a440
+> **Extracted file count:** 6
+> **Identification name:** NSIS
+> **Identification version:** Generic
+>
 >### ReversingLabs threat indicators
+>
 >|category|description|id|priority|reasons|relevance|
 >|---|---|---|---|---|---|
 >| 22 | Deletes files in Windows system directories. | 101 | 7 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: DeleteFileA'},<br/>{'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: GetSystemDirectoryA'} | 0 |
@@ -5379,7 +5389,6 @@ Upload sample to A1000 and retrieve analysis results
 >| 12 | Contains references to image file extensions. | 315 | 1 | {'propagated': False, 'category': 'Strings', 'description': 'Contains the following string: /IMGID=$PLUGINSDIR\\checkbox1.bmp'},<br/>{'propagated': False, 'category': 'Strings', 'description': 'Contains the following string: /IMGID=$PLUGINSDIR\\checkbox2.bmp'} | 0 |
 >| 18 | Accesses clipboard. | 328 | 1 | {'propagated': False, 'category': 'Capability Match', 'description': 'Matched the following application capabilities: Clipboard'} | 0 |
 
-
 ### reversinglabs-a1000-delete-sample
 
 ***
@@ -5393,17 +5402,20 @@ Delete an uploaded sample from A1000
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | The hash to delete. | Required | 
+| hash | The hash to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_delete_report | Unknown | A1000 file delete report | 
+| ReversingLabs.a1000_delete_report | Unknown | A1000 file delete report |
 
 #### Command example
+
 ```!reversinglabs-a1000-delete-sample hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5433,11 +5445,11 @@ Delete an uploaded sample from A1000
 #### Human Readable Output
 
 >## ReversingLabs A1000 delete sample
+>
 > **Message:** Sample deleted successfully.
->    **MD5:** a984de0ce47a8d5337ef569c812b57d0
->    **SHA1:** 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
->    **SHA256:** b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
-
+> **MD5:** a984de0ce47a8d5337ef569c812b57d0
+> **SHA1:** 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+> **SHA256:** b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
 
 ### reversinglabs-a1000-list-extracted-files
 
@@ -5462,8 +5474,11 @@ List files extracted from a sample.
 | ReversingLabs.a1000_list_extracted_report | Unknown | A1000 list extracted files report. |
 
 #### Command example
+
 ```!reversinglabs-a1000-list-extracted-files hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6" max_results="2"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5535,12 +5550,11 @@ List files extracted from a sample.
 #### Human Readable Output
 
 >### Extracted files
+>
 >|SHA1|Name|Path|Info|Size|Local First Seen|Local Last Seen|Malware Status|Risk Score|Identification Name|Identification Version|Type Display|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad | aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl | aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl | PE/Exe | 1432064 | 2022-10-27T11:03:31.473395Z | 2023-08-10T00:15:32.849362Z | malicious | 10 |  |  | PE/Exe |
 >| 1489f923c4dca729178b3e3233458550d8dddf29 | 1 | binary_layer/resource/1 | Text/None | 2 | 2022-10-27T11:03:31.473395Z | 2023-08-10T00:15:32.849362Z | malicious | 10 |  |  | Text/None |
-
-
 
 ### reversinglabs-a1000-download-sample
 
@@ -5555,14 +5569,18 @@ Download sample from A1000
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Sample hash to download. | Required | 
+| hash | Sample hash to download. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-a1000-download-sample hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -5582,7 +5600,8 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->## ReversingLabs A1000 download sample 
+>## ReversingLabs A1000 download sample
+>
 >Requested sample is available for download under the name a94775deb818a4d68635eeed3d16abc7f7b8bdd6
 
 ### reversinglabs-a1000-reanalyze
@@ -5598,17 +5617,20 @@ Re-analyze sample on A1000
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | The hash of an already uploaded sample. | Required | 
+| hash | The hash of an already uploaded sample. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_reanalyze_report | Unknown | Get extracted files report | 
+| ReversingLabs.a1000_reanalyze_report | Unknown | Get extracted files report |
 
 #### Command example
+
 ```!reversinglabs-a1000-reanalyze hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5676,10 +5698,11 @@ Re-analyze sample on A1000
 #### Human Readable Output
 
 >## ReversingLabs A1000 re-analyze sample
+>
 >**Message:** Sample is queued for analysis.
->    **MD5:** a322205db6c3b1c451725b84f1d010cc
->    **SHA1:** a94775deb818a4d68635eeed3d16abc7f7b8bdd6
->    **SHA256:** d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2
+> **MD5:** a322205db6c3b1c451725b84f1d010cc
+> **SHA1:** a94775deb818a4d68635eeed3d16abc7f7b8bdd6
+> **SHA256:** d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2
 
 ### reversinglabs-a1000-download-extracted-files
 
@@ -5694,14 +5717,18 @@ Download samples obtained through the unpacking process
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | The sample hash we want unpacked samples for. | Required | 
+| hash | The sample hash we want unpacked samples for. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!reversinglabs-a1000-download-extracted-files hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6"```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -5722,7 +5749,8 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->## ReversingLabs A1000 download extraced files 
+>## ReversingLabs A1000 download extraced files
+>
 >Extracted files are available for download under the name a94775deb818a4d68635eeed3d16abc7f7b8bdd6.zip
 
 ### reversinglabs-a1000-get-classification
@@ -5738,31 +5766,34 @@ Retrieve classification report for a sample
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | The hash of a desired sample. | Required | 
-| localOnly | Return only local classification data for the sample, without falling back to querying TitaniumCloud. Default is False. | Optional | 
-| avScanners | Return AV scanner data from TitaniumCloud. | Optional | 
+| hash | The hash of a desired sample. | Required |
+| localOnly | Return only local classification data for the sample, without falling back to querying TitaniumCloud. Default is False. | Optional |
+| avScanners | Return AV scanner data from TitaniumCloud. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.EntryID | String | The Entry ID. | 
-| File.Info | String | Information about the file. | 
-| File.Type | String | The type of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| ReversingLabs.a1000_classification_report | Unknown | A1000 classification report | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.EntryID | String | The Entry ID. |
+| File.Info | String | Information about the file. |
+| File.Type | String | The type of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| ReversingLabs.a1000_classification_report | Unknown | A1000 classification report |
 
 #### Command example
+
 ```!reversinglabs-a1000-get-classification hash="a94775deb818a4d68635eeed3d16abc7f7b8bdd6" localOnly="False"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -5844,6 +5875,7 @@ Retrieve classification report for a sample
 #### Human Readable Output
 
 >## ReversingLabs A1000 get classification for sha1: a94775deb818a4d68635eeed3d16abc7f7b8bdd6
+>
 >**Classification:** malicious
 >**Riskscore:** 10
 >**First seen:** 2022-12-19T11:39:11Z
@@ -5858,7 +5890,6 @@ Retrieve classification report for a sample
 >**Md5:** a322205db6c3b1c451725b84f1d010cc
 >**Av scanners:** {'scanner_count': 32, 'scanner_match': 0, 'scanner_percent': 0.0, 'vendor_count': 21, 'vendor_match': 0, 'vendor_percent': 0.0, 'antivirus': {'vendor_match': 0, 'scanner_match': 0, 'vendor_count': 21, 'scanner_count': 32}}
 
-
 ### reversinglabs-a1000-advanced-search
 
 ***
@@ -5872,19 +5903,22 @@ Search for hashes on A1000 using multi-part search criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Advanced search query. | Required | 
-| ticloud | Show only cloud results. If omitted, the response will show only local results. Possible values are: true, false. Default is false. | Optional | 
-| result_limit | Maximum number of results. Default is 5000. | Optional | 
+| query | Advanced search query. | Required |
+| ticloud | Show only cloud results. If omitted, the response will show only local results. Possible values are: true, false. Default is false. | Optional |
+| result_limit | Maximum number of results. Default is 5000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_advanced_search_report | Unknown | A1000 classification report | 
+| ReversingLabs.a1000_advanced_search_report | Unknown | A1000 classification report |
 
 #### Command example
+
 ```!reversinglabs-a1000-advanced-search query="av-count:5 available:TRUE" ticloud="False" result_limit=2```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -5902,7 +5936,8 @@ Search for hashes on A1000 using multi-part search criteria.
 
 #### Human Readable Output
 
->## Reversinglabs A1000 advanced Search 
+>## Reversinglabs A1000 advanced Search
+>
 >Full report is returned in a downloadable file
 
 ### reversinglabs-a1000-url-report
@@ -5918,17 +5953,20 @@ Get a report for the submitted URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL string. | Required | 
+| url | URL string. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_url_report | Unknown | A1000 URL report | 
+| ReversingLabs.a1000_url_report | Unknown | A1000 URL report |
 
 #### Command example
+
 ```!reversinglabs-a1000-url-report url="http://akiwinds.duckdns.org/chats/fre.php"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6068,27 +6106,31 @@ Get a report for the submitted URL.
 #### Human Readable Output
 
 >## ReversingLabs A1000 URL Report for http:<span>//</span>akiwinds.duckdns.org/chats/fre.php
+>
 > **Classification**: malicious
->    
+> 
 >## Third party reputation statistics
+>
 > **Total**: 20
->    **Malicious**: 1
->    **Clean**: 0
->    **Undetected**: 19
->    
+> **Malicious**: 1
+> **Clean**: 0
+> **Undetected**: 19
+> 
 >## Analysis statistics
+>
 > **Unknown**: None
->    **Suspicious**: None
->    **Malicious**: None
->    **Goodware**: None
->    **Total**: None
->    
+> **Suspicious**: None
+> **Malicious**: None
+> **Goodware**: None
+> **Total**: None
+> 
 >**First analysis**: None
->    **Analysis count**: None
->    
+> **Analysis count**: None
+> 
 > ## Third party reputation sources
 >
 > ### Sources
+>
 >|detection|source|update_time|
 >|---|---|---|
 >| undetected | phishing_database | 2023-06-06T10:57:14 |
@@ -6113,11 +6155,12 @@ Get a report for the submitted URL.
 >| undetected | urlhaus | 2023-06-06T09:24:38 |
 >
 > ### Last analysis
+>
 >**No entries.**
 >
 > ### Analysis history
+>
 >**No entries.**
-
 
 ### reversinglabs-a1000-domain-report
 
@@ -6132,17 +6175,20 @@ Get a report for the submitted domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain string. | Required | 
+| domain | Domain string. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_domain_report | Unknown | A1000 domain report | 
+| ReversingLabs.a1000_domain_report | Unknown | A1000 domain report |
 
 #### Command example
+
 ```!reversinglabs-a1000-domain-report domain="ink-scape.online"```
+
 #### Context Example
+
 ```json
 {
     "Domain": {
@@ -6274,8 +6320,11 @@ Get a report for the submitted domain.
 #### Human Readable Output
 
 >## ReversingLabs A1000 Domain Report for ink-scape.online
+>
 > **Modified time**: 2023-06-06T13:52:05
+>
 > ### Top threats
+>
 >|files_count|risk_score|threat_name|
 >|---|---|---|
 >| 1 | 10 | Win64.Trojan.Casdet |
@@ -6284,26 +6333,30 @@ Get a report for the submitted domain.
 >| 1 | 10 | Win32.Trojan.Fragtor |
 >
 > ### Third party reputation statistics
+>
 > **Malicious**: 1
->    **Undetected**: 12
->    **Clean**: 0
->    **Total**: 13
->    
+> **Undetected**: 12
+> **Clean**: 0
+> **Total**: 13
+> 
 > ### Downloaded files statistics
+>
 > **Unknown**: 0
->    **Suspicious**: 0
->    **Malicious**: 4
->    **Goodware**: 0
->    **Total**: 4
->    
+> **Suspicious**: 0
+> **Malicious**: 4
+> **Goodware**: 0
+> **Total**: 4
+> 
 >**Last DNS records time**: 2023-05-11T17:46:01
->    
+> 
 > ### Last DNS records
+>
 >|provider|type|value|
 >|---|---|---|
 >| ReversingLabs | A | 37.140.192.210 |
 >
 > ### Third party reputation sources
+>
 >|detection|source|update_time|
 >|---|---|---|
 >| undetected | phishing_database | 2023-06-06T01:26:52 |
@@ -6320,7 +6373,6 @@ Get a report for the submitted domain.
 >| undetected | osint | 2023-06-06T00:30:41 |
 >| undetected | crdf | 2023-06-06T11:30:27 |
 
-
 ### reversinglabs-a1000-ip-address-report
 
 ***
@@ -6334,17 +6386,20 @@ Get a report for the submitted IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP address string. | Required | 
+| ip_address | IP address string. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_ip_address_report | Unknown | A1000 IP address report | 
+| ReversingLabs.a1000_ip_address_report | Unknown | A1000 IP address report |
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-address-report ip_address="105.101.110.37"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6436,24 +6491,30 @@ Get a report for the submitted IP address.
 #### Human Readable Output
 
 >## ReversingLabs A1000 IP Address Report for 105.101.110.37
+>
 > **Modified time**: 2023-06-06T14:00:43
+>
 > ### Top threats
+>
 >**No entries.**
 >
 > ### Third party reputation statistics
+>
 > **Malicious**: 2
->    **Undetected**: 5
->    **Clean**: 0
->    **Total**: 7
->    
+> **Undetected**: 5
+> **Clean**: 0
+> **Total**: 7
+> 
 > ### Downloaded files statistics
+>
 > **Unknown**: 0
->    **Suspicious**: 0
->    **Malicious**: 0
->    **Goodware**: 0
->    **Total**: 0
->    
+> **Suspicious**: 0
+> **Malicious**: 0
+> **Goodware**: 0
+> **Total**: 0
+> 
 > ### Third party reputation sources
+>
 >|category|detect_time|detection|source|update_time|
 >|---|---|---|---|---|
 >|  |  | undetected | alphamountain | 2023-06-06T13:52:05 |
@@ -6463,7 +6524,6 @@ Get a report for the submitted IP address.
 >|  |  | undetected | osint | 2023-06-06T00:30:41 |
 >|  |  | undetected | feodotracker | 2023-06-06T04:27:58 |
 >|  | 2023-05-28T05:00:06 | malicious | crdf | 2023-06-06T11:30:27 |
-
 
 ### reversinglabs-a1000-ip-downloaded-files
 
@@ -6478,21 +6538,24 @@ Get a list of files downloaded from an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP address string. | Required | 
-| extended_results | Return extended results. Default is True. | Optional | 
-| classification | Return only results with this classification. | Optional | 
-| page_size | Number of results per query page. Default is 500. | Optional | 
-| max_results | Maximum number of returned results. Default is 5000. | Optional | 
+| ip_address | IP address string. | Required |
+| extended_results | Return extended results. Default is True. | Optional |
+| classification | Return only results with this classification. | Optional |
+| page_size | Number of results per query page. Default is 500. | Optional |
+| max_results | Maximum number of returned results. Default is 5000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_ip_address_downloaded_files | Unknown | A1000 Files downloaded from IP address | 
+| ReversingLabs.a1000_ip_address_downloaded_files | Unknown | A1000 Files downloaded from IP address |
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-downloaded-files classification="MALICIOUS" page_size="2" max_results="2" ip_address="123.140.161.243" extended_results="true"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6555,12 +6618,13 @@ Get a list of files downloaded from an IP address.
 #### Human Readable Output
 
 >## ReversingLabs A1000 Files Downloaded From IP Address 123.140.161.243
+>
 > ### Files downloaded from IP address
+>
 >|classification|first_download|first_seen|last_download|last_download_url|last_seen|malware_family|malware_type|md5|platform|risk_score|sample_available|sample_size|sample_type|sha1|sha256|subplatform|threat_name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| MALICIOUS | 2022-11-02T07:38:05 | 2022-11-02T07:38:05 | 2022-11-02T07:38:05 | http:<span>//</span>uaery.top/dl/buildz.exe | 2023-04-27T15:22:05 | RedLine | Trojan | 1af44914e2340ab6da17a3a61609a2e4 | Win32 | 10 | true | 840704 |  | 03359456add1d7c5eae291f8f50576e0a324cbbd | 069027da6066f79736223dbc9fa99a42533cfbdf24f6e683f6e9d3934f009afa |  | Win32.Trojan.RedLine |
 >| MALICIOUS | 2023-03-28T04:12:36 | 2023-03-28T04:12:36 | 2023-03-28T04:12:36 | https:<span>//</span>worldofcreatures.at/Launcher.exe | 2023-04-29T15:38:56 | TrickOrTreat | Trojan | aea58c2837e8dd1850d46198e9870c5e | Win64 | 10 | true | 1179894205 | PE+/Exe | 1181efbb5f267554a4ca8ffe98434c83e456d6bb | 33ba1893894e50bc960af51348b99e3064e98e533f255b255846b49ea5ed5421 |  | Win64.Trojan.TrickOrTreat |
-
 
 ### reversinglabs-a1000-ip-domain-resolutions
 
@@ -6575,19 +6639,22 @@ Get a list of IP-to-domain resolutions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP address string. | Required | 
-| page_size | Number of results per query page. Default is 500. | Optional | 
-| max_results | Maximum number of returned results. Default is 5000. | Optional | 
+| ip_address | IP address string. | Required |
+| page_size | Number of results per query page. Default is 500. | Optional |
+| max_results | Maximum number of returned results. Default is 5000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_ip_domain_resolutions | Unknown | A1000 IP-to-domain resolutions | 
+| ReversingLabs.a1000_ip_domain_resolutions | Unknown | A1000 IP-to-domain resolutions |
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-domain-resolutions ip_address="142.250.186.142" page_size="2" max_results="2"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6620,12 +6687,13 @@ Get a list of IP-to-domain resolutions.
 #### Human Readable Output
 
 >## ReversingLabs A1000 IP-to-domain Resolutions for IP address 142.250.186.142
+>
 > ### IP-to-domain resolutions
+>
 >|host_name|last_resolution_time|provider|
 >|---|---|---|
 >| pl16304805.trustedcpmrevenue.com | 2022-01-22T14:42:19 | ReversingLabs |
 >| pl16023914.revenuenetworkcpm.com | 2022-02-15T13:54:37 | ReversingLabs |
-
 
 ### reversinglabs-a1000-ip-urls
 
@@ -6640,19 +6708,22 @@ Get a list of URLs hosted on the requested IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP address string. | Required | 
-| page_size | Number of results per query page. Default is 500. | Optional | 
-| max_results | Maximum number of returned results. Default is 5000. | Optional | 
+| ip_address | IP address string. | Required |
+| page_size | Number of results per query page. Default is 500. | Optional |
+| max_results | Maximum number of returned results. Default is 5000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_ip_urls | Unknown | A1000 URL-s hosted on an IP address | 
+| ReversingLabs.a1000_ip_urls | Unknown | A1000 URL-s hosted on an IP address |
 
 #### Command example
+
 ```!reversinglabs-a1000-ip-urls ip_address="142.250.186.142" page_size="2" max_results="2"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -6681,13 +6752,13 @@ Get a list of URLs hosted on the requested IP address.
 #### Human Readable Output
 
 >## ReversingLabs A1000 URL-s Hosted On IP Address 142.250.186.142
+>
 > ### URL-s hosted on the IP address
+>
 >|url|
 >|---|
 >| https:<span>//</span>vam.simpleintactloop.com/?kw=25&s1=dfadc40091de4d20b5ae5178a3ed04cf&s2=25&s3=1812092 |
 >| https:<span>//</span>consent.youtube.com/m?continue=https:<span>//</span>www.youtube.com/playlist?list=PLUdyEkajrVvQgvw3E7Ms4YAvqa8yze0mk&bsft_aaid=d3faaff4-8ea9-405d-9544-4da5a26dc24a&bsft_eid=9ee948cc-69cb-27ef-383f-8b42608edab0&bsft_clkid=a51526e6-0d0d-42ba-a5b2-4ffe739b39b3&bsft_uid=13d7aa07-4c09-453f-85ae-fbd4e975b709&bsft_mid=5b0f75fb-615d-401c-b15c-8e301bce51a0&bsft_txnid=a887540d-743a-4d12-ab6a-9e9a09073a67&bsft_mime_type=html&bsft_ek=2022-03-20T12%253A10%253A17Z&bsft_lx=7&bsft_tv=25&amp&list_code=MONMARW&email_id=000139679745&cbrd=1&gl=DE&hl=de&m=0&pc=yt&src=1&uxe=23983171 |
-
-
 
 ### reversinglabs-a1000-user-tags
 
@@ -6702,19 +6773,22 @@ Perform user tag actions for a sample - Get existing tags, create new tags or de
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Which tag action to perform - GET, CREATE or DELETE. Possible values are: GET, CREATE, DELETE. | Required | 
-| hash | Hash of the desired sample. | Required | 
-| tags | Comma-separated list of tags. | Optional | 
+| action | Which tag action to perform - GET, CREATE or DELETE. Possible values are: GET, CREATE, DELETE. | Required |
+| hash | Hash of the desired sample. | Required |
+| tags | Comma-separated list of tags. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_user_tags | Unknown | Actions for managing user tags on samples. | 
+| ReversingLabs.a1000_user_tags | Unknown | Actions for managing user tags on samples. |
 
 #### Command example
+
 ```!reversinglabs-a1000-user-tags hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" tags="tag3,tag4" action="CREATE"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -6729,6 +6803,7 @@ Perform user tag actions for a sample - Get existing tags, create new tags or de
 #### Human Readable Output
 
 >## ReversingLabs A1000 user tags - CREATE tags
+>
 > **Tag list**: ["tag3","tag4"]
 
 ### reversinglabs-a1000-file-analysis-status
@@ -6744,18 +6819,21 @@ Check the analysis status of submitted files.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hashes | Comma-separated list of file hashes. Should be written without spaces and all hashes should be of the same type. | Required | 
-| analysis_status | Check only files with this analysis status. Available values are 'processed' and 'not_found'. | Optional | 
+| hashes | Comma-separated list of file hashes. Should be written without spaces and all hashes should be of the same type. | Required |
+| analysis_status | Check only files with this analysis status. Available values are 'processed' and 'not_found'. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_file_analysis_status | Unknown | Analysis status of requested files. | 
+| ReversingLabs.a1000_file_analysis_status | Unknown | Analysis status of requested files. |
 
 #### Command example
+
 ```!reversinglabs-a1000-file-analysis-status hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" analysis_status="processed"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -6775,13 +6853,15 @@ Check the analysis status of submitted files.
 #### Human Readable Output
 
 >## ReversingLabs A1000 file analysis status
+>
 > **Hash type**: sha1
 >**Only status**: processed
+>
 >### Analysis status
+>
 >|hash_value|status|
 >|---|---|
 >| 0000a0a381d31e0dafcaa22343d2d7e40ff76e06 | processed |
-
 
 ### reversinglabs-a1000-pdf-report
 
@@ -6796,18 +6876,21 @@ Perform PDF report actions for a sample - create a report, check the status of a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Sample hash. | Required | 
-| action | Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT. Possible values are: CREATE REPORT, CHECK STATUS, DOWNLOAD REPORT. | Required | 
+| hash | Sample hash. | Required |
+| action | Which PDF report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT. Possible values are: CREATE REPORT, CHECK STATUS, DOWNLOAD REPORT. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_pdf_report | Unknown | Actions for creating and downloading PDF reports. | 
+| ReversingLabs.a1000_pdf_report | Unknown | Actions for creating and downloading PDF reports. |
 
 #### Command example
+
 ```!reversinglabs-a1000-pdf-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -6822,6 +6905,7 @@ Perform PDF report actions for a sample - create a report, check the status of a
 #### Human Readable Output
 
 >## ReversingLabs A1000 PDF report - CREATE REPORT
+>
 >**Status endpoint**: /api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/status
 > **Download endpoint**: /api/pdf/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/download
 
@@ -6838,25 +6922,28 @@ Retrieve the static analysis report for a local sample.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Sample hash. | Required | 
+| hash | Sample hash. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| ReversingLabs.a1000_static_analysis_report | Unknown | The static analysis report. | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| ReversingLabs.a1000_static_analysis_report | Unknown | The static analysis report. |
 
 #### Command example
+
 ```!reversinglabs-a1000-static-analysis-report hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -10509,27 +10596,32 @@ Retrieve the static analysis report for a local sample.
 #### Human Readable Output
 
 >## ReversingLabs A1000 static analysis report for 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+>
 > **Classification**: 3
->    **Factor**: 8
->    **Result**: Win32.Downloader.Unruy
->    **SHA-1**: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
->    **MD5**: a984de0ce47a8d5337ef569c812b57d0
->    **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
->    **SHA-512**: 9357144084c64531dec928de2a85c924d8079b50b5e98ab2c61ae59b97992a39b833f618341e91b071ec94e65bd901ebdf892851e5a4247e1557a55c14923da5
->    **Story**: This file (SHA1: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06) is a 32-bit portable executable application. The application uses the Windows graphical user interface (GUI) subsystem. Appended data was detected at the file&#x27;s end. Its length is smaller than the size of the image. This application has access to running processes. Libraries kernel32 Generic and user32 Generic were detected in the file. There are no extracted files.
+> **Factor**: 8
+> **Result**: Win32.Downloader.Unruy
+> **SHA-1**: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+> **MD5**: a984de0ce47a8d5337ef569c812b57d0
+> **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
+> **SHA-512**: 9357144084c64531dec928de2a85c924d8079b50b5e98ab2c61ae59b97992a39b833f618341e91b071ec94e65bd901ebdf892851e5a4247e1557a55c14923da5
+> **Story**: This file (SHA1: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06) is a 32-bit portable executable application. The application uses the Windows graphical user interface (GUI) subsystem. Appended data was detected at the file&#x27;s end. Its length is smaller than the size of the image. This application has access to running processes. Libraries kernel32 Generic and user32 Generic were detected in the file. There are no extracted files.
+>
 > ### Indicators
+>
 >|category|description|id|priority|reasons|relevance|
 >|---|---|---|---|---|---|
 >| 4 | Allocates additional memory in the calling process. | 17985 | 3 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: HeapAlloc'} | 0 |
 >| 10 | Loads additional libraries. | 69 | 2 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: LoadLibraryA'} | 1 |
 >| 10 | Loads additional APIs. | 70 | 2 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: GetProcAddress'},<br/>{'propagated': False, 'category': 'Indicator Match', 'description': 'Matched another indicator that describes the following: Loads additional libraries.'} | 0 |
 >| 16 | Uses string related methods. | 18050 | 1 | {'propagated': False, 'category': 'Imported API Name', 'description': 'Imports the following function: lstrcatA'} | 0 |
+>
 > ### Tags
+>
 >|ticore|user|
 >|---|---|
 >| antivirus,<br/>arch-x86,<br/>capability-execution,<br/>desktop,<br/>entropy-high,<br/>gui,<br/>machine-learning,<br/>overlay,<br/>rich-header | tag1,<br/>tag2,<br/>tag3,<br/>tag4 |
 >
->    
+> 
 
 ### reversinglabs-a1000-dynamic-analysis-report
 
@@ -10544,19 +10636,22 @@ Perform dynamic analysis report actions for a sample - create a report, check th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Sample hash. | Required | 
-| action | Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT. Possible values are: CREATE REPORT, CHECK STATUS, DOWNLOAD REPORT. | Required | 
-| report_format | Dynamic analysis report format. Possible values are: pdf, html. Default is pdf. | Required | 
+| hash | Sample hash. | Required |
+| action | Which dynamic analysis report action to perform - CREATE REPORT, CHECK STATUS or DOWNLOAD REPORT. Possible values are: CREATE REPORT, CHECK STATUS, DOWNLOAD REPORT. | Required |
+| report_format | Dynamic analysis report format. Possible values are: pdf, html. Default is pdf. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_dynamic_analysis_report | Unknown | Actions for creating and downloading dynamic analysis reports. | 
+| ReversingLabs.a1000_dynamic_analysis_report | Unknown | Actions for creating and downloading dynamic analysis reports. |
 
 #### Command example
+
 ```!reversinglabs-a1000-dynamic-analysis-report report_format="pdf" hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="CREATE REPORT"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10571,6 +10666,7 @@ Perform dynamic analysis report actions for a sample - create a report, check th
 #### Human Readable Output
 
 >## ReversingLabs A1000 dynamic analysis report - CREATE REPORT
+>
 >**Status endpoint**: /api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/status/
 > **Download endpoint**: /api/rl_dynamic_analysis/export/summary/0000a0a381d31e0dafcaa22343d2d7e40ff76e06/pdf/download/
 
@@ -10587,34 +10683,37 @@ Perform sample classification actions - get sample classification, set sample cl
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Sample hash. | Required | 
-| action | Which classification action to perform - GET CLASSIFICATION, SET CLASSIFICATION or DELETE CLASSIFICATION. Possible values are: GET CLASSIFICATION, SET CLASSIFICATION, DELETE CLASSIFICATION. | Required | 
-| system | Local or TitaniumCloud. Possible values are: local, ticloud. | Optional | 
-| local_only | Return only local samples without querying TitaniumCloud. Possible values are: true, false. | Optional | 
-| av_scanners | Return return AV scanner results. Possible values are: true, false. | Optional | 
-| classification | goodware, suspicious or malicious. Possible values are: goodware, suspicious, malicious. | Optional | 
-| risk_score | If specified, it must be within range for the specified classification. If not specified, a default value is used. Goodware - 0, Suspicious - 6, Malicious - 10. | Optional | 
-| threat_platform | If specified, it must be on the supported list (platforms and subplatforms - see official API docs). If not specified, the default value is 'Win32'. | Optional | 
-| threat_type | If specified, it must be on the supported list (malware types - see official API docs). If not specified, the default value is 'Malware'. | Optional | 
-| threat_name | If specified, must be an alphanumeric string not longer than 32 characters. If not specified, the default value is 'Generic'. | Optional | 
+| hash | Sample hash. | Required |
+| action | Which classification action to perform - GET CLASSIFICATION, SET CLASSIFICATION or DELETE CLASSIFICATION. Possible values are: GET CLASSIFICATION, SET CLASSIFICATION, DELETE CLASSIFICATION. | Required |
+| system | Local or TitaniumCloud. Possible values are: local, ticloud. | Optional |
+| local_only | Return only local samples without querying TitaniumCloud. Possible values are: true, false. | Optional |
+| av_scanners | Return return AV scanner results. Possible values are: true, false. | Optional |
+| classification | goodware, suspicious or malicious. Possible values are: goodware, suspicious, malicious. | Optional |
+| risk_score | If specified, it must be within range for the specified classification. If not specified, a default value is used. Goodware - 0, Suspicious - 6, Malicious - 10. | Optional |
+| threat_platform | If specified, it must be on the supported list (platforms and subplatforms - see official API docs). If not specified, the default value is 'Win32'. | Optional |
+| threat_type | If specified, it must be on the supported list (malware types - see official API docs). If not specified, the default value is 'Malware'. | Optional |
+| threat_name | If specified, must be an alphanumeric string not longer than 32 characters. If not specified, the default value is 'Generic'. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| ReversingLabs.a1000_sample_classification | Unknown | Sample classification actions. | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| ReversingLabs.a1000_sample_classification | Unknown | Sample classification actions. |
 
 #### Command example
+
 ```!reversinglabs-a1000-sample-classification hash="0000a0a381d31e0dafcaa22343d2d7e40ff76e06" action="GET CLASSIFICATION" system="local" local_only="true" av_scanners="false" classification="malicious"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -10669,16 +10768,17 @@ Perform sample classification actions - get sample classification, set sample cl
 #### Human Readable Output
 
 >## ReversingLabs A1000 sample classification - GET CLASSIFICATION
+>
 >**Classification**: malicious
->        **Risk score**: 8
->        **First seen**: 2011-09-21T02:09:00Z
->        **Last seen**: 2024-06-05T15:10:39Z
->        **Classification result**: Win32.Downloader.Unruy
->        **Classification reason**: Antivirus
->        **SHA-1**: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
->        **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
->        **MD5**: a984de0ce47a8d5337ef569c812b57d0
->        
+> **Risk score**: 8
+> **First seen**: 2011-09-21T02:09:00Z
+> **Last seen**: 2024-06-05T15:10:39Z
+> **Classification result**: Win32.Downloader.Unruy
+> **Classification reason**: Antivirus
+> **SHA-1**: 0000a0a381d31e0dafcaa22343d2d7e40ff76e06
+> **SHA-256**: b25e707a78a472d92a99b08be5d0e55072f695275a7408d1e841a5344ca85dc3
+> **MD5**: a984de0ce47a8d5337ef569c812b57d0
+> 
 
 ### reversinglabs-a1000-yara
 
@@ -10693,21 +10793,24 @@ Perform A1000 YARA actions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Which YARA action to perform. Possible values are: GET RULESETS, GET CONTENTS, GET MATCHES, UPDATE RULESET, DELETE RULESET, ENABLE RULESET, DISABLE RULESET, GET SYNCHRONIZATION TIME, UPDATE SYNCHRONIZATION TIME. | Required | 
-| ruleset_name | Ruleset name. | Optional | 
-| ruleset_content | Ruleset content. | Optional | 
-| publish | Publish the ruleset. Possible values are: true, false. | Optional | 
-| sync_time | Desired ruleset synchronization time. | Optional | 
+| action | Which YARA action to perform. Possible values are: GET RULESETS, GET CONTENTS, GET MATCHES, UPDATE RULESET, DELETE RULESET, ENABLE RULESET, DISABLE RULESET, GET SYNCHRONIZATION TIME, UPDATE SYNCHRONIZATION TIME. | Required |
+| ruleset_name | Ruleset name. | Optional |
+| ruleset_content | Ruleset content. | Optional |
+| publish | Publish the ruleset. Possible values are: true, false. | Optional |
+| sync_time | Desired ruleset synchronization time. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_yara | Unknown | YARA actions. | 
+| ReversingLabs.a1000_yara | Unknown | YARA actions. |
 
 #### Command example
+
 ```!reversinglabs-a1000-yara action="GET RULESETS"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10776,10 +10879,10 @@ Perform A1000 YARA actions.
 #### Human Readable Output
 
 >## ReversingLabs A1000 YARA - GET RULESETS
+>
 >|count|next|previous|results|source|status|type|
 >|---|---|---|---|---|---|---|
 >| 4 |  |  | {'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 1, 'goodware_match_count': 27, 'unknown_match_count': 1, 'name': 'get_money3', 'owner': 'admin', 'last_matched': '2024-06-05T15:47:06.917422Z', 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 2, 'unknown_match_count': 0, 'name': 'Rule_Find_PDF_with_URLs', 'owner': 'admin', 'last_matched': '2024-05-24T16:00:19.220946Z', 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'pending', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 0, 'unknown_match_count': 0, 'name': 'MislavTesting', 'owner': 'admin', 'last_matched': None, 'system_ruleset': False, 'cloud_synced': False},<br/>{'status': 'active', 'suspicious_match_count': 0, 'malicious_match_count': 0, 'goodware_match_count': 0, 'unknown_match_count': 0, 'name': 'test_yara_rule', 'owner': 'admin', 'last_matched': None, 'system_ruleset': False, 'cloud_synced': True} | all | all | my |
-
 
 ### reversinglabs-a1000-yara-retro
 
@@ -10794,19 +10897,22 @@ Perform A1000 YARA Retroactive Hunt actions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Which YARA Retro action to perform. Possible values are: MANAGE LOCAL SCAN, LOCAL SCAN STATUS, MANAGE CLOUD SCAN, CLOUD SCAN STATUS. | Required | 
-| ruleset_name | Ruleset name. | Optional | 
-| operation | Select a ruleset operation. Possible values are: START, STOP, CLEAR. | Optional | 
+| action | Which YARA Retro action to perform. Possible values are: MANAGE LOCAL SCAN, LOCAL SCAN STATUS, MANAGE CLOUD SCAN, CLOUD SCAN STATUS. | Required |
+| ruleset_name | Ruleset name. | Optional |
+| operation | Select a ruleset operation. Possible values are: START, STOP, CLEAR. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_yara_retro | Unknown | YARA Retro actions. | 
+| ReversingLabs.a1000_yara_retro | Unknown | YARA Retro actions. |
 
 #### Command example
+
 ```!reversinglabs-a1000-yara-retro action="LOCAL SCAN STATUS" ruleset_name="get_money3"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10854,10 +10960,10 @@ Perform A1000 YARA Retroactive Hunt actions.
 #### Human Readable Output
 
 >## ReversingLabs A1000 YARA Retroactive Hunt - LOCAL SCAN STATUS
+>
 >|message|status|success|
 >|---|---|---|
 >|  | state: COMPLETED<br/>started: 2024-05-24T15:58:55.075337+00:00<br/>stopped: 2024-05-24T16:28:13.110974+00:00<br/>samples: 281<br/>processed: 371<br/>history: {'state': 'COMPLETED', 'started': '2024-05-24T15:58:55.075337+00:00', 'stopped': '2024-05-24T16:28:13.110974+00:00', 'samples': 281, 'started_username': 'admin', 'stopped_username': None},<br/>{'state': 'COMPLETED', 'started': '2022-11-15T10:14:16.515681+00:00', 'stopped': '2022-11-15T10:14:20.687855+00:00', 'samples': 11, 'started_username': 'admin', 'stopped_username': None},<br/>{'state': 'COMPLETED', 'started': '2022-11-11T15:02:00.683418+00:00', 'stopped': '2022-11-11T15:02:07.011490+00:00', 'samples': 11, 'started_username': 'admin', 'stopped_username': None} | true |
-
 
 ### reversinglabs-a1000-list-containers
 
@@ -10872,17 +10978,20 @@ Get a list of all top-level containers from which the requested samples have bee
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_hashes | Comma-separated list of sample hashes. No whitespaces are allowed. | Required | 
+| sample_hashes | Comma-separated list of sample hashes. No whitespaces are allowed. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReversingLabs.a1000_list_containers | Unknown | A10000 list top-level containers. | 
+| ReversingLabs.a1000_list_containers | Unknown | A10000 list top-level containers. |
 
 #### Command example
+
 ```!reversinglabs-a1000-list-containers sample_hashes="0000a0a381d31e0dafcaa22343d2d7e40ff76e06,661566e9131c39a1b34cabde9a14877d9bcb3d90"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10899,10 +11008,10 @@ Get a list of all top-level containers from which the requested samples have bee
 #### Human Readable Output
 
 >## ReversingLabs A1000 List containers for hashes
+>
 >|count|next|previous|results|
 >|---|---|---|---|
 >| 0 |  |  |  |
-
 
 ### reversinglabs-a1000-upload-from-url-actions
 
@@ -10917,31 +11026,34 @@ Actions for uploading a sample from a URL and fetching the analysis results.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Which action to perform. Upload a sample from URL, get the report for an sample or both actions combined. Possible values are: UPLOAD, GET REPORT, UPLOAD AND GET REPORT, CHECK ANALYSIS STATUS. | Required | 
-| file_url | URL to the file you want to submit for analysis. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional | 
-| crawler | Which crawler to use - local or cloud. Used in UPLOAD and UPLOAD AND GET REPORT. Possible values are: local, cloud. | Optional | 
-| archive_password | Required if the sample is an archive and it has a password. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional | 
-| sandbox_platform | Which sandbox platform to use. Check the A1000 documentation to see the current list of supported platforms. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional | 
-| task_id | ID of the URL processing task. Used in GET REPORT. | Optional | 
-| retry | Utilize the retry mechanism for fetching the report. Used in GET REPORT and UPLOAD AND GET REPORT. | Optional | 
+| action | Which action to perform. Upload a sample from URL, get the report for an sample or both actions combined. Possible values are: UPLOAD, GET REPORT, UPLOAD AND GET REPORT, CHECK ANALYSIS STATUS. | Required |
+| file_url | URL to the file you want to submit for analysis. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional |
+| crawler | Which crawler to use - local or cloud. Used in UPLOAD and UPLOAD AND GET REPORT. Possible values are: local, cloud. | Optional |
+| archive_password | Required if the sample is an archive and it has a password. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional |
+| sandbox_platform | Which sandbox platform to use. Check the A1000 documentation to see the current list of supported platforms. Used in UPLOAD and UPLOAD AND GET REPORT. | Optional |
+| task_id | ID of the URL processing task. Used in GET REPORT. | Optional |
+| retry | Utilize the retry mechanism for fetching the report. Used in GET REPORT and UPLOAD AND GET REPORT. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.MD5 | String | MD5 hash of the file. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| ReversingLabs.a1000_upload_from_url_actions | Unknown | Actions for uploading a sample from a URL and fetching the analysis results. | 
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.MD5 | String | MD5 hash of the file. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| ReversingLabs.a1000_upload_from_url_actions | Unknown | Actions for uploading a sample from a URL and fetching the analysis results. |
 
 #### Command example
+
 ```!reversinglabs-a1000-upload-from-url-actions action="UPLOAD" file_url="https://download.sublimetext.com/sublime_text_build_4169_x64_setup.exe" crawler="local" sandbox_platform="windows10"```
+
 #### Context Example
+
 ```json
 {
     "ReversingLabs": {
@@ -10962,9 +11074,9 @@ Actions for uploading a sample from a URL and fetching the analysis results.
 #### Human Readable Output
 
 >## ReversingLabs A1000 URL sample actions - UPLOAD
+>
 >### Upload results
+>
 >|code|detail|message|
 >|---|---|---|
 >| 201 | id: 419<br/>user: 1<br/>created: 2024-06-05T15:50:40.409482Z<br/>filename: https:<span>//</span>download.sublimetext.com/sublime_text_build_4169_x64_setup.exe | Done. |
-
-

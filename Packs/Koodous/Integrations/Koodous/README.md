@@ -2,12 +2,10 @@ Check Android app samples (APK) against Koodous API.
 
 ## Configure Koodous in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | False |
 | API Key | False |
-
 
 ## Commands
 
@@ -27,4 +25,4 @@ Check APK sample.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | The hash of the sample (MD5, SHA1 or SHA256). | Required | 
+| hash | The hash of the sample (MD5, SHA1 or SHA256). | Required |
