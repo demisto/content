@@ -394,7 +394,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     """
     attributes = None
     indicator = None
-    extracted_indicator = []
+    extracted_indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
     if feed_config and 'indicator' in feed_config:
@@ -500,20 +500,21 @@ def process_indicator_data(client,
                            auto_detect,
                            create_relationships=False,
                            enrichment_excluded: bool = False):
-    """_summary_
+    """
+    Builds the indicator data object.
 
     Args:
-        client (_type_): _description_
-        value (_type_): _description_
-        attributes (_type_): _description_
-        url (_type_): _description_
-        itype (_type_): _description_
-        auto_detect (_type_): _description_
-        create_relationships (bool, optional): _description_. Defaults to False.
-        enrichment_excluded (bool, optional): _description_. Defaults to False.
+        client: The client object.
+        value: The indicator value.
+        attributes: The indicator attributes.
+        url: The URL.
+        itype: The indicator type.
+        auto_detect: The suto detect param.
+        create_relationships: Whether to create relationsheeps.
+        enrichment_excluded: Whether to enrich excluded..
 
     Returns:
-        _type_: _description_
+        dict: The indicator data object.
     """
     attributes = attributes if attributes else {}
     attributes['value'] = value
