@@ -36,7 +36,7 @@ def check_remote_access_intergation_enable():
         return_error(ERROR_MESSAGE)
 
 
-def main():
+def main(): # pragma: no cover
     check_remote_access_intergation_enable()
     try:
         execute_ssh_command()
