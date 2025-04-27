@@ -106,6 +106,8 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+  hidden:
+  - marketplacev2
 - display: IOA fetch query
   name: ioa_fetch_query
   type: 0
@@ -113,6 +115,8 @@ configuration:
   required: false
   advanced: true
   additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
+  hidden:
+  - marketplacev2
 - display: Detections from On-Demand Scans fetch query
   name: on_demand_fetch_query
   type: 0
@@ -224,7 +228,6 @@ configuration:
   name: fetch_events_or_detections
   type: 16
   section: Collect
-  advanced: true
   required: false
   additionalinfo: |-
    Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
@@ -233,8 +236,6 @@ configuration:
   - IDP Detection
   - Endpoint Incident
   - Endpoint Detection
-  - Indicator of Misconfiguration
-  - Indicator of Attack
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
