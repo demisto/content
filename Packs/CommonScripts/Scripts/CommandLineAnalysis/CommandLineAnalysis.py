@@ -840,7 +840,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
         "malicious_commands": 25,
         "custom_patterns": 25,
         "suspicious_macos_applescript_commands": 25,
-        "suspicious_mshta": 25,
+        "suspicious_mshta": 50,
         "social_engineering": 25,
         "data_exfiltration": 15,
         "lateral_movement": 15,
