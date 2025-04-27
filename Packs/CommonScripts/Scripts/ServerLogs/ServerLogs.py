@@ -3,8 +3,7 @@ import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-ERROR_MESSAGE = ("The script could not execute the `ssh` command. Please create an instance of the "
-                 "`RemoteAccess` integration and try to run the script again.")
+ERROR_MESSAGE = ()
 
 
 def execute_ssh_command():
@@ -16,7 +15,7 @@ def execute_ssh_command():
     if isinstance(contents, list):
         contents = contents[0]
         error = contents.get('error')
-        return_error(error)
+        raise Exception(error)
 
     output = f"File: {file}\n"
     output += contents.get("output")
@@ -25,7 +24,7 @@ def execute_ssh_command():
     return_results(output)
 
 
-def check_remote_access_intergation_enable():
+def check_remote_access_integration_enable():
     found_module = False
     for module in demisto.getModules().values():
         if "RemoteAccess v2" in module.get('brand') and module.get("state") == "active":
@@ -33,16 +32,18 @@ def check_remote_access_intergation_enable():
             found_module = True
 
     if not found_module:
-        return_error(ERROR_MESSAGE)
+        return_error("The script could not execute the `ssh` command. Please create an instance of the "
+                     "`RemoteAccess v2` integration and try to run the script again.")
 
 
-def main(): # pragma: no cover
-    check_remote_access_intergation_enable()
+def main():  # pragma: no cover
+    check_remote_access_integration_enable()
     try:
         execute_ssh_command()
     except ValueError as e:
         demisto.error(str(e))
-        return_error(ERROR_MESSAGE)
+        return_error("The script could not execute the `ssh` command. Please create an instance of the "
+                     "`RemoteAccess v2` integration and try to run the script again.")
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
