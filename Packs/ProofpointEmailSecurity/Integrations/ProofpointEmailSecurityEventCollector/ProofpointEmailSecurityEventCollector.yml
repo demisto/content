@@ -44,13 +44,25 @@ configuration:
   type: 8
   required: false
   section: Collect
+- additionalinfo: Denotes which event type to fetch, if not provided will fetch all kinds.
+  display: Event types to fetch
+  name: event_types
+  type: 16
+  required: false
+  options:
+  - message
+  - maillog
+  - audit
+  section: Collect
+  advanced: true
+  defaultvalue: message,maillog,audit
 script:
   script: ""
   type: python
   commands:
   - name: "proofpoint-es-get-last-run-results"
     description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
-  dockerimage: demisto/netutils:1.0.0.118055
+  dockerimage: demisto/netutils:1.0.0.3073344
   longRunning: true
   subtype: python3
 marketplaces:
