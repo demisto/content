@@ -404,7 +404,8 @@ def test_get_actors_names_request_called_with(mocker, requests_mock):
         crowdstrike_client, "_http_request", return_value={"resources": {"name": "TEST TEST"}}
     )
     crowdstrike_client.get_actors_names_request(params_string="ids=123&fields=name")
-    http_request_mock.assert_called_once_with(method="GET", url_suffix="intel/entities/actors/v1?ids=123&fields=name", timeout=30)
+    http_request_mock.assert_called_once_with(method="GET", url_suffix="intel/entities/actors/v1?ids=123&fields=name",
+                                              timeout=30, ok_codes=(200, 401))
 
 
 def test_crowdstrike_indicators_list_command_check_actors_convert(mocker, requests_mock):
