@@ -755,9 +755,15 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 chunk_data=chunk_data,
                 attachment_size=attachment_size
             )
+            try:
+                content = response.json()
+            except ValueError:
+                content = response.text
 
-            if response.status_code not in (201, 200):
-                raise Exception(f'{response.json()}')
+            demisto.debug(f"Upload attachment failed. Status Code: {response.status_code}, Response: {content}")
+
+            if response.status_code not in (200, 201):
+                raise Exception(f"Failed with status {response.status_code}: {content}")
 
     def send_mail_with_upload_session_flow(self, email: str, json_data: dict,
                                            attachments_more_than_3mb: list[dict], reply_message_id: str = None):
