@@ -25,8 +25,21 @@ configuration:
   additionalinfo: Returns only the CVEs where the word or phrase is found in the description.
   required: false
   section: Connect
-- name: cvssv4severity
-  display: CVSS 4 Severity Filter
+- name: cvssv3severity
+  display: CVSS 3 Severity Filter
+  additionalinfo: Select the severities you wish to get back from the feed.
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  defaultvalue:
+  required: false
+  type: 16
+  section: Connect
+  hidden: true
+- name: severity
+  display: CVSS Severity Filter
   additionalinfo: Select the severities you wish to get back from the feed.
   options:
   - CRITICAL

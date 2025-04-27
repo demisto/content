@@ -14,6 +14,7 @@ from FeedNVDv2 import (
     get_cvss_version_and_score,
     parse_cpe_command,
     retrieve_cves,
+    LATEST_CVSS_VERSION_SEVERITY
 )
 
 BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
@@ -27,7 +28,7 @@ client = Client(
     has_kev=False,
     feed_tags=[],
     first_fetch="1 day",
-    cvssv4severity=[],
+    severity=[],
     keyword_search="",
 )
 
@@ -135,13 +136,13 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
 @pytest.mark.parametrize(
     "input_params, expected_param_string",
     [
-        ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected&cvssV4Severity=LOW&cvssV4Severity=MEDIUM"),
-        ({"noRejected": "None"}, "noRejected&cvssV4Severity=LOW&cvssV4Severity=MEDIUM"),
-        ({"hasKev": "True"}, "hasKev&cvssV4Severity=LOW&cvssV4Severity=MEDIUM"),
+        ({"param1": "value1", "noRejected": "None"}, f"param1=value1&noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
+        ({"noRejected": "None"}, f"noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
+        ({"hasKev": "True"}, f"hasKev&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
     ],
 )
 def test_build_param_string(input_params, expected_param_string):
-    client.cvssv4severity = ["LOW", "MEDIUM"]
+    client.severity = ["LOW", "MEDIUM"]
     result = client.build_param_string(input_params)
     assert result == expected_param_string
 

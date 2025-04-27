@@ -14,7 +14,7 @@ from dateparser import parse
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-
+LATEST_CVSS_VERSION_SEVERITY = "cvssv4severity" # In case of cvss update - need to update this param to the latest cvss version
 
 class Client(BaseClient):
     """Client class to interact with the service API"""
@@ -28,7 +28,7 @@ class Client(BaseClient):
         has_kev: bool,
         first_fetch: str,
         feed_tags: list[str],
-        cvssv4severity: list[str],
+        severity: list[str],
         keyword_search: str,
     ):
         super().__init__(base_url=base_url, proxy=proxy)
@@ -39,7 +39,7 @@ class Client(BaseClient):
         self.has_kev = has_kev
         self.feed_tags = feed_tags
         self.first_fetch = first_fetch
-        self.cvssv4severity = cvssv4severity
+        self.severity = severity
         self.keyword_search = keyword_search
 
     def get_cves(self, path: str, params: dict):  # pragma: no cover
@@ -75,8 +75,8 @@ class Client(BaseClient):
         param_string = param_string.replace("noRejected=None", "noRejected")
         param_string = param_string.replace("hasKev=True", "hasKev")
 
-        for value in self.cvssv4severity:
-            param_string += f"&cvssV4Severity={value}"
+        for value in self.severity:
+            param_string += f"&{LATEST_CVSS_VERSION_SEVERITY}={value}"
 
         return param_string
 
@@ -502,7 +502,7 @@ def main():  # pragma: no cover
             has_kev=has_kev,
             first_fetch=first_fetch,
             feed_tags=feed_tags,
-            cvssv4severity=params.get("cvssv4severity", []),
+            severity=params.get("severity", []),
             keyword_search=params.get("keyword_search", ""),
         )
 
