@@ -43,18 +43,21 @@ configuration:
   - URL
   type: 16
   required: false
+  section: Collect
 - display: First fetch time
   name: first_fetch
   required: true
   type: 0
   additionalinfo: "The time range to consider for the initial data fetch. Warning: This feed may fetch tens of thousands of indicators per day. Please consider this when configuring this parameter to further in the past, as it may overload the system with indicators."
   defaultvalue: '1 week'
+  section: Collect
 - display: Max. indicators per fetch
   defaultvalue: 5000
   name: max_indicator_to_fetch
   type: 0
   additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
   required: false
+  section: Collect
 - additionalinfo: Malicious confidence level to filter by.
   display: Malicious confidence
   name: malicious_confidence
@@ -65,20 +68,24 @@ configuration:
   - unverified
   type: 16
   required: false
+  section: Collect
 - display: Include deleted indicators
   name: include_deleted
   type: 8
   required: false
+  section: Collect
 - additionalinfo: "Advanced: FQL query. For more information visit the CrowdStrike documentation."
   display: Filter
   name: filter
   type: 0
   required: false
+  section: Collect
 - display: Generic phrase match
   additionalinfo: Generic phrase match search across all indicator fields.
   name: generic_phrase
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
