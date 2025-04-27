@@ -18,7 +18,8 @@
     "useCases": [],
     "keywords": [
         "microsoft",
-        "windows"
+        "windows",
+        "events"
     ],
     "dependencies": {
         "MicrosoftDNS": {
