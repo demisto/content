@@ -1000,8 +1000,8 @@ def get_edl_on_demand() -> tuple[str, int]:
         store_log_data(request_args, created_time, edl_data_stats)
 
         try:
-            if EXTENSIVE_LOGGING:
-                demisto.debug("edl: Writing EDL data to cache")
+            
+            demisto.debug("edl: Writing EDL data to cache")
 
             with open(EDL_ON_DEMAND_CACHE_PATH, "w") as file:
                 file.write(edl_data)
@@ -1010,13 +1010,13 @@ def get_edl_on_demand() -> tuple[str, int]:
             demisto.debug(f"edl: Error in writing to file: {e!s}")
             raise e
 
-        if EXTENSIVE_LOGGING:
-            demisto.debug("edl: Finished writing EDL data to cache")
+        
+        demisto.debug("edl: Finished writing EDL data to cache")
         set_integration_context(ctx)
 
     else:
-        if EXTENSIVE_LOGGING:
-            demisto.debug("edl: Reading EDL data from cache")
+        
+        demisto.debug("edl: Reading EDL data from cache")
 
         try:
             with open(EDL_ON_DEMAND_CACHE_PATH) as file:
@@ -1355,11 +1355,11 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
         fields_to_present = "use_legacy_query"
 
     if query and request_args.get("q"):
-        if EXTENSIVE_LOGGING:
-            demisto.debug(
-                "Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
-                "For more information, review the documentation."
-            )
+        
+        demisto.debug(
+            "Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
+            "For more information, review the documentation."
+        )
         limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
 
     return RequestArguments(
@@ -1564,7 +1564,7 @@ def main():
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
     
-    EXTENSIVE_LOGGING = demisto.params().get("extensive_logging", False)
+    EXTENSIVE_LOGGING = argToBoolean(params.get("extensive_logging", False))
     
     if (username and not password) or (password and not username):
         err_msg: str = "If using credentials, both username and password should be provided."
