@@ -1,5 +1,5 @@
 {
-    "name":  "CVSS  (Deprecated)“",
+    "name":  "CVSS  (Deprecated)",
     "description": "Deprecated. Use from CommonScripts instead.",
     "support": "xsoar",
     "currentVersion": "1.0.3",
