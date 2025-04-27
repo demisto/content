@@ -474,3 +474,74 @@ def test_change_actors_from_id_to_name(mocker, requests_mock):
     assert result[0] == "WAS IN CONTEXT"
     assert result[1] == "Changedtest1"
     assert result[2] == "Changedtest2"
+
+
+# This function will alternate the response each time it's called
+def mock_alternate_response(request,context):
+    # Track the number of times the post request has been called
+    if not hasattr(mock_alternate_response, "call_count"):
+        mock_alternate_response.call_count = 0
+    mock_alternate_response.call_count += 1
+
+    if mock_alternate_response.call_count == 1:
+        # First call: Return 401 Unauthorized
+        context.status_code = 401
+        return {'errors': [{'code': 401, 'message': 'access denied, authorization failed'}]}
+    else:
+        # Second call: Return 200 OK with the access token
+        context.status_code = 200
+        return {'resources': []}
+
+def test_fetch_no_indicators_regenerate_token(requests_mock):
+    """
+    Given
+        - no indicators api response
+    When
+        - fetching indicators when API token expired.
+    Then
+        - Ensure empty list is returned and no exception is raised.
+    """
+    from CrowdStrikeIndicatorFeed import Client
+
+    requests_mock.post("https://api.crowdstrike.com/oauth2/token", json={"access_token": "12345"})
+    requests_mock.get(url="https://api.crowdstrike.com/intel/combined/indicators/v1", json=mock_alternate_response)
+
+    feed_tags = ["Tag1", "Tag2"]
+    client = Client(
+        base_url="https://api.crowdstrike.com/",
+        credentials={"identifier": "123", "password": "123"},
+        type="Domain",
+        include_deleted="false",
+        limit=2,
+        feed_tags=feed_tags,
+    )
+
+    assert client.fetch_indicators(limit=10, offset=5, fetch_command=True) == []
+
+def test_get_actors_names_request_regenerate_token(requests_mock):
+    """
+    Given
+        - no actors api response
+    When
+        - calling get_actors_names_request after fetching/listing indicators
+    Then
+        - Ensure empty list is returned and no exception is raised.
+    """
+    from CrowdStrikeIndicatorFeed import Client
+
+    mock_response = util_load_json("test_data/crowdstrike_indicators_list_command.json")
+    requests_mock.post("https://api.crowdstrike.com/oauth2/token", json={"access_token": "12345"})
+    requests_mock.get(url="https://api.crowdstrike.com/intel/combined/indicators/v1", json=mock_response)
+    crowdstrike_client = Client(
+        base_url="https://api.crowdstrike.com/",
+        credentials={"identifier": "123", "password": "123"},
+        type="Domain",
+        include_deleted="false",
+        limit=2,
+    )
+    requests_mock.get(url="https://api.crowdstrike.com/intel/entities/actors/v1?", json={"resources": ""})
+    requests_mock.get(
+        url="https://api.crowdstrike.com/intel/entities/actors/v1?ids=123&fields=name", json=mock_alternate_response
+    )
+    res = crowdstrike_client.get_actors_names_request(params_string="ids=123&fields=name")
+    assert res == []
