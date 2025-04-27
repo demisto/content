@@ -1,4 +1,4 @@
-comment: Uses the ssh integration to grab the host server logs. This script is supported only in Cortex XSOAR 6.
+comment: Uses the ssh integration to grab the host server logs. This script is supported only on Cortex XSOAR on-prem (version 6.X)
 commonfields:
   id: ServerLogs
   version: -1
