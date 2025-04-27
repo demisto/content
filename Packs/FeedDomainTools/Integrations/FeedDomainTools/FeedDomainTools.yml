@@ -193,7 +193,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.2432953
+  dockerimage: demisto/vendors-sdk:1.0.0.3156526
   feed: true
   isfetch: false
   longRunning: false
