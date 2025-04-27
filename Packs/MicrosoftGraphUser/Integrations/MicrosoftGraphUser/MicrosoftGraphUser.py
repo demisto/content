@@ -690,10 +690,6 @@ def create_zip_with_password(generated_tap_password: str, zip_password: str):
     except Exception as e:
         raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
 
-    finally:
-        if os.path.exists(zip_file_name):
-            os.remove(zip_file_name)
-
     return_results(fileResult(zip_file_name, zip_content))
 
 

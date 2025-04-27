@@ -517,3 +517,44 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
     else:
         result = test_function(client, {})
         assert result == expected_result
+
+def test_create_zip_with_password():
+    from pyzipper import AESZipFile, ZIP_DEFLATED, WZ_AES
+    from MicrosoftGraphUser import create_zip_with_password
+    import os
+    import time
+
+    def clean_up_files(created_time):
+        cwd = os.getcwd()
+        for filename in os.listdir(cwd):
+            file_path = os.path.join(cwd, filename)
+            if os.path.isfile(file_path):
+                file_creation_time = os.path.getctime(file_path)
+                if file_creation_time > created_time:
+                    try:
+                        os.remove(file_path)
+                    except Exception as e:
+                        pytest.fail(f"Error removing {file_path}: {e}")
+
+    generated_tap_password = 'test_password_123'
+    zip_password = 'kldsjflk453lksdf'
+    zip_file_name = os.path.join(os.getcwd(), 'TAPPolicyInfo.zip')
+    txt_file_name = 'TAPPolicyPass.txt'
+    start_time = time.time()
+
+    create_zip_with_password(
+        zip_password=zip_password,
+        generated_tap_password=generated_tap_password
+    )
+    
+    try:
+        with AESZipFile(zip_file_name, mode='r', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+            zf.pwd = bytes(zip_password, 'utf-8')
+            zip_content = zf.read(txt_file_name)
+            assert zip_content.decode('utf-8') == generated_tap_password
+
+    except Exception as e:
+        pytest.fail(f"Unexpected error during ZIP file handling: {e}")
+
+    finally:
+        clean_up_files(start_time)
