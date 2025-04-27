@@ -6,13 +6,14 @@ from CommonServerPython import *  # noqa: F401
 
 
 def GetAutomationId(name):
-    autoId = execute_command("core-api-post", {"uri": f"/automation/load/{name}"})["response"]["id"]
+    autoId = demisto.executeCommand("core-api-post", {"uri": f"/automation/load/{name}"})[0]["Contents"]["response"]["id"]
     return autoId
 
 
 def GetPlaybookId(name):
-    playbook = execute_command("core-api-post", {"uri": "/playbook/search", "body": {"query": "name:" + f'"{name}"'}})[
-        "response"]["playbooks"]
+    playbook = demisto.executeCommand("core-api-post", {"uri": "/playbook/search", "body": {"query": "name:" + f'"{name}"'}})[0][
+        "Contents"
+    ]["response"]["playbooks"]
     if playbook is None:
         return "-1"
     pbid = playbook[0]["id"]
@@ -53,7 +54,9 @@ def RunUTResults(args):
         # Add the task to display unit test results
         attempts = 0
         while attempts < 5:
-            results = execute_command("core-api-post", {"uri": f"/inv-playbook/task/add/{incid}", "body": task})
+            results = demisto.executeCommand("core-api-post", {"uri": f"/inv-playbook/task/add/{incid}", "body": task})[0][
+                "Contents"
+            ]
             if "response" in results:
                 results = results["response"]
                 if "tasks" in results:
@@ -79,10 +82,10 @@ def RunUTResults(args):
 
         # Execute the task inside a demisto lock to prevent concurrent updates to the unit test status grid field
         attempts = 0
-        contents = execute_command("demisto-lock-get", {"name": gridfld, "timeout": 60})
+        contents = demisto.executeCommand("demisto-lock-get", {"name": gridfld, "timeout": 60})[0]["Contents"]
         if "Lock acquired successfully" in contents:
             while attempts < 5:
-                start_response = execute_command(
+                start_response = demisto.executeCommand(
                     "core-api-post",
                     {
                         "uri": "/inv-playbook/task/execute",
@@ -93,15 +96,15 @@ def RunUTResults(args):
                         },
                     },
                 )
-                if "response" not in start_response:
+                if "response" not in start_response[0]["Contents"]:
                     attempts = attempts + 1
                 else:
                     break
-            execute_command("demisto-lock-release", {"name": gridfld})
+            demisto.executeCommand("demisto-lock-release", {"name": gridfld})
         else:
             raise DemistoException(f"unable to acquire lock name: {gridfld}")
     except Exception as ex:
-        execute_command("demisto-lock-release", {"name": gridfld})
+        demisto.executeCommand("demisto-lock-release", {"name": gridfld})
         demisto.error(traceback.format_exc())
         return_error(f"RunUTResults: Exception failed to execute. Error: {ex!s}")
 
@@ -124,14 +127,14 @@ def RunAdhocPlaybook(playbookname, taskname, addafter, incid):
             "version": -1,
         }
         # Add the playbook as a task
-        tasks = execute_command("core-api-post", {"uri": f"/inv-playbook/task/add/{incid}", "body": task})[
+        tasks = demisto.executeCommand("core-api-post", {"uri": f"/inv-playbook/task/add/{incid}", "body": task})[0]["Contents"][
             "response"
         ]["tasks"]
 
         # Find the new task ID in the updated playbook and execute the task
         for key, task in tasks.items():
             if "name" in task["task"] and task["task"]["name"] == taskname:
-                execute_command(
+                demisto.executeCommand(
                     "core-api-post",
                     {
                         "uri": "/inv-playbook/task/execute",
@@ -210,7 +213,7 @@ def main():
         testType = args.get("testType", "")
         listName = args.get("listName", "")
         if listName != "":
-            listlines = execute_command("getList", {"listName": listName})
+            listlines = demisto.executeCommand("getList", {"listName": listName})[0]["Contents"]
             buf = io.StringIO(listlines)
         else:
             buf = None

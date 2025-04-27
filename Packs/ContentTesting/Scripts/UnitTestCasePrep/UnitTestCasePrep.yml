@@ -1,7 +1,7 @@
 args:
-- description: Test Case Name.
+- description: Test Case Name
   name: testName
-- description: List to Read Test Case From.
+- description: List to Read Test Case From
   name: listName
 commonfields:
   id: UnitTestCasePrep
@@ -9,7 +9,8 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.12.8.1983910
+comment: ''
+dockerimage: demisto/python3:3.11.10.116439
 enabled: true
 name: UnitTestCasePrep
 runas: DBotWeakRole
@@ -22,4 +23,3 @@ fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 runonce: false
-engineinfo: {}

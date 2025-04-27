@@ -641,7 +641,7 @@ Returns the status of a job.
 ##### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sid | Comma-separated list of job IDs for which to retrieve the statuses. | Required |
+| sid | The ID of the job for which to get the status. | Required |
 
 ##### Context Output
 | **Path** | **Type** | **Description** |

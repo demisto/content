@@ -5,12 +5,12 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         listName = demisto.args()["list"]
-        results = execute_command("getList", {"listName": listName})
+        results = demisto.executeCommand("getList", {"listName": listName})[0]["Contents"]
         if "Item not found" not in results:
             fields = json.loads(results)
             # Set context
             for key, val in fields.items():
-                execute_command("Set", {"key": key, "value": val})
+                demisto.executeCommand("Set", {"key": key, "value": val})
         else:
             raise DemistoException(f"UnitTestLoadContextList: list '{listName}' not found")
     except Exception as ex:

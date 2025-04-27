@@ -49,7 +49,7 @@ class OktaASAClient(BaseClient):
         token_response.pop("team_name", None)
         return token_response
 
-    def get_audit_events_request(self, params: dict) -> dict:
+    def get_audit_events_request(self, params: dict) -> list:
         """Gets audit events request.
 
         Args:
@@ -57,15 +57,15 @@ class OktaASAClient(BaseClient):
             params (Dict): Request parameters.
 
         Returns:
-            dict: The response dict form: {"list": [], "related_objects": {}}.
+            list: A list of events.
         """
-        events_response: dict = self._http_request("GET", "/auditsV2", params=params)
+        events_response: list = self._http_request("GET", "/auditsV2", params=params).get("list", [])
 
         return events_response
 
     def execute_audit_events_request(
         self, offset: Optional[str], count: Optional[int], descending: Optional[bool], prev: Optional[bool]
-    ) -> tuple[list,dict]:
+    ) -> list:
         """Gets audit events request.
 
         Args:
@@ -76,13 +76,13 @@ class OktaASAClient(BaseClient):
             prev (bool): Controls the direction of paging
 
         Returns:
-            tuple[list,dict]: The response "list" and the response "related_objects".
+            Dict: The response.
         """
 
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
         self.generate_token_if_required()
-        response = self.get_audit_events_request(params)
-        return response.get("list",[]),response.get("related_objects",{})
+        events_response = self.get_audit_events_request(params)
+        return events_response
 
     def generate_token_if_required(self, hard: bool = False) -> None:
         """Checks if token refresh required and return the token.
@@ -112,7 +112,7 @@ class OktaASAClient(BaseClient):
         self._headers = {"Authorization": f"Bearer {token}"}
 
     def search_events(
-        self, limit: Optional[int] = 10000, add_time_mapping: bool = False, offset: str | None = None
+        self, limit: Optional[int] = 10000, offset: str | None = None
     ) -> tuple[List[Dict], Optional[str], Optional[str]]:
         """
         Searches for Okta ASA events using the '/auditsV2' API endpoint.
@@ -120,7 +120,6 @@ class OktaASAClient(BaseClient):
 
         Args:
             limit (int): limit.
-            add_time_mapping (bool): whether to add time mapping.
             offset (str): The UUID of an object used as an offset for pagination.
 
         Returns:
@@ -134,12 +133,9 @@ class OktaASAClient(BaseClient):
         count = min(limit, 1000) if limit else 1000
         while limit and len(results) < limit:
             descending = bool(not offset)
-            events, related_objects = self.execute_audit_events_request(
-                offset=offset, count=count, descending=descending, prev=None
-            )
+            events = self.execute_audit_events_request(offset=offset, count=count, descending=descending, prev=None)
             if not events:
                 break
-            add_time_and_related_object_data_to_events(events, related_objects, add_time_mapping)
             event_offset = events[0] if descending else events[len(events) - 1]
             offset = event_offset.get("id")
             returned_timestamp = event_offset.get("timestamp")
@@ -169,32 +165,18 @@ def is_token_expired(expires_date: str) -> bool:
     return current_utc_time > expires_datetime_date
 
 
-def add_time_and_related_object_data_to_events(events: List[Dict], related_objects: Dict, add_time_mapping: bool):
+def add_time_to_events(events: List[Dict]):
     """
-    Adds the "_time" key to the event and enhances the "server", "project" keys values of an event.
-    Related object structure is "related_objects": {"id_of_keys_to_enhance": {"type": "some_type", "object": {}}}
+    Adds the _time key to the events.
     Args:
         events: List[Dict] - list of events to add the _time key to.
-        related_objects: Dict - A dict of events related_objects to add the related objects to.
-        add_time_mapping (bool): whether to add time mapping.
     Returns:
-        list: The events with the _time key and related object information.
+        list: The events with the _time key.
     """
-    keys_to_enhance = ["project", "server"]
     for event in events:
-        if add_time_mapping:
-            create_time = arg_to_datetime(arg=event.get("timestamp"))
-            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+        create_time = arg_to_datetime(arg=event.get("timestamp"))
+        event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
-        for key in keys_to_enhance:
-            event_details = event.get("details", {})
-            id_of_key_to_enhance = event_details.get(key)
-            if not event_details or not id_of_key_to_enhance:
-                continue
-            # structure is {"type": "some_type", "object": {}}
-            related_object_dict = related_objects.get(id_of_key_to_enhance,{})
-            if  key == related_object_dict.get("type") and (related_object_data:=related_object_dict.get("object")):
-                event_details[key] = related_object_data if related_object_data else id_of_key_to_enhance
 
 """COMMAND FUNCTIONS"""
 
@@ -224,23 +206,21 @@ def test_module(client: OktaASAClient) -> str:
     return "ok"
 
 
-def get_events_command(
-    client: OktaASAClient, args: dict = {}, add_time_mapping: bool = False
-) -> tuple[List[Dict], CommandResults]:
+def get_events_command(client: OktaASAClient, args: dict = {}) -> tuple[List[Dict], CommandResults]:
     """
     Gets audit events from Audits Events endpoint.
 
     Args:
         self (OktaASAClient): Okta ASA Client.
         args (dict): A dictionary containing the command arguments.
-        add_time_mapping (bool): whether to add time mapping.
+
     Returns:
         List[Dict]: list of events.
         CommandResults: command results containing Audits Events.
     """
 
     limit = arg_to_number(args.get("limit")) or 50
-    events, _, _ = client.search_events(limit=limit, add_time_mapping=add_time_mapping)
+    events, _, _ = client.search_events(limit=limit)
     hr = tableToMarkdown(name="Audits Events", t=events)
     return events, CommandResults(readable_output=hr)
 
@@ -250,7 +230,6 @@ def fetch_events_command(
     last_run: dict[str, str],
     team_name: str,
     max_audit_events_per_fetch: Optional[int],
-    add_time_mapping: bool
 ) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
@@ -258,7 +237,6 @@ def fetch_events_command(
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
         max_audit_events_per_fetch (int): number of events per fetch.
         team_name (str): The name of the team.
-        add_time_mapping (bool): whether to add time mapping.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
@@ -268,7 +246,6 @@ def fetch_events_command(
     events, offset, timestamp = client.search_events(
         limit=max_audit_events_per_fetch,
         offset=last_run.get("offset") if last_run and last_run.get("team_name") == team_name else None,
-        add_time_mapping=add_time_mapping
     )
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run: dict = {"offset": offset, "timestamp": timestamp, "team_name": team_name} if offset else last_run
@@ -294,7 +271,7 @@ def main() -> None:  # pragma: no cover
     team_name = params.get("team_name", "").lower()
     base_url = urljoin(params.get("url"), f"/v1/teams/{team_name}")
     verify_certificate = not params.get("insecure", False)
-    max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch", "5000"))
+    max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch", "10000"))
     proxy = params.get("proxy", False)
 
     demisto.debug(f"{INTEGRATION_NAME}: Command being called is {command}")
@@ -309,17 +286,19 @@ def main() -> None:  # pragma: no cover
 
         elif command == "okta-asa-get-events":
             should_push_events = argToBoolean(args.pop("should_push_events"))
-            events, results = get_events_command(client, demisto.args(), should_push_events)
+            events, results = get_events_command(client, demisto.args())
             return_results(results)
             if should_push_events:
+                add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events_command(
-                client=client, last_run=last_run, max_audit_events_per_fetch=max_audit_events_per_fetch, team_name=team_name,
-                add_time_mapping = True
+                client=client, last_run=last_run, max_audit_events_per_fetch=max_audit_events_per_fetch, team_name=team_name
             )
+
+            add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 

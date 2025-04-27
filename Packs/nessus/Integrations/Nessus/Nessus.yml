@@ -1,33 +1,28 @@
 commonfields:
   id: Nessus
   version: -1
-sectionOrder:
-- Connect
 name: Nessus
 display: Nessus
 category: Vulnerability Management
-description: Vulnerability scanner for auditors and security analysts by Tenable Network Security.
+description: Vulnerability scanner for auditors and security analysts by Tenable Network Security
 configuration:
 - display: 'Server Url (format : https://127.0.0.1:8834)'
   name: url
   defaultvalue: ""
   type: 0
   required: true
-  section: Connect
 - display: Username
   name: username
   defaultvalue: ""
   type: 0
   hidden: true
   required: false
-  section: Connect
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
-  section: Connect
 - display: Username
   name: credentials
   type: 9
@@ -38,13 +33,6 @@ configuration:
   name: insecure
   type: 8
   required: false
-  section: Connect
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: "false"
-  type: 8
-  required: false
-  section: Connect
 script:
   script: ''
   type: javascript
@@ -52,9 +40,9 @@ script:
   - name: nessus-list-scans
     arguments:
     - name: foldersHeaders
-      description: The table's headers to be shown by order.
+      description: The table's headers to be shown by order
     - name: scansHeaders
-      description: The table's headers to be shown by order.
+      description: The table's headers to be shown by order
     outputs:
     - contextPath: NessusScan.UUID
       description: The uuid for the scan.
@@ -93,9 +81,9 @@ script:
     deprecated: true
     arguments:
     - name: foldersHeaders
-      description: The table's headers to be shown by order.
+      description: The table's headers to be shown by order
     - name: scansHeaders
-      description: The table's headers to be shown by order.
+      description: The table's headers to be shown by order
     outputs:
     - contextPath: NessusScan.UUID
       description: The uuid for the scan.
@@ -135,7 +123,7 @@ script:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: targets
       description: If specified, these targets will be scanned instead of the default. Value can be single host or of comma separated targets.
     outputs:
@@ -148,7 +136,7 @@ script:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: targets
       description: If specified, these targets will be scanned instead of the default. Value can be single host or of comma separated targets.
     outputs:
@@ -160,11 +148,11 @@ script:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: historyId
       description: The history_id of the historical data that should be returned.
     - name: tables
-      description: The tables to be shown by order.
+      description: The tables to be shown by order
     outputs:
     - contextPath: NessusScan.UUID
       description: The uuid for the scan.
@@ -261,25 +249,25 @@ script:
     - contextPath: NessusScan.Remediations.Remediations
       description: Remedy to vulnerabilites found during the scan.
     - contextPath: NessusScan.Remediations.NumHosts
-      description: Number of hosts of Remediations.
+      description: Number of hosts of Remediations
     - contextPath: NessusScan.Remediations.NumCVEs
-      description: Number of CVE's.
+      description: Number of CVE's
     - contextPath: NessusScan.Remediations.NumImpactedHosts
-      description: Number of impacted hosts.
+      description: Number of impacted hosts
     - contextPath: NessusScan.Remediations.NumRemediatedCVEs
-      description: Number of Remediated CVE's.
-    description: Returns details for the given scan.
+      description: Number of Remediated CVE's
+    description: Returns details for the given scan
   - name: scan-details
     deprecated: true
     arguments:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: historyId
       description: The history_id of the historical data that should be returned.
     - name: tables
-      description: The tables to be shown by order.
+      description: The tables to be shown by order
     outputs:
     - contextPath: NessusScan.UUID
       description: The uuid for the scan.
@@ -376,21 +364,21 @@ script:
     - contextPath: Remediations.Remediations
       description: Remedy to vulnerabilites found during the scan.
     - contextPath: Remediations.NumHosts
-      description: Number of hosts of Remediations.
+      description: Number of hosts of Remediations
     - contextPath: Remediations.NumCVEs
-      description: Number of CVE's.
+      description: Number of CVE's
     - contextPath: Remediations.NumImpactedHosts
-      description: Number of impacted hosts.
+      description: Number of impacted hosts
     - contextPath: Remediations.NumRemediatedCVEs
-      description: Number of Remediated CVE's.
-    description: Returns details for the given scan.
+      description: Number of Remediated CVE's
+    description: Returns details for the given scan
   - name: scan-host-details
     deprecated: true
     arguments:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: historyId
       description: The history_id of the historical data that should be returned.
     - name: hostId
@@ -431,7 +419,7 @@ script:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: historyId
       description: The history_id of the historical data that should be returned.
     - name: hostId
@@ -472,99 +460,99 @@ script:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: historyId
       description: The history_id of the historical data that should be returned.
     - name: format
       required: true
-      description: scan report file format (nessus, csv, html, db, pdf).
+      description: scan report file format (nessus, csv, html, db, pdf)
     - name: password
       description: The password used to encrypt database exports (*Required when exporting as DB).
     - name: chapters
-      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance).'
+      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
     outputs:
     - contextPath: ScanReportID
       description: ID of the scan report.
-    description: Export the given scan (Nessus, HTML, PDF, CSV, or DB format).
+    description: Export the given scan (Nessus, HTML, PDF, CSV, or DB format)
   - name: scan-export
     deprecated: true
     arguments:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: historyId
       description: The history_id of the historical data that should be returned.
     - name: format
       required: true
-      description: scan report file format (nessus, csv, html, db, pdf).
+      description: scan report file format (nessus, csv, html, db, pdf)
     - name: password
       description: The password used to encrypt database exports (*Required when exporting as DB).
     - name: chapters
-      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance).'
+      description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
     outputs:
     - contextPath: ScanReportID
       description: ID of the scan report.
-    description: Export the given scan (Nessus, HTML, PDF, CSV, or DB format).
+    description: Export the given scan (Nessus, HTML, PDF, CSV, or DB format)
   - name: scan-report-download
     deprecated: true
     arguments:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: fileId
       required: true
       description: The id of the file to download (result from command export-scan).
-    description: Download an exported scan.
+    description: Download an exported scan
   - name: nessus-scan-report-download
     arguments:
     - name: scanId
       required: true
       default: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: fileId
       required: true
       description: The id of the file to download (result from command export-scan).
-    description: Download an exported scan.
+    description: Download an exported scan
   - name: scan-create
     deprecated: true
     arguments:
     - name: editor
       required: true
       default: true
-      description: The uuid for the editor template to use.
+      description: The uuid for the editor template to use
     - name: name
       required: true
-      description: The name of the scan.
+      description: The name of the scan
     - name: description
-      description: The description of the scan.
+      description: The description of the scan
     - name: policyId
-      description: The unique id of the policy to use(number).
+      description: The unique id of the policy to use(number)
     - name: folderId
-      description: The unique id of the destination folder for the scan(number).
+      description: The unique id of the destination folder for the scan(number)
     - name: scannerId
-      description: The unique id of the scanner to use(number).
+      description: The unique id of the scanner to use(number)
     - name: schedule
       required: true
-      description: If true, the schedule for the scan is enabled(true/false).
+      description: If true, the schedule for the scan is enabled(true/false)
     - name: launch
-      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY).
+      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY)
     - name: startTime
       description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
     - name: rules
-      description: Expects a semi-colon delimited string comprised of three values. The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs every three weeks on Monday Wednesday and Friday the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'.
+      description: Expects a semi-colon delimited string comprised of three values. The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs every three weeks on Monday Wednesday and Friday the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
     - name: timeZone
-      description: The timezone for the scan schedule.
+      description: The timezone for the scan schedule
     - name: targets
       required: true
       description: The list of targets to scan, Value can be single host or of comma separated targets.
     - name: emails
-      description: A comma separated list of accounts who will receive the email summary report.
+      description: A comma separated list of accounts who will recieve the email summary report
     - name: acls
-      description: An array containing permissions to apply to the scan.
+      description: An array containing permissions to apply to the scan
     - name: fileTargets
-      description: The name of a file containing the list of targets to scan.
+      description: The name of a file containing the list of targets to scan
     outputs:
     - contextPath: NessusScan.UUID
       description: The uuid for the scan.
@@ -586,44 +574,44 @@ script:
       description: The type of scan (local, remote, or agent).
     - contextPath: NessusScan.Policy
       description: The policy if the scan.
-    description: Creates a new scan.
+    description: Creates a new scan
   - name: nessus-scan-create
     arguments:
     - name: editor
       required: true
       default: true
-      description: The uuid for the editor template to use.
+      description: The uuid for the editor template to use
     - name: name
       required: true
-      description: The name of the scan.
+      description: The name of the scan
     - name: description
-      description: The description of the scan.
+      description: The description of the scan
     - name: policyId
-      description: The unique id of the policy to use(number).
+      description: The unique id of the policy to use(number)
     - name: folderId
-      description: The unique id of the destination folder for the scan(number).
+      description: The unique id of the destination folder for the scan(number)
     - name: scannerId
-      description: The unique id of the scanner to use(number).
+      description: The unique id of the scanner to use(number)
     - name: schedule
       required: true
-      description: If true, the schedule for the scan is enabled(true/false).
+      description: If true, the schedule for the scan is enabled(true/false)
     - name: launch
-      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY).
+      description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY)
     - name: startTime
       description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
     - name: rules
-      description: Expects a semi-colon delimited string comprised of three values. The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs every three weeks on Monday Wednesday and Friday the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'.
+      description: Expects a semi-colon delimited string comprised of three values. The frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs every three weeks on Monday Wednesday and Friday the string would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
     - name: timeZone
-      description: The timezone for the scan schedule.
+      description: The timezone for the scan schedule
     - name: targets
       required: true
       description: The list of targets to scan, Value can be single host or of comma separated targets.
     - name: emails
-      description: A comma separated list of accounts who will receive the email summary report.
+      description: A comma separated list of accounts who will recieve the email summary report
     - name: acls
-      description: An array containing permissions to apply to the scan.
+      description: An array containing permissions to apply to the scan
     - name: fileTargets
-      description: The name of a file containing the list of targets to scan.
+      description: The name of a file containing the list of targets to scan
     outputs:
     - contextPath: NessusScan.UUID
       description: The uuid for the scan.
@@ -645,41 +633,41 @@ script:
       description: The type of scan (local, remote, or agent).
     - contextPath: NessusScan.Policy
       description: The policy if the scan.
-    description: Creates a new scan.
+    description: Creates a new scan
   - name: nessus-get-scans-editors
     arguments: []
-    description: Returns all scan editors template list.
+    description: Returns all scan editors template list
   - name: scan-export-status
     deprecated: true
     arguments:
     - name: scanId
       required: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: fileId
       required: true
       description: The id of the file to download (result from command export-scan).
     outputs:
     - contextPath: NessusScan.ScanReportStatus
       description: The status of the scan report.
-    description: Check the file status of an exported scan.
+    description: Check the file status of an exported scan
   - name: nessus-scan-export-status
     arguments:
     - name: scanId
       required: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     - name: fileId
       required: true
       description: The id of the file to download (result from command export-scan).
     outputs:
     - contextPath: NessusScan.ScanReportStatus
       description: The status of the scan report.
-    description: Check the file status of an exported scan.
+    description: Check the file status of an exported scan
   - name: nessus-scan-status
-    description: Get scan status by scan id.
+    description: Get scan status by scan id
     arguments:
     - name: scanId
       required: true
-      description: The Scan ID (use command list-scans to get possible scan ID's).
+      description: The Scan ID (use command list-scans to get possible scan ID's)
     outputs:
     - contextPath: NessusScan.Status
       description: The status of the scan report.

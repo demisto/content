@@ -334,7 +334,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     if indicator_type == CATEGORIES_PARAM:
         categories = argToList(indicator_value)
         for category in categories:
-            if not category.lstrip('-').isdigit():
+            if not category.isdigit():
                 raise ValueError(f"Invalid input Error: Categories argument is not a valid list of integers: {indicator_value}")
 
     return True

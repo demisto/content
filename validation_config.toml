@@ -76,7 +76,7 @@ select = [
     "IT102", "IT103",
     "MR100", "MR101", "MR106", "MR107", "MR108",
     "LO100", "LO107",
-    "GR100", "GR101", "GR102", "GR103","GR104", "GR105", "GR108",
+    "GR100", "GR101", "GR102", "GR103","GR104", "GR105", "GR107", "GR108",
     "CR102",
     "PR101",
     "RM102",
@@ -84,7 +84,7 @@ select = [
     "TR100",
     "VC100", "VC101"
 ]
-warning = ["RM108", "PB130", "PB131", "GR107"]
+warning = ["RM108", "PB130", "PB131"]
 
 
 [Custom_Categories]

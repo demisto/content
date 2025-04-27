@@ -53,12 +53,14 @@ def CheckUpdates(packs, types, playbook, layout):
 
 
 def GetUpgradedPacks():
-    response = execute_command("core-api-get", {"uri": "/contentpacks/installed-expired", "body": ""})["response"]
+    response = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/installed-expired", "body": ""})[0]["Contents"][
+        "response"
+    ]
     upgradePacks = {}
     changesPacks = {}
 
     for r in response:
-        if "updateAvailable" in r and r["updateAvailable"]:
+        if r["updateAvailable"]:
             packid = r["packID"]
             upgradePacks[packid] = r
             changes = ""
@@ -87,18 +89,21 @@ def FilterPacks(packs, upgradePacks, changesPacks):
     if len(packlist) == 1 and packlist[0] == "":
         return upgradePacks, changesPacks
 
-    newUpgrade = {}
-    for packid, pack in upgradePacks.items():
+    upgrade = upgradePacks.copy()
+    for packid, _pack in upgrade.items():
         if packid.lower().replace(" ", "") in packlist:
-            newUpgrade[packid] = pack
+            continue
         else:
+            del upgradePacks[packid]
             del changesPacks[packid]
 
-    return newUpgrade, changesPacks
+    return upgradePacks, changesPacks
 
 
 def GetUpgradedIntegrations(packs):
-    response = execute_command("core-api-post", {"uri": "/settings/integration/search", "body": {}})["response"]
+    response = demisto.executeCommand("core-api-post", {"uri": "/settings/integration/search", "body": {}})[0]["Contents"][
+        "response"
+    ]
     configs = response["configurations"]
     instances = response["instances"]
     integrations = {}
@@ -136,12 +141,13 @@ def GetUpgradedIntegrations(packs):
 
 
 def GetCustomPlaybooks():
-    response = execute_command(
+    response = demisto.executeCommand(
         "core-api-post", {"uri": "/playbook/search", "body": {"query": "system:F AND hidden:F AND deprecated:F"}}
-    )["response"]["playbooks"]
+    )[0]["Contents"]["response"]["playbooks"]
     playbooks = []
 
     for r in response:
+        # if r['packID'] == "":
         playbooks.append(r)
     return playbooks
 
@@ -211,7 +217,9 @@ def GetUpgradedScripts(packs, scripts):
     upgscripts = []
 
     for p in packs:
-        response = execute_command("core-api-get", {"uri": f"/contentpacks/marketplace/{p}", "body": ""})["response"]
+        response = demisto.executeCommand("core-api-get", {"uri": f"/contentpacks/marketplace/{p}", "body": ""})[0]["Contents"][
+            "response"
+        ]
         automations = response["contentItems"]["automation"]
 
         if automations is not None:
@@ -224,7 +232,7 @@ def GetUpgradedScripts(packs, scripts):
 
 
 def GetUpgradedIncidentTypes(packs):
-    response = execute_command("core-api-get", {"uri": "/incidenttype", "body": ""})["response"]
+    response = demisto.executeCommand("core-api-get", {"uri": "/incidenttype", "body": ""})[0]["Contents"]["response"]
     uptypes = {}
     custtypes = []
     for r in response:

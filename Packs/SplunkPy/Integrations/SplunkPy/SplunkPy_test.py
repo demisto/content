@@ -8,7 +8,7 @@ import SplunkPy as splunk
 from CommonServerPython import *
 from pytest_mock import MockerFixture
 from splunklib import client, results
-from splunklib.binding import AuthenticationError, HTTPError
+from splunklib.binding import AuthenticationError
 
 RETURN_ERROR_TARGET = "SplunkPy.return_error"
 
@@ -3947,101 +3947,6 @@ def test_splunk_job_create_command(mocker, query, expected_query):
     args = {"query": query}
     splunk.splunk_job_create_command(mocked_service, args)
     mocked_create_job.assert_called_once_with(expected_query, exec_mode="normal", app="")
-
-
-def mock_service_job(sid):
-    class MockJob:
-        def __init__(self, state):
-            self.state = MagicMock()
-            self.state.content = {"dispatchState": state}
-
-    class MockResponse:
-        def __init__(self, status, reason, body):
-            self.status = status
-            self.reason = reason
-            self.body = body
-            self.headers = {}
-
-    class MockBody:
-        def __init__(self, message):
-            self.message = message
-        def read(self):
-            return self.message
-
-    if sid == "valid_sid":
-        return MockJob("DONE")
-    elif sid == "running_sid":
-        return MockJob("RUNNING")
-    elif sid == "error_sid":
-        raise HTTPError(MockResponse("418", "I'm a teapot", MockBody("I won't brew coffee.")))
-    else:
-        raise HTTPError(MockResponse("404", "Not Found", MockBody("Unknown sid.")))
-
-
-@patch("SplunkPy.client.Service")
-def test_splunk_job_status_valid(mock_service):
-    mock_service.job.side_effect = mock_service_job
-
-    service = mock_service
-    args = {"sid": "valid_sid"}
-    result = splunk.splunk_job_status(service, args)
-
-    assert len(result) == 1
-    assert result[0].outputs == {"SID": "valid_sid", "Status": "DONE"}
-    assert "Splunk Job Status" in result[0].readable_output
-
-
-@patch("SplunkPy.client.Service")
-def test_splunk_job_status_running(mock_service):
-    mock_service.job.side_effect = mock_service_job
-
-    service = mock_service
-    args = {"sid": "running_sid"}
-    result = splunk.splunk_job_status(service, args)
-
-    assert len(result) == 1
-    assert result[0].outputs == {"SID": "running_sid", "Status": "RUNNING"}
-    assert "Splunk Job Status" in result[0].readable_output
-
-
-@patch("SplunkPy.client.Service")
-def test_splunk_job_status_not_found(mock_service):
-    mock_service.job.side_effect = mock_service_job
-
-    service = mock_service
-    args = {"sid": "invalid_sid"}
-    result = splunk.splunk_job_status(service, args)
-
-    assert len(result) == 1
-    assert result[0].readable_output == "Not found job for SID: invalid_sid"
-
-
-@patch("SplunkPy.client.Service")
-def test_splunk_job_status_418_error(mock_service):
-
-    mock_service.job.side_effect = mock_service_job
-
-    service = mock_service
-    args = {"sid": "error_sid"}
-    result = splunk.splunk_job_status(service, args)
-
-    assert len(result) == 1
-    assert ("Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee"
-            in result[0].readable_output)
-
-
-@patch("SplunkPy.client.Service")
-def test_splunk_job_status_multiple_sids(mock_service):
-    mock_service.job.side_effect = mock_service_job
-
-    service = mock_service
-    args = {"sid": "valid_sid,running_sid,invalid_sid"}
-    result = splunk.splunk_job_status(service, args)
-
-    assert len(result) == 3
-    assert result[0].outputs == {"SID": "valid_sid", "Status": "DONE"}
-    assert result[1].outputs == {"SID": "running_sid", "Status": "RUNNING"}
-    assert result[2].readable_output == "Not found job for SID: invalid_sid"
 
 def test_splunk_search_parse_bad_chars():
     """

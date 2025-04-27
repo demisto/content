@@ -2,6 +2,7 @@ from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from dateutil.parser import parse
 
 
 def BuildTask(t) -> dict:
@@ -13,13 +14,9 @@ def BuildTask(t) -> dict:
     if "state" in t:
         state = t["state"]
         if state == "Completed":
-            if "startDate" in t and "completedDate" in t:
-                start = datetime.fromisoformat(t["startDate"].replace("Z", "+00:00"))
-                end = datetime.fromisoformat(t["completedDate"].replace("Z", "+00:00"))
-                delta = end - start
-                duration = int(delta.total_seconds() * 1000)
-            else:
-                notexecuted = 1
+            start = date_to_timestamp(parse(t["startDate"]))
+            end = date_to_timestamp(parse(t["completedDate"]))
+            duration = end - start
         elif state == "inprogress":
             started = 1
         elif state == "WillNotBeExecuted":
@@ -49,33 +46,15 @@ def GetSubpbTasks(subplaybook, t, tasks):
 
 
 def GetTasks(incid: str, subplaybook: str) -> list:
-    body = {
-        "states": [
-            "Error",
-            "Waiting",
-            "Completed",
-            "inprogress"
-        ],
-        "types": [
-            "regular",
-            "condition",
-            "playbook,"
-            "collection"
-        ]
-    }
-    resp = execute_command("core-api-post", {
-        "uri": f"/investigation/{incid}/workplan/tasks",
-        "body": body
-    })
+    resp = execute_command("core-api-get", {"uri": f"/inv-playbook/{incid}"})
     tasks: list = []
 
-    if "response" in resp and resp["response"] is not None:
-        for t in resp["response"]:
-            if t["type"] in ["regular", "condition", "playbook", "collection"]:
-                if t["type"] == "playbook" and subplaybook != "":
-                    tasks = GetSubpbTasks(subplaybook, t, tasks)
-                else:
-                    tasks.append(BuildTask(t))
+    for _key, t in resp["response"]["tasks"].items():
+        if t["type"] in ["regular", "condition", "playbook", "collection"]:
+            if t["type"] == "playbook" and subplaybook != "":
+                tasks = GetSubpbTasks(subplaybook, t, tasks)
+            else:
+                tasks.append(BuildTask(t))
 
     return tasks
 
@@ -122,8 +101,7 @@ def TaskStats(task: list, taskstat: dict) -> dict:
 
 
 def GetTaskStats(playbookname, subplaybookname, firstday, lastday, maxinc):
-    argument = {"size": maxinc,
-                "query": f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
+    argument = {"query": f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
     response = execute_command("getIncidents", argument)
     taskstat: dict = {}
     taskstats: dict = {}
