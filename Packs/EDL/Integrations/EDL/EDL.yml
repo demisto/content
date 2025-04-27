@@ -439,7 +439,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.2027021
+  dockerimage: demisto/flask-nginx:1.0.0.3194255
   longRunning: true
   longRunningPort: true
   script: '-'

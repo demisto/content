@@ -84,7 +84,7 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 
 INCREASE_LIMIT = 1.1
 
-EXTENSIVE_LOGGING: bool
+EXTENSIVE_LOGGING: bool = False
 
 
 class IndicatorAction(Enum):
