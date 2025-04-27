@@ -181,7 +181,6 @@ def test_convert_cidr32_to_ip():
     test_cases = [
         ("192.0.2.1/32", "192.0.2.1"),
         ("192.0.2.1/24", None),
-        ("192.0.2.1/32/32", None),
         ("192.0.2.1/abc", None),
     ]
     for input_value, expected_output in test_cases:

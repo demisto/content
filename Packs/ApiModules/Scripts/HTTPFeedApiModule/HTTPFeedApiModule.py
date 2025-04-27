@@ -369,7 +369,7 @@ def is_cidr_32(value:str) -> bool:
     """
     try:
         return str(value).strip().endswith('/32')
-    except Exception:
+    except ValueError:
         return False
 
 
@@ -381,14 +381,10 @@ def convert_cidr32_to_ip(value : str) -> Optional[str]:
         value (str): A CIDR address with /32 in the end
 
     Returns:
-        str: an ip address without the /32 string
+        Optional[str]: an ip address without the /32 string
     """
-    try:
-        ip, subnet = value.strip().split('/')
-        if subnet == '32':
-            return ip
-    except ValueError:
-        return None
+    ip, subnet = value.strip().split('/')
+    return ip if subnet == '32' else None
 
 
 
@@ -522,20 +518,20 @@ def process_indicator_data(client,
                            url,
                            indicator_type,
                            create_relationships=False,
-                           enrichment_excluded: bool = False):
-    """_summary_
+                           enrichment_excluded: bool = False) -> dict:
+    """ Builds the indicator data object.
 
     Args:
-        client (_type_): _description_
-        value (_type_): _description_
-        attributes (_type_): _description_
-        url (_type_): _description_
-        indicator_type (_type_): _description_
-        create_relationships (bool, optional): _description_. Defaults to False.
-        enrichment_excluded (bool, optional): _description_. Defaults to False.
+        client: The client object.
+        value: The indicator value.
+        attributes: The indicator attributes.
+        url: The URL.
+        indicator_type: The indicator type.
+        create_relationships: Whether to create relationsheeps.
+        enrichment_excluded: Whether to enrich excluded..
 
     Returns:
-        _type_: _description_
+         dict: The indicator data object.
     """
     attributes = attributes if attributes else {}
     attributes['value'] = value
