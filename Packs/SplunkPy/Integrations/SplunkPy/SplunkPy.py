@@ -2557,9 +2557,9 @@ class ResponseReaderWrapper(io.RawIOBase):
         sz = len(b)
         data = self.responseReader.read(sz)
 
-        # replace non utf-8 characters with � to avoid decode errors in JSONResultsReader
-        cleaned_data = data.decode("utf-8", errors="replace").encode("utf-8")
-        if len(cleaned_data) != len(data): # Any replaced byte is subbed by a � sign which uses 3 bytes
+        # Remove non utf-8 characters to avoid decode errors in JSONResultsReader
+        cleaned_data = data.decode("utf-8", errors="ignore").encode("utf-8")
+        if len(cleaned_data) != len(data): # Check if any bytes were removed
             demisto.debug("Replaced non utf-8 characters in incoming Splunk data:\n"
                           f"Original Splunk data: {data}\n"
                           f"Modified data: {cleaned_data}\n")

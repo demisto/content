@@ -4050,7 +4050,7 @@ def test_splunk_search_parse_bad_chars():
     When:
         Attempting to parse the results from splunk search.
     Then:
-        The parsing replaces the bad chars with � and proceeds successfully.
+        The parsing removes the bad chars and proceeds successfully.
     """
     import io
     bad_search_output = (
@@ -4071,16 +4071,16 @@ Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service start
 
     expected_res = (
         [{
-            'Message': 'Service �started� successfully.',
+            'Message': 'Service started successfully.',
             '_bkt': 'main~1111~00000000-0000-0000-0000-000000000000',
             '_cd': '1111:0000000',
             '_indextime': '5555555555',
             '_pre_msg': (
-                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information�\n'
+                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n'
                 'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic'
             ),
             '_raw': (
-                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information�\n'
+                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n'
                 'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic\n'
                 'Message=Service started successfully.\n'
             ),
@@ -4097,7 +4097,7 @@ Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service start
         [{'Indicator': '127.0.0.1', 'Type': 'hostname', 'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True}]
     )
     mock_result_batch = io.BytesIO(bad_search_output)
-    
+
     res = splunk.parse_batch_of_results(mock_result_batch, 10, '')
-    
+
     assert res == expected_res
