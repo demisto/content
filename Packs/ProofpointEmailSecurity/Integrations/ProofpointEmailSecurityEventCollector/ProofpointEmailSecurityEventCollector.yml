@@ -44,6 +44,18 @@ configuration:
   type: 8
   required: false
   section: Collect
+- additionalinfo: Denotes which event type to fetch, if not provided will fetch all kinds.
+  display: Event types to fetch
+  name: event_types
+  type: 16
+  required: false
+  options:
+  - message
+  - maillog
+  - audit
+  section: Collect
+  advanced: true
+  defaultvalue: message,maillog,audit
 script:
   script: ""
   type: python
