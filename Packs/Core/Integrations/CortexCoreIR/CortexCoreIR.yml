@@ -1756,8 +1756,9 @@ script:
       name: generic_file_path
       defaultValue: 'Issue initiator file'
       prettyname: File to retrieve
+      required: true
       prettypredefined:
-        Issue initiator file: ${issue.filepath}
+        Issue initiator file: ${issue.initiatorpath}
         Issue CGO file path: ${issue.cgopath}
     - description: For polling use.
       isArray: true

@@ -6,7 +6,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: UpgradeCheck
 runas: DBotWeakRole
@@ -18,8 +18,9 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-timeout: 1.2µs
+timeout: 20m0s
 args:
 - description: Comma separated list of packs that should be analyzed.
   name: packs
 runonce: false
+engineinfo: {}
