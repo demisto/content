@@ -1,0 +1,34 @@
+commonfields:
+  id: AgentixRetrieveData
+  version: -1
+name: AgentixRetrieveData
+script: ''
+type: python
+tags:
+  - Utilities
+comment: Gets an indicator data set and timeframe, and searches for the indicator.
+enabled: true
+args:
+  - name: indicator
+    required: true
+    description: The indicator to look for.
+  - name: time_frame
+    required: true
+    defaultvalue: 7 days
+    description: How many days back to search for the indicator.
+  - name: data_set
+    defaultvalue: xdr_set
+    description: The dataset to search in.
+outputs:
+  - contextPath: GeoEvents
+    description: The calculated events for each input.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.1.0
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - xsoar
+  - marketplacev2
+  - platform
