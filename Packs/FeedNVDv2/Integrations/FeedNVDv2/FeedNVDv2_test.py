@@ -136,7 +136,8 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
 @pytest.mark.parametrize(
     "input_params, expected_param_string",
     [
-        ({"param1": "value1", "noRejected": "None"}, f"param1=value1&noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
+        ({"param1": "value1", "noRejected": "None"},
+         f"param1=value1&noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
         ({"noRejected": "None"}, f"noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
         ({"hasKev": "True"}, f"hasKev&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
     ],
