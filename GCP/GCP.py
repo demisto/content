@@ -6,21 +6,33 @@ from googleapiclient.discovery import build
 
 urllib3.disable_warnings()
 REQUIRED_PERMISSIONS: Dict[str, List[str]] = {
-    "gcp-compute-patch-firewall": ["compute.firewalls.update"],
-    "gcp-compute-update-subnet": [
-        "compute.subnetworks.setPrivateIpGoogleAccess",
-        "compute.subnetworks.update"
+    "gcp-compute-firewall-patch": [
+        "compute.firewalls.update",
+        "compute.firewalls.get",
+        "compute.networks.updatePolicy"
     ],
-    "gcp-compute-project-info-add-metadata": ["compute.instances.setMetadata"],
-    "gcp-storage-delete-bucket-policy": [
+    "gcp-compute-subnet-update": [
+        "compute.subnetworks.setPrivateIpGoogleAccess",
+        "compute.subnetworks.update",
+        "compute.subnetworks.get"
+    ],
+    "gcp-compute-project-metadata-add": [
+        "compute.instances.setMetadata",
+        "compute.instances.get"
+    ],
+    "gcp-storage-bucket-policy-delete": [
         "storage.buckets.getIamPolicy",
         "storage.buckets.setIamPolicy"
     ],
-    "gcp-container-cluster-update-security-config": ["container.clusters.update"],
-    "gcp-storage-update-bucket-metadata": ["storage.buckets.update"],
+    "gcp-container-cluster-security-update": [
+        "container.clusters.update"
+    ],
+    "gcp-storage-bucket-metadata-update": [
+        "storage.buckets.update"
+    ],
 }
 
-
+OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 ########## taken from GoogleCloudCompute
 
 
@@ -69,18 +81,7 @@ def parse_metadata_items(tags_str):
 
 ##########
 
-def parse_operation(response: dict):
-    return {
-        "Id": response.get("id"),
-        "Kind": response.get("kind"),
-        "Name": response.get("name"),
-        "OperationType": response.get("operationType"),
-        "Progress": response.get("progress"),
-        "SelfLink": response.get("selfLink"),
-        "Status": response.get("status"),
-        "TargetLink": response.get("targetLink"),
-        "Zone": response.get("zone"),
-    }
+
 
 
 def get_access_token(
@@ -180,7 +181,7 @@ def compute_firewall_patch(creds: Credentials, args: Dict[str, Any]) -> CommandR
     ).execute()
 
     hr = tableToMarkdown(f"Firewall rule {resource_name} was successfully patched (disabled) in project {project_id}",
-                         parse_operation(response), removeNull=True)
+                         t=response, headers=OPERATION_TABLE, removeNull=True)
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
@@ -232,30 +233,48 @@ def compute_subnet_update(creds: Credentials, args: Dict[str, Any]) -> CommandRe
     project_id = args.get("project_id")
     region = args.get("region")
     resource_name = args.get("resource_name")
-    enable_flow_logs = argToBoolean(args.get("enable_flow_logs"))
-    enable_private_access = argToBoolean(args.get("enable_private_ip_google_access"))
 
     compute = build("compute", "v1", credentials=creds)
-
-    if enable_private_access is not None:
-        compute.subnetworks().setPrivateIpGoogleAccess(
+    hr, response_patch, response_set = "", {}, {}
+    patch_body = {}
+    if enable_flow_logs := args.get("enable_flow_logs"):
+        patch_body["enableFlowLogs"] = argToBoolean(enable_flow_logs)
+        subnetwork = compute.subnetworks().get(
+            project=project_id,
+            region=region,
+            subnetwork=resource_name
+        ).execute()
+        fingerprint = subnetwork.get("fingerprint")
+        if not fingerprint:
+            raise DemistoException("Fingerprint for the subnetwork is missing.")
+        patch_body["fingerprint"] = fingerprint
+        response_patch = compute.subnetworks().patch(
             project=project_id,
             region=region,
             subnetwork=resource_name,
-            body={"privateIpGoogleAccess": enable_private_access}
+            body=patch_body
         ).execute()
 
-    patch_body = {"enableFlowLogs": enable_flow_logs} if enable_flow_logs is not None else {}
-    response = compute.subnetworks().patch(
-        project=project_id,
-        region=region,
-        subnetwork=resource_name,
-        body=patch_body
-    ).execute()
+        hr += tableToMarkdown(
+            f"Flow Logs configuration for subnet {resource_name} in project {project_id}",
+            t=response_patch, headers=OPERATION_TABLE, removeNull=True
+        )
+    if enable_private_access := args.get("enable_private_ip_google_access"):
+        response_set = compute.subnetworks().setPrivateIpGoogleAccess(
+            project=project_id,
+            region=region,
+            subnetwork=resource_name,
+            body={"privateIpGoogleAccess": argToBoolean(enable_private_access)}
+        ).execute()
+        hr += tableToMarkdown(
+            f"Private IP Google Access configuration for subnet {resource_name} in project {project_id}",
+            t=response_set, headers=OPERATION_TABLE, removeNull=True
+        )
 
-    hr = tableToMarkdown(f"Subnet configuration for {resource_name} was successfully updated in project {project_id}",
-                         parse_operation(response), removeNull=True)
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+    if not hr:
+        hr = f"No updates were made to subnet configuration for {resource_name} in project {project_id}"
+
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=[response_patch, response_set])
 
 
 def compute_project_metadata_add(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
@@ -284,7 +303,7 @@ def compute_project_metadata_add(creds: Credentials, args: Dict[str, Any]) -> Co
     response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name, body=body).execute()
 
     hr = tableToMarkdown(f"Metadata was successfully added to instance {resource_name} in project {project_id}",
-                         parse_operation(response), removeNull=True)
+                         t=response, headers=OPERATION_TABLE, removeNull=True)
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operation", outputs=response)
 
 
@@ -306,32 +325,40 @@ def container_cluster_security_update(creds: Credentials, args: Dict[str, Any]) 
     project_id = args.get("project_id")
     region = args.get("region")
     resource_name = args.get("resource_name")
-    enable_intra = argToBoolean(args.get("enable_intra_node_visibility"))
-    enable_master = argToBoolean(args.get("enable_master_authorized_networks"))
     cidrs = argToList(args.get("cidrs"))
 
-    if enable_master and not cidrs:
+    if args.get("enable_master_authorized_networks") and not cidrs:
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
 
     container = build("container", "v1", credentials=creds)
     update_fields: Dict[str, Any] = {}
 
-    if enable_intra:
-        update_fields["intraNodeVisibilityConfig"] = {"enabled": True}
+    if enable_intra := args.get("enable_intra_node_visibility"):
+        update_fields["desiredIntraNodeVisibilityConfig"] = {"enabled": argToBoolean(enable_intra)}
 
-    if enable_master:
-        update_fields["masterAuthorizedNetworksConfig"] = {
-            "enabled": True,
-            "cidrBlocks": [{"cidrBlock": cidr} for cidr in cidrs]
+    if enable_master := args.get("enable_master_authorized_networks"):
+        update_fields["desiredControlPlaneEndpointsConfig"] = {
+            "ipEndpointsConfig": {
+                "authorizedNetworksConfig": {
+                    "enabled": argToBoolean(enable_master),
+                    "cidrBlocks": [{"cidrBlock": cidr} for cidr in cidrs]
+                }
+            }
         }
 
     response = container.projects().locations().clusters().update(
         name=f"projects/{project_id}/locations/{region}/clusters/{resource_name}",
-        body={"update": update_fields}
+        body={
+            "update": update_fields
+        }
     ).execute()
 
-    hr = tableToMarkdown(f"Cluster security configuration for {resource_name} was successfully updated in project {project_id}",
-                         parse_operation(response), removeNull=True)
+    hr = tableToMarkdown(
+        f"Cluster security configuration for {resource_name} was successfully updated in project {project_id}",
+        t=response, headers=OPERATION_TABLE,
+        removeNull=True
+    )
+
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operation", outputs=response)
 
 
@@ -347,15 +374,13 @@ def storage_bucket_metadata_update(creds: Credentials, args: Dict[str, Any]) -> 
         CommandResults: Result of the metadata update operation.
     """
     bucket = args.get("resource_name")
-    enable_versioning = argToBoolean(args.get("enable_versioning"))
-    enable_uniform_access = argToBoolean(args.get("enable_uniform_access"))
 
     storage = build("storage", "v1", credentials=creds)
     body: Dict[str, Any] = {}
-    if enable_versioning is not None:
-        body["versioning"] = {"enabled": enable_versioning}
-    if enable_uniform_access is not None:
-        body.setdefault("iamConfiguration", {})["uniformBucketLevelAccess"] = {"enabled": enable_uniform_access}
+    if enable_versioning := args.get("enable_versioning"):
+        body["versioning"] = {"enabled":  argToBoolean(enable_versioning)}
+    if enable_uniform_access := args.get("enable_uniform_access"):
+        body.setdefault("iamConfiguration", {})["uniformBucketLevelAccess"] = {"enabled": argToBoolean(enable_uniform_access)}
 
     response = storage.buckets().patch(bucket=bucket, body=body).execute()
     data_res = {
@@ -370,7 +395,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: Dict[str, Any]) -> 
         "uniformBucketLevelAccess": response.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled")
     }
     hr = tableToMarkdown(f"Metadata for bucket {bucket} was successfully updated.", data_res, removeNull=True)
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response, outputs_key_field="name")
 
 
 def check_required_permissions(creds: Credentials, args: Dict[str, Any], command: Optional[str] = None) -> str:
