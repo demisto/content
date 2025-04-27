@@ -42,6 +42,7 @@ MAX_FETCH = int(params.get("fetch_limit") or 50)
 AUTH_CODE = params.get("auth_code_creds", {}).get("password") or params.get("code")
 AUTH_CODE_UNQUOTE_PREFIX = "code="
 LEGACY_NAME = argToBoolean(params.get("legacy_name", False))
+LOOK_BACK_IN_MINUTES = 1
 
 OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
 CLIENT_ID = params.get("credentials", {}).get("identifier") or params.get("client_id") or OOB_CLIENT_ID
@@ -1174,10 +1175,9 @@ def get_attachments_command(client: Client):
 
 """FETCH INCIDENTS"""
 
-
 def fetch_incidents(client: Client):
     user_key = "me"
-    query = "" if params["query"] is None else params["query"]
+    query = "" if params.get("query") is None else params.get("query")
     last_run = demisto.getLastRun()
     demisto.debug(f"last run: {last_run}")
     last_fetch = last_run.get("gmt_time")
@@ -1185,6 +1185,7 @@ def fetch_incidents(client: Client):
     page_token = last_run.get("page_token")
     ignore_ids: list[str] = last_run.get("ignore_ids") or []
     ignore_list_used = last_run.get("ignore_list_used") or False  # can we reset the ignore list if we haven't used it
+    lookback_ids_and_dates: list[tuple[str, str]] = last_run.get("lookback_msg", [])
     # handle first time fetch - gets current GMT time -1 day
     if not last_fetch:
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
@@ -1211,13 +1212,17 @@ def fetch_incidents(client: Client):
     result = execute_gmail_action(service, "list", list_command_args)
 
     incidents = []
+    emails_ids_and_dates: list[tuple] = []
     # so far, so good
     demisto.debug(f"GMAIL: possible new incidents are {result}")
+    lookback_ids = [msg_id for msg_id, _ in lookback_ids_and_dates]
     for msg in result.get("messages", []):
         msg_id = msg["id"]
         if msg_id in ignore_ids:
             demisto.info(f"Ignoring msg id: {msg_id} as it is in the ignore list")
             ignore_list_used = True
+            continue
+        if msg_id in lookback_ids:
             continue
         command_kwargs = {"userId": user_key, "id": msg_id}
         msg_result = execute_gmail_action(service, "get", command_kwargs)
@@ -1226,6 +1231,9 @@ def fetch_incidents(client: Client):
             demisto.info(f'appending to ignore list msg id: {msg_id}. name: {incident.get("name")}')
             ignore_list_used = True
             ignore_ids.append(msg_id)
+        else:
+            #save new msg date for lookback
+            emails_ids_and_dates.append((msg_id, occurred))
         # update last run only if we trust the occurred timestamp
         if is_valid_date and occurred > next_last_fetch:
             next_last_fetch = occurred + timedelta(seconds=1)
@@ -1238,28 +1246,46 @@ def fetch_incidents(client: Client):
 
     demisto.info(f"extracted {len(incidents)} incidents")
     next_page_token = result.get("nextPageToken", "")
+    msg_to_exclude_in_next_fetch = []
     if next_page_token:
         # we still have more results
         demisto.info(
             f"keeping current last fetch: {last_fetch} as result has additional pages to fetch."
             f" token: {next_page_token}. Ignoring incremented last_fatch: {next_last_fetch}"
         )
+        lookback_date = parse_date(client, next_last_fetch, "date") - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
+        msg_to_exclude_in_next_fetch = [
+                (msg_id, parse_date(client, msg_date))
+                for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
+                if parse_date(client, msg_date, "date") >= lookback_date  # type: ignore
+            ]
     else:
-        demisto.debug(f"will use new last fetch date (no next page token): {next_last_fetch}")
         # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
         if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
             demisto.info(f"resetting ignore list of len: {len(ignore_ids)}")
             ignore_ids = []
+        if emails_ids_and_dates:
+            # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
+            latest_msg = max([parse_date(client, msg_date, "date")
+                             for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
+            next_last_fetch = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
+            msg_to_exclude_in_next_fetch = [
+                (msg_id, parse_date(client, msg_date))
+                for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
+                if parse_date(client, msg_date, "date") >= next_last_fetch  # type: ignore
+            ]
+        demisto.debug(f"will use new last fetch date (no next page token): {next_last_fetch}")
         last_fetch = next_last_fetch
-    demisto.setLastRun(
-        {
-            "gmt_time": client.get_date_isoformat_server(last_fetch),
-            "next_gmt_time": client.get_date_isoformat_server(next_last_fetch),
-            "page_token": next_page_token,
-            "ignore_ids": ignore_ids,
-            "ignore_list_used": ignore_list_used,
-        }
-    )
+    new_last_run = {
+        "gmt_time": client.get_date_isoformat_server(last_fetch),
+        "next_gmt_time": client.get_date_isoformat_server(next_last_fetch),
+        "page_token": next_page_token,
+        "ignore_ids": ignore_ids,
+        "ignore_list_used": ignore_list_used,
+        "lookback_msg": msg_to_exclude_in_next_fetch or lookback_ids_and_dates or [],
+    }
+    demisto.debug(f"Gmail: save the following details to LastRun: {new_last_run}")
+    demisto.setLastRun(new_last_run)
     return incidents
 
 
