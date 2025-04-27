@@ -3229,8 +3229,6 @@ def fetch_events():
     incidents: list = []
     detections: list = []
     idp_detections: list = []
-    iom_incidents: list[dict[str, Any]] = []
-    ioa_incidents: list[dict[str, Any]] = []
     mobile_detections: list[dict[str, Any]] = []
     on_demand_detections: list[dict[str, Any]] = []
     ofp_detections: list[dict[str, Any]] = []
@@ -3242,8 +3240,6 @@ def fetch_events():
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
     current_fetch_info_idp_detections: dict = {} if len(last_run) < 3 else last_run[2]
-    iom_last_run: dict = {} if len(last_run) < 4 else last_run[3]
-    ioa_last_run: dict = {} if len(last_run) < 5 else last_run[4]
     current_fetch_info_mobile_detections: dict = {} if len(last_run) < 6 else last_run[5]
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
@@ -3403,94 +3399,6 @@ def fetch_events():
             start_time_key="timestamp",
         )
 
-    if "Indicator of Misconfiguration" in fetch_incidents_or_detections:
-        demisto.debug("Fetching Indicator of Misconfiguration incidents")
-        demisto.debug(f"{iom_last_run=}")
-        fetch_query = params.get("iom_fetch_query", "")
-        validate_iom_fetch_query(iom_fetch_query=fetch_query)
-
-        last_resource_ids, iom_next_token, last_scan_time, first_fetch_timestamp = get_current_fetch_data(
-            last_run_object=iom_last_run,
-            date_format=IOM_DATE_FORMAT,
-            last_date_key="last_scan_time",
-            next_token_key="iom_next_token",
-            last_fetched_ids_key="last_resource_ids",
-        )
-        filter = create_iom_filter(
-            is_paginating=bool(iom_next_token),
-            last_fetch_filter=iom_last_run.get("last_fetch_filter", ""),
-            last_scan_time=last_scan_time,
-            first_fetch_timestamp=first_fetch_timestamp,
-            configured_fetch_query=fetch_query,
-        )
-        demisto.debug(f"IOM {filter=}")
-        iom_resource_ids, iom_new_next_token = iom_ids_pagination(
-            filter=filter, iom_next_token=iom_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=500
-        )
-        demisto.debug(f'Fetched the following IOM resource IDS: {", ".join(iom_resource_ids)}')
-        iom_incidents, fetched_resource_ids, new_scan_time = parse_ioa_iom_incidents(
-            fetched_data=get_iom_resources(iom_resource_ids=iom_resource_ids),
-            last_date=last_scan_time,
-            last_fetched_ids=last_resource_ids,
-            date_key="scan_time",
-            id_key="id",
-            date_format=IOM_DATE_FORMAT,
-            is_paginating=bool(iom_new_next_token or iom_next_token),
-            to_incident_context=iom_resource_to_incident,
-            incident_type="iom_configurations",
-        )
-
-        iom_last_run = {
-            "iom_next_token": iom_new_next_token,
-            "last_scan_time": new_scan_time,
-            "last_fetch_filter": filter,
-            "last_resource_ids": fetched_resource_ids or last_resource_ids,
-        }
-
-    if "Indicator of Attack" in fetch_incidents_or_detections:
-        demisto.debug("Fetching Indicator of Attack incidents")
-        demisto.debug(f"{ioa_last_run=}")
-        fetch_query = params.get("ioa_fetch_query", "")
-        validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
-
-        last_fetch_event_ids, ioa_next_token, last_date_time_since, _ = get_current_fetch_data(
-            last_run_object=ioa_last_run,
-            date_format=DATE_FORMAT,
-            last_date_key="last_date_time_since",
-            next_token_key="ioa_next_token",
-            last_fetched_ids_key="last_event_ids",
-        )
-        ioa_fetch_query = create_ioa_query(
-            is_paginating=bool(ioa_next_token),
-            configured_fetch_query=fetch_query,
-            last_fetch_query=ioa_last_run.get("last_fetch_query", ""),
-            last_date_time_since=last_date_time_since,
-        )
-        demisto.debug(f"IOA {ioa_fetch_query=}")
-        ioa_events, ioa_new_next_token = ioa_events_pagination(
-            ioa_fetch_query=ioa_fetch_query, ioa_next_token=ioa_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=1000
-        )
-        demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
-
-        ioa_incidents, ioa_event_ids, new_date_time_since = parse_ioa_iom_incidents(
-            fetched_data=ioa_events,
-            last_date=last_date_time_since,
-            last_fetched_ids=last_fetch_event_ids,
-            date_key="event_created",
-            id_key="event_id",
-            date_format=DATE_FORMAT,
-            is_paginating=bool(ioa_new_next_token or ioa_next_token),
-            to_incident_context=ioa_event_to_incident,
-            incident_type="ioa_events",
-        )
-
-        ioa_last_run = {
-            "ioa_next_token": ioa_new_next_token,
-            "last_date_time_since": new_date_time_since,
-            "last_fetch_query": ioa_fetch_query,
-            "last_event_ids": ioa_event_ids or last_fetch_event_ids,
-        }
-
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
         if LEGACY_VERSION:
             raise DemistoException("On-Demand Scans Detection is not supported in legacy version.")
@@ -3527,8 +3435,6 @@ def fetch_events():
             current_fetch_info_detections,
             current_fetch_info_incidents,
             current_fetch_info_idp_detections,
-            iom_last_run,
-            ioa_last_run,
             current_fetch_info_mobile_detections,
             current_fetch_on_demand_detections,
             current_fetch_ofp_detection,
@@ -3538,8 +3444,6 @@ def fetch_events():
         incidents
         + detections
         + idp_detections
-        + iom_incidents
-        + ioa_incidents
         + mobile_detections
         + on_demand_detections
         + ofp_detections
