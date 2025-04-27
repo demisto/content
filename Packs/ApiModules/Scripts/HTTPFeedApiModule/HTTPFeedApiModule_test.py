@@ -267,18 +267,18 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
 
     # verify one of the expected indicators
     assert {
-        'rawJSON': {
-            'asndrop_country': 'US',
-            'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
-            'tags': tags.split(','),
-            'trafficlightprotocol': 'AMBER',
-            'type': indicator_type,
-            'value': 'AS397539'
-        },
-        'type': indicator_type,
-        'value': 'AS397539',
-        'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
-    } in indicators
+               'rawJSON': {
+                   'asndrop_country': 'US',
+                   'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
+                   'tags': tags.split(','),
+                   'trafficlightprotocol': 'AMBER',
+                   'type': indicator_type,
+                   'value': 'AS397539'
+               },
+               'type': indicator_type,
+               'value': 'AS397539',
+               'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
+           } in indicators
 
 
 def test_feed_main_test_module(mocker, requests_mock):
@@ -627,7 +627,8 @@ def test_fetch_indicators_ip_ranges_to_cidrs_convert_32_to_ip():
             feed_url_to_config=feed_url_to_config,
             indicator_type='CIDR'
         )
-        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='CIDR', auto_detect=False, cidr_32_to_ip=True)
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='CIDR', auto_detect=False,
+                                              cidr_32_to_ip=True)
 
         assert indicators == expected_res
 

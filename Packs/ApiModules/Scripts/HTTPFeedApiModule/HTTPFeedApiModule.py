@@ -357,7 +357,7 @@ def datestring_to_server_format(date_string: str) -> str:
     return parsed_date.strftime(DATE_FORMAT)  # type: ignore
 
 
-def is_cidr_32(value:str) -> bool:
+def is_cidr_32(value: str) -> bool:
     """
     Checks if the given CIDR address is a /32.
 
@@ -373,7 +373,7 @@ def is_cidr_32(value:str) -> bool:
         return False
 
 
-def convert_cidr32_to_ip(value : str) -> Optional[str]:
+def convert_cidr32_to_ip(value: str) -> Optional[str]:
     """
     Converts a CIDR /32 address to its IP part.
 
@@ -385,7 +385,6 @@ def convert_cidr32_to_ip(value : str) -> Optional[str]:
     """
     ip, subnet = value.strip().split('/')
     return ip if subnet == '32' else None
-
 
 
 def ip_range_to_cidr(start_ip: str, end_ip: str) -> list:
@@ -488,8 +487,8 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
     return attributes, extracted_indicator
 
 
-
-def process_indicator_type(client : Client, value : str , url : str, itype : str, auto_detect : bool, cidr_32_to_ip : bool) -> Tuple[str, bool]:
+def process_indicator_type(client: Client, value: str, url: str, itype: str, auto_detect: bool, cidr_32_to_ip: bool) -> Tuple[
+    str, bool]:
     """
     Processes the indicator value and configuration parameters to determine the indicator type.
 
@@ -632,8 +631,9 @@ def fetch_indicators_command(client,
                 demisto.debug(f"Got the following indicator values - {indicator_values}")
 
                 for indicator_value in indicator_values:
-                    indicator_type, is_32_cidr = process_indicator_type(client=client, value=indicator_value, url=url, itype=itype,
-                                                            auto_detect=auto_detect, cidr_32_to_ip=cidr_32_to_ip)
+                    indicator_type, is_32_cidr = process_indicator_type(client=client, value=indicator_value, url=url,
+                                                                        itype=itype,
+                                                                        auto_detect=auto_detect, cidr_32_to_ip=cidr_32_to_ip)
                     indicators.append(process_indicator_data(
                         client,
                         indicator_value,
