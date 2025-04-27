@@ -18,7 +18,7 @@ description: |-
   - For domain users: Retrieve AD attributes, including password expiration.
   - For local users: Run a Powershell command to get "Password Expires" attribute of the local user.
   - Get risk level for the affected host.
-  - Search for related Script Engine Activity alerts in the incident.
+  - Search for related Script Engine Activity alerts in the <-incident->.
 
   Containment:
 
