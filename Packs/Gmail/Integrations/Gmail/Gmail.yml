@@ -545,7 +545,7 @@ script:
       name: search_from
     - description: Used to track search progress.
       name: search_to
-    description: Searches the Gmail records for all Google users. (For more than 2500 accounts, use with the `Search all mailboxes - Gmail with polling` playbook).
+    description: Searches the Gmail records for all Google users. (This command handles up to 2,500 email accounts).
     polling: true
     name: gmail-search-all-mailboxes
     outputs:

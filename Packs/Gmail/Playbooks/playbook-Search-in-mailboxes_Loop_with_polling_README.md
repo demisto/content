@@ -1,3 +1,4 @@
+NOTE: This playbook is deprecated.
 This playbook should only run as a sub-playbook for the Search-all-mailboxes - Gmail playbook, it should not run alone.
 
 ## Dependencies

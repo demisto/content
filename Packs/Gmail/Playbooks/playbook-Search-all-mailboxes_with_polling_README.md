@@ -1,3 +1,4 @@
+NOTE: This playbook is deprecated.
 This playbook searches Gmail records for all Google users. It is intended for large companies with over 2500 Google users.
 
 ## Dependencies
