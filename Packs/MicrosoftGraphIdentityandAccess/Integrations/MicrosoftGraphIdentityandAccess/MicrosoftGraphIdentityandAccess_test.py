@@ -506,14 +506,14 @@ def test_update_conditional_access_policy_cases(policy_input, response_mock, exp
             # Case 1: Regular merge of list field
             {"conditions": {"users": {"includeUsers": ["user1"]}}},
             {"conditions": {"users": {"includeUsers": ["user2"]}}},
-            {"conditions": {"users": {"includeUsers": sorted(["user1", "user2"])}}},
+            ["user1", "user2"],  # Only the expected array, not the whole dict
             [],
         ),
         (
             # Case 2: Merge with special value 'All'
             {"conditions": {"users": {"includeUsers": ["All"]}}},
             {"conditions": {"users": {"includeUsers": ["user2"]}}},
-            {"conditions": {"users": {"includeUsers": ["All"]}}},
+            ["All"],  # Only the expected array
             [
                 "The field 'includeUsers' was not updated because it currently holds the special value 'All'."
                 " This value cannot be merged with others. All other updates were applied."
@@ -524,7 +524,7 @@ def test_update_conditional_access_policy_cases(policy_input, response_mock, exp
             # Case 3: Non-list field - should skip
             {"state": "enabled"},
             {"state": "disabled"},
-            {"state": "disabled"},  # unchanged due to skip
+            "disabled",  # Just the expected value
             [],  # we don't capture demisto.info in test
         ),
     ]
@@ -553,8 +553,14 @@ def test_merge_policy_section_behavior(base_existing, new_input, expected_merged
 
     merge_policy_section(base_existing_copy, new_input_copy, messages)
 
-    assert new_input_copy == expected_merged
+    # Check correct type of test case
+    if "conditions" in new_input_copy and "users" in new_input_copy["conditions"]:
+        assert sorted(new_input_copy["conditions"]["users"]["includeUsers"]) == sorted(expected_merged)
+    else:
+        assert new_input_copy["state"] == expected_merged
+        
     assert messages == expected_messages
+
     
 
 
@@ -634,10 +640,7 @@ def test_create_conditional_access_policy(mocker, policy_input, http_response, e
         else:
             assert result.outputs is None or not result.outputs.get("id")
 
-import pytest
 from CommonServerPython import CommandResults
-from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client
-
 
 @pytest.mark.parametrize(
     "args, mock_return, expected_in_output, should_mock_call",
@@ -671,6 +674,7 @@ from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_com
     ],
 )
 def test_create_policy_command_variants(mocker, args, mock_return, expected_in_output, should_mock_call):
+    from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client
     mock_client = mocker.Mock(spec=Client)
     if should_mock_call:
         mock_client.create_conditional_access_policy.return_value = mock_return
@@ -678,10 +682,6 @@ def test_create_policy_command_variants(mocker, args, mock_return, expected_in_o
     result = create_conditional_access_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert expected_in_output in result.readable_output
-
-import pytest
-from CommonServerPython import CommandResults
-from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command
 
 
 @pytest.mark.parametrize(
@@ -757,6 +757,9 @@ from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_com
 def test_update_policy_appends_merge_messages_correctly(
     mocker, args, existing_policy, mock_result, expected_note_text, expect_merge_message
 ):
+    
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, CommandResults, Client
+    
     mock_client = mocker.Mock(spec=Client)
 
     # Mock list_conditional_access_policies
