@@ -119,7 +119,7 @@ tasks:
     task:
       id: d3f6f991-6825-418f-8021-5336a5ec0e14
       version: -1
-      name: Get user risk score
+      name: Get core user risk score
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       script: '|||core-list-risky-users'
       type: regular
@@ -128,6 +128,7 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
+      - "133"
     scriptarguments:
       user_id:
         simple: ${Core.OriginalAlert.raw_abioc.event.identity_normalized.identity}
@@ -164,6 +165,7 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
+      - "133"
     scriptarguments:
       risk_level:
         simple: high
@@ -193,7 +195,7 @@ tasks:
     task:
       id: 1489d7a7-f3c1-43c9-a913-99eb0d47a17b
       version: -1
-      name: Check if user is risky
+      name: Check if the admin is risky
       type: condition
       iscommand: false
       brand: ""
@@ -221,15 +223,6 @@ tasks:
                     right:
                       value:
                         simple: Core.OriginalAlert.event.identity_name
-                      iscontext: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: AzureRiskyUsers.RiskyUser
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AppOwner
                       iscontext: true
                 - - operator: isEqualString
                     left:
@@ -416,7 +409,7 @@ tasks:
     task:
       id: 06925304-6553-43c9-9d46-43fc84d1fa7d
       version: -1
-      name: Clear user session
+      name: Clear admin session
       description: "Revoke a user session by invalidating all refresh tokens issued to applications for a user. \nThis command requires an administrator role.\nPermission required: Directory.AccessAsUser.All (Delegated)."
       script: '|||msgraph-user-session-revoke'
       type: regular
@@ -452,7 +445,7 @@ tasks:
     task:
       id: 9f3a2374-591c-45a1-8fc3-0e13a81236c9
       version: -1
-      name: Set risky user
+      name: Set admin risky user
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -463,7 +456,7 @@ tasks:
       - "29"
     scriptarguments:
       key:
-        simple: UserIsRisky
+        simple: AdminIsRisky
       value:
         simple: "True"
     separatecontext: false
@@ -567,7 +560,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Actions Recommended:\n\nWe recommend to limit the application activity by performing one of the actions below.\n"
+          simple: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **App Owner is risky?**: `${.=valOwnerIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **The admin is risky?**: `${.=valAdminIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Actions Recommended:\n\nWe recommend to limit the application activity by performing one of the actions below.\n"
         required: false
         gridcolumns: []
         defaultrows: []
@@ -677,6 +670,7 @@ tasks:
     nexttasks:
       '#none#':
       - "82"
+      - "135"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -757,7 +751,7 @@ tasks:
     task:
       id: ecffd95d-2836-4f88-a543-e73bfa300348
       version: -1
-      name: Does the identity detected as suspicious?
+      name: Does the admin who consented the app is suspicious?
       type: condition
       iscommand: false
       brand: ""
@@ -774,7 +768,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: UserIsRisky
+              simple: AdminIsRisky
             iscontext: true
           right:
             value:
@@ -815,10 +809,14 @@ tasks:
             value:
               simple: MaliciousIP
             iscontext: true
-        - operator: isNotEmpty
+        - operator: containsGeneral
           left:
             value:
               simple: UsersCreatedRecently
+            iscontext: true
+          right:
+            value:
+              simple: Core.OriginalAlert.event.identity_name
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -843,7 +841,7 @@ tasks:
       id: a7c8bf69-a132-403e-ac4b-2f4656a3cd13
       version: -1
       name: Investigation Summary And Needed Response Actions
-      description: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Manual Actions Recommended:\nSince there is no MSGraph Application integration connected to XSIAM, we recommend to perform the following actions manually:\n\n- Limit the application activity by removing or disabling its associated Service Principal\n- If the user who initiated the consent is risky, consider disabling it until further investigation."
+      description: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **App Owner is risky?**: `${.=valOwnerIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **The admin is risky?**: `${.=valAdminIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Manual Actions Recommended:\nSince there is no MSGraph Application integration connected to XSIAM, we recommend to perform the following actions manually:\n\n- Limit the application activity by removing or disabling its associated Service Principal\n- If the user who initiated the consent is risky, consider disabling it until further investigation."
       type: regular
       iscommand: false
       brand: ""
@@ -2104,6 +2102,8 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
     - label: Yes And User Suspicious
       condition:
       - - operator: isNotEmpty
@@ -2136,6 +2136,15 @@ tasks:
           left:
             value:
               simple: SuspiciousUser
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: SuspiciousOwner
             iscontext: true
           right:
             value:
@@ -2269,7 +2278,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **User is risky**: `${.=val.UserIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Actions Recommended:\n\nWe recommend to limit the application activity by performing one of the actions below.\n"
+          simple: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **App Owner is risky?**: `${.=valOwnerIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **The admin is risky?**: `${.=valAdminIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Actions Recommended:\n\nWe recommend to limit the application activity by performing one of the actions below.\n"
         required: false
         gridcolumns: []
         defaultrows: []
@@ -2562,17 +2571,298 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 35136fd5-c445-4748-a599-db369b482a28
+    type: condition
+    task:
+      id: 35136fd5-c445-4748-a599-db369b482a28
+      version: -1
+      name: Check if the user who registered the app is risky
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "134"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskyUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AppOwner
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser.riskState
+                      iscontext: true
+                    right:
+                      value:
+                        simple: atRisk
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser
+                      iscontext: true
+                    right:
+                      value:
+                        simple: confirmedCompromised
+                    ignorecase: true
+                accessor: userPrincipalName
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AppOwner
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1062,
+          "y": 2501
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: c121b7c6-8e62-41da-b48d-2f2bc6d36011
+    type: regular
+    task:
+      id: c121b7c6-8e62-41da-b48d-2f2bc6d36011
+      version: -1
+      name: Set app owner as risky user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: OwnerIsRisky
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1324,
+          "y": 2633
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: bc944789-6ee4-477a-a0a4-b7421880d970
+    type: condition
+    task:
+      id: bc944789-6ee4-477a-a0a4-b7421880d970
+      version: -1
+      name: Does the app owner is suspicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OwnerIsRisky
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: UsersCreatedRecently
+            iscontext: true
+          right:
+            value:
+              simple: AppOwner
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 847,
+          "y": 3405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: a58f4a61-3c7c-4a90-b4ac-e95ff24287fe
+    type: regular
+    task:
+      id: a58f4a61-3c7c-4a90-b4ac-e95ff24287fe
+      version: -1
+      name: Set app owner is suspicious to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "137"
+    scriptarguments:
+      key:
+        simple: SuspiciousOwner
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: e1ef03d6-6168-4258-8a3f-a2965bcf9b28
+    type: condition
+    task:
+      id: e1ef03d6-6168-4258-8a3f-a2965bcf9b28
+      version: -1
+      name: Check if MSGraph Security integration is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "105"
+      "yes":
+      - "138"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3671
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: d7ab6da9-ed8d-4bda-8f5b-3913fa512c85
+    type: regular
+    task:
+      id: d7ab6da9-ed8d-4bda-8f5b-3913fa512c85
+      version: -1
+      name: Clear app owner session
+      description: "Revoke a user session by invalidating all refresh tokens issued to applications for a user. \nThis command requires an administrator role.\nPermission required: Directory.AccessAsUser.All (Delegated)."
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+      - "125"
+    scriptarguments:
+      user:
+        simple: ${AppOwner}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1228,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "105_37_#default#": 0.24,
       "106_66_#default#": 0.29,
+      "108_33_#default#": 0.28,
       "108_59_Remove App": 0.67,
       "112_6_yes": 0.33,
       "117_29_#default#": 0.3,
       "119_66_#default#": 0.33,
       "121_66_yes": 0.19,
       "128_109_Disable App": 0.68,
+      "128_33_#default#": 0.18,
+      "129_33_#default#": 0.12,
+      "135_105_#default#": 0.11,
       "19_29_#default#": 0.29,
       "19_39_yes": 0.4,
       "62_105_no": 0.31,
