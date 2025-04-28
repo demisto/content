@@ -34,6 +34,7 @@ else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment, misc]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
+from elastic_transport import RequestsHttpNode
 
 
 ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
@@ -158,7 +159,6 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    from elastic_transport import RequestsHttpNode
 
     connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection, RequestsHttpNode]] = {
         "hosts": [SERVER],
@@ -860,7 +860,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     requested_index = index or FETCH_INDEX
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
-        search = Search(using=es, index=requested_index).from_dict(body)
+        search = Search(using=es, index=requested_index).update_from_dict(body)
         if size and isinstance(page, int):
             search = search[page : page + size]
         response = search.execute().to_dict()
