@@ -411,6 +411,7 @@ COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached
 
 COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER = ["osi/public_leak", "attacks/phishing_group"]
 
+
 class NumberedSeverity(Enum):
     LOW = 1
     MEDIUM = 2
@@ -485,7 +486,7 @@ MAPPING = {
             "country_name": "events.client.ipv4.countryName",
             "region": "events.client.ipv4.region",
         },
-        "source_type":"sourceType", # Not displayed in the incident, but used in the code 
+        "source_type": "sourceType",  # Not displayed in the incident, but used in the code
     },
     "compromised/bank_card_group": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "cardInfo.number",
@@ -1481,7 +1482,7 @@ class Client(BaseClient):
             if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
                 hunting_rules = 1
             if enable_probable_corporate_access:
-                enable_probable_corporate_access = 1
+                enable_probable_corporate_access = 1  # type: ignore
             return (
                 self.poller.create_update_generator(
                     collection_name=collection_name,
@@ -1796,7 +1797,7 @@ class IncidentBuilder:
         self.mapping = mapping
         self.exclude_combolist = exclude_combolist
         self.remove_threat_actor_from_incident = False
-        
+
     def get_system_severity(self) -> int:
         severity_map = {
             "green": NumberedSeverity.LOW.value,
@@ -1822,7 +1823,7 @@ class IncidentBuilder:
         for variant in occured_date_field:
             try:
                 date_value = self.incident.get(variant, "")
-                
+
                 if date_value is None:
                     continue
                 if not isinstance(date_value, str):
@@ -1830,7 +1831,7 @@ class IncidentBuilder:
                 if not date_value.strip():
                     continue
                 incident_occured_date = dateparser_parse(date_string=date_value)
-                
+
                 assert incident_occured_date is not None, (
                     f"{self.incident} incident_occured_date cannot be None, "
                     f"occured_date_field: {variant}, incident_occured_date: {incident_occured_date}"
@@ -1948,22 +1949,25 @@ class IncidentBuilder:
     def check_combolist(self) -> bool:
         if self.collection_name == "compromised/account_group":
             incident_source_type = self.incident.get("source_type", None)
-            demisto.debug(f"check_combolist incident_source_type: {incident_source_type} {self.incident['id']} {self.exclude_combolist}")
+            demisto.debug(f"check_combolist {incident_source_type} {self.incident['id']} {self.exclude_combolist}")
             if self.exclude_combolist and (incident_source_type == "Combolist" or "Combolist" in incident_source_type):
                 return False
             elif not self.exclude_combolist and (incident_source_type == "Combolist" or "Combolist" in incident_source_type):
                 self.remove_threat_actor_from_incident = True
                 return True
         return True
-    
+
     def check_threat_actor(self):
         if self.collection_name == "compromised/account_group":
-            demisto.debug(f"check_threat_actor incident_source_type: {self.incident['source_type']} {self.incident['id']} {self.remove_threat_actor_from_incident}")
+            demisto.debug(
+                f"check_threat_actor {self.incident['source_type']} "
+                f"{self.incident['id']} {self.remove_threat_actor_from_incident}"
+            )
             if self.remove_threat_actor_from_incident:
                 demisto.debug(f"check_threat_actor Threat actor before deleting:{self.incident['events_table']['threatActor']}")
                 self.incident['events_table']['threatActor'] = []
                 demisto.debug(f"check_threat_actor Threat actor after deleting:{self.incident['events_table']['threatActor']}")
-                
+
     def build_incident(self) -> dict:
         self.check_threat_actor()
         self.incident = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=self.incident)
@@ -2055,7 +2059,7 @@ class BuilderCommandResponses:
             # differentiate your json from getting the whole list
             if self.collection_name == "compromised/breached":
                 mapping["emailDomains"] = "emails"
-                
+
             parsed_portion = result.parse_portion(
                 keys=mapping
             )
@@ -2167,7 +2171,7 @@ def fetch_incidents_command(
             first_fetch_time=first_fetch_time,
             enable_probable_corporate_access=enable_probable_corporate_access,
         )
-        
+
         mapping = MAPPING.get(collection_name, {})
         for portion in portions:
             sequpdate = portion.sequpdate
@@ -2372,7 +2376,7 @@ def main():
         incident_collections = params.get("incident_collections", [])
         incidents_first_fetch = params.get("first_fetch", "3 days").strip()
         requests_count = int(params.get("max_fetch", 3))
-        
+
         exclude_combolist = params.get("exclude_combolist", False)
         enable_probable_corporate_access = params.get("enable_probable_corporate_access", 0)
 
