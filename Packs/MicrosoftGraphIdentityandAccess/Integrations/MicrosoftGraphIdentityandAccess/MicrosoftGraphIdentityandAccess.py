@@ -1,12 +1,16 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Microsoft Graph Identity and Access, pack version = 1.2.60')
 """
 An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
 
 import urllib3
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+
 from MicrosoftApiModule import *  # noqa: E402
-from CommonServerUserPython import *  # noqa
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -436,7 +440,6 @@ class Client:  # pragma: no cover
             # in case user send json policy
             if isinstance(policy, str):
                 policy = json.loads(policy)
-
 
             res = self.ms_client.http_request(
                 method="POST",
@@ -1201,8 +1204,8 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
         "conditions": {
             "clientAppTypes": argToList(args.get('client_app_types')),
             "applications": {
-                "includeApplications": argToList(args.get('include_applications', 'none')),
-                "excludeApplications": argToList(args.get('exclude_applications', 'none')),
+                "includeApplications": argToList(args.get('include_applications')),
+                "excludeApplications": argToList(args.get('exclude_applications')),
                 "includeUserActions": argToList(args.get('include_user_actions')),
             },
             "users": {
@@ -1227,7 +1230,7 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
         },
         "grantControls": {
             "operator": args.get('grant_control_operator', 'AND'),
-            "builtInControls": argToList(args.get('built_in_controls', 'mfa'))
+            "builtInControls": argToList(args.get('grant_control_enforcement', 'mfa'))
         }
         }
 
@@ -1293,7 +1296,7 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
 
     new_grant_controls = {
         "operator": args.get('grant_control_operator'),
-        "builtInControls": argToList(args.get('built_in_controls')),
+        "builtInControls": argToList(args.get('grant_control_enforcement')),
     }
 
     new_policy: Dict[str, Any] = {
@@ -1414,4 +1417,5 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
+
 
