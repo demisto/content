@@ -1,11 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 """IMPORTS"""
-import re
 import json
-from datetime import datetime, date
+import re
+from datetime import date, datetime
+
 import urllib3.util
 
 # Disable insecure warnings
@@ -14,7 +16,7 @@ urllib3.disable_warnings()
 
 def parse_tag_field(tags_str):
     tags = []
-    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.IGNORECASE)
     for f in tags_str.split(";"):
         match = regex.match(f)
         if match is None:
@@ -27,7 +29,7 @@ def parse_tag_field(tags_str):
 
 def parse_subnet_mappings(subnets_str):
     subnets = []
-    regex = re.compile(r"subnetid=([\w\d_:.-]+),allocationid=([ /\w\d@_,.*-]+)", flags=re.I)
+    regex = re.compile(r"subnetid=([\w\d_:.-]+),allocationid=([ /\w\d@_,.*-]+)", flags=re.IGNORECASE)
     for f in subnets_str.split(";"):
         match = regex.match(f)
         if match is None:
@@ -260,7 +262,7 @@ def main():
 
     except Exception as e:
         LOG(str(e))
-        return_error(f"Error has occurred in the AWS ACM Integration: {type(e)}\n {str(e)}")
+        return_error(f"Error has occurred in the AWS ACM Integration: {type(e)}\n {e!s}")
 
 
 from AWSApiModule import *  # noqa: E402
