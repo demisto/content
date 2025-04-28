@@ -690,7 +690,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     content = (
         b"MIME-Version: 1.0\r\n"
         b"Message-ID:\r\n"
-        b"<message-test-idRANDOMVALUES@testing.com>"
+        b" <message-test-idRANDOMVALUES@testing.com>"
         b'Content-Type: text/plain; charset="us-ascii"\r\n'
         b"X-FAKE-Header: HVALue\r\n"
         b"X-Who-header: whovALUE\r\n"
@@ -713,7 +713,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     # sent to "fileResult", original headers from content with matched casing, with additional header
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
         "X-FAKE-Header: HVALue\r\n"
         "X-Who-header: whovALUE\r\n"
         "DATE: 2023-12-16T12:04:45\r\n"
@@ -850,7 +850,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     content = (
         b"MIME-Version: 1.0\r\n"
         b"Message-ID:\r\n"
-        b"<message-test-idRANDOMVALUES@testing.com>"
+        b" <message-test-idRANDOMVALUES@testing.com>"
         b'Content-Type: text/plain; charset="us-ascii"\r\n'
         b"X-FAKE-Header: HVALue\r\n"
         b"X-Who-header: whovALUE\r\n"
@@ -871,7 +871,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     ]
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
         "X-FAKE-Header: HVALue\r\n"
         "X-Who-header: whovALUE\r\n"
         "DATE: 2023-12-16T12:04:45\r\n"
