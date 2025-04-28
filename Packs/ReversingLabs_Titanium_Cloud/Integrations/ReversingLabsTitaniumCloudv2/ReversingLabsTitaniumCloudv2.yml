@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+  - Connect
+  - Collect
 commonfields:
   id: ReversingLabs TitaniumCloud v2
   version: -1
@@ -8,10 +11,12 @@ configuration:
     name: base
     required: true
     type: 0
+    section: Connect
   - display: Credentials
     name: credentials
     required: true
     type: 9
+    section: Connect
   - defaultvalue: C - Fairly reliable
     display: Reliability
     name: reliability
@@ -25,29 +30,40 @@ configuration:
       - F - Reliability cannot be judged
     type: 15
     required: false
+    section: Collect
   - defaultvalue: "false"
     display: Verify certificates
     name: verify_certs
     type: 8
     required: false
+    section: Connect
+    advanced: true
   - display: HTTP proxy address with the protocol and port number
     name: http_proxy
     type: 0
     required: false
+    section: Connect
+    advanced: true
   - display: HTTP proxy username
     name: http_credentials
     displaypassword: HTTP proxy password
     required: false
     type: 9
+    section: Connect
+    advanced: true
   - display: HTTPS proxy address with the protocol and port number
     name: https_proxy
     type: 0
     required: false
+    section: Connect
+    advanced: true
   - display: HTTPS proxy username
     name: https_credentials
     displaypassword: HTTPS proxy password
     required: false
     type: 9
+    section: Connect
+    advanced: true
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
 display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2
@@ -67,10 +83,10 @@ script:
           type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -105,10 +121,11 @@ script:
           description: List of URLs.
           default: true
           required: true
+          isArray: true
       outputs:
         - contextPath: URL.Data
           description: The URL.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -137,10 +154,11 @@ script:
           description: List of IP addresses.
           default: true
           required: true
+          isArray: true
       outputs:
         - contextPath: IP.Address
           description: The IP address.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -166,10 +184,11 @@ script:
           description: List of domain names.
           default: true
           required: true
+          isArray: true
       outputs:
         - contextPath: Domain.Name
           description: The domain name.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -198,13 +217,13 @@ script:
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
-          type: Unknown
+          type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -230,13 +249,13 @@ script:
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
-          type: Unknown
+          type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.av_scanners
           description: The AV scanners.
           type: Unknown
@@ -250,13 +269,13 @@ script:
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
-          type: Unknown
+          type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.file_analysis
           description: The file analysis.
           type: Unknown
@@ -284,13 +303,13 @@ script:
       outputs:
         - contextPath: File.SHA1
           description: File SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: File SHA256.
-          type: Unknown
+          type: String
         - contextPath: File.MD5
           description: File MD5.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -316,16 +335,16 @@ script:
       outputs:
         - contextPath: IP.Address
           description: IP address.
-          type: Unknown
+          type: String
         - contextPath: Domain.Name
           description: Domain name.
-          type: Unknown
+          type: String
         - contextPath: URL.Data
           description: The URL.
-          type: Unknown
+          type: String
         - contextPath: Email.To
           description: Destination email address.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.uri_statistics
           description: The URI statistics.
           type: Unknown
@@ -397,7 +416,7 @@ script:
       outputs:
         - contextPath: URL.Data
           description: The URL.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -573,16 +592,16 @@ script:
       outputs:
         - contextPath: ReversingLabs.create_yara_ruleset
           description: The YARA ruleset.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.delete_yara_ruleset
           description: The YARA ruleset.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.get_yara_ruleset_info
           description: The YARA ruleset.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.get_yara_ruleset_text
           description: The YARA ruleset.
-          type: Unknown
+          type: String
     - name: reversinglabs-titaniumcloud-yara-matches-feed
       description: Returns a recordset of YARA ruleset matches in the specified time range.
       arguments:
@@ -618,16 +637,16 @@ script:
       outputs:
         - contextPath: ReversingLabs.enable_yara_retro
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.start_yara_retro
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.check_yara_retro_status
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.cancel_yara_retro
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
     - name: reversinglabs-titaniumcloud-yara-retro-matches-feed
       description: Returns a recordset of YARA ruleset matches in the specified time range.
       arguments:
