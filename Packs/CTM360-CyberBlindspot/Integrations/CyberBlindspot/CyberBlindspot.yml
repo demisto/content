@@ -199,19 +199,19 @@ script:
     description: Retrieves screenshot evidence if available.
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: FileName.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The EntryID of the report.
       type: string
     - contextPath: InfoFile.Size
-      description: File Size
+      description: File Size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: File type e.g. "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
   - name: get-remote-data
     arguments:
