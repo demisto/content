@@ -20,7 +20,7 @@ description: |-
 
   - Enrich the user that executed the queries
   - Check if the user was created recently
-  - Search for additional discovery alerts in the incident
+  - Search for additional discovery alerts in the <-incident->
   - Check user groups and roles to determine if the user is unprivileged
   - Check user querying frequency to detect anomalies
   - Get host risk level
@@ -111,8 +111,8 @@ tasks:
     task:
       id: 2b12deed-65f6-4e1d-8b5e-175f07cb4c84
       version: -1
-      name: Search for additional discovery alerts in the incident
-      description: Searches for additional alerts in the incident that may further indicate user attempts to enumerate Active Directory.
+      name: Search for additional discovery alerts in the <-incident->
+      description: Searches for additional alerts in the <-incident-> that may further indicate user attempts to enumerate Active Directory.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
