@@ -34,7 +34,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
 - display: Public API Token
   name: publicApiKey
