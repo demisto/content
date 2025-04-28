@@ -2,7 +2,6 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-
 from CommonServerPython import CommandResults
 from CortexCoreIR import core_execute_command_reformat_args
 
@@ -24,7 +23,7 @@ def test_report_incorrect_wildfire_command(mocker):
     Then
         - returns markdown, context data and raw response.
     """
-    from CortexCoreIR import report_incorrect_wildfire_command, Client
+    from CortexCoreIR import Client, report_incorrect_wildfire_command
 
     wildfire_response = load_test_data("./test_data/wildfire_response.json")
     mock_client = Client(base_url=f"{Core_URL}/public_api/v1", headers={})
@@ -45,7 +44,7 @@ class TestPrevalenceCommands:
         Then:
             - Verify response is as expected.
         """
-        from CortexCoreIR import handle_prevalence_command, Client
+        from CortexCoreIR import Client, handle_prevalence_command
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         mock_res = load_test_data("./test_data/prevalence_response.json")
@@ -63,7 +62,7 @@ class TestPrevalenceCommands:
         Then:
             - Verify response is as expected.
         """
-        from CortexCoreIR import handle_prevalence_command, Client
+        from CortexCoreIR import Client, handle_prevalence_command
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         mock_res = load_test_data("./test_data/prevalence_response.json")
@@ -81,7 +80,7 @@ class TestPrevalenceCommands:
         Then:
             - Verify response is as expected.
         """
-        from CortexCoreIR import handle_prevalence_command, Client
+        from CortexCoreIR import Client, handle_prevalence_command
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         mock_res = load_test_data("./test_data/prevalence_response.json")
@@ -101,7 +100,7 @@ class TestPrevalenceCommands:
         Then:
             - Verify response is as expected.
         """
-        from CortexCoreIR import blocklist_files_command, Client
+        from CortexCoreIR import Client, blocklist_files_command
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         args = {"incident_id": "1", "hash_list": ["hash"]}
@@ -127,7 +126,7 @@ class TestPrevalenceCommands:
         Then:
             - Verify response is as expected.
         """
-        from CortexCoreIR import allowlist_files_command, Client
+        from CortexCoreIR import Client, allowlist_files_command
 
         mock_client = Client(base_url=f"{Core_URL}/xsiam/", headers={})
         args = {"incident_id": "1", "hash_list": ["hash"]}
@@ -205,8 +204,8 @@ class TestPollingCommand:
             - Make sure the readable output is returned only in the first run.
             - Make sure the correct output prefix is returned.
         """
-        from CoreIRApiModule import script_run_polling_command, CoreClient
         from CommonServerPython import ScheduledCommand
+        from CoreIRApiModule import CoreClient, script_run_polling_command
 
         client = CoreClient(base_url="https://test_api.com/public_api/v1", headers={})
 
@@ -215,9 +214,7 @@ class TestPollingCommand:
 
         command_result = script_run_polling_command(args={"endpoint_ids": "1", "script_uid": "1"}, client=client)
 
-        assert (
-            command_result.readable_output == "Waiting for the script to finish running on the following endpoints: ['1']..."
-        )
+        assert command_result.readable_output == "Waiting for the script to finish running on the following endpoints: ['1']..."
         assert command_result.outputs == {"action_id": 1, "endpoints_count": 1, "status": 1}
 
         polling_args = {"endpoint_ids": "1", "script_uid": "1", "action_id": "1", "hide_polling_output": True, "is_core": "true"}
@@ -257,7 +254,7 @@ def test_get_asset_details_command_success(mocker):
     THEN:
         The response is parsed, formatted, and returned correctly.
     """
-    from CortexCoreIR import get_asset_details_command, Client
+    from CortexCoreIR import Client, get_asset_details_command
 
     mock_client = Client(base_url="", headers={})
     mock_get_asset_details = mocker.patch.object(
@@ -351,8 +348,8 @@ def test_get_distribution_url_command_without_download_not_supported_type():
     Then:
         - Should raise a demisto error.
     """
-    from CoreIRApiModule import get_distribution_url_command
     from CommonServerPython import DemistoException
+    from CoreIRApiModule import get_distribution_url_command
 
     client = MagicMock()
     client.get_distribution_url = MagicMock(return_value="https://example.com/distribution")
