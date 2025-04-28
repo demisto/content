@@ -16,13 +16,14 @@ configuration:
 - display: Client ID
   name: client_id
   required: true
-  type: 9
+  type: 0
   section: Connect
-- display: Client Secret
+- displaypassword: Client Secret
   name: client_secret
   required: true
   type: 9
   section: Connect
+  hiddenusername: true
 - display: Application ID
   name: application_id
   type: 0
@@ -33,11 +34,13 @@ configuration:
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Fetch Events
   name: isFetchEvents
   required: false
@@ -59,12 +62,14 @@ configuration:
   type: 0
   required: false
   advanced: true
+  section: Collect
 - display: The maximum number of Healthrule Violations Events per fetch
   name: max_healthrule_fetch
   defalutvalue: '3000'
   type: 0
   required: false
   advanced: true
+  section: Collect
 description: AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs moment to moment. No other solution offers application modernization, cloud and hybrid monitoring, and application security with business context.
 display: CiscoAppDynamics
 name: CiscoAppDynamics
@@ -74,21 +79,21 @@ script:
     description: Retrieves a list of events from the cisappdynamics instance.
     arguments:
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise it will only display them.
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+        - 'True'
+        - 'False'
       required: true
     - description: 'The maximum number of Audit History logs per fetch.'
       name: max_audit_fetch
       defaultvalue: '1000'
-      required: 'false'
+      required: false
     - description: 'The maximum number of Healthrule Violations Events per fetch.'
       name: max_healthrule_fetch
       defaultvalue: '3000'
-      required: 'false'
+      required: false
     - description: 'Which events to fetch.'
       name: events_type_to_fetch
       predefined:

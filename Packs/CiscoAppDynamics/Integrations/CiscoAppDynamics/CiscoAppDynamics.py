@@ -372,7 +372,7 @@ def main() -> None:  # pragma: no cover
     
     base_url = params.get("url", "")
     client_id = params.get("client_id", "")
-    client_secret = params.get("client_secret", "")
+    client_secret = params.get("client_secret", {}).get("password")
     application_id = params.get("application_id", "")
     verify = argToBoolean(not params.get('insecure', False))
     proxy = argToBoolean(params.get('proxy', False))
