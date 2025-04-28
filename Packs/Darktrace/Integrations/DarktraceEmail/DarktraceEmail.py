@@ -186,6 +186,8 @@ class Client(BaseClient):
         :param start_time: start timestamp (epoch in seconds) for the email search
         :type end_time: ``int``
         :param end_time: end timestamp (epoch in seconds) for the email search
+        :type direction: ``str | None``
+        :param direction: emails with the corresponding direction will be fetched.
         :return: list containing the found Darktrace emails as dicts
         :rtype: ``List[Dict[str, Any]]``
         """
@@ -470,6 +472,8 @@ def fetch_incidents(client: Client, max_alerts: int,
     :type tag_severity: ``List[str]``
     :param tag_severity:
         list of tag severities to filter by when fetching emails
+    :type direction: ``str | None``
+        :param direction: emails with the corresponding direction will be fetched.
     :return:
         A tuple containing two elements:
             next_run (``Dict[str, int]``): Contains the timestamp that will be
