@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: MicrosoftGraphIdentityandAccess - update
+  id: MicrosoftGraphIdentityandAccess
   version: -1
 configuration:
 - section: Connect
@@ -124,8 +124,8 @@ configuration:
   advanced: true
   required: false
 description: Use the Azure Active Directory Identity And Access integration to manage roles and members.
-display: Azure Active Directory Identity And Access - update
-name: MicrosoftGraphIdentityandAccess - update
+display: Azure Active Directory Identity And Access
+name: MicrosoftGraphIdentityandAccess
 script:
   commands:
   - description: Run this command to start the authorization process and follow the instructions in the command results.
