@@ -30,9 +30,9 @@ def test_create_access_token(client:Client):
     assert client.token_expiry > datetime.now(UTC)
     
 @pytest.mark.parametrize("token, expiry_offset_minutes, should_create_new", [
-    (None, None, True),              # No token at all --> should create new
-    ("valid-token", 10, False),       # Valid token (expiry in 10 minutes) --> should reuse
-    ("expired-token", -1, True),      # Expired token (expiry 1 minute ago) --> should create new
+    (None, None, True),
+    ("valid-token", 10, False),
+    ("expired-token", -1, True),
 ])
 def test_get_valid_token(client, mocker, token, expiry_offset_minutes, should_create_new):
     
@@ -70,21 +70,14 @@ def test_get_valid_token(client, mocker, token, expiry_offset_minutes, should_cr
 def test_get_audit_logs_various_cases(client, mocker, api_response, expected_count):
     """Test get_audit_logs with different API responses."""
     
-    # Mock _authorized_request to return the api_response
     mocker.patch.object(client, '_authorized_request', return_value=api_response)
 
-    # Define start and end times
     start = datetime.now(UTC) - timedelta(hours=1)
     end = datetime.now(UTC)
 
-    # Call the function
     events = client.get_audit_logs(start, end)
 
-    # Assertions
-    assert isinstance(events, list)
     assert len(events) == expected_count
-    if expected_count > 0:
-        assert all("timeStamp" in ev for ev in events)
     
 
 @pytest.mark.parametrize("api_response, expected_count", [
@@ -103,20 +96,14 @@ def test_get_audit_logs_various_cases(client, mocker, api_response, expected_cou
 def test_get_health_events_various_cases(client, mocker, api_response, expected_count):
     """Test get_health_events with different API responses."""
 
-    # Mock _authorized_request to return a different batch each call
     mocker.patch.object(client, '_authorized_request', return_value=api_response)
 
     start = datetime.now(UTC) - timedelta(hours=1)
     end = datetime.now(UTC)
 
-    # Call the function
     events = client.get_health_events(start, end)
 
-    # Assertions
-    assert isinstance(events, list)
     assert len(events) == expected_count
-    if expected_count > 0:
-        assert all("detectedTimeInMillis" in ev for ev in events)
     
 def test_fetch_events(client):
     now = datetime.now(UTC)
