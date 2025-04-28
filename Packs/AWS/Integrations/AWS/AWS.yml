@@ -489,6 +489,195 @@ script:
         - 'disabled'
         - 'enabled'
   
+        - name: aws-s3-bucket-policy-put
+      description: 'Adds or replaces a bucket policy for an Amazon S3 bucket.'
+      arguments:
+        - name: account_id
+          description: 'Will be taken from the "account" field on the asset/issue'
+          required: true
+        - name: region
+          description: 'Will be taken from the "region" field on the asset/issue'
+          required: true
+          auto: PREDEFINED
+          predefined:
+        - name: bucket
+          description: 'The name of the bucket to which the policy will be applied.'
+          required: true
+        - name: policy
+          description: 'The bucket policy to apply as a JSON string.'
+          required: true
+
+    # TODO - Verify
+    - name: aws-ec2-security-group-ingress-revoke
+      description: 'Revokes one or more ingress rules in a security group.'
+      arguments:
+        - name: account_id
+          description: 'Will be taken from the "account" field on the asset/issue'
+          required: true
+        - name: region
+          description: 'Will be taken from the "region" field on the asset/issue'
+          required: true
+          auto: PREDEFINED
+          predefined:
+        - name: group_id
+          description: 'The ID of the security group.'
+          required: true
+        - name: ip_permissions
+          description: 'The sets of IP permissions to revoke, in JSON format.'
+          required: true
+
+    - name: aws-ec2-security-group-egress-revoke
+      description: 'Revokes one or more egress rules in a security group.'
+      arguments:
+        - name: account_id
+          description: 'Will be taken from the "account" field on the asset/issue'
+          required: true
+        - name: region
+          description: 'Will be taken from the "region" field on the asset/issue'
+          required: true
+          auto: PREDEFINED
+          predefined:
+        - name: group_id
+          description: 'The ID of the security group.'
+          required: true
+        - name: ip_permissions
+          description: 'The sets of IP permissions to revoke, in JSON format.'
+          required: true
+
+    - name: aws-ec2-snapshot-permission-modify
+      description: 'Adds or removes permission settings for the specified snapshot.'
+      arguments:
+        - name: account_id
+          description: 'Will be taken from the "account" field on the asset/issue'
+          required: true
+        - name: region
+          description: 'Will be taken from the "region" field on the asset/issue'
+          required: true
+          auto: PREDEFINED
+          predefined:
+        - name: snapshot_id
+          description: 'The ID of the snapshot.'
+          required: true
+        - name: attribute
+          description: 'The snapshot attribute to modify.'
+          required: true
+          auto: PREDEFINED
+          predefined:
+          - 'createVolumePermission'
+        - name: operation_type
+          description: 'The operation to perform.'
+          required: true
+          auto: PREDEFINED
+          predefined:
+          - 'add'
+          - 'remove'
+        - name: user_ids
+          description: 'The IDs of the AWS accounts to add to or remove from the list of users that have permission to create EBS volumes from the snapshot.'
+          required: false
+        - name: group
+          description: 'The groups to add to or remove from the list of entities that have permission to create volumes from the snapshot.'
+          required: false
+          auto: PREDEFINED
+          predefined:
+          - 'all'
+
+    - name: aws-ec2-instance-attribute-modify
+      description: 'Modifies a single attribute of an instance.'
+      arguments:
+        - name: account_id
+          description: 'Will be taken from the "account" field on the asset/issue'
+          required: true
+        - name: region
+          description: 'Will be taken from the "region" field on the asset/issue'
+          required: true
+          auto: PREDEFINED
+          predefined:
+        - name: instance_id
+          description: 'The ID of the instance.'
+          required: true
+        - name: attribute
+          description: 'The name of the attribute to modify.'
+          required: true
+          auto: PREDEFINED
+          predefined:
+          - 'instanceType'
+          - 'kernel'
+          - 'ramdisk'
+          - 'userData'
+          - 'disableApiTermination'
+          - 'instanceInitiatedShutdownBehavior'
+          - 'rootDeviceName'
+          - 'blockDeviceMapping'
+          - 'productCodes'
+          - 'sourceDestCheck'
+          - 'groupSet'
+          - 'ebsOptimized'
+          - 'sriovNetSupport'
+          - 'enaSupport'
+          - 'enclaveOptions'
+        - name: value
+          description: 'The new value for the attribute.'
+          required: true
+
+    - name: aws-ec2-image-attribute-modify
+      description: 'Modifies the specified attribute of the specified AMI.'
+      arguments:
+        - name: account_id
+          description: 'Will be taken from the "account" field on the asset/issue'
+          required: true
+        - name: region
+          description: 'Will be taken from the "region" field on the asset/issue'
+          required: true
+          auto: PREDEFINED
+          predefined:
+        - name: image_id
+          description: 'The ID of the AMI.'
+          required: true
+        - name: attribute
+          description: 'The AMI attribute to modify.'
+          required: true
+          auto: PREDEFINED
+          predefined:
+          - 'description'
+          - 'launchPermission'
+        - name: operation_type
+          description: 'The operation to perform on the attribute.'
+          required: false
+          auto: PREDEFINED
+          predefined:
+          - 'add'
+          - 'remove'
+        - name: user_ids
+          description: 'The AWS account IDs to add to or remove from the list of users that have launch permissions for the AMI.'
+          required: false
+        - name: user_groups
+          description: 'The user groups to add to or remove from the list of user groups that have launch permissions for the AMI.'
+          required: false
+        - name: description
+          description: 'A new description for the AMI.'
+          required: false
+
+    - name: aws-eks-cluster-config-update
+      description: 'Updates an Amazon EKS cluster configuration.'
+      arguments:
+        - name: account_id
+          description: 'Will be taken from the "account" field on the asset/issue'
+          required: true
+        - name: region
+          description: 'Will be taken from the "region" field on the asset/issue'
+          required: true
+          auto: PREDEFINED
+          predefined:
+        - name: cluster_name
+          description: 'The name of the Amazon EKS cluster to update.'
+          required: true
+        - name: logging
+          description: 'The logging configuration for your cluster.'
+          required: false
+        - name: resources_vpc_config
+          description: 'The VPC configuration used by the cluster control plane.'
+          required: false
+
   isfetch: false
   runonce: false
   type: python
