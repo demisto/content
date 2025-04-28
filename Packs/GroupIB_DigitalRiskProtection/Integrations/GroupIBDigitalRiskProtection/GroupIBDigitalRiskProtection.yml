@@ -92,7 +92,7 @@ description: Pack helps to integrate Group-IB Digital Risk Protection and get vi
 display: Group-IB Digital Risk Protection
 name: Group-IB Digital Risk Protection
 script:
-  dockerimage: demisto/vendors-sdk:1.0.0.2914202
+  dockerimage: demisto/vendors-sdk:1.0.0.3242986
   isfetch: true
   runonce: false
   script: ''
