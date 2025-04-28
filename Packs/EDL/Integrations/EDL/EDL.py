@@ -98,12 +98,14 @@ class IndicatorAction(Enum):
 
 def debug_function(func):
     def wrapper(*args, **kwargs):
-        demisto.debug(f"edl: Entering function {func.__name__}")
+        if EXTENSIVE_LOGGING:
+            demisto.debug(f"edl: Entering function {func.__name__}")
         results = func(*args, **kwargs)
-        demisto.debug(f"edl: Exiting function {func.__name__}")
+        if EXTENSIVE_LOGGING:
+            demisto.debug(f"edl: Exiting function {func.__name__}")
         return results
 
-    return wrapper if EXTENSIVE_LOGGING else func
+    return wrapper
 
 
 class RequestArguments:
@@ -389,6 +391,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
                     headers_was_writen = True
                 if ioc_counter >= indicator_searcher.limit:
                     break
+
 
     except Exception as e:
         demisto.error(f"Error in parsing the indicators, error: {e!s}")
@@ -926,7 +929,9 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
                     reason="Found new IPv6.",
                     log_stats=log_stats,
                 )
-
+    # Log on the logs files all the modification of the indicators
+    if not EXTENSIVE_LOGGING:
+        log_stats = {}
     return formatted_indicators, log_stats
 
 
