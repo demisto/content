@@ -1,0 +1,30 @@
+{
+    "id": "WizDefend Detection",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "WizDefend Detection",
+    "prevName": "WizDefend Detection",
+    "color": "#0C97AD",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "playbookId": "Assess WizDefend Detections",
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 1,
+    "layout": "WizDefend Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}

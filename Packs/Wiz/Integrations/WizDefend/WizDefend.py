@@ -573,18 +573,52 @@ def build_incidents(detection):
     }
 
 
+def get_last_run_time():
+    """
+    Gets the last run time for fetch incidents.
+    If the last run time is more than MAX_DAYS_FIRST_FETCH_DETECTIONS days ago,
+    it returns MAX_DAYS_FIRST_FETCH_DETECTIONS days ago instead.
+
+    Returns:
+        str: ISO formatted timestamp string for the last run time
+    """
+    demisto_params = demisto.params()
+
+    last_run = demisto.getLastRun().get(DemistoParams.TIME)
+
+    if not last_run:
+        demisto.info(f"First Time Fetch")
+        first_fetch_param = demisto_params.get(DemistoParams.FIRST_FETCH,
+                                               DEFAULT_FETCH_BACK).strip()
+        last_run = get_fetch_timestamp(first_fetch_param)
+        return last_run
+
+    # Check if last_run is older than MAX_DAYS_FIRST_FETCH_DETECTIONS
+    try:
+        last_run_datetime = datetime.strptime(last_run, DEMISTO_OCCURRED_FORMAT)
+        max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
+
+        if last_run_datetime < max_days_ago:
+            demisto.info(f"Last run time ({last_run}) is more than {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago. "
+                         f"Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as the fetch time.")
+
+            # Format max_days_ago to match DEMISTO_OCCURRED_FORMAT
+            last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
+    except Exception as e:
+        demisto.error(f"Error parsing last run time: {str(e)}. Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as fetch time.")
+        max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
+        last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
+
+    return last_run
+
+
 def fetch_incidents():
     """
     Fetch all Detections (OOB XSOAR Fetch)
     """
     demisto_params = demisto.params()
 
-    # Get last run time
-    last_run = demisto.getLastRun().get(DemistoParams.TIME)
-    if not last_run:  # first time fetch
-        first_fetch_param = demisto_params.get(DemistoParams.FIRST_FETCH,
-                                               DEFAULT_FETCH_BACK).strip()
-        last_run = get_fetch_timestamp(first_fetch_param)
+    last_run = get_last_run_time()
 
     # Extract configuration parameters from integration settings
     severity = demisto_params.get(WizInputParam.SEVERITY)

@@ -1,10 +1,10 @@
 {
-    "id": "incident_wizissueid",
+    "id": "incident_wizdefendrecommendedactions",
     "version": -1,
-    "modified": "2021-12-30T16:28:53.738615368Z",
-    "name": "Wiz Issue ID",
+    "modified": "2025-04-24T12:00:00.000000000Z",
+    "name": "Wiz Detection Recommended Actions",
     "ownerOnly": false,
-    "cliName": "wizissueid",
+    "cliName": "wizdefendrecommendedactions",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,14 +18,13 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Wiz Issue",
         "WizDefend Detection"
     ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
-    "description": "Wiz Issue ID",
+    "description": "Specific recommended actions to mitigate WizDefend detections.",
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0"
