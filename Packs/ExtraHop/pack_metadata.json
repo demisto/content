@@ -11,9 +11,14 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "RevealX"
+    ],
     "githubUser": [
         "Dan-at-Extrahop"
     ],
