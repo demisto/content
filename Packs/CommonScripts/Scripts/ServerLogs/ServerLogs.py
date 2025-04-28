@@ -14,8 +14,8 @@ def execute_ssh_command():
     contents = res[0].get('Contents')
     if isinstance(contents, list):
         contents = contents[0]
-        error = contents.get('error')
-        raise Exception(error)
+        if contents.get('error'):
+            raise Exception(contents.get('error'))
 
     output = f"File: {file}\n"
     output += contents.get("output")
