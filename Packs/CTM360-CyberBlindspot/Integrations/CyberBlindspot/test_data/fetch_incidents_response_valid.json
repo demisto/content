@@ -11,7 +11,13 @@
         "first_seen": "20-12-2023 04:51:51 AM",
         "last_seen": "20-12-2023 04:51:51 AM",
         "brand": "Mock Brand",
-        "timestamp": 1703047911349
+        "timestamp": 1703047911349,
+        "screenshots": [
+            {
+                "filename": "screenshot1.png",
+                "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"
+            }
+        ]
     },
     {
         "id": "COMX123456654321",
@@ -25,7 +31,13 @@
         "first_seen": "20-12-2023 04:50:30 AM",
         "last_seen": "20-12-2023 04:50:30 AM",
         "brand": "Mock Brand",
-        "timestamp": 1703047830650
+        "timestamp": 1703047830650,
+        "screenshots": [
+            {
+                "filename": "screenshot2.png",
+                "filepath": "03d3ac0020c7cf952ecdeb693dba0a74"
+            }
+        ]
     },
     {
         "id": "COMX987654",
@@ -39,6 +51,16 @@
         "first_seen": "20-12-2023 03:17:10 AM",
         "last_seen": "20-12-2023 03:17:10 AM",
         "brand": "Mock Brand",
-        "timestamp": 1703042231364
+        "timestamp": 1703042231364,
+        "screenshots": [
+            {
+                "filename": "screenshot3.png",
+                "filepath": "030789ab900009a5815bd0f5c984e77c"
+            },
+            {
+                "filename": "screenshot4.png",
+                "filepath": "de083bd7e734df8a3eab7354ea36add1"
+            }
+        ]
     }
 ]

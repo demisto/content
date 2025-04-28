@@ -1754,7 +1754,6 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
-      defaultValue: 'Issue initiator file'
       prettyname: File to retrieve
       required: true
       prettypredefined:

@@ -1,10 +1,11 @@
 import gzip
 import json
 from unittest.mock import MagicMock, patch
-from freezegun import freeze_time
+
 import CortexCoreXQLQueryEngine
 import pytest
 from CommonServerPython import *
+from freezegun import freeze_time
 
 CLIENT = CortexCoreXQLQueryEngine.Client(headers={}, base_url="some_mock_url", verify=False, is_core=True)
 ENDPOINT_IDS = '"test1","test2"'

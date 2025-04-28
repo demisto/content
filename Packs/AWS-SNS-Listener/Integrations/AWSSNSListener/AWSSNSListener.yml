@@ -61,7 +61,7 @@ display: AWS-SNS-Listener
 name: AWS-SNS-Listener
 script:
   commands: []
-  dockerimage: demisto/fastapi:0.115.5.117397
+  dockerimage: demisto/fastapi:0.115.12.3243695
   longRunning: true
   longRunningPort: true
   script: '-'
