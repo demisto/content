@@ -777,31 +777,6 @@ tasks:
         - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ip
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "3"
-                accessor: Indicator
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
               simple: SuspiciousUserAgent
             iscontext: true
         - operator: isNotEmpty
@@ -1530,11 +1505,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: AzureLogAnalytics.Query.Data.AppOwner
-            iscontext: true
       - - operator: containsGeneral
           left:
             value:
@@ -1543,6 +1513,11 @@ tasks:
           right:
             value:
               simple: Core.OriginalAlert.raw_abioc.event.identity_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.Query.Data.AppOwner
             iscontext: true
     continueonerrortype: ""
     view: |-
