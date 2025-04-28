@@ -299,7 +299,7 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      built_in_controls:
+      grant_control_enforcement:
         simple: mfa,compliantDevice
       execution-timeout:
         simple: "0"
