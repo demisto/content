@@ -1,6 +1,7 @@
 A transformer to encode an array or any value given as JSON text.
 
 ---
+
 ## Script Data
 
 | **Name** | **Description** |
