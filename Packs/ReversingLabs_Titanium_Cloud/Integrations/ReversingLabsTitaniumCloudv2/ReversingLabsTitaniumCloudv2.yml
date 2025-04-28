@@ -60,6 +60,7 @@ script:
           default: true
           description: List of file hashes.
           required: true
+          isArray: true
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
