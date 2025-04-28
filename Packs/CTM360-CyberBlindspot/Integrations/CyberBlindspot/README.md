@@ -259,7 +259,11 @@ Retrieves screenshot evidence if available.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File | Unknown | Output list of files. | 
+| InfoFile.Name | string | FileName | 
+| InfoFile.EntryID | string | The EntryID of the report | 
+| InfoFile.Size | number | File Size | 
+| InfoFile.Type | string | File type e.g. "PE" | 
+| InfoFile.Info | string | Basic information of the file | 
 
 ### get-remote-data
 
