@@ -1,8 +1,8 @@
+import importlib
 import json
+from http import HTTPStatus
 
 import pytest
-import importlib
-from http import HTTPStatus
 
 AWS_S3 = importlib.import_module("AWS-S3")
 
