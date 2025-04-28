@@ -1,26 +1,4 @@
-description: "**This playbook addresses the following alerts**:\n- SSO authentication\
-  \ attempt with suspicious characteristics.\n- Successful SSO authentication with\
-  \ suspicious characteristics.\n\n**Playbook Stages**:\n\n**Triage**:\n- Collect\
-  \ initial information about the user and the SSO authentication event.\n- Validate\
-  \ whether the authentication proxy is linked to iCloud Relay.\n\n**Investigation**:\n\
-  - **Check IOCs Reputation**:\n  - Analyze the reputation of IP addresses associated\
-  \ with the alert.\n- **Search Related Alerts**:\n  - Look for alerts related to\
-  \ the same user within the system to identify suspicious activity trends.\n- **Check\
-  \ If User Is Risky**:\n  - Retrieve the user's risk score and evaluate high-risk\
-  \ indicators for suspicious activities.\n- **Check User Agent**:\n  - Identify suspicious\
-  \ user agents used during the authentication attempts.\n- **Check Okta Logs**:\n\
-  \  - Retrieve Okta authentication logs for failed login attempts and suspicious\
-  \ authentication activities within the last day.\n\n**Containment**:\n- **Automatic\
-  \ Actions**:\n  - Clear user sessions if any suspicious evidence is found during\
-  \ the investigation.\n- **Analyst Review**:\n  - Provide an analyst with findings\
-  \ for review and determine the appropriate action:\n    - No action required.\n\
-  \    - Suspend the user in Okta.\n  - If the analyst chooses to suspend the user,\
-  \ their active sessions are cleared in Okta.\n\n**Requirements**:\nFor the best\
-  \ results, it's recommended to ensure these integrations are configured and working:\n\
-  - **Core** integration for user risk evaluation and suspicious activity checks.\n\
-  - **Okta v2** integration for analyzing authentication logs, clearing sessions,\
-  \ and user suspension.\n- Any IP reputation integration that supports the `!ip`\
-  \ command for checking IP address reputation."
+description: "**This playbook addresses the following alerts**:\n- SSO authentication attempt with suspicious characteristics.\n- Successful SSO authentication with suspicious characteristics.\n\n**Playbook Stages**:\n\n**Triage**:\n- Collect initial information about the user and the SSO authentication event.\n- Validate whether the authentication proxy is linked to iCloud Relay.\n\n**Investigation**:\n- **Check IOCs Reputation**:\n  - Analyze the reputation of IP addresses associated with the alert.\n- **Search Related Alerts**:\n  - Look for alerts related to the same user within the system to identify suspicious activity trends.\n- **Check If User Is Risky**:\n  - Retrieve the user's risk score and evaluate high-risk indicators for suspicious activities.\n- **Check User Agent**:\n  - Identify suspicious user agents used during the authentication attempts.\n- **Check Okta Logs**:\n  - Retrieve Okta authentication logs for failed login attempts and suspicious authentication activities within the last day.\n\n**Containment**:\n- **Automatic Actions**:\n  - Clear user sessions if any suspicious evidence is found during the investigation.\n- **Analyst Review**:\n  - Provide an analyst with findings for review and determine the appropriate action:\n    - No action required.\n    - Suspend the user in Okta.\n  - If the analyst chooses to suspend the user, their active sessions are cleared in Okta.\n\n**Requirements**:\nFor the best results, it's recommended to ensure these integrations are configured and working:\n- **Core** integration for user risk evaluation and suspicious activity checks.\n- **Okta v2** integration for analyzing authentication logs, clearing sessions, and user suspension.\n- Any IP reputation integration that supports the `!ip` command for checking IP address reputation."
 fromversion: 8.9.0
 id: silent-SSO Authentication With Suspicious Characteristics Test
 inputs: []
@@ -234,8 +212,7 @@ tasks:
 
         This playbook is a sub-playbook within the containment plan playbook.
 
-        The playbook uses the ''Okta v2'' and ''MSGraph User'' integrations to clear
-        user sessions.'
+        The playbook uses the ''Okta v2'' and ''MSGraph User'' integrations to clear user sessions.'
       id: 615f55bb-76d6-481a-86cd-06196dbf65aa
       iscommand: false
       name: Containment Plan - Clear User Sessions
@@ -315,9 +292,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: Retrieve the risk score of a specific user or list of users with
-        the highest risk score in the environment along with the reason affecting
-        each score.
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
       id: 4476bd38-fefa-4180-8f32-afc58b6cd7b9
       iscommand: true
       name: Get core user risk score
@@ -362,12 +337,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: 'Set a value in context under the key you entered. If no value
-        is entered, the script doesn''t do anything.
+      description: 'Set a value in context under the key you entered. If no value is entered, the script doesn''t do anything.
 
 
-        This automation runs using the default Limited User role, unless you explicitly
-        change the permissions.
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
 
         For more information, see the section about permissions here:
 
@@ -515,9 +488,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: Suspends a single user. This operation can only be performed on
-        users with an ACTIVE status. After the porcess is completed, the user's status
-        is SUSPENDED.
+      description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
       id: ebb75b74-3580-4d8f-82af-238299139250
       iscommand: true
       name: Suspend user in Okta
@@ -593,14 +564,7 @@ tasks:
       extend-context:
         simple: OktaLogs=.
       filter:
-        simple: (outcome.result eq "SUCCESS" AND (eventType eq "app.oauth2.client_id_rate_limit_warning"
-          OR eventType eq "user.mfa.attempt_bypass")) OR (outcome.result eq "FAILURE"
-          AND ( eventType eq "user.authentication.auth_via_mfa" OR eventType eq "user.authentication.auth_via_IDP"
-          OR eventType eq "user.account.lock" OR eventType eq "user.authentication.auth_via_social"
-          OR eventType eq "user.account.unlock" OR eventType eq "user.account.use_token"
-          OR eventType eq "app.oauth2.token.grant" OR eventType eq "app.oauth2.as.evaluate.claim"
-          OR eventType eq "app.oauth2.as.token.revoke")) AND actor.alternateId eq
-          "${Core.OriginalAlert.event.auth_normalized_user.upn}"
+        simple: (outcome.result eq "SUCCESS" AND (eventType eq "app.oauth2.client_id_rate_limit_warning" OR eventType eq "user.mfa.attempt_bypass")) OR (outcome.result eq "FAILURE" AND ( eventType eq "user.authentication.auth_via_mfa" OR eventType eq "user.authentication.auth_via_IDP" OR eventType eq "user.account.lock" OR eventType eq "user.authentication.auth_via_social" OR eventType eq "user.account.unlock" OR eventType eq "user.account.use_token" OR eventType eq "app.oauth2.token.grant" OR eventType eq "app.oauth2.as.evaluate.claim" OR eventType eq "app.oauth2.as.token.revoke")) AND actor.alternateId eq "${Core.OriginalAlert.event.auth_normalized_user.upn}"
       ignore-outputs:
         simple: 'true'
       since:
@@ -694,11 +658,23 @@ tasks:
           left:
             iscontext: true
             value:
-              simple: OktaLogs
-          operator: isNotEqualString
-          right:
-            value:
-              simple: No logs found
+              complex:
+                root: OktaLogs
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: OktaLogs
+                      iscontext: true
+                    right:
+                      value:
+                        simple: No logs found
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: OktaLogs
+                      iscontext: true
+          operator: isNotEmpty
         - ignorecase: true
           left:
             iscontext: true
@@ -769,6 +745,15 @@ tasks:
           right:
             value:
               simple: '"TOR_PROXY"'
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.riask_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
       label: 'yes'
     continueonerrortype: ''
     id: '43'
@@ -787,12 +772,12 @@ tasks:
     task:
       brand: ''
       description: ''
-      id: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
+      id: 5838e1c9-cafe-4588-b1f8-91f18d903503
       iscommand: false
       name: Check for suspicious evidence
       type: condition
       version: -1
-    taskid: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
+    taskid: 5838e1c9-cafe-4588-b1f8-91f18d903503
     timertriggers: []
     type: condition
     view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1280\n  }\n}"
@@ -826,13 +811,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Set a value in context under the key you entered. If no value\
-        \ is entered, the script doesn't do anything.\n\nThis automation runs using\
-        \ the default Limited User role, unless you explicitly change the permissions.\n\
-        For more information, see the section about permissions here:\n- For Cortex\
-        \ see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations\
-        \ \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n\
-        - For Cortex On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       id: fe290ade-179c-411b-818a-20eb58f6d94f
       iscommand: false
       name: Check for a suspicious User Agent
@@ -873,8 +852,7 @@ tasks:
 
         This playbook is a sub-playbook within the containment plan playbook.
 
-        The playbook uses the ''Okta v2'' and ''MSGraph User'' integrations to clear
-        user sessions.'
+        The playbook uses the ''Okta v2'' and ''MSGraph User'' integrations to clear user sessions.'
       id: b62483ff-7b2a-40dc-8eed-7cca09b538a2
       iscommand: false
       name: Containment Plan - Clear User Sessions
@@ -919,21 +897,17 @@ tasks:
                   simple: username:*
               suffix:
                 value:
-                  simple: '* AND (name:"A successful SSO sign-in from TOR" or name:"A
-                    user connected from a new country using an anonymized proxy" or
-                    name:"Abnormal first access to a resource by a user via SSO")'
+                  simple: '* AND (name:"A successful SSO sign-in from TOR" or name:"A user connected from a new country using an anonymized proxy" or name:"Abnormal first access to a resource by a user via SSO")'
             operator: concat
           - operator: uniq
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      description: 'Searches Cortex alerts. A summarized version of this scrips is
-        avilable with the summarizedversion argument.
+      description: 'Searches Cortex alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
 
 
-        This automation runs using the default Limited User role, unless you explicitly
-        change the permissions.
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
 
         For more information, see the section about permissions here:
 
@@ -970,9 +944,7 @@ tasks:
 
             #### Malicious IP Found:
 
-            `${.=val.DBotScore && val.DBotScore.filter(d => d.Type === "ip" && d.Score
-            === 3).length > 0 ? val.DBotScore.filter(d => d.Type === "ip" && d.Score
-            === 3)[0].Indicator : "None"}`
+            `${.=val.DBotScore && val.DBotScore.filter(d => d.Type === "ip" && d.Score === 3).length > 0 ? val.DBotScore.filter(d => d.Type === "ip" && d.Score === 3)[0].Indicator : "None"}`
 
 
             ---
@@ -980,8 +952,7 @@ tasks:
 
             #### Core User Risk Analysis:
 
-            - **User is risky**: `${.=val.UserRiskyCoreReason ? "Yes, Reason: " +
-            val.UserRiskyCoreReason : "N/A"}`
+            - **User is risky**: `${.=val.UserRiskyCoreReason ? "Yes, Reason: " + val.UserRiskyCoreReason : "N/A"}`
 
 
             ---
@@ -989,9 +960,7 @@ tasks:
 
             #### Related Alerts:
 
-            ${.=val.foundIncidents && val.foundIncidents.length > 0 ? Array.from(new
-            Set(val.foundIncidents.map(incident => "  - " + incident.name))).join("\n\n")
-            : "N/A"}
+            ${.=val.foundIncidents && val.foundIncidents.length > 0 ? Array.from(new Set(val.foundIncidents.map(incident => "  - " + incident.name))).join("\n\n") : "N/A"}
 
 
             ---
@@ -1007,9 +976,7 @@ tasks:
 
             #### Okta Logs Analysis:
 
-            - **Last Day Failed Login Attempts**: `${.=val.FailedLogins && val.FailedLogins
-            !== "No logs found" ? val.FailedLogins.filter(f => f.actor.alternateId
-            === val.Core.OriginalAlert.event.auth_normalized_user.upn).length : "N/A"}`
+            - **Last Day Failed Login Attempts**: `${.=val.FailedLogins && val.FailedLogins !== "No logs found" ? val.FailedLogins.filter(f => f.actor.alternateId === val.Core.OriginalAlert.event.auth_normalized_user.upn).length : "N/A"}`
 
             - **Number of Suspicious Okta System Logs from Last Day**:
 
@@ -1041,19 +1008,19 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ''
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
       - '30'
@@ -1133,8 +1100,4 @@ tasks:
 tests:
 - No tests (auto formatted)
 version: -1
-view: "{\n  \"linkLabelsPosition\": {\n    \"12_14_yes - close alert\": 0.16,\n  \
-  \  \"12_9_#default#\": 0.36,\n    \"30_14_No Action\": 0.29,\n    \"30_32_Suspend\
-  \ User\": 0.63,\n    \"43_14_#default#\": 0.11,\n    \"43_17_yes\": 0.57\n  },\n\
-  \  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2735,\n      \"width\"\
-  : 2270,\n      \"x\": -360,\n      \"y\": 20\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"12_14_yes - close alert\": 0.16,\n    \"12_9_#default#\": 0.36,\n    \"30_14_No Action\": 0.29,\n    \"30_32_Suspend User\": 0.63,\n    \"43_14_#default#\": 0.11,\n    \"43_17_yes\": 0.57\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2735,\n      \"width\": 2270,\n      \"x\": -360,\n      \"y\": 20\n    }\n  }\n}"
