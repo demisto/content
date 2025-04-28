@@ -1155,15 +1155,19 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     """
     policy_id = args.get('policy_id')
     filter_query = args.get('filter')
-    limit = args.get('limit', 50)
+    limit = args.get('limit')
     all_results = argToBoolean(args.get('all_results', True))
     
     policies: Union[list[dict[str, Any]], CommandResults] = client.list_conditional_access_policies(policy_id, filter_query)
     if isinstance(policies, CommandResults):
         return policies
-    
-    
-    max_items = len(policies) if all_results else min(len(policies), int(limit))
+        
+    if limit:
+        max_items = int(limit)
+    elif all_results:
+        max_items = len(policies)
+    else:
+        max_items = min(len(policies), 50)  # Default limit
 
     policies_to_process = policies[:max_items]
 
