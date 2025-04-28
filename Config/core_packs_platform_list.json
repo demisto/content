@@ -24,6 +24,8 @@
         {
             "id": "CommonPlaybooks",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -54,6 +56,7 @@
         {
             "id": "Core",
             "supportedModules": [
+                "C1",
                 "C3",
                 "X0",
                 "X1",
@@ -92,6 +95,8 @@
         {
             "id": "DemistoRESTAPI",
             "supportedModules": [
+                "C1",
+                "C3",
                 "X0",
                 "X1",
                 "X3",
@@ -213,6 +218,8 @@
         {
             "id": "rasterize",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -222,6 +229,8 @@
         {
             "id": "CortexResponseAndRemediation",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",

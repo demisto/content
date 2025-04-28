@@ -1428,11 +1428,28 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
  - ${alert.&lt;alert-field&gt;}
  - ${incident.&lt;incident-field&gt;}
 
-In addition, it supports extended variables that start with `.`. Currently, only one value is defined for those variables.
+In addition, it supports extended variables that start with `.`.
 
  - ${.recordset}
    * It refers to the record set retrieved by the XQL query.
 
+ - ${.query.string}
+   * It refers to the query string used in the XQL query.
+
+ - ${.query.timeframe.from}
+   * It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
+
+ - ${.query.timeframe.to}
+   * It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
+
+ - ${.query.execution_id}
+   * It refers to the unique execution ID for the request query.
+
+ - ${.query.request_url}
+   * It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
+
+ - ${.query.result_url}
+   * It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
 
 
 ## Caching
