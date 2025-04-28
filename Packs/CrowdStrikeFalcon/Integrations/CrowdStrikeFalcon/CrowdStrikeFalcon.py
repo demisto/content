@@ -7543,7 +7543,7 @@ def get_ioarules_command(args: dict) -> CommandResults:
     )
 
 
-def main():
+def main(): # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
