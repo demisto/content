@@ -1,5 +1,3 @@
-from unittest.mock import patch, MagicMock
-
 import demistomock as demisto
 import pytest
 

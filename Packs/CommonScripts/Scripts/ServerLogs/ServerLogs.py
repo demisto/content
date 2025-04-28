@@ -23,7 +23,7 @@ def execute_ssh_command():
     return_results(output)
 
 
-def main():  # pragma: no cover
+def main():
     try:
         execute_ssh_command()
     except ValueError as e:
