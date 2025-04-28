@@ -742,7 +742,7 @@ A user can only have one Temporary Access Pass that's usable within its specifie
 | zip_password | Password for the Zip file. | Required | 
 | lifetime_in_minutes | Lifetime in minutes. Default is 60. | Optional | 
 | is_usable_once | Is useable only once. Possible values are: true, false. | Optional | 
-| start_time | Start time - Specify the start time for the Temporary Access Pass. <br/>The start time can be specified in various formats, such as "now", "in 2 days", etc.<br/>Also a valid start time can be an ISO 8601 date-time string in the format "YYYY-MM-DDThh:mm:ssZ". Default is now. | Optional | 
+| start_time | Start time - The start time for the Temporary Access Pass. <br/>The start time can be specified in various formats, such as "now", "in 2 days", etc.<br/>Also a valid start time can be an ISO 8601 date-time string in the format "YYYY-MM-DDThh:mm:ssZ". Default is now. | Optional | 
 
 #### Context Output
 
