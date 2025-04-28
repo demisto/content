@@ -140,7 +140,6 @@ script:
     - name: uuid
       required: true
       description: Unique ID of Email.
-      type: unknown
     description: Apply "hold" action to a specified Email.
     execution: true
   - name: darktrace-email-release-email
