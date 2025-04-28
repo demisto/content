@@ -136,8 +136,16 @@ def test_get_unsupported_chars_in_user():
 
     invalid_chars = "%&*+/=?`{|}"
     invalid_user = f"demi{invalid_chars}sto"
+    result = get_unsupported_chars_in_user(invalid_user)
+    assert len(result.difference(set(invalid_chars))) == 0, "All invalid characters should be extracted."
 
-    assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0
+    # Test case with None as user
+    result = get_unsupported_chars_in_user(None)
+    assert result == set(), "Expected an empty set when user is None."
+
+    # Test case with an empty string as user
+    result = get_unsupported_chars_in_user("")
+    assert result == set(), "Expected an empty set when user is an empty string."
 
 
 def test_suppress_errors(mocker):
@@ -558,3 +566,39 @@ def test_create_zip_with_password():
 
     finally:
         clean_up_files(start_time)
+        
+        
+def test_create_tap_policy_command_failure_on_empty_response(mocker):
+    from MicrosoftGraphUser import MsGraphClient, create_tap_policy_command
+    from CommonServerPython import CommandResults
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {
+        'user_id': '123456789',
+        'zip_password': '12345'
+    }
+
+    # Mock create_tap_policy to return None (failure scenario)
+    mock_create_tap_policy = mocker.patch.object(client, 'create_tap_policy', return_value=None)
+
+    # Call the function
+    result = create_tap_policy_command(client, args)
+
+    # Assert that the readable_output is 'Failed to create TAP policy.'
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == 'Failed to create TAP policy.'
+    assert mock_create_tap_policy.call_count == 1
