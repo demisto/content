@@ -1193,6 +1193,7 @@ def get_team_aad_id(team_name: str) -> str:
         teams: list = json.loads(integration_context["teams"])
         for team in teams:
             if team_name == team.get("team_name", ""):
+                demisto.debug(f"Using team_aad_id from integration context. ID - {team.get('team_aad_id', '')}")
                 return team.get("team_aad_id", "")
     url: str = (
         f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{urllib.parse.quote(team_name)}' "
@@ -2561,6 +2562,40 @@ def channel_mirror_loop():
         finally:
             time.sleep(5)
 
+def filter_invalid_teams(teams: list[dict], team_name: str) -> list[dict]:
+    """
+    Requests an updated list of teams with the given team name
+    and filters any missing teams of the same name from the given teams list.
+
+    :param teams: List of teams currently cached in the integration context.
+    :param team_name: Team name to test for.
+    :returns: Updated list of teams with bad team entries removed.
+    """
+    demisto.debug(f"Checking for invalid teams in cache for name '{team_name}'")
+    try:
+        url: str = (
+            f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{urllib.parse.quote(team_name)}' "
+            f"and resourceProvisioningOptions/Any(x:x eq 'Team')"
+        )
+        response: dict = cast(dict[Any, Any], http_request("GET", url))
+        response_teams = response.get("value", [])
+        demisto.debug(f"Found {len(response_teams)} valid teams with the name {team_name}")
+        valid_team_aad_ids = [team.get("id", "") for team in response_teams]
+        demisto.debug(f"aad_ids of discovered valid teams: {valid_team_aad_ids}")
+
+        # Keep only teams with different team names, or ones with ids found in the query
+        valid_teams = [team for team in teams if (team.get("team_name") != team_name or
+                                                  team.get("team_aad_id") in valid_team_aad_ids)]
+        if len(valid_teams) < len(teams):
+            filtered_ids = [team.get("team_aad_id", "") for team in teams if team not in valid_teams]
+            demisto.debug(f"Invalid team aad_ids filtered: {filtered_ids}")
+
+        return valid_teams
+
+    except Exception as e:
+        demisto.debug(f"Got error while trying to update the team cache: {e}")
+        return teams
+
 
 def member_added_handler(integration_context: dict, request_body: dict, channel_data: dict):
     """
@@ -2605,17 +2640,79 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     team_members: list = get_team_members(service_url, team_id)
 
     found_team: bool = False
+    found_duplicate_name: bool = False
     for team in teams:
         if team.get("team_aad_id", "") == team_aad_id:
             team["team_members"] = team_members
             found_team = True
-            break
+
+        elif team.get("team_name", "") == team_name: # Found cached team with same name but different id
+            found_duplicate_name = True
+
+    if found_duplicate_name:
+        teams = filter_invalid_teams(teams, team_name)
+
     if not found_team:
         # Didn't found an existing team, adding new team object
         teams.append({"team_aad_id": team_aad_id, "team_id": team_id, "team_name": team_name, "team_members": team_members})
     integration_context["teams"] = json.dumps(teams)
     set_integration_context(integration_context)
 
+def team_renamed_handler(integration_context: dict, channel_data: dict):
+    """
+    Updates the cached teams data with the new team name.
+    Adds a new team entry to the cache if the team is not already cached.
+
+    :param integration_context: Cache object to retrieve relevant data from.
+    :param channel_data: Channel data dict containing relevant data of the event.
+    :return: None
+    """
+    team = channel_data.get("team", {})
+    team_aad_id = team.get("aadGroupId")
+    team_new_name = team.get("name")
+    team_id = team.get("id", "")
+    demisto.debug(f"Renamed team aad_id is {team_aad_id}")
+
+    teams: list = json.loads(integration_context.get("teams", "[]"))
+    service_url: str = integration_context.get("service_url", "")
+
+    found_team: bool = False
+    found_duplicate_name: bool = False
+    for team in teams:
+        if team.get("team_aad_id", "") == team_aad_id:
+            team["team_name"] = team_new_name
+            found_team = True
+            demisto.info(f"Team {team['team_name']} has been renamed to {team_new_name}")
+
+        elif team.get("team_name", "") == team_new_name: # Found cached team with same name but different id
+            found_duplicate_name = True
+
+    if found_duplicate_name:
+        teams = filter_invalid_teams(teams, team_new_name)
+
+    if not found_team and service_url:
+        team_members: list = get_team_members(service_url, team_id)
+        teams.append({"team_aad_id": team_aad_id, "team_id": team_id, "team_name": team_new_name, "team_members": team_members})
+
+    integration_context["teams"] = json.dumps(teams)
+    set_integration_context(integration_context)
+
+def team_deleted_handler(integration_context: dict, channel_data: dict):
+    """
+    Removes the team listed in the event from the cached teams data.
+
+    :param integration_context: Cache object to retrieve relevant data from.
+    :param channel_data: Channel data dict containing relevant data of the event.
+    :return: None
+    """
+    team_aad_id = channel_data.get("team", {}).get("aadGroupId")
+    demisto.debug(f"Deleted team aad_id is {team_aad_id}")
+
+    teams: list = json.loads(integration_context.get("teams", "[]"))
+    teams = [team for team in teams if team.get("team_aad_id", "") != team_aad_id]
+
+    integration_context["teams"] = json.dumps(teams)
+    set_integration_context(integration_context)
 
 def handle_external_user(user_identifier: str, allow_create_incident: bool, create_incident: bool) -> str:
     """
@@ -2859,6 +2956,12 @@ def messages() -> Response:
                     f'Updated team in the integration context. '
                     f'Current saved teams: {json.dumps(get_integration_context().get("teams"))}'
                 )
+            elif event_type == "teamRenamed":
+                demisto.debug("Microsoft Teams team was renamed, updating teams cache")
+                team_renamed_handler(integration_context, channel_data)
+            elif event_type == "teamDeleted":
+                demisto.debug("Microsoft Teams team was deleted, updating teams cache")
+                team_deleted_handler(integration_context, channel_data)
             elif value:
                 # In TeamsAsk process
                 demisto.info("Got response from user in MicrosoftTeamsAsk process")
