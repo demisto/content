@@ -41,7 +41,13 @@ from ReversingLabsTitaniumCloudv2 import (
     yara_retro_actions_output,
     yara_retro_matches_feed_output,
     yara_ruleset_output,
+    ip_command,
+    file_command,
+    domain_command,
+    url_command
 )
+from ReversingLabs.SDK.helper import WrongInputError
+
 
 INTEGRATION_NAME = "ReversingLabs TitaniumCloud v2"
 test_hash = "21841b32c6165b27dddbd4d6eb3a672defe54271"
@@ -400,3 +406,23 @@ def test_customer_data_output():
     result = customer_usage_data_output(data_type="MONTHLY USAGE", whole_company=False, response_json=report)
 
     assert result.to_context().get("Contents").get("customer_usage_data").get("rl").get("month") == "2024-06"
+
+
+def test_ip_command():
+    with pytest.raises(WrongInputError):
+        ip_command()
+
+
+def test_domain_command():
+    with pytest.raises(WrongInputError):
+        domain_command()
+
+
+def test_url_command():
+    with pytest.raises(WrongInputError):
+        url_command()
+
+
+def test_file_command():
+    with pytest.raises(WrongInputError):
+        file_command()
