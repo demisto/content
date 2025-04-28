@@ -88,6 +88,9 @@ class Client(BaseClient):  # pragma: no cover
         )
         
     def convert_time(self ,time):
+        '''
+        The API receive timestamps only in iso format, percent encoded
+        '''
         time  = time.isoformat() #convert to iso format
         time_encoded = quote(time, safe = '')# Percent-encode (e.g., encode '+' to '%2B')
         return time_encoded
@@ -103,11 +106,11 @@ class Client(BaseClient):  # pragma: no cover
             "state": "all",
             "created_start_time": start,
             "created_end_time": curr_time,
-            "order": "asc" # need to be checked
+            "order": "asc"
                 }
         incidents : List[int] = []
         # handle paging
-        while len(incidents) < self.max_fetch:
+        while len(incidents) < self.max_fetch:  # take a look here - maybe a problem in case of several incidents in the same moment, and then filter them, but using page < total pages can bring to a high latency
             params["page"]= str(page)
             response = self._http_request(
                 method="GET",url_suffix=f"/incident/{self.company_id}/list/",params=params)
