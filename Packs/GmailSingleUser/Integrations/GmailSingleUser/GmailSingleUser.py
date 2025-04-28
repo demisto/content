@@ -1253,29 +1253,23 @@ def fetch_incidents(client: Client):
             f"keeping current last fetch: {last_fetch} as result has additional pages to fetch."
             f" token: {next_page_token}. Ignoring incremented last_fatch: {next_last_fetch}"
         )
-        lookback_date = parse_date(client, next_last_fetch, "date") - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
-        msg_to_exclude_in_next_fetch = [
-                (msg_id, parse_date(client, msg_date))
-                for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
-                if parse_date(client, msg_date, "date") >= lookback_date  # type: ignore
-            ]
     else:
         # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
         if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
             demisto.info(f"resetting ignore list of len: {len(ignore_ids)}")
             ignore_ids = []
-        if emails_ids_and_dates:
-            # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
-            latest_msg = max([parse_date(client, msg_date, "date")
-                             for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
-            next_last_fetch = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
-            msg_to_exclude_in_next_fetch = [
-                (msg_id, parse_date(client, msg_date))
-                for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
-                if parse_date(client, msg_date, "date") >= next_last_fetch  # type: ignore
-            ]
         demisto.debug(f"will use new last fetch date (no next page token): {next_last_fetch}")
         last_fetch = next_last_fetch
+    if emails_ids_and_dates:
+        # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
+        latest_msg = max([parse_date(client, msg_date, "date")
+                            for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
+        lookback_date = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
+        msg_to_exclude_in_next_fetch = [
+            (msg_id, parse_date(client, msg_date))
+            for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
+            if parse_date(client, msg_date, "date") >= lookback_date  # type: ignore
+        ]
     new_last_run = {
         "gmt_time": client.get_date_isoformat_server(last_fetch),
         "next_gmt_time": client.get_date_isoformat_server(next_last_fetch),
