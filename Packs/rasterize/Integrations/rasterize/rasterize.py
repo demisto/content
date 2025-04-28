@@ -25,7 +25,6 @@ from PyPDF2 import PdfReader
 from functools import lru_cache
 from urllib.parse import urlparse
 import ipaddress
-import ast
 
 # region constants and configurations
 
