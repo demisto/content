@@ -720,6 +720,8 @@ def ctm360_cbs_details_command(client: Client, args: dict[str, Any]) -> CommandR
     params |= {"module_type": INSTANCE.module}
     result = client.fetch_incident(params)
     log(INFO, f"Received {result}")
+    if result.get("timestamp", ""):
+        result["timestamp"] = str(result["timestamp"])
 
     return CommandResults(
         outputs_prefix=INSTANCE.details_prefix,
