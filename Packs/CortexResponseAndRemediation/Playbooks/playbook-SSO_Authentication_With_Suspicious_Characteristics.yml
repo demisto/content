@@ -978,7 +978,7 @@ tasks:
         - operator: isEqualString
           left:
             value:
-              simple: Core.RiskyUser.riask_level
+              simple: Core.RiskyUser.risk_level
             iscontext: true
           right:
             value:
