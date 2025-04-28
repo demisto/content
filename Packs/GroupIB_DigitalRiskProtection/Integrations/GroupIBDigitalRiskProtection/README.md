@@ -47,8 +47,11 @@ Receive all configured brands.
 | GIBDRP.OtherInfo | string | List of configured brands. | 
 
 #### Command example
+
 ```!gibdrp-get-brands```
+
 #### Context Example
+
 ```json
 {
     "GIBDRP": {
@@ -67,6 +70,7 @@ Receive all configured brands.
 #### Human Readable Output
 
 >### Installed Brands
+
 >|Name|Id|
 >|---|---|
 >| Example Brand | PvY1BZUBSFbLZGo2x8TA |
@@ -93,8 +97,11 @@ Receive all configured subscriptions.
 | GIBDRP.OtherInfo | string | List of configured subscriptions. | 
 
 #### Command example
+
 ```!gibdrp-get-subscriptions```
+
 #### Context Example
+
 ```json
 {
     "GIBDRP": {
@@ -110,6 +117,7 @@ Receive all configured subscriptions.
 #### Human Readable Output
 
 >### Purchased subscriptions
+
 >|Subscriptions|
 >|---|
 >| scam |
@@ -133,6 +141,7 @@ Getting a single violation by its ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### gibdrp-change-violation-status
 
 ***

@@ -37,8 +37,8 @@
                     "simple": "first_detected"
                 },
                 "GIB DRP Typosquatting Status": {
-					"simple": "typosquatting_status"
-				},
+                    "simple": "typosquatting_status"
+                },
                 "GIB DRP First Solved": {
                     "simple": "first_solved"
                 },
