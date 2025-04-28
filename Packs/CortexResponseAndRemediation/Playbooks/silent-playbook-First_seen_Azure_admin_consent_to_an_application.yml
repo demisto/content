@@ -1201,7 +1201,7 @@ tasks:
     task:
       id: a7b60609-0bda-4bad-9ce1-efe4f7d852d6
       version: -1
-      name: Does the consented application detected as suspicious?
+      name: Check whether the consented app is flagged as suspicious
       type: condition
       iscommand: false
       brand: ""
@@ -1310,7 +1310,7 @@ tasks:
     task:
       id: 6dcd4223-a281-4e2c-8b01-d0f43d4c0142
       version: -1
-      name: Evaluate analyst decision
+      name: Review the analyst's decision on the app response
       type: condition
       iscommand: false
       brand: ""
@@ -1491,7 +1491,7 @@ tasks:
     task:
       id: ddbab275-1563-4dfa-985e-36ab49bffe42
       version: -1
-      name: Does the user who consented the app is the app owner?
+      name: Check if User Consent is the app owner
       type: condition
       iscommand: false
       brand: ""
@@ -1578,7 +1578,7 @@ tasks:
     task:
       id: 7ef4fcd0-a8d3-480c-a561-20edaae9fdd0
       version: -1
-      name: Set App owner to context
+      name: Set App Owner
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -1651,7 +1651,7 @@ tasks:
     task:
       id: 966c7795-15b6-417a-aad6-405aa6dbcc37
       version: -1
-      name: 'Check if the app owner or the admin users was added recently '
+      name: Check if the app owner or admin was recently added
       description: Executes an Analytics query for data.
       script: '|||azure-log-analytics-execute-query'
       type: regular
@@ -1688,7 +1688,7 @@ tasks:
     task:
       id: f586c6d1-333f-413f-9882-62a0c8d5c339
       version: -1
-      name: Does any of the users created recently?
+      name: Check if users were created recently
       type: condition
       iscommand: false
       brand: ""
@@ -1731,7 +1731,7 @@ tasks:
     task:
       id: a749c6b5-cde0-4bdf-95ec-fd453feb4239
       version: -1
-      name: Set Users Created Recently to context
+      name: Set Created Users to Context
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -2035,7 +2035,7 @@ tasks:
     task:
       id: c31d25e5-4cef-4420-bac8-6b661176696c
       version: -1
-      name: Check if responding using Microsoft Graph integration is possible
+      name: Check if response via Microsoft Graph integration is possible
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       type: condition
       iscommand: false
@@ -2301,7 +2301,7 @@ tasks:
     task:
       id: 060a5c0f-086c-4068-8b85-e40dd5d18871
       version: -1
-      name: Evaluate analyst decision in regards to app response
+      name: Review the analyst's decision on the app response
       type: condition
       iscommand: false
       brand: ""
@@ -2359,7 +2359,7 @@ tasks:
     task:
       id: 8e9f95a6-995b-4413-b342-bb2b266e9369
       version: -1
-      name: Check if the analyst chose to disable the admin
+      name: Check whether the analyst disabled the admin
       type: condition
       iscommand: false
       brand: ""
@@ -2668,7 +2668,7 @@ tasks:
     task:
       id: bc944789-6ee4-477a-a0a4-b7421880d970
       version: -1
-      name: Does the app owner is suspicious?
+      name: Check if the app owner is suspicious
       type: condition
       iscommand: false
       brand: ""
