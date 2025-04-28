@@ -1297,6 +1297,7 @@ Message was sent successfully.
 
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
+For Microsoft Teams integration commands to be sent to Cortex XSIAM, you need to have role/access to Cortex XSIAM and your Teams email needs to match the email/user in Cortex XSIAM. External users can create incidents if the flag is set in the integration, but the rest of the commands require a valid Cortex XSIAM user and role.
 
 ## Direct messages commands
 You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.

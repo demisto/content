@@ -36,6 +36,10 @@ class MockPychromeEventHandler:
     is_private_network_url = False
 
 
+class MockTab:
+    id = "tab_id"
+
+
 def test_rasterize_email_image(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
@@ -612,7 +616,7 @@ def test_is_mailto_urls(mocker: MockerFixture):
     mock_handler = MockPychromeEventHandler()
     mock_handler.is_mailto = True
     mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
-    res = screenshot_image(None, None, "url", None, None)
+    res = screenshot_image(None, MockTab(), "url", None, None)
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
@@ -652,7 +656,7 @@ def test_is_private_network_urls(mocker: MockerFixture):
     mock_handler.is_private_network_url = True
     mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
 
-    res = screenshot_image(None, None, "url", None, None)
+    res = screenshot_image(None, MockTab(), "url", None, None)
 
     assert res == (
         None,
