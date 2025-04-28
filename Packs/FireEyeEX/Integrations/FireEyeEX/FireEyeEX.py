@@ -1,8 +1,6 @@
-
-from CommonServerPython import *
-
 # Disable insecure warnings
 import urllib3
+from CommonServerPython import *
 
 urllib3.disable_warnings()
 
@@ -100,7 +98,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     alerts = raw_response.get("alert")
     if not alerts:
-        md_ = f"No alerts with the given arguments were found.\n Arguments {str(request_params)}"
+        md_ = f"No alerts with the given arguments were found.\n Arguments {request_params!s}"
     else:
         alerts = alerts[:limit]
         headers = ["id", "occurred", "name", "action", "smtpMessage", "src", "dst", "alertUrl"]
@@ -258,9 +256,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
 
     if report_type == "alertDetailsReport":  # validate arguments
         # can use either alert_id, or infection_type and infection_id
-        err_str = (
-            "The alertDetailsReport can be retrieved using alert_id argument alone, or by infection_type and infection_id"
-        )
+        err_str = "The alertDetailsReport can be retrieved using alert_id argument alone, or by infection_type and infection_id"
         if alert_id:
             if infection_id or infection_type:
                 raise DemistoException(err_str)
@@ -475,7 +471,7 @@ def fetch_incidents(
     else:
         next_run = last_run
 
-    demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
+    demisto.info(f'{INTEGRATION_NAME} executing fetch with: {next_run.get("time")!s}')
     raw_response = client.fe_client.get_alerts_request(
         request_params={
             "start_time": to_fe_datetime_converter(next_run["time"]),  # type: ignore
@@ -488,7 +484,7 @@ def fetch_incidents(
     ten_minutes_date = dateparser.parse("10 minutes")
     assert ten_minutes_date is not None
     if not all_alerts:
-        demisto.info(f"{INTEGRATION_NAME} no alerts were fetched from FireEye server at: {str(next_run)}")
+        demisto.info(f"{INTEGRATION_NAME} no alerts were fetched from FireEye server at: {next_run!s}")
         # as no alerts occurred in the window of 48 hours from the given start time, update last_run window to the next
         # 48 hours. If it is later than now -10 minutes take the latter (to avoid missing events).
         two_days_from_last_search = dateparser.parse(next_run["time"]) + timedelta(hours=48)  # type: ignore
@@ -500,7 +496,7 @@ def fetch_incidents(
             "time": next_search.isoformat(),  # type: ignore
             "last_alert_ids": [],
         }
-        demisto.info(f"{INTEGRATION_NAME} setting next run to: {str(next_run)}")
+        demisto.info(f"{INTEGRATION_NAME} setting next run to: {next_run!s}")
         return next_run, []
 
     alerts = all_alerts[:max_fetch]
@@ -512,9 +508,10 @@ def fetch_incidents(
         if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
             incident = {
                 "name": f"{INTEGRATION_NAME} Alert: {alert_id}",
-
-                "occurred": dateparser.parse(alert.get("occurred"),  # type: ignore[union-attr]
-                                             settings={"TO_TIMEZONE": "UTC"}).strftime(DATE_FORMAT),    # type: ignore
+                "occurred": dateparser.parse(
+                    alert.get("occurred"),  # type: ignore[union-attr]
+                    settings={"TO_TIMEZONE": "UTC"},
+                ).strftime(DATE_FORMAT),  # type: ignore
                 "severity": alert_severity_to_dbot_score(alert.get("severity")),
                 "rawJSON": json.dumps(alert),
             }
@@ -522,7 +519,7 @@ def fetch_incidents(
             last_alert_ids.append(alert_id)
 
     if not incidents:
-        demisto.info(f"{INTEGRATION_NAME} no new alerts were collected at: {str(next_run)}.")
+        demisto.info(f"{INTEGRATION_NAME} no new alerts were collected at: {next_run!s}.")
         # As no incidents were collected, we know that all the fetched alerts for 48 hours starting in the 'start_time'
         # already exists in our system, thus update last_run time to look for the next 48 hours. If it is later than
         # now -10 minutes take the latter (to avoid missing events)
@@ -538,7 +535,7 @@ def fetch_incidents(
         "time": alerts[-1].get("occurred"),
         "last_alert_ids": last_alert_ids,  # save the alert IDs from the last fetch
     }
-    demisto.info(f"{INTEGRATION_NAME} Fetched {len(incidents)}. last fetch at: {str(next_run)}")
+    demisto.info(f"{INTEGRATION_NAME} Fetched {len(incidents)}. last fetch at: {next_run!s}")
     return next_run, incidents
 
 
