@@ -47,6 +47,7 @@ class PrismaSase:
         context_rule_list = get_relevant_context(res_rule_list[0].get('EntryContext', {}), 'PrismaSase.SecurityRule')
         rule_id = context_rule_list.get('id', '')  # type: ignore
         rule_destination = context_rule_list.get('destination', [])  # type: ignore
+        demisto.debug(f"The info of the existing rule {rule_name=} {rule_id=} {rule_destination=}")
         if address_group not in rule_destination:
             command_name = "prisma-sase-security-rule-update"
             res_rule_update = run_execute_command(command_name,
