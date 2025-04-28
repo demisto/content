@@ -597,8 +597,6 @@ def test_create_tap_policy_command_failure_on_empty_response(mocker):
 
     # Call the function
     result = create_tap_policy_command(client, args)
-
-    # Assert that the readable_output is 'Failed to create TAP policy.'
     assert isinstance(result, CommandResults)
     assert result.readable_output == 'Failed to create TAP policy.'
     assert mock_create_tap_policy.call_count == 1
