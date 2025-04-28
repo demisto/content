@@ -29,12 +29,14 @@ from EWSO365 import (
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
+    fetch_attachments_for_message,
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone, FileAttachment
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
+from EWSApiModule import EWSClient
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -51,7 +53,7 @@ class TestNormalCommands:
         * ews-expand-group
     """
 
-    class MockClient:
+    class MockClient(EWSClient):
         class MockAccount:
             DEFAULT_FOLDER_TRAVERSAL_DEPTH = 3
 
@@ -1142,3 +1144,42 @@ def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header
     result = handle_attached_email_with_incorrect_from_header(message)
 
     assert result["From"] == "Task One Test <info@test.com>"
+
+def test_fetch_attachments_for_message_output(mocker):
+    from EWSO365 import main
+    from EWSApiModule import CustomDomainOAuth2Credentials
+    from CommonServerPython import CommandResults
+
+    client = TestNormalCommands.MockClient()
+    client.credentials = MagicMock(spec=CustomDomainOAuth2Credentials)
+    client.account.primary_smtp_address = "mock_primary_address"
+    item_id = "mock_item_id"
+
+    mock_file_attachment = MagicMock(spec=FileAttachment)
+    mock_file_attachment.name = "mock_file_attachment"
+    mock_file_attachment.content = "mock file content"
+    mock_file_attachment.content_id = "mock_file_id"
+    mock_item_attachment = MagicMock(spec=ItemAttachment)
+    mock_item_attachment.name = "item_attachment_mock"
+    mock_item_attachment.content_id = "mock_item_id"
+    mock_item_attachment.item.mime_content = "mock mime content"
+    mock_attachments = [mock_file_attachment, mock_item_attachment]
+
+    mocker.patch.object(demisto, "args", return_value={"item_id": item_id})
+    mocker.patch.object(demisto, "command", return_value="ews-get-attachment")
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch("EWSO365.get_client_from_params", return_value=client)
+    mocker.patch.object(client, "get_attachments_for_item", return_value=mock_attachments)
+    mocker.patch("EWSO365.fileResult", side_effect=lambda attach_name, data: {"File": attach_name, "content": data})
+    return_results_mock = mocker.patch("EWSO365.return_results")
+
+    main()
+
+    assert return_results_mock
+    results = return_results_mock.call_args.args[0]
+    assert results[0].get("File") == "mock_file_id-attachmentName-mock_file_attachment"
+    assert results[0].get("content") == "mock file content"
+    assert isinstance(results[1], CommandResults)
+    assert results[1].outputs.get("attachmentName") == "mock_item_id-attachmentName-item_attachment_mock"
+    assert results[2].get("File") == "mock_item_id-attachmentName-item_attachment_mock.eml"
+    assert results[2].get("content") == "mock mime content"
