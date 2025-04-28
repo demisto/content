@@ -900,7 +900,7 @@ Creates a Conditional Access policy.
 | include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
 | exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
 | grant_control_operator | The operator for grant control.<br/>. Possible values are: AND, OR. | Optional | 
-| built_in_controls | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Default value is 'mfa'<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
+| grant_control_enforcement | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Default value is 'mfa'<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
 
 #### Context Output
 
@@ -937,7 +937,7 @@ Creates a Conditional Access policy.
 | MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled | boolean | Whether sign-in frequency control is enabled. | 
 
 #### Command example
-```!msgraph-identity-ca-policy-create policy_name="test" state=disabled client_app_types="all" include_users="All" include_applications="none" include_platforms="iOS" built_in_controls="block" grant_control_operator="AND" sign_in_risk_levels="low" user_risk_levels="low"```
+```!msgraph-identity-ca-policy-create policy_name="test" state=disabled client_app_types="all" include_users="All" include_applications="none" include_platforms="iOS" grant_control_enforcement="block" grant_control_operator="AND" sign_in_risk_levels="low" user_risk_levels="low"```
 #### Context Example
 ```json
 {
@@ -1054,7 +1054,7 @@ Updates a Conditional Access policy. By default, the command attempts to **appen
 | include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
 | exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
 | grant_control_operator | The operator for grant control.<br/>. Possible values are: AND, OR. | Optional | 
-| built_in_controls | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
+| grant_control_enforcement | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
 | update_action | Defines how to update fields in the policy.<br/>- `override` (default): Replaces existing values.<br/>- `append`: Adds new values to existing ones without removing them.<br/>. Possible values are: override, append. | Optional | 
 
 #### Context Output
@@ -1095,4 +1095,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Conditional Access policy fc271abb-e52c-4c40-aff9-5fd1e534a58d was successfully deleted.
-

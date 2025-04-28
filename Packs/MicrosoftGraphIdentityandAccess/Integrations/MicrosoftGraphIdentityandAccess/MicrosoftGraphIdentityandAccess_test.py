@@ -674,7 +674,25 @@ from CommonServerPython import CommandResults
     ],
 )
 def test_create_policy_command_variants(mocker, args, mock_return, expected_in_output, should_mock_call):
+    """
+    Tests the create_conditional_access_policy_command function with various inputs.
+
+    Given:
+        - Different argument combinations for creating a policy (valid structured input, empty required fields)
+        - Mock return values for the client function
+
+    When:
+        - Calling create_conditional_access_policy_command
+
+    Then:
+        - Validates correct handling of:
+            - Valid input with proper command results
+            - Empty required list fields with appropriate error message
+        - Confirms mock client is called only when expected
+    """
+    
     from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client
+    
     mock_client = mocker.Mock(spec=Client)
     if should_mock_call:
         mock_client.create_conditional_access_policy.return_value = mock_return
@@ -757,7 +775,28 @@ def test_create_policy_command_variants(mocker, args, mock_return, expected_in_o
 def test_update_policy_appends_merge_messages_correctly(
     mocker, args, existing_policy, mock_result, expected_note_text, expect_merge_message
 ):
-    
+    """
+    Tests the behavior of updating conditional access policies with special merge handling.
+
+    Given:
+        - Different scenarios for updating policies:
+            - Policy with special 'All' value in includeUsers
+            - Policy with regular values
+            - Error case in update operation
+        - Mock responses for each scenario
+
+    When:
+        - Calling update_conditional_access_policy_command
+
+    Then:
+        - Verifies merge messages are appended correctly when:
+            - Special values like 'All' exist in array fields
+            - Updates would overwrite these special values
+        - Confirms messages are NOT appended when:
+            - No special values exist
+            - The update operation returns an error
+    """
+        
     from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, CommandResults, Client
     
     mock_client = mocker.Mock(spec=Client)
