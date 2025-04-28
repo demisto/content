@@ -723,7 +723,7 @@ def main() -> None:     # pragma: no cover
             # Get tag severities to filter by
             tag_severity = demisto.params().get('tag_severity')
             if isinstance(tag_severity, str):
-                tag_severity = EMAIL_SEVERITY_MAPPER[tag_severity]
+                tag_severity = [EMAIL_SEVERITY_MAPPER[tag_severity]]
             elif isinstance(tag_severity, list):
                 tag_severity = [EMAIL_SEVERITY_MAPPER[tag_sev] for tag_sev in tag_severity]
 
