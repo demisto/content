@@ -91,6 +91,77 @@ configuration:
 script:
   commands:
 
+    - name: aws-s3-public-access-block-put
+      description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
+      arguments:
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+      - description: The name of the Amazon S3 bucket.
+        name: bucket
+        required: true
+      - description: Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+        name: block_public_acls
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+      - description: Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+        name: ignore_public_acls
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+      - description: Specifies whether Amazon S3 should block public bucket policies for this bucket.
+        name: block_public_policy
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+      - description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
+        name: restrict_public_buckets
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+    
     - name: aws-s3-bucket-acl-put
       description: 'TODO'
       arguments:
@@ -265,77 +336,6 @@ script:
           description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
           required: false
 
-    - name: aws-s3-public-access-block-update
-      description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
-      arguments:
-      - description: The AWS account ID.
-        name: account_id
-        required: true
-      - description: The AWS region.
-        name: region
-        required: true
-        auto: PREDEFINED
-        predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - af-south-1
-        - ap-east-1
-        - ap-south-2
-        - ap-southeast-3
-        - ap-southeast-5
-        - ap-southeast-4
-        - ap-south-1
-        - ap-northeast-3
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-southeast-7
-        - ap-northeast-1
-        - ca-central-1
-        - ca-west-1
-        - eu-central-1
-        - eu-west-1
-        - eu-west-2
-        - eu-south-1
-        - eu-west-3
-        - eu-south-2
-        - eu-north-1
-        - eu-central-2
-        - il-central-1
-        - mx-central-1
-        - me-south-1
-        - me-central-1
-        - sa-east-1
-      - description: The name of the Amazon S3 bucket.
-        name: bucket
-        required: true
-      - description: Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
-        name: block_public_acls
-        auto: PREDEFINED
-        predefined:
-        - 'true'
-        - 'false'
-      - description: Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
-        name: ignore_public_acls
-        auto: PREDEFINED
-        predefined:
-        - 'true'
-        - 'false'
-      - description: Specifies whether Amazon S3 should block public bucket policies for this bucket.
-        name: block_public_policy
-        auto: PREDEFINED
-        predefined:
-        - 'true'
-        - 'false'
-      - description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
-        name: restrict_public_buckets
-        auto: PREDEFINED
-        predefined:
-        - 'true'
-        - 'false'
-    
     - name: aws-iam-account-password-policy-get
       description: Get AWS account's password policy.
       arguments:
@@ -373,6 +373,62 @@ script:
       - contextPath: AWS.IAM.PasswordPolicy.HardExpiry
         description: Specifies whether IAM users are prevented from setting a new password via the Amazon Web Services Management Console after their password has expired.
         type: boolean
+
+    - name: aws-iam-account-password-policy-update
+      description: Create/update password policy.
+      execution: true
+      arguments:
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The minimum number of characters allowed in an IAM user password.
+        name: minimum_password_length
+        predefined:
+        - ''
+      - auto: PREDEFINED
+        description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
+        name: require_symbols
+        predefined:
+        - 'true'
+        - 'false'
+      - auto: PREDEFINED
+        description: Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False".
+        name: require_numbers
+        predefined:
+        - 'true'
+        - 'false'
+      - auto: PREDEFINED
+        description: Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
+        name: require_uppercase_characters
+        predefined:
+        - 'true'
+        - 'false'
+      - auto: PREDEFINED
+        description: Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
+        name: require_lowercase_characters
+        predefined:
+        - 'true'
+        - 'false'
+      - auto: PREDEFINED
+        description: Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False".
+        name: allow_users_to_change_password
+        predefined:
+        - 'true'
+        - 'false'
+      - description: The number of days that an IAM user password is valid.
+        name: max_password_age
+        predefined:
+        - ''
+      - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
+        name: password_reuse_prevention
+        predefined:
+        - ''
+      - auto: PREDEFINED
+        description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
+        name: hard_expiry
+        predefined:
+        - 'true'
+        - 'false'
 
     - name: aws-ec2-instance-metadata-options-modify
       description: Modify the EC2 instance metadata parameters on a running or stopped instance.
@@ -432,63 +488,7 @@ script:
         predefined:
         - 'disabled'
         - 'enabled'
-
-    - name: aws-iam-account-password-policy-update
-      description: Create/update password policy.
-      execution: true
-      arguments:
-      - description: The AWS account ID.
-        name: account_id
-        required: true
-      - description: The minimum number of characters allowed in an IAM user password.
-        name: minimum_password_length
-        predefined:
-        - ''
-      - auto: PREDEFINED
-        description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
-        name: require_symbols
-        predefined:
-        - 'true'
-        - 'false'
-      - auto: PREDEFINED
-        description: Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False".
-        name: require_numbers
-        predefined:
-        - 'true'
-        - 'false'
-      - auto: PREDEFINED
-        description: Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
-        name: require_uppercase_characters
-        predefined:
-        - 'true'
-        - 'false'
-      - auto: PREDEFINED
-        description: Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
-        name: require_lowercase_characters
-        predefined:
-        - 'true'
-        - 'false'
-      - auto: PREDEFINED
-        description: Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False".
-        name: allow_users_to_change_password
-        predefined:
-        - 'true'
-        - 'false'
-      - description: The number of days that an IAM user password is valid.
-        name: max_password_age
-        predefined:
-        - ''
-      - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
-        name: password_reuse_prevention
-        predefined:
-        - ''
-      - auto: PREDEFINED
-        description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
-        name: hard_expiry
-        predefined:
-        - 'true'
-        - 'false'
-
+  
   isfetch: false
   runonce: false
   type: python

@@ -1,7 +1,7 @@
 Support for AWS cloud
-This integration was integrated and tested with version 1.0.0 of AWS Cloud Automations.
+This integration was integrated and tested with version 1.0.0 of AWS.
 
-## Configure AWS Cloud Automations in Cortex
+## Configure AWS in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
