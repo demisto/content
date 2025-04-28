@@ -4,6 +4,8 @@ This integration was built and tested with version 2.0 of National Vulnerability
 
 An API key for this feed can be obtained at [the NIST NVD Developer Website](https://nvd.nist.gov/developers/request-an-api-key)
 
+This integration supports the latest CVSS - Common Vulnerability Scoring System standard - CVSS Version 4.0.
+
 ## Configure National Vulnerability Database in Cortex
 
 
