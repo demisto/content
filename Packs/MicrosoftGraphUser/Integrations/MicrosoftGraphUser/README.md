@@ -707,7 +707,7 @@ There is no context output for this command.
 ### msgraph-user-tap-policy-delete
 
 ***
-This command will delete a specific Temporary Access Pass policy
+This command will delete a specific Temporary Access Pass policy.
 
 #### Base Command
 
