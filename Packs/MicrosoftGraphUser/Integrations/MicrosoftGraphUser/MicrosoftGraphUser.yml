@@ -669,7 +669,7 @@ script:
       name: zip_password
       required: true
       secret: true
-    - description: The Duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days).
+    - description: The duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days).
       name: lifetime_in_minutes
       required: false
       defaultValue: 60
