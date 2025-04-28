@@ -63,7 +63,7 @@ script:
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
-          type: Unknown
+          type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
           type: Unknown
