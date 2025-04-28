@@ -865,11 +865,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
+    taskid: 5838e1c9-cafe-4588-b1f8-91f18d903503
     type: condition
     task:
-      id: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
-      description: ""
+      id: 5838e1c9-cafe-4588-b1f8-91f18d903503
       version: -1
       name: Check for suspicious evidence
       type: condition
@@ -877,92 +876,113 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+        - "14"
       "yes":
-      - "17"
+        - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: OktaLogs
-            iscontext: true
-          right:
-            value:
-              simple: No logs found
-          ignorecase: true
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: FailedLogins
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: FailedLogins.actor.alternateId
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert.event.auth_normalized_user.upn
-                      iscontext: true
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "5"
-          ignorecase: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: foundIncidents.id
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ip
-                    ignorecase: true
-                - - operator: greaterThanOrEqual
-                    left:
-                      value:
-                        simple: DBotScore.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "3"
-                accessor: Indicator
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: UserAgent
-            iscontext: true
-        - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Core.OriginalAlert.raw_abioc.event.sso_debug_data
-                accessor: tunnels
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: '"TOR_PROXY"'
-          ignorecase: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: OktaLogs
+                    filters:
+                      - - operator: isNotEqualString
+                          left:
+                            value:
+                              simple: OktaLogs
+                            iscontext: true
+                          right:
+                            value:
+                              simple: No logs found
+                      - - operator: isNotEmpty
+                          left:
+                            value:
+                              simple: OktaLogs
+                            iscontext: true
+                iscontext: true
+              ignorecase: true
+            - operator: greaterThanOrEqual
+              left:
+                value:
+                  complex:
+                    root: FailedLogins
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: FailedLogins.actor.alternateId
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Core.OriginalAlert.event.auth_normalized_user.upn
+                            iscontext: true
+                    transformers:
+                      - operator: count
+                iscontext: true
+              right:
+                value:
+                  simple: "5"
+              ignorecase: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: foundIncidents.id
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: DBotScore
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: DBotScore.Type
+                            iscontext: true
+                          right:
+                            value:
+                              simple: ip
+                          ignorecase: true
+                      - - operator: greaterThanOrEqual
+                          left:
+                            value:
+                              simple: DBotScore.Score
+                            iscontext: true
+                          right:
+                            value:
+                              simple: "3"
+                    accessor: Indicator
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: UserAgent
+                iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  complex:
+                    root: Core.OriginalAlert.raw_abioc.event.sso_debug_data
+                    accessor: tunnels
+                    transformers:
+                      - operator: uniq
+                iscontext: true
+              right:
+                value:
+                  simple: '"TOR_PROXY"'
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.riask_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -972,7 +992,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
