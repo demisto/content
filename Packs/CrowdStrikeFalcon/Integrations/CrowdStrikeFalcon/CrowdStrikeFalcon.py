@@ -761,7 +761,7 @@ def add_mirroring_fields(incident: dict):
     incident["mirror_instance"] = INTEGRATION_INSTANCE
 
 
-def detection_to_incident(detection):
+def detection_to_incident(detection, is_fetch_events: bool = False):
     """
     Creates an incident of a detection.
 
@@ -781,7 +781,7 @@ def detection_to_incident(detection):
         "rawJSON": json.dumps(detection),
         "severity": severity_string_to_int(severity),
     }
-    if is_fetch_events():
+    if is_fetch_events:
         incident["_source_log_type"] = detection.get("incident_type")
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
@@ -794,7 +794,7 @@ def detection_to_incident(detection):
     return incident
 
 
-def incident_to_incident_context(incident):
+def incident_to_incident_context(incident, is_fetch_events: bool = False):
     """
     Creates an incident context of a incident.
 
@@ -814,7 +814,7 @@ def incident_to_incident_context(incident):
         "occurred": str(incident.get("start")),
         "rawJSON": json.dumps(incident),
     }
-    if is_fetch_events():
+    if is_fetch_events:
         incident_context["_source_log_type"] = incident.get("incident_type")
         # new incident
         if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created")):
@@ -849,7 +849,7 @@ def fix_time_field(detection: dict, time_key: str):
     detection[time_key] = fixed_date
 
 
-def detection_to_incident_context(detection, detection_type, start_time_key: str = "start_time"):
+def detection_to_incident_context(detection, detection_type, start_time_key: str = "start_time", is_fetch_events: bool = False):
     """
     Creates an incident context of an IDP/Mobile/ODS detection.
 
@@ -873,7 +873,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
     
-    if is_fetch_events():
+    if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
@@ -3290,7 +3290,7 @@ def fetch_events():
                     f"CrowdStrikeFalconMsg: Detection {detection_id} "
                     f"was fetched which was created in {detection['created_timestamp']}"
                 )
-                incident = detection_to_incident(detection)
+                incident = detection_to_incident(detection, is_fetch_events=True)
                 detections.append(incident)
 
         detections = filter_incidents_by_duplicates_and_limit(
@@ -3351,7 +3351,7 @@ def fetch_events():
                 full_incidents = demisto.get(raw_res, "resources")
                 for incident in full_incidents:
                     incident["incident_type"] = incident_type
-                    incident_to_context = incident_to_incident_context(incident)
+                    incident_to_context = incident_to_incident_context(incident, is_fetch_events=True)
                     incidents.append(incident_to_context)
 
         incidents = filter_incidents_by_duplicates_and_limit(
@@ -3386,6 +3386,7 @@ def fetch_events():
             product_type="idp",
             detection_name_prefix=IDP_DETECTION_FETCH_TYPE,
             start_time_key="created_timestamp",
+            is_fetch_events=True
         )
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3397,6 +3398,7 @@ def fetch_events():
             product_type="mobile",
             detection_name_prefix=MOBILE_DETECTION_FETCH_TYPE,
             start_time_key="timestamp",
+            is_fetch_events=True
         )
 
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
@@ -3413,6 +3415,7 @@ def fetch_events():
             product_type="ods",
             detection_name_prefix=ON_DEMAND_SCANS_DETECTION_TYPE,
             start_time_key="created_timestamp",
+            is_fetch_events=True
         )
 
     if OFP_DETECTION_TYPE in fetch_incidents_or_detections:
@@ -3429,6 +3432,7 @@ def fetch_events():
             product_type="ofp",
             detection_name_prefix=OFP_DETECTION_TYPE,
             start_time_key="created_timestamp",
+            is_fetch_events=True
         )
 
     last_run = [
@@ -3459,6 +3463,7 @@ def fetch_detections_by_product_type(
     detections_type: str,
     detection_name_prefix: str,
     start_time_key: str,
+    is_fetch_events: bool = False
 ) -> tuple[List, dict]:
     """The fetch logic for idp, ods and mobile detections.
 
@@ -3479,7 +3484,7 @@ def fetch_detections_by_product_type(
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-    if is_fetch_events():
+    if is_fetch_events:
         fetch_limit = current_fetch_info.get("limit") or MAX_FETCH_DETECTION_PER_API_CALL
     else:
         fetch_limit = current_fetch_info.get("limit") or INCIDENTS_PER_FETCH
@@ -3509,7 +3514,10 @@ def fetch_detections_by_product_type(
             full_detections = demisto.get(raw_res, "resources")
             for detection in full_detections:
                 detection["incident_type"] = detections_type
-                detection_to_context = detection_to_incident_context(detection, detection_name_prefix, start_time_key)
+                detection_to_context = detection_to_incident_context(detection,
+                                                                     detection_name_prefix,
+                                                                     start_time_key,
+                                                                     is_fetch_events=is_fetch_events)
                 detections.append(detection_to_context)
         detections = (
             truncate_long_time_str(detections, "occurred")
