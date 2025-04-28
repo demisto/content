@@ -20,6 +20,10 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
 
+## Known Limitations
+
+* The *fetch-incidents* only ingests the events with **"Critical"** severity.
+
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
