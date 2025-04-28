@@ -81,8 +81,8 @@ tasks:
     task:
       id: f1fa1236-07c7-4291-8230-fa48fb2e2d4a
       version: -1
-      name: Set Isolated endpoint ID to the Alert context
-      description: commands.local.cmd.set.parent.alert.context
+      name: Set Isolated endpoint ID to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
@@ -348,8 +348,8 @@ tasks:
     task:
       id: 677be289-10e0-46ea-8380-a44f18e8a047
       version: -1
-      name: Set Isolated endpoint ID to the Alert context
-      description: commands.local.cmd.set.parent.alert.context
+      name: Set Isolated endpoint ID to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
