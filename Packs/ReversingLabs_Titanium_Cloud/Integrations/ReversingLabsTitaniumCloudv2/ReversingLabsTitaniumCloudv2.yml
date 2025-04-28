@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+  - Connect
+  - Collect
 commonfields:
   id: ReversingLabs TitaniumCloud v2
   version: -1
@@ -8,10 +11,12 @@ configuration:
     name: base
     required: true
     type: 0
+    section: Connect
   - display: Credentials
     name: credentials
     required: true
     type: 9
+    section: Connect
   - defaultvalue: C - Fairly reliable
     display: Reliability
     name: reliability
@@ -25,29 +30,40 @@ configuration:
       - F - Reliability cannot be judged
     type: 15
     required: false
+    section: Collect
   - defaultvalue: "false"
     display: Verify certificates
     name: verify_certs
     type: 8
     required: false
+    section: Connect
+    advanced: true
   - display: HTTP proxy address with the protocol and port number
     name: http_proxy
     type: 0
     required: false
+    section: Connect
+    advanced: true
   - display: HTTP proxy username
     name: http_credentials
     displaypassword: HTTP proxy password
     required: false
     type: 9
+    section: Connect
+    advanced: true
   - display: HTTPS proxy address with the protocol and port number
     name: https_proxy
     type: 0
     required: false
+    section: Connect
+    advanced: true
   - display: HTTPS proxy username
     name: https_credentials
     displaypassword: HTTPS proxy password
     required: false
     type: 9
+    section: Connect
+    advanced: true
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
 display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2
