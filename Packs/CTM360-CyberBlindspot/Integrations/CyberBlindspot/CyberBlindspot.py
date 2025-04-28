@@ -767,38 +767,67 @@ def ctm360_cbs_incident_retrieve_screenshots_command(
     log(DEBUG, f"Getting screenshot evidence for {params=}")
 
     try:
+        # Early returns for disabled screenshots
         if not RETRIEVE_SCREENSHOTS:
             log(INFO, "Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
             return CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
-
-        results = client.get_screenshot_files(params)
+        
+        # Get existing filenames from context
+        existing_files = demisto.context().get("InfoFile", [])
+        log(DEBUG, f"{existing_files=}")
+        if not isinstance(existing_files, list):
+            existing_files = [existing_files] if existing_files else []
+        existing_filenames = [d.get("Name") for d in existing_files if isinstance(d, dict) and d.get("Name")]
+        
+        # Filter requested files that already exist in context
+        if "files" in params and isinstance(params["files"], list):
+            original_files = params["files"]
+            params["files"] = [
+                file_info for file_info in original_files
+                if isinstance(file_info, dict) and file_info.get("filename") not in existing_filenames
+            ]
+            
+            if not params["files"] and original_files:
+                return CommandResults(readable_output="All requested screenshots already exist in context")
+        
+        # Make API call and handle errors
+        try:
+            results = client.get_screenshot_files(params) if params.get("files", True) else []
+            log(DEBUG, f"{results=}")
+        except Exception as e:
+            log(ERROR, f"Error calling get_screenshot_files: {str(e)}")
+            return CommandResults(readable_output=f"Failed to fetch screenshots from API: {str(e)}")
 
         if not results:
-            return CommandResults(readable_output="Failed to fetch screenshot(s)")
+            return CommandResults(readable_output="No new screenshots to fetch")
 
-        files = []
+        # Process results
+        file_results = []
         for file_data in results:
-            log(DEBUG, f"File: {file_data}")
+            if not isinstance(file_data, dict):
+                continue
+                
             filename = file_data.get("filename")
             filedata = file_data.get("filedata", {})
 
             if not filename or not isinstance(filedata, dict) or "data" not in filedata:
-                log(INFO, f"Skipping invalid file data: {file_data}")
                 continue
 
             try:
                 data = bytes(filedata["data"])
                 file = fileResult(filename, data, file_type=EntryType.IMAGE)
-                files.append(file)
+                if file:
+                    file_results.append(file)
             except Exception as e:
                 log(ERROR, f"Failed to process file {filename}: {str(e)}")
                 continue
 
-        if not files:
-            return CommandResults(readable_output="No valid screenshots found")
+        log(DEBUG, f"{file_results=}")
+        if not file_results:
+            return CommandResults(readable_output="No new screenshots to add to context")
 
-        log(DEBUG, f"{files=}")
-        return files[0] if len(files) == 1 else files
+        log(INFO, f"Added {len(file_results)} new screenshot(s) to context")
+        return file_results
 
     except Exception as e:
         log(ERROR, f"Failed to get screenshot evidence: {str(e)}")
