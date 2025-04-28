@@ -4,3 +4,8 @@ name: Workday Modeling Rule
 rules: ''
 schema: ''
 tags: workday
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
