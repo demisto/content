@@ -4,7 +4,6 @@ from GetDataCollectionLink import (
     encode_string,
     generate_url,
     get_data_collection_url,
-    is_machine_saas,
 )
 
 
@@ -22,33 +21,6 @@ def test_main(mocker):
             "user": "t",
         }
     ]
-
-
-@pytest.mark.parametrize(
-    "platform, version, expected",
-    [
-        ("x2", "0.0.0", True),
-        ("xsoar", "8.4.0", True),
-        ("xsoar_hosted", "6.0.0", False),
-        ("xsoar", "6.12.0", False),
-    ],
-)
-def test_is_machine_saas(mocker, platform, version, expected):
-    """
-    Given:
-        - The platform and version args
-    When:
-        - `is_machine_saas` is called
-    Then:
-        - Ensure that returns as expected
-
-    """
-    mocker.patch.object(
-        demisto,
-        "demistoVersion",
-        return_value={"platform": platform, "version": version},
-    )
-    assert is_machine_saas() == expected
 
 
 @pytest.mark.parametrize(
