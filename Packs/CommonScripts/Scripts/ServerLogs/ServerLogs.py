@@ -3,8 +3,6 @@ import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-ERROR_MESSAGE = ()
-
 
 def execute_ssh_command():
     """Execute the `ssh` command to get the server logs and return the result to the war room."""
