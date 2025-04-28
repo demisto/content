@@ -751,7 +751,7 @@ tasks:
     task:
       id: ecffd95d-2836-4f88-a543-e73bfa300348
       version: -1
-      name: Does the admin who consented the app is suspicious?
+      name: Check whether the consenting admin is suspicious
       type: condition
       iscommand: false
       brand: ""
@@ -1024,7 +1024,7 @@ tasks:
     task:
       id: 9392c418-647d-4f37-9ceb-990bb6b48ce7
       version: -1
-      name: Does a new sign in from an uncommon location found?
+      name: Check the sign-in from an uncommon location.
       type: condition
       iscommand: false
       brand: ""
