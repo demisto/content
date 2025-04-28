@@ -83,10 +83,10 @@ script:
           type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -125,7 +125,7 @@ script:
       outputs:
         - contextPath: URL.Data
           description: The URL.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -158,7 +158,7 @@ script:
       outputs:
         - contextPath: IP.Address
           description: The IP address.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -188,7 +188,7 @@ script:
       outputs:
         - contextPath: Domain.Name
           description: The domain name.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -217,13 +217,13 @@ script:
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
-          type: Unknown
+          type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -249,13 +249,13 @@ script:
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
-          type: Unknown
+          type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.av_scanners
           description: The AV scanners.
           type: Unknown
@@ -269,13 +269,13 @@ script:
       outputs:
         - contextPath: File.MD5
           description: Bad hash found.
-          type: Unknown
+          type: String
         - contextPath: File.SHA1
           description: Bad hash SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: Bad hash SHA256.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.file_analysis
           description: The file analysis.
           type: Unknown
@@ -303,13 +303,13 @@ script:
       outputs:
         - contextPath: File.SHA1
           description: File SHA1.
-          type: Unknown
+          type: String
         - contextPath: File.SHA256
           description: File SHA256.
-          type: Unknown
+          type: String
         - contextPath: File.MD5
           description: File MD5.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -335,16 +335,16 @@ script:
       outputs:
         - contextPath: IP.Address
           description: IP address.
-          type: Unknown
+          type: String
         - contextPath: Domain.Name
           description: Domain name.
-          type: Unknown
+          type: String
         - contextPath: URL.Data
           description: The URL.
-          type: Unknown
+          type: String
         - contextPath: Email.To
           description: Destination email address.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.uri_statistics
           description: The URI statistics.
           type: Unknown
@@ -416,7 +416,7 @@ script:
       outputs:
         - contextPath: URL.Data
           description: The URL.
-          type: Unknown
+          type: String
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
@@ -592,16 +592,16 @@ script:
       outputs:
         - contextPath: ReversingLabs.create_yara_ruleset
           description: The YARA ruleset.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.delete_yara_ruleset
           description: The YARA ruleset.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.get_yara_ruleset_info
           description: The YARA ruleset.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.get_yara_ruleset_text
           description: The YARA ruleset.
-          type: Unknown
+          type: String
     - name: reversinglabs-titaniumcloud-yara-matches-feed
       description: Returns a recordset of YARA ruleset matches in the specified time range.
       arguments:
@@ -637,16 +637,16 @@ script:
       outputs:
         - contextPath: ReversingLabs.enable_yara_retro
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.start_yara_retro
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.check_yara_retro_status
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
         - contextPath: ReversingLabs.cancel_yara_retro
           description: The YARA retro hunt.
-          type: Unknown
+          type: String
     - name: reversinglabs-titaniumcloud-yara-retro-matches-feed
       description: Returns a recordset of YARA ruleset matches in the specified time range.
       arguments:
