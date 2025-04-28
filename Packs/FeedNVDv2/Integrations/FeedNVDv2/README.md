@@ -12,6 +12,7 @@ An API key for this feed can be obtained at [the NIST NVD Developer Website](htt
 | API Key | API Key from the NIST NVD Website (see above). | True |
 | Start_date | Start date for the integration to begin fetching CVEs from (YYYY-MM-DD). | True |
 | Return only CVEs that have a KEV | Check this box to only retrieve CVEs in the given date range that have a known exploited vulnerability (KEV) associated with them. Default: FALSE. | False |
+| CVSS Severity Filter | Filters CVEs by their CVSS Score, Supporting the latest CVSS Common Vulnerability Scoring System standard. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | True |
 | Indicator Expiration Method | The method to be used to expire indicators from this feed. Default: Never. | True |
