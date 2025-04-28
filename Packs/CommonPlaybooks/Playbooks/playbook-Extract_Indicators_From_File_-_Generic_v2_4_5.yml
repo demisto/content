@@ -1,5 +1,16 @@
-id: Extract Indicators From File - Generic v2
-version: -1
+id: 45e0cf73-bbbd-43b7-8f2c-e5912b6c731f
+version: 18
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Common Playbooks
+    itemVersion: 2.6.55
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+vcShouldKeepItemLegacyProdMachine: false
 name: Extract Indicators From File - Generic v2
 description: |-
   This playbook extracts indicators from a file.
@@ -35,7 +46,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -110,14 +120,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1798
+          "x": 915,
+          "y": 1744
         }
       }
     note: false
@@ -138,7 +147,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -173,7 +181,8 @@ tasks:
       id: a8ed00fd-f07a-492a-8a9a-d2af590ab91d
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and
+        EML files.
       type: condition
       iscommand: false
       brand: ""
@@ -797,7 +806,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -1012,7 +1020,8 @@ tasks:
       id: 61e4f247-0d0f-4a85-8f28-491314b03130
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration. enabled.
+      description: Checks whether there is an active instance of the Image OCR integration.
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1063,7 +1072,8 @@ tasks:
       id: b00731f6-af3b-4011-8be2-3680f778777e
       version: -1
       name: Extract text from images
-      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract
+        to get reputation for indicators.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
@@ -1300,9 +1310,9 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
-          ignorecase: true
           right:
             value: {}
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1532,7 +1542,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 915,
           "y": 1608
         }
       }
@@ -1606,8 +1616,7 @@ tasks:
       id: 6bead496-6144-44a8-8973-6e43547abcf3
       version: -1
       name: Is there an image file?
-      description: |-
-        Checks if the uploaded file is a valid image file.
+      description: Checks if the uploaded file is a valid image file.
       type: condition
       iscommand: false
       brand: ""
@@ -1834,7 +1843,9 @@ tasks:
       id: 5c6cf188-f1e8-45ea-9d0b-41bcae9be38f
       version: -1
       name: Extract Text from QR Code
-      description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
+      description: Extracts the text from a QR code. The output of this script includes
+        the output of the script "extractIndicators" run on the text extracted from
+        the QR code.
       scriptName: ReadQRCode
       type: regular
       iscommand: false
@@ -2056,7 +2067,8 @@ tasks:
       id: 213aae05-47d1-4361-8a40-a5f58b03d241
       version: -1
       name: Extract Hyper-Links from Office Files
-      description: 'Extracts hyperlinks from Office files. Supported file types are: xlsx, docx, pptx.'
+      description: 'Extracts hyperlinks from Office files. Supported file types are:
+        xlsx, docx, pptx.'
       scriptName: ExtractHyperlinksFromOfficeFiles
       type: regular
       iscommand: false
@@ -2372,7 +2384,13 @@ tasks:
       id: c3860719-d894-4c8c-8553-1b548856825b
       version: -1
       name: Save converted PDFs separately
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2421,7 +2439,13 @@ tasks:
       id: b0385f75-90e9-44f6-a0d4-1a0cc445dbb1
       version: -1
       name: Save valid PDFs separately
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2482,7 +2506,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1868,
+        "height": 1814,
         "width": 4165,
         "x": -975,
         "y": -10
@@ -2496,7 +2520,7 @@ inputs:
       root: File
   required: false
   description: The file to extract indicators from.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ""
   value: {}
   required: false
@@ -2504,7 +2528,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results:
+    results: null
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -2512,8 +2536,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -2524,7 +2548,7 @@ inputs:
   description: |-
     Available values: "True" or "False". Default is "False"
     When this is set to "True", in case a macro was found within the file (using oletools), it will output all the obfuscated strings with their decoded content (Hex, Base64, StrReverse, Dridex, VBA).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: MaxImagesFromPDF
   value:
     simple: "10"
@@ -2533,7 +2557,7 @@ inputs:
     The maximum number of images that can be extracted from a PDF file.
     We recommend setting a low number if you don't need all images extracted from PDF files.
     If no value is specified, a default of 20 will be used.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Domain.Name
   description: The extracted domains.
@@ -2587,7 +2611,9 @@ outputs:
   description: The list of URLs that were extracted from the file.
   type: string
 - contextPath: ExtractedURLsFromFiles
-  description: The list of URLs that were extracted from the file. This output is a duplicate of the URL.Data output and it enables parent playbooks to identify the URLs generated by this playbook.
+  description: The list of URLs that were extracted from the file. This output is
+    a duplicate of the URL.Data output and it enables parent playbooks to identify
+    the URLs generated by this playbook.
   type: String
 - contextPath: Oletools.Oleid.ole_command_result
   description: Indicator list from the oleid command.
@@ -2754,8 +2780,7 @@ outputs:
 - contextPath: ExtractedHyperLink.FileName
   description: The Office file from which the hyperlinks are extracted.
   type: String
+sourceplaybookid: Extract Indicators From File - Generic v2
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields: {}

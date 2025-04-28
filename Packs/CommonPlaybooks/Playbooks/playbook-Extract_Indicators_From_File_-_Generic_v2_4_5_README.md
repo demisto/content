@@ -34,11 +34,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* CheckPDFEncryptionAndValidity
 * ConvertFile
 * ExtractHyperlinksFromOfficeFiles
 * ExtractIndicatorsFromTextFile
 * ExtractIndicatorsFromWordFile
-* IsPDFFileEncrypted
 * ReadPDFFileV2
 * ReadQRCode
 * SetAndHandleEmpty
