@@ -330,7 +330,11 @@ def search_command(proxies):
     demisto.debug(f"Executing search with index={index}, query={query}, query_dsl={query_dsl}")
 
     if query_dsl:
-        response = execute_raw_query(es, query_dsl, index, size, base_page)
+        query_dsl = query_string_to_dict(query_dsl)
+        if query_dsl.get("size", False) or query_dsl.get("page", False):
+            response = execute_raw_query(es, query_dsl, index)
+        else:
+            response = execute_raw_query(es, query_dsl, index, size, base_page)
 
     else:
         que = QueryString(query=query)
@@ -844,7 +848,8 @@ def get_time_range(
     return {"range": {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query, index=None, size=None, page=None):
+def query_string_to_dict(raw_query) -> Dict:
+    """Parses a query_dsl string or bytearray into a Dict to make its fields accessible"""
     try:
         if not isinstance(raw_query, Dict):
             raw_query = json.loads(raw_query)
@@ -856,6 +861,11 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     except (ValueError, TypeError) as e:
         body = {"query": raw_query}
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
+    return body
+
+
+def execute_raw_query(es, raw_query, index=None, size=None, page=None):
+    body = query_string_to_dict(raw_query)
 
     requested_index = index or FETCH_INDEX
 
