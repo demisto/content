@@ -446,10 +446,6 @@ script:
       - 'text'
       - 'html'
       defaultValue: 'text'
-    - description: The type of chat message.
-      name: message_type
-      defaultValue: 'message'
-      hidden: true
     description: |-
       Sends a new chat message in the specified chat. 
       Notes: 

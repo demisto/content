@@ -856,7 +856,6 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 | chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. |  Required     |
 | content           | The content of the chat message.                                                 | Required     | 
 | content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     | 
-| message_type      | The type of chat message. Default is message.                                    | Optional     | 
 
 
 #### Context Output
