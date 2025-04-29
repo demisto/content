@@ -3441,7 +3441,8 @@ def fetch_items(command="fetch-incidents"):
     demisto.debug(f"CrowdStrikeFalconMsg: Updated last_run object after fetch: {last_run}")
     return last_run, items
 
-
+    return last_run, events
+        
 def fetch_detections_by_product_type(
     current_fetch_info: dict,
     look_back: int,
