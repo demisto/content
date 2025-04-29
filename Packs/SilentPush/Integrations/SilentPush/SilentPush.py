@@ -1126,24 +1126,28 @@ class Client(BaseClient):
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
         """
         Initializes the client with the necessary parameters.
-        Args:
-            base_url (str): The base URL for the SilentPush API.
-            api_key (str): The API key for authentication.
-            verify (bool): Flag to determine whether to verify SSL certificates (default True).
-            proxy (bool): Flag to determine whether to use a proxy (default False).
         """
         full_base_url = base_url.rstrip('/') + '/api/v1/merge-api/'
         super().__init__(full_base_url, verify, proxy)
 
-        self.base_url = full_base_url  # Store base_url
-        self.verify = verify  # ✅ Initialize verify attribute
+        self.base_url = full_base_url
+        self.verify = verify
+        self.proxies = handle_proxy() if proxy else None  # ✅ Add this line
 
         self._headers = {
             'X-API-Key': api_key,
             'Content-Type': 'application/json'
         }
 
-    def _http_request(self, method: str, url_suffix: str, params: dict = None, data: dict = None) -> Any:
+
+    def _http_request(
+        self,
+        method: str,
+        url_suffix: str = "",
+        params: dict = None,
+        data: dict = None,
+        url: str = None
+    ) -> Any:
         """
         Perform an HTTP request to the SilentPush API.
 
@@ -1159,30 +1163,24 @@ class Client(BaseClient):
         Raises:
             DemistoException: If the response is not JSON or if the request fails.
         """
-        full_url = f'{self.base_url}{url_suffix}'
-
+        # Properly build the full URL using override if provided
+        full_url = url if url else f"{self.base_url.rstrip('/')}/{url_suffix.lstrip('/')}"
+        
         try:
             response = requests.request(
                 method=method,
-                url=full_url,
+                url=full_url,  # <<< this must be full_url, not something else
                 headers=self._headers,
                 verify=self.verify,
                 params=params,
-                json=data
+                json=data,
+                proxies=self.proxies
             )
-
             response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            raise DemistoException(f"Request error: {str(e)}")
 
-            # ✅ Always try to parse as JSON
-            try:
-                return response.json()
-            except ValueError:
-                raise DemistoException(f'Expected JSON but got non-JSON response: {response.text}')
-
-        except requests.exceptions.RequestException as req_err:
-            raise DemistoException(f'Request error: {str(req_err)}')
-        except Exception as e:
-            raise DemistoException(f'Error in API call: {str(e)}')
 
     def get_job_status(self, job_id: str, params: Optional[dict] = None) -> Dict[str, Any]:
         """
@@ -1798,10 +1796,10 @@ class Client(BaseClient):
             'size': page_size,
             'source_uuids': feed_uuid
         })
-
-        return self._http_request(
+        
+        self._http_request(
             method="GET",
-            url_suffix=url_suffix,
+            url=self.base_url.replace("/api/v1/merge-api", "") + "/api/v2/iocs/threat-ranking",
             params=params
         )
 
