@@ -1,8 +1,3 @@
-[file:SIGNL4.yml]
-ignore=IN126
-
-[file:README.md]
-ignore=RM106
 
 [file:SIGNL4_image.png]
 ignore=IM111
