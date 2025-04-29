@@ -829,6 +829,7 @@ Notes:
 - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
 - This command will fail if the consent user is not a member of the destination chat.
 - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
+- This command can only send messages from type 'message'
 
 ##### Base Command
 
