@@ -16,10 +16,10 @@ from cryptography.hazmat.primitives import serialization
 """GLOBAL VARS"""
 
 PARAMS = demisto.params()  # pylint: disable=W9016
-CREDENTIALS = PARAMS.get("credentials")
+CREDENTIALS = PARAMS.get("credentials", {})
 USER = CREDENTIALS.get("identifier")
 PASSWORD = CREDENTIALS.get("password")
-CERTIFICATE = CREDENTIALS.get("credentials", {}).get("sshkey").encode()
+CERTIFICATE = CREDENTIALS.get("credentials", {}).get("sshkey", "").encode()
 CERT_PASSWORD = CREDENTIALS.get("credentials", {}).get("password")
 CERT_PASSWORD = CERT_PASSWORD.encode() if CERT_PASSWORD else None
 ACCOUNT = PARAMS.get("account")
@@ -308,6 +308,7 @@ def fetch_incidents():
     # Get the last fetch time and data if it exists
     last_fetch = last_run.get("last_fetched_data_timestamp")
     last_fetched_data = last_run.get("last_fetched_data")
+
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
