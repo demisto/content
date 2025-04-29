@@ -195,8 +195,8 @@ def storage_bucket_policy_delete(creds: Credentials, args: Dict[str, Any]) -> Co
 
     modified = False
     updated_bindings = []
-
-    for binding in policy.bindings:
+    bindings = policy.get("bindings", [])
+    for binding in bindings:
         role = binding["role"]
         original_members = set(binding.get("members", []))
         filtered_members = original_members - entities_to_remove
@@ -209,14 +209,11 @@ def storage_bucket_policy_delete(creds: Credentials, args: Dict[str, Any]) -> Co
                 "role": role,
                 "members": list(filtered_members)
             })
-        else:
-            if original_members:
-                demisto.debug(f"All members removed from role '{role}', dropping binding.")
 
     if modified:
-        policy.bindings = updated_bindings
+        policy["bindings"] = updated_bindings
         storage.buckets().setIamPolicy(bucket=bucket, body=policy).execute()
-        hr = (f"Access permissions {', '.join(f'`{e}`' for e in entities_to_remove)} were successfully "
+        hr = (f"Access permissions for {', '.join(f'`{e}`' for e in entities_to_remove)} were successfully "
               f"revoked from bucket **{bucket}**")
     else:
         hr = f"No IAM changes made for bucket '{bucket}'."
