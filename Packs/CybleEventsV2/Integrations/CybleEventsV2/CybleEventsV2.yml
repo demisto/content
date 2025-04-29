@@ -202,7 +202,7 @@ script:
       type: String
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   runonce: false
   script: '-'
@@ -214,3 +214,4 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
+supportlevelheader: xsoar
