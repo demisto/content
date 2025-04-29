@@ -1398,8 +1398,8 @@ def add_filename_suffix(file_names: list, file_extension: str):
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
     #in case of list from the war room - convert python-like list to list
-    # if isinstance(urls, str) and urls.strip().startswith('['):
-    #     urls  = argToList(urls)
+    if isinstance(urls, str) and urls.strip().startswith('['):
+        urls  = argToList(urls)
     # Do not remove this line, as rasterize does not support array in `url`.
     urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
