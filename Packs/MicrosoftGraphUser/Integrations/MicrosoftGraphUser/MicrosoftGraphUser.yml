@@ -665,7 +665,7 @@ script:
     - description: The Azure AD user ID.
       name: user_id
       required: true
-    - description: A password for the locked zip file that will include the password of the new TAP.
+    - description: A password for the password-protected zip file that will include the password of the new TAP.
       name: zip_password
       required: true
       secret: true

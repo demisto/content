@@ -1,5 +1,7 @@
 import pytest
 from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
+import os
+import time
 
 users_list_mock = [
     {
@@ -86,8 +88,8 @@ def test_get_user_command_404_response(mocker):
     error_404.status_code = 404
     mocker.patch.object(BaseClient, "_http_request", return_value=error_404)
     mocker.patch.object(MicrosoftClient, "get_access_token")
-    hr, _, _ = get_user_command(client, {"user": "NotExistingUser"})  # client.get_user('user', 'properties')
-    assert "User NotExistingUser was not found" in hr
+    output = get_user_command(client, {"user": "NotExistingUser"})  # client.get_user('user', 'properties')
+    assert "User NotExistingUser was not found" in output.readable_output
 
 
 def test_get_user_command_url_saved_chars(mocker):
@@ -119,7 +121,7 @@ def test_get_user_command_url_saved_chars(mocker):
     )
     http_mock = mocker.patch.object(BaseClient, "_http_request")
     mocker.patch.object(MicrosoftClient, "get_access_token")
-    hr, _, _ = get_user_command(client, {"user": user_name})
+    _ = get_user_command(client, {"user": user_name})
     assert http_mock.call_args[1]["url_suffix"] == "users/dbot%5E"
 
 
@@ -529,8 +531,6 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
 def test_create_zip_with_password():
     from pyzipper import AESZipFile, ZIP_DEFLATED, WZ_AES
     from MicrosoftGraphUser import create_zip_with_password
-    import os
-    import time
 
     def clean_up_files(created_time):
         cwd = os.getcwd()
@@ -592,11 +592,164 @@ def test_create_tap_policy_command_failure_on_empty_response(mocker):
         'zip_password': '12345'
     }
 
-    # Mock create_tap_policy to return None (failure scenario)
     mock_create_tap_policy = mocker.patch.object(client, 'create_tap_policy', return_value=None)
-
-    # Call the function
     result = create_tap_policy_command(client, args)
+    
     assert isinstance(result, CommandResults)
-    assert result.readable_output == 'Failed to create TAP policy.'
+    assert result.readable_output == 'Failed to create TAP policy for user: 123456789.'
     assert mock_create_tap_policy.call_count == 1
+    
+    
+def test_delete_tap_policy_command_success(mocker):
+    from MicrosoftGraphUser import MsGraphClient, delete_tap_policy_command
+    from CommonServerPython import CommandResults
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {
+        'user_id': '123456789',
+        'policy_id': '987654321'
+    }
+
+    # Mock the client's delete_tap_policy method
+    mocker.patch.object(client, 'delete_tap_policy', return_value=None)
+    result = delete_tap_policy_command(client, args)
+    
+    expected_output = 'Temporary Access Pass Authentication methods policy 987654321 was successfully deleted.'
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == expected_output
+
+
+def test_list_tap_policy_command_success(mocker):
+    from MicrosoftGraphUser import MsGraphClient, list_tap_policy_command
+    from CommonServerPython import CommandResults
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {
+        'user_id': '123456789'
+    }
+
+    mock_tap_data = {
+        "id": "987654321",
+        "startDateTime": "2025-04-28T12:00:00Z",
+        "lifetimeInMinutes": 60,
+        "isUsableOnce": True,
+        "isUsable": True,
+        "methodUsabilityReason": "Enabled"
+    }
+
+    parsed_readable = [{
+        'ID': '987654321',
+        'Start Date Time': '2025-04-28T12:00:00Z',
+        'Lifetime In Minutes': 60,
+        'Is Usable Once': True,
+        'Is Usable': True,
+        'Method Usability Reason': 'Enabled'
+    }]
+    parsed_output = [{
+        'ID': '987654321',
+        'Start Date Time': '2025-04-28T12:00:00Z',
+        'Lifetime In Minutes': 60,
+        'Is Usable Once': True,
+        'Is Usable': True,
+        'Method Usability Reason': 'Enabled',
+        'TemporaryAccessPass': 'some-pass-data'
+    }]
+
+    mocker.patch.object(client, 'list_tap_policy', return_value=mock_tap_data)
+    mocker.patch('MicrosoftGraphUser.parse_outputs', return_value=(parsed_readable, parsed_output))
+    result = list_tap_policy_command(client, args)
+    
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'MSGraphUser.TAPPolicy'
+    assert result.outputs_key_field == 'ID'
+    assert result.outputs['ID'] == '987654321'
+    assert 'Policy ID' in result.readable_output
+    assert 'TAP Policy for User ID 123456789' in result.readable_output
+
+
+
+def test_create_tap_policy_command_success(mocker):
+    from MicrosoftGraphUser import MsGraphClient, create_tap_policy_command
+    from CommonServerPython import CommandResults
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {
+        'user_id': '123456789',
+        'zip_password': 'securepass123',
+        'lifetime_in_minutes': '60',
+        'is_usable_once': 'true',
+        'start_time': '2025-04-29T10:00:00Z'
+    }
+
+    mock_api_response = {
+        'id': '987654321',
+        'startDateTime': '2025-04-29T10:00:00.000Z',
+        'lifetimeInMinutes': 60,
+        'isUsableOnce': True,
+        'isUsable': True,
+        'methodUsabilityReason': 'Enabled',
+        'temporaryAccessPass': 'Generated-P@ssword1!'
+    }
+
+    parsed_output = [{
+        'ID': '987654321',
+        'Start Date Time': '2025-04-29T10:00:00.000Z',
+        'Lifetime In Minutes': 60,
+        'Is Usable Once': True,
+        'Is Usable': True,
+        'Method Usability Reason': 'Enabled'
+    }]
+
+    mocker.patch.object(client, 'create_tap_policy', return_value=mock_api_response)
+    mocker.patch('MicrosoftGraphUser.create_zip_with_password')  # no side effect
+    mocker.patch('MicrosoftGraphUser.parse_outputs', return_value=(None, parsed_output))
+    result = create_tap_policy_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    expected_output = """Temporary Access Pass Authentication methods policy for user: 123456789 was successfully created."""
+    assert result.readable_output == expected_output
+    assert result.outputs_prefix == 'MSGraphUser.TAPPolicy'
+    assert result.outputs_key_field == 'ID'
+    assert result.outputs[0]['ID'] == '987654321'
