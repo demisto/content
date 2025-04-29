@@ -797,9 +797,17 @@ def test_return_error_is_called_on_error(mocker, requests_mock):
     Then:
         - Ensure an error entry is returned
     """
-    from Zscaler import main
 
+    import Zscaler
+
+    mock_id = "mock_id"
+    mocker.patch.object(
+        Zscaler,
+        "get_integration_context",
+        return_value={Zscaler.SESSION_ID_KEY: mock_id},
+    )
+    mocker.patch.object(Zscaler, "test_module")
     requests_mock.get("http://cloud/api/v1/status", status_code=429)
     return_error_mock = mocker.patch.object(CommonServerPython, "return_error")
-    main()
+    Zscaler.main()
     assert return_error_mock.called_once
