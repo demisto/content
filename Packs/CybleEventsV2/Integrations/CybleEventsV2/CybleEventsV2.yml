@@ -9,11 +9,13 @@ configuration:
   name: base_url
   required: true
   type: 0
+  section: Collect
 - displaypassword: Access Token
   name: credentials
   required: true
   hiddenusername: true
   type: 9
+  section: Collect
 - display: Colletions to fetch
   name: incident_collections
   type: 16
@@ -26,6 +28,7 @@ configuration:
   - Compromised Cards
   - All collections
   hidden: false
+  section: Collect
 - display: Severity
   name: incident_severity
   type: 16
@@ -37,44 +40,53 @@ configuration:
   - High
   - All severities
   hidden: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Collect
 - display: Incident Fetch Limit
   name: max_fetch
   type: 0
   required: false
   additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000 incidents.
   defaultvalue: '1'
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: First fetch time (by days)
   name: first_fetch_timestamp
   required: false
   type: 0
   additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
   defaultvalue: '1'
+  section: Collect
 - display: Hide Card Details
   hidden: false
   name: hide_data
   required: false
   type: 8
+  section: Collect
 - display: Update Incident to Remote System
   hidden: false
   name: mirror
   required: false
   type: 8
+  section: Collect
 description: Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
 display: CybleEvents v2
 name: cybleeventsv2
