@@ -432,6 +432,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     if tenant_ids:
         data['request_data']['tenants'] = tenant_ids
     # call the client function and get the raw response
+    demisto.error(f'DANF from start_xql_query client: {client._headers}')
     execution_id = client.start_xql_query(data)
     return execution_id
 
@@ -648,6 +649,7 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
     """
     if not args.get('query_name'):
         raise DemistoException('Please provide a query name')
+    demisto.error('DANF from start_xql_query_polling_command')
     execution_id = start_xql_query(client, args)
     if execution_id == 'FAILURE':
         demisto.debug("Did not succeed to start query, retrying.")

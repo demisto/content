@@ -19,8 +19,9 @@ class Client(CoreClient):
     For this  implementation, no special attributes defined
     """
 
+# CONSTANTS
 
-""" MAIN FUNCTION """
+INTEGRATION_NAME: str = 'XQL Query Engine'
 
 # COMMAND CONSTANTS
 
@@ -74,7 +75,26 @@ GENERIC_QUERY_COMMANDS = {
     "xdr-xql-get-quota": get_xql_quota_command,
 }
 
+def set_playbook_metadata_headers(command: str):
+    headers = {}
+    ctx_output: dict = demisto.callingContext or {}
+    entry_task: dict = ctx_output.get('context', {}).get('ParentEntry', {}).get('entryTask',{})
+    incidents: list = ctx_output.get('context', {}).get('Incidents', [])
+    playbook_id = incidents[0].get('playbookId', 'missing_playbookId') if incidents else ''
+    playbook_name = entry_task.get('playbookName', 'missing_playbook_name') if entry_task else ''
+    task_name = entry_task.get('taskName', 'missing_task_name') if entry_task else ''
+    task_id = entry_task.get('taskId', 'missing_task_id') if entry_task else ''
+    headers = {'playbook_metadata': {
+        'playbook_name': playbook_name,
+        'playbook_id': playbook_id,
+        'task_name': task_name,
+        'task_id': task_id,
+        'integration_name': INTEGRATION_NAME,
+        'command_name': command}}
+    print(f"DANF: headers: {headers}")
+    return headers
 
+""" MAIN FUNCTION """
 def main() -> None:
     """
     executes an integration command
@@ -84,12 +104,12 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     args = demisto.args()
+    headers = set_playbook_metadata_headers(command)
     url_suffix = "/public_api/v1"
     try:
         url = "/api/webapp/"
         base_url = urljoin(url, url_suffix)
-        client = Client(base_url=base_url, proxy=proxy, verify=verify_certificate, headers={}, is_core=True)
-
+        client = Client(base_url=base_url, proxy=proxy, verify=verify_certificate, headers=headers, is_core=True)        
         if command in GENERIC_QUERY_COMMANDS:
             return_results(GENERIC_QUERY_COMMANDS[command](client, args))
         elif command in BUILT_IN_QUERY_COMMANDS:

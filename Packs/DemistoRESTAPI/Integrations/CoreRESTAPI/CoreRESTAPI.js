@@ -560,6 +560,9 @@ switch (command) {
         if (res.response.id == undefined){
             throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
         }
+        var cache = getIntegrationContext();
+        console.log(`DANF cache: ${cache}`)
+        logDebug(`DANF cache: ${cache}`)
         return 'ok';
     case 'demisto-api-post':
     case 'core-api-post':
@@ -571,7 +574,21 @@ switch (command) {
         return sendRequest('POST',args.uri, args.body);
     case 'demisto-api-get':
     case 'core-api-get':
-        return sendRequest('GET',args.uri);
+        flattenFields(invContext,undefined,flat);
+        keysArr = Object.keys(flat);
+        for (var i = 0; i < keysArr.length; i++) {
+            currentValue=flat[keysArr[i]];
+            logDebug(`DANF: ${currentValue}`)
+        // var contextData = getIntegrationContext();
+        return keysArr
+        // logDebug(`DANF ParentEntry: ${invContext['ParentEntry']}`)
+        // for (const key in invContext) {
+        //     logDebug(`DANF ${key} : ${invContext[key]}`)
+        // }
+        // logDebug(`DANF taskId: ${invContext['ParentEntry']['entryTask']['taskId']}`)
+        // logDebug(`DANF taskName: ${invContext['ParentEntry']['entryTask']['taskName']}`)
+        // return "DANF"
+        // return sendRequest('GET',args.uri);
     case 'demisto-api-put':
     case 'core-api-put':
         var body = JSON.parse(args.body);
