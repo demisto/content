@@ -15,11 +15,6 @@ ABSOLUTE_URL_TO_API_URL = {
     "https://cc.fr1.absolutegov.com": "https://api.fr1.absolutegov.com",
 }
 
-# If you log in to https://cc.absolute.com, use https://api.absolute.com/jws/validate.
-# If you log in to https://cc.us.absolute.com, use https://api.us.absolute.com/jws/validate.
-# If you log in to https://cc.eu2.absolute.com, use https://api.eu2.absolute.com/jws/validate.
-# If you log in to https://cc.fr1.absolutegov.com, use https://api.fr1.absolutegov.com/jws/validate
-
 ABSOLUTE_AGET_STATUS = {
     "Active": "A",
     "Disabled": "D",
@@ -191,7 +186,7 @@ class ClientV3(BaseClient):
         return self._http_request(
             method="POST",
             data=signed,
-            full_url=CLIENT_V3_JWS_VALIDATION_URL,
+            url_suffix=url_suffix,
             return_empty_response=True,
             ok_codes=ok_codes,
             resp_type=resp_type,
