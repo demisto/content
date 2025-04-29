@@ -73,4 +73,3 @@ Get all tasks for a specific incident by the given state, name and/or tag.
 >|id|name|state|owner|scriptId|
 >|---|---|---|---|---|
 >| 101 | Email Campaign Search | Completed | Dummy |  |
-

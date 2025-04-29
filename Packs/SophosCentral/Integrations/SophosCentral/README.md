@@ -2,7 +2,6 @@ The unified console for managing Sophos products.
 
 ## Configure Sophos Central in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | credentials | Sophos client ID and secret | True |
@@ -15,49 +14,52 @@ The unified console for managing Sophos products.
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### sophos-central-alert-list
+
 ***
 List alerts.
-
 
 #### Base Command
 
 `sophos-central-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional | 
-
+| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. | 
-| SophosCentral.Alert.category | String | Alert category. | 
-| SophosCentral.Alert.description | String | Alert description. | 
-| SophosCentral.Alert.groupKey | String | Alert group key. | 
-| SophosCentral.Alert.id | String | The alert ID. | 
-| SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
+| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. |
+| SophosCentral.Alert.category | String | Alert category. |
+| SophosCentral.Alert.description | String | Alert description. |
+| SophosCentral.Alert.groupKey | String | Alert group key. |
+| SophosCentral.Alert.id | String | The alert ID. |
+| SophosCentral.Alert.managedAgentId | String | The alert source ID. |
 | SophosCentral.Alert.managedAgentName | String | The alert source name. |
-| SophosCentral.Alert.managedAgentType | String | The source that triggered the Alert. | 
-| SophosCentral.Alert.person | String | The ID of the referenced person object. | 
+| SophosCentral.Alert.managedAgentType | String | The source that triggered the Alert. |
+| SophosCentral.Alert.person | String | The ID of the referenced person object. |
 | SophosCentral.Alert.personName | String | The name of the referenced person object. |
-| SophosCentral.Alert.product | String | Product type. | 
-| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
-| SophosCentral.Alert.severity | String | Severity level for the alert. | 
-| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. | 
-| SophosCentral.Alert.tenantName | String | Tenant name. | 
-| SophosCentral.Alert.type | String | Alert type. | 
-
+| SophosCentral.Alert.product | String | Product type. |
+| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. |
+| SophosCentral.Alert.severity | String | Severity level for the alert. |
+| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. |
+| SophosCentral.Alert.tenantName | String | Tenant name. |
+| SophosCentral.Alert.type | String | Alert type. |
 
 #### Command Example
+
 ```!sophos-central-alert-list limit=50```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -123,7 +125,8 @@ List alerts.
 
 #### Human Readable Output
 
->### Listed Alerts:
+>### Listed Alerts
+>
 >|id|description|severity|raisedAt|allowedActions|managedAgentId|category|type|
 >|---|---|---|---|---|---|---|---|
 >| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\JonDoe\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
@@ -132,46 +135,47 @@ List alerts.
 >Results on this page: 3.Maximum number of results allowed in a page: 100
 
 ### sophos-central-alert-get
+
 ***
 Get a single alert by ID.
-
 
 #### Base Command
 
 `sophos-central-alert-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert ID. | Required | 
-
+| alert_id | The alert ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. | 
-| SophosCentral.Alert.category | String | Alert category. | 
-| SophosCentral.Alert.description | String | Alert description. | 
-| SophosCentral.Alert.groupKey | String | Alert group key. | 
-| SophosCentral.Alert.id | String | The alert ID. | 
-| SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
+| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. |
+| SophosCentral.Alert.category | String | Alert category. |
+| SophosCentral.Alert.description | String | Alert description. |
+| SophosCentral.Alert.groupKey | String | Alert group key. |
+| SophosCentral.Alert.id | String | The alert ID. |
+| SophosCentral.Alert.managedAgentId | String | The alert source ID. |
 | SophosCentral.Alert.managedAgentName | String | The alert source name. |
-| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. | 
-| SophosCentral.Alert.person | String | The ID of the referenced person object. | 
+| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. |
+| SophosCentral.Alert.person | String | The ID of the referenced person object. |
 | SophosCentral.Alert.personName | String | The name of the referenced person object. |
-| SophosCentral.Alert.product | String | Product type. | 
-| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
-| SophosCentral.Alert.severity | String | Severity level for the alert. | 
-| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. | 
-| SophosCentral.Alert.tenantName | String | Tenant name. | 
-| SophosCentral.Alert.type | String | Alert type. | 
-
+| SophosCentral.Alert.product | String | Product type. |
+| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. |
+| SophosCentral.Alert.severity | String | Severity level for the alert. |
+| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. |
+| SophosCentral.Alert.tenantName | String | Tenant name. |
+| SophosCentral.Alert.type | String | Alert type. |
 
 #### Command Example
+
 ```!sophos-central-alert-get alert_id=8e879165-81cb-4747-8608-1cc4e630a017```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -199,47 +203,48 @@ Get a single alert by ID.
 
 #### Human Readable Output
 
->### Found Alert:
+>### Found Alert
+>
 >|id|description|severity|raisedAt|allowedActions|managedAgentId|category|type|
 >|---|---|---|---|---|---|---|---|
 >| 8e879165-81cb-4747-8608-1cc4e630a017 | Manual cleanup required: 'EICAR-AV-Test' at 'C:\Users\JonDoe\Downloads\eicarcom2.zip' | high | 2020-11-25T09:19:18.936Z | clearThreat | 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | malware | Event::Endpoint::Threat::CleanupFailed |
 
-
 ### sophos-central-alert-action
+
 ***
 Take an action against alerts.
-
 
 #### Base Command
 
 `sophos-central-alert-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id |Comma-separated list of alert IDs. | Required | 
-| action | Actions to perform on the alerts. Possible values are: "acknowledge", "cleanPua", "cleanVirus", "authPua", "clearThreat", "clearHmpa", "sendMsgPua", and "sendMsgThreat". | Required | 
-| message | Message to send for the action. | Optional | 
-
+| alert_id |Comma-separated list of alert IDs. | Required |
+| action | Actions to perform on the alerts. Possible values are: "acknowledge", "cleanPua", "cleanVirus", "authPua", "clearThreat", "clearHmpa", "sendMsgPua", and "sendMsgThreat". | Required |
+| message | Message to send for the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AlertAction.action | String | Actions that you can perform on the alert. | 
-| SophosCentral.AlertAction.alertId | String | Alert ID. | 
-| SophosCentral.AlertAction.completedAt | Date | Time when the action was completed. | 
-| SophosCentral.AlertAction.id | String | Alert action ID. | 
-| SophosCentral.AlertAction.requestedAt | Date | Time when the action was requested. | 
-| SophosCentral.AlertAction.result | String | The result of the action. | 
-| SophosCentral.AlertAction.startedAt | Date | Time when the action was started. | 
-| SophosCentral.AlertAction.status | String | Status of an alert action. | 
-
+| SophosCentral.AlertAction.action | String | Actions that you can perform on the alert. |
+| SophosCentral.AlertAction.alertId | String | Alert ID. |
+| SophosCentral.AlertAction.completedAt | Date | Time when the action was completed. |
+| SophosCentral.AlertAction.id | String | Alert action ID. |
+| SophosCentral.AlertAction.requestedAt | Date | Time when the action was requested. |
+| SophosCentral.AlertAction.result | String | The result of the action. |
+| SophosCentral.AlertAction.startedAt | Date | Time when the action was started. |
+| SophosCentral.AlertAction.status | String | Status of an alert action. |
 
 #### Command Example
+
 ```!sophos-central-alert-action action=clearThreat alert_id=8e879165-81cb-4747-8608-1cc4e630a017 message=testmessage```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -259,61 +264,62 @@ Take an action against alerts.
 
 #### Human Readable Output
 
->### Alerts Acted Against:
+>### Alerts Acted Against
+>
 >|id|action|alertId|result|requestedAt|status|
 >|---|---|---|---|---|---|
 >| c75b1e4d-c62c-4b3a-8ca5-dea658a18c1b | clearThreat | 8e879165-81cb-4747-8608-1cc4e630a017 | success | 2020-11-25T10:47:14.639Z | requested |
 
-
 ### sophos-central-alert-search
+
 ***
 Get alerts matching request.
-
 
 #### Base Command
 
 `sophos-central-alert-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_key | Alert group key. | Optional | 
-| start | Time on which or after the alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
-| end | Time before which alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
-| date_range | The date range in which to search from the current time instead of a start/end time in the format (`<number> <time unit>`, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined. | Optional | 
-| product | Alerts for a product(s). Possible values are: "other", "endpoint", "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat", "wireless", "iaas", and "firewall". | Optional | 
-| category | Alert category(s). | Optional | 
-| severity | Alerts for a specific severity level(s). Possible values are: "high", "medium", and "low". | Optional | 
-| ids | List of IDs. | Optional | 
-| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional | 
-
+| group_key | Alert group key. | Optional |
+| start | Time on which or after the alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional |
+| end | Time before which alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional |
+| date_range | The date range in which to search from the current time instead of a start/end time in the format (`<number> <time unit>`, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined. | Optional |
+| product | Alerts for a product(s). Possible values are: "other", "endpoint", "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat", "wireless", "iaas", and "firewall". | Optional |
+| category | Alert category(s). | Optional |
+| severity | Alerts for a specific severity level(s). Possible values are: "high", "medium", and "low". | Optional |
+| ids | List of IDs. | Optional |
+| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. | 
-| SophosCentral.Alert.category | String | Alert category. | 
-| SophosCentral.Alert.description | String | Alert description. | 
-| SophosCentral.Alert.groupKey | String | Alert group key. | 
-| SophosCentral.Alert.id | String | The alert ID. | 
-| SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
+| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. |
+| SophosCentral.Alert.category | String | Alert category. |
+| SophosCentral.Alert.description | String | Alert description. |
+| SophosCentral.Alert.groupKey | String | Alert group key. |
+| SophosCentral.Alert.id | String | The alert ID. |
+| SophosCentral.Alert.managedAgentId | String | The alert source ID. |
 | SophosCentral.Alert.managedAgentName | String | The alert source name. |
-| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. | 
+| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. |
 | SophosCentral.Alert.person | String | The ID of the referenced person object. |
 | SophosCentral.Alert.personName | String | The name of the referenced person object. |
-| SophosCentral.Alert.product | String | Product type. | 
-| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
-| SophosCentral.Alert.severity | String | Severity level for the alert. | 
-| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. | 
-| SophosCentral.Alert.tenantName | String | Tenant name. | 
-| SophosCentral.Alert.type | String | Alert type. | 
-
+| SophosCentral.Alert.product | String | Product type. |
+| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. |
+| SophosCentral.Alert.severity | String | Severity level for the alert. |
+| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. |
+| SophosCentral.Alert.tenantName | String | Tenant name. |
+| SophosCentral.Alert.type | String | Alert type. |
 
 #### Command Example
+
 ```!sophos-central-alert-search category=general product=endpoint```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -324,62 +330,64 @@ Get alerts matching request.
 
 #### Human Readable Output
 
->### Found Alerts:
+>### Found Alerts
+>
 >**No entries.**
 >Results on this page: 0.Maximum number of results allowed in a page: 100
 
 ### sophos-central-endpoint-list
+
 ***
 List all endpoints for a tenant.
-
 
 #### Base Command
 
 `sophos-central-endpoint-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| health_status | Match endpoints that have any of the specified health statuses. Possible values are: "bad", "good", "suspicious", and "unknown". | Optional | 
-| endpoint_type | Match endpoints that have any of the specified endpoint types. Possible values are: "computer", "server", and "securityVm". | Optional | 
-| tamper_protection_enabled | Whether tamper protection is enabled. Possible values are: "true" and "false". | Optional | 
-| lockdown_status | Match endpoints that have any of the specified lockdown statuses. Possible values are: "creatingWhitelist", "installing", "locked", "notInstalled", "registering", "starting", "stopping", "unavailable", "uninstalled", and "unlocked". | Optional | 
-| last_seen_before | The datetime before which the endpoints were last seen (UTC). | Optional | 
-| last_seen_after | The datetime on or after which the endpoints were last seen (UTC). | Optional | 
-| ids | List of IDs. | Optional | 
-| view | Type of view to be returned in the response. Possible values are: "basic", "summary", and "full". | Optional | 
-| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional | 
-
+| health_status | Match endpoints that have any of the specified health statuses. Possible values are: "bad", "good", "suspicious", and "unknown". | Optional |
+| endpoint_type | Match endpoints that have any of the specified endpoint types. Possible values are: "computer", "server", and "securityVm". | Optional |
+| tamper_protection_enabled | Whether tamper protection is enabled. Possible values are: "true" and "false". | Optional |
+| lockdown_status | Match endpoints that have any of the specified lockdown statuses. Possible values are: "creatingWhitelist", "installing", "locked", "notInstalled", "registering", "starting", "stopping", "unavailable", "uninstalled", and "unlocked". | Optional |
+| last_seen_before | The datetime before which the endpoints were last seen (UTC). | Optional |
+| last_seen_after | The datetime on or after which the endpoints were last seen (UTC). | Optional |
+| ids | List of IDs. | Optional |
+| view | Type of view to be returned in the response. Possible values are: "basic", "summary", and "full". | Optional |
+| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Endpoint.assignedProductCodes | String | Code of a product assigned to the endpoint. | 
-| SophosCentral.Endpoint.associatedPersonId | String | The unique ID for the person associated with the endpoint. | 
-| SophosCentral.Endpoint.associatedPersonName | String | Name of the person associated with the endpoint. | 
-| SophosCentral.Endpoint.associatedPersonViaLogin | String | The login of the person associated with the endpoint. | 
-| SophosCentral.Endpoint.groupId | String | The unique ID for the endpoint group. | 
-| SophosCentral.Endpoint.groupName | String | Endpoint group name. | 
-| SophosCentral.Endpoint.hostname | String | The hostname of the endpoint. | 
-| SophosCentral.Endpoint.id | String | The unique ID for the endpoint. | 
-| SophosCentral.Endpoint.health | String | Health status of the endpoint. | 
-| SophosCentral.Endpoint.ipv4Addresses | String | IPv4 address of the endpoint. | 
-| SophosCentral.Endpoint.ipv6Addresses | String | IPv6 address of the endpoint. | 
-| SophosCentral.Endpoint.macAddresses | String | MAC address of the endpoint. | 
-| SophosCentral.Endpoint.osBuild | String | Operating system build. | 
-| SophosCentral.Endpoint.osIsServer | Boolean | Whether the operating system is a server operating system. | 
-| SophosCentral.Endpoint.osName | String | Operating system name as reported by the endpoint. | 
-| SophosCentral.Endpoint.osPlatform | String | Operating system platform type. | 
-| SophosCentral.Endpoint.tamperProtectionEnabled | Boolean | Whether tamper protection is enabled. | 
-| SophosCentral.Endpoint.type | String | The endpoint type. | 
-| SophosCentral.Endpoint.online | Boolean | Whether the endpoint is online. | 
-
+| SophosCentral.Endpoint.assignedProductCodes | String | Code of a product assigned to the endpoint. |
+| SophosCentral.Endpoint.associatedPersonId | String | The unique ID for the person associated with the endpoint. |
+| SophosCentral.Endpoint.associatedPersonName | String | Name of the person associated with the endpoint. |
+| SophosCentral.Endpoint.associatedPersonViaLogin | String | The login of the person associated with the endpoint. |
+| SophosCentral.Endpoint.groupId | String | The unique ID for the endpoint group. |
+| SophosCentral.Endpoint.groupName | String | Endpoint group name. |
+| SophosCentral.Endpoint.hostname | String | The hostname of the endpoint. |
+| SophosCentral.Endpoint.id | String | The unique ID for the endpoint. |
+| SophosCentral.Endpoint.health | String | Health status of the endpoint. |
+| SophosCentral.Endpoint.ipv4Addresses | String | IPv4 address of the endpoint. |
+| SophosCentral.Endpoint.ipv6Addresses | String | IPv6 address of the endpoint. |
+| SophosCentral.Endpoint.macAddresses | String | MAC address of the endpoint. |
+| SophosCentral.Endpoint.osBuild | String | Operating system build. |
+| SophosCentral.Endpoint.osIsServer | Boolean | Whether the operating system is a server operating system. |
+| SophosCentral.Endpoint.osName | String | Operating system name as reported by the endpoint. |
+| SophosCentral.Endpoint.osPlatform | String | Operating system platform type. |
+| SophosCentral.Endpoint.tamperProtectionEnabled | Boolean | Whether tamper protection is enabled. |
+| SophosCentral.Endpoint.type | String | The endpoint type. |
+| SophosCentral.Endpoint.online | Boolean | Whether the endpoint is online. |
 
 #### Command Example
+
 ```!sophos-central-endpoint-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -447,7 +455,8 @@ List all endpoints for a tenant.
 
 #### Human Readable Output
 
->### Listed Endpoints:
+>### Listed Endpoints
+>
 >|id|hostname|ipv4Addresses|ipv6Addresses|macAddresses|type|tamperProtectionEnabled|
 >|---|---|---|---|---|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | Thunderbox | 1.1.1.1 | fe80::9905:5b42:6605:5e93 | 00:00:00:B0:00:BA | computer | false |
@@ -455,33 +464,34 @@ List all endpoints for a tenant.
 >Results on this page: 2.Maximum number of results allowed in a page: 500
 
 ### sophos-central-endpoint-scan
+
 ***
 Scan endpoints of a tenant.
-
 
 #### Base Command
 
 `sophos-central-endpoint-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID(s). | Required | 
-
+| endpoint_id | The endpoint ID(s). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointScan.id | String | Identifies a request to perform or configure the endpoint scan. | 
-| SophosCentral.EndpointScan.requestedAt | Date | Time when the scan was requested. | 
-| SophosCentral.EndpointScan.status | String | The status of an endpoint scan. | 
-
+| SophosCentral.EndpointScan.id | String | Identifies a request to perform or configure the endpoint scan. |
+| SophosCentral.EndpointScan.requestedAt | Date | Time when the scan was requested. |
+| SophosCentral.EndpointScan.status | String | The status of an endpoint scan. |
 
 #### Command Example
+
 ```!sophos-central-endpoint-scan endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -496,41 +506,42 @@ Scan endpoints of a tenant.
 
 #### Human Readable Output
 
->### Scanning Endpoints:
+>### Scanning Endpoints
+>
 >|id|status|requestedAt|
 >|---|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | requested | 2020-11-25T10:47:20.343Z |
 
-
 ### sophos-central-endpoint-tamper-get
+
 ***
 Get tamper protection information for one or more endpoints. Potentially harmful because of the password.
-
 
 #### Base Command
 
 `sophos-central-endpoint-tamper-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID(s). | Required | 
-| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional | 
-
+| endpoint_id | The endpoint ID(s). | Required |
+| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. | 
-| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint. | 
-| SophosCentral.EndpointTamper.password | String | Current tamper protection password. | 
-
+| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. |
+| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint. |
+| SophosCentral.EndpointTamper.password | String | Current tamper protection password. |
 
 #### Command Example
+
 ```!sophos-central-endpoint-tamper-get endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -545,42 +556,43 @@ Get tamper protection information for one or more endpoints. Potentially harmful
 
 #### Human Readable Output
 
->### Listed Endpoints Tamper Protection:
+>### Listed Endpoints Tamper Protection
+>
 >|endpointId|enabled|
 >|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | false |
 
-
 ### sophos-central-endpoint-tamper-update
+
 ***
 Update tamper protection information for one or more endpoints. Potentially Harmful because of the password.
-
 
 #### Base Command
 
 `sophos-central-endpoint-tamper-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID(s). | Required | 
-| enabled | Whether tamper protection should be turned on for the endpoint. Possible values are: "true" and "false". | Required | 
-| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional | 
-
+| endpoint_id | The endpoint ID(s). | Required |
+| enabled | Whether tamper protection should be turned on for the endpoint. Possible values are: "true" and "false". | Required |
+| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. | 
-| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint.  | 
-| SophosCentral.EndpointTamper.password | String | Current tamper protection password. | 
-
+| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. |
+| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint.  |
+| SophosCentral.EndpointTamper.password | String | Current tamper protection password. |
 
 #### Command Example
+
 ```!sophos-central-endpoint-tamper-update enabled=true endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -595,52 +607,53 @@ Update tamper protection information for one or more endpoints. Potentially Harm
 
 #### Human Readable Output
 
->### Updated Endpoints Tamper Protection:
+>### Updated Endpoints Tamper Protection
+>
 >|endpointId|enabled|
 >|---|---|
 >| 6e9567ea-bb50-40c5-9f12-42eb308e4c9b | true |
 
-
 ### sophos-central-allowed-item-list
+
 ***
 List all allowed items.
-
 
 #### Base Command
 
 `sophos-central-allowed-item-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | he maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
-| page | Page number to return. Default is "1". | Optional | 
-
+| page_size | he maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
+| page | Page number to return. Default is "1". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
-| SophosCentral.AllowedItem.fileName | String | The file name. | 
-| SophosCentral.AllowedItem.path | String | The path for the application. | 
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
-
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
+| SophosCentral.AllowedItem.fileName | String | The file name. |
+| SophosCentral.AllowedItem.path | String | The path for the application. |
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
 
 #### Command Example
+
 ```!sophos-central-allowed-item-list page=1 page_size=50```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -791,7 +804,8 @@ List all allowed items.
 
 #### Human Readable Output
 
->### Listed Allowed Items:
+>### Listed Allowed Items
+>
 >|id|comment|fileName|sha256|path|certificateSigner|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|---|---|---|
 >| b2148cc0-6ee8-440e-9c4b-cd5486b36c3c | hello world1 |  |  | /root/helloaworld/1/1 |  | 2020-11-25T10:19:37.608Z | path | 2020-11-25T10:19:37.608Z |
@@ -812,44 +826,45 @@ List all allowed items.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-allowed-item-get
+
 ***
 Get a single allowed item by ID.
-
 
 #### Base Command
 
 `sophos-central-allowed-item-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| allowed_item_id | The ID of the allowed item. | Required | 
-
+| allowed_item_id | The ID of the allowed item. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
-| SophosCentral.AllowedItem.fileName | String | The file name. | 
-| SophosCentral.AllowedItem.path | String | The path for the application. | 
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
-
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
+| SophosCentral.AllowedItem.fileName | String | The file name. |
+| SophosCentral.AllowedItem.path | String | The path for the application. |
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
 
 #### Command Example
+
 ```!sophos-central-allowed-item-get allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -870,57 +885,58 @@ Get a single allowed item by ID.
 
 #### Human Readable Output
 
->### Found Allowed Item:
+>### Found Allowed Item
+>
 >|id|comment|path|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|
 >| b2148cc0-6ee8-440e-9c4b-cd5486b36c3c | hello world1 | /root/helloaworld/1/1 | 2020-11-25T10:19:37.608Z | path | 2020-11-25T10:19:37.608Z |
 
-
 ### sophos-central-allowed-item-add
+
 ***
 Add a new allowed item.
-
 
 #### Base Command
 
 `sophos-central-allowed-item-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | Comment indicating why the item should be allowed. | Required | 
-| certificate_signer | The value saved for the certificateSigner. | Optional | 
-| file_name | The file name. | Optional | 
-| path | The path for the application. | Optional | 
-| sha256 | The SHA256 value for the application. | Optional | 
-| item_type | The property by which an item is allowed. Note that the specified item type requires the matching argument filled. For example, the item type "path" requires the path argument. Possible values are: "path", "sha256", and "certificateSigner". | Required | 
-| origin_endpoint_id | The endpoint where the item to be allowed was last seen. | Optional | 
-
+| comment | Comment indicating why the item should be allowed. | Required |
+| certificate_signer | The value saved for the certificateSigner. | Optional |
+| file_name | The file name. | Optional |
+| path | The path for the application. | Optional |
+| sha256 | The SHA256 value for the application. | Optional |
+| item_type | The property by which an item is allowed. Note that the specified item type requires the matching argument filled. For example, the item type "path" requires the path argument. Possible values are: "path", "sha256", and "certificateSigner". | Required |
+| origin_endpoint_id | The endpoint where the item to be allowed was last seen. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
-| SophosCentral.AllowedItem.fileName | String | The file name. | 
-| SophosCentral.AllowedItem.path | String | The path for the application. | 
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
-
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
+| SophosCentral.AllowedItem.fileName | String | The file name. |
+| SophosCentral.AllowedItem.path | String | The path for the application. |
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
 
 #### Command Example
+
 ```!sophos-central-allowed-item-add comment="hello world1" item_type=path path=/root/helloaworld/12```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -941,52 +957,53 @@ Add a new allowed item.
 
 #### Human Readable Output
 
->### Added Allowed Item:
+>### Added Allowed Item
+>
 >|id|comment|path|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|
 >| c68f1abc-986d-43eb-b050-d9113959207a | hello world1 | /root/helloaworld/12 | 2020-11-25T10:47:32.082Z | path | 2020-11-25T10:47:32.082Z |
 
-
 ### sophos-central-allowed-item-update
+
 ***
 Update an existing allowed item.
-
 
 #### Base Command
 
 `sophos-central-allowed-item-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| allowed_item_id | The allowed item ID. | Required | 
-| comment | Comment indicating why the item should be allowed. | Required | 
-
+| allowed_item_id | The allowed item ID. | Required |
+| comment | Comment indicating why the item should be allowed. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
-| SophosCentral.AllowedItem.fileName | String | The file name. | 
-| SophosCentral.AllowedItem.path | String | The path for the application. | 
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
-
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
+| SophosCentral.AllowedItem.fileName | String | The file name. |
+| SophosCentral.AllowedItem.path | String | The path for the application. |
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
 
 #### Command Example
+
 ```!sophos-central-allowed-item-update allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c comment=changedcomment```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1007,38 +1024,39 @@ Update an existing allowed item.
 
 #### Human Readable Output
 
->### Updated Allowed Item:
+>### Updated Allowed Item
+>
 >|id|comment|path|createdAt|type|updatedAt|
 >|---|---|---|---|---|---|
 >| b2148cc0-6ee8-440e-9c4b-cd5486b36c3c | changedcomment | /root/helloaworld/1/1 | 2020-11-25T10:19:37.608Z | path | 2020-11-25T10:47:39.104Z |
 
-
 ### sophos-central-allowed-item-delete
+
 ***
 Delete an existing allowed item.
-
 
 #### Base Command
 
 `sophos-central-allowed-item-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| allowed_item_id | The allowed item ID. | Required | 
-
+| allowed_item_id | The allowed item ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedAllowedItem.deletedItemId | String | The ID of the deleted item. | 
-
+| SophosCentral.DeletedAllowedItem.deletedItemId | String | The ID of the deleted item. |
 
 #### Command Example
+
 ```!sophos-central-allowed-item-delete allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1054,45 +1072,46 @@ Delete an existing allowed item.
 >Success deleting allowed item: b2148cc0-6ee8-440e-9c4b-cd5486b36c3c
 
 ### sophos-central-blocked-item-list
+
 ***
 Get all blocked items.
-
 
 #### Base Command
 
 `sophos-central-blocked-item-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size |  The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
-| page | Page number to return. Default is "1" | Optional | 
-
+| page_size |  The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
+| page | Page number to return. Default is "1" | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. | 
-| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
-| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. | 
-| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. | 
-| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. | 
-| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. | 
-| SophosCentral.BlockedItem.fileName | String | The file name. | 
-| SophosCentral.BlockedItem.path | String | The path for the application. | 
-| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. | 
-| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. | 
-| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
-| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. | 
-| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. | 
-| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. | 
-
+| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. |
+| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
+| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. |
+| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. |
+| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. |
+| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. |
+| SophosCentral.BlockedItem.fileName | String | The file name. |
+| SophosCentral.BlockedItem.path | String | The path for the application. |
+| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. |
+| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. |
+| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
+| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. |
+| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. |
+| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. |
 
 #### Command Example
+
 ```!sophos-central-blocked-item-list page=1 page_size=50```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1137,7 +1156,8 @@ Get all blocked items.
 
 #### Human Readable Output
 
->### Listed Blocked Items:
+>### Listed Blocked Items
+>
 >|id|comment|sha256|createdAt|type|
 >|---|---|---|---|---|
 >| 9b44086b-95bd-43e5-b84b-82b91725f02b | hello 2world | c7f4db9b3191e6e693ce938bd74fab37aee71372c8a034f50b0a62d8c69e4de1 | 2020-11-25T10:19:54.523Z | sha256 |
@@ -1148,44 +1168,45 @@ Get all blocked items.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-blocked-item-get
+
 ***
 Get a single blocked item by ID.
-
 
 #### Base Command
 
 `sophos-central-blocked-item-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blocked_item_id | The blocked item ID. | Required | 
-
+| blocked_item_id | The blocked item ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. | 
-| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
-| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. | 
-| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. | 
-| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. | 
-| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. | 
-| SophosCentral.BlockedItem.fileName | String | The file name. | 
-| SophosCentral.BlockedItem.path | String | The path for the application. | 
-| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. | 
-| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. | 
-| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
-| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. | 
-| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. | 
-| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. | 
-
+| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. |
+| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
+| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. |
+| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. |
+| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. |
+| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. |
+| SophosCentral.BlockedItem.fileName | String | The file name. |
+| SophosCentral.BlockedItem.path | String | The path for the application. |
+| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. |
+| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. |
+| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
+| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. |
+| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. |
+| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. |
 
 #### Command Example
+
 ```!sophos-central-blocked-item-get blocked_item_id=9b44086b-95bd-43e5-b84b-82b91725f02b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1206,56 +1227,57 @@ Get a single blocked item by ID.
 
 #### Human Readable Output
 
->### Found Blocked Item:
+>### Found Blocked Item
+>
 >|id|comment|sha256|createdAt|type|
 >|---|---|---|---|---|
 >| 9b44086b-95bd-43e5-b84b-82b91725f02b | hello 2world | c7f4db9b3191e6e693ce938bd74fab37aee71372c8a034f50b0a62d8c69e4de1 | 2020-11-25T10:19:54.523Z | sha256 |
 
-
 ### sophos-central-blocked-item-add
+
 ***
 Add a new blocked item.
-
 
 #### Base Command
 
 `sophos-central-blocked-item-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | Comment indicating why the item should be blocked. | Required | 
-| certificate_signer | The value saved for the certificateSigner. | Optional | 
-| file_name | The file name. | Optional | 
-| path | The path for the application. | Optional | 
-| sha256 | The SHA256 value for the application. | Required | 
-| item_type | The property by which an item is blocked. Possible value is sha256. | Required | 
-
+| comment | Comment indicating why the item should be blocked. | Required |
+| certificate_signer | The value saved for the certificateSigner. | Optional |
+| file_name | The file name. | Optional |
+| path | The path for the application. | Optional |
+| sha256 | The SHA256 value for the application. | Required |
+| item_type | The property by which an item is blocked. Possible value is sha256. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. | 
-| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
-| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. | 
-| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. | 
-| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. | 
-| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. | 
-| SophosCentral.BlockedItem.fileName | String | The file name. | 
-| SophosCentral.BlockedItem.path | String | The path for the application. | 
-| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. | 
-| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. | 
-| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
-| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. | 
-| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. | 
-| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. | 
-
+| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. |
+| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
+| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. |
+| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. |
+| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. |
+| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. |
+| SophosCentral.BlockedItem.fileName | String | The file name. |
+| SophosCentral.BlockedItem.path | String | The path for the application. |
+| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. |
+| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. |
+| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
+| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. |
+| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. |
+| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. |
 
 #### Command Example
+
 ```!sophos-central-blocked-item-add comment="hello 2world" item_type=sha256 sha256=CAF4DB9B3191E6E693CE938BD74FAB37AEE71372C8A034F5040362D8C69E4DE4```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1276,38 +1298,39 @@ Add a new blocked item.
 
 #### Human Readable Output
 
->### Added Blocked Item:
+>### Added Blocked Item
+>
 >|id|comment|sha256|createdAt|type|
 >|---|---|---|---|---|
 >| 9535be44-40f3-4704-94df-6afa1e563f9c | hello 2world | caf4db9b3191e6e693ce938bd74fab37aee71372c8a034f5040362d8c69e4de4 | 2020-11-25T10:47:46.428Z | sha256 |
 
-
 ### sophos-central-blocked-item-delete
+
 ***
 Delete an existing blocked item.
-
 
 #### Base Command
 
 `sophos-central-blocked-item-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blocked_item_id | The blocked item ID. | Required | 
-
+| blocked_item_id | The blocked item ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedBlockedItem.deletedItemId | String | The ID of the deleted item. | 
-
+| SophosCentral.DeletedBlockedItem.deletedItemId | String | The ID of the deleted item. |
 
 #### Command Example
+
 ```!sophos-central-blocked-item-delete blocked_item_id=9b44086b-95bd-43e5-b84b-82b91725f02b```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1323,38 +1346,39 @@ Delete an existing blocked item.
 >Success deleting blocked item: 9b44086b-95bd-43e5-b84b-82b91725f02b
 
 ### sophos-central-scan-exclusion-list
+
 ***
 List all scan exclusions.
-
 
 #### Base Command
 
 `sophos-central-scan-exclusion-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_type | Scan exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral" | Optional | 
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
-| page | The page number to fetch. Default is "1" | Optional | 
-
+| exclusion_type | Scan exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral" | Optional |
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
+| page | The page number to fetch. Default is "1" | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
-| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
-
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
+| SophosCentral.ScanExclusion.value | String | The exclusion value. |
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1390,7 +1414,8 @@ List all scan exclusions.
 
 #### Human Readable Output
 
->### Listed Scan Exclusions:
+>### Listed Scan Exclusions
+>
 >|id|value|type|description|comment|scanMode|
 >|---|---|---|---|---|---|
 >| 369b0956-a7b6-44fc-b1cc-bd7b3279c663 | %programfiles(x86)%\Sophos\Sophos Anti-Virus\ | path | Sophos temporary exclusion see KBA 133945 | Sophos temporary exclusion see KBA 133945 | onDemandAndOnAccess |
@@ -1401,36 +1426,37 @@ List all scan exclusions.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-scan-exclusion-get
+
 ***
 Get a single scan exclusion by ID.
-
 
 #### Base Command
 
 `sophos-central-scan-exclusion-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_id | The exclusion ID. | Required | 
-
+| exclusion_id | The exclusion ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
-| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
-
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
+| SophosCentral.ScanExclusion.value | String | The exclusion value. |
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-get exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1448,46 +1474,47 @@ Get a single scan exclusion by ID.
 
 #### Human Readable Output
 
->### Found Scan Exclusion:
+>### Found Scan Exclusion
+>
 >|id|value|type|scanMode|
 >|---|---|---|---|
 >| 6868151e-4eac-4d0a-8985-5db9bff9d6f2 | testpathhzh | path | onDemandAndOnAccess |
 
-
 ### sophos-central-scan-exclusion-add
+
 ***
 Add a new scan exclusion.
-
 
 #### Base Command
 
 `sophos-central-scan-exclusion-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | A comment indicating why the exclusion was created. | Optional | 
-| scan_mode | The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional | 
-| exclusion_type | The scanning exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral". | Required | 
-| value | The exclusion value. | Required | 
-
+| comment | A comment indicating why the exclusion was created. | Optional |
+| scan_mode | The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional |
+| exclusion_type | The scanning exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral". | Required |
+| value | The exclusion value. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
-| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
-
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
+| SophosCentral.ScanExclusion.value | String | The exclusion value. |
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-add exclusion_type=path value=avsdfasdfaa```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1505,46 +1532,47 @@ Add a new scan exclusion.
 
 #### Human Readable Output
 
->### Added Scan Exclusion:
+>### Added Scan Exclusion
+>
 >|id|value|type|scanMode|
 >|---|---|---|---|
 >| be7b05bf-368b-4621-8131-0776486e1c7b | avsdfasdfaa | path | onDemandAndOnAccess |
 
-
 ### sophos-central-scan-exclusion-update
+
 ***
 Update an existing scan exclusion.
-
 
 #### Base Command
 
 `sophos-central-scan-exclusion-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | A comment indicating why the exclusion was created. | Optional | 
-| scan_mode | The default value of scan mode is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional | 
-| exclusion_id | The exclusion ID. | Required | 
-| value | The exclusion value. | Optional | 
-
+| comment | A comment indicating why the exclusion was created. | Optional |
+| scan_mode | The default value of scan mode is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional |
+| exclusion_id | The exclusion ID. | Required |
+| value | The exclusion value. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
-| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
-
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
+| SophosCentral.ScanExclusion.value | String | The exclusion value. |
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-update exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1562,38 +1590,39 @@ Update an existing scan exclusion.
 
 #### Human Readable Output
 
->### Updated Scan Exclusion:
+>### Updated Scan Exclusion
+>
 >|id|value|type|scanMode|
 >|---|---|---|---|
 >| 6868151e-4eac-4d0a-8985-5db9bff9d6f2 | testpathhzh | path | onDemandAndOnAccess |
 
-
 ### sophos-central-scan-exclusion-delete
+
 ***
 Delete an existing scan exclusion.
-
 
 #### Base Command
 
 `sophos-central-scan-exclusion-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_id | The exclusion ID. | Required | 
-
+| exclusion_id | The exclusion ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedScanExclusion.deletedExclusionId | String | The ID of the deleted exclusion. | 
-
+| SophosCentral.DeletedScanExclusion.deletedExclusionId | String | The ID of the deleted exclusion. |
 
 #### Command Example
+
 ```!sophos-central-scan-exclusion-delete exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1609,38 +1638,39 @@ Delete an existing scan exclusion.
 >Success deleting scan exclusion: 6868151e-4eac-4d0a-8985-5db9bff9d6f2
 
 ### sophos-central-exploit-mitigation-list
+
 ***
 List exploit mitigation settings for all protected applications.
-
 
 #### Base Command
 
 `sophos-central-exploit-mitigation-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_type | Exploit mitigation type. Possible values are: "detected" and "custom". | Optional | 
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
-| page | The page number to fetch. Default is "1". | Optional | 
-| modified | Whether the Exploit Mitigation application has been customized. Possible values are: "true" and "false". | Optional | 
-
+| mitigation_type | Exploit mitigation type. Possible values are: "detected" and "custom". | Optional |
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
+| page | The page number to fetch. Default is "1". | Optional |
+| modified | Whether the Exploit Mitigation application has been customized. Possible values are: "true" and "false". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
-
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1861,7 +1891,8 @@ List exploit mitigation settings for all protected applications.
 
 #### Human Readable Output
 
->### Listed Exploit Mitigations:
+>### Listed Exploit Mitigations
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| ff9d87d0-c944-4ca5-9f76-c5efd1f89ded | 3bf6f110-48d8-4114-95e3-a286ac50d722 | custom | other | newnewnewnewnew |
@@ -1892,35 +1923,36 @@ List exploit mitigation settings for all protected applications.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-exploit-mitigation-get
+
 ***
 Get exploit mitigation settings for a single application.
-
 
 #### Base Command
 
 `sophos-central-exploit-mitigation-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The Exploit Mitigation application ID. | Required | 
-
+| mitigation_id | The Exploit Mitigation application ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
-
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-get mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1939,42 +1971,43 @@ Get exploit mitigation settings for a single application.
 
 #### Human Readable Output
 
->### Found Exploit Mitigation:
+>### Found Exploit Mitigation
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| ff9d87d0-c944-4ca5-9f76-c5efd1f89ded | 3bf6f110-48d8-4114-95e3-a286ac50d722 | custom | other | newnewnewnewnew |
 
-
 ### sophos-central-exploit-mitigation-add
+
 ***
 Exclude a set of file paths from exploit mitigation.
-
 
 #### Base Command
 
 `sophos-central-exploit-mitigation-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required | 
-
+| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
-
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-add path=testestesteset```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -1993,43 +2026,44 @@ Exclude a set of file paths from exploit mitigation.
 
 #### Human Readable Output
 
->### Added Exploit Mitigation:
+>### Added Exploit Mitigation
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| 755ec991-c04f-498f-ab8e-20ef1a187b52 | d082226b-0c17-4959-a3ed-a6957f39c9bc | custom | other | testestesteset |
 
-
 ### sophos-central-exploit-mitigation-update
+
 ***
 Update exploit mitigation settings for an application.
-
 
 #### Base Command
 
 `sophos-central-exploit-mitigation-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The Exploit Mitigation application ID. | Required | 
-| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required | 
-
+| mitigation_id | The Exploit Mitigation application ID. | Required |
+| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
-
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-update mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded path=changed```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2048,38 +2082,39 @@ Update exploit mitigation settings for an application.
 
 #### Human Readable Output
 
->### Updated Exploit Mitigation:
+>### Updated Exploit Mitigation
+>
 >|id|name|type|category|paths|
 >|---|---|---|---|---|
 >| ff9d87d0-c944-4ca5-9f76-c5efd1f89ded | 3bf6f110-48d8-4114-95e3-a286ac50d722 | custom | other | changed |
 
-
 ### sophos-central-exploit-mitigation-delete
+
 ***
 Delete a custom (user-defined) exploit mitigation application by ID.
-
 
 #### Base Command
 
 `sophos-central-exploit-mitigation-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The Exploit Mitigation application ID. | Required | 
-
+| mitigation_id | The Exploit Mitigation application ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedExploitMitigation.deletedMitigationId | String | The ID of the deleted mitigation. | 
-
+| SophosCentral.DeletedExploitMitigation.deletedMitigationId | String | The ID of the deleted mitigation. |
 
 #### Command Example
+
 ```!sophos-central-exploit-mitigation-delete mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2095,42 +2130,43 @@ Delete a custom (user-defined) exploit mitigation application by ID.
 >Success deleting exploit mitigation: ff9d87d0-c944-4ca5-9f76-c5efd1f89ded
 
 ### sophos-central-detected-exploit-list
+
 ***
 List all detected exploits.
-
 
 #### Base Command
 
 `sophos-central-detected-exploit-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
-| page | The page number to fetch. Default is "1". | Optional | 
-| thumbprint_not_in | Filter out detected exploits with these thumbprints. | Optional | 
-
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
+| page | The page number to fetch. Default is "1". | Optional |
+| thumbprint_not_in | Filter out detected exploits with these thumbprints. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. | 
-| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. | 
-| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation Application. | 
-| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. | 
-| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. | 
-| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. | 
-| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. | 
-| SophosCentral.DetectedExploit.lastUserName | String | Person's name. | 
-| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. | 
-| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. | 
-
+| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. |
+| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. |
+| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation Application. |
+| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. |
+| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. |
+| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. |
+| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. |
+| SophosCentral.DetectedExploit.lastUserName | String | Person's name. |
+| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. |
+| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. |
 
 #### Command Example
+
 ```!sophos-central-detected-exploit-list```
 
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2141,64 +2177,64 @@ List all detected exploits.
 
 #### Human Readable Output
 
->### Listed Detected Exploits:
+>### Listed Detected Exploits
+>
 >**No entries.**
 >Current page: 1.
 >Results on this page: 0.
 >Maximum number of results allowed in a page: 100.
 
 ### sophos-central-detected-exploit-get
+
 ***
 Get a single detected exploit.
-
 
 #### Base Command
 
 `sophos-central-detected-exploit-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detected_exploit_id | The ID of a previously detected exploit. | Required | 
-
+| detected_exploit_id | The ID of a previously detected exploit. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. | 
-| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. | 
-| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation application. | 
-| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. | 
-| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. | 
-| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. | 
-| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. | 
-| SophosCentral.DetectedExploit.lastUserName | String | Person's name. | 
-| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. | 
-| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. | 
-
+| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. |
+| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. |
+| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation application. |
+| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. |
+| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. |
+| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. |
+| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. |
+| SophosCentral.DetectedExploit.lastUserName | String | Person's name. |
+| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. |
+| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. |
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
 ### sophos-central-isolate-endpoint
+
 ***
 Isolate one or more endpoints.
-
 
 #### Base Command
 
 `sophos-central-isolate-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | ID(s) of the endpoint(s) to be isolated. | Required |
 | comment | Comment indicating why the endpoint(s) should be isolated. | Optional |
-
 
 #### Context Output
 
@@ -2212,11 +2248,12 @@ Isolate one or more endpoints.
 | SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id | String | Principal Email or clientId by whom isolation was disabled. |
 | SophosCentral.EndpointIsolation.items.isolation.comment | String | Reason endpoint should be isolated or not. |
 
-
 #### Command Example
+
 ```!sophos-central-isolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
 
 #### Context Example
+
 ```json
 {
     "items": [
@@ -2243,22 +2280,21 @@ Isolate one or more endpoints.
 
 Endpoint(s) isolated successfully.
 
-
 ### sophos-central-deisolate-endpoint
+
 ***
 De-isolate one or more endpoints.
-
 
 #### Base Command
 
 `sophos-central-deisolate-endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | ID(s) of the endpoint(s) to be de-isolated. | Required |
 | comment | Comment indicating why the endpoint(s) should be de-isolated. | Optional |
-
 
 #### Context Output
 
@@ -2272,11 +2308,12 @@ De-isolate one or more endpoints.
 | SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id | String | Principal Email or clientId by whom isolation was disabled. |
 | SophosCentral.EndpointIsolation.items.isolation.comment | String | Reason endpoint should be isolated or not. |
 
-
 #### Command Example
+
 ```!sophos-central-deisolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
 
 #### Context Example
+
 ```json
 {
     "items": [
@@ -2304,32 +2341,35 @@ De-isolate one or more endpoints.
 Endpoint(s) de-isolated successfully.
 
 ### sophos-central-usergroups-users-add
+
 ***
 Add multiple users to the specified group.
-
 
 #### Base Command
 
 `sophos-central-usergroups-users-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | Unique UUID of Group. | Required | 
-| userIds | Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list). | Required | 
-
+| groupId | Unique UUID of Group. | Required |
+| userIds | Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.UserGroups.id | String | The Group ID. | 
-| SophosCentral.UserGroups.addedUsers.id | String | User ID. | 
-| SophosCentral.UserGroups.addedUsers.name | String | User's full name. | 
+| SophosCentral.UserGroups.id | String | The Group ID. |
+| SophosCentral.UserGroups.addedUsers.id | String | User ID. |
+| SophosCentral.UserGroups.addedUsers.name | String | User's full name. |
 
 #### Command example
+
 ```!sophos-central-usergroups-users-add groupId="733cce06-5ad0-487b-9547-03af02b5722e" userIds="09c515b2-009e-4e78-a83f-a5423e6def9a, f9029e98-311a-4c19-9908-15bafff9f39f, 86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2359,31 +2399,34 @@ Add multiple users to the specified group.
 >User(s) added to the specified group.
 
 ### sophos-central-usergroups-user-delete
+
 ***
 Remove a specific User from the group.
-
 
 #### Base Command
 
 `sophos-central-usergroups-user-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | Unique UUID of Group (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
-| userId | Unique UUID of User (You can retrieve the user ID from the sophos-central-users-list). | Required | 
-
+| groupId | Unique UUID of Group (You can retrieve the group ID from the sophos-central-usergroups-list). | Required |
+| userId | Unique UUID of User (You can retrieve the user ID from the sophos-central-users-list). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.UserGroups.id | String | The Group ID. | 
-| SophosCentral.UserGroups.users.removedUser | String | The User ID. | 
+| SophosCentral.UserGroups.id | String | The Group ID. |
+| SophosCentral.UserGroups.users.removedUser | String | The User ID. |
 
 #### Command example
+
 ```!sophos-central-usergroups-user-delete groupId="733cce06-5ad0-487b-9547-03af02b5722e" userId="86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2399,48 +2442,50 @@ Remove a specific User from the group.
 
 >User removed from group.
 
-
 ### sophos-central-usergroups-membership-get
+
 ***
 List all users in a specific group.
-
 
 #### Base Command
 
 `sophos-central-usergroups-membership-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | Unique Group UUID (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
-| search | Search for items that match the given terms. | Optional | 
-| searchFields | Search only within the specified comma-separated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only. | Optional | 
-| domain | List the items that match the given domain. | Optional | 
-| sourceType | Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional | 
-| page | The page number to fetch. Default is "1". Default is 1. | Optional | 
-| pageSize | Size of the page requested. Default is "50". Maximum is "100". Default is 50. | Optional | 
-
+| groupId | Unique Group UUID (You can retrieve the group ID from the sophos-central-usergroups-list). | Required |
+| search | Search for items that match the given terms. | Optional |
+| searchFields | Search only within the specified comma-separated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only. | Optional |
+| domain | List the items that match the given domain. | Optional |
+| sourceType | Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional |
+| page | The page number to fetch. Default is "1". Default is 1. | Optional |
+| pageSize | Size of the page requested. Default is "50". Maximum is "100". Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.UserGroups.users.id | String | User ID. | 
-| SophosCentral.UserGroups.users.name | String | User's name. | 
-| SophosCentral.UserGroups.users.firstName | String | User's first name or given name. | 
-| SophosCentral.UserGroups.users.lastName | String | User's last name or surname. | 
-| SophosCentral.UserGroups.users.emailAddress | String | User's email address. | 
-| SophosCentral.UserGroups.users.groups.total | number | Total number of groups. | 
-| SophosCentral.UserGroups.users.groups.itemsCount | number | Item count. | 
-| SophosCentral.UserGroups.users.groups.items.id | String | Group ID. | 
-| SophosCentral.UserGroups.users.groups.items.name | String | Group name. | 
-| SophosCentral.UserGroups.users.groups.items.displayName | String | Group display name. | 
-| SophosCentral.UserGroups.users.groups.tenant.id | String | Tenant ID. | 
-| SophosCentral.UserGroups.users.groups.source.type | String | Types of sources of directory information. | 
+| SophosCentral.UserGroups.users.id | String | User ID. |
+| SophosCentral.UserGroups.users.name | String | User's name. |
+| SophosCentral.UserGroups.users.firstName | String | User's first name or given name. |
+| SophosCentral.UserGroups.users.lastName | String | User's last name or surname. |
+| SophosCentral.UserGroups.users.emailAddress | String | User's email address. |
+| SophosCentral.UserGroups.users.groups.total | number | Total number of groups. |
+| SophosCentral.UserGroups.users.groups.itemsCount | number | Item count. |
+| SophosCentral.UserGroups.users.groups.items.id | String | Group ID. |
+| SophosCentral.UserGroups.users.groups.items.name | String | Group name. |
+| SophosCentral.UserGroups.users.groups.items.displayName | String | Group display name. |
+| SophosCentral.UserGroups.users.groups.tenant.id | String | Tenant ID. |
+| SophosCentral.UserGroups.users.groups.source.type | String | Types of sources of directory information. |
 
 #### Command example
+
 ```!sophos-central-usergroups-membership-get groupId="6ed5e258-b427-4fa0-a9cf-568d130796c3"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2568,10 +2613,11 @@ List all users in a specific group.
 #### Human Readable Output
 
 >### Total Records: 4
+>
 >Page: 1/1
-> 
+>
 >Listed 4 User(s) in Usergroup:
-> 
+>
 >|id|name|email|
 >|---|---|---|
 >| 86e0ae0f-77ef-423a-bbbf-d95e49edd468 | Administrator | ruqdxvd1g7@lightning.example.com |
@@ -2579,44 +2625,46 @@ List all users in a specific group.
 >| 69d3d421-f4cc-4a24-b093-8b2e5c6d20a4 | Lightning-gm4vu3jxek\Lightning |  |
 >| 9f59b08a-2cfd-476a-af9e-f1c039284c09 | Lightning-nlr7f2n6zd\Lightning |  |
 
-
 ### sophos-central-usergroups-get
+
 ***
 Returns the details of the GroupID specified.
-
 
 #### Base Command
 
 `sophos-central-usergroups-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | Unique ID of the group whose details to be retrieved (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
-
+| groupId | Unique ID of the group whose details to be retrieved (You can retrieve the group ID from the sophos-central-usergroups-list). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.UserGroups.id | String | Group ID. | 
-| SophosCentral.UserGroups.name | String | Group name. | 
-| SophosCentral.UserGroups.displayName | String | Group display name. | 
-| SophosCentral.UserGroups.description | String | Group description. | 
-| SophosCentral.UserGroups.groups.total | Number | Count of total groups. | 
-| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
-| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
-| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.users.id | String | User ID. | 
-| SophosCentral.UserGroups.users.name | String | User Name. | 
-| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
-| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+| SophosCentral.UserGroups.id | String | Group ID. |
+| SophosCentral.UserGroups.name | String | Group name. |
+| SophosCentral.UserGroups.displayName | String | Group display name. |
+| SophosCentral.UserGroups.description | String | Group description. |
+| SophosCentral.UserGroups.groups.total | Number | Count of total groups. |
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.users.id | String | User ID. |
+| SophosCentral.UserGroups.users.name | String | User Name. |
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. |
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. |
 
 #### Command example
+
 ```!sophos-central-usergroups-get groupId="733cce06-5ad0-487b-9547-03af02b5722e"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2666,50 +2714,53 @@ Returns the details of the GroupID specified.
 #### Human Readable Output
 
 >### Found User Groups
+>
 >|id|name|description|sourceType|
 >|---|---|---|---|
 >| 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe | NewDescriptionReadMe | custom |
 
-
 ### sophos-central-usergroups-create
+
 ***
 Creates a new “custom” (Centrally Managed) Group
-
 
 #### Base Command
 
 `sophos-central-usergroups-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupName | Provide a unique name of the group to create a usergroup in a directory. | Required | 
-| description | Description of the user group. | Optional | 
-| userIds | Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list). | Optional | 
-
+| groupName | Provide a unique name of the group to create a usergroup in a directory. | Required |
+| description | Description of the user group. | Optional |
+| userIds | Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.UserGroups.id | String | Group ID. | 
-| SophosCentral.UserGroups.name | String | Group name. | 
-| SophosCentral.UserGroups.displayName | String | Group display name. | 
-| SophosCentral.UserGroups.description | String | Group description. | 
-| SophosCentral.UserGroups.groups.total | Number | Total count of groups. | 
-| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
-| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
-| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.users.id | String | User ID. | 
-| SophosCentral.UserGroups.users.name | String | User Name. | 
-| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
-| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+| SophosCentral.UserGroups.id | String | Group ID. |
+| SophosCentral.UserGroups.name | String | Group name. |
+| SophosCentral.UserGroups.displayName | String | Group display name. |
+| SophosCentral.UserGroups.description | String | Group description. |
+| SophosCentral.UserGroups.groups.total | Number | Total count of groups. |
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.users.id | String | User ID. |
+| SophosCentral.UserGroups.users.name | String | User Name. |
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. |
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. |
 
 #### Command example
+
 ```!sophos-central-usergroups-create groupName=GroupNameTestReadMe groupDescription=GroupDescriptionReadMe userIds="86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2742,44 +2793,47 @@ Creates a new “custom” (Centrally Managed) Group
 >Successfully created a user group with ID: 03d1fcb2-246e-4307-b570-82dcf9083686.
 
 ### sophos-central-usergroups-update
+
 ***
 Allows for the editing of the group name and description for a usergroup.
-
 
 #### Base Command
 
 `sophos-central-usergroups-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | Unique ID of the group whose details to be updated (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
-| groupName | Group Name. | Required | 
-| description | Group Description. | Optional | 
-
+| groupId | Unique ID of the group whose details to be updated (You can retrieve the group ID from the sophos-central-usergroups-list). | Required |
+| groupName | Group Name. | Required |
+| description | Group Description. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.UserGroups.id | String | Group ID. | 
-| SophosCentral.UserGroups.name | String | Group name. | 
-| SophosCentral.UserGroups.displayName | String | Group display name. | 
-| SophosCentral.UserGroups.description | String | Group description. | 
-| SophosCentral.UserGroups.groups.total | Number | Total count of groups. | 
-| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
-| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
-| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.users.id | String | User ID. | 
-| SophosCentral.UserGroups.users.name | String | User Name. | 
-| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
-| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+| SophosCentral.UserGroups.id | String | Group ID. |
+| SophosCentral.UserGroups.name | String | Group name. |
+| SophosCentral.UserGroups.displayName | String | Group display name. |
+| SophosCentral.UserGroups.description | String | Group description. |
+| SophosCentral.UserGroups.groups.total | Number | Total count of groups. |
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.users.id | String | User ID. |
+| SophosCentral.UserGroups.users.name | String | User Name. |
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. |
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. |
 
 #### Command example
+
 ```!sophos-central-usergroups-update groupId="733cce06-5ad0-487b-9547-03af02b5722e" groupName=NewGroupNameReadMe description=NewDescriptionReadMe```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2825,29 +2879,32 @@ Allows for the editing of the group name and description for a usergroup.
 >Successfully updated the user group with ID: 733cce06-5ad0-487b-9547-03af02b5722e.
 
 ### sophos-central-usergroups-delete
+
 ***
 Deletes the specified group.
-
 
 #### Base Command
 
 `sophos-central-usergroups-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | Unique id of the usergroup to be deleted. Users in the usergroup should be removed first in order to delete the usergroup (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
-
+| groupId | Unique id of the usergroup to be deleted. Users in the usergroup should be removed first in order to delete the usergroup (You can retrieve the group ID from the sophos-central-usergroups-list). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedUserGroups.deletedUserGroupId | String | Deleted Group ID. | 
+| SophosCentral.DeletedUserGroups.deletedUserGroupId | String | Deleted Group ID. |
 
 #### Command example
+
 ```!sophos-central-usergroups-delete groupId="0210d539-66ab-46ac-afa2-eb8928856340"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2862,51 +2919,53 @@ Deletes the specified group.
 
 >Successfully deleted the user group with ID: 0210d539-66ab-46ac-afa2-eb8928856340.
 
-
 ### sophos-central-usergroups-list
+
 ***
 Returns a list of all user groups that match the search criteria (optional).
-
 
 #### Base Command
 
 `sophos-central-usergroups-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupsIds | Comma separated list of group UUIDs. | Optional | 
-| search | Search for items that match the given terms. | Optional | 
-| searchFields | Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched:- name,description. | Optional | 
-| domain | List the items that match the given domain. | Optional | 
-| sourceType | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed:- custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional | 
-| userId | Search groups associated with the given user ID. | Optional | 
-| page | The page number to fetch. Default is "1". Default is 1. | Optional | 
-| pageSize | Size of the page requested. Default is "50". Maximum is "100". Default is 50. | Optional | 
-
+| groupsIds | Comma separated list of group UUIDs. | Optional |
+| search | Search for items that match the given terms. | Optional |
+| searchFields | Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched:- name,description. | Optional |
+| domain | List the items that match the given domain. | Optional |
+| sourceType | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed:- custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional |
+| userId | Search groups associated with the given user ID. | Optional |
+| page | The page number to fetch. Default is "1". Default is 1. | Optional |
+| pageSize | Size of the page requested. Default is "50". Maximum is "100". Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.UserGroups.id | String | Group ID. | 
-| SophosCentral.UserGroups.name | String | Group name. | 
-| SophosCentral.UserGroups.displayName | String | Group display name. | 
-| SophosCentral.UserGroups.description | String | Group description. | 
-| SophosCentral.UserGroups.groups.total | Number | Total Count of groups. | 
-| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
-| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
-| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
-| SophosCentral.UserGroups.users.id | String | User ID. | 
-| SophosCentral.UserGroups.users.name | String | User Name. | 
-| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
-| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+| SophosCentral.UserGroups.id | String | Group ID. |
+| SophosCentral.UserGroups.name | String | Group name. |
+| SophosCentral.UserGroups.displayName | String | Group display name. |
+| SophosCentral.UserGroups.description | String | Group description. |
+| SophosCentral.UserGroups.groups.total | Number | Total Count of groups. |
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
+| SophosCentral.UserGroups.users.id | String | User ID. |
+| SophosCentral.UserGroups.users.name | String | User Name. |
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. |
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. |
 
 #### Command example
+
 ```!sophos-central-usergroups-list groupsIds="733cce06-5ad0-487b-9547-03af02b5722e, 03d1fcb2-246e-4307-b570-82dcf9083686" search=GroupName searchFields=name,description sourceType=custom userId="86e0ae0f-77ef-423a-bbbf-d95e49edd468" page=1 pageSize=10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -2984,58 +3043,62 @@ Returns a list of all user groups that match the search criteria (optional).
 #### Human Readable Output
 
 >### Total Records: 2
+>
 >Page: 1/1
-> 
+>
 >Listed 2 User Groups:
-> 
+>
 >|id|name|description|sourceType|
 >|---|---|---|---|
 >| 03d1fcb2-246e-4307-b570-82dcf9083686 | GroupNameTestReadMe |  | custom |
 >| 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe | NewDescriptionReadMe | custom |
 
 ### sophos-central-group-membership-get
+
 ***
 Get endpoints in a group.
-
 
 #### Base Command
 
 `sophos-central-group-membership-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
-
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.id | String | Group ID. | 
-| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
-| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.EndpointGroups.hostname | String | Hostname of the endpoint. | 
-| SophosCentral.EndpointGroups.os.isServer | Boolean | Whether the OS is a server OS. | 
-| SophosCentral.EndpointGroups.os.platform | String | OS platform type. | 
-| SophosCentral.EndpointGroups.os.name | String | OS name as reported by the endpoint. | 
-| SophosCentral.EndpointGroups.os.majorVersion | Number | OS major version. | 
-| SophosCentral.EndpointGroups.os.minorVersion | Number | OS minor version. | 
-| SophosCentral.EndpointGroups.os.build | Number | OS build. | 
-| SophosCentral.EndpointGroups.ipv4Addresses | String | List of IPv4 addresses. | 
-| SophosCentral.EndpointGroups.ipv6Addresses | String | List of IPv6 addresses. | 
-| SophosCentral.EndpointGroups.macAddresses | String | List of MAC addresses. | 
-| SophosCentral.EndpointGroups.group.name | String | Endpoint group name. | 
-| SophosCentral.EndpointGroups.group.id | String | Unique ID for endpoint group. | 
-| SophosCentral.EndpointGroups.associatedPerson.name | String | Person's name. | 
-| SophosCentral.EndpointGroups.associatedPerson.viaLogin | String | Person's login on the endpoint. | 
-| SophosCentral.EndpointGroups.associatedPerson.id | String | Unique ID for endpoint group. | 
-| SophosCentral.EndpointGroups.tamperProtectionEnabled | Boolean | Whether Tamper Protection is turned on. | 
-| SophosCentral.EndpointGroups.lastSeenAt | Date | Date and time \(UTC\) when the endpoint last communicated with Sophos Central. | 
+| SophosCentral.EndpointGroups.id | String | Group ID. |
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. |
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.EndpointGroups.hostname | String | Hostname of the endpoint. |
+| SophosCentral.EndpointGroups.os.isServer | Boolean | Whether the OS is a server OS. |
+| SophosCentral.EndpointGroups.os.platform | String | OS platform type. |
+| SophosCentral.EndpointGroups.os.name | String | OS name as reported by the endpoint. |
+| SophosCentral.EndpointGroups.os.majorVersion | Number | OS major version. |
+| SophosCentral.EndpointGroups.os.minorVersion | Number | OS minor version. |
+| SophosCentral.EndpointGroups.os.build | Number | OS build. |
+| SophosCentral.EndpointGroups.ipv4Addresses | String | List of IPv4 addresses. |
+| SophosCentral.EndpointGroups.ipv6Addresses | String | List of IPv6 addresses. |
+| SophosCentral.EndpointGroups.macAddresses | String | List of MAC addresses. |
+| SophosCentral.EndpointGroups.group.name | String | Endpoint group name. |
+| SophosCentral.EndpointGroups.group.id | String | Unique ID for endpoint group. |
+| SophosCentral.EndpointGroups.associatedPerson.name | String | Person's name. |
+| SophosCentral.EndpointGroups.associatedPerson.viaLogin | String | Person's login on the endpoint. |
+| SophosCentral.EndpointGroups.associatedPerson.id | String | Unique ID for endpoint group. |
+| SophosCentral.EndpointGroups.tamperProtectionEnabled | Boolean | Whether Tamper Protection is turned on. |
+| SophosCentral.EndpointGroups.lastSeenAt | Date | Date and time \(UTC\) when the endpoint last communicated with Sophos Central. |
 
 #### Command example
+
 ```!sophos-central-group-membership-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3122,45 +3185,49 @@ Get endpoints in a group.
 #### Human Readable Output
 
 >### Fetched 2 Endpoint(s) Successfully
+>
 >|id|type|hostname|
 >|---|---|---|
 >| 1abcf612-d426-457b-8088-10d921112f1b | computer | Lightning-uz1lwmqwqk |
 >| 3413a306-5227-40f1-8b86-53195d927566 | computer | Lightning-r8s9l77e5g |
 
 ### sophos-central-group-create
+
 ***
 Create a new endpoint group.
-
 
 #### Base Command
 
 `sophos-central-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Group name. | Required | 
-| description | Group description. | Optional | 
-| type | Group type. The following values are allowed: computer, server. Possible values are: server, computer. | Required | 
-| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Optional | 
-
+| name | Group name. | Required |
+| description | Group description. | Optional |
+| type | Group type. The following values are allowed: computer, server. Possible values are: server, computer. | Required |
+| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.id | String | Group ID. | 
-| SophosCentral.EndpointGroups.name | String | Group name. | 
-| SophosCentral.EndpointGroups.description | String | Group description. | 
-| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
-| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
-| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
-| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.EndpointGroups.id | String | Group ID. |
+| SophosCentral.EndpointGroups.name | String | Group name. |
+| SophosCentral.EndpointGroups.description | String | Group description. |
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. |
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. |
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. |
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. |
 
 #### Command example
+
 ```!sophos-central-group-create name="Name-readme2" description=description type=computer endpointIds="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3195,46 +3262,48 @@ Create a new endpoint group.
 #### Human Readable Output
 
 >### EndpointGroup Created Successfully
+>
 >|id|name|type|
 >|---|---|---|
 >| 3ba49c2c-2c05-4e39-8ff4-ed0488fe0a3d | Name-readme2 | computer |
 
-
-
 ### sophos-central-group-update
+
 ***
 Update an endpoint group.
-
 
 #### Base Command
 
 `sophos-central-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Group name. | Optional | 
-| description | Group description. | Optional | 
-| groupId | UUID of Endpoint group ID. | Required | 
-
+| name | Group name. | Optional |
+| description | Group description. | Optional |
+| groupId | UUID of Endpoint group ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.id | String | Group ID. | 
-| SophosCentral.EndpointGroups.name | String | Group name. | 
-| SophosCentral.EndpointGroups.description | String | Group description. | 
-| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
-| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
-| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
-| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
-| SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. | 
+| SophosCentral.EndpointGroups.id | String | Group ID. |
+| SophosCentral.EndpointGroups.name | String | Group name. |
+| SophosCentral.EndpointGroups.description | String | Group description. |
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. |
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. |
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. |
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. |
+| SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. |
 
 #### Command example
+
 ```!sophos-central-group-update name="Name-readme2-update" groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3261,43 +3330,46 @@ Update an endpoint group.
 #### Human Readable Output
 
 >### EndpointGroup Updated Successfully
+>
 >|id|name|description|
 >|---|---|---|
 >| f1ff9020-f101-42c7-a5eb-06e9ef35e7af | Name-readme2-update | description |
 
-
 ### sophos-central-group-get
+
 ***
 Get an endpoint group by ID.
-
 
 #### Base Command
 
 `sophos-central-group-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | UUID of Endpoint group ID. | Required | 
-
+| groupId | UUID of Endpoint group ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.id | String | Group ID. | 
-| SophosCentral.EndpointGroups.name | String | Group name. | 
-| SophosCentral.EndpointGroups.description | String | Group description. | 
-| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
-| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
-| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
-| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
-| SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. | 
+| SophosCentral.EndpointGroups.id | String | Group ID. |
+| SophosCentral.EndpointGroups.name | String | Group name. |
+| SophosCentral.EndpointGroups.description | String | Group description. |
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. |
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. |
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. |
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. |
+| SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. |
 
 #### Command example
+
 ```!sophos-central-group-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3324,38 +3396,41 @@ Get an endpoint group by ID.
 #### Human Readable Output
 
 >### Fetched EndpointGroup Successfully
+>
 >|description|name|
 >|---|---|
 >| description | Name-readme2-update |
 
-
 ### sophos-central-group-endpoints-add
+
 ***
 Add endpoints in a group.
-
 
 #### Base Command
 
 `sophos-central-group-endpoints-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
-| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required | 
-
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required |
+| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.endpoints.id | String | Unique endpoint ID. | 
-| SophosCentral.EndpointGroups.endpoints.hostname | String | Endpoint hostname. | 
-| SophosCentral.EndpointGroups.id | String | Unique group ID. | 
+| SophosCentral.EndpointGroups.endpoints.id | String | Unique endpoint ID. |
+| SophosCentral.EndpointGroups.endpoints.hostname | String | Endpoint hostname. |
+| SophosCentral.EndpointGroups.id | String | Unique group ID. |
 
 #### Command example
+
 ```!sophos-central-group-endpoints-add groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3379,38 +3454,41 @@ Add endpoints in a group.
 #### Human Readable Output
 
 >### 2 Endpoint(s) Added Successfully
+>
 >|id|hostname|
 >|---|---|
 >| 3413a306-5227-40f1-8b86-53195d927566 | Lightning-r8s9l77e5g |
 >| 1abcf612-d426-457b-8088-10d921112f1b | Lightning-uz1lwmqwqk |
 
-
 ### sophos-central-group-endpoint-remove
+
 ***
 Remove endpoint from a group.
-
 
 #### Base Command
 
 `sophos-central-group-endpoint-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
-| endpointId | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required | 
-
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required |
+| endpointId | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.removedEndpoint | Boolean | EndpointId of removed endpoint. | 
-| SophosCentral.EndpointGroups.id | String | Group Id. | 
+| SophosCentral.EndpointGroups.removedEndpoint | Boolean | EndpointId of removed endpoint. |
+| SophosCentral.EndpointGroups.id | String | Group Id. |
 
 #### Command example
+
 ```!sophos-central-group-endpoint-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" endpointId="3413a306-5227-40f1-8b86-53195d927566"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3426,35 +3504,37 @@ Remove endpoint from a group.
 
 >Endpoint removed successfully
 
-
 ### sophos-central-group-endpoints-remove
+
 ***
 Remove endpoints from a group.
-
 
 #### Base Command
 
 `sophos-central-group-endpoints-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
-| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required | 
-
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required |
+| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.endpoints.id | String | Unique endpoint ID. | 
-| SophosCentral.EndpointGroups.endpoints.hostname | String | Endpoint hostname. | 
-| SophosCentral.EndpointGroups.id | String | Unique group ID. | 
-| SophosCentral.EndpointGroups.removedEndpoints | String | List of removed EndpointIds from the group. | 
+| SophosCentral.EndpointGroups.endpoints.id | String | Unique endpoint ID. |
+| SophosCentral.EndpointGroups.endpoints.hostname | String | Endpoint hostname. |
+| SophosCentral.EndpointGroups.id | String | Unique group ID. |
+| SophosCentral.EndpointGroups.removedEndpoints | String | List of removed EndpointIds from the group. |
 
 #### Command example
+
 ```!sophos-central-group-endpoints-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3475,43 +3555,46 @@ Remove endpoints from a group.
 #### Human Readable Output
 
 >### 1 EndPoint(s) Removed Successfully
+>
 >|id|hostname|
 >|---|---|
 >| 1abcf612-d426-457b-8088-10d921112f1b | Lightning-uz1lwmqwqk |
 
-
 ### sophos-central-group-list
+
 ***
 List endpoint groups.
-
 
 #### Base Command
 
 `sophos-central-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "1000". Default is 50. | Optional | 
-| page | Page number to return. Default is "1". Default is 1. | Optional | 
-
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "1000". Default is 50. | Optional |
+| page | Page number to return. Default is "1". Default is 1. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.id | String | Group ID. | 
-| SophosCentral.EndpointGroups.name | String | Group name. | 
-| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
-| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
-| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
-| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
-| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
-| SophosCentral.EndpointGroups.description | String | Group description. | 
+| SophosCentral.EndpointGroups.id | String | Group ID. |
+| SophosCentral.EndpointGroups.name | String | Group name. |
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. |
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. |
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. |
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. |
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. |
+| SophosCentral.EndpointGroups.description | String | Group description. |
 
 #### Command example
+
 ```!sophos-central-group-list page_size=10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3585,11 +3668,12 @@ List endpoint groups.
 
 #### Human Readable Output
 
->### Found 4 records 
-> Page : 1/1 
-> 
+>### Found 4 records
+>
+> Page : 1/1
+>
 > Listed 4 EndpointGroups:
-> 
+>
 >|id|name|type|count|
 >|---|---|---|---|
 >| b8c0428e-a422-4db6-a72f-5af4844ed418 | Name-readme | computer | 0 |
@@ -3597,32 +3681,34 @@ List endpoint groups.
 >| 3ba49c2c-2c05-4e39-8ff4-ed0488fe0a3d | Name-readme2 | computer | 0 |
 >| f1ff9020-f101-42c7-a5eb-06e9ef35e7af | Name-readme2-update | computer | 0 |
 
-
 ### sophos-central-group-delete
+
 ***
 Delete an endpoint group by ID.
-
 
 #### Base Command
 
 `sophos-central-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
-
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointGroups.deleted | Boolean | Endpoint group deleted. | 
-| SophosCentral.EndpointGroups.id | String | Group Id. | 
+| SophosCentral.EndpointGroups.deleted | Boolean | Endpoint group deleted. |
+| SophosCentral.EndpointGroups.id | String | Group Id. |
 
 #### Command example
+
 ```!sophos-central-group-delete groupId="b3dec702-5d56-4cb9-8961-b0dba3194c94"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3638,49 +3724,51 @@ Delete an endpoint group by ID.
 
 >EndpointGroup Deleted Successfully
 
-
 ### sophos-central-users-list
+
 ***
 List users for the given tenant.
-
 
 #### Base Command
 
 `sophos-central-users-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pageSize | The maximum number of items to return. Default is "50". Maximum is "100". Default is 50. | Optional | 
-| page | Page number to return. Default is "1". Default is 1. | Optional | 
-| search | Search for items that match the given terms. | Optional | 
-| searchFields | Search only within the specified comma-seperated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only. | Optional | 
-| sourceType | Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional | 
-| groupId | Search for users in a group that has this ID (You can get the group ID from sophos-central-usergroups-list command). | Optional | 
-| domain | List the items that match the given domain. | Optional | 
-
+| pageSize | The maximum number of items to return. Default is "50". Maximum is "100". Default is 50. | Optional |
+| page | Page number to return. Default is "1". Default is 1. | Optional |
+| search | Search for items that match the given terms. | Optional |
+| searchFields | Search only within the specified comma-seperated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only. | Optional |
+| sourceType | Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional |
+| groupId | Search for users in a group that has this ID (You can get the group ID from sophos-central-usergroups-list command). | Optional |
+| domain | List the items that match the given domain. | Optional |
 
 #### Context Output
 
 | **Path**                                     | **Type** | **Description** |
 |----------------------------------------------| --- | -- |
-| SophosCentral.Users.id                       | String | User ID. | 
-| SophosCentral.Users.name                     | String | User's name. | 
-| SophosCentral.Users.firstName                | String | User's first name or given name. | 
-| SophosCentral.Users.lastName                 | String | User's last name or surname. | 
-| SophosCentral.Users.email                    | String | User's email address. | 
-| SophosCentral.Users.groups.total             | Number | Total users | 
-| SophosCentral.Users.groups.itemsCount        | Number | Total number of groups in which user is exists. | 
-| SophosCentral.Users.groups.items.id          | string | Group ID. | 
-| SophosCentral.Users.groups.items.name        | string | Group name. | 
-| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
-| SophosCentral.Users.tenant.id                | String | Tenant ID. | 
-| SophosCentral.Users.source.type              | String | SourceType of the user. | 
-| SophosCentral.Users.createdAt                | Date | When the user was created. | 
+| SophosCentral.Users.id                       | String | User ID. |
+| SophosCentral.Users.name                     | String | User's name. |
+| SophosCentral.Users.firstName                | String | User's first name or given name. |
+| SophosCentral.Users.lastName                 | String | User's last name or surname. |
+| SophosCentral.Users.email                    | String | User's email address. |
+| SophosCentral.Users.groups.total             | Number | Total users |
+| SophosCentral.Users.groups.itemsCount        | Number | Total number of groups in which user is exists. |
+| SophosCentral.Users.groups.items.id          | string | Group ID. |
+| SophosCentral.Users.groups.items.name        | string | Group name. |
+| SophosCentral.Users.groups.items.displayName | string | Group display name. |
+| SophosCentral.Users.tenant.id                | String | Tenant ID. |
+| SophosCentral.Users.source.type              | String | SourceType of the user. |
+| SophosCentral.Users.createdAt                | Date | When the user was created. |
 
 #### Command example
+
 ```!sophos-central-users-list searchFields="firstname, lastname, email"  search="playbook" pageSize=5```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3774,55 +3862,57 @@ List users for the given tenant.
 #### Human Readable Output
 
 >### Total Records: 3
+>
 >Page: 1/1
-> 
+>
 >Listed 3 User(s):
-> 
+>
 >|id|firstName|lastName|email|groupIds|groupNames|
 >|---|---|---|---|---|---|
 >| 4c994c63-c252-4ac9-8840-bcccb095d5a2 | updatedPlaybook | updatedTest | updatedemail.forplaybook@playbook.com | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
 >| 111a4a5c-4c9e-449e-88fb-19a2ce5752c6 | playbook | test | email.forplaybook1@playbook.com | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
 >| f6032b13-f001-4bae-adf2-a0fb6f344fbd | playbook | test | email.forplaybook2@playbook.com | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
 
-
-
 ### sophos-central-users-get
+
 ***
 List user with userId for the given tenant.
-
 
 #### Base Command
 
 `sophos-central-users-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | Unique User UUID (You can get the user ID from sophos-central-users-list command). | Required | 
-
+| userId | Unique User UUID (You can get the user ID from sophos-central-users-list command). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | -- |
-| SophosCentral.Users.id | String | User ID. | 
-| SophosCentral.Users.name | String | User's name. | 
-| SophosCentral.Users.firstName | String | User's first name or given name. | 
-| SophosCentral.Users.lastName | String | User's last name or surname. | 
-| SophosCentral.Users.email | String | User's email address. | 
-| SophosCentral.Users.groups.total | Number | Total users. | 
-| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. | 
-| SophosCentral.Users.groups.items.id | string | Group ID. | 
-| SophosCentral.Users.groups.items.name | string | Group name. | 
-| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
-| SophosCentral.Users.tenant.id | String | Tenant ID. | 
-| SophosCentral.Users.source.type | String | SourceType of the user. | 
-| SophosCentral.Users.createdAt | Date | When the user was created. | 
-| SophosCentral.Users.updatedAt | Date | When the user was updated. | 
+| SophosCentral.Users.id | String | User ID. |
+| SophosCentral.Users.name | String | User's name. |
+| SophosCentral.Users.firstName | String | User's first name or given name. |
+| SophosCentral.Users.lastName | String | User's last name or surname. |
+| SophosCentral.Users.email | String | User's email address. |
+| SophosCentral.Users.groups.total | Number | Total users. |
+| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. |
+| SophosCentral.Users.groups.items.id | string | Group ID. |
+| SophosCentral.Users.groups.items.name | string | Group name. |
+| SophosCentral.Users.groups.items.displayName | string | Group display name. |
+| SophosCentral.Users.tenant.id | String | Tenant ID. |
+| SophosCentral.Users.source.type | String | SourceType of the user. |
+| SophosCentral.Users.createdAt | Date | When the user was created. |
+| SophosCentral.Users.updatedAt | Date | When the user was updated. |
 
 #### Command example
+
 ```!sophos-central-users-get userId=4c994c63-c252-4ac9-8840-bcccb095d5a2```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3845,53 +3935,56 @@ List user with userId for the given tenant.
 
 #### Human Readable Output
 
->### Found User:
+>### Found User
+>
 >|id|firstName|lastName|email|exchangeLogin|groupIds|groupNames|
 >|---|---|---|---|---|---|---|
 >| 4c994c63-c252-4ac9-8840-bcccb095d5a2 | updatedPlaybook | updatedTest | updatedemail.forplaybook@playbook.com |  | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
 
-
 ### sophos-central-users-add
+
 ***
 Add a new user.
-
 
 #### Base Command
 
 `sophos-central-users-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firstName | First Name of the user. This must not include a space. Maximum length should be 250 characters. | Required | 
-| lastName | Last Name of the user. This must not include a space. Maximum length should be 250 characters. | Required | 
-| email | Email Address of the user. | Required | 
-| exchangeLogin | Exchange Login for the user. | Optional | 
-| groupIds | Comma-separated list of GroupIds to be enrolled in (You can get the list of user IDs from sophos-central-usergroups-list command). | Optional | 
-
+| firstName | First Name of the user. This must not include a space. Maximum length should be 250 characters. | Required |
+| lastName | Last Name of the user. This must not include a space. Maximum length should be 250 characters. | Required |
+| email | Email Address of the user. | Required |
+| exchangeLogin | Exchange Login for the user. | Optional |
+| groupIds | Comma-separated list of GroupIds to be enrolled in (You can get the list of user IDs from sophos-central-usergroups-list command). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | -- |
-| SophosCentral.Users.id | String | User ID. | 
-| SophosCentral.Users.name | String | User's name. | 
-| SophosCentral.Users.firstName | String | User's first name or given name. | 
-| SophosCentral.Users.lastName | String | User's last name or surname. | 
-| SophosCentral.Users.email | String | User's email address. | 
-| SophosCentral.Users.groups.total | Number | Total users. | 
-| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. | 
-| SophosCentral.Users.groups.items.id | string | Group ID. | 
-| SophosCentral.Users.groups.items.name | string | Group name. | 
-| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
-| SophosCentral.Users.tenant.id | String | Tenant ID. | 
-| SophosCentral.Users.source.type | String | SourceType of the user. | 
-| SophosCentral.Users.createdAt | Date | When the user was created. | 
-| SophosCentral.Users.updatedAt | Date | When the user was updated. | 
+| SophosCentral.Users.id | String | User ID. |
+| SophosCentral.Users.name | String | User's name. |
+| SophosCentral.Users.firstName | String | User's first name or given name. |
+| SophosCentral.Users.lastName | String | User's last name or surname. |
+| SophosCentral.Users.email | String | User's email address. |
+| SophosCentral.Users.groups.total | Number | Total users. |
+| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. |
+| SophosCentral.Users.groups.items.id | string | Group ID. |
+| SophosCentral.Users.groups.items.name | string | Group name. |
+| SophosCentral.Users.groups.items.displayName | string | Group display name. |
+| SophosCentral.Users.tenant.id | String | Tenant ID. |
+| SophosCentral.Users.source.type | String | SourceType of the user. |
+| SophosCentral.Users.createdAt | Date | When the user was created. |
+| SophosCentral.Users.updatedAt | Date | When the user was updated. |
 
 #### Command example
+
 ```!sophos-central-users-add firstName=playbook lastName=test email=email.forplaybook2@playbook.com groupIds=733cce06-5ad0-487b-9547-03af02b5722e```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -3931,47 +4024,50 @@ Add a new user.
 >A new User was added to the Directory.
 
 ### sophos-central-users-update
+
 ***
 Update a user.
-
 
 #### Base Command
 
 `sophos-central-users-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | Unique User UUID (You can get the user ID from sophos-central-users-list command). | Required | 
-| name | User's fullname. | Optional | 
-| firstName | First Name of the user. This must not include a space. Maximum length should be 250 characters. | Optional | 
-| lastName | Last Name of the user. This must not include a space. Maximum length should be 250 characters. | Optional | 
-| email | Email Address of the user. | Optional | 
-| exchangeLogin | Exchange Login for the user. | Optional | 
-
+| userId | Unique User UUID (You can get the user ID from sophos-central-users-list command). | Required |
+| name | User's fullname. | Optional |
+| firstName | First Name of the user. This must not include a space. Maximum length should be 250 characters. | Optional |
+| lastName | Last Name of the user. This must not include a space. Maximum length should be 250 characters. | Optional |
+| email | Email Address of the user. | Optional |
+| exchangeLogin | Exchange Login for the user. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | -- |
-| SophosCentral.Users.id | String | User ID. | 
-| SophosCentral.Users.name | String | User's name. | 
-| SophosCentral.Users.firstName | String | User's first name or given name. | 
-| SophosCentral.Users.lastName | String | User's last name or surname. | 
-| SophosCentral.Users.email | String | User's email address. | 
-| SophosCentral.Users.groups.total | Number | Total users. | 
-| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. | 
-| SophosCentral.Users.groups.items.id | string | Group ID. | 
-| SophosCentral.Users.groups.items.name | string | Group name. | 
-| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
-| SophosCentral.Users.tenant.id | String | Tenant ID. | 
-| SophosCentral.Users.source.type | String | SourceType of the user. | 
-| SophosCentral.Users.createdAt | Date | When the user was created. | 
-| SophosCentral.Users.updatedAt | Date | When the user was updated. | 
+| SophosCentral.Users.id | String | User ID. |
+| SophosCentral.Users.name | String | User's name. |
+| SophosCentral.Users.firstName | String | User's first name or given name. |
+| SophosCentral.Users.lastName | String | User's last name or surname. |
+| SophosCentral.Users.email | String | User's email address. |
+| SophosCentral.Users.groups.total | Number | Total users. |
+| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. |
+| SophosCentral.Users.groups.items.id | string | Group ID. |
+| SophosCentral.Users.groups.items.name | string | Group name. |
+| SophosCentral.Users.groups.items.displayName | string | Group display name. |
+| SophosCentral.Users.tenant.id | String | Tenant ID. |
+| SophosCentral.Users.source.type | String | SourceType of the user. |
+| SophosCentral.Users.createdAt | Date | When the user was created. |
+| SophosCentral.Users.updatedAt | Date | When the user was updated. |
 
 #### Command example
+
 ```!sophos-central-users-update userId=4c994c63-c252-4ac9-8840-bcccb095d5a2 firstName="updatedPlaybook" lastName="updatedTest" email="updatedemail.forplaybook@playbook.com"```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4011,29 +4107,32 @@ Update a user.
 >User updated.
 
 ### sophos-central-users-delete
+
 ***
 Delete a user.
-
 
 #### Base Command
 
 `sophos-central-users-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userId | Unique User UUID (You can get user ID from sophos-central-users-list command). | Required | 
-
+| userId | Unique User UUID (You can get user ID from sophos-central-users-list command). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedUsers.deletedUserId | String | Deleted User's Id. | 
+| SophosCentral.DeletedUsers.deletedUserId | String | Deleted User's Id. |
 
 #### Command example
+
 ```!sophos-central-users-delete userId=9d79e670-3846-45b7-a119-12ca1ee46933```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4048,41 +4147,43 @@ Delete a user.
 
 >User deleted.
 
-
 ### sophos-central-endpoint-policy-search
+
 ***
 Get all endpoint policy.
-
 
 #### Base Command
 
 `sophos-central-endpoint-policy-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "200". Default is 50. | Optional | 
-| page | Page number to return. Default is "1". Default is 1. | Optional | 
-| policy_type | Fetch the policies based on policy_type value. Possible values are: "threat-protection", "peripheral-control", "application-control", "data-loss-prevention", "device-encryption", "web-control", "agent-updating", "windows-firewall", "server-threat-protection", "server-peripheral-control", "server-application-control", "server-web-control", "server-lockdown", "server-data-loss-prevention", "server-agent-updating", "server-windows-firewall", "server-file-integrity-monitoring". Possible values are: threat-protection, peripheral-control, application-control, data-loss-prevention, device-encryption, web-control, agent-updating, windows-firewall, server-threat-protection, server-peripheral-control, server-application-control, server-web-control, server-lockdown, server-data-loss-prevention, server-agent-updating, server-windows-firewall, server-file-integrity-monitoring. | Optional | 
-
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "200". Default is 50. | Optional |
+| page | Page number to return. Default is "1". Default is 1. | Optional |
+| policy_type | Fetch the policies based on policy_type value. Possible values are: "threat-protection", "peripheral-control", "application-control", "data-loss-prevention", "device-encryption", "web-control", "agent-updating", "windows-firewall", "server-threat-protection", "server-peripheral-control", "server-application-control", "server-web-control", "server-lockdown", "server-data-loss-prevention", "server-agent-updating", "server-windows-firewall", "server-file-integrity-monitoring". Possible values are: threat-protection, peripheral-control, application-control, data-loss-prevention, device-encryption, web-control, agent-updating, windows-firewall, server-threat-protection, server-peripheral-control, server-application-control, server-web-control, server-lockdown, server-data-loss-prevention, server-agent-updating, server-windows-firewall, server-file-integrity-monitoring. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.PolicyAndEnumeration.id | String | Policy ID | 
-| SophosCentral.PolicyAndEnumeration.feature | String | Feature | 
-| SophosCentral.PolicyAndEnumeration.settings | String | Settings | 
-| SophosCentral.PolicyAndEnumeration.orderPriority | String | Order priority | 
-| SophosCentral.PolicyAndEnumeration.name | String | Name | 
-| SophosCentral.PolicyAndEnumeration.enforced | Boolean | Enforced \(T|F\) | 
-| SophosCentral.PolicyAndEnumeration.typeSingle | String | Type Single | 
-| SophosCentral.PolicyAndEnumeration.typeGroup | String | Type Group | 
-| SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified | 
+| SophosCentral.PolicyAndEnumeration.id | String | Policy ID |
+| SophosCentral.PolicyAndEnumeration.feature | String | Feature |
+| SophosCentral.PolicyAndEnumeration.settings | String | Settings |
+| SophosCentral.PolicyAndEnumeration.orderPriority | String | Order priority |
+| SophosCentral.PolicyAndEnumeration.name | String | Name |
+| SophosCentral.PolicyAndEnumeration.enforced | Boolean | Enforced \(T|F\) |
+| SophosCentral.PolicyAndEnumeration.typeSingle | String | Type Single |
+| SophosCentral.PolicyAndEnumeration.typeGroup | String | Type Group |
+| SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified |
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-search page_size=10 page=1```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4394,9 +4495,12 @@ Get all endpoint policy.
 
 #### Human Readable Output
 
->### Total Record(s): 24 
+>### Total Record(s): 24
+>
 >### Current page: 1/3
->### Listed 10 Endpoint Policies:
+>
+>### Listed 10 Endpoint Policies
+>
 >|id|feature|settings|orderPriority|name|enforced|typeSingle|typeGroup|lastModified|
 >|---|---|---|---|---|---|---|---|---|
 >| 67074d6e-ce83-40c2-a7f4-8a94a1beac10 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 9 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
@@ -4410,39 +4514,41 @@ Get all endpoint policy.
 >| 875166af-1848-463a-a853-bed673cad119 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 1 | Base Policy (cloned) | false |  |  | 2022-10-11T06:13:07.146Z |
 >| 3f863d0a-4405-4c6d-a035-4215db53b087 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 0 | Base Policy | true |  |  | 2022-05-07T01:16:26.767Z |
 
-
 ### sophos-central-endpoint-policy-get
+
 ***
 Get details of Policy by id.
-
 
 #### Base Command
 
 `sophos-central-endpoint-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
-
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.PolicyAndEnumeration.id | String | Policy ID | 
-| SophosCentral.PolicyAndEnumeration.feature | String | Feature | 
-| SophosCentral.PolicyAndEnumeration.settings | String | Settings | 
-| SophosCentral.PolicyAndEnumeration.orderPriority | String | Order priority | 
-| SophosCentral.PolicyAndEnumeration.name | String | Name | 
-| SophosCentral.PolicyAndEnumeration.enforced | Boolean | Enforced \(T|F\) | 
-| SophosCentral.PolicyAndEnumeration.typeSingle | String | Type Single | 
-| SophosCentral.PolicyAndEnumeration.typeGroup | String | Type Group | 
-| SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified | 
+| SophosCentral.PolicyAndEnumeration.id | String | Policy ID |
+| SophosCentral.PolicyAndEnumeration.feature | String | Feature |
+| SophosCentral.PolicyAndEnumeration.settings | String | Settings |
+| SophosCentral.PolicyAndEnumeration.orderPriority | String | Order priority |
+| SophosCentral.PolicyAndEnumeration.name | String | Name |
+| SophosCentral.PolicyAndEnumeration.enforced | Boolean | Enforced \(T|F\) |
+| SophosCentral.PolicyAndEnumeration.typeSingle | String | Type Single |
+| SophosCentral.PolicyAndEnumeration.typeGroup | String | Type Group |
+| SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified |
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-get policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4482,36 +4588,40 @@ Get details of Policy by id.
 
 #### Human Readable Output
 
->### 67074d6e-ce83-40c2-a7f4-8a94a1beac10 Policy Details:
+>### 67074d6e-ce83-40c2-a7f4-8a94a1beac10 Policy Details
+>
 >|id|feature|settings|orderPriority|name|enforced|typeSingle|typeGroup|lastModified|
 >|---|---|---|---|---|---|---|---|---|
 >| 67074d6e-ce83-40c2-a7f4-8a94a1beac10 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 9 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
 
 ### sophos-central-endpoint-policy-reorder
+
 ***
 Update Policy priority for non-base policies.
-
 
 #### Base Command
 
 `sophos-central-endpoint-policy-reorder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
-| priority | Update Policy Order priority for non-base policies. | Required | 
-
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required |
+| priority | Update Policy Order priority for non-base policies. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.PolicyAndEnumeration.updatedPolicyId | String | The ID of the updated policy. | 
+| SophosCentral.PolicyAndEnumeration.updatedPolicyId | String | The ID of the updated policy. |
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-reorder policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10 priority=1```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4527,29 +4637,32 @@ Update Policy priority for non-base policies.
 >Success updating endpoint policy: 67074d6e-ce83-40c2-a7f4-8a94a1beac10
 
 ### sophos-central-endpoint-policy-search-delete
+
 ***
 Delete an existing endpoint policy.
-
 
 #### Base Command
 
 `sophos-central-endpoint-policy-search-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
-
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.PolicyAndEnumeration.deletedPolicyId | String | The ID of the deleted policy. | 
+| SophosCentral.PolicyAndEnumeration.deletedPolicyId | String | The ID of the deleted policy. |
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-search-delete policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {
@@ -4565,30 +4678,33 @@ Delete an existing endpoint policy.
 >Success deleting endpoint policy: 67074d6e-ce83-40c2-a7f4-8a94a1beac10
 
 ### sophos-central-endpoint-policy-clone
+
 ***
 Clone an existing endpoint policy.
-
 
 #### Base Command
 
 `sophos-central-endpoint-policy-clone`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
-| name | Policy name of the newly cloned policy. | Optional | 
-
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required |
+| name | Policy name of the newly cloned policy. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.PolicyAndEnumeration.clonedPolicyId | String | The ID of the cloned policy. | 
+| SophosCentral.PolicyAndEnumeration.clonedPolicyId | String | The ID of the cloned policy. |
 
 #### Command example
+
 ```!sophos-central-endpoint-policy-clone policy_id=b3715f16-b675-4978-927d-2e0fb206b6e9 name=testclonenew```
+
 #### Context Example
+
 ```json
 {
     "SophosCentral": {

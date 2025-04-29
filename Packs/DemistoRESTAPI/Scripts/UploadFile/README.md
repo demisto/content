@@ -28,6 +28,7 @@ This script uses the following commands and scripts.
 | body              | Request body.                                                                                                                                                                                                                                       |
 | target            | Where to upload the file<br/>- Available options are:<br/>- \`war room entry\`: the file will be uploaded as War Room entry.<br/>- \`incident attachment\`: the file will be uploaded as incident attachment.<br/>- default are \`war room entry\` |
 | using             | Integration instance to use to run the command.                                                                                                                                                                                                     |
+
 ## Outputs
 
 ---
@@ -35,6 +36,6 @@ There are no outputs for this script.
 
 ### Troubleshooting
 
-Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
-automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
+Multi-tenant environments should be configured with the Cortex Rest API instance when using this
+automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked
 to ensure that API calls are made to the current tenant instead of the master tenant.
