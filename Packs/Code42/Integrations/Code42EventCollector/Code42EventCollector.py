@@ -10,7 +10,6 @@ from CommonServerUserPython import *  # noqa
 from typing import Any
 from enum import Enum
 
-
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
 DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 
@@ -133,7 +132,7 @@ class Client:
         demisto.debug(f'[TEMP] Just fetched file_events={"|".join(TEMP_event_id(event.event.id) for event in file_events)}')
 
         sorted_file_events = sorted(file_events, key=lambda x: x.event.inserted)
-        
+
         # demisto.debug('[TEMP] 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(100), file_events)))
         # demisto.debug('[TEMP] Last 100 Times: ' + ', '.join(str(event.event.inserted) for _, event in zip(range(max(0, len(file_events) - 100), len(file_events)), file_events)))
 
@@ -176,7 +175,8 @@ def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[s
     return [dict_safe_get(event, keys=keys_to_id) for event in events]
 
 
-def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre_fetch_look_back: Optional[datetime] = None) -> tuple[List[str], str]:
+def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre_fetch_look_back: Optional[datetime] = None) -> \
+    tuple[List[str], str]:
     """
     Get the latest event IDs and get latest time
 
@@ -186,7 +186,7 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str], pre
     """
     event_type = events[0]["eventType"]
     latest_time_event = max(event["_time"] for event in events)
-    
+
     next_fetch_from = datetime.fromisoformat(
         min(
             latest_time_event,
@@ -227,12 +227,14 @@ def datetime_to_date_string(events: List[Dict[str, Any]]):
         _datetime_to_date_string(event)
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, event_types_to_fetch) -> str:
     """
     Tests that it is possible to retrieve file events and audit logs and credentials are valid
     """
-    client.get_file_events(timedelta(minutes=1), page_size=1)
-    client.get_audit_logs(datetime.now() - timedelta(minutes=1), page_size=1)
+    if "File" in event_types_to_fetch:
+        client.get_file_events(timedelta(minutes=1), page_size=1)
+    if "Audit" in event_types_to_fetch:
+        client.get_audit_logs(datetime.now() - timedelta(minutes=1), page_size=1)
     return "ok"
 
 
@@ -254,7 +256,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         else (datetime.now() - timedelta(minutes=1))
     )
 
-    fetched_events = last_run.get(FileEventLastRun.FETCHED_IDS, [])
+    fetched_events = last_run.get(FileEventLastRun.FETCHED_IDS, {})
     pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
     file_events = client.get_file_events(  # type: ignore[arg-type]
         file_event_time,
@@ -325,39 +327,40 @@ def format_last_run_dupes(dupes: dict) -> list[dict]:
     ]
 
 
-def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max_fetch_audit_events: int):
+def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max_fetch_audit_events: int,
+                 event_types_to_fetch: List[str]):
     """
     Fetch audit-logs & file-events
     """
-    file_events, file_events_last_run = fetch_file_events(client, last_run=last_run, max_fetch_file_events=max_fetch_file_events)
-    # if file_events:
-    #     file_events_last_run["nextTrigger"] = "30"
+    if "File" in event_types_to_fetch:
+        file_events, file_events_last_run = fetch_file_events(client, last_run=last_run,
+                                                              max_fetch_file_events=max_fetch_file_events)
+        # if file_events:
+        #     file_events_last_run["nextTrigger"] = "30"
 
-    last_run.update(file_events_last_run)
-    futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
-    if futures:
-        tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
+        last_run.update(file_events_last_run)
+        futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
+        if futures:
+            tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
+        demisto.debug(
+            f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
+        )
+        demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.FILE} events")
+    if "Audit" in event_types_to_fetch:
+        audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run,
+                                                           max_fetch_audit_events=max_fetch_audit_events)
+        audit_log_ids = get_event_ids(audit_logs, keys_to_id=["id"])
+        for log in audit_logs:
+            log.pop("id", None)
 
-    demisto.debug(
-        f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
-    )
-    # demisto.setLastRun(last_run)
-    demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.FILE} events")
+        # if audit_logs:
+        #     audit_logs_last_run["nextTrigger"] = "30"
 
-    audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
-    audit_log_ids = get_event_ids(audit_logs, keys_to_id=["id"])
-    for log in audit_logs:
-        log.pop("id", None)
-
-    # if audit_logs:
-    #     audit_logs_last_run["nextTrigger"] = "30"
-
-    last_run.update(audit_logs_last_run)
-    send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
-    demisto.debug(f"Fetched the following {EventType.AUDIT} events event IDs {audit_log_ids}")
-
+        last_run.update(audit_logs_last_run)
+        send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+        demisto.debug(f"Fetched the following {EventType.AUDIT} events event IDs {audit_log_ids}")
+        demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.AUDIT} logs")
     demisto.setLastRun(last_run)
-    demisto.debug(f"Updated the last run to {last_run} after fetching {EventType.AUDIT} logs")
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -401,7 +404,7 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     max_fetch_file_events = arg_to_number(params.get("max_file_events_per_fetch")) or DEFAULT_FILE_EVENTS_MAX_FETCH
     max_fetch_audit_events = arg_to_number(params.get("max_audit_events_per_fetch")) or DEFAULT_AUDIT_EVENTS_MAX_FETCH
-
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["File"]))
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
     try:
@@ -412,13 +415,14 @@ def main() -> None:
             verify=verify_certificate,
         )
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client, event_types_to_fetch))
         elif command == "fetch-events":
             fetch_events(
                 client,
                 last_run=demisto.getLastRun(),
                 max_fetch_file_events=max_fetch_file_events,
                 max_fetch_audit_events=max_fetch_audit_events,
+                event_types_to_fetch=event_types_to_fetch,
             )
             demisto.debug(f'[TEMP] fetch ended. LastRun: {demisto.getLastRun()}')
         elif command == "code42-get-events":
