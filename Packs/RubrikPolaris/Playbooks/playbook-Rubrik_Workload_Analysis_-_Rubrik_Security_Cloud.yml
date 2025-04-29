@@ -1,7 +1,7 @@
 id: Rubrik Workload Analysis - Rubrik Security Cloud
 version: -1
 name: Rubrik Workload Analysis - Rubrik Security Cloud
-description: This playbook fetches workload information for the provided IPs or domains, and then increases the XSOAR incident severity based on the workload risk levels and threat information.
+description: This playbook fetches workload information for the provided IPs or domains/hostnames, and then increases the XSOAR incident severity based on the workload risk levels and threat information.
 starttaskid: "0"
 tasks:
   "0":
@@ -324,8 +324,8 @@ tasks:
     task:
       id: 83eb8f64-fe43-46c8-8d74-237a17d60b1b
       version: -1
-      name: Check whether IPs or domains are available in playbook input
-      description: Check whether ips or domains are available in playbook input.
+      name: Check whether IPs or domains/hostnames are available in playbook input
+      description: Check whether ips or domains/hostnames are available in playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -378,8 +378,8 @@ tasks:
     task:
       id: be556a30-526d-430f-824f-e863a90f85b8
       version: -1
-      name: Check for domain indicator
-      description: Retrieve the sensitive information available for the given domain(s).
+      name: Check for domain/hostname indicator
+      description: Retrieve the sensitive information available for the given domain(s)/hostname(s).
       script: RubrikPolaris|||domain
       type: regular
       iscommand: true
@@ -532,8 +532,8 @@ tasks:
     task:
       id: ad618db1-0cf1-45bc-8e9b-f61085bc12f3
       version: -1
-      name: Check that domain indicators are present or not
-      description: Check that domain(s) is present or not.
+      name: Check that domain/hostname indicators are present or not
+      description: Check that domain(s)/hostname(s) is present or not.
       type: condition
       iscommand: false
       brand: ""
@@ -689,7 +689,7 @@ inputs:
 - key: domains
   value: {}
   required: false
-  description: The optional comma-separated list of domain(s) for which to use workload information to increase the XSOAR incident severity.
+  description: The optional comma-separated list of domain(s)/hostname(s) for which to use workload information to increase the XSOAR incident severity.
   playbookInputQuery:
 outputs: []
 tests:
