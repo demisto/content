@@ -100,7 +100,7 @@ configuration:
   advanced: true
   required: false
 description: Use the Proofpoint Threat Response integration to orchestrate and automate incident response.
-display: Proofpoint Threat Response (Beta)
+display: Proofpoint Threat Response
 name: Proofpoint Threat Response
 script:
   commands:
@@ -741,6 +741,5 @@ script:
   type: python
   dockerimage: demisto/python3:3.11.11.1940698
 tests:
-- No test - beta_integration
-beta: true
+- No test
 fromversion: 5.0.0
