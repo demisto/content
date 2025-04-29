@@ -9,15 +9,8 @@ def execute_ssh_command():
     file = "/var/log/demisto/server.log"
     res = demisto.executeCommand("ssh", {"cmd": f"tail {file}", "using": "localhost"})
 
-    contents = res[0].get('Contents')
-    # if isinstance(contents, list):
-    #     contents = contents[0]
-    #
-    # if contents.get('error'):
-    #     raise Exception(contents.get('error'))
-
     output = f"File: {file}\n"
-    output += contents.get("output")
+    output += res[0].get("Contents").get("output")
     output = re.sub(r" \(source: .*\)", "", output)
 
     return_results(output)
@@ -29,7 +22,7 @@ def main():
     except ValueError as e:
         demisto.error(str(e))
         return_error(
-            "The script could not execute the `ssh` command. Please create an instance of the "
+            "The script could not execute the `ssh` command. Please create an instance of the"
             "`RemoteAccess v2` integration and try to run the script again."
         )
 
