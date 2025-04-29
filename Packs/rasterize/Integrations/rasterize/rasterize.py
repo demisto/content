@@ -239,8 +239,8 @@ class PychromeEventHandler:
         """
         Callback handler for when a frame has stopped loading in the page.
         
-        This method is called by Chrome when a frame in the page finishes loading. It checks if 
-        the finished frame is the main frame we're tracking, then verifies the loaded URL. If the 
+        This method is called by Chrome when a frame in the page finishes loading. It checks if
+        the finished frame is the main frame we're tracking, then verifies the loaded URL. If the
         URL indicates a Chrome error page for a local file, it attempts to retry loading. Otherwise,
         it signals that the page is ready by setting the tab_ready_event.
         
@@ -250,7 +250,7 @@ class PychromeEventHandler:
         Returns:
             None
         """
-        demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}, {self.tab.id=}")
+        demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}, {self.tab.id=}, {self.path=}")
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
             try:
@@ -268,14 +268,14 @@ class PychromeEventHandler:
                         self.retry_loading()
                     except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
                         # The tab is already stopping or has been stopped
-                        demisto.debug(f"Tab is stopping/stopped while retrying page load: {ex}")
+                        demisto.debug(f"Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}")
                         self.tab_ready_event.set()
                 else:
                     demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
                     self.tab_ready_event.set()
             except Exception as ex:
                 # Catch any other unexpected exceptions
-                demisto.info(f"Unexpected exception in page_frame_stopped_loading: {ex}")
+                demisto.info(f"Unexpected exception in page_frame_stopped_loading {self.path=}, {self.tab.id=}: {ex}")
                 # Make sure we always set the event to prevent hanging
                 self.tab_ready_event.set()
 

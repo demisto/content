@@ -646,12 +646,8 @@ def test_get_frame_tree_url_success(mocker: MockerFixture):
     mock_event = mocker.Mock()
     
     handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
-    
-    # Call the method
-    result = handler.get_frame_tree_url()
-    
-    # Verify results
-    assert result == "https://test.com"
+
+    assert handler.get_frame_tree_url() == "https://test.com"
     assert not mock_event.set.called
 
 
@@ -674,8 +670,7 @@ def test_get_frame_tree_url_runtime_exception(mocker: MockerFixture):
     mock_event = mocker.Mock()
     
     handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
-    
-    # Verify results
+
     assert handler.get_frame_tree_url() == ""
     assert mock_event.set.called
 
