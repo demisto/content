@@ -577,16 +577,26 @@ def merge_policy_section(base_existing: dict, new: dict, messages: List[str]) ->
                 stack.append((existing_sub, new_sub, current_path))
             else:
                 # Get the existing value from the full base_existing path
-                existing_value = base_existing
-                for p in current_path:
-                    existing_value = existing_value[p]
+                try:
+                    existing_value = base_existing
+                    for p in current_path:
+                        existing_value = existing_value[p]
+                except TypeError as e:
+                    demisto.info(f"The existing policy doesn't contain the path {'.'.join(current_path)}: {str(e)},"
+                                 " using empty list instead")
+                    existing_value = None
 
-                if not isinstance(existing_value, list):
-                    demisto.info(f"Field `{'.'.join(current_path)}` is not a list. 'append' mode is not applicable."
-                                  "The existing value has been overwritten with the new value.")
-                    continue
+                
+                if existing_value:
+                    if not isinstance(existing_value, list):
+                        demisto.info(f"Field `{'.'.join(current_path)}` is not a list. 'append' mode is not applicable."
+                                    "The existing value has been overwritten with the new value.")
+                        continue
 
-                merged = resolve_merge_value(key, existing_value, value, messages)
+                    merged = resolve_merge_value(key, existing_value, value, messages)
+                else:
+                    merged = value
+                    
                 target = new
                 
                 for p in current_path[:-1]:

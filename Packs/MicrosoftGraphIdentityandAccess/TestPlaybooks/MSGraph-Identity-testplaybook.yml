@@ -313,6 +313,12 @@ tasks:
         simple: test playbook
       state:
         simple: disabled
+      user_risk_levels:
+        simple: high
+      sign_in_risk_levels:
+        simple: high
+      client_app_types:
+        simple: all
     separatecontext: false
     continueonerrortype: ""
     view: |-
