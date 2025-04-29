@@ -606,3 +606,69 @@ def test_get_unix_date(input_args, expected):
     from GmailSingleUser import get_unix_date
     assert get_unix_date(input_args) == expected
 
+
+def test_fetch_incidents_set_last_run_called_correctly(mocker):
+    """
+    Test the `fetch_incidents` function to ensure it correctly updates the 'setLastRun' after fetching incidents.
+
+    Given:
+    - A GmailSingleUser client with a mocked Gmail service and necessary method patches.
+    - A patch on 'GmailSingleUser.execute_gmail_action' to simulate Gmail API responses for 'list' and 'get' actions based on the fetch count.
+    - Initial 'getLastRun' returning a specific datetime indicating the last run time.
+    - An external file 'test_data/a.json' to simulate fetched email details.
+
+    When:
+    - The `fetch_incidents` function is called twice, first with an initial fetch count of 0, then incremented to simulate a subsequent fetch.
+
+    Then:
+    - The function should update 'setLastRun' correctly after each call:
+      - After the first call, 'setLastRun' should contain exactly two messages with IDs '1' and '3'.
+      - After the second call, 'setLastRun' should contain exactly three messages with IDs '1', '2', and '3', reflecting the updated fetch.
+      - The 'lookback_msg' field in the data sent to 'setLastRun' should reflect the correct IDs of the messages fetched in each incident fetch.
+    """  # noqa: E501
+    from GmailSingleUser import fetch_incidents
+    import GmailSingleUser
+    gmail_single_user_client = Client()
+    # Mock the chain of calls: service.users().messages().send().execute()
+    mock_execute = mocker.Mock(return_value={"id": "mock_message_id"})
+    mock_send = mocker.Mock(return_value=mock_execute)
+    mock_messages = mocker.Mock(send=mocker.Mock(return_value=mock_send))
+    mock_users = mocker.Mock(messages=mocker.Mock(return_value=mock_messages))
+    mock_service = mocker.Mock(users=mocker.Mock(return_value=mock_users))
+    # Patch the service object in the Client class to use the mocked service
+    mocker.patch.object(GmailSingleUser.Client, "get_service", new=mock_service)
+    fetch_count = 0
+
+    def execute_gmail_action_side_effect(service, action, args):
+        nonlocal fetch_count
+        if action == "list":
+            if fetch_count == 0:
+                return {'messages': [{'id': '1'}, {'id': '3'}]}
+            return {'messages': [{'id': '1'}, {'id': '2'}, {'id': '3'}]}
+        elif action == "get":
+            message_id = args.get("id")
+            for item in util_load_json("test_data/lookback_emails.json"):
+                if item.get("id") == message_id:
+                    return item
+        return {}
+
+    # Mocking external functions and globals
+    mocker.patch('GmailSingleUser.execute_gmail_action', side_effect=execute_gmail_action_side_effect)
+    mocker.patch('GmailSingleUser.demisto.getLastRun', return_value={"gmt_time": "2025-02-24T15:17:05Z"})
+    mock_set_last_run = mocker.patch('GmailSingleUser.demisto.setLastRun')
+
+    fetch_incidents(gmail_single_user_client)
+
+    last_args = mock_set_last_run.call_args[0][0]
+    assert len(last_args['lookback_msg']) == 2, "lookback_msg does not contain exactly three messages in the first fetch"
+
+    fetch_count += 1
+    fetch_incidents(gmail_single_user_client)
+
+    # Check the last arguments sent to setLastRun
+    last_args = mock_set_last_run.call_args[0][0]
+
+    # Assert the lookback_msg contains the correct messages
+    assert 'lookback_msg' in last_args, "lookback_msg key is missing in the arguments sent to setLastRun"
+    assert len(last_args['lookback_msg']) == 3, "lookback_msg does not contain exactly three messages in the secund fetch"
+    assert [id for id, _ in last_args['lookback_msg']] == ["1", "2", "3"], "lookback_msg do"
