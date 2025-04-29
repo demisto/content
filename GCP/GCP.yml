@@ -161,7 +161,7 @@ script:
           defaultValue: "allUsers"
           required: false
           isArray: true
-          description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user-<userId or email>\n* group-<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+          description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
     - name: gcp-compute-subnet-update
       description: Enables flow logs or Private Google Access on a subnet.

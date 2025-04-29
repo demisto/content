@@ -5,27 +5,34 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 urllib3.disable_warnings()
+API_VERSION = "v1"
 REQUIRED_PERMISSIONS: Dict[str, List[str]] = {
     "gcp-compute-firewall-patch": [
         "compute.firewalls.update",
         "compute.firewalls.get",
-        "compute.networks.updatePolicy"
+        "compute.firewalls.list",
+        "compute.networks.updatePolicy",
+        "compute.networks.list"
     ],
     "gcp-compute-subnet-update": [
         "compute.subnetworks.setPrivateIpGoogleAccess",
         "compute.subnetworks.update",
-        "compute.subnetworks.get"
+        "compute.subnetworks.get",
+        "compute.subnetworks.list"
     ],
     "gcp-compute-project-metadata-add": [
         "compute.instances.setMetadata",
-        "compute.instances.get"
+        "compute.instances.get",
+        "compute.instances.list"
     ],
     "gcp-storage-bucket-policy-delete": [
         "storage.buckets.getIamPolicy",
         "storage.buckets.setIamPolicy"
     ],
     "gcp-container-cluster-security-update": [
-        "container.clusters.update"
+        "container.clusters.update",
+        "container.clusters.get",
+        "container.clusters.list"
     ],
     "gcp-storage-bucket-metadata-update": [
         "storage.buckets.update"
@@ -33,55 +40,58 @@ REQUIRED_PERMISSIONS: Dict[str, List[str]] = {
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
-########## taken from GoogleCloudCompute
+
+# taken from GoogleCloudCompute
+FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
+METADATA_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
 
 
-def parse_firewall_rule(rule_str):
+def parse_firewall_rule(rule_str: str) -> List[Dict[str, List[str] | str]]:
     """
-    Transforms a string of multiple inputes to a dictionary list
-    parameter: (string) rules
-        A firewall rule in the specified project
-    Return firewall rules as dictionary list
+    Transforms a string of firewall rules into a list of dictionaries.
+
+    Args:
+        rule_str (str): A semicolon-separated string of firewall rules,
+                        e.g., "ipprotocol=abc,ports=123;ipprotocol=ded,ports=22,443".
+
+    Returns:
+        List[Dict[str, Union[str, List[str]]]]: A list of dictionaries containing 'IPProtocol' and 'ports'.
     """
     rules = []
-    regex = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
     for f in rule_str.split(";"):
-        match = regex.match(f)
+        match = FIREWALL_RULE_REGEX.match(f)
         if match is None:
             raise ValueError(
                 f"Could not parse field: {f}. Please make sure you provided like so: "
                 "ipprotocol=abc,ports=123;ipprotocol=fed,ports=456"
             )
-
         rules.append({"IPProtocol": match.group(1), "ports": match.group(2).split(",")})
-
     return rules
 
 
-def parse_metadata_items(tags_str):
+def parse_metadata_items(tags_str: str) -> List[Dict[str, str]]:
     """
-    Transforms a string of multiple inputes to a dictionary list
-    parameter: (string) metadata_items
+    Transforms a string of metadata items into a list of dictionaries.
 
-    Return metadata items as a dictionary list
+    Args:
+        tags_str (str): A semicolon-separated string of metadata items,
+                        e.g., "key=abc,value=123;key=fed,value=456".
+
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries containing 'key' and 'value' pairs.
     """
     tags = []
-    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
     for f in tags_str.split(";"):
-        match = regex.match(f)
+        match = METADATA_ITEM_REGEX.match(f)
         if match is None:
             raise ValueError(
                 f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
             )
-
         tags.append({"key": match.group(1), "value": match.group(2)})
-
     return tags
 
 
 ##########
-
-
 
 
 def get_access_token(
@@ -96,7 +106,7 @@ def get_access_token(
         str: Access token for GCP.
 
     Raises:
-        ValueError: If 'project_id' is not provided.
+        DemistoException: If 'project_id' is not provided.
     """
     if not args.get("project_id"):
         raise DemistoException("project_id is required to retrieve a token.")
@@ -124,56 +134,37 @@ def compute_firewall_patch(creds: Credentials, args: Dict[str, Any]) -> CommandR
     resource_name = args.get("resource_name")
     config = {}
 
-    if args.get("description"):
-        config["description"] = args.get("description")
+    if description := args.get("description"):
+        config["description"] = description
+    if network := args.get("network"):
+        config["network"] = network
+    if priority := args.get("priority"):
+        config["priority"] = priority
+    if sourceRanges := args.get("sourceRanges"):
+        config["sourceRanges"] = argToList(sourceRanges)
+    if destinationRanges := args.get("destinationRanges"):
+        config["destinationRanges"] = destinationRanges
+    if sourceTags := args.get("sourceTags"):
+        config["sourceTags"] = argToList(sourceTags)
+    if targetTags := args.get("targetTags"):
+        config["targetTags"] = argToList(targetTags)
+    if sourceServiceAccounts := args.get("sourceServiceAccounts"):
+        config["sourceServiceAccounts"] = argToList(sourceServiceAccounts)
+    if targetServiceAccounts := args.get("targetServiceAccounts"):
+        config["targetServiceAccounts"] = argToList(targetServiceAccounts)
+    if allowed := args.get("allowed"):
+        config["allowed"] = parse_firewall_rule(allowed)
+    if denied := args.get("denied"):
+        config["denied"] = parse_firewall_rule(denied)
+    if direction := args.get("direction"):
+        config["direction"] = direction
+    if logConfigEnable := args.get("logConfigEnable"):
+        config["logConfig"] = {"enable": logConfigEnable == "true"}
+    if disabled := args.get("disabled"):
+        config["disabled"] = disabled == "true"
 
-    if args.get("network"):
-        config["network"] = args.get("network")
-
-    if args.get("priority"):
-        config["priority"] = args.get("priority")
-
-    if args.get("sourceRanges"):
-        config["sourceRanges"] = argToList(args.get("sourceRanges"))
-
-    if args.get("destinationRanges"):
-        config["destinationRanges"] = argToList(args.get("destinationRanges"))
-
-    if args.get("sourceTags"):
-        config["sourceTags"] = argToList(args.get("sourceTags"))
-
-    if args.get("targetTags"):
-        config["targetTags"] = argToList(args.get("targetTags"))
-
-    if args.get("sourceServiceAccounts"):
-        config["sourceServiceAccounts"] = argToList(
-            args.get("sourceServiceAccounts")
-        )
-
-    if args.get("targetServiceAccounts"):
-        config["targetServiceAccounts"] = argToList(
-            args.get("targetServiceAccounts")
-        )
-
-    if args.get("allowed"):
-        config["allowed"] = parse_firewall_rule(args.get("allowed"))
-
-    if args.get("denied"):
-        config["denied"] = parse_firewall_rule(args.get("denied"))
-
-    if args.get("direction"):
-        config["direction"] = args.get("direction")
-
-    if args.get("logConfigEnable"):
-        log_config_enable = args.get("logConfigEnable") == "true"
-        config["logConfig"] = {"enable": log_config_enable}
-
-    if args.get("disabled"):
-        disabled = args.get("disabled") == "true"
-        config["disabled"] = disabled
-
-    compute = build("compute", "v1", credentials=creds)
-
+    compute = build("compute", API_VERSION, credentials=creds)
+    demisto.debug(f"Firewall patch config for {resource_name} in project {project_id}: {config}")
     response = compute.firewalls().patch(
         project=project_id,
         firewall=resource_name,
@@ -197,24 +188,38 @@ def storage_bucket_policy_delete(creds: Credentials, args: Dict[str, Any]) -> Co
         CommandResults: Result of the policy removal operation.
     """
     bucket = args.get("resource_name")
-    entities = argToList(args.get("entity", "allUsers"))
-    storage = build("storage", "v1", credentials=creds)
+    entities_to_remove = set(argToList(args.get("entity", "allUsers")))
 
+    storage = build("storage", API_VERSION, credentials=creds)
     policy = storage.buckets().getIamPolicy(bucket=bucket).execute()
-    bindings = policy.get("bindings", [])
 
     modified = False
-    for b in bindings[:]:
-        b["members"] = [m for m in b.get("members", []) if m not in entities]
-        if not b["members"]:
-            bindings.remove(b)
+    updated_bindings = []
+
+    for binding in policy.bindings:
+        role = binding["role"]
+        original_members = set(binding.get("members", []))
+        filtered_members = original_members - entities_to_remove
+        removed = original_members & entities_to_remove
+        if removed:
             modified = True
+            demisto.debug(f"Removing members {removed} from role '{role}'.")
+        if filtered_members:
+            updated_bindings.append({
+                "role": role,
+                "members": list(filtered_members)
+            })
+        else:
+            if original_members:
+                demisto.debug(f"All members removed from role '{role}', dropping binding.")
 
     if modified:
-        policy["bindings"] = bindings
-        storage.buckets().setIamPolicy(bucket=bucket, body={"policy": policy}).execute()
-
-    hr = f"Access permissions {', '.join(f'`{e}`' for e in entities)} were successfully revoked from bucket **{bucket}**."
+        policy.bindings = updated_bindings
+        storage.buckets().setIamPolicy(bucket=bucket, body=policy).execute()
+        hr = (f"Access permissions {', '.join(f'`{e}`' for e in entities_to_remove)} were successfully "
+              f"revoked from bucket **{bucket}**")
+    else:
+        hr = f"No IAM changes made for bucket '{bucket}'."
     return CommandResults(readable_output=hr)
 
 
@@ -234,7 +239,7 @@ def compute_subnet_update(creds: Credentials, args: Dict[str, Any]) -> CommandRe
     region = args.get("region")
     resource_name = args.get("resource_name")
 
-    compute = build("compute", "v1", credentials=creds)
+    compute = build("compute", API_VERSION, credentials=creds)
     hr, response_patch, response_set = "", {}, {}
     patch_body = {}
     if enable_flow_logs := args.get("enable_flow_logs"):
@@ -273,7 +278,7 @@ def compute_subnet_update(creds: Credentials, args: Dict[str, Any]) -> CommandRe
 
     if not hr:
         hr = f"No updates were made to subnet configuration for {resource_name} in project {project_id}"
-
+        return CommandResults(readable_output=hr)
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=[response_patch, response_set])
 
 
@@ -291,14 +296,13 @@ def compute_project_metadata_add(creds: Credentials, args: Dict[str, Any]) -> Co
     project_id = args.get("project_id")
     zone = args.get("zone")
     resource_name = args.get("resource_name")
-    metadata_str = args.get("metadata")
-    compute = build("compute", "v1", credentials=creds)
+    metadata_str: str = args.get("metadata", "")
+    compute = build("compute", API_VERSION, credentials=creds)
 
     instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()
     fingerprint = instance.get("metadata", {}).get("fingerprint")
 
     items = parse_metadata_items(metadata_str)
-
     body = {"fingerprint": fingerprint, "items": items}
     response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name, body=body).execute()
 
@@ -330,7 +334,7 @@ def container_cluster_security_update(creds: Credentials, args: Dict[str, Any]) 
     if args.get("enable_master_authorized_networks") and not cidrs:
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
 
-    container = build("container", "v1", credentials=creds)
+    container = build("container", API_VERSION, credentials=creds)
     update_fields: Dict[str, Any] = {}
 
     if enable_intra := args.get("enable_intra_node_visibility"):
@@ -375,10 +379,11 @@ def storage_bucket_metadata_update(creds: Credentials, args: Dict[str, Any]) -> 
     """
     bucket = args.get("resource_name")
 
-    storage = build("storage", "v1", credentials=creds)
+    storage = build("storage", API_VERSION, credentials=creds)
+
     body: Dict[str, Any] = {}
     if enable_versioning := args.get("enable_versioning"):
-        body["versioning"] = {"enabled":  argToBoolean(enable_versioning)}
+        body["versioning"] = {"enabled": argToBoolean(enable_versioning)}
     if enable_uniform_access := args.get("enable_uniform_access"):
         body.setdefault("iamConfiguration", {})["uniformBucketLevelAccess"] = {"enabled": argToBoolean(enable_uniform_access)}
 
@@ -395,13 +400,14 @@ def storage_bucket_metadata_update(creds: Credentials, args: Dict[str, Any]) -> 
         "uniformBucketLevelAccess": response.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled")
     }
     hr = tableToMarkdown(f"Metadata for bucket {bucket} was successfully updated.", data_res, removeNull=True)
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response, outputs_key_field="name")
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response,
+                          outputs_key_field="name")
 
 
-def check_required_permissions(creds: Credentials, args: Dict[str, Any], command: Optional[str] = None) -> str:
+def check_required_permissions(creds: Credentials, args: Dict[str, Any], command: str = "") -> str:
     """
     Checks if the provided GCP credentials have the required IAM permissions.
-
+    API: https://cloud.google.com/resource-manager/reference/rest/v1/projects/testIamPermissions
     Args:
         creds (Credentials): GCP credentials.
         args (Dict[str, Any]): Must include 'project_id'.
@@ -411,38 +417,44 @@ def check_required_permissions(creds: Credentials, args: Dict[str, Any], command
         str: 'ok' if permissions are sufficient, otherwise raises an error.
     """
     project_id = args.get("project_id")
-    if not project_id:
-        raise DemistoException("'project_id' is required.")
 
-    if command:
-        permissions = REQUIRED_PERMISSIONS.get(command, [])
-    else:
-        permissions = list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms})
+    permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
 
     try:
-        response = build("cloudresourcemanager", "v1", credentials=creds).projects().testIamPermissions(
+        response = build("cloudresourcemanager", API_VERSION, credentials=creds).projects().testIamPermissions(
             resource=project_id, body={"permissions": permissions}
         ).execute()
     except Exception as e:
         raise DemistoException(f"Permission check failed: {e}") from e
 
     granted = set(response.get("permissions", []))
-
-    if command:
-        missing_permissions = [p for p in permissions if p not in granted]
-        if missing_permissions:
-            raise DemistoException(f"Missing permissions for `{command}`: {', '.join(missing_permissions)}")
-    else:
-        missing_per_command: Dict[str, List[str]] = {
-            cmd: [p for p in perms if p not in granted]
-            for cmd, perms in REQUIRED_PERMISSIONS.items()
-            if any(p not in granted for p in perms)
-        }
-        if missing_per_command:
-            issues = "\n".join(f"- `{cmd}`: {', '.join(perms)}" for cmd, perms in missing_per_command.items())
-            raise DemistoException(f"Missing permissions:\n{issues}")
-
+    if missing := '\n'.join(set(permissions) - granted):
+        raise DemistoException(f"Missing permissions for '{command}': {missing}")
     return "ok"
+
+
+def test_module(args: Dict[str, Any]) -> CommandResults:
+    """
+    Tests API connectivity and permissions for the GCP integration.
+
+    This function verifies that:
+    1. Access token can be retrieved
+    2. The credentials have all required permissions for all commands
+
+    Args:
+        args (Dict[str, Any]): Must include 'project_id'
+
+    Returns:
+        CommandResults: Success or failure message
+    """
+    # Get token and create credentials
+    token = get_access_token(args)
+    creds = Credentials(token)
+
+    check_required_permissions(creds, args)
+    return CommandResults(
+        readable_output="✅ Success! Connected to GCP and verified all required permissions.",
+    )
 
 
 def main():
@@ -450,8 +462,11 @@ def main():
     try:
         command = demisto.command()
         args = demisto.args()
+        if command == "test-module":
+            return_results(test_module(args))
+            return
+
         command_map = {
-            # "test-module": test_module,
             "gcp-compute-firewall-patch": compute_firewall_patch,
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-compute-subnet-update": compute_subnet_update,
