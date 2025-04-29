@@ -9,7 +9,10 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "IT",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "checkpoint",
