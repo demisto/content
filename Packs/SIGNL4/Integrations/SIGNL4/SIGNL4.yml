@@ -6,7 +6,7 @@ configuration:
 - display: Team or Integration Secret
   name: secret
   hiddenusername: true
-  type: 4
+  type: 9
   required: true
 - display: Use system proxy settings
   name: proxy
