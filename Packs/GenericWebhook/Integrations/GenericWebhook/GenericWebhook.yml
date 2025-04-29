@@ -78,9 +78,12 @@ triggers:
         operator: not_exists
     effects:
       - name: longRunningPort
-        hidden: true
+        action:
+          hidden: true
+          required: false
       - name: credentials
-        required: true
+        action:
+          required: true
 fromversion: 5.5.0
 tests:
 - Generic Webhook - Test
