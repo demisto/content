@@ -31,7 +31,7 @@ outputs:
 - contextPath: CreateYARARuleIndicators.tags
   description: The YARA Rule tags.
   type: string
-dockerimage: demisto/yarapy:1.0.0.1941591
+dockerimage: demisto/yarapy:1.0.0.2195935
 enabled: true
 engineinfo: {}
 name: CreateYARARuleIndicators
