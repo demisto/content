@@ -10,7 +10,6 @@ import time
 import secrets
 import jwt
 import re
-from distutils.util import strtobool
 from datetime import UTC
 from typing import Any, BinaryIO
 from requests.models import Response
@@ -90,7 +89,7 @@ class FileShareLink:
         self.access = args.get("access")
         self.password = args.get("password")
         self.unshared_at = args.get("unshared_at")
-        self.permissions = {"can_download": bool(strtobool(args.get("can_download", "False")))}
+        self.permissions = {"can_download": argToBoolean(args.get("can_download", "False"))}
         self.file_id = args.get("file_id")
         self.args = args
 
@@ -115,7 +114,7 @@ class FolderShareLink:
         self.access = args.get("access")
         self.password = args.get("password")
         self.unshared_at = args.get("unshared_at")
-        self.permissions = {"can_download": bool(strtobool(args.get("can_download", "False")))}
+        self.permissions = {"can_download": argToBoolean(args.get("can_download", "False"))}
         self.folder_id = args.get("folder_id")
         self.args = args
 
@@ -1609,7 +1608,7 @@ def delete_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     as_user: str = args.get("as_user")  # type:ignore
     user_id: str = args.get("user_id")  # type:ignore
-    force: bool = bool(strtobool(args.get("force", "false")))
+    force: bool = argToBoolean(args.get("force", "false"))
 
     response = client.delete_user(as_user=as_user, user_id=user_id, force=force)
 
@@ -1663,7 +1662,7 @@ def move_folder_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     from_user_id: str = args.get("from_user_id")  # type:ignore
     to_user_id: str = args.get("to_user_id")  # type:ignore
-    notify: bool = bool(strtobool(args.get("notify", "true")))
+    notify: bool = argToBoolean(args.get("notify", "true"))
 
     response = client.move_folder(from_user_id=from_user_id, to_user_id=to_user_id, notify=notify)
     readable_output: str = tableToMarkdown(
