@@ -154,7 +154,7 @@ class ClientV3(BaseClient):
 
         demisto.debug(f"ABS: Making JWS token with headers: {headers}, request_payload_data: {request_payload_data}")
 
-        return jwt.encode(request_payload_data, self._secret_key, algorithm="HS256", headers=headers)
+        jwt.encode(request_payload_data, self._secret_key, algorithm="HS256", headers=headers)
 
     def prepare_query_string_for_canonical_request(self, query_string: str) -> str:
         """
@@ -184,7 +184,7 @@ class ClientV3(BaseClient):
         """
         signed = self.prepare_request(method=method, url_suffix=url_suffix, query_string=query_string, payload=payload)
         return self._http_request(
-            method="POST",
+            method=method,
             data=signed,
             url_suffix=url_suffix,
             return_empty_response=True,
@@ -391,7 +391,8 @@ def validate_absolute_api_url(base_url: str) -> str:
 def test_module(client: ClientV3) -> str:  # pragma: no cover
     """Tests API connectivity to Absolute"""
     try:
-        client.api_request_absolute("GET", CLIENT_V3_JWS_VALIDATION_URL_SUFFIX, query_string="", page=0, page_size=1, specific_page=True)
+        # client.api_request_absolute("POST", CLIENT_V3_JWS_VALIDATION_URL_SUFFIX, query_string="", page_size=1, specific_page=True)
+        client.api_request_absolute("GET", "/reporting/siem-events", query_string="", page_size=1, specific_page=True)
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
@@ -1242,7 +1243,7 @@ def main() -> None:  # pragma: no cover
         proxy = params.get("proxy", False)
 
         demisto.debug(f"Command being called is {demisto.command()}")
-
+        demisto.debug(f"base_url: {base_url}")
         client_v3 = ClientV3(base_url=base_url, verify=verify_certificate, proxy=proxy, token_id=token_id, secret_key=secret_key)
 
         args = demisto.args()
