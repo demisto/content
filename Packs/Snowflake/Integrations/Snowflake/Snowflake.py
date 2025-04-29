@@ -81,7 +81,7 @@ def convert_datetime_to_string(v):  # pylint: disable=W9014
     """
     if isinstance(v, datetime):
         formatted_datetime = v.strftime("%Y-%m-%d %H:%M:%S.%f %z").strip()
-        if "." in formatted_datetime:
+        if "." in formatted_datetime:  # convert the time format to 2 digits after the decimal point to co-p with server formats.
             split_datetime = formatted_datetime.split('.')
             fixed_datetime = split_datetime[0] + '.' + split_datetime[1][:2]
         else:
