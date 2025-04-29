@@ -140,6 +140,9 @@ script:
     - name: uuid
       required: true
       description: Unique ID of Email.
+    outputs:
+    - contextPath: Darktrace.Action.resp
+      description: 'Status of the hold action.'
     description: Apply "hold" action to a specified Email.
     execution: true
   - name: darktrace-email-release-email
@@ -149,6 +152,9 @@ script:
       description: Unique ID of Email.
     - name: recipient
       description: Recipient of Email. Not required but speeds up the command.
+    outputs:
+    - contextPath: Darktrace.Action.resp
+      description: 'Status of the release action.'
     description: 'Apply "release" action to a specified Email. '
     execution: true
   dockerimage: demisto/python3:3.12.8.1983910

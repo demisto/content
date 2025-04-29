@@ -70,7 +70,9 @@ Apply "hold" action to a specified Email.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.Action.resp | string | Status of the hold action. | 
 
 ### darktrace-email-release-email
 
@@ -90,4 +92,6 @@ Apply "release" action to a specified Email.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.Action.resp | string | Status of the release action. | 
