@@ -6,6 +6,8 @@ import urllib3
 import traceback
 from typing import Any, Dict, List, Optional, Tuple
 import ast
+from urllib.parse import urlencode
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1795,18 +1797,18 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: Response containing future attack indicators.
         """
-        url_suffix = FUTURE_ATTACK_INDICATOR
-
-        params = remove_nulls_from_dictionary({
+        params = {
+            'feed_uuids': feed_uuid,
             'page': page_no,
-            'size': page_size,
-            'source_uuids': feed_uuid
-        })
-        
-        self._http_request(
+            'size': page_size
+        }
+
+        query_string = urlencode(params)
+        url = self._base_url.replace("/api/v1/merge-api", "") + f"/api/v2/iocs/threat-ranking/?{query_string}"
+
+        return self._http_request(
             method="GET",
-            url=self.base_url.replace("/api/v1/merge-api", "") + "/api/v2/iocs/threat-ranking",
-            params=params
+            url=url
         )
 
     def screenshot_url(self, url: str) -> Dict[str, Any]:
@@ -3181,7 +3183,7 @@ def format_scan_results(scan_results: dict, url: str) -> tuple:
     outputs_list=FUTURE_ATTACK_INDICATOR_OUTPUTS,
     description="This command fetch indicators of potential future attacks using a feed UUID."
 )
-def get_future_attack_indicators_command(client: Client, args: dict) -> CommandResults:
+def get_future_attack_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Command handler for retrieving indicators of future attack feed.
 
@@ -3196,38 +3198,25 @@ def get_future_attack_indicators_command(client: Client, args: dict) -> CommandR
         ValueError: If required parameters are missing.
     """
     feed_uuid = args.get('feed_uuid')
-    if not feed_uuid:
-        raise ValueError("feed_uuid is a required parameter")
+    page_no = int(args.get('page_no', 1))
+    page_size = int(args.get('page_size', 10000))
 
-    page_no = arg_to_number(args.get('page_no', 1))
-    page_size = arg_to_number(args.get('page_size', 10000))
+    raw_response = client.get_future_attack_indicators(feed_uuid, page_no, page_size)
 
-    raw_response = client.get_future_attack_indicators(
-        feed_uuid=feed_uuid,
-        page_no=page_no,
-        page_size=page_size
-    )
-
-    headers = list(raw_response.keys()) if raw_response else []
-    readable_output = tableToMarkdown(
-        f"# Future Attack Indicators\nFeed UUID: {feed_uuid}\n",
-        raw_response,
-        headers=headers,
-        removeNull=True
-    )
+    # Handle list or dict gracefully
+    if isinstance(raw_response, list):
+        indicators = raw_response
+    else:
+        indicators = raw_response.get("indicators", [])
 
     return CommandResults(
-        outputs_prefix='SilentPush.FutureAttackIndicators',
-        outputs_key_field='feed_uuid',
-        outputs={
-            'feed_uuid': feed_uuid,
-            'page_no': page_no,
-            'page_size': page_size,
-            'indicators': raw_response
-        },
-        readable_output=readable_output,
+        readable_output=tableToMarkdown("SilentPush Future Attack Indicators", indicators),
+        outputs_prefix="SilentPush.FutureAttackIndicator",
+        outputs_key_field="id",  # replace with appropriate key like "uuid" if needed
+        outputs=indicators,
         raw_response=raw_response
     )
+
 
 
 @metadata_collector.command(
