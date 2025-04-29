@@ -5527,7 +5527,7 @@
             "instance_names": [
                 "legacy_context_output"
             ],
-            "memory_threshold": 300,
+            "memory_threshold": 370,
             "timeout": 600,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
