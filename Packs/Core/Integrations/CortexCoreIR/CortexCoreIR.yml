@@ -1325,7 +1325,7 @@ script:
       required: true
       name: endpoint_id_list
       prettyname: Run action on
-      prettypredefined: 
+      prettypredefined:
         Issue initiator host: ${issue.xdmsourceagentidentifier}
         Issue remote host: ${issue.xdmtargetagentidentifier}
     - description: Name of the distribution list.
