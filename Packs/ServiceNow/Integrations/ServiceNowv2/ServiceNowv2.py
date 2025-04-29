@@ -698,6 +698,16 @@ class Client(BaseClient):
             
 
     def check_private_key(self, private_key) -> str:
+        """_summary_
+
+        Args:
+            private_key (Dict): The user Private key, inside of a dictionary
+            since the private key type is 9.
+        Raises:
+            ValueError: : If the private key format (PEM) is incorrect, a ValueError will be raised.
+        Returns:
+            str: key without whitespaces and invalid characters
+        """
         # Define the start and end markers
         start_marker = "-----BEGIN PRIVATE KEY-----"
         end_marker = "-----END PRIVATE KEY-----"
@@ -714,6 +724,12 @@ class Client(BaseClient):
         return processed_key
     
     def create_jwt(self):
+        """
+        This function generate the JWT from the use credential
+
+        Returns:
+            JWT token
+        """
         # Private key (PEM format)
         private_key = self.check_private_key(self.jwt_params["private_key"])
 
