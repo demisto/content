@@ -63,7 +63,7 @@ if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
     err_msg = "When fetching is enabled there are two additional parameters that are required;"
     err_msg += " The fetch query that determines what data to fetch and the name of the column"
     err_msg += " in the fetched data that contains a datetime object or timestamp."
-    # raise Exception(err_msg)
+    raise Exception(err_msg)
 
 
 """HELPER FUNCTIONS"""
@@ -184,13 +184,13 @@ def format_to_json_serializable(column_descriptions, results):  # pylint: disabl
     # Screen by type_code
     for col in column_descriptions:
         # if col[type_code] == 0:
-        if TYPE_CODE_TO_DATATYPE.get(col.type_code) == "number/int":
+        if TYPE_CODE_TO_DATATYPE.get(col[type_code]) == "number/int":
             # Then need to check that column's data to see if its data type is Decimal
-            checks.setdefault("isDecimal", []).append(col.name)
+            checks.setdefault("isDecimal", []).append(col[name])
         # elif col[type_code] in {3, 4, 6, 7, 8, 12}:
-        elif TYPE_CODE_TO_DATATYPE.get(col.type_code) in DT_NEEDS_CHECKING:
+        elif TYPE_CODE_TO_DATATYPE.get(col[type_code]) in DT_NEEDS_CHECKING:
             # Then need to check that column's data to see if its data type is date, time, timedelta or datetime
-            checks.setdefault("isDT", []).append(col.name)
+            checks.setdefault("isDT", []).append(col[name])
 
     # if 'results' is a list then it is a data table (list of rows) and need to process each row
     # in the table, otherwise if 'results' is a dict then it a single table row
@@ -313,7 +313,7 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
     args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
     column_descriptions, data = snowflake_query(args)
-    # data.sort(key=lambda k: k[DATETIME_COLUMN])
+    data.sort(key=lambda k: k[DATETIME_COLUMN])
     # convert the data/events to demisto incidents
     incidents = []
     for row in data:
@@ -326,11 +326,10 @@ def fetch_incidents():
             if incident.get("rawJSON") != last_fetched_data:
                 last_fetched_data = incident.get("rawJSON")
                 del incident["timestamp"]
-        incidents.append(incident)
+                incidents.append(incident)
 
     this_run = {"last_fetched_data": last_fetched_data, "last_fetched_data_timestamp": last_fetch}
     demisto.setLastRun(this_run)
-    incident["rawJSON"] = json.dumps(incident["rawJSON"])
     demisto.incidents(incidents)
 
 
