@@ -31,7 +31,7 @@ def test_signl4_alert():
     assert "eventId" in outputs
 
 
-def test_signl4_close():
+def test_signl4_close_alert():
 
     client = Client(secret=mock_secret, verify=False)
     args = {

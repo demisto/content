@@ -43,7 +43,7 @@ Sends a mobile alert to a SIGNL4 team.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| eventId | String | SIGNL4 event ID. | 
+| SIGNL4.AlertCreated.eventId | String | SIGNL4 event ID. | 
 
 #### Command example
 ```!signl4-alert name="Test Alert"```
@@ -57,6 +57,14 @@ Sends a mobile alert to a SIGNL4 team.
 ```
 
 #### Human Readable Output
+
+SIGNL4 alert created
+```json
+
+{
+        "s4_external_id": "id1234"
+}
+```
 
 ### signl4_close
 
@@ -77,7 +85,7 @@ Close a SIGNL4 alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| eventId | String | SIGNL4 event ID. | 
+| SIGNL4.AlertClosed.eventId | String | SIGNL4 event ID. | 
 
 #### Command example
 ```!signl4-close name="Close Alert"```
@@ -89,6 +97,14 @@ Close a SIGNL4 alert.
 ```
 
 #### Human Readable Output
+
+SIGNL4 alert closed
+```json
+
+{
+        "s4_external_id": "id1234"
+}
+```
 
 This is how a SIGNL4 might look like in the mobile app:
 

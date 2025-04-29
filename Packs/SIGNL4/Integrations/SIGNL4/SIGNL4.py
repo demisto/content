@@ -3,26 +3,26 @@ from CommonServerPython import *
 
 class Client(BaseClient):
 
-    def send_signl4_alert(self, **kwargs):
+    def send_signl4_alert(self, json_data):
 
         payload = {
-            "Title": kwargs.get('json_data').get('title'),
-            "Message": kwargs.get('json_data').get('message'),
-            "X-S4-ExternalID": kwargs.get('json_data').get('s4_external_id'),
+            "Title": json_data.get('title'),
+            "Message": json_data.get('message'),
+            "X-S4-ExternalID": json_data.get('s4_external_id'),
             "X-S4-Status": "new",
-            "X-S4-Service": kwargs.get('json_data').get('s4_service'),
-            "X-S4-Location": kwargs.get('json_data').get('s4_location'),
-            "X-S4-AlertingScenario": kwargs.get('json_data').get('s4_alerting_scenario'),
-            "X-S4-Filtering": kwargs.get('json_data').get('s4_filtering'),
+            "X-S4-Service": json_data.get('s4_service'),
+            "X-S4-Location": json_data.get('s4_location'),
+            "X-S4-AlertingScenario": json_data.get('s4_alerting_scenario'),
+            "X-S4-Filtering": json_data.get('s4_filtering'),
             "X-S4-SourceSystem": "CortexXSOAR"
         }
 
         return self._http_request(method='POST', json_data=payload)
 
-    def close_signl4_alert(self, **kwargs):
+    def close_signl4_alert(self, json_data):
 
         payload = {
-            "X-S4-ExternalID": kwargs.get('json_data').get('s4_external_id'),
+            "X-S4-ExternalID": json_data.get('s4_external_id'),
             "X-S4-Status": "resolved",
             "X-S4-SourceSystem": "CortexXSOAR"
         }
@@ -38,7 +38,7 @@ def test_module(client):
         "title": "Test Alert from Cortex XSOAR",
         "X-S4-SourceSystem": "CortexXSOAR"
     }
-    result = client.send_signl4_alert(method='POST', json_data=payload)
+    result = client.send_signl4_alert(json_data=payload)
     if 'eventId' in result:
         demisto.results("ok")
     else:
@@ -47,14 +47,30 @@ def test_module(client):
         demisto.results(f'{error_code} {description}')
 
 
-def send_signl4_alert(client, **kwargs):
-    result = client.send_signl4_alert(**kwargs)
-    return result
+def send_signl4_alert(client, json_data):
+    result = client.send_signl4_alert(json_data)
+
+    r = CommandResults(
+        outputs_prefix="SIGNL4.AlertCreated",
+        outputs_key_field='eventId',
+        outputs=result,
+        readable_output=tableToMarkdown("SIGNL4 alert created", result),
+        raw_response=result
+    )
+    return r
 
 
-def close_signl4_alert(client, **kwargs):
-    result = client.close_signl4_alert(**kwargs)
-    return result
+def close_signl4_alert(client, json_data):
+    result = client.close_signl4_alert(json_data)
+    
+    r = CommandResults(
+        outputs_prefix="SIGNL4.AlertClosed",
+        outputs_key_field='eventId',
+        outputs=result,
+        readable_output=tableToMarkdown("SIGNL4 alert closed", result),
+        raw_response=result
+    )
+    return r
 
 
 def main():
@@ -82,9 +98,9 @@ def main():
         if command == 'test-module':
             test_module(client)
         elif command == 'signl4_alert':
-            return_results(send_signl4_alert(client, method='POST', json_data=args))
-        elif command == 'signl4_close':
-            return_results(close_signl4_alert(client, method='POST', json_data=args))
+            return_results(send_signl4_alert(client, json_data=args))
+        elif command == 'signl4_close_alert':
+            return_results(close_signl4_alert(client, json_data=args))
 
     except Exception as ex:
         return_error(str(ex))

@@ -1,1 +1,3 @@
-When critical systems fail, incidents happen or urgent services need to be provided, SIGNL4 bridges the ‘last mile’ to your staff, engineers, IT admins and workers ‘in the field’. It adds real-time mobile alerting to to Cortex XSOAR and other services, systems and processes in no time. SIGNL4 notifies through persistent mobile push, text, email and voice calls with acknowledgement, tracking and escalation. Integrated duty and shift scheduling ensures the right people are alerted at the right time. SIGNL4 thus provides for an up to 10x faster and effective response to critical alerts, major incidents and urgent service requests.
+In order to configure the SIGNL4 pack in Cortex XSOAR you just need the SIGNL4 team or integration secret. You can find the same in your SIGNL4 web portal under Teams or under Integrations -> Installed -> Inbound Webhook. It is the last part of your webhook URL.
+
+You find more information about SIGNL4 at [signl4.com](https://signl4.com).

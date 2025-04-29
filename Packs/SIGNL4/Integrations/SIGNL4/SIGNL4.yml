@@ -12,7 +12,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: SIGNL4, mobile alerting.
+description: SIGNL4 offers critical alerting, incident response and service dispatching for operating critical infrastructure. It alerts you persistently via app push, SMS text, voice calls, and email including tracking, escalation, on-call duty scheduling and collaboration.
 display: SIGNL4
 name: SIGNL4
 script:
@@ -41,7 +41,7 @@ script:
     - description: The external ID is used to reference the open alert which shall be closed.
       name: s4_external_id
     description: Close an alert in SIGNL4
-    name: signl4_close
+    name: signl4_close_alert
   dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
