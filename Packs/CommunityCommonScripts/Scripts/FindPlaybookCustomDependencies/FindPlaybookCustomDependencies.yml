@@ -19,8 +19,10 @@ enabled: true
 engineinfo: {}
 name: FindPlaybookCustomDependencies
 outputs:
-- contextPath: CustomDependencies.Info
+- contextPath: FindPlaybookCustomDependencies.CustomDependencies.CustomScripts
   description: Context Path for the outputs of the playbooks using a custom script.
+- contextPath: FindPlaybookCustomDependencies.CustomDependencies.CustomIntegrations
+  description: Context Path for the outputs of the playbooks using a custom integrations.
 runas: DBotWeakRole
 runonce: false
 script: ''

@@ -40,8 +40,8 @@ def get_custom_scripts_playbooks():
         markdown = tableToMarkdown('Custom scripts Used in Playbooks', final_results)
         command_results_results = CommandResults(
             readable_output=markdown,
-            outputs_prefix='CustomScripts',
-            outputs_key_field='CustomDependencies.Info',
+            outputs_prefix='FindPlaybookCustomDependencies.CustomDependencies.CustomScripts',
+            outputs_key_field='ScriptName',
             outputs=final_results
         )
         return_results(command_results_results)
@@ -90,8 +90,8 @@ def get_integrations_playbooks() -> None:
         markdown = tableToMarkdown('Integrations Used in Playbooks', final_results)
         command_results_results = CommandResults(
             readable_output=markdown,
-            outputs_prefix='Integrations',
-            outputs_key_field='Info',
+            outputs_prefix='FindPlaybookCustomDependencies.CustomDependencies.CustomIntegrations',
+            outputs_key_field='IntegrationBrand',
             outputs=final_results
         )
         return_results(command_results_results)

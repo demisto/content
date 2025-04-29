@@ -31,4 +31,5 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CustomDependencies.Info | Context Path for the outputs of the playbooks using a custom script | Unknown |
+| FindPlaybookCustomDependencies.CustomDependencies.CustomScripts | Context Path for the outputs of the playbooks using a custom script | Unknown |
+| FindPlaybookCustomDependencies.CustomDependencies.CustomIntegrations | Context Path for the outputs of the playbooks using a custom integrations | Unknown |
