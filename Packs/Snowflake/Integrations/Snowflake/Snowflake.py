@@ -63,7 +63,7 @@ if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
     err_msg = "When fetching is enabled there are two additional parameters that are required;"
     err_msg += " The fetch query that determines what data to fetch and the name of the column"
     err_msg += " in the fetched data that contains a datetime object or timestamp."
-    raise Exception(err_msg)
+    # raise Exception(err_msg)
 
 
 """HELPER FUNCTIONS"""
@@ -79,17 +79,18 @@ def convert_datetime_to_string(v):  # pylint: disable=W9014
     returns:
         Formatted string of the object
     """
-    demisto.info(f"[test] in convert_datetime_to_string didn't got {v=}.")
     if isinstance(v, datetime):
-        demisto.info(f"[test] in convert_datetime_to_string in first condition {v=}.")
-        return v.strftime("%Y-%m-%d %H:%M:%S.%f %z").strip()
+        formatted_datetime = v.strftime("%Y-%m-%d %H:%M:%S.%f %z").strip()
+        if "." in formatted_datetime:
+            split_datetime = formatted_datetime.split('.')
+            fixed_datetime = split_datetime[0] + '.' + split_datetime[1][:2]
+        else:
+            fixed_datetime = formatted_datetime
+        return fixed_datetime.strip()
     elif isinstance(v, date):
-        demisto.info(f"[test] in convert_datetime_to_string in second condition {v=}.")
         return v.strftime("%Y-%m-%d").strip()
     elif isinstance(v, dttime):
-        demisto.info(f"[test] in convert_datetime_to_string in third condition {v=}.")
         return v.strftime("%H:%M:%S.%f").strip()
-    demisto.info(f"[test] in convert_datetime_to_string in no condition {v=}.")
     return v
 
 
@@ -150,18 +151,14 @@ def process_table_row(row, checks):  # pylint: disable=W9014
     returns:
         Reformatted Row
     """
-    demisto.info(f"[test] in process_table_row got {row=}, {checks=}.")
     for column_name, val in row.items():
         if column_name in checks.get("isDecimal", []):
-            demisto.info(f"[test] in process_table_row got isDecimal for {column_name=}, {val=}.")
             # Then check the value and reformat it if necessary
             if isinstance(val, Decimal):
                 row[column_name] = str(val)
         elif column_name in checks.get("isDT", []):
-            demisto.info(f"[test] in process_table_row got isDT for {column_name=}, {val=}.")
             # Then reformat it if necessary
             row[column_name] = convert_datetime_to_string(val)
-    demisto.info(f"[test] in process_table_row return {row=}.")
     return row
 
 
@@ -187,26 +184,23 @@ def format_to_json_serializable(column_descriptions, results):  # pylint: disabl
     # Screen by type_code
     for col in column_descriptions:
         # if col[type_code] == 0:
-        if TYPE_CODE_TO_DATATYPE.get(col[type_code]) == "number/int":
+        if TYPE_CODE_TO_DATATYPE.get(col.type_code) == "number/int":
             # Then need to check that column's data to see if its data type is Decimal
-            checks.setdefault("isDecimal", []).append(col[name])
+            checks.setdefault("isDecimal", []).append(col.name)
         # elif col[type_code] in {3, 4, 6, 7, 8, 12}:
-        elif TYPE_CODE_TO_DATATYPE.get(col[type_code]) in DT_NEEDS_CHECKING:
+        elif TYPE_CODE_TO_DATATYPE.get(col.type_code) in DT_NEEDS_CHECKING:
             # Then need to check that column's data to see if its data type is date, time, timedelta or datetime
-            checks.setdefault("isDT", []).append(col[name])
+            checks.setdefault("isDT", []).append(col.name)
 
     # if 'results' is a list then it is a data table (list of rows) and need to process each row
     # in the table, otherwise if 'results' is a dict then it a single table row
     # Check candidates and reformat if necessary
     if isinstance(results, dict):
-        demisto.info(f"[test] in format_to_json_serializable got dict {results=}.")
         results = process_table_row(results, checks)
     else:
-        demisto.info(f"[test] in format_to_json_serializable got list {results=}.")
         # if 'results' isn't a dict, assume it's a list
         for i, row in enumerate(results):
             results[i] = process_table_row(row, checks)
-    demisto.info(f"[test] in format_to_json_serializable {results=}.")
     return results
 
 
@@ -260,14 +254,12 @@ def row_to_incident(column_descriptions, row):  # pylint: disable=W9014
     occurred = row.get(DATETIME_COLUMN)
     timestamp = None
     if occurred:
-        demisto.info(f"[test] in row_to_incident got {occurred=}")
         if isinstance(occurred, dttime | timedelta):
             err_msg = "The datetime field specified in the integration parameters must "
             err_msg += 'contain values of type "datetime" or "date".'
             raise Exception(err_msg)
         timestamp = occurred.timestamp() * 1000
     else:
-        demisto.info(f"[test] in row_to_incident didn't get occur.")
         err_msg = "Nothing found when trying to fetch the datetime field specified in"
         err_msg += " the integration parameters. Please check that the name was correct."
         err_msg += " If the field name was correct, verify that the returned value for"
@@ -275,23 +267,17 @@ def row_to_incident(column_descriptions, row):  # pylint: disable=W9014
         raise Exception(err_msg)
     # Incident Title
     if INCIDENT_NAME_COLUMN:
-        demisto.info(f"[test] in row_to_incident didn't got {INCIDENT_NAME_COLUMN=}.")
         name = row.get(INCIDENT_NAME_COLUMN)
-        demisto.info(f"[test] in row_to_incident didn't got {name=}.")
     else:
         name = "Snowflake Incident -- "
-        demisto.info(f"[test] in row_to_incident didn't got {occurred=}.")
         name += convert_datetime_to_string(occurred) + "- " + str(datetime.now().timestamp())
-        demisto.info(f"[test] in row_to_incident didn't got {name=}.")
     incident["name"] = name
-    incident["occurred"] = occurred.isoformat()
+    incident["occurred"] = timestamp_to_datestring(timestamp)
     # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
     incident["timestamp"] = timestamp
     # The raw response for the row (reformatted to be json serializable) returned by the db query
-    demisto.info(f"[test] in row_to_incident so far got {incident=}.")
     reformatted_row = format_to_json_serializable(column_descriptions, row)
     incident["rawJSON"] = json.dumps(reformatted_row)
-    demisto.info(f"[test] in row_to_incident return {incident=}.")
     return incident
 
 
@@ -317,38 +303,35 @@ def fetch_incidents():
     returns:
         Demisto incidents
     """
-    # # demisto.getLastRun() will returns an obj with the previous run in it.
-    # last_run = demisto.getLastRun()
-    # # Get the last fetch time and data if it exists
-    # last_fetch = last_run.get("last_fetched_data_timestamp")
-    # last_fetched_data = last_run.get("last_fetched_data")
-    # # Handle first time fetch, fetch incidents retroactively
-    # if not last_fetch:
-    #     last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    # args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
-    # demisto.info(f'[test] going to get incidents with {args=}')
-    # column_descriptions, data = snowflake_query(args)
-    # demisto.info(f'[test] got events with {column_descriptions=} and {data=}')
+    # demisto.getLastRun() will returns an obj with the previous run in it.
+    last_run = demisto.getLastRun()
+    # Get the last fetch time and data if it exists
+    last_fetch = last_run.get("last_fetched_data_timestamp")
+    last_fetched_data = last_run.get("last_fetched_data")
+    # Handle first time fetch, fetch incidents retroactively
+    if not last_fetch:
+        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+    args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
+    column_descriptions, data = snowflake_query(args)
     # data.sort(key=lambda k: k[DATETIME_COLUMN])
-    # # convert the data/events to demisto incidents
-    # incidents = []
-    # for row in data:
-    #     incident = row_to_incident(column_descriptions, row)
-    #     incident_timestamp = incident.get("timestamp")
+    # convert the data/events to demisto incidents
+    incidents = []
+    for row in data:
+        incident = row_to_incident(column_descriptions, row)
+        incident_timestamp = incident.get("timestamp")
 
-    #     # Update last run and add incident if the incident is newer than last fetch
-    #     if incident_timestamp and incident_timestamp >= last_fetch:
-    #         last_fetch = incident_timestamp
-    #         if incident.get("rawJSON") != last_fetched_data:
-    #             last_fetched_data = incident.get("rawJSON")
-    #             del incident["timestamp"]
-    #             incidents.append(incident)
+        # Update last run and add incident if the incident is newer than last fetch
+        if incident_timestamp and incident_timestamp >= last_fetch:
+            last_fetch = incident_timestamp
+            if incident.get("rawJSON") != last_fetched_data:
+                last_fetched_data = incident.get("rawJSON")
+                del incident["timestamp"]
+        incidents.append(incident)
 
-    # this_run = {"last_fetched_data": last_fetched_data, "last_fetched_data_timestamp": last_fetch}
-    # demisto.setLastRun(this_run)
-    incident = {"name": "2792150219529", "occurred": "2024-04-25T17:17:00", "rawJSON": {"TICKET_PAYMENT_EVENT_ID": "a71e5d608b686bf62732d63498d4d09f", "TICKET_PAYMENT_ID": "71e605332aa0aa5d10d8501fb2c6bc38", "TICKET_TRANSACTION_ID": "42f45a0f1d6e5b0048674ece9da3bf39", "TICKET_ID": "8d3ad8d699d0bb02739d45c6b24f72c6", "TICKET_INCREMENTAL_ID": "2f6fdbd1ce8cad1dbc0855e3e2c6f7ae", "PNR_ID": "f7f4e68ac0c38d4ad7eee05f72ac62a5", "RECORD_INDICATOR": "22", "TICKET_NUMBER": "2792150219529", "TICKET_CREATE_DATE": "2024-04-04", "TRANSACTION_DATETIME": "2024-04-25 17:17:00.000000", "PNR_LOCATOR": "JQBKFG", "PNR_CREATE_DATE": "2024-04-04", "PAYMENT_SEQUENCE_NUMBER": 1, "FORM_OF_PAYMENT_CODE": "CC", "FORM_OF_PAYMENT_CODE_DESC": "CREDIT CARD", "PAYMENT_AMOUNT": "581.1900", "PAYMENT_VENDOR_CODE": "VI", "ACCOUNT_NUMBER": "4030P1XXXXXX0394", "PAYMENT_CURRENCY_CODE": "USD", "PAYMENT_REMARKS": "VI4030P1XXXXXX0394", "PAYMENT_APPROVAL_CODE": "004288", "PAYMENT_APPROVAL_TYPE_CODE": None, "PAYMENT_APPROVAL_TYPE_CODE_DESC": None, "SABRE_FILE_CREATION_TIMESTAMP": "2024-04-26 03:00:00.000000", "METADATA_FILENAME": "processed/tkt-payment/2024/04/TktPayment_20240426_A.dat.gz", "METADATA_ROW_NUMBER": 449206, "METADATA_INSERT_TIMESTAMP": "2024-04-26 07:35:36.003000", "ROW_INSERT_TIMESTAMP": "2024-08-14 22:43:09.851000"}}
+    this_run = {"last_fetched_data": last_fetched_data, "last_fetched_data_timestamp": last_fetch}
+    demisto.setLastRun(this_run)
     incident["rawJSON"] = json.dumps(incident["rawJSON"])
-    demisto.incidents([incident])
+    demisto.incidents(incidents)
 
 
 def snowflake_query(args):  # pylint: disable=W9014
@@ -375,9 +358,7 @@ def snowflake_query_command():
     query = args.get("query")
     db = args.get("database") if args.get("database") else DATABASE
     schema = args.get("schema") if args.get("schema") else SCHEMA
-    demisto.info(f'[test] snowflake_query_command {args=}')
     col_descriptions, results = snowflake_query(args)
-    demisto.info(f'[test] snowflake_query_command {col_descriptions=} {results=}')
     if not results:
         demisto.results("No data found matching the query")  # pylint: disable=W9008
     else:
