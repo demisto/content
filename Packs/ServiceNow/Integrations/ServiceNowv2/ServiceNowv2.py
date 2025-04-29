@@ -691,7 +691,7 @@ class Client(BaseClient):
                 headers=oauth_params.get("headers", ""),
             )
             if self.use_jwt:
-                self.generate_jwt: Dict[Any, Any] = {"jwt": jwt_params, "oauth":oauth_params}
+                self.jwt_params = jwt_params
                 self.jwt = self.create_jwt()
         else:
             self._auth = (self._username, self._password)
@@ -714,23 +714,21 @@ class Client(BaseClient):
         return processed_key
     
     def create_jwt(self):
-        jwt_params = self.generate_jwt["jwt"]
-        oauth_params = self.generate_jwt["oauth"]
         # Private key (PEM format)
-        private_key = self.check_private_key(jwt_params["private_key"])
+        private_key = self.check_private_key(self.jwt_params["private_key"])
 
         # Header
         header = {
             "alg": "RS256",  # Signing algorithm
             "typ": "JWT",  # Token type
-            "kid": jwt_params.get('kid'), #From ServiceNow (see Jwt Verifier Maps )
+            "kid": self.jwt_params.get('kid'), #From ServiceNow (see Jwt Verifier Maps )
         }
         self.exp_time = datetime.now(UTC) + timedelta(hours=1)  # Expiry time 1 hour
         # Payload
         payload = {
-            "sub": jwt_params.get("sub"),  # Subject (e.g., user ID)
-            "aud": oauth_params.get('client_id', ''), # serviceNow client_id
-            "iss": oauth_params.get('client_id', ''),# can be serviceNow client_id
+            "sub": self.jwt_params.get("sub"),  # Subject (e.g., user ID)
+            "aud": self.snow_client.client_id, # serviceNow client_id
+            "iss": self.snow_client.client_id,# can be serviceNow client_id
             "iat": datetime.now(UTC),  # Issued at
             "exp": self.exp_time,
             "jti": str(uuid.uuid4())    # Unique JWT ID
@@ -3544,9 +3542,9 @@ def main():
     args = demisto.args()
     verify = not params.get("insecure", False)
     use_oauth = params.get("use_oauth", False)
+    use_jwt = params.get('use_jwt', False)
     oauth_params = {}
     
-    use_jwt = params.get('use_jwt', False)
     
     #use jwt only with OAuth
     if use_jwt and use_oauth:

@@ -10,6 +10,8 @@ import requests
 
 
 import ServiceNowv2
+import jwt
+
 from CommonServerPython import CommandResults, DemistoException, EntryType
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
@@ -1740,7 +1742,6 @@ def test_jwt_checker(mocker):
     - (a) that the return type is a string
     - (b) validate the pem format
     """
-    import jwt
 
     mocker.patch.object(jwt, "encode", return_value="")
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
