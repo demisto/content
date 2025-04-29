@@ -192,7 +192,7 @@ alter  // DNS Queries events. Schema: https://cloud.google.com/dns/docs/monitori
     dns_records = coalesce(if(
         dns_query_type = "A", arraystring(regextract(dns_rdata, "((?:\d{1,3}\.){3}\d{1,3})"), ","), // ipv4 records
         dns_query_type = "AAAA", arraystring(regextract(dns_rdata, "((?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4})"), ","), // ipv6 records
-        dns_query_type in ("CNAME", "PTR", "NS"), arraystring(regextract(dns_rdata, "(?i)(?:\s+|\\t)(?:CNAME|PTR|NS)(?:\s+|\\t)(\S+)\.?"), ",")), // domains,  
+        dns_query_type in ("CNAME", "PTR", "NS"), arraystring(regextract(dns_rdata, "(?:\s+|\\t)(?:[CcNnAaMmEe]{5}|[PpTtRr]{3}|[NnSs]{2})(?:\s+|\\t)(\S+)\.?"), ",")), // domains,  
         dns_rdata), // default fallback
     source_ipv4 = if(source_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", source_ip),
     source_ipv6 = if(source_ip ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", source_ip)
