@@ -621,6 +621,89 @@ def test_is_mailto_urls(mocker: MockerFixture):
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
 
 
+def test_get_frame_tree_url_success(mocker: MockerFixture):
+    """
+    Test the get_frame_tree_url method of PychromeEventHandler with successful retrieval.
+    
+    Given:
+        - A PychromeEventHandler object with a mock tab that successfully returns a frame tree
+    When:
+        - Calling the get_frame_tree_url method
+    Then:
+        - Verify the correct URL is returned
+        - Verify the tab_ready_event is not set
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.id = "test_tab_id"
+    mock_tab.Page.getFrameTree.return_value = {
+        "frameTree": {
+            "frame": {
+                "url": "https://test.com"
+            }
+        }
+    }
+    
+    mock_event = mocker.Mock()
+    
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
+    
+    # Call the method
+    result = handler.get_frame_tree_url()
+    
+    # Verify results
+    assert result == "https://test.com"
+    assert not mock_event.set.called
+
+
+def test_get_frame_tree_url_runtime_exception(mocker: MockerFixture):
+    """
+    Test the get_frame_tree_url method of PychromeEventHandler with RuntimeException.
+    
+    Given:
+        - A PychromeEventHandler object with a mock tab that raises RuntimeException
+    When:
+        - Calling the get_frame_tree_url method
+    Then:
+        - Verify an empty string is returned
+        - Verify the tab_ready_event is set
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.id = "test_tab_id"
+    mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.RuntimeException("Tab is closed")
+    
+    mock_event = mocker.Mock()
+    
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
+    
+    # Verify results
+    assert handler.get_frame_tree_url() == ""
+    assert mock_event.set.called
+
+
+def test_get_frame_tree_url_user_abort_exception(mocker: MockerFixture):
+    """
+    Test the get_frame_tree_url method of PychromeEventHandler with UserAbortException.
+    
+    Given:
+        - A PychromeEventHandler object with a mock tab that raises UserAbortException
+    When:
+        - Calling the get_frame_tree_url method
+    Then:
+        - Verify an empty string is returned
+        - Verify the tab_ready_event is set
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.id = "test_tab_id"
+    mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.UserAbortException("User aborted")
+    
+    mock_event = mocker.Mock()
+    
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
+    
+    assert handler.get_frame_tree_url() == ""
+    assert mock_event.set.called
+
+
 def test_screenshot_image_local_file(mocker: MockerFixture):
     """The function returns an error when attempting to rasterize a local file"""
     mock_browser = mocker.Mock()
@@ -900,7 +983,7 @@ def test_retry_loading(mocker: MockerFixture):
     mock_tab = mocker.Mock()
     mock_tab.Page.navigate = mocker.Mock()
     mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
-
+    
     mock_event = mocker.Mock()
     handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
 
@@ -929,7 +1012,7 @@ def test_page_frame_stopped_loading(
     url: str, mock_event_set_called: bool, mock_retry_loading_called: bool, mocker: MockerFixture
 ):
     """
-    Test the page_frame_stopped_loading method of PychromeEventHandler.
+    Test the page_frame_stopped_loading method of PychromeEventHandler for normal operation.
 
     This test covers two scenarios:
     1. HTTP URL: Verifies that the event is set when a regular page is loaded.
@@ -940,9 +1023,6 @@ def test_page_frame_stopped_loading(
         mock_event_set_called (bool): Expected state of the event.set() call.
         mock_retry_loading_called (bool): Expected state of the retry_loading() call.
         mocker (MockerFixture): pytest-mock fixture for creating mock objects.
-
-    The test uses parametrization to cover both scenarios and mocking to simulate
-    Chrome tab behavior and verify correct method calls under different conditions.
     """
     mock_tab = mocker.Mock()
     mock_event = mocker.Mock()
@@ -957,6 +1037,43 @@ def test_page_frame_stopped_loading(
 
     assert mock_event.set.called == mock_event_set_called
     assert mock_retry_loading.called == mock_retry_loading_called
+
+@pytest.mark.parametrize(
+    "exception_class, exception_message",
+    [
+        pytest.param(pychrome.exceptions.RuntimeException, "Tab has been stopped", id="runtime_exception"),
+        pytest.param(pychrome.exceptions.UserAbortException, "User abort", id="userabort_exception"),
+    ],
+)
+def test_page_frame_stopped_loading_exception_handling(exception_class, exception_message, mocker: MockerFixture):
+    """
+    Test the page_frame_stopped_loading method of PychromeEventHandler for exception handling.
+
+    This test covers exception scenarios:
+    1. RuntimeException: When the tab has been stopped
+    2. UserAbortException: When the tab operation is aborted
+
+    Args:
+        exception_class: The exception class to simulate
+        exception_message: The message for the exception
+        mocker (MockerFixture): pytest-mock fixture for creating mock objects.
+
+    The test verifies that when exceptions occur, the event is properly set
+    to prevent hanging and no retry attempt is made.
+    """
+    mock_tab = mocker.Mock()
+    mock_event = mocker.Mock()
+    mock_tab.Page.getFrameTree.side_effect = exception_class(exception_message)
+
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "http://test.com", 30)
+    handler.start_frame = "test_frame_id"
+
+    mock_retry_loading = mocker.patch.object(handler, "retry_loading")
+
+    handler.page_frame_stopped_loading("test_frame_id")
+
+    assert mock_event.set.called
+    assert not mock_retry_loading.called
 
 
 def test_chrome_manager_one_port_use_same_port(mocker):
