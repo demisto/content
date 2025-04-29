@@ -1755,14 +1755,13 @@ def test_jwt_checker(mocker):
 def test_jwt_init(mocker):
     """
     Given:
-
+    - JWT credential
     When:
-    - creating a jwt
+    - User connect using JWT authentication
     Then:
     - create jwt
     """
     mocker.patch('jwt.encode', return_value = 'test')
-
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                 'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                 get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS, jwt_params = JWT_PARAMS)
