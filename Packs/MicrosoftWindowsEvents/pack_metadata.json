@@ -18,7 +18,8 @@
     "useCases": [],
     "keywords": [
         "microsoft",
-        "windows"
+        "windows",
+        "events"
     ],
     "dependencies": {
         "MicrosoftDNS": {
@@ -32,6 +33,10 @@
         "MicrosoftWindowsAMSI": {
             "mandatory": false,
             "display_name": "Microsoft Windows AMSI"
+        },
+        "MicrosoftWindowsSysmon": {
+            "mandatory": false,
+            "display_name": "Microsoft Sysmon"
         }
     },
     "marketplaces": [
