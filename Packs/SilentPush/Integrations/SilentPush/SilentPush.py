@@ -1126,6 +1126,11 @@ class Client(BaseClient):
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
         """
         Initializes the client with the necessary parameters.
+        Args:
+            base_url (str): The base URL for the SilentPush API.
+            api_key (str): The API key for authentication.
+            verify (bool): Flag to determine whether to verify SSL certificates (default True).
+            proxy (bool): Flag to determine whether to use a proxy (default False).
         """
         full_base_url = base_url.rstrip('/') + '/api/v1/merge-api/'
         super().__init__(full_base_url, verify, proxy)
