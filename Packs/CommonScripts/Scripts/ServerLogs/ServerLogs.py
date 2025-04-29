@@ -7,14 +7,14 @@ from CommonServerPython import *  # noqa: F401
 def execute_ssh_command():
     """Execute the `ssh` command to get the server logs and return the result to the war room."""
     file = "/var/log/demisto/server.log"
-    res = demisto.executeCommand("ssh", {"cmd": f"tail {file}"})
+    res = demisto.executeCommand("ssh", {"cmd": f"tail {file}", "using": "localhost"})
 
     contents = res[0].get('Contents')
-    if isinstance(contents, list):
-        contents = contents[0]
-
-    if contents.get('error'):
-        raise Exception(contents.get('error'))
+    # if isinstance(contents, list):
+    #     contents = contents[0]
+    #
+    # if contents.get('error'):
+    #     raise Exception(contents.get('error'))
 
     output = f"File: {file}\n"
     output += contents.get("output")
