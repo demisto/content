@@ -63,7 +63,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    secret = params.get('secret')
+    secret = params.get('secret', {}).get('password')
 
     if not secret:
         raise DemistoException('Team or integration secret must be provided.')
