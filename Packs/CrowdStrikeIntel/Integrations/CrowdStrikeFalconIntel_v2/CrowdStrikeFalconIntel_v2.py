@@ -66,7 +66,8 @@ class Client:
                 if key not in self.date_params:
                     values: List[str] = argToList(args[key], ",")
                     for value in values:
-                        value = value.replace("'", "%27")
+                        if isinstance(value, str):
+                            value = value.replace("'", "%27")
                         filter_query += f"{key}:'{value}'+"
                 else:
                     operator: Optional[str] = self.date_params.get(key, {}).get("operator")
