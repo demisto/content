@@ -6,7 +6,7 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 - Search for an email message across mailboxes and folders.
 - Get email attachment information.
 - Delete email items from a mailbox.
-- Manage Tenant Allow/Block Lists. 
+- Manage Tenant Allow/Block Lists.
 
 ## Integrations
 The [EWS O365 integration](https://xsoar.pan.dev/docs/reference/integrations/ewso365) enables you to:
