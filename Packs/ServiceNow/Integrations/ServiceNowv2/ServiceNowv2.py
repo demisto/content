@@ -690,7 +690,7 @@ class Client(BaseClient):
                 proxy=oauth_params.get("proxy", False),
                 headers=oauth_params.get("headers", ""),
             )
-            if self.use_jwt:
+            if jwt_params:
                 self.jwt_params = jwt_params
                 self.jwt = self.create_jwt()
         else:
