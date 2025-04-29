@@ -7,6 +7,9 @@ commonfields:
   id: Generic Webhook
   version: -1
 configuration:
+- name: engine
+  type: 23
+  section: Connect
 - display: Long running instance
   defaultvalue: 'true'
   name: longRunning
@@ -58,6 +61,12 @@ configuration:
   name: resultLink  # Where will this 'name' be used? And where will the 'GeneratedLink' from Figma appear?
   type: 22
   required: true  # do we need to add this field in content?
+  hidden: false
+  defaultValue: ""
+  hiddenUsername: false
+  hiddenPassword: false
+  displayPassword: ""
+  options: null
 description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
