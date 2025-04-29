@@ -1,0 +1,19 @@
+[MODEL: dataset = "forescout_counteract_raw"]
+alter 
+    xdm.event.type = cs1,
+    xdm.event.original_event_type = cs2,
+    xdm.event.description = if(cs3 = "yes", "Host Status Compliant", 
+                               cs3 = "no", "Host Status Non-Compliant", 
+                               "Host Compliancy Status Unknown"),
+    xdm.event.operation_sub_type = cs4,
+    xdm.source.host.hostname = dvchost,
+    xdm.source.ipv4 = dvc,
+    xdm.target.ipv4 = dst,
+    xdm.target.host.mac_addresses = if(dmac = ":::::", null, arraycreate(dmac)),
+    xdm.target.host.hostname = dhost,
+    xdm.target.user.username = duser,
+    xdm.target.host.fqdn = dntdom,
+    xdm.alert.subcategory = cefName,
+    xdm.alert.severity = cefSeverity,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.target.resource.sub_type = cefDeviceEventClassId;
