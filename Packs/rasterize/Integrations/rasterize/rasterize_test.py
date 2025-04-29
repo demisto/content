@@ -651,54 +651,6 @@ def test_get_frame_tree_url_success(mocker: MockerFixture):
     assert not mock_event.set.called
 
 
-def test_get_frame_tree_url_runtime_exception(mocker: MockerFixture):
-    """
-    Test the get_frame_tree_url method of PychromeEventHandler with RuntimeException.
-    
-    Given:
-        - A PychromeEventHandler object with a mock tab that raises RuntimeException
-    When:
-        - Calling the get_frame_tree_url method
-    Then:
-        - Verify an empty string is returned
-        - Verify the tab_ready_event is set
-    """
-    mock_tab = mocker.Mock()
-    mock_tab.id = "test_tab_id"
-    mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.RuntimeException("Tab is closed")
-    
-    mock_event = mocker.Mock()
-    
-    handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
-
-    assert handler.get_frame_tree_url() == ""
-    assert mock_event.set.called
-
-
-def test_get_frame_tree_url_user_abort_exception(mocker: MockerFixture):
-    """
-    Test the get_frame_tree_url method of PychromeEventHandler with UserAbortException.
-    
-    Given:
-        - A PychromeEventHandler object with a mock tab that raises UserAbortException
-    When:
-        - Calling the get_frame_tree_url method
-    Then:
-        - Verify an empty string is returned
-        - Verify the tab_ready_event is set
-    """
-    mock_tab = mocker.Mock()
-    mock_tab.id = "test_tab_id"
-    mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.UserAbortException("User aborted")
-    
-    mock_event = mocker.Mock()
-    
-    handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
-    
-    assert handler.get_frame_tree_url() == ""
-    assert mock_event.set.called
-
-
 def test_screenshot_image_local_file(mocker: MockerFixture):
     """The function returns an error when attempting to rasterize a local file"""
     mock_browser = mocker.Mock()
@@ -993,6 +945,37 @@ def test_retry_loading(mocker: MockerFixture):
     # Test successful retry
     mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "file:///test.html"}}}
     handler.retry_loading()
+    assert mock_event.set.called
+
+
+@pytest.mark.parametrize(
+    "exception_class, exception_message",
+    [
+        pytest.param(pychrome.exceptions.RuntimeException, "Tab is closed", id="runtime_exception"),
+        pytest.param(pychrome.exceptions.UserAbortException, "User aborted", id="userabort_exception"),
+    ],
+)
+def test_get_frame_tree_url_exception_handling(exception_class, exception_message, mocker: MockerFixture):
+    """
+    Test the get_frame_tree_url method of PychromeEventHandler with exceptions.
+    
+    Given:
+        - A PychromeEventHandler object with a mock tab that raises exceptions
+    When:
+        - Calling the get_frame_tree_url method
+    Then:
+        - Verify an empty string is returned
+        - Verify the tab_ready_event is set
+    """
+    mock_tab = mocker.Mock()
+    mock_tab.id = "test_tab_id"
+    mock_tab.Page.getFrameTree.side_effect = exception_class(exception_message)
+    
+    mock_event = mocker.Mock()
+    
+    handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
+    
+    assert handler.get_frame_tree_url() == ""
     assert mock_event.set.called
 
 
