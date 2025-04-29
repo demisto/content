@@ -2,8 +2,8 @@
 alter 
     xdm.event.type = cs1,
     xdm.event.original_event_type = cs2,
-    xdm.event.description = if(cs3 = "yes", "Host Status Compliant", 
-                               cs3 = "no", "Host Status Non-Compliant", 
+    xdm.event.description = if(cs3 = "yes", "Host Status Compliant",
+                               cs3 = "no", "Host Status Non-Compliant",
                                "Host Compliancy Status Unknown"),
     xdm.event.operation_sub_type = cs4,
     xdm.source.host.hostname = dvchost,
