@@ -930,7 +930,6 @@ def test_retry_loading(mocker: MockerFixture):
     mock_tab = mocker.Mock()
     mock_tab.Page.navigate = mocker.Mock()
     mock_tab.Page.getFrameTree = mocker.Mock(return_value={"frameTree": {"frame": {"url": CHROME_ERROR_URL}}})
-    
     mock_event = mocker.Mock()
     handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
 
