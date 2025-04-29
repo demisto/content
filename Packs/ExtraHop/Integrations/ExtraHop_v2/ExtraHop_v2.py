@@ -299,6 +299,12 @@ MAX_FETCH = 200
 
 EXTRAHOP_MARKDOWN_REGEX = r"(\[[^\]]+\]\(\#\/[^\)]+\))+"
 
+XSOAR_VERSION = get_demisto_version_as_str() or '6.5.0'
+
+PACK_VERSION = get_pack_version() or '2.3.1'
+
+MINIMUM_FIRMWARE_VERSION = "9.3.0"
+
 """ CLIENT CLASS """
 
 
@@ -334,13 +340,13 @@ class ExtraHopClient(BaseClient):
         if on_cloud:
             self._headers: Dict[str, Any] = {
                 "Authorization": f"Bearer {self.get_access_token(client_id=client_id, client_secret=client_secret)}",
-                "ExtraHop-Integration": "XSOAR-6.5.0-ExtraHop-2.0.0",
+                "ExtraHop-Integration": f"XSOAR-{XSOAR_VERSION}-ExtraHop-{PACK_VERSION}",
             }
         else:
             self._headers = {
                 "Accept": "application/json",
                 "Authorization": f"ExtraHop apikey={api_key}",
-                "ExtraHop-Integration": "XSOAR-6.5.0-ExtraHop-2.0.0",
+                "ExtraHop-Integration": f"XSOAR-{XSOAR_VERSION}-ExtraHop-{PACK_VERSION}",
             }
 
     def get_access_token(self, client_id: str, client_secret: str) -> str:
@@ -1130,7 +1136,7 @@ def get_device_by_ip(client: ExtraHopClient, ip, active_from: str = None, active
     if devices:
         return devices[0]
     else:
-        raise DemistoException(f"Error the IP Address {ip} was not found in ExtraHop.")
+        raise DemistoException(f"Error the IP Address {ip} was not found in ExtraHop.")  # noqa: E713
 
 
 def get_devices_by_ip_or_id(
@@ -1199,8 +1205,8 @@ def get_protocols(client: ExtraHopClient, ip_or_id, query_from, query_until) -> 
                 "ContentsFormat": formats["markdown"],
                 "Contents": (
                     f"This Device is in Discovery Mode. Configure your [Analysis Priorities]"
-                    f"(https://docs.extrahop.com/current/analysis_priorities/) or add this device to the "
-                    f"[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/"
+                    f"(https://docs.extrahop.com/current/analysis_priorities/) or add this device to the "  # noqa: E231
+                    f"[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/"  # noqa: E231
                     f"#what-is-the-watchlist) manually with: `!extrahop-edit-watchlist add={api_id}`"
                 ),
             }
@@ -1264,8 +1270,8 @@ def peers_get(
                 "ContentsFormat": formats["markdown"],
                 "Contents": (
                     f"This Device is in Discovery Mode. Configure your [Analysis Priorities]"
-                    f"(https://docs.extrahop.com/current/analysis_priorities/) or add this device to the "
-                    f"[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/"
+                    f"(https://docs.extrahop.com/current/analysis_priorities/) or add this device to the "  # noqa: E231
+                    f"[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/"  # noqa: E231
                     f"#what-is-the-watchlist) manually with: `!extrahop-edit-watchlist add={api_id}`"
                 ),
             }
@@ -1590,6 +1596,35 @@ def prepare_list_detections_output(detections) -> str:
     return tableToMarkdown(f"Found {len(hr_outputs)} Detection(s)", hr_outputs, headers=headers, removeNull=True)
 
 
+def is_version_greater_or_equal(version1, version2):
+    """
+    Returns True if version1 >= version2, else False.
+
+    Args:
+        version1: The first version to compare.
+        version2: The second version to compare.
+
+    Returns:
+        True if version1 >= version2, else False
+    """
+    v1_parts = list(map(int, version1.split(".")))
+    v2_parts = list(map(int, version2.split(".")))
+
+    length_diff = len(v1_parts) - len(v2_parts)
+
+    if length_diff > 0:
+        v2_parts.extend([0] * length_diff)
+    elif length_diff < 0:
+        v1_parts.extend([0] * abs(length_diff))
+
+    for a, b in zip(v1_parts, v2_parts):
+        if a > b:
+            return True
+        elif a < b:
+            return False
+    return True
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -1746,8 +1781,11 @@ def fetch_incidents(client: ExtraHopClient, params: Dict, last_run: Dict, on_clo
     if last_run.get("version_recheck_time", 1581852287000) < int(now.timestamp() * 1000):
         version = get_extrahop_server_version(client)
         last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
-        if version < "9.3.0":
-            raise DemistoException("This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
+        if not is_version_greater_or_equal(version, MINIMUM_FIRMWARE_VERSION):
+            raise DemistoException(
+                "This integration works with ExtraHop firmware version greater than or equal to "
+                f"{MINIMUM_FIRMWARE_VERSION} and current firmware version being used by you is {version}"
+            )
 
     advanced_filter = params.get("advanced_filter")
     if advanced_filter and advanced_filter.strip():
@@ -2030,7 +2068,7 @@ def packets_search_command(client: ExtraHopClient, args: Dict[str, Any]) -> Unio
     filename_header = response.headers.get("content-disposition")
     f_attr = "filename="
     if filename_header and f_attr in filename_header:
-        quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr) :]
+        quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
         filename = quoted_filename.replace('"', "")
     else:
         raise DemistoException("Error filename could not be found in response header.")
@@ -2280,8 +2318,11 @@ def detections_list_command(client: ExtraHopClient, args: Dict[str, Any], on_clo
         CommandResults object.
     """
     version = get_extrahop_server_version(client)
-    if version < "9.3.0":
-        raise DemistoException("This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
+    if not is_version_greater_or_equal(version, MINIMUM_FIRMWARE_VERSION):
+        raise DemistoException(
+            "This integration works with ExtraHop firmware version greater than or equal to "
+            f"{MINIMUM_FIRMWARE_VERSION} and current firmware version being used by you is {version}"
+        )
 
     body = {}
     if advanced_filter:
@@ -2482,8 +2523,11 @@ def test_module(client: ExtraHopClient) -> str:
     """
     response = client.test_connection()
     version = get_extrahop_server_version(client)
-    if version < "9.3.0":
-        raise DemistoException("This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
+    if not is_version_greater_or_equal(version, MINIMUM_FIRMWARE_VERSION):
+        raise DemistoException(
+            "This integration works with ExtraHop firmware version greater than or equal to "
+            f"{MINIMUM_FIRMWARE_VERSION} and current firmware version being used by you is {version}"
+        )
     if response:
         return "ok"
     raise ValueError("Failed to establish connection with provided credentials.")
@@ -2672,7 +2716,7 @@ def main():
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as error:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{error!s}")
+        return_error(f"Failed to execute {command} command.\nError:\n{error!s}")  # noqa: E231
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

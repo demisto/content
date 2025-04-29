@@ -589,10 +589,13 @@ def test_detections_list_command_failure_when_firmware_version_is_outdated(reque
        - Returns a valid error message.
     """
     client = init_mock_client(requests_mock, on_cloud=False)
-    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"})
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1"})
     with pytest.raises(DemistoException) as err:
         ExtraHop_v2.detections_list_command(client, {}, True, "{}")
-    assert str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
+    assert (
+        str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0 "
+        "and current firmware version being used by you is 9.1"
+    )
 
 
 @pytest.mark.parametrize("on_cloud", [False, True])
@@ -607,7 +610,7 @@ def test_list_detections_command_successful_execution_with_categories(on_cloud, 
      - Ensure human-readable output is correct.
      - Ensure outputs prefix is correct.
     """
-    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"})
+    requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.4"})
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "2",
@@ -1662,7 +1665,7 @@ def test_extrahop_protocols_get_ip_not_present_in_extrahop(requests_mock):
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {"ip_or_id": "0.0.0.0"}
-    expected_error_message = f"Error the IP Address {args['ip_or_id']} was not found in ExtraHop."
+    expected_error_message = f"Error the IP Address {args['ip_or_id']} was not found in ExtraHop."  # noqa: E713
     expected_response = []
     requests_mock.post(f"{BASE_URL}/api/v1/devices/search", json=expected_response, status_code=200)
     with pytest.raises(DemistoException) as error:
@@ -2294,7 +2297,10 @@ def test_fetch_detections_failure_when_firmware_version_is_outdated(requests_moc
     requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"})
     with pytest.raises(DemistoException) as err:
         ExtraHop_v2.fetch_incidents(client, {}, {}, False)
-    assert str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
+    assert (
+        str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0 "
+        "and current firmware version being used by you is 9.1.2"
+    )
 
 
 @pytest.mark.parametrize("advanced_filter", ["{}", '{"categories":["sec.attack"]}'])
@@ -2442,7 +2448,10 @@ def test_test_module_failure_extrahop_version_is_outdated(requests_mock):
     requests_mock.get(f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"})
     with pytest.raises(DemistoException) as err:
         ExtraHop_v2.test_module(client)
-    assert str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
+    assert (
+        str(err.value) == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0 "
+        "and current firmware version being used by you is 9.1.2"
+    )
 
 
 def test_test_module_failure(requests_mock):
