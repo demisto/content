@@ -79,11 +79,11 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    secret = params.get('secret')
+    secret = params.get('secret', {}).get('password')
 
     if not secret:
         raise DemistoException('Team or integration secret must be provided.')
-    LOG(f'Command is {demisto.command()}')
+    demisto.debug(f"Command is {command}")
 
     try:
         # Remove proxy if not set to true in params
