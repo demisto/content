@@ -16,13 +16,13 @@ def shorten_text(text: str) -> str:
 
 
 def search_for_indicator(args: dict):
-    time_frame: str = args["time_frame"]
+    time_frame: str = args.get("time_frame", "7 days")
     data_set: str = args.get("data_set", "xdr_data")
     indicator: str = args["indicator"]
     query_name: str = args["query_name"]
 
     time_frame_for_query: str = shorten_text(time_frame)
-    query: str = f'config timeframe = {time_frame_for_query} |search "{indicator}" dataset = {data_set}'
+    query: str = f'config timeframe = {time_frame_for_query} | search "{indicator}" dataset = {data_set}'
 
     res = demisto.executeCommand(command="xdr-xql-generic-query", args={"query": query, "query_name": query_name})
     query_id = res[0]["Metadata"]["pollingArgs"]["query_id"]
