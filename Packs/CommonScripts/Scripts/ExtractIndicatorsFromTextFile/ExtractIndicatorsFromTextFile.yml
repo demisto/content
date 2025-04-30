@@ -54,4 +54,4 @@ tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
 tags: []
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.1983910
