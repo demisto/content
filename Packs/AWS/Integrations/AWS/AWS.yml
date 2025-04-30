@@ -1,9 +1,9 @@
 category: Cloud Services
-description: Support for AWS cloud.
-display: AWS Cloud Automations
-name: AWS Cloud Automations
+description: The AWS Integration automates management and security configurations across core AWS services - including S3, EC2, IAM, and related resources.
+display: AWS
+name: AWS
 commonfields:
-  id: AWS Cloud Automations
+  id: AWS
   version: -1
 configuration:
 - display: Role Name
