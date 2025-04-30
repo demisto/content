@@ -1,4 +1,4 @@
-# AWS Cloud Automations Integration
+# AWS Integration
 
 This integration can be used to connect to your AWS accounts. You can run playbooks, scripts and commands on several AWS accounts using single EC2 machine. To leverage this integration with AWS, several steps must be completed to properly set up the environment within your AWS account.
 
