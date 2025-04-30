@@ -3,7 +3,6 @@ This integration was integrated and tested with version 37.0 of WorkdaySignonEve
 
 ## Configure Workday Signon Event Generator (Beta) in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Long running instance | False |
