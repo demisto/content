@@ -1,4 +1,4 @@
-# AWS Cloud Automations Integration
+# AWS Integration
 
 This integration can be used to connect to your AWS accounts. You can run playbooks, scripts and commands on several AWS accounts using single EC2 machine. To leverage this integration with AWS, several steps must be completed to properly set up the environment within your AWS account.
 
@@ -36,7 +36,7 @@ EC2 instance should have `sts:AssumeRole` permission over target AWS roles.
 
 | Command | Required Permissions |
 | ------------- | ------------- |
-| aws-s3-public-access-block-update  | s3:PutBucketPublicAccessBlock  |
+| aws-s3-public-access-block-update  | s3:GetBucketPublicAccessBlock <br> s3:PutBucketPublicAccessBlock  |
 | aws-iam-account-password-policy-get  | iam:GetAccountPasswordPolicy  |
 | aws-iam-account-password-policy-update  | iam:GetAccountPasswordPolicy <br> iam:UpdateAccountPasswordPolicy  |
 | aws-ec2-instance-metadata-options-modify  | ec2:ModifyInstanceMetadataOptions  |

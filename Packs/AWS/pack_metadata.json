@@ -1,6 +1,6 @@
 {
-    "name": "AWS Cloud Automations",
-    "description": "Amazon Web Services Automations",
+    "name": "AWS",
+    "description": "Amazon Web Services",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex",

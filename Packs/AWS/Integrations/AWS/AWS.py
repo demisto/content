@@ -1,6 +1,6 @@
-import demistomock as demisto
+import demistomock as demisto # noqa: F401
 from AWSApiModule import *  # noqa: E402
-from CommonServerPython import *
+from CommonServerPython import * # noqa: F401
 from http import HTTPStatus
 from datetime import date
 
