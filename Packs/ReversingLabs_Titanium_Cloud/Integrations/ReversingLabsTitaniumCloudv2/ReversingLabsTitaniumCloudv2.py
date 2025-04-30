@@ -30,7 +30,7 @@ from ReversingLabs.SDK.ticloud import (
     YARARetroHunting,
 )
 
-VERSION = f"v{get_pack_version()}" or "v2.7.0"
+VERSION = f"v{get_pack_version()}" or "v2.7.1"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")
@@ -761,12 +761,14 @@ def url_report_output(response_json, url):
         **Final URL**: {last_analysis.get("final_url")}
         **Availability status**: {last_analysis.get("availability_status")}
         **Domain**: {last_analysis.get("domain")}
-        **Serving IP Address**: {last_analysis.get("serving_ip_address")}\n ### Statistics\n **KNOWN**: {statistics.get(
-            "known")}
-        **SUSPICIOUS**: {statistics.get("suspicious")}
-        **MALICIOUS**: {statistics.get("malicious")}
-        **UNKNOWN**: {statistics.get("unknown")}
-        **TOTAL**: {statistics.get("total")}"""
+        **Serving IP Address**: {last_analysis.get("serving_ip_address")}\n"""
+
+        if statistics:
+            markdown += f"""### Statistics\n **KNOWN**: {statistics.get("known")}
+            **SUSPICIOUS**: {statistics.get("suspicious")}
+            **MALICIOUS**: {statistics.get("malicious")}
+            **UNKNOWN**: {statistics.get("unknown")}
+            **TOTAL**: {statistics.get("total")}"""
 
         analysis_table = tableToMarkdown("Analysis history", analysis_history)
         markdown = f"{markdown}\n {analysis_table}"
