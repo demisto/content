@@ -5,6 +5,10 @@ class AWSClient:
     def aws_session(self, **kwargs):
         return Boto3Client()
 
+class AWSClientFail:
+    def aws_session(self, **kwargs):
+        return None
+
 class Boto3Client:
     def get_public_access_block(self, **kwargs):
         pass
@@ -26,6 +30,34 @@ class Boto3Client:
 def aws_client():
     return AWSClient()
 
+@pytest.mark.parametrize(
+    "client_class, params, expected_result",
+    [
+        (
+            AWSClient,
+            { "test_account_id": "test-account" },
+            "ok"
+        ),
+        (
+            AWSClient,
+            {},
+            "Please provide Test AWS Account ID for the Integration instance to run test"
+        ),
+        (
+            AWSClientFail,
+            { "test_account_id": "test-account" },
+            "fail"
+        )
+    ]
+)
+def test_test_module(mocker, client_class, params, expected_result):
+    
+    mocker.patch.object(AWS, "get_client", return_value=client_class())
+    
+    result = AWS.test_module(params, {})
+    
+    assert result == expected_result
+    
 
 @pytest.mark.parametrize(
     "bucket, get_command_return, put_command_return, expected_result",
