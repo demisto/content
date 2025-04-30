@@ -1,5 +1,5 @@
 import pytest
-import Packs.AWS.Integrations.AWS.AWS as AWS
+from Packs.AWS.Integrations.AWS import AWS
 
 class AWSClient:
     def aws_session(self, **kwargs):

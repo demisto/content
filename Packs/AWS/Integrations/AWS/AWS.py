@@ -221,7 +221,7 @@ class S3:
                 try:
                     bucket_logging_status = json.loads(args.get('bucket-logging-status'))
                 except json.JSONDecodeError:
-                    return CommandResults(readable_output=f"Error: 'bucket-logging-status' must be a valid JSON string")
+                    return CommandResults(readable_output="Error: 'bucket-logging-status' must be a valid JSON string")
             elif args.get('target-bucket'):
                 # Build configuration from individual parameters
                 bucket_logging_status = {
