@@ -10,10 +10,13 @@
         "Forensics & Malware Analysis"
     ],
     "tags": [
-        "Forensics"
+        "Forensics",
+        "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Digital Forensics"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
