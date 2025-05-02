@@ -169,7 +169,7 @@ def ec2_instance_metadata_options_modify(aws_client: AWSClient, args: Dict[str, 
 # =================== #
 # MAIN
 # =================== #
-def main():
+def main():  # pragma: no cover
 
     params = demisto.params()
     demisto.debug(f"Params: {params}")
