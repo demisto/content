@@ -2,8 +2,9 @@ import copy
 import json
 import os
 import unittest.mock
+from collections.abc import Callable
 from datetime import datetime
-from typing import Any, Callable
+from typing import Any
 
 import CommonServerPython
 import pytest
@@ -245,15 +246,7 @@ def test_determine_clients(
 
 
 @pytest.mark.parametrize(
-    (
-        "username,"
-        "password,"
-        "url_regular,"
-        "quarantine_username,"
-        "quarantine_password,"
-        "url_quarantine,"
-        "expected_message"
-    ),
+    ("username,password,url_regular,quarantine_username,quarantine_password,url_quarantine,expected_message"),
     [
         # Test for mismatched credentials (only username is provided)
         (
@@ -945,10 +938,7 @@ def test_action_ioc_command_failure_multiple_ioc(requests_mock, mock_client: Sym
     with unittest.mock.patch("builtins.open", mocked_open):
         command_results = SymantecEmailSecurity.action_ioc_command(mock_client, args)
 
-    assert (
-        command_results.readable_output
-        == "## The following IOC(s) failed:\n- 000: Hello World!\n- subject-Test: Hello World!"
-    )
+    assert command_results.readable_output == "## The following IOC(s) failed:\n- 000: Hello World!\n- subject-Test: Hello World!"
 
 
 def test_renew_ioc_command_success(requests_mock, mock_client: SymantecEmailSecurity.Client) -> None:
@@ -1186,7 +1176,7 @@ def test_automatic_pagination_commands(
     number_of_calls = args["limit"] // SymantecEmailSecurity.QUARANTINE_API_MAX_LIMIT
 
     for i in range(number_of_calls + 1):
-        expected_output = mock_response[outputs_key][number_of_calls * i: number_of_calls * (i + 1)]
+        expected_output = mock_response[outputs_key][number_of_calls * i : number_of_calls * (i + 1)]
 
         if not expected_output:
             break

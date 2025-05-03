@@ -1,13 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
 # noqa: F401
 # noqa: F401
 import os
-import sys
 import re
+import sys
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 LS_RE = (
     rb"(?P<type>^[d-])(?P<u>.{3})(?P<g>.{3})(?P<o>.{3})(?P<S>[.\s]+)(?P<hlinks>\d+)\s+(?P<uid>\S+)\s+"

@@ -135,9 +135,8 @@ def main():  # pragma: no cover
             "(Azure) or to the bucket (AWS/GCP) based on the cloud provider."
         ),
         "Empty storage asset": (
-            "This action would delete the storage account (Azure) or the storage bucket "
-            "(AWS/GCP) based on the cloud provider."
-        )
+            "This action would delete the storage account (Azure) or the storage bucket (AWS/GCP) based on the cloud provider."
+        ),
     }
     try:
         incident = demisto.args().get("dspmIncident")

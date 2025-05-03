@@ -36,6 +36,7 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
+- platform
 name: silent-Suspicious process execution by scheduled task on a sensitive server
   Test
 outputs: []

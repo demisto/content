@@ -1,15 +1,17 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 """ Imports """
 
-import urllib3  # type: ignore
-import traceback
-import requests
 import copy
-from greynoise import GreyNoise, util  # type: ignore
-from greynoise.exceptions import RequestFailure, RateLimitError  # type: ignore
+import traceback
+
+import requests
+import urllib3  # type: ignore
+from greynoise import GreyNoise, util  # type: ignore   # pylint: disable=E0401
+from greynoise.exceptions import RateLimitError, RequestFailure  # type: ignore # pylint: disable=E0401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -74,9 +76,7 @@ class Client(GreyNoise):
             elif status_code == 429:
                 raise DemistoException(EXCEPTION_MESSAGES["API_RATE_LIMIT"])
             elif 400 <= status_code < 500:
-                raise DemistoException(
-                    EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), body)
-                )
+                raise DemistoException(EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), body))
             elif status_code >= 500:
                 raise DemistoException(EXCEPTION_MESSAGES["SERVER_ERROR"])
             else:
@@ -108,9 +108,7 @@ def exception_handler(func: Any) -> Any:
             elif status_code == 429:
                 raise DemistoException(EXCEPTION_MESSAGES["API_RATE_LIMIT"])
             elif 400 <= status_code < 500:
-                raise DemistoException(
-                    EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), body)
-                )
+                raise DemistoException(EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), body))
             elif status_code >= 500:
                 raise DemistoException(EXCEPTION_MESSAGES["SERVER_ERROR"])
             else:
@@ -217,13 +215,10 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
     ips = argToList(args.get("ip"), ",")
     command_results = []
     for ip in ips:
-
         response = client.ip(ip)
 
         if not isinstance(response, dict):
-            raise DemistoException(
-                EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response)
-            )
+            raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
 
         original_response = copy.deepcopy(response)
         tmp_response = get_ip_context_data([response])
@@ -232,9 +227,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
         response["address"] = response["ip"]
         del response["ip"]
 
-        dbot_score_int, dbot_score_string = get_ip_reputation_score(
-            response.get("classification")
-        )
+        dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
         human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
         human_readable += tableToMarkdown(
@@ -245,9 +238,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
         )
 
         if response["noise"]:
-            malicious_description = (
-                "This IP has been observed scanning the internet in the last 90 days."
-            )
+            malicious_description = "This IP has been observed scanning the internet in the last 90 days."
         else:
             malicious_description = ""
 
@@ -257,7 +248,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             score=dbot_score_int,
             integration_name="GreyNoise Community",
             malicious_description=malicious_description,
-            reliability=reliability
+            reliability=reliability,
         )
 
         ip_standard_context = Common.IP(
@@ -340,9 +331,7 @@ def main() -> None:  # pragma: no cover
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), str(err))
-        )
+        return_error(EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), str(err)))
 
 
 """ ENTRY POINT """

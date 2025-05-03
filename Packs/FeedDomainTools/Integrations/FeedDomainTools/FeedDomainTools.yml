@@ -42,8 +42,11 @@ configuration:
   type: 15
   options:
   - ALL
-  - NOD
-  - NAD
+  - nod
+  - nad
+  - noh
+  - domainrdap
+  - domaindiscovery
   additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
   section: Collect
 - display: Fetch indicators
@@ -145,7 +148,15 @@ script:
     execution: false
     arguments:
     - name: feed_type
-      defaultValue: 'nod'
+      type: String
+      auto: PREDEFINED
+      predefined:
+      - "nod"
+      - "nad"
+      - "noh"
+      - "domainrdap"
+      - "domaindiscovery"
+      defaultValue: "nod"
       description: The DomainTools integration feed type to fetch.
       isArray: false
       default: false
@@ -184,7 +195,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.2432953
+  dockerimage: demisto/vendors-sdk:1.0.0.3242986
   feed: true
   isfetch: false
   longRunning: false
@@ -200,6 +211,6 @@ sectionOrder:
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
-

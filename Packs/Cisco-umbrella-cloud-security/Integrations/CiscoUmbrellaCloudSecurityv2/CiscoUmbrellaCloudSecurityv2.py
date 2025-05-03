@@ -7,26 +7,26 @@ from collections.abc import Callable
 from typing import Any, TypeVar
 
 
-BASE_URL = 'https://api.umbrella.com'
+BASE_URL = "https://api.umbrella.com"
 
-INTEGRATION_COMMAND_PREFIX = 'umbrella'
-DESTINATION = 'destination'
-DESTINATION_LIST = 'destination-list'
-DOMAIN = 'domain'
+INTEGRATION_COMMAND_PREFIX = "umbrella"
+DESTINATION = "destination"
+DESTINATION_LIST = "destination-list"
+DOMAIN = "domain"
 
-INTEGRATION_OUTPUT_PREFIX = 'Umbrella'
-DESTINATION_OUTPUT_PREFIX = 'Destinations'
-DESTINATION_LIST_OUTPUT_PREFIX = 'DestinationLists'
+INTEGRATION_OUTPUT_PREFIX = "Umbrella"
+DESTINATION_OUTPUT_PREFIX = "Destinations"
+DESTINATION_LIST_OUTPUT_PREFIX = "DestinationLists"
 
-ID_OUTPUTS_KEY_FIELD = 'id'
+ID_OUTPUTS_KEY_FIELD = "id"
 
 MAX_LIMIT = 100
 DEFAULT_LIMIT = 50
 
-DESTINATION_LIST_HEADERS = ['id', 'name', 'access', 'isGlobal', 'destinationCount']
+DESTINATION_LIST_HEADERS = ["id", "name", "access", "isGlobal", "destinationCount"]
 DESTINATION_LIST_JSON_TRANSFORMER = JsonTransformer(keys=DESTINATION_LIST_HEADERS, is_nested=True)
 
-OptionalDictOrList = TypeVar('OptionalDictOrList', None, dict[str, Any], list[dict[str, Any]])
+OptionalDictOrList = TypeVar("OptionalDictOrList", None, dict[str, Any], list[dict[str, Any]])
 
 
 class BundleType(int, enum.Enum):
@@ -35,20 +35,20 @@ class BundleType(int, enum.Enum):
 
 
 class Access(str, enum.Enum):
-    ALLOW = 'allow'
-    BLOCK = 'block'
+    ALLOW = "allow"
+    BLOCK = "block"
 
 
-''' Client '''
+""" Client """
 
 
 class Client(BaseClient):
     """Client class to interact with the Umbrella API."""
 
-    AUTH_SUFFIX = 'auth/v2/token'
-    POLICIES_SUFFIX = 'policies/v2'
+    AUTH_SUFFIX = "auth/v2/token"
+    POLICIES_SUFFIX = "policies/v2"
 
-    DESTINATION_LIST_ENDPOINT = urljoin(POLICIES_SUFFIX, 'destinationlists')
+    DESTINATION_LIST_ENDPOINT = urljoin(POLICIES_SUFFIX, "destinationlists")
 
     def __init__(
         self,
@@ -85,7 +85,7 @@ class Client(BaseClient):
         The access token is stored in the headers of the request.
         """
         access_token = self.get_access_token()
-        self._headers['Authorization'] = f'Bearer {access_token}'
+        self._headers["Authorization"] = f"Bearer {access_token}"
 
     def get_access_token(self):
         """
@@ -94,29 +94,27 @@ class Client(BaseClient):
         """
         # Check if there is an existing valid access token
         integration_context = get_integration_context()
-        if integration_context.get('access_token') and integration_context.get('expiry_time') > date_to_timestamp(datetime.now()):
-            return integration_context.get('access_token')
+        if integration_context.get("access_token") and integration_context.get("expiry_time") > date_to_timestamp(datetime.now()):
+            return integration_context.get("access_token")
         else:
             try:
                 res = self._http_request(
-                    method='POST',
+                    method="POST",
                     url_suffix=Client.AUTH_SUFFIX,
-                    headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                    headers={"Content-Type": "application/x-www-form-urlencoded"},
                     auth=(self.api_key, self.api_secret),
-                    data={'grant_type': 'client_credentials'}
+                    data={"grant_type": "client_credentials"},
                 )
-                if res.get('access_token'):
-                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                    expiry_time += res.get('expires_in', 0) * 1000 - 10
-                    context = {
-                        'access_token': res.get('access_token'),
-                        'expiry_time': expiry_time
-                    }
+                if res.get("access_token"):
+                    expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+                    expiry_time += res.get("expires_in", 0) * 1000 - 10
+                    context = {"access_token": res.get("access_token"), "expiry_time": expiry_time}
                     set_integration_context(context)
-                    return res.get('access_token')
+                    return res.get("access_token")
             except Exception as e:
-                return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
-                             f'\n\n{e.args[0]}')
+                return_error(
+                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
+                )
 
     def _get_destination_payload(
         self,
@@ -139,8 +137,8 @@ class Client(BaseClient):
 
         return [
             {
-                'destination': destination,
-                'comment': destinations_comment,
+                "destination": destination,
+                "comment": destinations_comment,
             }
             for destination in destinations
         ]
@@ -167,10 +165,10 @@ class Client(BaseClient):
             page=page,
             limit=limit,
         )
-        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f'{destination_list_id}/destinations')
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f"{destination_list_id}/destinations")
 
         return self._http_request(
-            method='GET',
+            method="GET",
             url_suffix=url_suffix,
             params=params,
         )
@@ -196,10 +194,10 @@ class Client(BaseClient):
             destinations=destinations,
             destinations_comment=destinations_comment,
         )
-        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f'{destination_list_id}/destinations')
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f"{destination_list_id}/destinations")
 
         return self._http_request(
-            method='POST',
+            method="POST",
             url_suffix=url_suffix,
             json_data=payload,
         )
@@ -214,9 +212,9 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: The destination list that holds the deleted destinations.
         """
-        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f'{destination_list_id}/destinations/remove')
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f"{destination_list_id}/destinations/remove")
         return self._http_request(
-            method='DELETE',
+            method="DELETE",
             url_suffix=url_suffix,
             json_data=destination_ids,
         )
@@ -239,7 +237,7 @@ class Client(BaseClient):
             limit=limit,
         )
         return self._http_request(
-            method='GET',
+            method="GET",
             url_suffix=Client.DESTINATION_LIST_ENDPOINT,
             params=params,
         )
@@ -254,7 +252,7 @@ class Client(BaseClient):
             dict[str, Any]: The destination list.
         """
         url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, destination_list_id)
-        return self._http_request(method='GET', url_suffix=url_suffix)
+        return self._http_request(method="GET", url_suffix=url_suffix)
 
     def create_destination_list(
         self,
@@ -283,18 +281,18 @@ class Client(BaseClient):
         """
         payload = remove_empty_elements(
             {
-                'name': name,
-                'access': access,
-                'isGlobal': is_global,
-                'bundleType': bundle_type and BundleType[bundle_type].value,
-                'destinations': self._get_destination_payload(
+                "name": name,
+                "access": access,
+                "isGlobal": is_global,
+                "bundleType": bundle_type and BundleType[bundle_type].value,
+                "destinations": self._get_destination_payload(
                     destinations=destinations,
                     destinations_comment=destinations_comment,
                 ),
             }
         )
         return self._http_request(
-            method='POST',
+            method="POST",
             url_suffix=Client.DESTINATION_LIST_ENDPOINT,
             json_data=payload,
         )
@@ -311,9 +309,9 @@ class Client(BaseClient):
         """
         url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, destination_list_id)
         return self._http_request(
-            method='PATCH',
+            method="PATCH",
             url_suffix=url_suffix,
-            json_data={'name': name},
+            json_data={"name": name},
         )
 
     def delete_destination_list(self, destination_list_id: str) -> dict[str, Any]:
@@ -327,12 +325,12 @@ class Client(BaseClient):
         """
         url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, destination_list_id)
         return self._http_request(
-            method='DELETE',
+            method="DELETE",
             url_suffix=url_suffix,
         )
 
 
-''' HELPER COMMANDS '''
+""" HELPER COMMANDS """
 
 
 @logger
@@ -352,10 +350,10 @@ def bridge_v1_to_v2(
     Returns:
         CommandResults: The result of v2 command.
     """
-    args['destination_list_id'] = args.pop('destId', None)
-    args['destinations'] = args.pop('domain', None) or args.pop('domains', None)
-    args['destination_ids'] = args.pop('domainIds', None)
-    args['limit'] = DEFAULT_LIMIT
+    args["destination_list_id"] = args.pop("destId", None)
+    args["destinations"] = args.pop("domain", None) or args.pop("domains", None)
+    args["destination_ids"] = args.pop("domainIds", None)
+    args["limit"] = DEFAULT_LIMIT
 
     return v2_command(client, args)
 
@@ -379,7 +377,7 @@ def is_get_request_type(get_args: list, list_args: list) -> bool:
     is_list_request = any(list_args)
 
     if is_get_request and is_list_request:
-        raise ValueError('GET and LIST arguments can not be supported simultaneously.')
+        raise ValueError("GET and LIST arguments can not be supported simultaneously.")
 
     return is_get_request
 
@@ -407,10 +405,7 @@ def get_json_table(obj: OptionalDictOrList, json_transformer: JsonTransformer) -
         Returns:
             dict[str, Any]: The transformed dict.
         """
-        return {
-            transformed_data[1]: transformed_data[2]
-            for transformed_data in json_transformer.json_to_path_generator(data)
-        }
+        return {transformed_data[1]: transformed_data[2] for transformed_data in json_transformer.json_to_path_generator(data)}
 
     if isinstance(obj, list):
         return [transform_json_to_dict(o) for o in obj]
@@ -460,21 +455,21 @@ def handle_pagination(
     """
     if page:
         page_size = min(page_size or DEFAULT_LIMIT, MAX_LIMIT)
-        demisto.debug(f'Calling list command with {args=}, {page=}, limit={page_size}')
+        demisto.debug(f"Calling list command with {args=}, {page=}, limit={page_size}")
         raw_response = list_command(*args, page=page, limit=page_size, **kwargs)
-        return raw_response.get('data', []), raw_response
+        return raw_response.get("data", []), raw_response
 
     page = 1
     outputs: list[dict[str, Any]] = []
 
     # Keep calling the API until the required amount of items have been met.
     while limit > 0:
-        demisto.debug(f'Calling list command with {args=}, {page=}, limit={MAX_LIMIT}')
+        demisto.debug(f"Calling list command with {args=}, {page=}, limit={MAX_LIMIT}")
         raw_response = list_command(*args, page=page, limit=MAX_LIMIT, **kwargs)
 
         # If the API returned no items, we're done.
-        if not (output := raw_response.get('data')):
-            demisto.debug(f'The API returned no items for {page=}, stopping')
+        if not (output := raw_response.get("data")):
+            demisto.debug(f"The API returned no items for {page=}, stopping")
             break
 
         received_items = len(output)
@@ -487,15 +482,15 @@ def handle_pagination(
 
         # If the API returned less than the required amount of items, we're done.
         if received_items < MAX_LIMIT:
-            demisto.debug(f'These are the last items in the API {page=}, stopping')
+            demisto.debug(f"These are the last items in the API {page=}, stopping")
             break
 
         limit -= received_items
         page += 1
 
-    raw_response['meta']['total'] = len(outputs)
+    raw_response["meta"]["total"] = len(outputs)
     outputs_result = get_single_or_full_list(outputs)
-    raw_response['data'] = outputs_result
+    raw_response["data"] = outputs_result
 
     return outputs_result, raw_response
 
@@ -568,36 +563,36 @@ def find_destinations(
 
     while destinations or destination_ids:
         page += 1
-        demisto.debug(f'Calling list command with {destination_list_id=}, {page=}, limit={MAX_LIMIT}')
+        demisto.debug(f"Calling list command with {destination_list_id=}, {page=}, limit={MAX_LIMIT}")
         raw_response = list_command(destination_list_id=destination_list_id, page=page, limit=MAX_LIMIT)
-        items = raw_response.get('data', [])
+        items = raw_response.get("data", [])
 
         if not items:
-            demisto.debug(f'The API returned no items for {page=}, stopping')
+            demisto.debug(f"The API returned no items for {page=}, stopping")
             break
 
         for item in items:
             # Called twice to avoid duplicates if an item was given in ID and destination.
             if filter_out_non_target_items(
-                item['id'],
+                item["id"],
                 destination_ids,
-                item['destination'],
+                item["destination"],
                 destinations,
             ) or filter_out_non_target_items(
-                item['destination'],
+                item["destination"],
                 destinations,
-                item['id'],
+                item["id"],
                 destination_ids,
             ):
                 outputs.append(item)
 
         if len(items) < MAX_LIMIT:
-            demisto.debug(f'These are the last items in the API {page=}, stopping')
+            demisto.debug(f"These are the last items in the API {page=}, stopping")
             break
 
-    raw_response['meta']['total'] = len(outputs)
+    raw_response["meta"]["total"] = len(outputs)
     outputs_result = get_single_or_full_list(outputs)
-    raw_response['data'] = outputs_result
+    raw_response["data"] = outputs_result
 
     return outputs_result, raw_response
 
@@ -614,13 +609,13 @@ def get_destination_list_command_results(raw_response: list | dict, outputs: lis
         CommandResults: The destination list command results.
     """
     readable_output = tableToMarkdown(
-        name='Destination List:',
+        name="Destination List:",
         t=get_json_table(outputs, DESTINATION_LIST_JSON_TRANSFORMER),
         headers=DESTINATION_LIST_HEADERS,
         headerTransform=pascalToSpace,
     )
     return CommandResults(
-        outputs_prefix='.'.join([INTEGRATION_OUTPUT_PREFIX, DESTINATION_LIST_OUTPUT_PREFIX]),
+        outputs_prefix=".".join([INTEGRATION_OUTPUT_PREFIX, DESTINATION_LIST_OUTPUT_PREFIX]),
         outputs_key_field=ID_OUTPUTS_KEY_FIELD,
         outputs=outputs,
         readable_output=readable_output,
@@ -628,19 +623,19 @@ def get_destination_list_command_results(raw_response: list | dict, outputs: lis
     )
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 @logger
 def list_destinations_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    destination_list_id = args['destination_list_id']
+    destination_list_id = args["destination_list_id"]
     # GET arguments
-    destinations = argToList(args.get('destinations'))
-    destination_ids = argToList(args.get('destination_ids'))
+    destinations = argToList(args.get("destinations"))
+    destination_ids = argToList(args.get("destination_ids"))
     # LIST arguments
-    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
 
     if is_get_request_type(
         get_args=[destinations, destination_ids],
@@ -662,14 +657,14 @@ def list_destinations_command(client: Client, args: dict[str, Any]) -> CommandRe
         )
 
     readable_output = tableToMarkdown(
-        name='Destination(s):',
+        name="Destination(s):",
         t=outputs,
-        headers=['id', 'destination', 'type', 'comment', 'createdAt'],
+        headers=["id", "destination", "type", "comment", "createdAt"],
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix='.'.join([INTEGRATION_OUTPUT_PREFIX, DESTINATION_OUTPUT_PREFIX]),
+        outputs_prefix=".".join([INTEGRATION_OUTPUT_PREFIX, DESTINATION_OUTPUT_PREFIX]),
         outputs_key_field=ID_OUTPUTS_KEY_FIELD,
         outputs=outputs,
         readable_output=readable_output,
@@ -691,9 +686,9 @@ def add_destination_command(client: Client, args: dict[str, Any]) -> CommandResu
     Returns:
         CommandResults: The result of the destination addition.
     """
-    destination_list_id = args['destination_list_id']
-    destinations = argToList(args['destinations'])
-    destinations_comment = args.get('comment')
+    destination_list_id = args["destination_list_id"]
+    destinations = argToList(args["destinations"])
+    destinations_comment = args.get("comment")
 
     raw_response = client.add_destination(
         destination_list_id=destination_list_id,
@@ -703,8 +698,7 @@ def add_destination_command(client: Client, args: dict[str, Any]) -> CommandResu
 
     return CommandResults(
         readable_output=(
-            f'The destination(s) "{destinations}" '
-            f'were successfully added to the destination list "{destination_list_id}"'
+            f'The destination(s) "{destinations}" were successfully added to the destination list "{destination_list_id}"'
         ),
         raw_response=raw_response,
     )
@@ -723,10 +717,8 @@ def delete_destination_command(client: Client, args: dict[str, Any]) -> CommandR
     Returns:
         CommandResults: The result of the destination deletion.
     """
-    destination_list_id = args['destination_list_id']
-    destination_ids = [
-        number for arg in argToList(args['destination_ids']) if (number := arg_to_number(arg)) is not None
-    ]
+    destination_list_id = args["destination_list_id"]
+    destination_ids = [number for arg in argToList(args["destination_ids"]) if (number := arg_to_number(arg)) is not None]
 
     raw_response = client.delete_destination(
         destination_list_id=destination_list_id,
@@ -758,11 +750,11 @@ def list_destination_lists_command(client: Client, args: dict[str, Any]) -> Comm
         CommandResults: The requested destination lists.
     """
     # GET arguments
-    destination_list_id = args.get('destination_list_id', '')
+    destination_list_id = args.get("destination_list_id", "")
     # LIST arguments
-    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
 
     if is_get_request_type(
         get_args=[destination_list_id],
@@ -778,7 +770,7 @@ def list_destination_lists_command(client: Client, args: dict[str, Any]) -> Comm
         )
 
     return get_destination_list_command_results(
-        outputs=outputs or raw_response.get('data'),
+        outputs=outputs or raw_response.get("data"),
         raw_response=raw_response,
     )
 
@@ -801,12 +793,12 @@ def create_destination_list_command(client: Client, args: dict[str, Any]) -> Com
         CommandResults: The created destination list.
     """
     raw_response = client.create_destination_list(
-        name=args['name'],
-        access=args['access'],
-        is_global=argToBoolean(args['is_global']),
-        bundle_type=args.get('bundle_type'),
-        destinations=argToList(args.get('destinations')),
-        destinations_comment=args.get('destinations_comment'),
+        name=args["name"],
+        access=args["access"],
+        is_global=argToBoolean(args["is_global"]),
+        bundle_type=args.get("bundle_type"),
+        destinations=argToList(args.get("destinations")),
+        destinations_comment=args.get("destinations_comment"),
     )
     return get_destination_list_command_results(
         outputs=raw_response,
@@ -828,11 +820,11 @@ def update_destination_list_command(client: Client, args: dict[str, Any]) -> Com
         CommandResults: The updated destination list.
     """
     raw_response = client.update_destination_list(
-        destination_list_id=args['destination_list_id'],
-        name=args['name'],
+        destination_list_id=args["destination_list_id"],
+        name=args["name"],
     )
     return get_destination_list_command_results(
-        outputs=raw_response['data'],
+        outputs=raw_response["data"],
         raw_response=raw_response,
     )
 
@@ -849,7 +841,7 @@ def delete_destination_list_command(client: Client, args: dict[str, Any]) -> Com
     Returns:
         CommandResults: The result of the destination list deletion.
     """
-    destination_list_id = args['destination_list_id']
+    destination_list_id = args["destination_list_id"]
     raw_response = client.delete_destination_list(destination_list_id)
 
     return CommandResults(
@@ -879,11 +871,11 @@ def test_module(client: Client) -> str:
 
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
-            return 'Authorization Error: invalid API key or secret'
+            return "Authorization Error: invalid API key or secret"
 
         raise exc
 
-    return 'ok'
+    return "ok"
 
 
 def main() -> None:
@@ -891,30 +883,30 @@ def main() -> None:
     args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
 
-    api_key: str = params['credentials']['identifier']
-    api_secret: str = params['credentials']['password']
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy: bool = params.get('proxy', False)
+    api_key: str = params["credentials"]["identifier"]
+    api_secret: str = params["credentials"]["password"]
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy: bool = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     commands_v2 = {
-        f'{INTEGRATION_COMMAND_PREFIX}-{DESTINATION}s-list': list_destinations_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-{DESTINATION}-add': add_destination_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-{DESTINATION}-delete': delete_destination_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}s-list': list_destination_lists_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}-create': create_destination_list_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}-update': update_destination_list_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}-delete': delete_destination_list_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{DESTINATION}s-list": list_destinations_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{DESTINATION}-add": add_destination_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{DESTINATION}-delete": delete_destination_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}s-list": list_destination_lists_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}-create": create_destination_list_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}-update": update_destination_list_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-{DESTINATION_LIST}-delete": delete_destination_list_command,
     }
 
     commands_v1 = {
-        f'{INTEGRATION_COMMAND_PREFIX}-get-{DESTINATION}-{DOMAIN}': list_destinations_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-get-{DESTINATION}-{DOMAIN}s': list_destinations_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-search-{DESTINATION}-{DOMAIN}s': list_destinations_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-add-{DOMAIN}': add_destination_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-remove-{DOMAIN}': delete_destination_command,
-        f'{INTEGRATION_COMMAND_PREFIX}-get-{DESTINATION}-lists': list_destination_lists_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-get-{DESTINATION}-{DOMAIN}": list_destinations_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-get-{DESTINATION}-{DOMAIN}s": list_destinations_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-search-{DESTINATION}-{DOMAIN}s": list_destinations_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-add-{DOMAIN}": add_destination_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-remove-{DOMAIN}": delete_destination_command,
+        f"{INTEGRATION_COMMAND_PREFIX}-get-{DESTINATION}-lists": list_destination_lists_command,
     }
 
     try:
@@ -926,7 +918,7 @@ def main() -> None:
             proxy=proxy,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             results = test_module(client)
         elif command in commands_v2:
             client.login()
@@ -935,7 +927,7 @@ def main() -> None:
             client.login()
             results = bridge_v1_to_v2(v2_command=commands_v1[command], client=client, args=args)
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
 
         return_results(results)
 
@@ -943,5 +935,5 @@ def main() -> None:
         return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

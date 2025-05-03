@@ -2503,6 +2503,9 @@ script:
       required: true
     - description: The blob SHA of the file being replaced. Use the GitHub-list-files command to get the SHA value of the file.  Required if you are updating a file.
       name: file_sha
+    - description: Are placeholders within the file text escaped with slashes (used for CI/CD pull request creation playbook).
+      name: placeholders_escaped
+      hidden: true
     description: Commits a given file.
     name: Github-commit-file
   - arguments:
@@ -3662,7 +3665,7 @@ script:
     - contextPath: GitHub.Workflow.updated_at
       description: Datetime the GitHub workflow was updated at.
       type: Date
-  dockerimage: demisto/auth-utils:1.0.0.115527
+  dockerimage: demisto/auth-utils:1.0.0.2025089
   isfetch: true
   runonce: false
   script: '-'

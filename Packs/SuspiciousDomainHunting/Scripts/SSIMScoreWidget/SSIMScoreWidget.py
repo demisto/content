@@ -24,17 +24,10 @@ def create_widget_entry(ssim_score) -> dict:
                     0 indicates no similarity, and -1 indicates perfect anti-correlation",
                 "sign": "%",
                 "signAlignment": "right",
-                "colors": {
-                        "isEnabled": True,
-                        "items": {
-                            color_ssim: {
-                                "value": -100
-                            }
-                        }
-                },
-                "type": "below"
-            }
-        }
+                "colors": {"isEnabled": True, "items": {color_ssim: {"value": -100}}},
+                "type": "below",
+            },
+        },
     }
 
     return data
@@ -42,7 +35,7 @@ def create_widget_entry(ssim_score) -> dict:
 
 def main():
     try:
-        ssim_score = demisto.context()['ImageSimilarity']["SSIM"]
+        ssim_score = demisto.context()["ImageSimilarity"]["SSIM"]
 
         ssim_score = 100 if not ssim_score else float(ssim_score)
 
@@ -52,5 +45,5 @@ def main():
         return_results("SSIM Score was not found in the context.")
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

@@ -10,59 +10,60 @@ from oauth2client import service_account
 from googleapiclient import discovery
 
 
-''' IMPORTS '''
+""" IMPORTS """
 
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 
 # Params for assembling object of the Service Account Credentials File Contents
 PARAMS = demisto.params()
-SERVICE_ACT_PROJECT_ID = PARAMS.get('project_id')
-PRIVATE_KEY_ID = PARAMS.get('private_key_id_creds', {}).get('password') or PARAMS.get('private_key_id')
-PRIVATE_KEY = PARAMS.get('private_key_creds', {}).get('password') or PARAMS.get('private_key')
-CLIENT_EMAIL = PARAMS.get('client_email_creds', {}).get('identifier') or PARAMS.get('client_email')
-CLIENT_ID = PARAMS.get('client_email_creds', {}).get('password') or PARAMS.get('client_id')
-CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url')
-PROXY = PARAMS.get('proxy')
-DISABLE_SSL = PARAMS.get('insecure')
+SERVICE_ACT_PROJECT_ID = PARAMS.get("project_id")
+PRIVATE_KEY_ID = PARAMS.get("private_key_id_creds", {}).get("password") or PARAMS.get("private_key_id")
+PRIVATE_KEY = PARAMS.get("private_key_creds", {}).get("password") or PARAMS.get("private_key")
+CLIENT_EMAIL = PARAMS.get("client_email_creds", {}).get("identifier") or PARAMS.get("client_email")
+CLIENT_ID = PARAMS.get("client_email_creds", {}).get("password") or PARAMS.get("client_id")
+CLIENT_X509_CERT_URL = PARAMS.get("client_x509_cert_url")
+PROXY = PARAMS.get("proxy")
+DISABLE_SSL = PARAMS.get("insecure")
 
 AUTH_JSON = {
-    'type': 'service_account',  # guardrails-disable-line
-    'project_id': SERVICE_ACT_PROJECT_ID,
-    'private_key_id': PRIVATE_KEY_ID,
-    'private_key': PRIVATE_KEY.replace('\\n', '\n'),
-    'client_email': CLIENT_EMAIL,
-    'client_id': CLIENT_ID,
-    'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
-    'token_uri': 'https://oauth2.googleapis.com/token',
-    'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
-    'client_x509_cert_url': CLIENT_X509_CERT_URL
+    "type": "service_account",  # guardrails-disable-line
+    "project_id": SERVICE_ACT_PROJECT_ID,
+    "private_key_id": PRIVATE_KEY_ID,
+    "private_key": PRIVATE_KEY.replace("\\n", "\n"),
+    "client_email": CLIENT_EMAIL,
+    "client_id": CLIENT_ID,
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": CLIENT_X509_CERT_URL,
 }
 
 # Params for constructing googleapiclient service object
-API_VERSION = 'v1'
-GRM = 'cloudresourcemanager'
+API_VERSION = "v1"
+GRM = "cloudresourcemanager"
 SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 # disable-secrets-detection-start
 def get_http_client_with_proxy():
     proxies = handle_proxy()
-    if not proxies or not proxies['https']:
-        raise Exception('https proxy value is empty. Check Demisto server configuration')
-    https_proxy = proxies['https']
-    if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-        https_proxy = 'https://' + https_proxy
+    if not proxies or not proxies["https"]:
+        raise Exception("https proxy value is empty. Check Demisto server configuration")
+    https_proxy = proxies["https"]
+    if not https_proxy.startswith("https") and not https_proxy.startswith("http"):
+        https_proxy = "https://" + https_proxy
     parsed_proxy = urllib.parse.urlparse(https_proxy)
     proxy_info = httplib2.ProxyInfo(
         proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
         proxy_host=parsed_proxy.hostname,
         proxy_port=parsed_proxy.port,
         proxy_user=parsed_proxy.username,
-        proxy_pass=parsed_proxy.password)
+        proxy_pass=parsed_proxy.password,
+    )
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
 
 
@@ -75,8 +76,7 @@ def get_credentials_obj():
     Returns:
         Credentials, the obtained credential.
     """
-    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(AUTH_JSON,
-                                                                            scopes=SCOPE)  # type: ignore
+    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(AUTH_JSON, scopes=SCOPE)  # type: ignore
 
     return cred.create_delegated(CLIENT_EMAIL)
 
@@ -113,28 +113,27 @@ def make_project_body(project_body):
     """
     keys = list(project_body.keys())
     body = {}
-    if 'project_id' in keys:
-        body['projectId'] = project_body['project_id']
-    if 'parent_type' in keys and 'parent_id' in keys:
-        body['parent'] = {
-            'type': project_body['parent_type'],
-            'id': project_body['parent_id']
-        }
-    if 'name' in keys:
-        body['name'] = project_body['name']
-    if 'label_keys' in keys and 'label_values' in keys:
-        label_keys = argToList(project_body['label_keys'])
-        label_values = argToList(project_body['label_values'])
+    if "project_id" in keys:
+        body["projectId"] = project_body["project_id"]
+    if "parent_type" in keys and "parent_id" in keys:
+        body["parent"] = {"type": project_body["parent_type"], "id": project_body["parent_id"]}
+    if "name" in keys:
+        body["name"] = project_body["name"]
+    if "label_keys" in keys and "label_values" in keys:
+        label_keys = argToList(project_body["label_keys"])
+        label_values = argToList(project_body["label_values"])
         if len(label_keys) != len(label_values):
-            err_msg = 'Label attrs array and Label values array do not match'\
-                ' in length.\nThese arrays need to match in length because '\
-                'each string in label_keys is assigned the value of the '\
-                'string in the corresponding index in the label_values array.'
+            err_msg = (
+                "Label attrs array and Label values array do not match"
+                " in length.\nThese arrays need to match in length because "
+                "each string in label_keys is assigned the value of the "
+                "string in the corresponding index in the label_values array."
+            )
             return_error(err_msg)
         else:
-            body['labels'] = {}
+            body["labels"] = {}
             for lbl_key, lbl_val in zip(label_keys, label_values):
-                body['labels'][lbl_key] = lbl_val
+                body["labels"][lbl_key] = lbl_val
     return body
 
 
@@ -153,30 +152,30 @@ def poll_operation(operation):
     returns: (Project) response
         dict object representation of a Project Resource
     """
-    name = operation.get('name')
-    while not operation.get('done'):
+    name = operation.get("name")
+    while not operation.get("done"):
         # delay 1 second and then retry and see if the operation finished
         time.sleep(1)
         service = build_and_authenticate()
         # get the latest state of the long-running operation
         operation = service.operations().get(name=name).execute()
-    if not operation.get('error'):
-        return operation.get('response')
+    if not operation.get("error"):
+        return operation.get("response")
     else:
-        exc = operation.get('error')
-        err_code = exc.get('code')
-        err_msg = exc.get('message')
-        full_err_msg = "error code: {}\nerror message: {}".format(err_code, err_msg)
-        return_error(full_err_msg)
+        exc = operation.get("error")
+        err_code = exc.get("code")
+        err_msg = exc.get("message")
+        full_err_msg = f"error code: {err_code}\nerror message: {err_msg}"
+        return_error(full_err_msg)  # noqa: RET503
 
 
-''' MAIN FUNCTIONS '''
+""" MAIN FUNCTIONS """
 
 
 def test_module():
     """If the list_projects_command executes successfully then the test completed and returns 'ok'"""
     build_and_authenticate()
-    demisto.results('ok')
+    demisto.results("ok")
 
 
 def create_project(service, project_body):
@@ -218,28 +217,25 @@ def create_project_command(service):
     response = create_project(service, args)
     # Parse response into context
     context = {
-        'Name': response.get('name'),
-        'ID': response.get('projectId'),
-        'Number': response.get('projectNumber'),
-        'State': response.get('lifecycleState'),
-        'CreateTime': response.get('createTime'),
-        'Parent': {
-            'ID': response.get('parent').get('id'),
-            'Type': response.get('parent').get('type')
-        },
-        'Label': response.get('labels')
+        "Name": response.get("name"),
+        "ID": response.get("projectId"),
+        "Number": response.get("projectNumber"),
+        "State": response.get("lifecycleState"),
+        "CreateTime": response.get("createTime"),
+        "Parent": {"ID": response.get("parent").get("id"), "Type": response.get("parent").get("type")},
+        "Label": response.get("labels"),
     }
-    md = tableToMarkdown('Google Cloud Project Successfully Created', context)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': {
-            'GRM.Project(val.ID && val.ID === obj.ID)': context
+    md = tableToMarkdown("Google Cloud Project Successfully Created", context)
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": response,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": md,
+            "EntryContext": {"GRM.Project(val.ID && val.ID === obj.ID)": context},
         }
-    })
+    )
 
 
 def delete_project(service, project_id):
@@ -260,36 +256,33 @@ def delete_project_command(service):
     returns:
         Deleted project resource object
     """
-    project_id = demisto.args()['project_id']
+    project_id = demisto.args()["project_id"]
     response = delete_project(service, project_id)
     if not response:
         response = get_project(service, project_id)
         # Parse response into context
         context = {
-            'Name': response.get('name'),
-            'ID': response.get('projectId'),
-            'Number': response.get('projectNumber'),
-            'State': response.get('lifecycleState'),
-            'CreateTime': response.get('createTime'),
-            'Parent': {
-                'ID': response.get('parent').get('id'),
-                'Type': response.get('parent').get('type')
-            },
-            'Label': response.get('labels')
+            "Name": response.get("name"),
+            "ID": response.get("projectId"),
+            "Number": response.get("projectNumber"),
+            "State": response.get("lifecycleState"),
+            "CreateTime": response.get("createTime"),
+            "Parent": {"ID": response.get("parent").get("id"), "Type": response.get("parent").get("type")},
+            "Label": response.get("labels"),
         }
-        md = tableToMarkdown('Project State Successfully Set To DELETE_REQUESTED', context)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                'GRM.Project(val.ID && val.ID === obj.ID)': context
+        md = tableToMarkdown("Project State Successfully Set To DELETE_REQUESTED", context)
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "Contents": response,
+                "ContentsFormat": formats["json"],
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": md,
+                "EntryContext": {"GRM.Project(val.ID && val.ID === obj.ID)": context},
             }
-        })
+        )
     else:
-        return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+        return_error(f"Unexpected return object from {demisto.command()} execution. Results uncertain.")
 
 
 def undelete_project(service, project_id):
@@ -310,36 +303,33 @@ def undelete_project_command(service):
     returns:
         Restored project resource object
     """
-    project_id = demisto.args()['project_id']
+    project_id = demisto.args()["project_id"]
     response = undelete_project(service, project_id)
     if not response:
         response = get_project(service, project_id)
         # Parse response into context
         context = {
-            'Name': response.get('name'),
-            'ID': response.get('projectId'),
-            'Number': response.get('projectNumber'),
-            'State': response.get('lifecycleState'),
-            'CreateTime': response.get('createTime'),
-            'Parent': {
-                'ID': response.get('parent').get('id'),
-                'Type': response.get('parent').get('type')
-            },
-            'Label': response.get('labels')
+            "Name": response.get("name"),
+            "ID": response.get("projectId"),
+            "Number": response.get("projectNumber"),
+            "State": response.get("lifecycleState"),
+            "CreateTime": response.get("createTime"),
+            "Parent": {"ID": response.get("parent").get("id"), "Type": response.get("parent").get("type")},
+            "Label": response.get("labels"),
         }
-        md = tableToMarkdown('Project State Successfully Set To ACTIVE', context)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': md,
-            'EntryContext': {
-                'GRM.Project(val.ID && val.ID === obj.ID)': context
+        md = tableToMarkdown("Project State Successfully Set To ACTIVE", context)
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "Contents": response,
+                "ContentsFormat": formats["json"],
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": md,
+                "EntryContext": {"GRM.Project(val.ID && val.ID === obj.ID)": context},
             }
-        })
+        )
     else:
-        return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
+        return_error(f"Unexpected return object from {demisto.command()} execution. Results uncertain.")
 
 
 def get_project(service, project_id):
@@ -358,32 +348,29 @@ def get_project_command(service):
     returns:
         The project resource object specified by the project_id
     """
-    project_id = demisto.args().get('project_id')
+    project_id = demisto.args().get("project_id")
     response = get_project(service, project_id)
     # Parse response into context
     context = {
-        'Name': response.get('name'),
-        'ID': response.get('projectId'),
-        'Number': response.get('projectNumber'),
-        'State': response.get('lifecycleState'),
-        'CreateTime': response.get('createTime'),
-        'Parent': {
-            'ID': response.get('parent').get('id'),
-            'Type': response.get('parent').get('type')
-        },
-        'Label': response.get('labels')
+        "Name": response.get("name"),
+        "ID": response.get("projectId"),
+        "Number": response.get("projectNumber"),
+        "State": response.get("lifecycleState"),
+        "CreateTime": response.get("createTime"),
+        "Parent": {"ID": response.get("parent").get("id"), "Type": response.get("parent").get("type")},
+        "Label": response.get("labels"),
     }
-    md = tableToMarkdown('Details of Fetched Google Cloud Project', context)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': {
-            'GRM.Project(val.ID && val.ID === obj.ID)': context
+    md = tableToMarkdown("Details of Fetched Google Cloud Project", context)
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": response,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": md,
+            "EntryContext": {"GRM.Project(val.ID && val.ID === obj.ID)": context},
         }
-    })
+    )
 
 
 def list_projects(service, filter_list):
@@ -403,35 +390,30 @@ def list_projects_command(service):
     returns:
         Project resource objects that are visible to the user and satisfy the specified filter
     """
-    filter_list = demisto.args().get('filter') if 'filter' in demisto.args() else None
+    filter_list = demisto.args().get("filter") if "filter" in demisto.args() else None
     response = list_projects(service, filter_list)
     contexts = []
-    for project in response.get('projects', []):
+    for project in response.get("projects", []):
         # Parse project into context
         context = {
-            'Name': project.get('name'),
-            'ID': project.get('projectId'),
-            'Number': project.get('projectNumber'),
-            'State': project.get('lifecycleState'),
-            'CreateTime': project.get('createTime'),
-            'Parent': {
-                'ID': project.get('parent').get('id'),
-                'Type': project.get('parent').get('type')
-            },
-            'Label': project.get('labels')
+            "Name": project.get("name"),
+            "ID": project.get("projectId"),
+            "Number": project.get("projectNumber"),
+            "State": project.get("lifecycleState"),
+            "CreateTime": project.get("createTime"),
+            "Parent": {"ID": project.get("parent").get("id"), "Type": project.get("parent").get("type")},
+            "Label": project.get("labels"),
         }
         contexts.append(context)
-    title = "Projects Filtered by '{}'".format(filter_list) if filter_list else "All Projects"
+    title = f"Projects Filtered by '{filter_list}'" if filter_list else "All Projects"
     md = tableToMarkdown(title, contexts)
     entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': {
-            'GRM.Project(val.ID && val.ID === obj.ID)': contexts
-        }
+        "Type": entryTypes["note"],
+        "Contents": response,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": md,
+        "EntryContext": {"GRM.Project(val.ID && val.ID === obj.ID)": contexts},
     }
     demisto.results(entry)
 
@@ -468,34 +450,31 @@ def update_project_command(service):
     returns:
         The updated Project resource object
     """
-    project_id = demisto.args().get('project_id')
+    project_id = demisto.args().get("project_id")
     project_body = demisto.args()
     project_body = make_project_body(project_body)
     response = update_project(service, project_id, project_body)
     # Parse response into context
     context = {
-        'Name': response.get('name'),
-        'ID': response.get('projectId'),
-        'Number': response.get('projectNumber'),
-        'State': response.get('lifecycleState'),
-        'CreateTime': response.get('createTime'),
-        'Parent': {
-            'ID': response.get('parent').get('id'),
-            'Type': response.get('parent').get('type')
-        },
-        'Label': response.get('labels')
+        "Name": response.get("name"),
+        "ID": response.get("projectId"),
+        "Number": response.get("projectNumber"),
+        "State": response.get("lifecycleState"),
+        "CreateTime": response.get("createTime"),
+        "Parent": {"ID": response.get("parent").get("id"), "Type": response.get("parent").get("type")},
+        "Label": response.get("labels"),
     }
-    md = tableToMarkdown('Details of Updated Google Cloud Project', context)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': {
-            'GRM.Project(val.ID && val.ID === obj.ID)': context
+    md = tableToMarkdown("Details of Updated Google Cloud Project", context)
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": response,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": md,
+            "EntryContext": {"GRM.Project(val.ID && val.ID === obj.ID)": context},
         }
-    })
+    )
 
 
 def search_organizations(service, req_body):
@@ -527,9 +506,9 @@ def search_organizations_command(service):
     args = demisto.args()
     # make request body
     req_body = {
-        'pageSize': args.get('page_size') if 'page_size' in args else None,
-        'pageToken': args.get('page_token') if 'page_token' in args else None,
-        'filter': args.get('filter') if 'filter' in args else None
+        "pageSize": args.get("page_size") if "page_size" in args else None,
+        "pageToken": args.get("page_token") if "page_token" in args else None,
+        "filter": args.get("filter") if "filter" in args else None,
     }
 
     contexts = []
@@ -541,31 +520,27 @@ def search_organizations_command(service):
     while next_page:
         response = search_organizations(service, req_body)
         contents.append(response)
-        for organization in response.get('organizations', []):
+        for organization in response.get("organizations", []):
             # Parse organization into context
             context = {
-                'Name': organization.get('name'),
-                'State': organization.get('lifecycleState'),
-                'CreateTime': organization.get('creationTime'),
-                'Owner': {
-                    'CustomerID': organization.get('owner').get('directoryCustomerId')
-                },
+                "Name": organization.get("name"),
+                "State": organization.get("lifecycleState"),
+                "CreateTime": organization.get("creationTime"),
+                "Owner": {"CustomerID": organization.get("owner").get("directoryCustomerId")},
             }
             contexts.append(context)
-        if 'nextPageToken' not in response:
+        if "nextPageToken" not in response:
             next_page = False
         else:
-            req_body['pageToken'] = response['nextPageToken']
+            req_body["pageToken"] = response["nextPageToken"]
     md = tableToMarkdown("Organizations", contexts)
     entry = {
-        'Type': entryTypes['note'],
-        'Contents': contents,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': {
-            'GRM.Organization(val.Name && val.Name === obj.Name)': contexts
-        }
+        "Type": entryTypes["note"],
+        "Contents": contents,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": md,
+        "EntryContext": {"GRM.Organization(val.Name && val.Name === obj.Name)": contexts},
     }
     demisto.results(entry)
 
@@ -594,31 +569,29 @@ def get_organization_command(service):
     returns:
         The organization object with its associated fields
     """
-    name = demisto.args().get('name')
+    name = demisto.args().get("name")
     response = get_organization(service, name)
     # Parse response into context
     context = {
-        'Name': response.get('name'),
-        'State': response.get('lifecycleState'),
-        'CreateTime': response.get('creationTime'),
-        'Owner': {
-            'CustomerID': response.get('owner').get('directoryCustomerId')
-        },
+        "Name": response.get("name"),
+        "State": response.get("lifecycleState"),
+        "CreateTime": response.get("creationTime"),
+        "Owner": {"CustomerID": response.get("owner").get("directoryCustomerId")},
     }
     md = tableToMarkdown("Details of Fetched Organization", context)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
-        'EntryContext': {
-            'GRM.Organization(val.Name && val.Name === obj.Name)': context
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "Contents": response,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": md,
+            "EntryContext": {"GRM.Organization(val.Name && val.Name === obj.Name)": context},
         }
-    })
+    )
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():
@@ -634,11 +607,10 @@ def main():
         "grm-undelete-project": undelete_project_command,
     }
 
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
 
     try:
-
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration test button.
             test_module()
         elif demisto.command() in list(commands.keys()):
@@ -648,14 +620,13 @@ def main():
     except Exception as exc:
         # Output HttpError errors from googleapiclient to the warroom nicely
         if isinstance(exc, googleapiclient.errors.HttpError):
-            if exc.resp.get('content-type').startswith('application/json'):  # pylint: disable=no-member
-                err_json = json.loads(exc.content.decode('utf-8'))  # pylint: disable=no-member
-                error_code = dict_safe_get(err_json, ['error', 'code'])
-                error_msg = dict_safe_get(err_json, ['error', 'message'])
-                error_reason = dict_safe_get(err_json, ['error', 'errors', 0, 'reason'])
-                error_status = dict_safe_get(err_json, ['error', 'status'])
-                full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
-                                                                                   error_reason, error_status)
+            if exc.resp.get("content-type").startswith("application/json"):  # pylint: disable=no-member
+                err_json = json.loads(exc.content.decode("utf-8"))  # pylint: disable=no-member
+                error_code = dict_safe_get(err_json, ["error", "code"])
+                error_msg = dict_safe_get(err_json, ["error", "message"])
+                error_reason = dict_safe_get(err_json, ["error", "errors", 0, "reason"])
+                error_status = dict_safe_get(err_json, ["error", "status"])
+                full_err_msg = f"error code: {error_code}\n{error_msg}\nreason: {error_reason}\nstatus: {error_status}"
                 return_error(full_err_msg)
         else:
             return_error(str(exc))

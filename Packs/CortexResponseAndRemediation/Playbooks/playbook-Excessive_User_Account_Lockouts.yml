@@ -19,7 +19,7 @@ description: |-
   Investigation:
 
   - Analyzes the lockout event timestamps to detect patterns.
-  - Checks for related medium severity brute-force alerts in the incident.
+  - Checks for related medium severity brute-force alerts in the <-incident->.
   - Retrieves the Risk Score for the Caller Computer that caused the lockouts.
 
   Containment:
@@ -460,7 +460,7 @@ tasks:
       id: 8bd9e5e8-d9a9-4d99-8f3d-8a4e8661dd1e
       version: -1
       name: Check verdict - low severity alert
-      description: Checks if there are medium severity brute-force alerts in the incident, and if the lockouts seem to be the result of an automated process.
+      description: Checks if there are medium severity brute-force alerts in the <-incident->, and if the lockouts seem to be the result of an automated process.
       type: condition
       iscommand: false
       brand: ""
@@ -508,7 +508,7 @@ tasks:
       id: 94de6f92-b24f-47ce-8c6a-2b2bc2b3ddc5
       version: -1
       name: Check verdict - medium/high severity alert
-      description: Checks if the Caller Computer is risky, there are medium severity brute-force alerts in the incident, or if the lockouts seem to be the result of an automated process.
+      description: Checks if the Caller Computer is risky, there are medium severity brute-force alerts in the <-incident->, or if the lockouts seem to be the result of an automated process.
       type: condition
       iscommand: false
       brand: ""
@@ -1091,7 +1091,7 @@ tasks:
     task:
       id: 3979d50a-f78e-4979-8103-27797180092d
       version: -1
-      name: Search for suspicious brute force alerts in the incident
+      name: Search for suspicious brute force alerts in the <-incident->
       description: Searches for non-low severity alerts with the Brute Force MITRE technique (T1110) in the same incident, which may be related to the excessive lockouts.
       scriptName: SearchAlertsV2
       type: regular
@@ -1247,7 +1247,7 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 tests:
 - no tests
 fromversion: 8.8.0

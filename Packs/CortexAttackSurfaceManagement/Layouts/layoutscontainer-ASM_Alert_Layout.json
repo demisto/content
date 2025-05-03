@@ -513,5 +513,11 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": "A layout used for ASM alerts in XSIAM."
+    "description": "A layout used for ASM alerts in XSIAM.",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

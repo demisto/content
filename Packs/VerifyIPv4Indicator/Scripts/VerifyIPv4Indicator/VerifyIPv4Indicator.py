@@ -11,12 +11,12 @@ def is_valid_ipv4_address(address: str):
         return False
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
-        the_input = demisto.args().get('input')
+        the_input = demisto.args().get("input")
         the_input = argToList(the_input)
         entries_list = []
 
@@ -29,14 +29,14 @@ def main():
         if entries_list:
             return_results(entries_list)
         else:
-            return_results('')
+            return_results("")
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+        return_error(f"Failed to execute BaseScript. Error: {str(ex)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,8 +1,8 @@
-from unittest.mock import patch
 import json
+from unittest.mock import patch
 
 
-@patch('demistomock.executeCommand')
+@patch("demistomock.executeCommand")
 def test_get_threat_indicator_list_when_valid_response_is_returned(mock_execute_command):
     """
     Test get_threat_indicator_list when command execution is successfull.
@@ -13,9 +13,7 @@ def test_get_threat_indicator_list_when_valid_response_is_returned(mock_execute_
         mock_response = json.load(data)
 
     mock_execute_command.return_value = mock_response
-    args = {
-        'threat_value': 'd9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567'
-    }
+    args = {"threat_value": "d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567"}
     response = get_threat_indicator_list(args)
 
     assert response == mock_response

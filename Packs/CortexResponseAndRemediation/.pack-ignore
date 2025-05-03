@@ -1,6 +1,9 @@
 [file:playbook-Azure_AD_account_unlock_or_password_reset.yml]
 ignore=GR103
 
+[file:silent-playbook-First_Azure_AD_PowerShell_operation_for_a_user.yml]
+ignore=GR103
+
 [file:silent-playbook-Azure_AD_account_unlock_or_password_reset_Test.yml]
 ignore=GR103
 
@@ -39,6 +42,10 @@ ignore=GR103
 
 # GR103 fails on SearchAlertsv2
 [file:silent-playbook_Intense_SSO_failures_with_suspicious_characteristics.yml]
+ignore=GR103
+
+# GR103 fails on SearchAlertsv2
+[file:silent-playbook-Suspicious_user_access_to_multiple_resources_via_SSO.yml]
 ignore=GR103
 
 [known_words]

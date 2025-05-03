@@ -1,17 +1,56 @@
 import json
-from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_output, file_analysis_output, \
-    rha1_analytics_output, uri_statistics_output, url_report_output, imphash_similarity_output, classification_to_score, \
-    analyze_url_output, detonate_sample_output, yara_matches_feed_output, yara_retro_matches_feed_output, \
-    functional_similarity_output, uri_index_output, advanced_search_output, expression_search_output, \
-    sample_dynamic_analysis_results_output, certificate_analytics_output, reanalyze_sample_output, url_downloaded_files_output, \
-    url_latest_analyses_feed_output, url_analyses_feed_from_date_output, yara_ruleset_output, yara_retro_actions_output, \
-    format_proxy, domain_report_output, domain_downloaded_files_output, domain_urls_output, domain_to_ip_output, \
-    domain_related_domains_output, ip_report_output, ip_downloaded_files_output, ip_urls_output, ip_to_domain_output, \
-    network_reputation_output, detonate_url_output, url_dynamic_analysis_results_output, customer_usage_data_output
+
 import demistomock as demisto
 import pytest
+from ReversingLabsTitaniumCloudv2 import (
+    advanced_search_output,
+    analyze_url_output,
+    av_scanners_output,
+    certificate_analytics_output,
+    classification_to_score,
+    customer_usage_data_output,
+    detonate_sample_output,
+    detonate_url_output,
+    domain_downloaded_files_output,
+    domain_related_domains_output,
+    domain_report_output,
+    domain_to_ip_output,
+    domain_urls_output,
+    expression_search_output,
+    file_analysis_output,
+    file_reputation_output,
+    format_proxy,
+    functional_similarity_output,
+    imphash_similarity_output,
+    ip_downloaded_files_output,
+    ip_report_output,
+    ip_to_domain_output,
+    ip_urls_output,
+    network_reputation_output,
+    reanalyze_sample_output,
+    rha1_analytics_output,
+    sample_dynamic_analysis_results_output,
+    uri_index_output,
+    uri_statistics_output,
+    url_analyses_feed_from_date_output,
+    url_downloaded_files_output,
+    url_dynamic_analysis_results_output,
+    url_latest_analyses_feed_output,
+    url_report_output,
+    yara_matches_feed_output,
+    yara_retro_actions_output,
+    yara_retro_matches_feed_output,
+    yara_ruleset_output,
+    ip_command,
+    file_command,
+    domain_command,
+    url_command
+)
+from CommonServerPython import *
+from ReversingLabs.SDK.helper import WrongInputError
 
-INTEGRATION_NAME = 'ReversingLabs TitaniumCloud v2'
+
+INTEGRATION_NAME = "ReversingLabs TitaniumCloud v2"
 test_hash = "21841b32c6165b27dddbd4d6eb3a672defe54271"
 url = "google.com"
 CLASSIFICATION = "MALICIOUS"
@@ -22,7 +61,7 @@ thumbprint = "A481635184832F09BC3D3921A335634466C4C6FC714D8BBD89F65E827E5AF1B1"
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
+    mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationBrand": INTEGRATION_NAME}})
 
 
 def load_json(file_path):
@@ -226,11 +265,7 @@ def test_yara_retro_output_status():
 
 
 def test_format_proxy():
-    formatted_correctly = format_proxy(
-        addr="https://proxy-address.com",
-        username="user1",
-        password="pass1"
-    )
+    formatted_correctly = format_proxy(addr="https://proxy-address.com", username="user1", password="pass1")
 
     correct_expected = "https://user1:pass1@proxy-address.com"
 
@@ -322,9 +357,9 @@ def test_network_reputation_output():
     test_report = load_json("test_data/network_reputation.json")
     test_context = load_json("test_data/network_reputation_context.json")
 
-    result = network_reputation_output(test_report,
-                                       ["http://43.138.221.139/jquery-3.3.1.min.js", "61.253.71.111", "bloom-artists.com"]
-                                       )
+    result = network_reputation_output(
+        test_report, ["http://43.138.221.139/jquery-3.3.1.min.js", "61.253.71.111", "bloom-artists.com"]
+    )
 
     assert result.to_context() == test_context
 
@@ -361,8 +396,7 @@ def test_url_dynamic_analysis_results_output():
     test_context = load_json("test_data/url_dynamic_context.json")
 
     result, _ = url_dynamic_analysis_results_output(
-        response_json=test_report,
-        passed_url="https://www.imdb.com/title/tt7740510/reviews?ref_=tt_urv"
+        response_json=test_report, passed_url="https://www.imdb.com/title/tt7740510/reviews?ref_=tt_urv"
     )
 
     assert result.to_context() == test_context
@@ -373,3 +407,81 @@ def test_customer_data_output():
     result = customer_usage_data_output(data_type="MONTHLY USAGE", whole_company=False, response_json=report)
 
     assert result.to_context().get("Contents").get("customer_usage_data").get("rl").get("month") == "2024-06"
+
+
+DEFAULT_PARAMS = {
+    "base": "data.reversinglabs.com",
+    "credentials": {
+        "password": "somepassword",
+        "identifier": "username"
+    },
+    "reliability": "C - Fairly reliable",
+    "verify_certs": "true"
+}
+
+
+
+@pytest.fixture
+def mock_demisto(mocker):
+    mocker.patch.object(demisto, 'getArg', return_value='8.8.8.8')
+    mocker.patch.object(demisto, 'args', return_value={'ip': '8.8.8.8'})
+    results = []
+    mocker.patch.object(demisto, 'results', side_effect=lambda r: results.append(r))
+    return results
+
+
+@pytest.fixture
+def mock_ip_response():
+    return {
+        "rl": {
+            "classification": "malicious",
+            "downloaded_files_statistics": {
+                "known": 1,
+                "malicious": 2,
+                "suspicious": 0,
+                "unknown": 0,
+                "total": 3
+            },
+            "third_party_reputations": {
+                "statistics": {
+                    "clean": 0,
+                    "malicious": 2,
+                    "undetected": 1,
+                    "total": 3
+                },
+                "sources": [
+                    {"source": "VendorA", "detection": "malicious"},
+                    {"source": "VendorB", "detection": "clean"}
+                ]
+            }
+        }
+    }
+
+
+def test_ip_command_success(mocker, mock_ip_response, mock_demisto):
+    mock_ip_ti = mocker.patch('ReversingLabsTitaniumCloudv2.IPThreatIntelligence')
+    instance = mock_ip_ti.return_value
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = mock_ip_response
+    instance.get_ip_report.return_value = mock_response
+
+    ip_command()
+
+    assert mock_demisto
+    output = mock_demisto[0]
+    assert isinstance(output, dict)
+
+
+def test_domain_command():
+    with pytest.raises(WrongInputError):
+        domain_command()
+
+
+def test_url_command():
+    with pytest.raises(WrongInputError):
+        url_command()
+
+
+def test_file_command():
+    with pytest.raises(WrongInputError):
+        file_command()

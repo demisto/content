@@ -7,15 +7,14 @@
         "AUTO_UPDATE_DOCKER_REVIEWER": "The GitHub username for auto-update-docker PRs reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
-        "sapirshuker",
-        "ilaredo",
-        "inbalapt1"
+        "mmhw",
+        "MosheEichler"
     ],
-    "CONTRIBUTION_TL": "eyalpalo",
+    "CONTRIBUTION_TL": "DeanArbel",
     "CONTRIBUTION_SECURITY_REVIEWER": ["karinafishman"],
     "ON_CALL_DEVS": [
-        "mwienfeld",
-        "okarkkatz"
+        "sfainberg",
+        "skroizer"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1",
