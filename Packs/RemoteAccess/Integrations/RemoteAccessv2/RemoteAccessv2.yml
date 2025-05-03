@@ -149,7 +149,7 @@ script:
     - contextPath: File.Type
       description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
-  dockerimage: demisto/netmiko:1.0.0.114712
+  dockerimage: demisto/netmiko:1.0.0.2034736
   runonce: false
   script: '-'
   subtype: python3
