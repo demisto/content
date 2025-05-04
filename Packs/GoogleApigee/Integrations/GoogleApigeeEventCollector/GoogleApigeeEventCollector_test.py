@@ -11,6 +11,12 @@ def mock_client(mocker):
     client = Client(base_url='https://test.com', verify=False, proxy=False, org_name='org', username='user',
                     password='password', zone='zone')
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    mocker.patch.object(Client, 'generte_data_with_username', return_value={'grant_type': 'password', 'username': 'user',
+                                                                         'password': 'password',})
+    mocker.patch.object(Client, 'generte_data_with_refresh_token', return_value={'grant_type': 'refresh_token',
+                                                                                 'refresh_token': 'valid'})
+    mocker.patch.object(Client, '_http_request', return_value={'access_token': 'access_token', 'expires_in': 3600,
+                                                               'refresh_token': 'refresh_token'})
     return client
 
 
@@ -187,3 +193,48 @@ def test_test_module(requests_mock, mocker):
 def test_is_token_valid(mocker, scenario, token_initiate_time, token_expiration_seconds, current_time, result):
     is_token_valid = Client.is_token_valid(token_initiate_time, token_expiration_seconds, current_time)
     assert is_token_valid == result, f'{scenario} - does not match expected value'
+
+def test_get_token_with_username(mocker):
+    client = mock_client(mocker)
+    spy_http = mocker.spy(Client, '_http_request')
+    access_token, expires_in, refresh_token = client.get_token_request()
+    assert access_token == 'access_token'
+    assert expires_in == 3600
+    assert refresh_token == 'refresh_token'
+    args = spy_http.call_args
+    assert args[0] == ('POST',)
+    assert args[1] == {'full_url': 'https://zone.login.apigee.com/oauth/token',
+                       'url_suffix': '/oauth/token',
+                       'data': {'grant_type': 'password', 'username': 'user', 'password': 'password'},
+                       'headers': {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                                   'Accept': 'application/json;charset=utf-8',
+                                   'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'}}
+    
+def test_get_token_with_valid_refresh_token(mocker):
+    client = mock_client(mocker)
+    spy_http = mocker.spy(Client, '_http_request')
+    access_token, expires_in, refresh_token = client.get_token_request(refresh_token = 'token')
+    assert access_token == 'access_token'
+    assert expires_in == 3600
+    assert refresh_token == 'refresh_token'
+    
+    args = spy_http.call_args
+    assert args[0] == ('POST',)
+    assert args[1] == {'full_url': 'https://zone.login.apigee.com/oauth/token',
+                       'url_suffix': '/oauth/token',
+                       'data': {'grant_type': 'refresh_token', 'refresh_token': 'valid'},
+                       'headers': {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                                   'Accept': 'application/json;charset=utf-8',
+                                   'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'}}
+
+def test_get_token_with_invalid_refresh_token(mocker):
+    client = mock_client(mocker)
+    
+    http_mock = mocker.patch.object(Client, '_http_request', side_effect=[Exception('Invalid refresh token'),
+                                                                          {'access_token': 'access_token', 'expires_in': 3600,
+                                                                           'refresh_token': 'refresh_token'}])
+    access_token, expires_in, refresh_token = client.get_token_request(refresh_token='refresh')
+    assert access_token == 'access_token'
+    assert expires_in == 3600
+    assert refresh_token == 'refresh_token'
+    assert http_mock.call_count == 2
