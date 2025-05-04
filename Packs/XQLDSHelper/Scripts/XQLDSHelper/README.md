@@ -1429,7 +1429,7 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
  - ${incident.&lt;incident-field&gt;}
 
 In addition, it supports extended variables that start with `.`.
-
+<!-- markdownlint-disable MD005 -->
  - ${.recordset}
    * It refers to the record set retrieved by the XQL query.
 
@@ -1451,6 +1451,7 @@ In addition, it supports extended variables that start with `.`.
  - ${.query.result_url}
    * It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
 
+<!-- markdownlint-enable MD005 -->
 
 ## Caching
 
