@@ -2147,6 +2147,7 @@ tasks:
       version: -1
       name: Does ReadQRCode support the image?
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
