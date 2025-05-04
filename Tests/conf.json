@@ -6247,7 +6247,7 @@
         "Campaign"
     ],
     "selected_nightly_tpb":
-    ["CortexAttackSurfaceManagement_Test",
+    ["CiscoESA_dictionary_commands_tpb",
     "Grafana-Test"
     ],
     "parallel_integrations": [
