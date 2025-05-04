@@ -104,7 +104,7 @@ DEVICE_OUTPUT_TO_XSOAR_CONTEXT_PATH = {
 }
 
 SEIM_EVENTS_PAGE_SIZE = 1000
-# CLIENT_V3_JWS_VALIDATION_URL_SUFFIX = "/jws/validate"
+CLIENT_V3_JWS_VALIDATION_URL_SUFFIX = "/jws/validate"
 VENDOR = "Absolute"
 PRODUCT = "Secure Endpoint"
 HEADERS_V3: dict = {"content-type": "text/plain"}
@@ -138,7 +138,7 @@ class ClientV3(BaseClient):
             bytes: The prepared signed HTTP request data.
         """
         if payload:
-            request_payload_data = {"data": json.dumps(payload)}
+            request_payload_data = {"data": payload}
         else:
             request_payload_data = {"data": {}}
 
@@ -184,9 +184,9 @@ class ClientV3(BaseClient):
         """
         signed = self.prepare_request(method=method, url_suffix=url_suffix, query_string=query_string, payload=payload)
         return self._http_request(
-            method=method,
+            method="POST",
             data=signed,
-            url_suffix=url_suffix,
+            full_url=f"{self._base_url}{CLIENT_V3_JWS_VALIDATION_URL_SUFFIX}",
             return_empty_response=True,
             ok_codes=ok_codes,
             resp_type=resp_type,
