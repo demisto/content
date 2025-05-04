@@ -654,37 +654,38 @@ class InfoBloxNIOSClient(BaseClient):
         Get the network information.
 
         Args:
-        - `pattern` (``str | None``): Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet.
-        - `additional_return_fields` (``Optional[str]``): Comma-separated list of additional fields to return.
-        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
-        - `max_results` (``int``): maximum number of results to return.
+        - `pattern` (``str | None``): Filter DNS Entries by Name.
+        - `max_results` (``int``): maximum number of results to return, 0 for unlimited.
 
         Returns:
         - Response JSON
         """
-        if max_results == 0:
-            paging = True
-            max_results = 1000
-        else:
-            paging = False
         request_params = assign_params(_max_results=max_results)
-
+        request_params["_page_id"] = None
+        if max_results == 0:
+            request_params["_paging"] = 1
+            request_params["_max_results"] = 1000
+        else:
+            request_params["_paging"] = None
         if pattern:
-            request_params["network~"] = pattern
-        if paging:
+            request_params["name~"] = pattern
+        if request_params["_paging"]:
             result = []
             while True:
                 resp = self._http_request("GET", f"record:{record_type}", params=request_params)
-                if "_page_id" in resp:
-                    request_params['_page_id'] = resp['next_page_id']
                 if len(resp["result"]) > 0:
                     result.extend(resp["result"])
+                else:
+                    break
+                if "next_page_id" in resp:
+                    request_params['_page_id'] = resp['next_page_id']
                 else:
                     break
             return result
 
         else:
-            return self._http_request("GET", f"record:{record_type}", params=request_params)["result"]
+            resp = self._http_request("GET", f"record:{record_type}", params=request_params)
+            return resp["result"]
 
 
 """ HELPER FUNCTIONS """
@@ -1663,8 +1664,8 @@ def get_dns_entries_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
         hr = "No dns entries found"
         context = {}
     else:
-        #hr = tableToMarkdown("DNS entries", output)
-        hr = dns_entries
+        hr = tableToMarkdown("DNS entries", dns_entries)
+        #hr = dns_entries
         context = {f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_DNS_ENTRIES_CONTEXT_KEY}": dns_entries}
 
     return hr, context, raw_response
@@ -1712,7 +1713,6 @@ def main():  # pragma: no cover
         f"{INTEGRATION_COMMAND_NAME}-list-network-info": get_network_info_command,
         f"{INTEGRATION_COMMAND_NAME}-list-dns-entries": get_dns_entries_command,
     }
-    return_outputs(*commands[command](client, demisto.args()))
     try:
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
