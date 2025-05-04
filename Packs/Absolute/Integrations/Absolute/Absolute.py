@@ -154,7 +154,7 @@ class ClientV3(BaseClient):
 
         demisto.debug(f"ABS: Making JWS token with headers: {headers}, request_payload_data: {request_payload_data}")
 
-        jwt.encode(request_payload_data, self._secret_key, algorithm="HS256", headers=headers)
+        return jwt.encode(request_payload_data, self._secret_key, algorithm="HS256", headers=headers)
 
     def prepare_query_string_for_canonical_request(self, query_string: str) -> str:
         """
