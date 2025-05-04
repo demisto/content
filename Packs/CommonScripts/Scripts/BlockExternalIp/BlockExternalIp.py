@@ -659,7 +659,7 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
         response=push_cr,
         continue_to_poll=continue_to_poll,
         partial_result=CommandResults(
-            readable_output=f'Waiting for Job-ID {job_id} to finish push the changes...'
+            readable_output=f'Waiting for Job-ID {job_id} to finish pushing the changes...'
         )
     )
 
@@ -702,7 +702,7 @@ def pan_os_push_status(args: dict, responses: list):
         response=push_cr,
         continue_to_poll=continue_to_poll,
         partial_result=CommandResults(
-            readable_output=f'Waiting for Job-ID {push_job_id} to finish push the changes...'
+            readable_output=f'Waiting for Job-ID {push_job_id} to finish pushing the changes...'
         )
     )
 
