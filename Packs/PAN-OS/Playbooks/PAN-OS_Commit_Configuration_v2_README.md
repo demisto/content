@@ -29,7 +29,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| device-group |  |  | Optional |
+| device-group | The device group to work on. Exists only in panorama. |  | Optional |
 
 ## Playbook Outputs
 

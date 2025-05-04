@@ -615,7 +615,7 @@ inputs:
 - key: device-group
   value: {}
   required: false
-  description: ""
+  description: "The device group to work on. Exists only in panorama."
   playbookInputQuery:
 outputs:
 - contextPath: Panorama.Commit.JobID
