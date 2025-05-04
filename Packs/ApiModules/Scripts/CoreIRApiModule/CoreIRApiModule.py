@@ -3198,7 +3198,7 @@ def get_scripts_command(client: CoreClient, args: Dict[str, str]) -> tuple[str, 
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk],
     )
-    scripts = copy.deepcopy(result.get("scripts")[offset : (offset + limit)])  # type: ignore
+    scripts = copy.deepcopy(result.get("scripts")[offset: (offset + limit)])  # type: ignore
     for script in scripts:
         timestamp = script.get("modification_date")
         script["modification_date_timestamp"] = timestamp
