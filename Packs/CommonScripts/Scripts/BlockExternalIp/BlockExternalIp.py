@@ -159,11 +159,13 @@ class PanOs:
                 command_hr = entry.get('HumanReadable')
                 message = entry.get('Contents')
                 entry_type = entry.get('Type')
+                metadata = entry.get('Metadata')
                 demisto.debug(f"got {entry_type=} , {command_hr=} , {message=}")
                 current_new_res.append({
                     'HumanReadable': command_hr,
                     'Contents': message,
-                    'Type': entry_type
+                    'Type': entry_type,
+                    'Metadata': metadata
                 })
             sanitize_responses.append(current_new_res)
         demisto.debug(f"{len(sanitize_responses)=}, {len(self.responses)=}")
@@ -471,21 +473,17 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
             demisto.debug(f"BEI: in failure case, creating context {failure_message=}")
             context.append({
                 "IP": ip,
-                "results": {
-                    "Message": failure_message,
-                    "result": "Failed",
-                    "Brand": used_integration,
-                }
+                "Message": failure_message,
+                "result": "Failed",
+                "Brand": used_integration,
             })
         else:
             demisto.debug("BEI: in a success case, creating context")
             context.append({
                 "IP": ip,
-                "results": {
-                    "Message": f"created_rule_name:{rule_name}" if rule_name else '',
-                    "Result": "OK",
-                    "Brand": used_integration,
-                }
+                "Message": "External IP was blocked successfully",
+                "Result": "Success",
+                "Brand": used_integration,
             })
     return context
 
@@ -510,11 +508,11 @@ def prepare_context_and_hr_multiple_executions(responses: list[list[dict]], verb
     for res in responses:
         for entry in res:
             command_hr = entry.get('HumanReadable')
-            message = entry.get('Contents', '')
+            message = f"{used_integration}: {entry.get('Contents', '')}"
             demisto.debug(f"In prepare_context_and_hr_multiple_executions {command_hr=} {message=}")
             if command_hr and command_hr != str(None):
                 demisto.debug(f"BEI: The command has {verbose=}, adding {command_hr=}")
-                results.append(CommandResults(readable_output=command_hr))
+                results.append(CommandResults(readable_output=f"{used_integration}:\n{command_hr}"))
             elif is_error(entry):
                 demisto.debug(f"A failure was found {message=}")
                 failed_messages.append(message)
@@ -565,6 +563,8 @@ def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
     Returns:
         The list of brands that were executed in previous runs and a set of the brands that should be executed in the current run.
     """
+    if "Panorama" not in brands_to_run:
+        return [], set(brands_to_run)
     incident_context = demisto.context()
     executed_brands = incident_context.get('executed_brands', '')
     executed_brands = ast.literal_eval(executed_brands) if executed_brands else []
@@ -901,8 +901,9 @@ def main():  # pragma: no cover
             demisto.debug(f"Updating the executed_brands {executed_brands=}")
             demisto.setContext('executed_brands', str(executed_brands))
         else:
-            demisto.debug("Not in a polling mode, initializing the executed_brands")
-            demisto.setContext('executed_brands', '')
+            if "Panorama" in brands_to_run:
+                demisto.debug("Not in a polling mode, initializing the executed_brands")
+                demisto.setContext('executed_brands', '')
         demisto.debug(f"returning at the end of main(), {results=}")
         return_results(results)
 
