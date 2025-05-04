@@ -11,7 +11,7 @@
         "MosheEichler"
     ],
     "CONTRIBUTION_TL": "DeanArbel",
-    "CONTRIBUTION_SECURITY_REVIEWER": ["karinafishman"],
+    "CONTRIBUTION_SECURITY_REVIEWER": [""],
     "ON_CALL_DEVS": [
         "sfainberg",
         "skroizer"
