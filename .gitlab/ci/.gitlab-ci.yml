@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: ip-test_corepacks_lock_for_platform
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: ip-test_corepacks_lock_for_platform
     project: "${CI_PROJECT_NAMESPACE}/infra"
