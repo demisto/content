@@ -707,7 +707,7 @@ There is no context output for this command.
 ### msgraph-user-tap-policy-delete
 
 ***
-This command will delete a specific Temporary Access Pass policy.
+Deletes a specific TAP policy.
 
 #### Base Command
 
@@ -717,7 +717,7 @@ This command will delete a specific Temporary Access Pass policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID. | Required | 
+| user_id | The Azure AD user ID. | Required | 
 | policy_id | Policy ID. | Required | 
 
 #### Context Output
@@ -730,8 +730,9 @@ There is no context output for this command.
 ### msgraph-user-tap-policy-create
 
 ***
-Create a new temporaryAccessPassAuthenticationMethod object on a user. 
-A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
+Create a new TAP policy for a user.
+During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
+A user can only have one Temporary Access Pass that's usable within its specified lifetime.  
 
 #### Base Command
 
@@ -741,11 +742,11 @@ A user can only have one Temporary Access Pass that's usable within its specifie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID. | Required | 
-| zip_password | Password for the Zip file. | Required | 
-| lifetime_in_minutes | Lifetime in minutes. Default is 60. | Optional | 
-| is_usable_once | Is useable only once. Possible values are: true, false. | Optional | 
-| start_time | Start time - The start time for the Temporary Access Pass. <br/>The start time can be specified in various formats, such as "now", "in 2 days", etc.<br/>Also a valid start time can be an ISO 8601 date-time string in the format "YYYY-MM-DDThh:mm:ssZ". Default is now. | Optional | 
+| user_id | The Azure AD user ID. | Required | 
+| zip_password | A password for the password-protected zip file that will include the password of the new TAP. | Required | 
+| lifetime_in_minutes | The duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days). Default is 60. | Optional | 
+| is_usable_once | Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. <br/>A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   . Possible values are: true, false. | Optional | 
+| start_time | The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",<br/>for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days". Default is now. | Optional | 
 
 #### Context Output
 
@@ -765,8 +766,8 @@ A user can only have one Temporary Access Pass that's usable within its specifie
 ### msgraph-user-tap-policy-list
 
 ***
-This command will only return a single object in the collection 
-as a user can have only one Temporary Access Pass method.
+Lists all TAP policies for a user.
+This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
 
 #### Base Command
 
@@ -776,7 +777,7 @@ as a user can have only one Temporary Access Pass method.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User ID. | Required | 
+| user_id | The Azure AD user ID. | Required | 
 
 #### Context Output
 
