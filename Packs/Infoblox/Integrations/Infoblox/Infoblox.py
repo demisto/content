@@ -656,7 +656,10 @@ class InfoBloxNIOSClient(BaseClient):
         Get the network information.
 
         Args:
-        - `pattern` (``str | None``): Filter DNS Entries by Name.
+        - `name_search` (``str | None``): Filter DNS Entries by Name.
+        - `ip4_search` (``str | None``): Filter DNS Entries by IPv4.
+        - `ip6_search` (``str | None``): Filter DNS Entries by IPv6.
+        - `record_type` (``str | None``): Record Type to list e.g. "a", "aaaa", "cname"
         - `max_results` (``int``): maximum number of results to return, 0 for unlimited.
 
         Returns:
@@ -1655,8 +1658,6 @@ def get_dns_entries_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
     ip4_search = args.get("ip4_search")
     ip6_search = args.get("ip6_search")
     max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
-    # additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
-    # extended_attributes = args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
 
     record_types = list(record_type.lower().split(","))
     dns_entries = []
@@ -1666,22 +1667,19 @@ def get_dns_entries_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
             ip4_search=ip4_search,
             ip6_search=ip6_search,
             record_type=record_type,
-            #additional_return_fields=additional_return_fields,
-            #extended_attributes=extended_attributes,
             max_results=max_results,
         )
         dns_entries.extend(raw_response)
 
-    # if "Error" in raw_response:
-    #    msg = raw_response.get("text")
-    #    raise DemistoException(f"Error retrieving host records: {msg}", res=raw_response)
+    if "Error" in raw_response:
+       msg = raw_response.get("text")
+       raise DemistoException(f"Error retrieving host records: {msg}", res=raw_response)
 
     if not dns_entries:
         hr = "No dns entries found"
         context = {}
     else:
         hr = tableToMarkdown("DNS entries", dns_entries)
-        #hr = dns_entries
         context = {f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_DNS_ENTRIES_CONTEXT_KEY}": dns_entries}
 
     return hr, context, raw_response
