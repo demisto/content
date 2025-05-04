@@ -10,6 +10,7 @@ from CiscoAppDynamics import (
     main,
     AUDIT,
     HEALTH_EVENT,
+    DATE_FORMAT
 )
 
 
@@ -51,6 +52,8 @@ def test_create_access_token(client:Client):
     assert client.token == "fake-token"
     assert client.token_expiry > datetime.now(UTC)
     
+    
+    
 @pytest.mark.parametrize("token, expiry_offset_minutes, should_create_new", [
     (None, None, True),
     ("valid-token", 10, False),
@@ -82,6 +85,32 @@ def test_get_valid_token(client, mocker, token, expiry_offset_minutes, should_cr
     else:
         mock_create.assert_not_called()
         assert result_token == token
+        
+
+
+def test_error_creating_token(requests_mock, mocker):
+    """
+    Given
+      - The auth (token) endpoint returns 401 Unauthorized.
+    When
+      - the user runs `!test-module`.
+    Then
+      - main() should catch that and invoke return_error with the 401 message.
+    """
+    mocker.patch.object(CiscoAppDynamics.demisto, 'command', return_value='test-module')
+    mocker.patch.object(CiscoAppDynamics.demisto, 'params', return_value={
+        'url': 'https://example.com',
+    })
+
+    return_error_mock = mocker.patch('CiscoAppDynamics.return_error')
+
+    auth_url = 'https://example.com/controller/api/oauth/access_token'
+    requests_mock.post(auth_url, status_code=401, json={'message': 'Unauthorized'})
+
+    main()
+
+    return_error_mock.assert_called_once()
+
     
 
 @pytest.mark.parametrize("api_response, expected_count", [
@@ -101,6 +130,10 @@ def test_get_audit_logs_various_cases(client, mocker, api_response, expected_cou
     """
     Given
         - get_audit_logs returns different sized lists via _authorized_request.
+        Case:
+        1. API return more then the max_audit_fetch.
+        2. API return less then the max_audit_fetch.
+        3. API return no logs.
     When
         - get_audit_logs is called.
     Then
@@ -115,6 +148,41 @@ def test_get_audit_logs_various_cases(client, mocker, api_response, expected_cou
     assert len(events) == expected_count
 
 
+
+
+@pytest.mark.parametrize("start_delta_hours, expected_start_delta", [
+    (12, 12),       # Within 24h, unchanged
+    (24, 24),       # Exactly 24h, unchanged
+    (30, 24),       # More than 24h, clamped to 24
+])
+def test_get_audit_logs_respects_24h_limit(client,start_delta_hours, expected_start_delta, mocker):
+    """
+    Given
+        - The start time is more/less/equal than 24 hours before the end time.
+    When
+        - get_audit_logs is called.
+    Then
+        - The start time is clamped to maximum 24 hours before the end time.
+        - The API call to _authorized_request uses the corrected time window.
+    """
+    end_dt = datetime(2025, 5, 4, 12, 0, 0, tzinfo=UTC)
+    original_start_dt = end_dt - timedelta(hours=start_delta_hours)
+    expected_start_dt = end_dt - timedelta(hours=expected_start_delta)
+
+    mocker.patch.object(client, "_authorized_request", return_value=[{"dummy": "event"}])
+
+    client.get_audit_logs(original_start_dt, end_dt)
+
+   # Assert
+    expected_params = {
+        "startTime": expected_start_dt.strftime(DATE_FORMAT)[:-3] + 'Z',
+        "endTime": end_dt.strftime(DATE_FORMAT)[:-3] + 'Z'
+    }
+
+    client._authorized_request.assert_called_once_with(
+        url_suffix="/controller/ControllerAuditHistory",
+        params=expected_params
+    )
 
 
 @pytest.mark.parametrize("api_response, expected_count", [
@@ -135,6 +203,10 @@ def test_get_health_events_various_cases(client, mocker, api_response, expected_
     """
     Given
         - get_health_events returns different sized lists via _authorized_request.
+        Case:
+        1. API return more then the max_healthrule_fetch.
+        2. API return less then the max_healthrule_fetch.
+        3. API return no logs.
     When
         - get_health_events is invoked with start and end datetimes.
     Then
@@ -156,9 +228,8 @@ def test_get_health_events_multi_calls(client, mocker):
     Given
         - get_health_events returns HEALTH_RULE_API_LIMIT events via _authorized_request every time.
     When
-        - get_health_events is invoked and call _authorized_request.
-        - Total events returned > max_healthrule_fetch.
-        - API response return the maximum number of events he can.
+        - We need to fetch multi time using the API because more events than the the API can return
+        happened and less then the total we made.
     Then
         - Returns max_healthrule_fetch events.
         - Call _authorized_request twice.
@@ -247,29 +318,6 @@ def test_create_empty_last_run():
     assert last_run["Healthrule Violations Events"] == start_time
     
 
-
-def test_error_creating_token(requests_mock, mocker):
-    """
-    Given
-      - The auth (token) endpoint returns 401 Unauthorized.
-    When
-      - the user runs `!test-module`.
-    Then
-      - main() should catch that and invoke return_error with the 401 message.
-    """
-    mocker.patch.object(CiscoAppDynamics.demisto, 'command', return_value='test-module')
-    mocker.patch.object(CiscoAppDynamics.demisto, 'params', return_value={
-        'url': 'https://example.com',
-    })
-
-    return_error_mock = mocker.patch('CiscoAppDynamics.return_error')
-
-    auth_url = 'https://example.com/controller/api/oauth/access_token'
-    requests_mock.post(auth_url, status_code=401, json={'message': 'Unauthorized'})
-
-    main()
-
-    return_error_mock.assert_called_once()
 
 
 @pytest.mark.parametrize("type_to_fetch, excepted_url", [

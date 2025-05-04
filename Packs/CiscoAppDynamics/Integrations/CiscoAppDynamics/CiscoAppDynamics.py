@@ -112,7 +112,9 @@ class Client(BaseClient):
     def get_audit_logs(self, start_dt: datetime, end_dt: datetime) -> list[dict]:
         """
         Fetches audit-history events.
-        Precondition: end_dt - start_dt <= 24 hours (API limits).
+        If start_dt is more than 24 hours before end_dt, it will be adjusted to be exactly 24 hours before end_dt.
+        If start_dt bigger or equal to end_dt return empty list.
+        The API limit is 24 hours time interval.
         Args:
             start_dt (datetime): start time.
             end_dt (datetime):   end time.
@@ -120,6 +122,15 @@ class Client(BaseClient):
         Returns:
             List[Dict]: JSON-decoded list of audit events.
         """
+        max_delta = timedelta(hours=24)
+        if end_dt - start_dt > max_delta:
+            demisto.debug("Start time is more than 24 hours before end time. Adjusting start time to end time minus 24 hours.")
+            start_dt = end_dt - max_delta
+        
+        if start_dt >= end_dt:
+            demisto.debug("Start time is bigger than or equal to end time")
+            return []
+
         params = {
             "startTime": start_dt.strftime(DATE_FORMAT)[:-3] + 'Z',
             "endTime": end_dt.strftime(DATE_FORMAT)[:-3] + 'Z'
@@ -173,7 +184,7 @@ def get_max_event_time(
 ) -> datetime:
     """
     Returns the maximum event time for the given batch.
-    pre-condition: events not empty.
+    Pre-condition: events not empty.
     based on log_type.
     Args:
         events:           List of event dicts.
