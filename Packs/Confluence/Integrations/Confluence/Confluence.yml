@@ -16,6 +16,11 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Personal Access Token
+  name: pat
+  defaultvalue: "false"
+  type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
@@ -138,6 +143,43 @@ script:
       description: Content body.
       type: String
     description: Returns Confluence content by space key and title.
+  - name: confluence-get-page-as-pdf
+    arguments:
+    - name: pageid
+      required: true
+      description: ID of the Page to download as PDF.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: The sample name.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: War Room entry ID of the file.
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: File.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
+    description: Returns Confluence Page as PDF by PageID.
   - name: confluence-delete-content
     arguments:
     - name: id
