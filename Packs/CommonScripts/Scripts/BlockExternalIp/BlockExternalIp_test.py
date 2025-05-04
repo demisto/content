@@ -62,20 +62,13 @@ def test_create_final_context_success():
     used_integration = 'FortiGate'
     ip_list = ['1.1.1.1', '2.2.2.2']
     expected_context = [
-        {
-            'IP': '1.1.1.1',
-            'results': {
-                'Brand': 'FortiGate', 'Message': '', 'Result': 'OK'
-            }
-        },
-        {
-            'IP': '2.2.2.2',
-            'results': {'Brand': 'FortiGate', 'Message': '', 'Result': 'OK'}}]
+        {'Brand': 'FortiGate', 'IP': '1.1.1.1', 'Message': 'External IP was blocked successfully', 'Result': 'Success'},
+        {'Brand': 'FortiGate', 'IP': '2.2.2.2', 'Message': 'External IP was blocked successfully', 'Result': 'Success'}]
     result_context = create_final_context('', used_integration, ip_list)
     assert result_context == expected_context
 
 
-def test_create_final_context_():
+def test_create_final_context_failure():
     """
     Given:
        - A failure message the integration, the ip_list, and the rule_name
@@ -89,10 +82,10 @@ def test_create_final_context_():
                        'Error: You are trying to create a rule that already exists.')
     used_integration = 'Cisco ASA'
     ip_list = ['1.1.1.1']
-    expected_context = [{'IP': '1.1.1.1', 'results': {'Brand': 'Cisco ASA',
-                                                      'Message': 'Failed to execute cisco-asa-create-rule command. '
-                                                                 'Error: You are trying to create a rule that already exists.',
-                                                      'result': 'Failed'}}]
+    expected_context = [{'Brand': 'Cisco ASA',
+                         'IP': '1.1.1.1',
+                         'Message': 'Failed to execute cisco-asa-create-rule command. Error: You are trying to create a rule '
+                                    'that already exists.', 'result': 'Failed'}]
     result_context = create_final_context(failure_message, used_integration, ip_list)
     assert result_context == expected_context
 
@@ -111,12 +104,12 @@ def test_prepare_context_and_hr_multiple_executions():
     verbose = True
     ip_list = ['7.7.7.7']
     expected_hr = [
-        "The item you're searching for does not exist within the Prisma SASE API.",
-        '### Address Object Created\n|Address Value|Folder|Id|Name|Type|\n|---|---|---|---|---|\n| 7.7.7.7 | Shared '
-        '| 11111111-1111-1111-1111-111111111111 | 7.7.7.7 | ip_netmask |\n',
-        "Waiting for all data to push for job id 845",
-        '### The IP was blocked successfully\n|IP|Status|Result|Used integration|\n|---|---|---|---|\n| 7.7.7.7 | Done '
-        '| Success | Palo Alto Networks - Prisma SASE |\n'
+        "Palo Alto Networks - Prisma SASE: The item you're searching for does not exist within the Prisma SASE API.",
+        'Palo Alto Networks - Prisma SASE:\n### Address Object Created\n|Address Value|Folder|Id|Name|Type|\n'
+        '|---|---|---|---|---|\n| 7.7.7.7 | Shared | 11111111-1111-1111-1111-111111111111 | 7.7.7.7 | ip_netmask |\n',
+        'Palo Alto Networks - Prisma SASE:\nWaiting for all data to push for job id 845',
+        '### The IP was blocked successfully\n|IP|Status|Result|Used integration|\n|---|---|---|---|\n'
+        '| 7.7.7.7 | Done | Success | Palo Alto Networks - Prisma SASE |\n'
     ]
     results = prepare_context_and_hr_multiple_executions(responses, verbose, '', ip_list)
     assert len(results) == 4
@@ -149,9 +142,9 @@ def test_sanitize_pan_os_responses():
     result_responses = pan_os.reduce_pan_os_responses()
     assert len(result_responses) == 6
     for result in result_responses:
-        assert len(result[0]) == 3
+        assert len(result[0]) == 4
         keys_list = list(result[0].keys())
-        assert keys_list == ['HumanReadable', 'Contents', 'Type']
+        assert keys_list == ['HumanReadable', 'Contents', 'Type', 'Metadata']
 
 
 def test_get_relevant_context():
@@ -337,17 +330,20 @@ def test_prisma_sase_block_ip_object_not_exist(mocker):
                                                                 res_address_group_update])
     results = prisma_sase.prisma_sase_block_ip()
     assert len(results) == 6
-    assert results[0].readable_output == "The item you're searching for does not exist within the Prisma SASE API."
-    assert results[1].readable_output == ('### Address Object Created\n|Address Value|Folder|Id|Name|Type|\n'
-                                          '|---|---|---|---|---|\n| 1.2.3.7 | Shared | '
-                                          '11111111-1111-1111-1111-111111111111 | 1.2.3.7 | ip_netmask |\n')
-    assert results[2].readable_output == ('### Address Groups\n|Id|Name|Description|Addresses|Dynamic Filter|\n'
-                                          '|---|---|---|---|---|\n| id | test_debug2 |  | 1.2.3.6 |  |\n')
-    assert results[3].readable_output == ('### Address Group updated\n|Addresses|Folder|Id|Name|\n|---|---|---|---|\n'
+    assert results[0].readable_output == ("Palo Alto Networks - Prisma SASE: The item you're searching for does not exist within "
+                                          "the Prisma SASE API.")
+    assert results[1].readable_output == ('Palo Alto Networks - Prisma SASE:\n### Address Object Created\n'
+                                          '|Address Value|Folder|Id|Name|Type|\n|---|---|---|---|---|\n'
+                                          '| 1.2.3.7 | Shared | 11111111-1111-1111-1111-111111111111 | 1.2.3.7 | ip_netmask |\n')
+    assert results[2].readable_output == ('Palo Alto Networks - Prisma SASE:\n### Address Groups\n'
+                                          '|Id|Name|Description|Addresses|Dynamic Filter|\n|---|---|---|---|---|\n'
+                                          '| id | test_debug2 |  | 1.2.3.6 |  |\n')
+    assert results[3].readable_output == ('Palo Alto Networks - Prisma SASE:\n### Address Group updated\n'
+                                          '|Addresses|Folder|Id|Name|\n|---|---|---|---|\n'
                                           '| 1.2.3.6,<br>1.2.3.7 | Shared | id | test_debug2 |\n')
     assert results[4].readable_output == ('### The IP was blocked successfully\n|IP|Status|Result|Created rule name|'
-                                          'Used integration|\n|---|---|---|---|---|\n| 1.2.3.7 | Done | Success | '
-                                          'rules | Palo Alto Networks - Prisma SASE |\n')
+                                          'Used integration|\n|---|---|---|---|---|\n| 1.2.3.7 | Done | Success | rules | '
+                                          'Palo Alto Networks - Prisma SASE |\n')
     assert results[5].readable_output == ('Not commiting the changes in Palo Alto Networks - Prisma SASE, since '
                                           'auto_commit=False. Please do so manually for the changes to take affect.')
 
