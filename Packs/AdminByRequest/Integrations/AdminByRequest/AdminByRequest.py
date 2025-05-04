@@ -57,28 +57,8 @@ class Client(BaseClient):
 
         # TODO: Is there expiration for the API KEY? it dosent seem that way - make sure of that
 
-
-    def retrieve_audit_log(self, params: dict) -> dict:
-        """Retrieve audit log from AdminByRequest API.
-        """
-        demisto.debug(f"Fetching audit logs events from with params={params}.")
-        url_suffix = "/auditlog/delta"
-        return self._inner_http_request(url_suffix=url_suffix, params=params)
-
-    def retrieve_request(self, params: dict) -> dict:
-        """Retrieve requests from AdminByRequest API.
-        """
-        url_suffix = "/requests"
-        return self._inner_http_request(url_suffix=url_suffix, params=params)
-
-    def retrieve_events(self, params: dict) -> dict:
-        """Retrieve events from AdminByRequest API.
-        """
-        url_suffix = "/events"
-        return self._inner_http_request(url_suffix=url_suffix, params=params)
-
-    def inner_http_request(self, url_suffix: str, params:dict) -> dict:
-        """Retrieve the detections from Reveal(X).
+    def retrieve_from_api(self, url_suffix: str, params:dict) -> dict:
+        """Retrieve the detections from AdminByRequest  API.
         """
         return self._http_request(
             "GET", url_suffix="/" + url_suffix, params=params, resp_type="json"
@@ -86,7 +66,7 @@ class Client(BaseClient):
 
 """ HELPER FUNCTIONS """
 
-def update_values_events(suffix: str) -> tuple[str, str]:
+def get_field_mapping(suffix: str) -> tuple[str, str]:
 
     if suffix == AUDIT_LOG_CALL_SUFFIX:
         source_log_type = "auditlog"
@@ -100,46 +80,40 @@ def update_values_events(suffix: str) -> tuple[str, str]:
 
     return source_log_type, time_field
 
-
-
-def retrieve_from_api(client: Client, suffix: str, params:dict) -> List[dict[str, Any]]:
-    events = list(client.inner_http_request(url_suffix=suffix, params=params))
-    update_values_events(events=events, suffix=suffix)
-    return events
-
-def fetch_audit_log(client: Client, last_run: dict) -> tuple[list[Any], dict]:
-    """Retrieve full audit log entries from AdminByRequest API using delta logic."""
-    today = get_current_time().strftime("%Y-%m-%d")
-    all_entries = []
-
-    if "start_time_audit_logs" in last_run:
-        start_time = last_run["start_time"]
-    else:
-        # Phase 1: Initial request to get timeNow
-        params = {"startdate": today, "enddate": today}
-        response = client.retrieve_audit_log(params=params)
-        entries = response.get("entries", [])
-        all_entries.extend(entries)
-        start_time = response.get("timeNow")
-
-    # Phase 2: Poll with deltaTime until no more entries
-    while True:
-        #updated params
-        params = {
-            "deltaTime": start_time
-        }
-        # API call
-        response = client.retrieve_audit_log(params=params)
-
-        start_time = response.get("timeNow")
-        new_entries = response.get("entries", [])
-        if not new_entries:
-            break
-        all_entries.extend(new_entries)
-
-    last_run["start_time_audit_logs"] = start_time
-
-    return all_entries, last_run
+# TODO: Delete this
+# def fetch_audit_log(client: Client, last_run: dict) -> tuple[list[Any], dict]:
+#     """Retrieve full audit log entries from AdminByRequest API using delta logic."""
+#     today = get_current_time().strftime("%Y-%m-%d")
+#     all_entries = []
+#
+#     if "start_time_audit_logs" in last_run:
+#         start_time = last_run["start_time"]
+#     else:
+#         # Phase 1: Initial request to get timeNow
+#         params = {"startdate": today, "enddate": today}
+#         response = client.retrieve_audit_log(params=params)
+#         entries = response.get("entries", [])
+#         all_entries.extend(entries)
+#         start_time = response.get("timeNow")
+#
+#     # Phase 2: Poll with deltaTime until no more entries
+#     while True:
+#         #updated params
+#         params = {
+#             "deltaTime": start_time
+#         }
+#         # API call
+#         response = client.retrieve_audit_log(params=params)
+#
+#         start_time = response.get("timeNow")
+#         new_entries = response.get("entries", [])
+#         if not new_entries:
+#             break
+#         all_entries.extend(new_entries)
+#
+#     last_run["start_time_audit_logs"] = start_time
+#
+#     return all_entries, last_run
 
 
 def validate_fetch_events_params(last_run : dict, call_type: str, fetch_limit:int) -> tuple[dict, str, str]:
@@ -168,17 +142,16 @@ def validate_fetch_events_params(last_run : dict, call_type: str, fetch_limit:in
     return params, suffix, key
 
 
-def retrieve_from_api_loop(client: Client, last_run: dict, call_type: str, fetch_limit: int) ->  tuple[
-    list[dict[str, Any]], dict]:
+def fetch_events_list(client: Client, last_run: dict, call_type: str, fetch_limit: int) ->  list[dict[str, Any]]:
 
     params, suffix, last_run_key = validate_fetch_events_params(last_run, call_type, fetch_limit)
-    time_field, source_log_type = update_values_events(suffix=suffix)
-    last_id : int
+    time_field, source_log_type = get_field_mapping(suffix=suffix)
+    last_id : int = 0
     output : list[dict[str, Any]] = []
     while True:
         try:
             # API call
-            events = list(client.inner_http_request(url_suffix=suffix, params=params))
+            events = list(client.retrieve_from_api(url_suffix=suffix, params=params))
         except DemistoException as e:
             if e.res.status_code == 429:
                 retry_after = int(e.res.headers.get("x-ratelimit-reset", 2))
@@ -191,8 +164,6 @@ def retrieve_from_api_loop(client: Client, last_run: dict, call_type: str, fetch
         if not events:
             break
 
-        output : List[dict[str, Any]] = []
-
         for event in events:
             last_id = event["id"]
             event["_TIME"] = time_field
@@ -201,17 +172,21 @@ def retrieve_from_api_loop(client: Client, last_run: dict, call_type: str, fetch
             output.append(event)
 
             if len(output) >= fetch_limit:
-                # Safe to add a millisecond and fetch since no two events share the same timestamp.
-                last_run[last_run_key] = last_id
-                return output, last_run
+                # update last run and return because we reach limit
+                last_run.update({
+                    last_run_key: int(last_id + 1)
+                })
+                return output
 
-        # If it was the first run and we have a first run "params values"
+        # If it was the first run, we have a first run "params values"
         remove_first_run_params(params)
-        params["startid"] = last_id
+        params["startid"] = last_id + 1
 
-    last_run[last_run_key] = last_id
+    last_run.update({
+        last_run_key: int(last_id + 1)
+    })
 
-    return output, last_run
+    return output
 
 
 def remove_first_run_params(params: dict) -> None:
