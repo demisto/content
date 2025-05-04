@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: ys-new-branch
+  CURRENT_BRANCH_NAME: ys-ship-code-check
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: ys-new-branch
+    ref: ys-ship-code-check
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 
