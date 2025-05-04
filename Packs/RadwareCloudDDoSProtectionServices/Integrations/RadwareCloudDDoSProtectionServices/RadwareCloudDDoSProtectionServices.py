@@ -120,10 +120,11 @@ def filter_documents(documents: List[Dict[str, Union[str, Dict]]],
 
     def get_timestamp(data: Dict[str, Union[str, Dict]]) -> Union[str, None]:
         if data_type == 'events':
-            return data['endTimestamp']
+            return data.get('endTimestamp')
         else:
             return data.get('context', {}).get('_timestamp')
-
+    if get_timestamp(documents[-1]) != timestamp:
+        return documents
     filtered_documents = []
     for doc in documents:  # Iterate through the original list
         if get_timestamp(doc) == timestamp and doc.get('_id') in ids:
@@ -147,7 +148,7 @@ def get_latest_timestamp_and_ids(documents: List[Dict[str, Union[str, Dict]]],
 
     def get_timestamp(data):
         if data_type == 'events':
-            return data['endTimestamp']
+            return data.get('endTimestamp')
         else:
             return data.get('context', {}).get('_timestamp')
 
@@ -175,21 +176,22 @@ def fetch_data(client, last_run, data_type):
     Returns:
         tuple: Contains the fetched documents and updated last run dictionary.
     """
-    end_time = int(time.time() * 1000)
+    # we are initiating variables based on the data type.
     last_fetch_key = f'last_fetch_{data_type}'
-    continue_fetch_key = f'continue_fetch_{data_type}'
+    iteration_cache_fetch_key = f'iteration_cache_fetch_{data_type}'
 
+    end_time = int(time.time() * 1000)
     latest_fetch = last_run.get(last_fetch_key, {})
     start_time = latest_fetch.get('latest_timestamp', end_time - 1)
-    continue_fetch_data = last_run.get(continue_fetch_key, None)
+    iteration_cache = last_run.get(iteration_cache_fetch_key, None)
     skip = 0
 
-    if continue_fetch_data:
-        end_time = continue_fetch_data.get('end_time')
-        start_time = continue_fetch_data.get('start_time')
-        skip = continue_fetch_data.get('fetched_' + data_type)
+    if iteration_cache:
+        end_time = iteration_cache.get('end_time')
+        start_time = iteration_cache.get('start_time')
+        skip = iteration_cache.get('fetched_' + data_type)
 
-    demisto.debug(f'RadwareCloudDDoS: {data_type=} {start_time=}, {end_time=}, {skip=}')
+    demisto.debug(f'{data_type=} {start_time=}, {end_time=}, {skip=}')
 
     if data_type == 'events':
         response = client.get_events(start_time, end_time, skip, PAGE_SIZE)
@@ -199,26 +201,26 @@ def fetch_data(client, last_run, data_type):
         raise ValueError("Invalid data_type. Expected 'events' or 'alerts'.")
 
     documents = response.get("documents")
-    demisto.debug(f'RadwareCloudDDoS: {data_type=} {len(documents)=}')
-    new_continue_fetch_data = {}
+    demisto.debug(f'got {len(documents)} documents in the response')
+    new_iteration_cache = {}
 
     filtered_documents = filter_documents(documents, timestamp=latest_fetch.get('latest_timestamp'),
                                           ids=latest_fetch.get('latest_ids'), data_type=data_type)
-    demisto.debug(f'RadwareCloudDDoS: {data_type=} {len(filtered_documents)=}')
+    demisto.debug(f'after filter remains {len(filtered_documents)} documents')
 
     if filtered_documents:
 
         if len(filtered_documents) == PAGE_SIZE:
-            demisto.debug(f'RadwareCloudDDoS: {data_type=} found next page')
-            new_continue_fetch_data = {'end_time': end_time, 'start_time': start_time,
+            demisto.debug(f'found next page')
+            new_iteration_cache = {'end_time': end_time, 'start_time': start_time,
                                        'fetched_' + data_type: len(filtered_documents) + skip}
 
-        if not continue_fetch_data:
+        if not iteration_cache:
             latest_timestamp, latest_ids = get_latest_timestamp_and_ids(filtered_documents, data_type)
             last_run[last_fetch_key] = {'latest_timestamp': latest_timestamp, 'latest_ids': latest_ids}
-            demisto.debug(f'RadwareCloudDDoS: {data_type=} saved {last_run[last_fetch_key]=}')
+            demisto.debug(f'saved {last_run[last_fetch_key]=}')
 
-        if new_continue_fetch_data:
+        if new_iteration_cache:
             last_run['nextTrigger'] = '0'
 
         if data_type == 'events':
@@ -229,8 +231,8 @@ def fetch_data(client, last_run, data_type):
         if not latest_fetch.get('latest_timestamp'):
             last_run[last_fetch_key] = {'latest_timestamp': start_time, 'latest_ids': []}
 
-    last_run[continue_fetch_key] = new_continue_fetch_data
-    demisto.debug(f'RadwareCloudDDoS: {data_type=} set {new_continue_fetch_data=}')
+    last_run[iteration_cache_fetch_key] = new_iteration_cache
+    demisto.debug(f'set {new_iteration_cache=}')
 
     return filtered_documents, last_run
 
@@ -247,7 +249,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     event_types = argToList(params.get("event_types"))
     last_run = demisto.getLastRun()
-    demisto.debug(f'RadwareCloudDDoS: {last_run=}')
+    demisto.debug(f'{last_run=}')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -272,9 +274,9 @@ def main() -> None:
 
             demisto.setLastRun(last_run)
             send_events_to_xsiam(events+alerts, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f'Successfully sent {len(events)}events and {len(alerts)}alerts to XSIAM')
-            demisto.debug(f'Successfully sent event {[event.get("_id") for event in events]} IDs to XSIAM')
-            demisto.debug(f'Successfully sent alert {[alert.get("_id") for alert in alerts]} IDs to XSIAM')
+            demisto.debug(f'Successfully sent {len(events)} events and {len(alerts)} alerts to XSIAM')
+            # demisto.debug(f'Successfully sent event {[event.get("_id") for event in events]} IDs to XSIAM')
+            # demisto.debug(f'Successfully sent alert {[alert.get("_id") for alert in alerts]} IDs to XSIAM')
         elif command == "radware-cloud-ddos-protection-services-get-events":
             events = []
             alerts = []
