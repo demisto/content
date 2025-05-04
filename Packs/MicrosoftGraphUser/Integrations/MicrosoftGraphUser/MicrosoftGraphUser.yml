@@ -691,7 +691,7 @@ script:
       defaultValue: now
     description:  |-
       Create a new TAP policy for a user.
-      During the command execution, a locked zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
+      During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
       A user can only have one Temporary Access Pass that's usable within its specified lifetime.  
     name: msgraph-user-tap-policy-create
     outputs:

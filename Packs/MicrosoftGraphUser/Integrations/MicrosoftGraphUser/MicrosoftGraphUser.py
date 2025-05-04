@@ -233,6 +233,16 @@ class MsGraphClient:
 
     #  If successful, this method returns 200
     def list_tap_policy(self, user_id):
+        """
+        Args:
+            user_id (str): The Azure AD user ID.
+
+        Returns:
+            list.
+            
+        API Reference:
+            https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
+        """
         url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
         
         res = self.ms_client.http_request(
@@ -243,6 +253,17 @@ class MsGraphClient:
 
     #  If successful, this method returns 201
     def create_tap_policy(self, user_id, body):
+        """
+        Args:
+            user_id (str): The Azure AD user ID.
+            body (dict): A dictionary containing the input arguments.
+
+        Returns:
+            dict.
+            
+        API Reference:
+            https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
+        """
         url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
         res = self.ms_client.http_request(
             method='POST',
@@ -254,6 +275,17 @@ class MsGraphClient:
 
     #  If successful, this method returns 204 - no content
     def delete_tap_policy(self, user_id, policy_id):
+        """
+        Args:
+            user_id (str): The Azure AD user ID.
+            policy_id (str): TAP Policy ID.
+
+        Returns:
+            None.
+            
+        API Reference:
+            https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods/[policy_id]
+        """
         url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}'
         self.ms_client.http_request(
             method='DELETE',
@@ -568,9 +600,6 @@ def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults
 
     Returns:
         CommandResults: The Temporary Access Pass (TAP) policies associated with a specific user.
-        
-    API Reference:
-        list_tap_policy
     """
     user_id = args.get('user_id')
     tap_data = client.list_tap_policy(user_id)
@@ -617,10 +646,6 @@ def create_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
 
     Returns:
         CommandResults: New Temporary Access Pass (TAP) policies created for a specific user.
-
-        
-    API Reference:
-        create_tap_policy
     """
     user_id = args.get('user_id')
     zip_password = args.get('zip_password', '')
@@ -668,9 +693,6 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
 
     Returns:
         CommandResults: Delete the Temporary Access Pass (TAP) police associated with a specific user.
-        
-    API Reference:
-        delete_tap_policy
     """
     user_id = args.get('user_id')
     policy_id = args.get('policy_id')
@@ -692,24 +714,31 @@ def create_zip_with_password(generated_tap_password: str, zip_password: str):
 
     Returns:
         return_results
-
     """
     zip_file_name = 'TAPPolicyInfo.zip'
 
     try:
         demisto.debug('Creating password-protected zip file')
-
-        with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
-            zf.pwd = bytes(zip_password, 'utf-8')
-            zf.writestr('TAPPolicyPass.txt', generated_tap_password)
-
-        with open(zip_file_name, 'rb') as zip_file:
-            zip_content = zip_file.read()
-
+        file_res = generate_password_protected_zip(zip_file_name, zip_password, generated_tap_password)
+        
     except Exception as e:
         raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
 
-    return_results(fileResult(zip_file_name, zip_content))
+    finally:
+        if os.path.exists(zip_file_name):
+            os.remove(zip_file_name)
+            
+    return_results(file_res)
+    
+def generate_password_protected_zip(zip_file_name, zip_password, generated_tap_password):
+    with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+            zf.pwd = bytes(zip_password, 'utf-8')
+            zf.writestr('TAPPolicyPass.txt', generated_tap_password)
+
+    with open(zip_file_name, 'rb') as zip_file:
+        zip_content = zip_file.read()
+    
+    return fileResult(zip_file_name, zip_content)
 
 
 def main():

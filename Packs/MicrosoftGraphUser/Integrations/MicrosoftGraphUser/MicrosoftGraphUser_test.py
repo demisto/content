@@ -533,14 +533,18 @@ def test_create_zip_with_password():
     Tests the creation of a password-protected ZIP file containing a Temporary Access Pass (TAP) password.
     Validates that the correct TAP password is stored in the ZIP file, and cleans up any files created during the test.
 
-    Raises:
-        pytest.fail: If any errors occur during ZIP file creation, reading, or cleanup.
-
-    API Reference:
-        create_zip_with_password
+    Given:
+        None.
+    When:
+        - Running the create_tap_policy_command.
+    Then:
+        1. Generates a password protected zip file, that will include the password of the new TAP.
+        2. Opens the zip file using the given password by the user.
+        3. Validates the password inside 'TAPPolicyPass.txt' matches the generated TAP password.
+        4. Clean all the encrypted files created during the process.
     """
     from pyzipper import AESZipFile, ZIP_DEFLATED, WZ_AES
-    from MicrosoftGraphUser import create_zip_with_password
+    from MicrosoftGraphUser import generate_password_protected_zip
 
     def clean_up_files(created_time):
         cwd = os.getcwd()
@@ -560,10 +564,7 @@ def test_create_zip_with_password():
     txt_file_name = 'TAPPolicyPass.txt'
     start_time = time.time()
 
-    create_zip_with_password(
-        zip_password=zip_password,
-        generated_tap_password=generated_tap_password
-    )
+    generate_password_protected_zip('TAPPolicyInfo.zip', zip_password, generated_tap_password)
     
     try:
         with AESZipFile(zip_file_name, mode='r', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
@@ -584,16 +585,14 @@ def test_create_tap_policy_command_failure_on_empty_response(mocker):
     from the Microsoft Graph API for creating a TAP policy.
     Verifies that the command correctly handles the failure and outputs an appropriate error message.
 
-    Args:
-        mocker: A fixture provided by pytest-mock to mock objects and functions.
-
-    Asserts:
-        - The result is an instance of CommandResults.
-        - The readable_output indicates a failure message for TAP policy creation.
-        - The create_tap_policy method was called once.
-
-    API Reference:
-        create_tap_policy_command
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the create_tap_policy_command.
+    Then:
+        1. Verify that the instance is of type CommandResults
+        2. Verify that the human readable output is as expected.
+        3. verify that the call count for the mocker was 1
     """
     from MicrosoftGraphUser import MsGraphClient, create_tap_policy_command
     from CommonServerPython import CommandResults
@@ -627,6 +626,18 @@ def test_create_tap_policy_command_failure_on_empty_response(mocker):
     
     
 def test_delete_tap_policy_command_success(mocker):
+    """
+    Tests the behavior of the delete_tap_policy_command function.
+    Validates that the human readable is as expected and the command returns CommandResults object.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the delete_tap_policy_command.
+    Then:
+        1. Verify that the instance is of type CommandResults
+        2. Verify that the human readable output is as expected.
+    """
     from MicrosoftGraphUser import MsGraphClient, delete_tap_policy_command
     from CommonServerPython import CommandResults
 
@@ -660,6 +671,23 @@ def test_delete_tap_policy_command_success(mocker):
 
 
 def test_list_tap_policy_command_success(mocker):
+    """
+    Tests the successful execution of the list_tap_policy_command function in the MicrosoftGraphUser module.
+    Validates that the function correctly retrieves and formats the Temporary Access Pass (TAP) policy data.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the list_tap_policy_command function with the mock client and arguments.
+    Then:
+        1. Mocks the list_tap_policy API call to return predefined TAP policy data.
+        2. Mocks the parse_outputs function to simulate parsed readable and output data.
+        3. Verifies that the result is an instance of CommandResults.
+        4. Asserts that the output prefix is correctly set to 'MSGraphUser.TAPPolicy'.
+        5. Confirms that the output key field is 'ID' and the correct TAP policy ID is returned.
+        6. Ensures that the readable output contains the correct policy information and user ID.
+    """
+
     from MicrosoftGraphUser import MsGraphClient, list_tap_policy_command
     from CommonServerPython import CommandResults
 
@@ -721,8 +749,25 @@ def test_list_tap_policy_command_success(mocker):
     assert 'TAP Policy for User ID 123456789' in result.readable_output
 
 
-
 def test_create_tap_policy_command_success(mocker):
+    """
+    Tests the successful execution of the create_tap_policy_command function in the MicrosoftGraphUser module.
+    Validates that the function correctly creates a Temporary Access Pass (TAP) policy and returns the expected results.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the create_tap_policy_command function with the mock client and arguments.
+    Then:
+        1. Mocks the create_tap_policy API call to return predefined API response for the TAP policy creation.
+        2. Mocks the create_zip_with_password function.
+        3. Mocks the parse_outputs function to simulate parsed output data.
+        4. Verifies that the result is an instance of CommandResults.
+        5. Confirms that the readable output contains the expected success message for the TAP policy creation.
+        6. Ensures that the output prefix is set to 'MSGraphUser.TAPPolicy' and the key field is 'ID'.
+        7. Verifies that the correct TAP policy ID is included in the output.
+    """
+
     from MicrosoftGraphUser import MsGraphClient, create_tap_policy_command
     from CommonServerPython import CommandResults
 
