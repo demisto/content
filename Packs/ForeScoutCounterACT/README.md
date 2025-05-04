@@ -31,7 +31,7 @@ Forescout CounterACT is a network access control (NAC) platform that helps organ
 
 For more information [<Link to the official docs>](https://docs.forescout.com/).
  
-### Cortex XSIAM side - Broker VM
+### Cortex XSIAM side - Broker VMg
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
  
 Follow the below steps to configure the Broker VM to receive Forescout CounterACT logs.
