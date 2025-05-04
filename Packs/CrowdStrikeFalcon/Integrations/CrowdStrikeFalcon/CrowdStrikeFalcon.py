@@ -782,8 +782,7 @@ def detection_to_incident(detection, is_fetch_events: bool = False):
     }
     if is_fetch_events:
         incident["_source_log_type"] = detection.get("incident_type")
-        for key, value in detection.items():
-                incident[key] = str(value)
+        incident.update({key: json.dumps(val) for key, val in detection.items()})
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident["_time"] = detection.get("timestamp")
@@ -818,8 +817,7 @@ def incident_to_incident_context(incident, is_fetch_events: bool = False):
     }
     if is_fetch_events:
         incident_context["_source_log_type"] = incident.get("incident_type")
-        for key, value in incident.items():
-            incident_context[key] = str(value)
+        incident_context.update({key: json.dumps(val) for key, val in incident.items()})
         # new incident
         if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created")):
             incident_context["_time"] = incident.get("created_timestamp")
@@ -880,8 +878,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
-        for key, value in detection.items():
-                incident_context[key] = str(value)
+        incident_context.update({key: json.dumps(val) for key, val in detection.items()})
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident_context["_time"] = detection.get("timestamp")
