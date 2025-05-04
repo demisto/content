@@ -242,50 +242,56 @@ def baseintegration_dummy_command(
 
 def main():
     """main function, parses params and runs command functions"""
-
-    # TODO: make sure you properly handle authentication
-    # api_key = params.get('apikey')
-
     params = demisto.params()
-    # get the service API url
-    base_url = urljoin(params.get("url"), "/api/v1")
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not argToBoolean(params("insecure", False))
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = argToBoolean(params.get("proxy", False))
-
+    args = demisto.args()
     command = demisto.command()
+
+
+    # get the service API url
+    base_url = params.get("url")
+    # TODO: this need to be API
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
+    api_key = params.get("api_key")
+    client_id = params.get("credentials", {}).get("identifier")
+    client_secret = params.get("credentials", {}).get("password")
+    fetch_limit_audit_logs = arg_to_number(params.get("max_events_audit_logs")) or MAX_FETCH_AUDIT_LIMIT
+    fetch_limit_events = arg_to_number(params.get("max_events_events")) or MAX_FETCH_EVENT_LIMIT
+    fetch_limit_requests = arg_to_number(params.get("max_events_requests")) or MAX_FETCH_REQUEST_LIMIT
+
     demisto.debug(f"Command being called is {command}")
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers = {}
-
         client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+            base_url=base_url, api_key=api_key, verify=verify_certificate, use_proxy=proxy
         )
-        args = demisto.args()
+
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
+            # Command made to test the integration
             result = test_module(client)
-        # TODO: REMOVE the following dummy command case:
-        elif command == "baseintegration-dummy":
-            result = baseintegration_dummy_command(client, args)
+            return_results(result)
+        elif command == "fetch-events":
+            last_run = demisto.getLastRun()
+            events, next_run = fetch_events(client, last_run, max_events)
+            if len(events):
+                demisto.debug(f'Sending {len(events)} events.')
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run)
+            demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
+        elif command == "admin_by_request_get-events":
+            command_results = get_events(client, args, max_events)
+            events = command_results.outputs
+            if events and argToBoolean(args.get('should_push_events')):
+                demisto.debug(f'Sending {len(events)} events.')
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(
-            result
-        )  # Returns either str, CommandResults and a list of CommandResults
+
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
