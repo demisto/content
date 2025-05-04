@@ -4,32 +4,33 @@
 Forescout CounterACT is a network access control (NAC) platform that helps organizations manage and secure devices connected to their network by providing real-time visibility, automated policy enforcement and threat prevention.
  
 ## This pack includes:
- 
-- Log Normalization - XDM mapping for key event types.
-  
- 
-### Supported Timestamp Formats:
-<Enter time format when pack contains time parsing>
- 
+
+-   This pack includes Log Normalization and a Modeling Rule, enabling you to process ForeScout CounterACT network access control logs into XDM fields.
  
 ***
  
 ## Data Collection
- 
+
 ### Forescout CounterACT side
-1. Configure the CEF Plugin
-    -   Navigate to CEF -> Add -> enter basic server parameters              
+
+1. Create and Configure the CEF Plugin
+    -   Navigate to CEF -> Add -> Add a SIEM Server -> enter basic server parameters              
     | `Name`                 | The name of the SIEM server.                                                    |
     | `Address`              | The IP address of the SIEM server.                                              |
     | `Port`                 | The UDP Syslog port used by CEF.                                                |                                                                               
     | `Report time interval` | The frequency with which to update the SIEM server with compliance information. |
     | `Comment`              | Comments regarding the server.                                                  |
-    - Click 
- 2. Configure Compliant CEF message
-    -   Add an action. In the Actions tree, open the Audit group and select the Send Compliant CEF message.
+    - Enable the plugin and assign it to the appropriate device groups for deployment.
+
+ 2. Sending CEF Message
+    -   Log in to the CounterACT Console
+    -   Select the Policy icon from the Console toolbar
+    -   Create or edit a policy.
+    -   Navigate to Actions -> Send Compliant CEF message
+    -   Add an action -> In the Actions tree, open the Audit group and select the **default** format "Send Compliant CEF message".
+
 For more information [<Link to the official docs>](https://docs.forescout.com/).
  
-
 ### Cortex XSIAM side - Broker VM
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
  
