@@ -557,6 +557,7 @@ tasks:
       id: ff99cb20-73b0-4e10-83aa-722b129df86f
       version: -1
       name: Is there a job to commit?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
