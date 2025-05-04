@@ -265,20 +265,3 @@ Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings 
 | GCP.StorageBucket.Metadata.billing.requesterPays | Boolean | Whether requester pays is enabled. | 
 | GCP.StorageBucket.Metadata.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. | 
 | GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. | 
-
-### test-module
-
-***
-Test connectivity and permission validation
-
-#### Base Command
-
-`test-module`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.

@@ -1,6 +1,9 @@
 commonfields:
   id: GCP
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - displaypassword: Service Account Private Key file content (JSON).
   name: credentials
@@ -498,7 +501,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/googleapi-python3:1.0.0.1839740
+  dockerimage: demisto/googleapi-python3:1.0.0.2933170
 fromversion: 6.1.0
 marketplaces:
 - xsoar
