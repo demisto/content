@@ -646,7 +646,9 @@ class InfoBloxNIOSClient(BaseClient):
 
     def get_dns_entries(
         self,
-        pattern: str | None,
+        name_search: str | None,
+        ip4_search: str | None,
+        ip6_search: str | None,
         record_type: str | None,
         max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
     ) -> dict:
@@ -661,14 +663,24 @@ class InfoBloxNIOSClient(BaseClient):
         - Response JSON
         """
         request_params = assign_params(_max_results=max_results)
+        if "name~" in request_params:
+            request_params.pop("name~")
+        if "ipv4addr~" in request_params:
+            request_params.pop("ipv4addr~")
+        if "ipv6addr~" in request_params:
+            request_params.pop("ipv6addr~")
         request_params["_page_id"] = None
         if max_results == 0:
             request_params["_paging"] = 1
             request_params["_max_results"] = 1000
         else:
             request_params["_paging"] = None
-        if pattern:
-            request_params["name~"] = pattern
+        if name_search:
+            request_params["name~"] = name_search
+        if ip4_search and record_type == "a":
+            request_params["ipv4addr~"] = ip4_search
+        if ip6_search and record_type == "aaaa":
+            request_params["ipv6addr~"] = ip6_search
         if request_params["_paging"]:
             result = []
             while True:
@@ -1639,7 +1651,9 @@ def get_dns_entries_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
     """
 
     record_type = args.get("record_type")
-    pattern = args.get("pattern")
+    name_search = args.get("name_search")
+    ip4_search = args.get("ip4_search")
+    ip6_search = args.get("ip6_search")
     max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
     # additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
     # extended_attributes = args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
@@ -1648,7 +1662,9 @@ def get_dns_entries_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
     dns_entries = []
     for record_type in record_types:
         raw_response = client.get_dns_entries(
-            pattern=pattern,
+            name_search=name_search,
+            ip4_search=ip4_search,
+            ip6_search=ip6_search,
             record_type=record_type,
             #additional_return_fields=additional_return_fields,
             #extended_attributes=extended_attributes,

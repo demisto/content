@@ -787,8 +787,14 @@ script:
   - name: infoblox-list-dns-entries
     description: List DNS entries.
     arguments:
-    - name: pattern
-      description: Search pattern for DNS entries.
+    - name: name_search
+      description: Search pattern for DNS Name entries.
+      required: false
+    - name: ip4_search
+      description: Search pattern for IPv4 DNS entries.
+      required: false
+    - name: ip6_search
+      description: Search pattern for IPv6 DNS entries.
       required: false
     - name: record_type
       description: Coma seperated list of  Record types to load, e.g., 'A', 'MX'.
