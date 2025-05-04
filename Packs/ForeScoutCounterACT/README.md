@@ -22,7 +22,7 @@ This pack includes Log Normalization and a Modeling Rule, enabling you to proces
     | `Comment`              | Comments regarding the server.                                                  |
     - Enable the plugin and assign it to the appropriate device groups for deployment.
 
- 2. Send a CEF message
+2. Send a CEF message
     -   Log in to the CounterACT console
     -   Select the **Policy** icon from the console toolbar
     -   Create or edit a policy.
