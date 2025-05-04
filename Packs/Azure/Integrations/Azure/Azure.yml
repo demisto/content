@@ -1087,30 +1087,273 @@ script:
       predefined:
         - None
         - SystemAssigned
-        - SystemAssigned, UserAssigned
-        - UserAssigned
       description: Managed service identity type.
-    - name: identity_name
-      type: string
+    - name: https_only
+      description: Configures the web site to accept only https requests.
+      type: bool
+      predefined:
+      - 'true'
+      - 'false'
+    - name: client_cert_enabled
+      description: Configures the web site to accept only https requests
+      type: bool
+      predefined:
+      - 'true'
+      - 'false'
+    name: azure-webapp-update
+    description: Updates an Azure Web App.
+    outputs: []
+  - arguments:
+    - name: resource_group_name
+      type: String
+      description: The resource group name.
+    - name: subscription_id
+      type: String
+      description: Subscription ID.
+    - name: registry_name
+      type: String
+      required: true
+      description: The name of the container registry.
+    - name: allow_exports
+      type: Boolean
+      description: Whether artifacts can be exported.
+      predefined:
+        - 'true'
+        - 'false'
+    - name: public_network_access
+      type: String
+      description: Whether public network access is allowed for the container registry.
+      predefined:
+        - Disabled
+        - Enabled
+    - name: anonymous_pull_enabled
+      type: Boolean
+      description: Enables registry-wide pull from unauthenticated clients.
+      predefined:
+        - 'true'
+        - 'false'
+    - name: authentication_as_arm_policy
+      auto: PREDEFINED
+      predefined:
+      - Disabled
+      - Enabled
+      description: Whether the policy is enabled or not.
+    name: azure-acr-update
+    description: Updates a container registry.
+    outputs: []
+  - arguments:
+    - name: resource_group_name
+      type: String
       required: false
-      description: The name of the User Assigned Identity to associate with the Web App. Required when using 'UserAssigned' or 'SystemAssigned, UserAssigned'.
-    - name: client_id
-      type: string
+      description: The resource group name.
+    - name: subscription_id
+      type: String
       required: false
-      description: The client ID of the User Assigned Identity.
-    - name: principal_id
-      type: string
-      required: false
-      description: The principal ID of the User Assigned Identity.
-    name: azure-webapp-identity-assign
-    description: Assigns a managed identity to an Azure Web App.
+      description: Subscription ID.
+    - name: server_name
+      type: String
+      required: true
+      description: Name of the PostgreSQL server.
+    - name: ssl_enforcement
+      type: String
+      description: Enable ssl enforcement or not when connect to server.
+      predefined:
+        - Disabled
+        - Enabled
+    name: azure-postgres-server-update
+    description: Updates an existing server.
+    outputs: []
+  - arguments:
+    - description: Key Vault name.
+      name: vault_name
+      required: true
+    - name: subscription_id
+      description: The subscription ID.
+      type: String
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+    - name: enable_purge_protection
+      description: Whether protection against purge is enabled for this vault. Enabling this functionality is irreversible - that is, the property does not accept false as its value.
+      type: bool
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+    - name: enable_soft_delete
+      description: Whether the 'soft delete' functionality is enabled for this key vault. Enabling this functionality is irreversible - that is, the property does not accept false as its value.
+      type: bool
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+    description: Updates a key vault in the specified subscription. 
+    name: azure-key-vault-update
+    outputs:
+    - contextPath: AzureKeyVault.KeyVault.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.name
+      description: Key Vault name.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.type
+      description: Resource type in Azure.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.location
+      description: Key Vault location.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.properties.sku.family
+      description: SKU family name.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.properties.sku.name
+      description: SKU name to specify whether the key vault is a standard vault or a premium vault.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.properties.tenantId
+      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
+      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
+      description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
+      description: Permissions to keys.
+      type: Unknown
+    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets
+      description: Permissions to secrets.
+      type: Unknown
+    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates
+      description: Permissions to certificates.
+      type: Unknown
+    - contextPath: AzureKeyVault.KeyVault.properties.enabledForDeployment
+      description: Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault.
+      type: Boolean
+    - contextPath: AzureKeyVault.KeyVault.properties.enabledForDiskEncryption
+      description: Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.
+      type: Boolean
+    - contextPath: AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment
+      description: Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.
+      type: Boolean
+    - contextPath: AzureKeyVault.KeyVault.properties.vaultUri
+      description: The URI of the vault for performing operations on keys and secrets.
+      type: String
+    - contextPath: AzureKeyVault.KeyVault.properties.provisioningState
+      description: The current provisioning state.
+      type: String
+  - arguments:
+    - description: Server name.
+      name: server_name
+      required: true
+    - description: Database name.
+      name: db_name
+      required: true
+    - auto: PREDEFINED
+      description: 'Whether the alert is sent to the account administrators. Possible values: "true" and "false".'
+      name: email_account_admins
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Subscription ID.
+      name: subscription_id
+    - description: The name of the resource group.
+      isArray: true
+      name: resource_group_name
+    description: Updates the database's threat detection policy.
+    name: azure-sql-db-threat-policy-update
+    outputs:
+    - contextPath: Azure.SQL.DBThreatPolicy.kind
+      description: Kind of threat policy.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.location
+      description: Threat policy location.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.id
+      description: Threat policy ID.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.name
+      description: Threat policy name.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.type
+      description: Threat policy type.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.state
+      description: Threat policy state.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.creationTime
+      description: Threat policy creation time.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.retentionDays
+      description: Number of days to keep in the Threat Detection audit logs.
+      type: Number
+    - contextPath: Azure.SQL.DBThreatPolicy.storageAccountAccessKey
+      description: The identifier key of the Threat Detection audit storage account.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.storageEndpoint
+      description: Threat Detection audit storage account.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.emailAccountAdmins
+      description: Email accounts administrators who the alert is sent to.
+      type: Boolean
+    - contextPath: Azure.SQL.DBThreatPolicy.emailAddresses
+      description: List of email addresses to which the alert is sent.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.disabledAlerts
+      description: List of alerts that are disabled, or an empty string if no alerts are disabled.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.useServerDefault
+      description: Whether to use the default server policy.
+      type: Unknown
+    - contextPath: Azure.SQL.DBThreatPolicy.databaseName
+      description: The name of the database that the threat policy is related to.
+      type: String
+    - contextPath: Azure.SQL.DBThreatPolicy.serverName
+      description: The name of server that the threat policy is related to.
+      type: String
+  - arguments:
+    - description: Server name.
+      name: server_name
+      required: true
+    - description: Database name.
+      name: db_name
+      required: true
+    - auto: PREDEFINED
+      description: The state of the transparent data encryption.
+      name: state
+      predefined:
+      - Disabled
+      - Enabled
+    - description: Subscription ID.
+      name: subscription_id
+    - description: The name of the resource group.
+      isArray: true
+      name: resource_group_name
+    description: Updates a logical database's transparent data encryption configuration.
+    name: azure-sql-db-transparent-data-encryption-set
+    outputs: []
+  - arguments:
+    - description: Cosmos DB database account name.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Disable write operations on metadata resources via account keys.
+      name: disable_key_based_metadata_write_access
+      predefined:
+      - 'true'
+      - 'false'
+      type: bool
+    - description: Subscription ID.
+      name: subscription_id
+    - description: The name of the resource group.
+      isArray: true
+      name: resource_group_name
+    description: Updates the properties of an existing Azure Cosmos DB database account.
+    name: azure-cosmos-db-update
     outputs: []
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: devdemisto/azure-cli:1.0.0.3254609
 fromversion: 6.1.0
 marketplaces:
 - xsoar
