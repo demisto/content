@@ -14,16 +14,16 @@ This integration enforces GCP security best practices by:
    - Kubernetes Engine  
    - Cloud Resource Manager
 
-2. **Create a Service Account** with the following permissions:
+2. **Create a Service Account** with the following permissions by action type:
 
-| Resource Type         | Permissions                                                                 |
-|-----------------------|-----------------------------------------------------------------------------|
-| **Compute Firewalls**  | `compute.firewalls.get`, `compute.firewalls.list`, `compute.firewalls.update` |
-| **Compute Instances**  | `compute.instances.get`, `compute.instances.list`, `compute.instances.setMetadata` |
-| **Compute Networks**   | `compute.networks.list`, `compute.networks.updatePolicy`                    |
-| **Compute Subnetworks**| `compute.subnetworks.get`, `compute.subnetworks.list`, `compute.subnetworks.setPrivateIpGoogleAccess`, `compute.subnetworks.update` |
-| **Kubernetes Clusters**| `container.clusters.get`, `container.clusters.list`, `container.clusters.update` |
-| **Cloud Storage Buckets**| `storage.buckets.getIamPolicy`, `storage.buckets.setIamPolicy`, `storage.buckets.update` |
+| Action Type                      | Permissions                                                                 |
+|----------------------------------|-----------------------------------------------------------------------------|
+| **gcp-compute-firewall-patch**   | `compute.firewalls.update`, `compute.firewalls.get`, `compute.firewalls.list`, `compute.networks.updatePolicy`, `compute.networks.list` |
+| **gcp-compute-subnet-update**    | `compute.subnetworks.setPrivateIpGoogleAccess`, `compute.subnetworks.update`, `compute.subnetworks.get`, `compute.subnetworks.list` |
+| **gcp-compute-project-metadata-add** | `compute.instances.setMetadata`, `compute.instances.get`, `compute.instances.list` |
+| **gcp-storage-bucket-policy-delete** | `storage.buckets.getIamPolicy`, `storage.buckets.setIamPolicy` |
+| **gcp-container-cluster-security-update** | `container.clusters.update`, `container.clusters.get`, `container.clusters.list` |
+| **gcp-storage-bucket-metadata-update** | `storage.buckets.update` |
 
 3. **OAuth Scope Required**:  
    `https://www.googleapis.com/auth/cloud-platform`

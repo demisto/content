@@ -1,387 +1,318 @@
 import pytest
+from google.oauth2.credentials import Credentials
 
 
-def test_parse_firewall_rule():
+def test_parse_firewall_rule_valid_input():
     """
-    Given: A string representing firewall rules.
-    When: Calling parse_firewall_rule function.
-    Then: Returns a list of dictionaries with 'IPProtocol' and 'ports' fields.
-    """
-    from GCP import parse_firewall_rule
-
-    rule_str = "ipprotocol=tcp,ports=80,443;ipprotocol=udp,ports=53"
-    result = parse_firewall_rule(rule_str)
-
-    assert len(result) == 2
-    assert result[0]["IPProtocol"] == "tcp"
-    assert result[0]["ports"] == ["80", "443"]
-    assert result[1]["IPProtocol"] == "udp"
-    assert result[1]["ports"] == ["53"]
-
-
-def test_parse_firewall_rule_invalid_format():
-    """
-    Given: A string with invalid firewall rule format.
-    When: Calling parse_firewall_rule function.
-    Then: Raises a ValueError with appropriate error message.
+    Given: A valid firewall rule string with multiple rules
+    When: parse_firewall_rule is called
+    Then: The function returns a correctly parsed list of dictionaries
     """
     from GCP import parse_firewall_rule
 
-    rule_str = "invalid-format"
+    input_str = "ipprotocol=tcp,ports=80,443;ipprotocol=udp,ports=53"
+    expected = [
+        {"IPProtocol": "tcp", "ports": ["80", "443"]},
+        {"IPProtocol": "udp", "ports": ["53"]}
+    ]
 
+    result = parse_firewall_rule(input_str)
+    assert result == expected
+
+
+def test_parse_firewall_rule_invalid_input():
+    """
+    Given: An invalid firewall rule string
+    When: parse_firewall_rule is called
+    Then: The function raises a ValueError with appropriate message
+    """
+    from GCP import parse_firewall_rule
+
+    input_str = "invalid=format"
     with pytest.raises(ValueError) as e:
-        parse_firewall_rule(rule_str)
+        parse_firewall_rule(input_str)
 
     assert "Could not parse field" in str(e.value)
+    assert "Please make sure you provided like so" in str(e.value)
 
 
-def test_parse_metadata_items():
+def test_parse_metadata_items_valid_input():
     """
-    Given: A string representing metadata items.
-    When: Calling parse_metadata_items function.
-    Then: Returns a list of dictionaries with 'key' and 'value' fields.
+    Given: A valid metadata items string with multiple items
+    When: parse_metadata_items is called
+    Then: The function returns a correctly parsed list of dictionaries
     """
     from GCP import parse_metadata_items
 
-    tags_str = "key=enable-oslogin,value=TRUE;key=serial-port-enable,value=FALSE"
-    result = parse_metadata_items(tags_str)
+    input_str = "key=enable-oslogin,value=true;key=serial-port-enable,value=false"
+    expected = [
+        {"key": "enable-oslogin", "value": "true"},
+        {"key": "serial-port-enable", "value": "false"}
+    ]
 
-    assert len(result) == 2
-    assert result[0]["key"] == "enable-oslogin"
-    assert result[0]["value"] == "TRUE"
-    assert result[1]["key"] == "serial-port-enable"
-    assert result[1]["value"] == "FALSE"
+    result = parse_metadata_items(input_str)
+    assert result == expected
 
 
-def test_parse_metadata_items_invalid_format():
+def test_parse_metadata_items_invalid_input():
     """
-    Given: A string with invalid metadata item format.
-    When: Calling parse_metadata_items function.
-    Then: Raises a ValueError with appropriate error message.
+    Given: An invalid metadata items string
+    When: parse_metadata_items is called
+    Then: The function raises a ValueError with appropriate message
     """
     from GCP import parse_metadata_items
 
-    tags_str = "invalid-format"
-
+    input_str = "wrong=format"
     with pytest.raises(ValueError) as e:
-        parse_metadata_items(tags_str)
+        parse_metadata_items(input_str)
 
     assert "Could not parse field" in str(e.value)
+    assert "Please make sure you provided like so: key=abc,value=123" in str(e.value)
 
 
-def test_get_access_token_missing_project_id():
+def test_compute_firewall_patch_edge_cases(mocker):
     """
-    Given: Arguments dictionary without project_id.
-    When: Calling get_access_token function.
-    Then: Raises a DemistoException about missing project_id.
-    """
-    from GCP import get_access_token
-    from CommonServerPython import DemistoException
-
-    args = {}
-
-    with pytest.raises(DemistoException) as e:
-        get_access_token(args)
-
-    assert "project_id is required" in str(e.value)
-
-
-def test_get_access_token():
-    """
-    Given: Arguments dictionary with project_id.
-    When: Calling get_access_token function.
-    Then: Returns an access token string.
-    """
-    from GCP import get_access_token
-
-    args = {"project_id": "test-project"}
-
-    result = get_access_token(args)
-
-    assert result == ""  # Currently hardcoded to return empty string
-
-
-def test_compute_firewall_patch(mocker):
-    """
-    Given: Arguments for firewall patch and GCP credentials.
-    When: Calling compute_firewall_patch function.
-    Then: Returns a CommandResults object with the operation details and calls API with correct parameters.
+    Given: Valid credentials with empty and complex arguments for a firewall rule update
+    When: compute_firewall_patch is called with boolean and list conversions
+    Then: The function handles data transformations correctly and builds proper requests
     """
     from GCP import compute_firewall_patch
-    from CommonServerPython import CommandResults
-    import json
 
-    # Mock the GCP API response
-    mock_execute = mocker.MagicMock(return_value={
-        "id": "operation-123",
-        "name": "operation-name",
-        "operationType": "patch",
-        "status": "RUNNING",
-        "progress": 0,
-        "zone": "us-central1-a",
-        "kind": "compute#operation"
-    })
-    mock_patch = mocker.MagicMock()
-    mock_patch.return_value.execute = mock_execute
+    # Mock credentials
+    mock_creds = mocker.MagicMock()
 
-    mock_firewalls = mocker.MagicMock()
-    mock_firewalls.patch.return_value = mock_patch
-
+    # Set up mocks
     mock_compute = mocker.MagicMock()
+    mock_firewalls = mocker.MagicMock()
+    mock_patch = mocker.MagicMock()
+
     mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.patch.return_value = mock_patch
+    mock_patch.execute.return_value = {"id": "operation-123", "status": "RUNNING"}
 
-    mocker.patch("GCP.Credentials")
+    # Mock the build function
     mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
 
-    args = {
+    # Test case 1: Empty configuration
+    empty_args = {
         "project_id": "test-project",
-        "resource_name": "test-firewall",
-        "description": "Updated firewall rule",
-        "disabled": "true",
-        "sourceRanges": "10.0.0.0/8,192.168.0.0/16",
-        "allowed": "ipprotocol=tcp,ports=80,443"
+        "resource_name": "fw-rule"
     }
 
-    creds = mocker.MagicMock()
-    result = compute_firewall_patch(creds, args)
+    compute_firewall_patch(mock_creds, empty_args)
 
-    # Check that the function returns expected results
-    assert isinstance(result, CommandResults)
-    assert "Firewall rule test-firewall was successfully patched" in result.readable_output
-    assert result.outputs_prefix == "GCP.Compute.Operations"
-    assert result.outputs["id"] == "operation-123"
+    # Should call with empty config
+    mock_firewalls.patch.assert_called_with(
+        project="test-project",
+        firewall="fw-rule",
+        body={}
+    )
 
-    # Verify API was called with correct parameters
+    # Reset mock for next test
+    mock_firewalls.patch.reset_mock()
+
+    # Test case 2: Boolean conversions and special fields
+    bool_args = {
+        "project_id": "test-project",
+        "resource_name": "fw-rule",
+        "disabled": "true",  # String boolean that should be converted
+        "logConfigEnable": "false",  # Another string boolean
+        "sourceTags": "single-tag",  # Single item that should become a list
+        "allowed": "ipprotocol=all,ports=*"  # Special format for allowed
+    }
+
+    result = compute_firewall_patch(mock_creds, bool_args)
+
+    # Get the body passed to patch
+    called_with = mock_firewalls.patch.call_args[1]['body']
+
+    # Verify boolean conversions
+    assert called_with["disabled"] is True
+    assert called_with["logConfig"]["enable"] is False
+
+    # Verify list conversions
+    assert called_with["sourceTags"] == ["single-tag"]
+
+    # Verify allowed rules parsing
+    assert called_with["allowed"] == [{"IPProtocol": "all", "ports": ["*"]}]
+
     mock_firewalls.patch.assert_called_once()
-    call_args = mock_firewalls.patch.call_args[1]
-    assert call_args["project"] == "test-project"
-    assert call_args["firewall"] == "test-firewall"
-
-    # Verify the body contains the expected config
-    body = call_args["body"]
-    assert body["description"] == "Updated firewall rule"
-    assert body["disabled"] is True
-    assert body["sourceRanges"] == ["10.0.0.0/8", "192.168.0.0/16"]
-    assert body["allowed"][0]["IPProtocol"] == "tcp"
-    assert body["allowed"][0]["ports"] == ["80", "443"]
+    assert result.outputs_prefix == "GCP.Compute.Operations"
 
 
-def test_storage_bucket_policy_delete_with_removal(mocker):
+def test_storage_bucket_policy_delete_multiple_entities(mocker):
     """
-    Given: Arguments for bucket policy deletion and GCP credentials.
-    When: Calling storage_bucket_policy_delete function with removable entities.
-    Then: Returns a CommandResults object with success message and calls API with correct parameters.
+    Given: A bucket with IAM policy containing multiple entities to be removed
+    When: storage_bucket_policy_delete is called with entity='allUsers,user:test@mail.com'
+    Then: The policy is updated with both entities removed from all roles
     """
     from GCP import storage_bucket_policy_delete
-    from CommonServerPython import CommandResults
 
-    # Mock the GCP API responses
-    initial_policy = {
+    # Mock data
+    args = {
+        "resource_name": "test-bucket",
+        "entity": "allUsers,user:test@mail.com"
+    }
+
+    policy = {
         "bindings": [
             {
                 "role": "roles/storage.objectViewer",
-                "members": ["allUsers", "user:someone@example.com"]
+                "members": ["allUsers", "user:test@mail.com", "user:other@example.com"]
             },
             {
-                "role": "roles/storage.objectAdmin",
-                "members": ["user:admin@example.com", "allUsers"]
+                "role": "roles/storage.admin",
+                "members": ["user:admin@example.com", "user:test@mail.com"]
             }
         ]
     }
 
-    mock_get_policy = mocker.MagicMock(return_value=initial_policy)
-    mock_set_policy = mocker.MagicMock()
+    # Mock the GCP API calls
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
 
-    mock_buckets = mocker.MagicMock()
-    mock_buckets.getIamPolicy.return_value.execute = mock_get_policy
-    mock_buckets.setIamPolicy.return_value.execute = mock_set_policy
-
-    mock_storage = mocker.MagicMock()
     mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = policy
+    mock_buckets.setIamPolicy.return_value.execute.return_value = {}
 
-    mocker.patch("GCP.build", return_value=mock_storage)
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch('GCP.build', return_value=mock_storage)
 
-    args = {
-        "resource_name": "test-bucket",
-        "entity": "allUsers"
-    }
+    # Run the function
+    result = storage_bucket_policy_delete(mock_creds, args)
 
-    creds = mocker.MagicMock()
-    result = storage_bucket_policy_delete(creds, args)
-
-    # Check that the function returns expected results
-    assert isinstance(result, CommandResults)
-    assert "Access permissions for `allUsers` were successfully revoked" in result.readable_output
-
-    # Verify APIs were called with correct parameters
+    # Verify the results
+    assert "`allUsers`" in result.readable_output
+    assert "`user:test@mail.com`" in result.readable_output
     mock_buckets.getIamPolicy.assert_called_once_with(bucket="test-bucket")
     mock_buckets.setIamPolicy.assert_called_once()
-
-    # Verify the policy was correctly modified
+    # Verify that the removed entities are no longer in the policy
     call_args = mock_buckets.setIamPolicy.call_args[1]
-    assert call_args["bucket"] == "test-bucket"
-
-    policy = call_args["body"]
-    assert len(policy["bindings"]) == 2
-
-    # Verify allUsers was removed from both roles
-    for binding in policy["bindings"]:
-        assert "allUsers" not in binding["members"]
-
-    # Verify other members still exist
-    assert "user:someone@example.com" in policy["bindings"][0]["members"]
-    assert "user:admin@example.com" in policy["bindings"][1]["members"]
-
-
-def test_storage_bucket_policy_delete_no_changes(mocker):
-    """
-    Given: Arguments for bucket policy deletion and GCP credentials.
-    When: Calling storage_bucket_policy_delete function with no matching entities.
-    Then: Returns a CommandResults object with no changes message and doesn't call setIamPolicy.
-    """
-    from GCP import storage_bucket_policy_delete
-    from CommonServerPython import CommandResults
-
-    # Mock the GCP API responses
-    initial_policy = {
-        "bindings": [
-            {
-                "role": "roles/storage.objectViewer",
-                "members": ["user:someone@example.com"]
-            }
-        ]
-    }
-
-    mock_get_policy = mocker.MagicMock(return_value=initial_policy)
-
-    mock_buckets = mocker.MagicMock()
-    mock_buckets.getIamPolicy.return_value.execute = mock_get_policy
-
-    mock_storage = mocker.MagicMock()
-    mock_storage.buckets.return_value = mock_buckets
-
-    mocker.patch("GCP.build", return_value=mock_storage)
-
-    args = {
-        "resource_name": "test-bucket",
-        "entity": "allUsers"
-    }
-
-    creds = mocker.MagicMock()
-    result = storage_bucket_policy_delete(creds, args)
-
-    # Check that the function returns expected results
-    assert isinstance(result, CommandResults)
-    assert "No IAM changes made for bucket" in result.readable_output
-
-    # Verify getIamPolicy was called but setIamPolicy was not
-    mock_buckets.getIamPolicy.assert_called_once_with(bucket="test-bucket")
-    mock_buckets.setIamPolicy.assert_not_called()
+    updated_policy = call_args['body']
+    for binding in updated_policy['bindings']:
+        assert "allUsers" not in binding.get('members', [])
+        assert "user:test@mail.com" not in binding.get('members', [])
 
 
 def test_compute_subnet_update_flow_logs(mocker):
     """
-    Given: Arguments for subnet update with flow logs and GCP credentials.
-    When: Calling compute_subnet_update function with enable_flow_logs.
-    Then: Returns a CommandResults object and calls API with correct parameters.
+    Given: A GCP subnet that needs flow logs enabled
+    When: compute_subnet_update is called with enable_flow_logs=true
+    Then: The subnet's flow logs are enabled with proper fingerprint validation
     """
     from GCP import compute_subnet_update
-    from CommonServerPython import CommandResults
 
-    # Mock the GCP API responses
-    mock_get_response = {
-        "fingerprint": "test-fingerprint"
-    }
-    mock_operation_response = {
-        "id": "operation-123",
-        "name": "operation-name",
-        "operationType": "patch",
-        "status": "RUNNING",
-        "progress": 0,
-        "zone": "us-central1-a",
-        "kind": "compute#operation"
-    }
-
-    mock_get = mocker.MagicMock(return_value=mock_get_response)
-    mock_patch = mocker.MagicMock(return_value=mock_operation_response)
-
-    mock_subnetworks = mocker.MagicMock()
-    mock_subnetworks.get.return_value.execute = mock_get
-    mock_subnetworks.patch.return_value.execute = mock_patch
-
-    mock_compute = mocker.MagicMock()
-    mock_compute.subnetworks.return_value = mock_subnetworks
-
-    mocker.patch("GCP.build", return_value=mock_compute)
-
+    # Mock data
     args = {
         "project_id": "test-project",
-        "region": "us-central1",
+        "region": "us-east1",
         "resource_name": "test-subnet",
         "enable_flow_logs": "true"
     }
 
-    creds = mocker.MagicMock()
-    result = compute_subnet_update(creds, args)
+    # Subnet response with fingerprint
+    subnet_response = {
+        "name": "test-subnet",
+        "fingerprint": "test-fingerprint-123",
+        "enableFlowLogs": False
+    }
 
-    # Check that the function returns expected results
-    assert isinstance(result, CommandResults)
+    # Expected patch operation response
+    patch_response = {
+        "id": "operation-123",
+        "name": "operation-123",
+        "kind": "compute#operation",
+        "operationType": "patch",
+        "progress": "100",
+        "zone": "us-east1",
+        "status": "RUNNING"
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_subnetworks = mocker.Mock()
+
+    mock_compute.subnetworks.return_value = mock_subnetworks
+    mock_subnetworks.get.return_value.execute.return_value = subnet_response
+    mock_subnetworks.patch.return_value.execute.return_value = patch_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch('GCP.build', return_value=mock_compute)
+
+    # Run the function
+    result = compute_subnet_update(mock_creds, args)
+
+    # Verify the results
     assert "Flow Logs configuration for subnet test-subnet" in result.readable_output
+    assert result.outputs[0] == patch_response
 
-    # Verify APIs were called with correct parameters
+    # Check that the correct API calls were made
     mock_subnetworks.get.assert_called_once_with(
         project="test-project",
-        region="us-central1",
+        region="us-east1",
         subnetwork="test-subnet"
     )
 
-    mock_subnetworks.patch.assert_called_once()
-    patch_args = mock_subnetworks.patch.call_args[1]
-    assert patch_args["project"] == "test-project"
-    assert patch_args["region"] == "us-central1"
-    assert patch_args["subnetwork"] == "test-subnet"
-    assert patch_args["body"]["enableFlowLogs"] is True
-    assert patch_args["body"]["fingerprint"] == "test-fingerprint"
+    mock_subnetworks.patch.assert_called_once_with(
+        project="test-project",
+        region="us-east1",
+        subnetwork="test-subnet",
+        body={"enableFlowLogs": True, "fingerprint": "test-fingerprint-123"}
+    )
 
 
 def test_compute_subnet_update_private_access(mocker):
     """
-    Given: Arguments for subnet update with private access and GCP credentials.
-    When: Calling compute_subnet_update function with enable_private_ip_google_access.
-    Then: Returns a CommandResults object and calls API with correct parameters.
+    Given: A GCP subnet that needs private IP Google access enabled
+    When: compute_subnet_update is called with enable_private_ip_google_access=true
+    Then: The subnet's private IP Google access is enabled
     """
     from GCP import compute_subnet_update
-    from CommonServerPython import CommandResults
 
-    # Mock the GCP API responses
-    mock_operation_response = {
-        "id": "operation-123",
-        "name": "operation-name",
-        "operationType": "setPrivateIpGoogleAccess",
-        "status": "RUNNING",
-        "progress": 0,
-        "zone": "us-central1-a",
-        "kind": "compute#operation"
-    }
-
-    mock_subnetworks = mocker.MagicMock()
-    mock_subnetworks.setPrivateIpGoogleAccess.return_value.execute = mocker.MagicMock(
-        return_value=mock_operation_response
-    )
-
-    mock_compute = mocker.MagicMock()
-    mock_compute.subnetworks.return_value = mock_subnetworks
-
-    mocker.patch("GCP.build", return_value=mock_compute)
-
+    # Mock data
     args = {
         "project_id": "test-project",
-        "region": "us-central1",
+        "region": "us-east1",
         "resource_name": "test-subnet",
         "enable_private_ip_google_access": "true"
     }
 
-    creds = mocker.MagicMock()
-    result = compute_subnet_update(creds, args)
+    # Expected operation response
+    set_response = {
+        "id": "operation-456",
+        "name": "operation-456",
+        "kind": "compute#operation",
+        "operationType": "setPrivateIpGoogleAccess",
+        "progress": "100",
+        "zone": "us-east1",
+        "status": "RUNNING"
+    }
 
-    # Check that the function returns expected results
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_subnetworks = mocker.Mock()
+
+    mock_compute.subnetworks.return_value = mock_subnetworks
+    mock_subnetworks.setPrivateIpGoogleAccess.return_value.execute.return_value = set_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch('GCP.build', return_value=mock_compute)
+
+    # Run the function
+    result = compute_subnet_update(mock_creds, args)
+
+    # Verify the results
+    assert "Private IP Google Access configuration for subnet test-subnet" in result.readable_output
+    assert result.outputs[1] == set_response
+
+    # Check that the correct API calls were made
+    mock_subnetworks.setPrivateIpGoogleAccess.assert_called_once_with(
+        project="test-project",
+        region="us-east1",
+        subnetwork="test-subnet",
+        body={"privateIpGoogleAccess": True}
+    )

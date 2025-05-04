@@ -3,10 +3,12 @@ from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from google.oauth2 import service_account
 
 urllib3.disable_warnings()
 API_VERSION = "v1"
-REQUIRED_PERMISSIONS: Dict[str, List[str]] = {
+SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-compute-firewall-patch": [
         "compute.firewalls.update",
         "compute.firewalls.get",
@@ -46,7 +48,7 @@ FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*
 METADATA_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
 
 
-def parse_firewall_rule(rule_str: str) -> List[Dict[str, List[str] | str]]:
+def parse_firewall_rule(rule_str: str) -> list[dict[str, list[str] | str]]:
     """
     Transforms a string of firewall rules into a list of dictionaries.
 
@@ -55,7 +57,7 @@ def parse_firewall_rule(rule_str: str) -> List[Dict[str, List[str] | str]]:
                         e.g., "ipprotocol=abc,ports=123;ipprotocol=ded,ports=22,443".
 
     Returns:
-        List[Dict[str, Union[str, List[str]]]]: A list of dictionaries containing 'IPProtocol' and 'ports'.
+        list[dict[str, Union[str, list[str]]]]: A list of dictionaries containing 'IPProtocol' and 'ports'.
     """
     rules = []
     for f in rule_str.split(";"):
@@ -69,7 +71,7 @@ def parse_firewall_rule(rule_str: str) -> List[Dict[str, List[str] | str]]:
     return rules
 
 
-def parse_metadata_items(tags_str: str) -> List[Dict[str, str]]:
+def parse_metadata_items(tags_str: str) -> list[dict[str, str]]:
     """
     Transforms a string of metadata items into a list of dictionaries.
 
@@ -78,7 +80,7 @@ def parse_metadata_items(tags_str: str) -> List[Dict[str, str]]:
                         e.g., "key=abc,value=123;key=fed,value=456".
 
     Returns:
-        List[Dict[str, str]]: A list of dictionaries containing 'key' and 'value' pairs.
+        list[dict[str, str]]: A list of dictionaries containing 'key' and 'value' pairs.
     """
     tags = []
     for f in tags_str.split(";"):
@@ -95,12 +97,12 @@ def parse_metadata_items(tags_str: str) -> List[Dict[str, str]]:
 
 
 def get_access_token(
-    args: Dict[str, Any]) -> str:
+    args: dict[str, Any]) -> str:
     """
     Retrieves a valid access token using the default GCP configuration.
 
     Args:
-        args (Dict[str, Any]): Dictionary containing 'project_id' which is used to get the token.
+        args (dict[str, Any]): dictionary containing 'project_id' which is used to get the token.
 
     Returns:
         str: Access token for GCP.
@@ -116,16 +118,16 @@ def get_access_token(
     #     "account_id": args.get("project_id"),
     # }
     return ""
-    # return demisto.get_token(params)
+    # return demisto.get_token(params) # TODO
 
 
-def compute_firewall_patch(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Disables a firewall rule in a GCP project.
 
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'project_id' and 'resource_name'.
+        args (dict[str, Any]): Must include 'project_id' and 'resource_name'.
 
     Returns:
         CommandResults: Result of the firewall patch operation.
@@ -159,9 +161,9 @@ def compute_firewall_patch(creds: Credentials, args: Dict[str, Any]) -> CommandR
     if direction := args.get("direction"):
         config["direction"] = direction
     if logConfigEnable := args.get("logConfigEnable"):
-        config["logConfig"] = {"enable": logConfigEnable == "true"}
+        config["logConfig"] = {"enable": argToBoolean(logConfigEnable)}
     if disabled := args.get("disabled"):
-        config["disabled"] = disabled == "true"
+        config["disabled"] = argToBoolean(disabled)
 
     compute = build("compute", API_VERSION, credentials=creds)
     demisto.debug(f"Firewall patch config for {resource_name} in project {project_id}: {config}")
@@ -171,18 +173,18 @@ def compute_firewall_patch(creds: Credentials, args: Dict[str, Any]) -> CommandR
         body=config
     ).execute()
 
-    hr = tableToMarkdown(f"Firewall rule {resource_name} was successfully patched (disabled) in project {project_id}",
+    hr = tableToMarkdown("Google Cloud Compute Firewall Rule Update Operation Started Successfully",
                          t=response, headers=OPERATION_TABLE, removeNull=True)
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
-def storage_bucket_policy_delete(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Deletes public IAM policy bindings from a GCS bucket.
 
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'resource_name' (bucket name) and optional 'entity'.
+        args (dict[str, Any]): Must include 'resource_name' (bucket name) and optional 'entity'.
 
     Returns:
         CommandResults: Result of the policy removal operation.
@@ -220,13 +222,13 @@ def storage_bucket_policy_delete(creds: Credentials, args: Dict[str, Any]) -> Co
     return CommandResults(readable_output=hr)
 
 
-def compute_subnet_update(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Updates subnet properties such as flow logs and private Google access.
 
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'project_id', 'region', 'resource_name',
+        args (dict[str, Any]): Must include 'project_id', 'region', 'resource_name',
         and optional flow log and private access flags.
 
     Returns:
@@ -279,13 +281,13 @@ def compute_subnet_update(creds: Credentials, args: Dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=[response_patch, response_set])
 
 
-def compute_project_metadata_add(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+def compute_project_metadata_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Adds metadata key-value pairs to a GCE instance.
 
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'metadata' in key=value format.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'metadata' in key=value format.
 
     Returns:
         CommandResults: Result of the metadata update operation.
@@ -298,23 +300,28 @@ def compute_project_metadata_add(creds: Credentials, args: Dict[str, Any]) -> Co
 
     instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()
     fingerprint = instance.get("metadata", {}).get("fingerprint")
+    existing_items = instance.get("metadata", {}).get("items", [])
+    existing_metadata = {item["key"]: item["value"] for item in existing_items}
 
-    items = parse_metadata_items(metadata_str)
-    body = {"fingerprint": fingerprint, "items": items}
+    new_items = parse_metadata_items(metadata_str)
+    for item in new_items:
+        existing_metadata[item["key"]] = item["value"]
+
+    body = {"fingerprint": fingerprint, "items": [{"key": k, "value": v} for k, v in existing_metadata.items()]}
     response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name, body=body).execute()
 
-    hr = tableToMarkdown(f"Metadata was successfully added to instance {resource_name} in project {project_id}",
+    hr = tableToMarkdown("Google Cloud Compute Project Metadata Update Operation Started Successfully",
                          t=response, headers=OPERATION_TABLE, removeNull=True)
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operation", outputs=response)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
-def container_cluster_security_update(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Updates security-related configurations for a GKE cluster.
 
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'project_id', 'region', 'resource_name' and optional security flags.
+        args (dict[str, Any]): Must include 'project_id', 'region', 'resource_name' and optional security flags.
             - enable_intra_node_visibility: Whether to enable intra-node visibility.
             - enable_master_authorized_networks: Whether to enable master authorized networks (required if cidrs provided).
             - cidrs: Comma-separated list of CIDR blocks (e.g. "192.168.0.0/24,10.0.0.0/32").
@@ -327,12 +334,16 @@ def container_cluster_security_update(creds: Credentials, args: Dict[str, Any]) 
     region = args.get("region")
     resource_name = args.get("resource_name")
     cidrs = argToList(args.get("cidrs"))
+    if "enable_master_authorized_networks" in args and "enable_intra_node_visibility" in args:
+        raise DemistoException("Only one update can be applied to a cluster with each request. "
+                               "Please provide either 'enable_intra_node_visibility' "
+                               "or 'enable_master_authorized_networks', not both.")
 
     if args.get("enable_master_authorized_networks") and not cidrs:
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
 
     container = build("container", API_VERSION, credentials=creds)
-    update_fields: Dict[str, Any] = {}
+    update_fields: dict[str, Any] = {}
 
     if enable_intra := args.get("enable_intra_node_visibility"):
         update_fields["desiredIntraNodeVisibilityConfig"] = {"enabled": argToBoolean(enable_intra)}
@@ -355,21 +366,21 @@ def container_cluster_security_update(creds: Credentials, args: Dict[str, Any]) 
     ).execute()
 
     hr = tableToMarkdown(
-        f"Cluster security configuration for {resource_name} was successfully updated in project {project_id}",
+        "Google Cloud Container Cluster Security Update Operation Started Successfully",
         t=response, headers=OPERATION_TABLE,
         removeNull=True
     )
 
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operation", outputs=response)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
 
 
-def storage_bucket_metadata_update(creds: Credentials, args: Dict[str, Any]) -> CommandResults:
+def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Updates metadata configuration for a GCS bucket.
 
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'resource_name' (bucket name) and optional versioning/uniform access flags.
+        args (dict[str, Any]): Must include 'resource_name' (bucket name) and optional versioning/uniform access flags.
 
     Returns:
         CommandResults: Result of the metadata update operation.
@@ -378,7 +389,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: Dict[str, Any]) -> 
 
     storage = build("storage", API_VERSION, credentials=creds)
 
-    body: Dict[str, Any] = {}
+    body: dict[str, Any] = {}
     if enable_versioning := args.get("enable_versioning"):
         body["versioning"] = {"enabled": argToBoolean(enable_versioning)}
     if enable_uniform_access := args.get("enable_uniform_access"):
@@ -401,13 +412,13 @@ def storage_bucket_metadata_update(creds: Credentials, args: Dict[str, Any]) -> 
                           outputs_key_field="name")
 
 
-def check_required_permissions(creds: Credentials, args: Dict[str, Any], command: str = "") -> str:
+def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:
     """
     Checks if the provided GCP credentials have the required IAM permissions.
     API: https://cloud.google.com/resource-manager/reference/rest/v1/projects/testIamPermissions
     Args:
         creds (Credentials): GCP credentials.
-        args (Dict[str, Any]): Must include 'project_id'.
+        args (dict[str, Any]): Must include 'project_id'.
         command (Optional[str]): Specific command to check, or all if None.
 
     Returns:
@@ -429,39 +440,12 @@ def check_required_permissions(creds: Credentials, args: Dict[str, Any], command
         raise DemistoException(f"Missing permissions for '{command}': {missing}")
     return "ok"
 
-
-def test_module(args: Dict[str, Any]) -> CommandResults:
-    """
-    Tests API connectivity and permissions for the GCP integration.
-
-    This function verifies that:
-    1. Access token can be retrieved
-    2. The credentials have all required permissions for all commands
-
-    Args:
-        args (Dict[str, Any]): Must include 'project_id'
-
-    Returns:
-        CommandResults: Success or failure message
-    """
-    # Get token and create credentials
-    token = get_access_token(args)
-    creds = Credentials(token)
-
-    check_required_permissions(creds, args)
-    return CommandResults(
-        readable_output="✅ Success! Connected to GCP and verified all required permissions.",
-    )
-
-
 def main():
     """Main function to route commands and execute logic"""
     try:
         command = demisto.command()
         args = demisto.args()
-        if command == "test-module":
-            return_results(test_module(args))
-            return
+        params = demisto.params()
 
         command_map = {
             "gcp-compute-firewall-patch": compute_firewall_patch,
@@ -472,13 +456,21 @@ def main():
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
         }
 
-        if command not in command_map:
+        if command != "test-module" and command not in command_map:
             raise NotImplementedError(f"Command not implemented: {command}")
 
-        token = get_access_token(args)
-        creds = Credentials(token)
-        check_required_permissions(creds, args, command)
-        result = command_map[command](creds, args)
+        creds = None
+        if service_account_info := json.loads(params.get("credentials", {}).get("password")):
+            creds = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
+            args["project_id"] = service_account_info.get("project_id")
+            demisto.debug("Using service account credentials")
+        if not creds:
+            token = get_access_token(args)
+            creds = Credentials(token=token)
+            demisto.debug("Using token-based credentials")
+
+        result: CommandResults | str = check_required_permissions(creds, args, command)
+        result = command_map[command](creds, args) if command in command_map else result
         return_results(result)
 
     except Exception as e:
