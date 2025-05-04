@@ -467,7 +467,7 @@ script:
       Executes a query request.
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     name: swis-query
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3295105
   isfetch: true
   runonce: false
   script: '-'
