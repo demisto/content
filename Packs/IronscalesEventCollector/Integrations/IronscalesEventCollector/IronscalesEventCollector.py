@@ -35,7 +35,7 @@ class Client(BaseClient):  # pragma: no cover
         proxy: bool,
         api_key: str,
         scopes: List[str],
-        all_incident:bool,
+        all_incident: bool,
         max_fetch: int,
     ) -> None:
         self.company_id = company_id
@@ -69,12 +69,12 @@ class Client(BaseClient):  # pragma: no cover
             method="GET",
             url_suffix=f"/incident/{self.company_id}/details/{incident_id}",
         )
-        
-    def get_incident_ids(self, start_time: datetime)-> List[int]:
+
+    def get_incident_ids(self, start_time: datetime) -> List[int]:
         '''
         Navigate to the correct endpoint
         '''
-        if self.all_incident :
+        if self.all_incident:
             return self.get_all_incident_ids(start_time)
         return self.get_open_incident_ids()
 
@@ -86,20 +86,20 @@ class Client(BaseClient):  # pragma: no cover
             ).get("incident_ids")
             or []
         )
-        
-    def convert_time(self ,time):
+
+    def convert_time(self, time):
         '''
         The API receive timestamps only in iso format, percent encoded
         '''
-        time  = time.isoformat() #convert to iso format
-        time_encoded = quote(time, safe = '')# Percent-encode (e.g., encode '+' to '%2B')
+        time = time.isoformat()  # convert to iso format
+        time_encoded = quote(time, safe='')  # Percent-encode (e.g., encode '+' to '%2B')
         return time_encoded
-        
-    def get_all_incident_ids(self, start_time:datetime) -> List[int]:
-        curr_time = datetime.now(timezone.utc) # Get the current datetime with UTC timezone
-        curr_time  = self.convert_time(curr_time)
+
+    def get_all_incident_ids(self, start_time: datetime) -> List[int]:
+        curr_time = datetime.now(timezone.utc)  # Get the current datetime with UTC timezone
+        curr_time = self.convert_time(curr_time)
         start = self.convert_time(start_time)
-        
+
         page = 1
         params = {
             "reportType": "all",
@@ -107,23 +107,26 @@ class Client(BaseClient):  # pragma: no cover
             "created_start_time": start,
             "created_end_time": curr_time,
             "order": "asc"
-                }
-        incidents : List[int] = []
+        }
+        incidents: List[int] = []
         # handle paging
-        while len(incidents) < self.max_fetch:  # take a look here - maybe a problem in case of several incidents in the same moment, and then filter them, but using page < total pages can bring to a high latency
-            params["page"]= str(page)
+        while len(incidents) < self.max_fetch:
+            # take a look here - maybe a problem in case of several incidents in the same
+            # moment, and then filter them, but using page < total pages can bring to a high latency
+            params["page"] = str(page)
             response = self._http_request(
-                method="GET",url_suffix=f"/incident/{self.company_id}/list/",params=params)
+                method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params)
             total_pages = response.get("total_pages")
             new_incidents = response.get("incidents").get("incidentID") or []
             incidents.extend(new_incidents)
             if not new_incidents or page >= total_pages:
                 break
-            page+=1
-            
+            page += 1
+
         if not incidents:
             return []
         return incidents
+
 
 """ HELPER FUNCTIONS """
 
@@ -292,8 +295,8 @@ def main():
             proxy=params.get("proxy", False),
             api_key=params.get("apikey", {}).get("password"),
             scopes=argToList(params.get("scopes")),
-            all_incident = params.get("collect_all_incidents"),
-            max_fetch = max_fetch,
+            all_incident=params.get("collect_all_incidents"),
+            max_fetch=max_fetch,
         )
         if command == "test-module":
             return_results(test_module_command(client, first_fetch))
