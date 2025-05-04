@@ -292,14 +292,17 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
 @debug_function
 def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
     """
-    Get indicators from the server using IndicatorsSearcher and format them.
+    Retrieves indicators using the IndicatorsSearcher and formats them according to the request arguments.
+    Applies optional cleanup (invalid removal, IP collapsing) and collects statistics on the changes.
 
-    Parameters:
-        request_args: Request arguments
+    Args:
+        request_args (RequestArguments): User-defined settings for formatting, filtering, and pagination.
 
     Returns:
-        tuple[str, int]: A tuple of formatted indicators to display in EDL's response (str),
-            and the number of original indicators received from the server before formatting (int).
+        tuple[str, int, dict]:
+            - str: A formatted string of indicators, ready to be returned in an EDL (one per line).
+            - int: The number of original indicators fetched before formatting.
+            - dict: Logging statistics about actions taken on indicators (added, dropped, modified).
     """
     limit = request_args.offset + request_args.limit
     offset = request_args.offset
@@ -327,8 +330,8 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
             elif line not in iocs_set:
                 iocs_set.add(line)
                 formatted_indicators += line
-        if EXTENSIVE_LOGGING:
-            demisto.debug(f"Finished formatting ioc. Count after collapse: {len(iocs_set)}")
+        
+        demisto.debug(f"Finished formatting ioc. Count after collapse: {len(iocs_set)}")
 
 
     else:
@@ -402,8 +405,6 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
                 if ioc_counter >= indicator_searcher.limit:
                     break
                 
-        if ioc_counter == 0:
-            demisto.debug("No IOCs found during indicator search.")
 
     except Exception as e:
         demisto.error(f"Error in parsing the indicators, error: {e!s}")
@@ -743,7 +744,7 @@ def log_indicator_line(raw_indicator: str, indicator: str, action: str, reason: 
 
 
 def store_log_data(request_args: RequestArguments, created: datetime, log_stats: dict) -> None:
-    """Add the header to the log string.
+    """Finalizes and writes the full EDL log file by adding a summary header and appending logged indicator actions.
 
     Args:
         request_args (RequestArguments): The request args, they will be added to the header.
@@ -775,22 +776,37 @@ def store_log_data(request_args: RequestArguments, created: datetime, log_stats:
         with open(EDL_FULL_LOG_PATH_WIP, "w+") as log_file_data:
             # Empty WIP log file after finalization.
             log_file_data.seek(0)
+        
 
 
 @debug_function
 def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Union[IO, IO[str]], dict]:
     """
-    Create a list in new file of formatted_indicators, and log the modifications.
-     * IP / CIDR:
-         1) if collapse_ips, collapse IPs/CIDRs
-     * URL:
-        1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
-        2) if port_stripping, strip ports
-        3) if protocol_stripping, strip protocols
-        4) if url_truncate, truncate urls
-    * Other indicator types:
-        1) if drop_invalids, drop invalids (has invalid chars)
-        2) if port_stripping, strip ports
+    Formats a stream of indicators (IOCs) into a standardized text output and logs processing actions.
+    Args:
+        iocs (IO): A file-like object with JSON lines, each representing an indicator with "value" and "indicator_type".
+        request_args (RequestArguments): An object containing formatting preferences such as from the following categories:
+            * IP / CIDR:
+                1) if collapse_ips, collapse IPs/CIDRs
+            * URL:
+                1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
+                2) if port_stripping, strip ports
+                3) if protocol_stripping, strip protocols
+                4) if url_truncate, truncate urls
+            * Other indicator types:
+                1) if drop_invalids, drop invalids (has invalid chars)
+                2) if port_stripping, strip ports
+    Returns:
+        tuple:
+            - A temporary file-like object containing the formatted indicators, one per line.
+            - A dictionary with statistics about dropped, added, and modified indicators.
+    
+    Behavior:
+        - Skips indicators missing a value or non-ASCII (if configured).
+        - For URLs/domains: applies cleaning (strip protocol/port, truncate) and filtering (length, invalid chars).
+        - For IPs/CIDRs: can collapse into ranges or drop if too large.
+        - Wildcard domains and TLDs are handled according to config.
+        - All actions (add, drop, modify) are logged and counted in the result.
     """
     enforce_ascii = argToBoolean(demisto.params().get("enforce_ascii", False))
     ipv4_formatted_indicators = set()
@@ -1025,8 +1041,8 @@ def get_edl_on_demand() -> tuple[str, int]:
             demisto.debug(f"edl: Error in writing to file: {e!s}")
             raise e
 
-        
-        demisto.debug("edl: Finished writing EDL data to cache")
+        if EXTENSIVE_LOGGING:
+            demisto.debug("edl: Finished writing EDL data to cache")
         set_integration_context(ctx)
 
     else:
@@ -1040,8 +1056,8 @@ def get_edl_on_demand() -> tuple[str, int]:
         except Exception as e:
             demisto.debug(f"edl: Error reading cache file: {e!s}")
             raise e
-
-        demisto.debug("edl: Finished reading EDL data from cache")
+        if EXTENSIVE_LOGGING:
+            demisto.debug("edl: Finished reading EDL data from cache")
 
     return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
@@ -1091,7 +1107,7 @@ def authenticate_app(params: dict, request_headers: Any) -> Optional[Response]:
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
     if EXTENSIVE_LOGGING:
-        demisto.debug("Attempting basic authentication for incoming request.")
+        demisto.debug("Attempting authentication for incoming request.")
     if username and password:
         headers: dict = cast(dict[Any, Any], request_headers)
         if not validate_basic_authentication(headers, username, password):
@@ -1163,8 +1179,6 @@ def route_edl() -> Response:
     if EXTENSIVE_LOGGING:
         demisto.debug("edl: authentication successful")
     request_args = get_request_args(request.args, params)
-    if EXTENSIVE_LOGGING:
-        demisto.debug(f"EDL request args resolved: {request_args.to_context_json()}")
     on_demand = params.get("on_demand")
     if EXTENSIVE_LOGGING:
         demisto.debug(f"{'Using' if on_demand else 'Not using'} on-demand cache to serve EDL.")
@@ -1218,6 +1232,12 @@ def route_edl() -> Response:
 
 @APP.route("/log_download", methods=["GET"])
 def log_download() -> Response:
+    """Flask route to download the full EDL log file as a zip.
+    The log file zipped is located at EDL_FULL_LOG_PATH.
+    
+    Return:
+        Response: A Flask Response object that sends a ZIP file containing the full log.
+    """
     params = demisto.params()
     demisto.debug("edl: Starting EDL route/log_download handler")
     auth_resp = authenticate_app(params, request.headers)
@@ -1241,7 +1261,14 @@ def log_download() -> Response:
 
 @APP.route("/log", methods=["GET"])
 def route_edl_log() -> Response:
-    """Show the edl indicators log on '/log' API request."""
+    """
+    Flask route to serve the EDL indicators log via HTTP.
+
+    Returns:
+        Response: A Flask Response containing either:
+            - The log contents as plain text (with optional prepend/append formatting), or
+            - A ZIP file download containing the log, if the log is too large to display.
+    """
     params = demisto.params()
 
     cache_refresh_rate: str = params.get("cache_refresh_rate")
@@ -1462,7 +1489,7 @@ def test_module(_: dict, params: dict):
 @debug_function
 def update_edl_command(args: dict, params: dict):
     """
-    Updates the context to update the EDL values on demand the next time it runs
+    Updates the context to update the EDL values on demand the next time it runs.
     """
     on_demand = params.get("on_demand")
     if not on_demand:
