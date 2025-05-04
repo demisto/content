@@ -1,4 +1,6 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
 commonfields:
   id: AzureDataExplorer
   version: -1
@@ -8,24 +10,28 @@ configuration:
   required: true
   defaultvalue: https://help.kusto.windows.net
   type: 0
+  section: Connect
   additionalinfo:
 - name: client_id
   display: Application ID
   required: true
   defaultvalue: a9ce8db2-847a-46af-9bfb-725d8a8d3c53
   type: 0
+  section: Connect
   additionalinfo:
 - name: client_activity_prefix
   display: Client Activity Prefix
   required: true
   defaultvalue: XSOAR-DataExplorer
   type: 0
+  section: Connect
   additionalinfo: "A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;<UUID>'."
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  section: Connect
   required: false
 - name: proxy
   display: Use system proxy settings
@@ -33,12 +39,14 @@ configuration:
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: authentication_type
   display: Authentication Type
   required: true
   defaultvalue: Device Code
   type: 15
   additionalinfo: Type of authentication - could be Authorization Code Flow (recommended), Device Code Flow, or Client Credentials Flow.
+  section: Connect
   options:
   - Device Code
   - Authorization Code
@@ -49,6 +57,7 @@ configuration:
   type: 0
   additionalinfo: ""
   required: false
+  section: Connect
 - name: credentials
   display: Client Secret
   defaultvalue:
@@ -57,12 +66,14 @@ configuration:
   displaypassword: Client Secret
   hiddenusername: true
   required: false
+  section: Connect
 - name: redirect_uri
   display: Application redirect URI
   defaultvalue:
   type: 0
   additionalinfo: ""
   required: false
+  section: Connect
 - name: auth_code
   display: Authorization code
   defaultvalue:
@@ -71,6 +82,7 @@ configuration:
   displaypassword: Authorization code
   hiddenusername: true
   required: false
+  section: Connect
 description: Use the Azure Data Explorer integration to collect and analyze data inside Azure Data Explorer clusters, and to manage search queries.
 display: Azure Data Explorer
 name: AzureDataExplorer
@@ -435,7 +447,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-data-explorer-generate-login-url
     arguments: []
-  dockerimage: demisto/auth-utils:1.0.0.116752
+  dockerimage: demisto/auth-utils:1.0.0.3030454
   runonce: false
   script: "-"
   subtype: python3
