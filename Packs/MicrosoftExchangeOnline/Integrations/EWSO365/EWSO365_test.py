@@ -1145,6 +1145,15 @@ def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header
     assert result["From"] == "Task One Test <info@test.com>"
 
 def test_fetch_attachments_for_message_output(mocker):
+    """
+    Given:
+        - The command and args are set for the ews-get-attachment command.
+    When:
+        - Calling the main function
+    Then:
+        - Attachments are fetched and parsed as expected.
+        - The output is returned in the correct format.
+    """
     from EWSO365 import main
     from EWSApiModule import CustomDomainOAuth2Credentials
     from CommonServerPython import CommandResults
