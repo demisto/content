@@ -10,7 +10,7 @@ The Cisco Security Management Appliance (SMA) is used to centralize services fro
 - Centralized Reporting - get Cisco SMA's statistics reports.
 - Fetch quarantine messages as incidents.
 
-# Syslog Collection
+## Syslog Collection
 Follow the below step to collect Cisco SMA logs via syslog.
 
 Data normalization capabilities: 
