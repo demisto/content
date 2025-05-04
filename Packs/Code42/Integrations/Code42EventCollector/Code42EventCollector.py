@@ -232,9 +232,9 @@ def test_module(client: Client, event_types_to_fetch) -> str:
     Tests that it is possible to retrieve file events and audit logs and credentials are valid
     """
     if "File" in event_types_to_fetch:
-        client.get_file_events(timedelta(minutes=1), page_size=1)
+        client.get_file_events(timedelta(minutes=1), limit=1)
     if "Audit" in event_types_to_fetch:
-        client.get_audit_logs(datetime.now() - timedelta(minutes=1), page_size=1)
+        client.get_audit_logs(datetime.now() - timedelta(minutes=1), limit=1)
     return "ok"
 
 
