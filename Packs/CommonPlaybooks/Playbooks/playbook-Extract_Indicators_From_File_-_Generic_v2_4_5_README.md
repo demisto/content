@@ -17,7 +17,11 @@ Supported file types:
 - DOTM
 - XLSB
 - DOT
-- PPSM.
+- PPSM
+- PNG
+- JPG/JPEG
+- GIF (when Image OCR is enabled).
+In addition, the playbook supports QR codes.
 The playbook does not support encrypted / password-protected files such as XLSB. Such files will be skipped.
 
 ## Dependencies

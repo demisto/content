@@ -21,7 +21,11 @@ description: |-
   - DOTM
   - XLSB
   - DOT
-  - PPSM.
+  - PPSM
+  - PNG
+  - JPG/JPEG
+  - GIF (when Image OCR is enabled).
+  In addition, the playbook supports QR codes.
   The playbook does not support encrypted / password-protected files such as XLSB. Such files will be skipped.
 starttaskid: "0"
 tasks:
@@ -1502,10 +1506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
+    taskid: fbb64cc1-e15c-4dc9-b71d-5b65885d3549
     type: regular
     task:
-      id: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
+      id: fbb64cc1-e15c-4dc9-b71d-5b65885d3549
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
@@ -2366,10 +2370,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: c3860719-d894-4c8c-8553-1b548856825b
+    taskid: 48a9949e-eefc-4718-a81e-fbbf1c29609f
     type: regular
     task:
-      id: c3860719-d894-4c8c-8553-1b548856825b
+      id: 48a9949e-eefc-4718-a81e-fbbf1c29609f
       version: -1
       name: Save converted PDFs separately
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -2397,6 +2401,8 @@ tasks:
                   simple: ConvertedFile.FileSHA256
                 iscontext: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2415,10 +2421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: b0385f75-90e9-44f6-a0d4-1a0cc445dbb1
+    taskid: 0b9fdb0b-fe2b-4ebe-9bc9-1cf25c15a577
     type: regular
     task:
-      id: b0385f75-90e9-44f6-a0d4-1a0cc445dbb1
+      id: 0b9fdb0b-fe2b-4ebe-9bc9-1cf25c15a577
       version: -1
       name: Save valid PDFs separately
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -2447,6 +2453,8 @@ tasks:
                   simple: CheckedPDFs.IsEncrypted
                 iscontext: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2759,3 +2767,4 @@ tests:
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
+system: true
