@@ -488,7 +488,7 @@ script:
       name: target
       required: true
     - description: The weight of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive).
-      name: weight 
+      name: weight
       required: true
     description: Creates a substitute rule of a SRV record.
     name: infoblox-create-srv-substitute-record-rule
@@ -768,6 +768,42 @@ script:
       description: Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases.
       required: false
       defaultValue: extattrs
+    outputs:
+    - contextPath: Infoblox.NetworkInfo.Reference
+      description: The network reference.
+      type: String
+    - contextPath: Infoblox.NetworkInfo.Name
+      description: The network name.
+      type: String
+    - contextPath: Infoblox.NetworkInfo.NetworkView
+      description: The network view name.
+      type: String
+    - contextPath: Infoblox.NetworkInfo.ExtendedAttributes
+      description: The network extended attributes.
+      type: Unknown
+    - contextPath: Infoblox.NetworkInfo.AdditionalFields
+      description: The additional fields for network.
+      type: Unknown
+  - name: infoblox-list-dns-entries
+    description: List DNS entries.
+    arguments:
+    - name: pattern
+      description: Search pattern for DNS entries.
+      required: false
+    - name: record_type
+      description: Coma seperated list of  Record types to load, e.g., 'A', 'MX'.
+      required: true
+      defaultValue: a,aaaa,cname
+    #- name: extattrs
+    #  description: Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue".
+    #  required: false
+    - name: max_results
+      description: The maximum number of records to return. 0 for everything.
+      defaultValue: 50
+    #- name: additional_return_fields
+    #  description: Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases.
+    #  required: false
+    #  defaultValue: extattrs
     outputs:
     - contextPath: Infoblox.NetworkInfo.Reference
       description: The network reference.

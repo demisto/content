@@ -18,6 +18,7 @@ INTEGRATION_COMMAND_NAME = "infoblox"
 INTEGRATION_CONTEXT_NAME = "Infoblox"
 INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
 INTEGRATION_NETWORK_INFO_CONTEXT_KEY = "NetworkInfo"
+INTEGRATION_DNS_ENTRIES_CONTEXT_KEY = "DNSEntries"
 INTEGRATION_AUTHORIZATION_EXCEPTION_MESSAGE = "Authorization error, check your credentials."
 
 # COMMON RAW RESULT KEYS
@@ -642,6 +643,48 @@ class InfoBloxNIOSClient(BaseClient):
                 request_params.update(e)
 
         return self._http_request("GET", "network", params=request_params)
+
+    def get_dns_entries(
+        self,
+        pattern: str | None,
+        record_type: str | None,
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
+        """
+        Get the network information.
+
+        Args:
+        - `pattern` (``str | None``): Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet.
+        - `additional_return_fields` (``Optional[str]``): Comma-separated list of additional fields to return.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
+
+        Returns:
+        - Response JSON
+        """
+        if max_results == 0:
+            paging = True
+            max_results = 1000
+        else:
+            paging = False
+        request_params = assign_params(_max_results=max_results)
+
+        if pattern:
+            request_params["network~"] = pattern
+        if paging:
+            result = []
+            while True:
+                resp = self._http_request("GET", f"record:{record_type}", params=request_params)
+                if "_page_id" in resp:
+                    request_params['_page_id'] = resp['next_page_id']
+                if len(resp["result"]) > 0:
+                    result.extend(resp["result"])
+                else:
+                    break
+            return result
+
+        else:
+            return self._http_request("GET", f"record:{record_type}", params=request_params)["result"]
 
 
 """ HELPER FUNCTIONS """
@@ -1582,6 +1625,51 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     return hr, context, raw_response
 
 
+def get_dns_entries_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
+    """
+    Get network information command.
+
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+
+    record_type = args.get("record_type")
+    pattern = args.get("pattern")
+    max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
+    # additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+    # extended_attributes = args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+
+    record_types = list(record_type.lower().split(","))
+    dns_entries = []
+    for record_type in record_types:
+        raw_response = client.get_dns_entries(
+            pattern=pattern,
+            record_type=record_type,
+            #additional_return_fields=additional_return_fields,
+            #extended_attributes=extended_attributes,
+            max_results=max_results,
+        )
+        dns_entries.extend(raw_response)
+
+    # if "Error" in raw_response:
+    #    msg = raw_response.get("text")
+    #    raise DemistoException(f"Error retrieving host records: {msg}", res=raw_response)
+
+    if not dns_entries:
+        hr = "No dns entries found"
+        context = {}
+    else:
+        #hr = tableToMarkdown("DNS entries", output)
+        hr = dns_entries
+        context = {f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_DNS_ENTRIES_CONTEXT_KEY}": dns_entries}
+
+    return hr, context, raw_response
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 
@@ -1622,7 +1710,9 @@ def main():  # pragma: no cover
         f"{INTEGRATION_COMMAND_NAME}-delete-rpz-rule": delete_rpz_rule_command,
         f"{INTEGRATION_COMMAND_NAME}-list-host-info": get_host_records_command,
         f"{INTEGRATION_COMMAND_NAME}-list-network-info": get_network_info_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-dns-entries": get_dns_entries_command,
     }
+    return_outputs(*commands[command](client, demisto.args()))
     try:
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
