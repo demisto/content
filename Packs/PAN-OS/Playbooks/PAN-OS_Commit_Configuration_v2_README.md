@@ -10,18 +10,18 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Panorama
+* Panorama
 
 ### Scripts
 
-PrintErrorEntry
+* PrintErrorEntry
 
 ### Commands
 
-* pan-os-push-to-device-group
 * pan-os
-* pan-os-commit-status
 * pan-os-commit
+* pan-os-commit-status
+* pan-os-push-to-device-group
 
 ## Playbook Inputs
 
@@ -29,7 +29,7 @@ PrintErrorEntry
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| device-group |  The device group | Optional |
+| device-group |  |  | Optional |
 
 ## Playbook Outputs
 
