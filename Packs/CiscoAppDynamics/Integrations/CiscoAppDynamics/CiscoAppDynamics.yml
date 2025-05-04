@@ -102,10 +102,10 @@ script:
       defalutvalue: 'Audit,Healthrule Violations Events'
     - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.'
       name: start_date
-      required: true
+      required: false
     - description: 'The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.'
       name: end_date
-      required: true
+      required: false
     outputs:
       - contextPath: CiscoAppDynamics
         description: The list of events.

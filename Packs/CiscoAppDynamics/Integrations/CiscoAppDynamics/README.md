@@ -26,44 +26,49 @@ You can create new API Client identity types that can be used to generate OAuth 
 2. Search for Cisco AppDynamics.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Client ID | True |
-    | Client Secret | True |
-    | Application ID | True |
-    | Fetch Events | False |
-    | Event types to fetch (Multi-select list) | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | The maximum number of Audit History API per fetch | False |
-    | The maximum number of Healthrule Violations Events per fetch | False |
+    | **Parameter**                                                | **Required** |
+    | Server URL                                                   | True         |
+    | Client ID                                                    | True         |
+    | Client Secret                                                | True         |
+    | Application ID                                               | True         |
+    | Fetch Events                                                 | False        |
+    | Event types to fetch (Multi-select list)                     | False        |
+    | Trust any certificate (not secure)                           | False        |
+    | Use system proxy settings                                    | False        |
+    | The maximum number of Audit History API per fetch            | False        |
+    | The maximum number of Healthrule Violations Events per fetch | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, credentials, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### cisco-appdynamics-get-events
+### cisappdynamics-get-events
 
 ***
-Gets events from Cisco AppDynamics.
+Retrieves a list of events from the cisappdynamics instance.
 
 #### Base Command
 
-`cisco-appdynamics-get-events`
+`cisappdynamics-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise it will only display them. Possible values are: True, False. Default is False. | Required | 
+| max_audit_fetch | The maximum number of Audit History logs per fetch. | Optional | 
+| max_healthrule_fetch | The maximum number of Healthrule Violations Events per fetch. | Optional | 
+| events_type_to_fetch | Which events to fetch. Possible values are: Audit, Healthrule Violations Events. | Optional | 
+| start_date | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08. | Optional | 
+| end_date | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoAppDynamics | List | The list of events. | 
+
+
