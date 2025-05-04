@@ -104,7 +104,7 @@ DEVICE_OUTPUT_TO_XSOAR_CONTEXT_PATH = {
 }
 
 SEIM_EVENTS_PAGE_SIZE = 1000
-CLIENT_V3_JWS_VALIDATION_URL_SUFFIX = "/jws/validate"
+# CLIENT_V3_JWS_VALIDATION_URL_SUFFIX = "/jws/validate"
 VENDOR = "Absolute"
 PRODUCT = "Secure Endpoint"
 HEADERS_V3: dict = {"content-type": "text/plain"}
@@ -138,9 +138,9 @@ class ClientV3(BaseClient):
             bytes: The prepared signed HTTP request data.
         """
         if payload:
-            request_payload_data = {"data": payload}
+            request_payload_data = {"data": json.dumps(payload)}
         else:
-            request_payload_data = {}
+            request_payload_data = {"data": {}}
 
         headers = {
             "alg": "HS256",
@@ -391,8 +391,8 @@ def validate_absolute_api_url(base_url: str) -> str:
 def test_module(client: ClientV3) -> str:  # pragma: no cover
     """Tests API connectivity to Absolute"""
     try:
-        # client.api_request_absolute("POST", CLIENT_V3_JWS_VALIDATION_URL_SUFFIX, query_string="", page_size=1, specific_page=True)
-        client.api_request_absolute("GET", "/reporting/siem-events", query_string="", page_size=1, specific_page=True)
+        client.api_request_absolute('GET', '/v3/reporting/devices', query_string='',
+                                    page=0, page_size=1, specific_page=True)
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
