@@ -65,15 +65,7 @@ Updates the specified firewall rule with the data included in the request.
 | GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. | 
 | GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. | 
 | GCP.Compute.Operations.error.errors | string | The array of errors encountered while processing this operation. | 
-| GCP.Compute.Operations.error.errors.code | string | The error type identifier for this error. | 
-| GCP.Compute.Operations.error.errors.location | string | Indicates the field in the request that caused the error. This property is optional. | 
-| GCP.Compute.Operations.error.errors.message | string | An optional, human-readable error message. | 
 | GCP.Compute.Operations.warnings | string | If warning messages are generated during processing of the operation, this field will be populated. | 
-| GCP.Compute.Operations.warnings.code | string | A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response. | 
-| GCP.Compute.Operations.warnings.message | string | A human-readable description of the warning code. | 
-| GCP.Compute.Operations.warnings.data | string | Metadata about this warning in key: value format. | 
-| GCP.Compute.Operations.warnings.data.key | string | A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings \(for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding\). | 
-| GCP.Compute.Operations.warnings.data.value | string | A warning data value corresponding to the key. | 
 | GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. | 
 | GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. | 
 | GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. | 
@@ -257,11 +249,10 @@ Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings 
 | GCP.StorageBucket.Metadata.logging.logBucket | String | The destination bucket where access logs are stored. | 
 | GCP.StorageBucket.Metadata.logging.logObjectPrefix | String | The object prefix used for logging. | 
 | GCP.StorageBucket.Metadata.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. | 
-| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess.enabled | Boolean | Whether uniform bucket-level access is enabled. | 
-| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess.lockedTime | Date | The time at which uniform bucket-level access became locked. | 
+| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. | 
 | GCP.StorageBucket.Metadata.cors | Unknown | CORS configuration for the bucket. | 
 | GCP.StorageBucket.Metadata.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. | 
 | GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. | 
 | GCP.StorageBucket.Metadata.billing.requesterPays | Boolean | Whether requester pays is enabled. | 
 | GCP.StorageBucket.Metadata.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. | 
-| GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. | 
+| GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |

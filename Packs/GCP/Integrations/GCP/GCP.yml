@@ -10,14 +10,19 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 name: GCP
 display: GCP
 category: Cloud Services
@@ -118,32 +123,8 @@ script:
         - contextPath: GCP.Compute.Operations.error.errors
           description: The array of errors encountered while processing this operation.
           type: string
-        - contextPath: GCP.Compute.Operations.error.errors.code
-          description: The error type identifier for this error.
-          type: string
-        - contextPath: GCP.Compute.Operations.error.errors.location
-          description: Indicates the field in the request that caused the error. This property is optional.
-          type: string
-        - contextPath: GCP.Compute.Operations.error.errors.message
-          description: An optional, human-readable error message.
-          type: string
         - contextPath: GCP.Compute.Operations.warnings
           description: If warning messages are generated during processing of the operation, this field will be populated.
-          type: string
-        - contextPath: GCP.Compute.Operations.warnings.code
-          description: A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.
-          type: string
-        - contextPath: GCP.Compute.Operations.warnings.message
-          description: A human-readable description of the warning code.
-          type: string
-        - contextPath: GCP.Compute.Operations.warnings.data
-          description: 'Metadata about this warning in key: value format.'
-          type: string
-        - contextPath: GCP.Compute.Operations.warnings.data.key
-          description: A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding).
-          type: string
-        - contextPath: GCP.Compute.Operations.warnings.data.value
-          description: A warning data value corresponding to the key.
           type: string
         - contextPath: GCP.Compute.Operations.httpErrorStatusCode
           description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
@@ -468,12 +449,9 @@ script:
         - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
           description: A list of lifecycle management rules for the bucket.
           type: Unknown
-        - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess.enabled
+        - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
           description: Whether uniform bucket-level access is enabled.
           type: Boolean
-        - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess.lockedTime
-          description: The time at which uniform bucket-level access became locked.
-          type: Date
         - contextPath: GCP.StorageBucket.Metadata.cors
           description: CORS configuration for the bucket.
           type: Unknown
