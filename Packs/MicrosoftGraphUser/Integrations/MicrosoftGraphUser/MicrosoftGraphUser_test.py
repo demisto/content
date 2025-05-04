@@ -529,6 +529,16 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
         assert result == expected_result
 
 def test_create_zip_with_password():
+    """
+    Tests the creation of a password-protected ZIP file containing a Temporary Access Pass (TAP) password.
+    Validates that the correct TAP password is stored in the ZIP file, and cleans up any files created during the test.
+
+    Raises:
+        pytest.fail: If any errors occur during ZIP file creation, reading, or cleanup.
+
+    API Reference:
+        create_zip_with_password
+    """
     from pyzipper import AESZipFile, ZIP_DEFLATED, WZ_AES
     from MicrosoftGraphUser import create_zip_with_password
 
@@ -569,6 +579,22 @@ def test_create_zip_with_password():
         
         
 def test_create_tap_policy_command_failure_on_empty_response(mocker):
+    """
+    Tests the behavior of the create_tap_policy_command function when an empty response is returned
+    from the Microsoft Graph API for creating a TAP policy.
+    Verifies that the command correctly handles the failure and outputs an appropriate error message.
+
+    Args:
+        mocker: A fixture provided by pytest-mock to mock objects and functions.
+
+    Asserts:
+        - The result is an instance of CommandResults.
+        - The readable_output indicates a failure message for TAP policy creation.
+        - The create_tap_policy method was called once.
+
+    API Reference:
+        create_tap_policy_command
+    """
     from MicrosoftGraphUser import MsGraphClient, create_tap_policy_command
     from CommonServerPython import CommandResults
 

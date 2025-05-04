@@ -570,7 +570,7 @@ def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults
         CommandResults: The Temporary Access Pass (TAP) policies associated with a specific user.
         
     API Reference:
-        https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods/[policy_id]
+        list_tap_policy
     """
     user_id = args.get('user_id')
     tap_data = client.list_tap_policy(user_id)
@@ -620,7 +620,7 @@ def create_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
 
         
     API Reference:
-        https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
+        create_tap_policy
     """
     user_id = args.get('user_id')
     zip_password = args.get('zip_password', '')
@@ -670,7 +670,7 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
         CommandResults: Delete the Temporary Access Pass (TAP) police associated with a specific user.
         
     API Reference:
-        https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods/[policy_id]
+        delete_tap_policy
     """
     user_id = args.get('user_id')
     policy_id = args.get('policy_id')
