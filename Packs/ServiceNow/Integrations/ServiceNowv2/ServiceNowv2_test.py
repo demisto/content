@@ -1731,6 +1731,28 @@ def test_test_module(mocker):
         module(client)
     assert "Test button cannot be used when using OAuth 2.0" in str(e)
     
+def test_invalid_private_key():
+    """
+    Given:
+    - Invalid format of private key
+    When:
+    - creating the JWT
+    Then:
+    - Raise a Value error with informative message
+    """
+    params = {
+    'private_key': '-----INVALID FORMAT----- test_token -----INVALID FORMAT-----',
+    'kid': 'test1',
+    'sub': 'test'
+}
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS, jwt_params = params)
+    with pytest.raises(Exception) as e:
+        client.create_jwt()
+    assert "Invalid private key format" in str(e)
+
+    
     
 def test_jwt_checker(mocker):
     """
