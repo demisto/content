@@ -1,4 +1,4 @@
-This is the Cisco AppDynamics event collector integration for XSIAM.
+AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs moment to moment. No other solution offers application modernization, cloud and hybrid monitoring, and application security with business context.
 
 ## API Clients:
 
