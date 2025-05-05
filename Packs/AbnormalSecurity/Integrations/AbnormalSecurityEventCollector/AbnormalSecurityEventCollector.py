@@ -33,7 +33,7 @@ def format_messages(messages: list):
     return messages
 
 
-def get_events(client: Client, after: str, next_page_number: int):
+def get_events(client: Client, after: str, before: str, next_page_number: int):
     """Retrieves messages by time range & ordered by datetime
 
     Args:
@@ -45,10 +45,11 @@ def get_events(client: Client, after: str, next_page_number: int):
       str: the last run to be set for the next run.
 
     """
-    before = arg_to_datetime(arg="now", arg_name="before", required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    if not before:
+        before = arg_to_datetime(arg="now", arg_name="before", required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
     demisto.debug(f"[Abnormal] {before=}")
     next_page_number, threats_ids = get_list_threats(client, after, before, next_page_number)
-    last_run = {'before': before, 'next_page_number': next_page_number}
+    last_run = {'before': before, 'after': after, 'next_page_number': next_page_number}
     messages = []
     if threats_ids:
         for threat in reversed(threats_ids):
@@ -121,6 +122,7 @@ def main():
     verify = params["verify"]
     proxy = params["proxy"]
     after = arg_to_datetime(arg="1 minute").strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+    before = None
     next_page_number = 1
     client = Client(
         base_url="https://api.abnormalplatform.com/v1", verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {token}"}
@@ -129,13 +131,17 @@ def main():
     last_run = demisto.getLastRun()
     demisto.debug(f"[Abnormal] {last_run=}")
     if last_run:
-        after = last_run.get('before')
         next_page_number = last_run.get('next_page_number')
+        if next_page_number > 1:
+            after = last_run.get('after')
+            before = last_run.get('before')
+        else:
+            after = last_run.get('before')
 
     command = demisto.command()
     demisto.debug(f"[Abnormal] Command being called is {command}")
     try:
-        threats, last_run = get_events(client, after, next_page_number)
+        threats, last_run = get_events(client, after, before, next_page_number)
         if command == "test-module":
             return_results("ok")
 
