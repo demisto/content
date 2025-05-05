@@ -44,7 +44,7 @@ MAX_FETCH_REQUEST_LIMIT = 5000
 DATE_FORMAT_ISO = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT_CALLS = "%Y-%m-%d"
 
-EVENT_TYPES : Dict[str, EventType] = {
+EVENT_TYPES: Dict[str, EventType] = {
     "Auditlog": EventType(
         suffix="auditlog",
         take=10000,
@@ -116,31 +116,32 @@ def remove_first_run_params(params: Dict[str, Any]) -> None:
         params.pop("enddate")
 
 
-def validate_fetch_events_params(last_run: dict, event_type : EventType) -> tuple[dict, str, str]:
+def validate_fetch_events_params(last_run: dict, event_type: EventType, use_last_run_as_params: bool) -> tuple[dict, str, str]:
     """
     Validate and update the params needed for the api call
     Args:
         last_run (dict): The last_run dictionary having the state of previous cycle.
         event_type (EventType): Event Type to fetch from API
+        use_last_run_as_params (boolean): Flag that sign do we use the last-run as params for the API call
     Returns:
         tuple[dict, str, str]: Correct params needed for the api call, call suffix, key to update in the last run.
     """
-
-    # phase 1 Params  - use today date to get the last ID in the first run
-
-    # if we gave start date then no need to check from today, else run from today
-    params = last_run
-    if not "startdate" in last_run:
-        today = get_current_time().strftime(DATE_FORMAT_CALLS)
-        params = {"startdate": today, "enddate": today}
 
     suffix = event_type.suffix
     take = event_type.take
     key = "start_id_" + suffix
 
-    # Phase 2 Params: If a call has already been executed then use the last run params.
-    if last_run.get(key):
+
+    if use_last_run_as_params:
+        params = last_run
+    elif key in last_run:
+        # Phase 2 Params: If a call has already been executed then use the last run params.
         params = {"startid": last_run[key]}
+    else:
+        # Phase 1 Params  - use today date to get the last ID in the first run
+        today = get_current_time().strftime(DATE_FORMAT_CALLS)
+        params = {"startdate": today, "enddate": today}
+
 
     take = min(take, event_type.max_fetch)
     params["take"] = take
@@ -148,17 +149,20 @@ def validate_fetch_events_params(last_run: dict, event_type : EventType) -> tupl
     return params, suffix, key
 
 
-def fetch_events_list(client: Client, last_run: dict, event_type : EventType) -> list[dict[str, Any]]:
+def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use_last_run_as_params=False) -> list[
+    dict[str, Any]]:
     """
     Main Function that Handles the Fetch action to the API service of AdminByRequest.
     Args:
         client (Client): The client object used to interact with the AdminByRequest service.
         last_run (dict): The last_run dictionary having the state of previous cycle.
         event_type (EventType): Event Type to fetch from API
+        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+
     Returns:
         list[dict[str, Any]]: List of records retrieved from the api call.
     """
-    params, suffix, last_run_key = validate_fetch_events_params(last_run, event_type)
+    params, suffix, last_run_key = validate_fetch_events_params(last_run, event_type, use_last_run_as_params)
     time_field, source_log_type = event_type.time_field, event_type.source_log_type
     fetch_limit = event_type.max_fetch
     last_id: int = 0
@@ -221,7 +225,6 @@ def get_event_type_fetch_limits(params: Dict[str, Any]) -> list[EventType]:
     max_auditlog_per_fetch = arg_to_number(params.get("max_auditlog_per_fetch")) or MAX_FETCH_AUDIT_LIMIT
     max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or MAX_FETCH_EVENT_LIMIT
     max_requests_per_fetch = arg_to_number(params.get("max_requests_per_fetch")) or MAX_FETCH_REQUEST_LIMIT
-
 
     event_types = []
     if "Auditlog" in event_types_to_fetch:
