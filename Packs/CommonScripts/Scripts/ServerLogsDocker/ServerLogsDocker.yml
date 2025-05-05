@@ -2,7 +2,7 @@ comment: Uses the ssh integration to grab the host server logs. This script is s
 commonfields:
   id: ServerLogs_docker
   version: -1
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: ServerLogs_docker
 runas: DBotWeakRole
