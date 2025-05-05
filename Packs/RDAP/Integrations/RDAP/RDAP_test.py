@@ -2,39 +2,13 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from RDAP import RDAPClient, parse_ip_response, parse_domain_response, parse_indicator_data
+from RDAP import RDAPClient, parse_ip_response, parse_domain_response, build_results
 from requests.exceptions import RequestException
 
 
 @pytest.fixture
 def client():
     return RDAPClient(base_url='https://rdap.org', verify=False)
-
-
-def test_parse_indicator_data():
-    # Test IP case
-    ip_input = "8.8.8.8"
-    ip_response = {"ipVersion": "v4"}
-    ip_result, ip_context, ip_readable = parse_indicator_data(ip_input, "ip", ip_response)
-
-    assert isinstance(ip_result, Common.IP)
-    assert ip_result.ip == "8.8.8.8"
-    assert ip_context['Value'] == "8.8.8.8"
-    assert ip_context['IndicatorType'] == "IP"
-
-    # Test Domain case
-    domain_input = "example.com"
-    domain_response = {}
-    domain_result, domain_context, domain_readable = parse_indicator_data(domain_input, "domain", domain_response)
-
-    assert isinstance(domain_result, Common.Domain)
-    assert domain_result.domain == "example.com"
-    assert domain_context['Value'] == "example.com"
-    assert domain_context['IndicatorType'] == "Domain"
-
-    # Test unsupported indicator type
-    with pytest.raises(TypeError):
-        parse_indicator_data("test", "unsupported", {})
 
 
 def test_parse_domain_response():
@@ -58,7 +32,7 @@ def test_parse_domain_response():
         'RegistrationDate': '2021-01-01',
         'ExpirationDate': '2022-01-01',
         'LastChangedDate': '2021-06-01',
-        'SecureDNS': True
+        'SecureDNS': "True"
     }
 
     assert readable_output == tableToMarkdown(
@@ -120,6 +94,91 @@ def test_parse_ip_response():
             {"Field": "Abuse Email", "Value": "abuse@google.com"}
         ]
     )
+
+
+def test_build_results(mocker):
+
+    # Create mock client
+    mock_client = mocker.Mock()
+    mock_client.rdap_query.return_value = {
+        "ipVersion": "v4",
+        "country": "US",
+        "remarks": [
+            {"title": "description", "description": ["Test IP"]}
+        ],
+        "entities": [
+            {
+                "roles": ["abuse"],
+                "vcardArray": [
+                    "vcard",
+                    [
+                        ["adr", {"label": "123 Test St, Test City, TC, 12345, US"},
+                            "text", ["", "", "", "", "", "", ""]],
+                        ["fn", {}, "text", "Test Corp"],
+                        ["email", {}, "text", "abuse@test.com"],
+                        ["tel", {}, "uri", "+15551234567"]
+                    ]
+                ]
+            }
+        ]
+    }
+
+    # Test basic functionality
+    indicators = ["192.168.1.1", "192.168.0.1"]
+    results = build_results(
+        client=mock_client,
+        parse_command=parse_ip_response,
+        indicators=indicators,
+        outputs_prefix="IP",
+        command="ip"
+    )
+
+    # Verify results
+    assert len(results) == 2
+    assert mock_client.rdap_query.call_count == 2
+    assert mock_client.rdap_query.call_args_list[0][1] == {'indicator_type': 'ip', 'value': '192.168.1.1'}
+    assert mock_client.rdap_query.call_args_list[1][1] == {'indicator_type': 'ip', 'value': '192.168.0.1'}
+
+    # Verify command results structure
+    for i, result in enumerate(results):
+        assert result.outputs_prefix == 'RDAP.IP'
+        assert result.outputs_key_field == 'IP'
+        assert result.outputs['Value'] == indicators[i]
+        assert result.outputs['IndicatorType'] == 'IP'
+        assert result.indicator.ip == indicators[i]
+
+    # Test handling of 404 errors
+    mock_client.rdap_query.side_effect = requests.exceptions.RequestException(response=mocker.Mock(status_code=404))
+
+    results = build_results(
+        client=mock_client,
+        parse_command=parse_ip_response,
+        indicators=["192.168.0.1"],
+        outputs_prefix="IP",
+        command="ip"
+    )
+
+    assert len(results) == 1
+    assert "Indicator Not Found" in results[0].readable_output
+
+    # Test handling of other errors
+    mock_error_response = mocker.Mock()
+    mock_error_response.status_code = 500
+    mock_error = requests.exceptions.RequestException(response=mock_error_response)
+    mock_client.rdap_query.side_effect = mock_error
+
+    with pytest.raises(requests.exceptions.RequestException) as excinfo:
+        build_results(
+            client=mock_client,
+            parse_command=parse_ip_response,
+            indicators=["192.168.0.1"],
+            outputs_prefix="IP",
+            command="ip"
+        )
+
+    # Verify that the exception raised is the same one we created
+    assert excinfo.value == mock_error
+    assert excinfo.value.response.status_code == 500
 
 
 def test_main(mocker):

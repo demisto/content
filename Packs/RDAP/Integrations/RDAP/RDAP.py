@@ -4,15 +4,19 @@ from CommonServerUserPython import *
 
 from typing import Any
 from collections.abc import Callable
+from collections import namedtuple
 
 
 INTEGRATION_NAME = "RDAP"
+
 VCARD_MAPPING = {
     "title": 0,
     "label": 1,
     "data_type": 2,
     "data": 3
 }
+
+IndicatorResult = namedtuple('IndicatorResult', ['value', 'context_output', 'readable_output'])
 
 
 class RDAPClient(BaseClient):
@@ -31,40 +35,6 @@ class RDAPClient(BaseClient):
         return response
 
 
-def parse_indicator_data(input: str,
-                         indicator_type: str,
-                         response: dict[str, Any]) -> tuple[Common.Indicator, dict[str, Any], str]:
-    """
-    Parse the RDAP response for an indicator and return the appropriate Common.Indicator object.
-
-    This function takes the input indicator, its type, and the RDAP response, then delegates
-    the parsing to the appropriate function based on the indicator type.
-
-    Args:
-        input (str): The indicator value being queried.
-        indicator_type (str): The type of the indicator (e.g., 'ip', 'domain').
-        response (dict[str, Any]): The RDAP response dictionary for the indicator.
-
-    Returns:
-        Common.Indicator|None: An object containing parsed information about the indicator,
-        or None if the indicator type is not supported.
-
-    Raises:
-        DemistoException: If an unsupported indicator type is provided.
-    """
-    demisto.debug(f"Parsing indicator data for {indicator_type}: {input}")
-
-    match indicator_type:
-        case 'ip':
-            return parse_ip_response(input, response)
-
-        case 'domain':
-            return parse_domain_response(input, response)
-
-        case _:
-            raise TypeError(f"Unsupported indicator type: {indicator_type}")
-
-
 def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Common.Domain, dict[str, Any], str]:
     demisto.debug(f"Parsing domain response for: {indicator}")
     domain = Common.Domain(
@@ -78,9 +48,9 @@ def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Com
     )
 
     if "Error" in response:
-        context = {'Value': indicator, 'IndicatorType': 'Domain'}
-        human_readable = f'### RDAP Information for {indicator}\n{response["Error"]}'
-        return domain, context, human_readable
+        context_output = {'Value': indicator, 'IndicatorType': 'Domain'}
+        readable_output = f'### RDAP Information for {indicator}\n{response["Error"]}'
+        return IndicatorResult(value=domain, context_output=context_output, readable_output=readable_output)
 
     events = response.get('events', []) if isinstance(response, dict) else []
     last_changed_date: str = ''
@@ -99,8 +69,8 @@ def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Com
 
     # Human readable output
     readable_output = tableToMarkdown(
-        f'RDAP Information for {indicator}',
-        [
+        name=f'RDAP Information for {indicator}',
+        t=[
             {'Field': 'Registration Date', 'Value': domain.creation_date},
             {'Field': 'Expiration Date', 'Value': domain.expiration_date},
             {'Field': 'Secure DNS', 'Value': delegation_signed}
@@ -114,10 +84,10 @@ def parse_domain_response(indicator: str, response: dict[str, Any]) -> tuple[Com
         'RegistrationDate': domain.creation_date,
         'ExpirationDate': domain.expiration_date,
         'LastChangedDate': last_changed_date,
-        'SecureDNS': delegation_signed
+        'SecureDNS': str(delegation_signed)
     }
 
-    return domain, context_output, readable_output
+    return IndicatorResult(value=domain, context_output=context_output, readable_output=readable_output)
 
 
 def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.IP, dict[str, Any], str]:
@@ -129,11 +99,14 @@ def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.
     IP type, geographical country, description, and registrar abuse contact information.
 
     Args:
-        input (str): The IP address being queried.
+        indicator (str): The IP address being queried.
         response (dict[str, Any]): The RDAP response dictionary for the IP address.
 
     Returns:
-        Common.IP: An object containing parsed information about the IP address.
+        tuple[Common.IP, dict[str, Any], str]: A tuple containing:
+            - Common.IP object with parsed information about the IP address
+            - Context data dictionary for XSOAR
+            - Human readable output string
     """
     demisto.debug(f"Parsing IP response for: {indicator}")
 
@@ -149,10 +122,10 @@ def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.
 
     ip.ip_type = "IP" if response.get("ipVersion", "") == "v4" else "IPv6"
 
-    if "error" in response:
-        context = {'Value': indicator, 'IndicatorType': 'IP'}
-        human_readable = f'### RDAP Information for {indicator}\n{response["Error"]}'
-        return ip, context, human_readable
+    if "Error" in response:
+        context_output = {'Value': indicator, 'IndicatorType': 'IP'}
+        readable_output = f'### RDAP Information for {indicator}\n{response["Error"]}'
+        return IndicatorResult(value=ip, context_output=context_output, readable_output=readable_output)
 
     ip.geo_country = response.get('country', '')
 
@@ -187,12 +160,14 @@ def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.
 
     # Human readable output
     readable_output = tableToMarkdown(
-        f'RDAP Information for {indicator}',
-        [
+        name=f'RDAP Information for {indicator}',
+        t=[
             {'Field': 'Abuse Address', 'Value': ip.registrar_abuse_address},
             {'Field': 'Abuse Name', 'Value': ip.registrar_abuse_name},
             {'Field': 'Abuse Email', 'Value': ip.registrar_abuse_email}
-        ]
+        ],
+        headers=['Field', 'Value'],
+        removeNull=True
     )
 
     # Context output
@@ -204,7 +179,7 @@ def parse_ip_response(indicator: str, response: dict[str, Any]) -> tuple[Common.
         'RegistrarAbuseEmail': ip.registrar_abuse_email,
     }
 
-    return ip, context_output, readable_output
+    return IndicatorResult(value=ip, context_output=context_output, readable_output=readable_output)
 
 
 def test_module(client: RDAPClient) -> str | None:
@@ -218,11 +193,61 @@ def test_module(client: RDAPClient) -> str | None:
     return 'ok'
 
 
+def build_results(client: 'RDAPClient', parse_command: Callable,
+                  indicators: List[str], outputs_prefix: str, command: str) -> List[CommandResults]:
+    """
+    Builds command results for the given indicators.
+
+    Args:
+        client (RDAPClient): The RDAP client to use for queries.
+        parse_command (Callable): The function to parse the RDAP response.
+        indicators (List[str]): List of indicators to query.
+        outputs_prefix (str): The prefix for the outputs context data.
+        command (str): The indicator type/command being executed.
+
+    Returns:
+        List[CommandResults]: List of command results for each indicator.
+    """
+
+    results = []
+
+    for value in indicators:
+        demisto.debug(f"Executing {demisto.command()} command for value: {value}")
+        try:
+            response = client.rdap_query(indicator_type=command, value=value)
+
+        except requests.exceptions.RequestException as e:
+            if e.response and e.response.status_code == 404:
+                response = {"Error": "Indicator Not Found"}
+
+            else:
+                raise e
+
+        except Exception as e:
+            raise e
+
+        result = parse_command(value, response)
+        indicator = result.value
+        context = result.context_output
+        readable_output = result.readable_output
+
+        results.append(
+            CommandResults(
+                outputs_prefix=f'{INTEGRATION_NAME}.{outputs_prefix}',
+                outputs_key_field=outputs_prefix,
+                outputs=context,
+                indicator=indicator,
+                readable_output=readable_output,
+            )
+        )
+
+    return results
+
+
 def main():
     args = demisto.args()
     base_url = args.get('base_url', 'https://rdap.org')
     command = demisto.command()
-    results = []
     outputs_prefix = ''
     indicators = argToList(args.get('ip', []) or args.get('domain', []))
     verify = not argToBoolean(args.get('insecure', False))
@@ -247,33 +272,7 @@ def main():
         else:
             raise DemistoException(f"Unknown command '{demisto.command()}'")
 
-        for value in indicators:
-            demisto.debug(f"Executing {demisto.command()} command for value: {value}")
-            try:
-                response = client.rdap_query(indicator_type=command, value=value)
-                indicator, context, readable_output = parse_command(value, response)
-
-            except requests.exceptions.RequestException as e:
-                if e.response and e.response.status_code == 404:
-                    response = {"Error": "Indicator Not Found"}
-                    indicator, context, readable_output = parse_command(value, response)
-
-                else:
-                    raise e
-
-            except Exception as e:
-                raise e
-
-            results.append(
-                CommandResults(
-                    outputs_prefix=f'{INTEGRATION_NAME}.{outputs_prefix}',
-                    outputs_key_field=outputs_prefix,
-                    outputs=context,
-                    indicator=indicator,
-                    readable_output=readable_output,
-                    # raw_response=response
-                )
-            )
+        results = build_results(client, parse_command, indicators, outputs_prefix, command)
 
         return_results(results)
 
