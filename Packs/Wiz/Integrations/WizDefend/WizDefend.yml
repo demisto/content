@@ -2,32 +2,32 @@ category: Utilities
 commonfields:
   id: WizDefend
   version: -1
-defaultmapperin: Wiz Mapper Webhook
+defaultmapperin: Wiz Mapper
 configuration:
 - name: incidentType
   display: Incident type
-  defaultvalue: WizDefend
+  defaultvalue: WizDefend Detection
   type: 13
   required: false
-- display: Service Account ID
-  name: credentials
+- name: credentials
+  display: Service Account ID
   type: 9
   required: true
-- display: Authentication Endpoint
-  name: auth_endpoint
+- name: auth_endpoint
+  display: Authentication Endpoint
   type: 0
   required: true
-- display: API Endpoint
-  name: api_endpoint
+- name: api_endpoint
+  display: API Endpoint
   required: true
   type: 0
   defaultvalue: https://api.us1.app.wiz.io/graphql
-- defaultvalue: 2 days
-  display: First fetch timestamp (max 14 days)
-  additionalinfo: 'How many detections to pull the first time. The format is <number> <time unit>, e.g., 12 hours, 7 days. The maximum is 14 days.'
-  name: first_fetch
+- name: first_fetch
+  display: First fetch timestamp (max 5 days)
+  additionalinfo: 'How many detections to pull the first time. The format is <number> <time unit>, e.g., 12 hours, 1 day. The maximum is 5 days.'
   type: 0
   required: false
+  defaultvalue: 1 day
 - name: severity
   additionalinfo: 'The chosen severity and above will be fetched.'
   display: Detection severities to fetch
@@ -40,17 +40,21 @@ configuration:
   defaultvalue: High
   type: 15
   required: false
-- name: detection_type
+- name: type
   display: Detection type to fetch
   options:
   - None
-  - GENERATED_THREAT
-  - MATCH_ONLY
-  defaultvalue: None
+  - GENERATED THREAT
+  - DID NOT GENERATE THREAT
+  defaultvalue: GENERATED THREAT
   type: 15
   required: false
-- name: detection_platform
-  display: Detection platforms to fetch
+- name: subscription
+  display: Detection subscription to fetch
+  type: 0
+  required: false
+- name: platform
+  display: Detection platforms to fetch.
   options:
   - AWS
   - GCP
@@ -83,6 +87,50 @@ configuration:
   - SelfHosted
   - LKE
   type: 16
+- name: origin
+  display: Cloud event origin to fetch.
+  options:
+    - WIZ_SENSOR
+    - WIZ_ADMISSION_CONTROLLER
+    - WIZ_FILE_INTEGRITY_MONITORING
+    - AWS_GUARD_DUTY
+    - AWS_CLOUDTRAIL
+    - AZURE_DEFENDER_FOR_CLOUD
+    - AZURE_ACTIVITY_LOGS
+    - GCP_SECURITY_COMMAND_CENTER
+    - GCP_AUDIT_LOGS
+    - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+    - AZURE_ACTIVE_DIRECTORY
+    - GOOGLE_WORKSPACE_AUDIT_LOGS
+    - WIN_SENTINEL_ONE
+    - WIZ_CODE_ANALYZER
+    - WIN_SALT
+    - WIN_NONAME
+    - WIN_CROWD_STRIKE
+    - WIN_TRACEABLE
+    - WIZ_CLI
+    - WIZ_IDE_EXTENSION
+    - WIZ_THREAT_DETECTION
+    - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+    - WIZ_CUSTOM_INTEGRATION
+    - WIN_AKAMAI_GUARDICORE
+    - OKTA_SYSTEM_LOGS
+    - WIN_SNOWFLAKE
+    - WIN_FALCO
+    - OCI_AUDIT_LOGS
+    - WIZ_VCS_FETCHER
+    - AWS_VPC_FLOW_LOGS
+    - GITHUB_AUDIT_LOGS
+    - WIN_FIRE_TAIL
+    - AZURE_STORAGE_ACCOUNT
+    - AZURE_KEY_VAULT
+    - AWS_RESOLVER_QUERY_LOGS
+    - AWS_S3_DATA_EVENTS
+    - GCP_STORAGE_DATA_ACCESS_LOGS
+    - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+    - WIZ_BROWSER_EXTENSION
+    - WIN_SALT_SECURITY
+  type: 16
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -100,18 +148,69 @@ script:
   - name: wiz-get-detections
     description: Get Wiz Detections for a specific type.
     arguments:
-    - name: creation_days_back
-      description: Number of days back to retrieve detections (1-60).
-      defaultValue: 2
+    - name: creation_minutes_back
+      description: Number of minutes back to retrieve detections (10-600).
+      defaultValue: 10
       required: false
-    - name: detection_type
+    - name: type
       description: Type of detections.
       predefined:
-      - GENERATED_THREAT
-      - MATCH_ONLY
+      - GENERATED THREAT
+      - DID NOT GENERATE THREAT
+      defaultValue: GENERATED THREAT
       auto: PREDEFINED
-    - name: detection_platform
-      description: Get detections for cloud platform.
+    - name: issue_id
+      description: The internal Wiz Issue ID of the detection.
+      required: false
+    - name: subscription
+      description: The cloud subscription of the detection.
+      required: false
+    - name: origin
+      description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
+      predefined:
+        - WIZ_SENSOR
+        - WIZ_ADMISSION_CONTROLLER
+        - WIZ_FILE_INTEGRITY_MONITORING
+        - AWS_GUARD_DUTY
+        - AWS_CLOUDTRAIL
+        - AZURE_DEFENDER_FOR_CLOUD
+        - AZURE_ACTIVITY_LOGS
+        - GCP_SECURITY_COMMAND_CENTER
+        - GCP_AUDIT_LOGS
+        - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+        - AZURE_ACTIVE_DIRECTORY
+        - GOOGLE_WORKSPACE_AUDIT_LOGS
+        - WIN_SENTINEL_ONE
+        - WIZ_CODE_ANALYZER
+        - WIN_SALT
+        - WIN_NONAME
+        - WIN_CROWD_STRIKE
+        - WIN_TRACEABLE
+        - WIZ_CLI
+        - WIZ_IDE_EXTENSION
+        - WIZ_THREAT_DETECTION
+        - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+        - WIZ_CUSTOM_INTEGRATION
+        - WIN_AKAMAI_GUARDICORE
+        - OKTA_SYSTEM_LOGS
+        - WIN_SNOWFLAKE
+        - WIN_FALCO
+        - OCI_AUDIT_LOGS
+        - WIZ_VCS_FETCHER
+        - AWS_VPC_FLOW_LOGS
+        - GITHUB_AUDIT_LOGS
+        - WIN_FIRE_TAIL
+        - AZURE_STORAGE_ACCOUNT
+        - AZURE_KEY_VAULT
+        - AWS_RESOLVER_QUERY_LOGS
+        - AWS_S3_DATA_EVENTS
+        - GCP_STORAGE_DATA_ACCESS_LOGS
+        - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+        - WIZ_BROWSER_EXTENSION
+        - WIN_SALT_SECURITY
+      auto: PREDEFINED
+    - name: platform
+      description: Get detections for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
       predefined:
         - AWS
         - GCP
@@ -184,12 +283,9 @@ script:
   - name: wiz-get-detection
     description: Get the details of a Wiz Detection.
     arguments:
-    - description: List of detection IDs to retrieve.
+    - description: Wiz internal detection ID to retrieve.
       name: detection_id
       isArray: true
-      required: false
-    - name: issue_id
-      description: The internal Wiz Issue ID of the detection.
       required: false
     outputs:
     - contextPath: Wiz.Manager.Detection.id
