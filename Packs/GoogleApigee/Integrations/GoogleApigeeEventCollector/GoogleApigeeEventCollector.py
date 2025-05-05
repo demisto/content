@@ -112,11 +112,10 @@ class Client(BaseClient):
         try:
             token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
         except Exception as e:
-            demisto.debug(f'Error occured: {e}')
             if refresh_token and 'Invalid refresh token' in str(e):
-                demisto.debug('Failed to generate access token using refresh token.'
-                              'Attempting to generate a new access token using username and password.')
-                data = self.generte_data_with_username()
+                demisto.debug(f'Failed to generate access token using refresh token.'
+                              'Attempting to generate a new access token using username and password. Original error is: {str(e)}')
+                data = self.generate_data_with_username()
                 token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
             else:
                 raise e
@@ -130,7 +129,7 @@ class Client(BaseClient):
             REFRESH_TOKEN_STR: refresh_token
         }
     
-    def generte_data_with_username(self) -> dict:
+    def generate_data_with_username(self) -> dict:
         demisto.debug('generates a new access token based on a username and password.')
         return {
             'grant_type': 'password',
