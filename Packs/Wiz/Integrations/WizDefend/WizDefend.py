@@ -607,7 +607,7 @@ def query_api(query, variables, paginate=True):
         entries = {}
 
     while page_info[WizApiResponse.HAS_NEXT_PAGE]:
-        demisto.info(f"Successfully pulled {len(entries)} detections")
+        demisto.debug(f"Successfully pulled {len(entries)} detections")
 
         variables[WizApiVariables.AFTER] = page_info[WizApiResponse.END_CURSOR]
         new_entries, page_info = get_entries(query, variables)
@@ -680,11 +680,6 @@ def build_incidents(detection):
         DemistoParams.RAW_JSON: json.dumps(detection),
         DemistoParams.SEVERITY: translate_severity(detection),
         DemistoParams.MIRROR_ID: str(detection[WizApiVariables.ID]),
-        DemistoParams.URL: get_wiz_detection_url(detection[WizApiVariables.ID]),
-        "type": "WizDefend Detection",
-        "wizdetectionid": detection.get(WizApiVariables.ID),
-        "wizdetectionstatus": "New",  # Or extract from detection if available
-        "wizissueid": detection.get("issue", {}).get("id"),
     }
 
 

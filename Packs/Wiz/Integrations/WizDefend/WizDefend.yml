@@ -2,7 +2,7 @@ category: Utilities
 commonfields:
   id: WizDefend
   version: -1
-defaultmapperin: Wiz Mapper
+defaultmapperin: WizDefend Mapper
 configuration:
 - name: incidentType
   display: Incident type
@@ -27,7 +27,7 @@ configuration:
   additionalinfo: 'How many detections to pull the first time. The format is <number> <time unit>, e.g., 12 hours, 1 day. The maximum is 5 days.'
   type: 0
   required: false
-  defaultvalue: 1 day
+  defaultvalue: 12 hours
 - name: severity
   additionalinfo: 'The chosen severity and above will be fetched.'
   display: Detection severities to fetch

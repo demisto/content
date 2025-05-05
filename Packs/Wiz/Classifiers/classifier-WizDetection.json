@@ -1,0 +1,15 @@
+{
+    "defaultIncidentType": "WizDefend Detection",
+    "description": "Classifies WizDefend Detections that are fetched via the built in XSOAR fetch mechanism.",
+    "feed": false,
+    "id": "WizDefend Classifier",
+    "name": "WizDefend Classifier",
+    "keyTypeMap": {},
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

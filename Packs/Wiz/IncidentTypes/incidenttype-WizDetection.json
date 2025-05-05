@@ -16,7 +16,6 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "playbookId": "Assess WizDefend Detections",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 1,
