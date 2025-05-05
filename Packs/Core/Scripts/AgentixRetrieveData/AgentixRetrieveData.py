@@ -80,7 +80,7 @@ def execute_query(args: dict) -> dict:
     timeout=600,
     requires_polling_arg=False
 )
-def polling_command(args: dict) -> PollResult:
+def retrieve_data_from_xdr(args: dict) -> PollResult:
     if "query_id" not in args:  # first time executing query
         demisto.debug("starting polling_command function")
         args_for_next_run = execute_query(args=args)
@@ -99,7 +99,7 @@ def polling_command(args: dict) -> PollResult:
 
 def main():
     try:
-        return_results(polling_command(args=demisto.args()))
+        return_results(retrieve_data_from_xdr(args=demisto.args()))
     except Exception as e:
         return_error("Error occurred while retrieving data from XDR. Exception info:\n" + str(e))
 
