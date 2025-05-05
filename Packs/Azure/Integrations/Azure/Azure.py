@@ -213,115 +213,43 @@ and resource group "{resource_group_name}" was not found.')
             json_data=json_data_args,
             resp_type="response",
         )
+        
     
     def storage_blob_service_properties_set_request(
-        self, subscription_id: str | None, resource_group_name: str | None, args: dict
+        self, subscription_id: str,
+        resource_group_name: str,
+        account_name: str,
+        delete_rentention_policy_enabled: str,
+        delete_rentention_policy_days: str
     ) -> dict:
         """
-            Send the user arguments for the blob service in the request body to the API.
+        Updates the delete retention policy settings for the Blob service of a given Azure Storage account.
         Args:
-            subscription_id: The subscription id.
-            resource_group_name: The resource group name.
-            args: The user arguments.
+            subscription_id (str): Azure subscription ID containing the storage account.
+            resource_group_name (str): Name of the resource group that contains the storage account.
+            account_name (str): Name of the Azure Storage account.
+            delete_rentention_policy_enabled (str): Whether delete retention is enabled ('true' or 'false').
+            delete_rentention_policy_days (str): Number of days to retain deleted blobs.
 
         Returns:
-            The json response from the API call.
+            dict: The full JSON response from the Azure REST API after applying the update.
         """
-        account_name = args.get("account_name")
-        properties = {}
-
-        if "change_feed_enabled" in args:
-            properties["changeFeed"] = {"enabled": args["change_feed_enabled"] == "true"}
-
-        if "change_feed_retention_days" in args:
-            if "changeFeed" not in properties:
-                properties["changeFeed"] = {}
-            properties["changeFeed"]["retentionInDays"] = args.get("change_feed_retention_days")
-
-        if "container_delete_rentention_policy_enabled" in args:
-            properties["containerDeleteRetentionPolicy"] = {
-                "enabled": args["container_delete_rentention_policy_enabled"] == "true"
-            }
-
-        if "container_delete_rentention_policy_days" in args:
-            if "containerDeleteRetentionPolicy" not in properties:
-                properties["containerDeleteRetentionPolicy"] = {}
-            properties["containerDeleteRetentionPolicy"]["days"] = args.get("container_delete_rentention_policy_days")
-
-        if "delete_rentention_policy_enabled" in args:
-            properties["deleteRetentionPolicy"] = {"enabled": args["delete_rentention_policy_enabled"] == "true"}
-
-        if "delete_rentention_policy_days" in args:
-            if "deleteRetentionPolicy" not in properties:
-                properties["deleteRetentionPolicy"] = {}
-            properties["deleteRetentionPolicy"]["days"] = args.get("delete_rentention_policy_days")
-
-        if "versioning" in args:
-            properties["isVersioningEnabled"] = argToBoolean(args.get("versioning"))
-
-        if (
-            "last_access_time_tracking_policy_enabled" in args
-            or "last_access_time_tracking_policy_blob_types" in args
-            or "last_access_time_tracking_policy_days" in args
-        ):
-            properties["lastAccessTimeTrackingPolicy"] = {}
-
-            if "last_access_time_tracking_policy_enabled" in args:
-                properties["lastAccessTimeTrackingPolicy"]["enable"] = (
-                    args.get("last_access_time_tracking_policy_enabled") == "true"
-                )
-
-            if "last_access_time_tracking_policy_blob_types" in args:
-                properties["lastAccessTimeTrackingPolicy"]["blobType"] = args[
-                    "last_access_time_tracking_policy_blob_types"
-                ].split(",")
-
-            if "last_access_time_tracking_policy_days" in args:
-                properties["lastAccessTimeTrackingPolicy"]["trackingGranularityInDays"] = args.get(
-                    "last_access_time_tracking_policy_days"
-                )
-
-        if "restore_policy_enabled" in args or "restore_policy_min_restore_time" in args or "restore_policy_days" in args:
-            properties["restorePolicy"] = {}
-
-            if "restore_policy_enabled" in args:
-                properties["restorePolicy"]["enabled"] = args.get("restore_policy_enabled") == "true"
-
-            if "restore_policy_min_restore_time" in args:
-                properties["restorePolicy"]["minRestoreTime"] = args.get("restore_policy_min_restore_time")
-
-            if "restore_policy_days" in args:
-                properties["restorePolicy"]["days"] = args.get("restore_policy_days")
-
-        return self.ms_client.http_request(
-            method="PUT",
-            full_url=(
-                f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
-                f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
-            ),
-            params={
-                "api-version": API_VERSION,
-            },
-            json_data={"properties": properties},
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
         )
+        data = {
+            "properties": {
+                "deleteRetentionPolicy": {
+                    "enabled": delete_rentention_policy_enabled,
+                    "days": delete_rentention_policy_days
+                }
+            }
+        }
+        params={"api-version": API_VERSION}
+        data = remove_empty_elements(data)
+        return self.ms_client.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
 
-
-    def update_aps(self, setting_name, auto_provision):
-        """
-        Args:
-            setting_name (str): Setting name
-            auto_provision (str): Auto provision setting (On/Off)
-
-        Returns:
-            dict: response body
-        """
-        cmd_url = f"/providers/Microsoft.Security/autoProvisioningSettings/{setting_name}"
-        params = {"api-version": APS_API_VERSION}
-
-        data = {"properties": {"autoProvision": auto_provision}}
-
-        return self.ms_client.http_request(method="PUT", url_suffix=cmd_url, json_data=data, params=params)
-    
     def create_policy_assignment(self, name, policy_definition_id, display_name, parameters, description, subscription_id):
         full_url=(
                 f"{PREFIX_URL}{subscription_id}"
@@ -838,36 +766,20 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
-    # if both are passed as arguments, the command arguments will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-
+    delete_rentention_policy_enabled = args.get("delete_rentention_policy_enabled", "")
+    delete_rentention_policy_days = args.get("delete_rentention_policy_days", "")
+    account_name = args.get("account_name", "")
+   
     response = client.storage_blob_service_properties_set_request(
-        subscription_id=subscription_id, resource_group_name=resource_group_name, args=args
+        subscription_id, resource_group_name, account_name, delete_rentention_policy_enabled, delete_rentention_policy_days
     )
-
-    if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
-        subscription_id = subscription_id.group(1)  # type: ignore
-
-    if resource_group := re.search("resourceGroups/(.+?)/providers", response.get("id", "")):
-        resource_group = resource_group.group(1)  # type: ignore
-
-    if account_name := re.search("storageAccounts/(.+?)/blobServices", response.get("id", "")):
-        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         "Name": response.get("name"),
-        "Account Name": account_name,
-        "Subscription ID": subscription_id,
-        "Resource Group": resource_group,
-        "Change Feed": str(response.get("properties", "").get("changeFeed").get("enabled"))
-        if response.get("properties", "").get("changeFeed")
-        else "",
-        "Delete Retention Policy": str(response.get("properties", "").get("deleteRetentionPolicy").get("enabled"))
-        if response.get("properties", "").get("deleteRetentionPolicy")
-        else "",
-        "Versioning": response.get("properties", "").get("isVersioningEnabled"),
+        "ID": response.get("id"),
+        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy") if args.get("delete_rentention_policy_enabled") or args.get("delete_rentention_policy_days") else None
     }
 
     return CommandResults(
@@ -875,52 +787,13 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
-            "Azure Storage Blob Service Properties",
+            "Updated Azure Storage Blob Service Properties",
             readable_output,
-            ["Name", "Account Name", "Subscription ID", "Resource Group", "Change Feed", "Delete Retention Policy", "Versioning"],
+            ["Name", "ID", "Delete Retention Policy"],
+            removeNull=True
         ),
         raw_response=response,
     )
-
-
-
-def update_aps_command(client: AzureClient, params: dict, args: dict):
-    """Updating Analytics Platform System
-
-    Args:
-        client:
-        args (dict): usually demisto.args()
-    """
-    setting_name = args.get("setting_name")
-    auto_provision = args.get("auto_provision")
-    setting = client.update_aps(setting_name, auto_provision)
-    outputs = [
-        {
-            "Name": setting.get("name"),
-            "AutoProvision": setting["properties"]["auto_provision"]
-            if setting.get("properties") and setting.get("properties").get("auto_provision")
-            else None,
-            "ID": setting.get("id"),
-        }
-    ]
-
-    md = tableToMarkdown(
-        "Azure Security Center - Update Auto Provisioning Setting",
-        outputs,
-        ["Name", "AutoProvision", "ID"],
-        removeNull=True,
-    )
-    # before the changes these two lines were existing:
-    # ec = {"AzureSecurityCenter.AutoProvisioningSetting(val.ID && val.ID === obj.ID)": outputs}
-    # return md, ec, setting
-    return CommandResults(
-        outputs_prefix="Azure.SecurityCenter",
-        outputs_key_field="id",
-        outputs=setting,
-        readable_output=md,
-        raw_response=outputs,
-    )
-    
 
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
@@ -1363,7 +1236,7 @@ def main():
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-storage-account-create-update": storage_account_create_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
-            "azure-sc-update-aps": update_aps_command,
+            # "azure-sc-update-aps": update_aps_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-webapp-config-set": set_webapp_config_command,
