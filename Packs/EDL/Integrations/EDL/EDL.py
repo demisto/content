@@ -284,7 +284,7 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
     """
     if formatted_indicators:
         truncated_data = formatted_indicators[:max_length]
-        demisto.debug(f"Formatted IOC data (first {max_length} characters):\n{truncated_data}")
+        demisto.debug(f"  {max_length} characters):\n{truncated_data}")
     else:
         demisto.debug("No data from IOC search.")
 
