@@ -36,12 +36,10 @@ class Client(BaseClient):  # pragma: no cover
         api_key: str,
         scopes: List[str],
         all_incident: bool,
-        max_fetch: int,
     ) -> None:
         self.company_id = company_id
         super().__init__(base_url, verify_certificate, proxy)
         self.all_incident = all_incident
-        self.max_fetch = max_fetch
         self._headers = {"Authorization": f"JWT {self.get_jwt_token(api_key, scopes)}"}
 
     def client_error_handler(self, res) -> Any:
@@ -70,12 +68,12 @@ class Client(BaseClient):  # pragma: no cover
             url_suffix=f"/incident/{self.company_id}/details/{incident_id}",
         )
 
-    def get_incident_ids(self, start_time: datetime) -> List[int]:
+    def get_incident_ids(self, start_time: datetime, max_fetch: int, last_id: Optional[int]) -> List[int]:
         '''
         Navigate to the correct endpoint
         '''
         if self.all_incident:
-            return self.get_all_incident_ids(start_time)
+            return self.get_all_incident_ids(start_time, max_fetch, last_id)
         return self.get_open_incident_ids()
 
     def get_open_incident_ids(self) -> List[int]:
@@ -95,7 +93,7 @@ class Client(BaseClient):  # pragma: no cover
         time_encoded = quote(time, safe='')  # Percent-encode (e.g., encode '+' to '%2B')
         return time_encoded
 
-    def get_all_incident_ids(self, start_time: datetime) -> List[int]:
+    def get_all_incident_ids(self, start_time: datetime, max_fetch: int, last_id: Optional[int]) -> List[int]:
         curr_time = datetime.now(timezone.utc)  # Get the current datetime with UTC timezone
         curr_time = self.convert_time(curr_time)
         start = self.convert_time(start_time)
@@ -110,21 +108,18 @@ class Client(BaseClient):  # pragma: no cover
         }
         incidents: List[int] = []
         # handle paging
-        while len(incidents) < self.max_fetch:
-            # take a look here - maybe a problem in case of several incidents in the same
-            # moment, and then filter them, but using page < total pages can bring to a high latency
-            params["page"] = str(page)
+        while len(incidents) < max_fetch:
+            params["page"] = page
             response = self._http_request(
                 method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params)
             total_pages = response.get("total_pages")
-            new_incidents = response.get("incidents").get("incidentID") or []
-            incidents.extend(new_incidents)
-            if not new_incidents or page >= total_pages:
+            new_incidents = [incident.get("incidentID") for incident in response.get("incidents")] or []
+            if not new_incidents or page > total_pages:
                 break
             page += 1
-
-        if not incidents:
-            return []
+            if last_id and new_incidents[-1] <= last_id: # Make that there is at least 1 new incident in the fetch
+                continue
+            incidents.extend(new_incidents)
         return incidents
 
 
@@ -187,8 +182,9 @@ def get_incident_ids_to_fetch(
     client: Client,
     first_fetch: datetime,
     last_id: Optional[int],
+    max_fetch,
 ) -> List[int]:
-    incident_ids: List[int] = client.get_incident_ids(first_fetch)
+    incident_ids: List[int] = client.get_incident_ids(first_fetch, max_fetch, last_id)
     if not incident_ids:
         return []
     if isinstance(last_id, int):
@@ -253,13 +249,11 @@ def fetch_events_command(
             - ID of the most recent incident ingested in the current run.
     """
     events: List[dict[str, Any]] = []
-    if isinstance(last_id, int):
-        first_fetch = arg_to_datetime(client.get_incident(last_id).get("first_reported_date")) \
-            or first_fetch
     incident_ids: List[int] = get_incident_ids_to_fetch(
         client=client,
         first_fetch=first_fetch,
         last_id=last_id,
+        max_fetch=max_fetch
     )
     last_id = last_id or -1
     for i in incident_ids:
@@ -296,7 +290,6 @@ def main():
             api_key=params.get("apikey", {}).get("password"),
             scopes=argToList(params.get("scopes")),
             all_incident=params.get("collect_all_incidents"),
-            max_fetch=max_fetch,
         )
         if command == "test-module":
             return_results(test_module_command(client, first_fetch))
@@ -308,6 +301,8 @@ def main():
                 send_events_to_xsiam(events, VENDOR, PRODUCT)
 
         elif command == "fetch-events":
+            if demisto.getLastRun().get("last_incident_time"):
+                first_fetch = arg_to_datetime(demisto.getLastRun().get("last_incident_time")) or first_fetch
             events, last_id = fetch_events_command(
                 client=client,
                 first_fetch=first_fetch,
@@ -315,7 +310,7 @@ def main():
                 last_id=demisto.getLastRun().get("last_id"),
             )
             send_events_to_xsiam(events, VENDOR, PRODUCT)
-            demisto.setLastRun({"last_id": last_id})
+            demisto.setLastRun({"last_id": last_id, "last_incident_time": events[-1].get("first_reported_date")})
 
     # Log exceptions
     except Exception as e:
