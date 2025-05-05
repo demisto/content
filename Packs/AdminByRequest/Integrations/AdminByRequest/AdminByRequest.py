@@ -34,6 +34,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 class Client(BaseClient):
     """Client class to interact with the service API
     """
+
     def __init__(self, base_url: str, api_key: str, verify: bool, use_proxy: bool) -> None:
         """
           Prepare constructor for Client class.
@@ -57,17 +58,18 @@ class Client(BaseClient):
 
         # TODO: Is there expiration for the API KEY? it dosent seem that way - make sure of that
 
-    def retrieve_from_api(self, url_suffix: str, params:dict) -> dict:
+    def retrieve_from_api(self, url_suffix: str, params: dict) -> dict:
         """Retrieve the detections from AdminByRequest  API.
         """
         return self._http_request(
             "GET", url_suffix=url_suffix, params=params, resp_type="json"
         )
 
+
 """ HELPER FUNCTIONS """
 
-def get_field_mapping(suffix: str) -> tuple[str, str]:
 
+def get_field_mapping(suffix: str) -> tuple[str, str]:
     if suffix == AUDIT_LOG_CALL_SUFFIX:
         source_log_type = "auditlog"
         time_field = "startTimeUTC"
@@ -79,6 +81,7 @@ def get_field_mapping(suffix: str) -> tuple[str, str]:
         source_log_type = "event"
 
     return source_log_type, time_field
+
 
 # TODO: Delete this
 # def fetch_audit_log(client: Client, last_run: dict) -> tuple[list[Any], dict]:
@@ -121,7 +124,7 @@ def remove_first_run_params(params: dict) -> None:
         params.pop("enddate")
 
 
-def validate_fetch_events_params(last_run : dict, call_type: str, fetch_limit:int) -> tuple[dict, str, str]:
+def validate_fetch_events_params(last_run: dict, call_type: str, fetch_limit: int) -> tuple[dict, str, str]:
     today = get_current_time().strftime("%Y-%m-%d")
     # phase 1 Params  - use today date to get the last ID in the first run
     params = {"startdate": today, "enddate": today}
@@ -147,12 +150,11 @@ def validate_fetch_events_params(last_run : dict, call_type: str, fetch_limit:in
     return params, suffix, key
 
 
-def fetch_events_list(client: Client, last_run: dict, call_type: str, fetch_limit: int) ->  list[dict[str, Any]]:
-
+def fetch_events_list(client: Client, last_run: dict, call_type: str, fetch_limit: int) -> list[dict[str, Any]]:
     params, suffix, last_run_key = validate_fetch_events_params(last_run, call_type, fetch_limit)
     time_field, source_log_type = get_field_mapping(suffix=suffix)
-    last_id : int = 0
-    output : list[dict[str, Any]] = []
+    last_id: int = 0
+    output: list[dict[str, Any]] = []
     while True:
         try:
             # API call
@@ -225,29 +227,23 @@ def get_event_type_fetch_limits(params: Dict[str, Any]) -> Dict[str, int]:
 
     return fetch_limits
 
+
 """ COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises:
-     exceptions if something goes wrong.
-
-    Args:
-        Client: client to use
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
     """
-
-    # TODO: ADD HERE some code to test connectivity and authentication to your service.
-    # This  should validate all the inputs given in the integration configuration panel,
-    # either manually or by using an API that uses them.
-    client.baseintegration_dummy("dummy", 10)  # No errors, the api is working
+    Tests the connection to the service by calling each one of the api endpoints.
+    Args:
+        client (Client): The client object used to interact with the service.
+    Returns:
+        str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
+    """
+    last_run = {}
+    fetch_specifications = {AUDIT_LOG_CALL_SUFFIX: 1, EVENTS_CALL_SUFFIX: 1, REQUESTS_CALL_SUFFIX: 1}
+    fetch_events(client, last_run, fetch_specifications)
     return "ok"
+
 
 def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AdminByRequest entity.
@@ -274,7 +270,6 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-
 
     # get the service API url
     base_url = params.get("url")
