@@ -34,10 +34,9 @@ def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
     if flags["double_encoding"] or flags["base_64_encoded"]:
         parsed_command_line = decoded_command_line
 
-    decoded_command_line, flags["obfuscated"] = encode_hex_and_oct_chars(
-        parsed_command_line
-    )
-
+    decoded_command_line, flags["obfuscated"] = encode_hex_and_oct_chars(parsed_command_line)
+    decoded_command_line, flags["obfuscated"] = multiple_strings(parsed_command_line)
+    
     if flags["obfuscated"]:
         parsed_command_line = decoded_command_line
 
@@ -78,6 +77,29 @@ def encode_hex_and_oct_chars(command_line: str):
     else:
         return command_line, False
 
+
+def multiple_strings(command_line: str):
+    """
+    Detects and joins multiple string concatenations in a command line string.
+
+    This function identifies patterns where strings are concatenated using the '+'
+    operator (e.g., "h" + "e" + "l" + "l" + "o") and joins them together by removing the
+    quotes and '+' symbols.
+
+    Args:
+        command_line (str): The input command line string to process.
+
+    Returns:
+        tuple: A tuple containing two elements:
+            - The processed string with concatenated strings joined together (if any were found).
+            - A boolean indicating whether any changes were made to the input string.
+    """
+
+    if re.search(r"\"\s*\+\s*\"", command_line):
+        return re.sub(r"\"(.*?)\"\s*\+", r"\1", command_line), True
+    
+    else:
+        return command_line, False
 
 # -----------------------------------------------------------------------------
 # 1) BASE64 & RELATED UTILITY FUNCTIONS
@@ -492,14 +514,10 @@ def check_suspicious_content(command_line: str) -> list[str]:
 
 def check_amsi(command_line: str) -> list[str]:
     patterns = [
-        r"\bSystem\.Management\.Automation\.AmsiUtils\b",
         r"\bamsiInitFailed\b",
-        r"\bLoadLibrary\(\"amsi\.dll\"\)\b",
         r"\bAmsiScanBuffer\(\)\b",
+        r"\bLoadLibrary\(\"amsi\.dll\"\)\b",
         r"\bSystem\.Management\.Automation\.AmsiUtils\b",
-        r"\bamsiInitFailed\b",
-        r"\bLoadLibrary\(\"amsi\.dll\"\)\b",
-        r"\bAmsiScanBuffer\(\)\b",
     ]
 
     demisto.debug("Checking for amsi patterns.")
@@ -540,29 +558,27 @@ def check_powershell_suspicious_patterns(command_line: str) -> list[str]:
     implemented using PowerShell.
     """
     patterns = [
-        r"\bNew\-Object\s+Net\.Sockets\.(?:TcpClient|UdpClient)\b",
-        r"\bSystem\.Net\.Sockets\.Tcp(?:Client|listener)\b",
-        r"\.Connect\(",
+        r"%\w+:~\d+,\d+%",
+        r"(\[char\[[^\]]+\]\]){3,}",
+        r"(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)",
+        r"\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]",
         r"\.AcceptTcpClient\(",
+        r"\.Connect\(",
+        r"\.ConnectAsync\(",
         r"\.Receive\(",
         r"\.Send\(",
-        r"\bpowershell.*IEX.*\(New\-Object\s+Net\.WebClient\)\b",
-        r"\bInvoke\-WebRequest.*-Uri\b",
-        r"\bInvoke\-RestMethod.*-Uri\b",
-        r"\bNew\-Object\s+System\.Net\.WebClient\b",
-        r"\bNew\-Object\s+Net\.WebClient\b",
-        r"\bDownloadString\b",
-        r"\bUploadString\b",
-        r"\bSystem\.Net\.WebSockets\.ClientWebSocket\b",
-        r"\.ConnectAsync\(",
         r"\[char\[\]\]\s*\([\d,\s]+\)|-join\s*\(\s*\[char\[\]\][^\)]+\)",
-        r"\$(env:[a-zA-Z]+)\[\d+\]\s*\+\s*\$env:[a-zA-Z]+\[\d+\]",
-        r"%\w+:~\d+,\d+%",
-        r"(cmd\.exe.*\/V:ON|setlocal.*EnableDelayedExpansion)",
-        r"if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?",
-        r"(\[char\[[^\]]+\]\]){3,}",
+        r"\b(?:Invoke\-Expression|IEX)\b",
+        r"\b(?:Invoke\-WebRequest|\biwr\b)",
+        r"\b(?:Upload|Download)String\b",
+        r"\bInvoke\-RestMethod.*-Uri\b",
+        r"\bNew\-Object\s+(?:System\.)?Net\.WebClient\b",
+        r"\bNew\-Object\s+Net\.Sockets\.(?:TcpClient|UdpClient)\b",
+        r"\bOutFile\b",
+        r"\bSystem\.Net\.Sockets\.Tcp(?:Client|listener)\b",
+        r"\bSystem\.Net\.WebSockets\.ClientWebSocket\b",
         r"for\s+%?\w+%?\s+in\s*\([^)]{50,}\)",
-        r"powershell.*?\b(iex.*?2>&1)\b",
+        r"if\s+%?\w+%?\s+geq\s+\d+\s+call\s+%?\w+%?:~\d+%?",
     ]
 
     demisto.debug("Checking for powershell suspicious patterns.")
@@ -579,46 +595,26 @@ def check_credential_dumping(command_line: str) -> list[str]:
     Detects credential dumping techniques.
     """
     patterns = [
-        r"\brundll32.*comsvcs\.dll\b",
-        r"\bprocdump.*lsass\b",
-        r"\bwmic\s+process\s+call\s+create.*lsass\b",
-        r"\bInvoke\-Mimikatz\b",
-        r"\btasklist.*lsass\b",
-        r"\bProcessHacker\b",
-        r"\bMiniDumpWriteDump\b",
         r"\bGet\-Credential\b",
+        r"\bInvoke\-Mimikatz\b",
         r"\blsass\.dmp\b",
+        r"\bMiniDumpWriteDump\b",
         r"\bntds\.dit\b",
         r"\bntdsutil\.exe.*ntds.*create\b",
-        r"\bsekurlsa\:\:",
+        r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
         r"\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp",
+        r"\bprocdump.*lsass\b",
+        r"\bProcessHacker\b",
+        r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
         r"\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*",
         r"\brundll32.*comsvcs\.dll\b",
-        r"\bprocdump.*lsass\b",
-        r"\bwmic\s+process\s+call\s+create.*lsass\b",
-        r"\bInvoke\-Mimikatz\b",
-        r"\btasklist.*lsass\b",
-        r"\bProcessHacker\b",
-        r"\bMiniDumpWriteDump\b",
-        r"\bGet\-Credential\b",
-        r"\blsass\.dmp\b",
-        r"\bntds\.dit\b",
-        r"\bntdsutil\.exe.*ntds.*create\b",
+        r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
         r"\bsekurlsa\:\:",
-        r"\bprocdump(\.exe)?\s+-ma\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp",
-        r"\brundll32(\.exe)?\s+comsvcs\.dll,\s+MiniDump\s+lsass\.exe\s+[a-zA-Z0-9_.-]+\.dmp.*",
-        r'\bwmic\s+process\s+call\s+create\s+".*mimikatz.*"',
+        r"\btasklist.*lsass\b",
         r"\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp",
-        r"\btaskmgr(\.exe)?\s+/create\s+/PID:\d+\s+/DumpFile:[a-zA-Z0-9_.-]+\.dmp",
+        r"\bwce(\.exe)?\s+-o",
+        r"\bwmic\s+process\s+call\s+create.*(?:lsass|mimikatz)\b",
         r'\bntdsutil(\.exe)?\s+".*ac i ntds.*" "ifm" "create full\s+[a-zA-Z]:\\.*"',
-        r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
-        r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
-        r"\bwce(\.exe)?\s+-o",
-        r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
-        r"\bsecretsdump(\.py)?\s+.*domain/.*:.*@.*",
-        r"\breg\s+save\s+hklm\\(sam|system)\s+[a-zA-Z0-9_.-]+\.hive",
-        r"\bwce(\.exe)?\s+-o",
-        r"\bpowershell.*Invoke\-BloodHound.*-CollectionMethod.*",
     ]
 
     demisto.debug("Checking for credential dumping.")
@@ -637,40 +633,19 @@ def check_lateral_movement(command_line: str) -> list[str]:
     Detects potential lateral movement techniques from a given command line.
     """
     patterns = [
-        r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
-        r"\bpsexec(\.exe)?",
-        r"\bpsexesvc\.exe\b",
-        r"\bpsexesvc\.log\b",
-        r"\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+",
-        r"\bmstsc(\.exe)?",
         r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
-        r"\bnet use \\\\.*\\IPC\$\b",
-        r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
-        r"\bEnter-PSSession\b",
-        r"\bpowershell.*Enter-PSSession\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-Credential\b",
         r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
-        r"\bpsexec(\.exe)?",
-        r"\bpsexesvc\.exe\b",
-        r"\bpsexesvc\.log\b",
-        r"\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+",
-        r"\bmstsc(\.exe)?",
-        r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
-        r"\bnet use \\\\.*\\IPC\$\b",
         r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
-        r"\bEnter-PSSession\b",
-        r"\bpowershell.*Enter-PSSession\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-Credential\b",
+        r"\bmstsc(\.exe)?",
+        r"\bnet use \\\\.*\\IPC\$\b",
+        r"\bpowershell.*(?:Enter-PSSession|Invoke\-Command)\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-(?:Credential|ScriptBlock)\b",
+        r"\bpsexec([.]exe)?",
+        r"\bpsexesvc[.](?:exe|log)\b",
+        r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
+        r"\bwmic\s+/node:\s*[a-zA-Z0-9_.-]+",
+        r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
         r'\bschtasks\s+/create\s+/tn\s+[a-zA-Z0-9_.-]+\s+/tr\s+".*"\s+/sc\s+[a-zA-Z]+\b',
-        r"\bpowershell.*Invoke\-Command\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-ScriptBlock\b",
-        r"\bmstsc(\.exe)?\s+/v\s+[a-zA-Z0-9_.-]+\b",
-        r"\bpowershell.*Invoke\-Command\s+-ComputerName\s+[a-zA-Z0-9_.-]+\s+-ScriptBlock\b",
-        r"\bmstsc(\.exe)?\s+/v\s+[a-zA-Z0-9_.-]+\b",
         r'\bwmiexec\.py\s+[a-zA-Z0-9_.-]+\s+".*"\b',
-        r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
-        r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\\.*\s+[a-zA-Z]:\\.*\b",
-        r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
-        r"\bssh.*?-o.*?StrictHostKeyChecking=no\b",
-        r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\\.*\s+[a-zA-Z]:\\.*\b",
-        r'\bcrackmapexec\s+smb\s+[a-zA-Z0-9_.-]+\s+-u\s+[a-zA-Z0-9_.-]+\s+-p\s+[a-zA-Z0-9_.-]+\s+-x\s+".*"\b',
     ]
 
     demisto.debug("Checking for lateral movement patterns.")
@@ -750,6 +725,10 @@ def check_social_engineering(command_line: str) -> list[str]:
     for emoji in checkmark_emojis:
         if emoji in command_line:
             return ["Emoji Found in command line"]
+
+    if re.search("mshta.*?#", command_line, re.IGNORECASE):
+        # This is used by attackers to fool a victim to run the mshta command via the explorer
+        return ["Comment character detected in mshta command line"]
 
     return []
 
@@ -833,7 +812,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
     weights: dict[str, int] = {
         "mixed_case_powershell": 25,
         "reversed_command": 25,
-        "powershell_suspicious_patterns": 25,
+        "powershell_suspicious_patterns": 35,
         "credential_dumping": 25,
         "double_encoding": 25,
         "amsi_techniques": 25,
@@ -923,9 +902,7 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
         if (high_risk_keys & context_keys_detected) and len(context_keys_detected) > 1:
             context_score += risk_bonuses["high"]
             context_findings.append("High-risk combination detected")
-        elif (medium_risk_keys & context_keys_detected) and len(
-            context_keys_detected
-        ) > 1:
+        elif (medium_risk_keys & context_keys_detected) and len(context_keys_detected) > 1:
             context_score += risk_bonuses["medium"]
             context_findings.append("Medium-risk combination detected")
         elif (low_risk_keys & context_keys_detected) and len(context_keys_detected) > 1:
@@ -1044,7 +1021,7 @@ def main():
     Entry point for analyzing command lines for suspicious activities and patterns.
     """
     args = demisto.args()
-    command_lines = argToList(args.get("command_line", []))
+    command_lines = argToList(args.get("command_line", []), separator=" , ")
     custom_patterns = argToList(args.get("custom_patterns", []))
     readable_output = ""
 
