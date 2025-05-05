@@ -1,7 +1,6 @@
 '''
 Event Collector Source file for AdminByRequest API.
 '''
-from enum import EnumMeta
 from typing import Any, Dict, Optional
 
 import demistomock as demisto
@@ -42,7 +41,6 @@ class Client(BaseClient):
           Calls the constructor of BaseClient class and updates the header with the authentication token.
 
           Args:
-              # TODO: do I need this url? im not sure
               base_url: The url of ExtraHop instance.
               api_key: The Api key for AdminByRequest API - specific for every licensing.
               verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
@@ -56,8 +54,6 @@ class Client(BaseClient):
             "apiKey": self._api_key
         }
 
-        # TODO: Is there expiration for the API KEY? it dosent seem that way - make sure of that
-
     def retrieve_from_api(self, url_suffix: str, params: dict) -> dict:
         """Retrieve the detections from AdminByRequest  API.
         """
@@ -70,6 +66,13 @@ class Client(BaseClient):
 
 
 def get_field_mapping(suffix: str) -> tuple[str, str]:
+    """
+    Returns the XSIAM field mapping for given suffix
+    Args:
+        suffix (str): The suffix represent the type of API call to make
+    Returns:
+        tuple[str, str]: the XSIAM field correct mapping for "_time" and "source_log_type".
+    """
     if suffix == AUDIT_LOG_CALL_SUFFIX:
         source_log_type = "auditlog"
         time_field = "startTimeUTC"
@@ -83,48 +86,29 @@ def get_field_mapping(suffix: str) -> tuple[str, str]:
     return source_log_type, time_field
 
 
-# TODO: Delete this
-# def fetch_audit_log(client: Client, last_run: dict) -> tuple[list[Any], dict]:
-#     """Retrieve full audit log entries from AdminByRequest API using delta logic."""
-#     today = get_current_time().strftime("%Y-%m-%d")
-#     all_entries = []
-#
-#     if "start_time_audit_logs" in last_run:
-#         start_time = last_run["start_time"]
-#     else:
-#         # Phase 1: Initial request to get timeNow
-#         params = {"startdate": today, "enddate": today}
-#         response = client.retrieve_audit_log(params=params)
-#         entries = response.get("entries", [])
-#         all_entries.extend(entries)
-#         start_time = response.get("timeNow")
-#
-#     # Phase 2: Poll with deltaTime until no more entries
-#     while True:
-#         #updated params
-#         params = {
-#             "deltaTime": start_time
-#         }
-#         # API call
-#         response = client.retrieve_audit_log(params=params)
-#
-#         start_time = response.get("timeNow")
-#         new_entries = response.get("entries", [])
-#         if not new_entries:
-#             break
-#         all_entries.extend(new_entries)
-#
-#     last_run["start_time_audit_logs"] = start_time
-#
-#     return all_entries, last_run
+def remove_first_run_params(params: Dict[str, Any]) -> None:
+    """
+    Remove the "First Run" items form the param dictionary.
 
-def remove_first_run_params(params: dict) -> None:
+    Args:
+        params (Dict[str, Any]): Integration parameters.
+
+    """
     if "startdate" in params:
         params.pop("startdate")
         params.pop("enddate")
 
 
 def validate_fetch_events_params(last_run: dict, call_type: str, fetch_limit: int) -> tuple[dict, str, str]:
+    """
+    Validate and update the params needed for the api call
+    Args:
+        last_run (dict): The last_run dictionary having the state of previous cycle.
+        call_type (str): The type of the api call.
+        fetch_limit (int): The maximum number of events to fetch.
+    Returns:
+        tuple[dict, str, str]: Correct params needed for the api call, call suffix, key to update in the last run.
+    """
 
     # phase 1 Params  - use today date to get the last ID in the first run
 
@@ -154,6 +138,16 @@ def validate_fetch_events_params(last_run: dict, call_type: str, fetch_limit: in
 
 
 def fetch_events_list(client: Client, last_run: dict, call_type: str, fetch_limit: int) -> list[dict[str, Any]]:
+    """
+    Main Function that Handles the Fetch action to the API service of AdminByRequest.
+    Args:
+        client (Client): The client object used to interact with the AdminByRequest service.
+        last_run (dict): The last_run dictionary having the state of previous cycle.
+        call_type (str): The type of the api call.
+        fetch_limit (int): The maximum number of events to fetch.
+    Returns:
+        list[dict[str, Any]]: List of records retrieved from the api call.
+    """
     params, suffix, last_run_key = validate_fetch_events_params(last_run, call_type, fetch_limit)
     time_field, source_log_type = get_field_mapping(suffix=suffix)
     last_id: int = 0
@@ -231,43 +225,6 @@ def get_event_type_fetch_limits(params: Dict[str, Any]) -> Dict[str, int]:
     return fetch_limits
 
 
-""" COMMAND FUNCTIONS """
-
-
-def test_module(client: Client) -> str:
-    """
-    Tests the connection to the service by calling each one of the api endpoints.
-    Args:
-        client (Client): The client object used to interact with the service.
-    Returns:
-        str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
-    """
-    last_run = {}
-    fetch_specifications = {AUDIT_LOG_CALL_SUFFIX: 1, EVENTS_CALL_SUFFIX: 1, REQUESTS_CALL_SUFFIX: 1}
-    fetch_events(client, last_run, fetch_specifications)
-    return "ok"
-
-
-def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> tuple[list[dict[str, Any]], dict]:
-    """Fetch the specified AdminByRequest entity.
-
-     Args:
-        client: ExtraHop client to be used.
-        last_run: The last_run dictionary having the state of previous cycle.
-        fetch_specifications : dictionary containing all the deatails of the AdminByRequest API calls tha should be execute
-    """
-    demisto.debug("AdminByRequest fetch_events invoked")
-    events = []
-
-    for api_call, fetch_limit in fetch_specifications.items():
-        output = fetch_events_list(client, last_run, api_call, fetch_limit)
-        events.extend(output)
-
-    demisto.debug(f"AdminByRequest next_run is {last_run}")
-
-    return events, last_run
-
-
 def prepare_list_output(records : List[dict[str, Any]]) -> str:
     """Prepare human-readable output.
 
@@ -292,6 +249,43 @@ def prepare_list_output(records : List[dict[str, Any]]) -> str:
         hr_outputs.append(hr_output)
 
     return tableToMarkdown(name="AdminByRequests Record(s)", t=hr_outputs, removeNull=True)
+
+
+""" COMMAND FUNCTIONS """
+
+
+def test_module(client: Client) -> str:
+    """
+    Tests the connection to the service by calling each one of the api endpoints.
+    Args:
+        client (Client): The client object used to interact with the service.
+    Returns:
+        str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
+    """
+    last_run = {}
+    fetch_specifications = {AUDIT_LOG_CALL_SUFFIX: 1, EVENTS_CALL_SUFFIX: 1, REQUESTS_CALL_SUFFIX: 1}
+    fetch_events(client, last_run, fetch_specifications)
+    return "ok"
+
+
+def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> tuple[list[dict[str, Any]], dict]:
+    """Fetch the specified AdminByRequest entity.
+
+     Args:
+        client (Client): The client object used to interact with the AdminByRequest service.
+        last_run: The last_run dictionary having the state of previous cycle.
+        fetch_specifications : dictionary containing all the details of the AdminByRequest API calls tha should be executed.
+    """
+    demisto.debug("AdminByRequest fetch_events invoked")
+    events = []
+
+    for api_call, fetch_limit in fetch_specifications.items():
+        output = fetch_events_list(client, last_run, api_call, fetch_limit)
+        events.extend(output)
+
+    demisto.debug(f"AdminByRequest next_run is {last_run}")
+
+    return events, last_run
 
 
 def get_events(client: Client, args: dict) -> CommandResults:
