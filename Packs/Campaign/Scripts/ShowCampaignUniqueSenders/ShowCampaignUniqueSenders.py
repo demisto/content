@@ -8,7 +8,12 @@ campaign_incidents = ""
 try:
     incident_id = demisto.incidents()[0].get("id", {})
     context = demisto.executeCommand("getContext", {"id": incident_id})
-    campaign_incidents = demisto.get(context[0], "Contents.context.EmailCampaign.incidents")
+    email_campaign = demisto.get(context[0], "Contents.context.EmailCampaign")
+    if email_campaign and isinstance(email_campaign, list):
+        email_campaign = email_campaign[0]
+    
+    campaign_incidents = email_campaign.get("incidents", [])
+    
     unique_senders = {incident.get("emailfrom") for incident in campaign_incidents}  # type: ignore[attr-defined]
     html = (
         f"<div style='font-size:17px; text-align:center; padding-top: 20px;'> "
