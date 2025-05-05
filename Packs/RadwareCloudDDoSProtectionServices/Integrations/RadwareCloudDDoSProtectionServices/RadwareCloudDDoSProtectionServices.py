@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any, Tuple
+from typing import Any
 from requests import Response
 import time
 
@@ -135,7 +135,7 @@ def filter_documents(documents: List[Dict[str, Union[str, Dict]]],
 
 
 def get_latest_timestamp_and_ids(documents: List[Dict[str, Union[str, Dict]]],
-                                 data_type: str) -> Tuple[Union[str, None], List[str]]:
+                                 data_type: str) -> tuple[Union[str, None], List[str]]:
     """
     Retrieves the latest timestamp and the corresponding ids from the given list of documents.
     args:
@@ -211,7 +211,7 @@ def fetch_data(client, last_run, data_type):
     if filtered_documents:
 
         if len(filtered_documents) == PAGE_SIZE:
-            demisto.debug(f'found next page')
+            demisto.debug('found next page')
             new_iteration_cache = {'end_time': end_time, 'start_time': start_time,
                                        'fetched_' + data_type: len(filtered_documents) + skip}
 
