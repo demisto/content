@@ -1,6 +1,6 @@
 {
-    "name": "ForeScoutCounterACT",
-    "description": "ForeScoutCounterACT",
+    "name": "ForeScout NAC - CounterACT",
+    "description": "ForeScout CounterACT",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,9 +9,20 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Compliance",
+        "Security",
+        "Network"
+    ],
+    "useCases": [
+        "Compliance",
+        "Network Security"
+    ],
+    "keywords": [
+        "ForeScout",
+        "CounterACT",
+        "NAC"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]
