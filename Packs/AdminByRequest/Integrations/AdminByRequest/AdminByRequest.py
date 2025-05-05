@@ -26,8 +26,8 @@ AUDIT_LOG_CALL_SUFFIX = "auditlog"
 REQUESTS_CALL_SUFFIX = "requests"
 EVENTS_CALL_SUFFIX = "events"
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-
+DATE_FORMAT_ISO = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT_CALLS = "%Y-%m-%d"
 """ CLIENT CLASS """
 
 
@@ -77,8 +77,8 @@ def get_field_mapping(suffix: str) -> tuple[str, str]:
         source_log_type = "request"
         time_field = "requestTime"
     else:
-        time_field = "startTimeUTC"
         source_log_type = "event"
+        time_field = "startTimeUTC"
 
     return source_log_type, time_field
 
@@ -125,19 +125,22 @@ def remove_first_run_params(params: dict) -> None:
 
 
 def validate_fetch_events_params(last_run: dict, call_type: str, fetch_limit: int) -> tuple[dict, str, str]:
-    today = get_current_time().strftime("%Y-%m-%d")
-    # phase 1 Params  - use today date to get the last ID in the first run
-    params = {"startdate": today, "enddate": today}
 
+    # phase 1 Params  - use today date to get the last ID in the first run
+
+    # if we gave start date then no need to check from today, else run from today
+    params = last_run
+    if not "startdate" in last_run:
+        today = get_current_time().strftime(DATE_FORMAT_CALLS)
+        params = {"startdate": today, "enddate": today}
+
+    suffix = call_type
     if call_type == AUDIT_LOG_CALL_SUFFIX:
-        suffix = "auditlog"
         take = DEFAULT_TAKE_AUDIT_LOGS
     elif call_type == REQUESTS_CALL_SUFFIX:
-        suffix = "requests"
         take = DEFAULT_TAKE_REQUESTS
     else:
         take = DEFAULT_TAKE_EVENTS
-        suffix = "events"
 
     key = "start_id_" + suffix
     # Phase 2 Params: If a call has already been executed then use the last run params.
@@ -265,6 +268,71 @@ def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> 
     return events, last_run
 
 
+def prepare_list_output(records : List[dict[str, Any]]) -> str:
+    """Prepare human-readable output.
+
+    Args:
+        records: List of entities response from the API.
+
+    Returns:
+        markdown string to be displayed in the war room.
+    """
+    hr_outputs = []
+    for rec in records:
+        hr_output = {
+            "ID": rec.get("id"),
+            "Type": rec.get("type"),
+            "Status": rec.get("status"),
+            "Reason": rec.get("reason"),
+            "Request Time": rec.get("requestTime"),
+            "Start Time": rec.get("startTime"),
+            "Event Text": rec.get("eventText"),
+            "Event Time": rec.get("eventTime"),
+        }
+        hr_outputs.append(hr_output)
+
+    return tableToMarkdown(name="AdminByRequests Record(s)", t=hr_outputs, removeNull=True)
+
+
+def get_events(client: Client, args: dict) -> CommandResults:
+    """
+    Inner Test Function to make sure the integration works
+    Args:
+        client: AdminByRequest client to be used.
+        args: command arguments.
+
+    Returns: Command results object that contain the results.
+    """
+    max_events = arg_to_number(args.get("limit")) or None
+    # User start date in the get events arguments, else get from today
+    first_fetch = arg_to_datetime(args.get("first_fetch")) or get_current_time()
+    first_fetch_date = first_fetch.strftime(DATE_FORMAT_CALLS)
+
+    call_type = args.get("event_type")
+    if not max_events:
+        if call_type == "Auditlog":
+            max_events = MAX_FETCH_AUDIT_LIMIT
+        elif call_type == "Events":
+            max_events = MAX_FETCH_EVENT_LIMIT
+        else:
+            max_events = MAX_FETCH_REQUEST_LIMIT
+
+    fetch_specifications = {call_type: max_events}
+
+    last_run = {
+        'startdate': first_fetch_date
+    }
+
+    output, _  = fetch_events(client, last_run, fetch_specifications)
+    human_readable = prepare_list_output(output)
+
+    command_results = CommandResults(
+        readable_output=human_readable,
+        outputs=output,
+        outputs_prefix="AdminByRequest." + call_type,
+    )
+    return command_results
+
 def main():
     """main function, parses params and runs command functions"""
     params = demisto.params()
@@ -298,7 +366,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "admin_by_request_get-events":
-            command_results = get_events(client, args, max_events)
+            command_results = get_events(client, args)
             events = command_results.outputs
             if events and argToBoolean(args.get('should_push_events')):
                 demisto.debug(f'Sending {len(events)} events.')
