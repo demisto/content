@@ -115,7 +115,7 @@ class Client(BaseClient):
             if refresh_token and 'Invalid refresh token' in str(e):
                 demisto.debug(f'Failed to generate access token using refresh token.'
                               'Attempting to generate a new access token using username and password. Original error is: {str(e)}')
-                data = self.generte_data_with_username()
+                data = self.generate_data_with_username()
                 token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
             else:
                 raise e
