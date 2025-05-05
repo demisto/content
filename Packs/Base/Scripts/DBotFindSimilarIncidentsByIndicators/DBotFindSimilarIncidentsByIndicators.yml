@@ -42,7 +42,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.2073016
+dockerimage: demisto/sklearn:1.0.0.3150306
 runas: DBotWeakRole
 tests:
 - DBotFindSimilarIncidentsByIndicators - Test
