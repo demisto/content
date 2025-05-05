@@ -11,10 +11,6 @@ def mock_client(mocker):
     client = Client(base_url='https://test.com', verify=False, proxy=False, org_name='org', username='user',
                     password='password', zone='zone')
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
-    mocker.patch.object(Client, 'generate_data_with_username', return_value={'grant_type': 'password', 'username': 'user',
-                                                                         'password': 'password',})
-    mocker.patch.object(Client, 'generate_data_with_refresh_token', return_value={'grant_type': 'refresh_token',
-                                                                                 'refresh_token': 'valid'})
     mocker.patch.object(Client, '_http_request', return_value={'access_token': 'access_token', 'expires_in': 3600,
                                                                'refresh_token': 'refresh_token'})
     return client
@@ -232,7 +228,7 @@ def test_get_token_with_valid_refresh_token(mocker):
     """
     client = mock_client(mocker)
     spy_http = mocker.spy(Client, '_http_request')
-    access_token, expires_in, refresh_token = client.get_token_request(refresh_token = 'token')
+    access_token, expires_in, refresh_token = client.get_token_request(refresh_token = 'refresh_token')
     assert access_token == 'access_token'
     assert expires_in == 3600
     assert refresh_token == 'refresh_token'
@@ -241,7 +237,7 @@ def test_get_token_with_valid_refresh_token(mocker):
     assert args[0] == ('POST',)
     assert args[1] == {'full_url': 'https://zone.login.apigee.com/oauth/token',
                        'url_suffix': '/oauth/token',
-                       'data': {'grant_type': 'refresh_token', 'refresh_token': 'valid'},
+                       'data': {'grant_type': 'refresh_token', 'refresh_token': 'refresh_token'},
                        'headers': {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                                    'Accept': 'application/json;charset=utf-8',
                                    'Authorization': 'Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0'}}
@@ -262,7 +258,7 @@ def test_get_token_with_invalid_refresh_token(mocker):
     http_mock = mocker.patch.object(Client, '_http_request', side_effect=[Exception('Invalid refresh token'),
                                                                           {'access_token': 'access_token', 'expires_in': 3600,
                                                                            'refresh_token': 'refresh_token'}])
-    access_token, expires_in, refresh_token = client.get_token_request(refresh_token='invalid')
+    access_token, expires_in, refresh_token = client.get_token_request(refresh_token='refresh_token')
     
     assert http_mock.call_count == 2
     first_call = http_mock.call_args_list[0]
@@ -271,7 +267,7 @@ def test_get_token_with_invalid_refresh_token(mocker):
     # Inspecting the first call
     assert first_call[0] == ('POST',)
     assert first_call[1]['data']['grant_type'] == 'refresh_token'
-    assert first_call[1]['data']['refresh_token'] == 'valid'
+    assert first_call[1]['data']['refresh_token'] == 'refresh_token'
 
     # Inspecting the second call
     assert second_call[0] == ('POST',)
