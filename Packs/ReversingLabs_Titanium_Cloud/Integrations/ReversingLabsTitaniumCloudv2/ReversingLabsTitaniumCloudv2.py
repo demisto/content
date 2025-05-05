@@ -30,7 +30,7 @@ from ReversingLabs.SDK.ticloud import (
     YARARetroHunting,
 )
 
-VERSION = f"v{get_pack_version()}" or "v2.7.1"
+VERSION = f"v{get_pack_version() or '2.7.1'}"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")
