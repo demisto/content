@@ -1,5 +1,5 @@
 
-# Radware Cloud WAF Services
+# Radware Cloud Services
 <~XSIAM>  
 This pack includes Cortex XSIAM content.  
 It supports the following Radware Cloud Services event types: 

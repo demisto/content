@@ -61,4 +61,4 @@ fromversion: 8.0.0
 marketplaces:
   - marketplacev2
 tests:
- "No tests"
+- No tests
