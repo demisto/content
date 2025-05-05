@@ -249,7 +249,7 @@ def test_module(client: Client) -> str:
     client.baseintegration_dummy("dummy", 10)  # No errors, the api is working
     return "ok"
 
-def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> list[dict[str, Any]]:
+def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AdminByRequest entity.
 
      Args:
@@ -258,15 +258,15 @@ def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> 
         fetch_specifications : dictionary containing all the deatails of the AdminByRequest API calls tha should be execute
     """
     demisto.debug("AdminByRequest fetch_events invoked")
-    fetch_params = validate_fetch_events_params(last_run)
     events = []
 
-    for api_call in fetch_specifications:
-        output = fetch_events_list(client, last_run, api_call[0], api_call[1])
+    for api_call, fetch_limit in fetch_specifications.items():
+        output = fetch_events_list(client, last_run, api_call, fetch_limit)
         events.extend(output)
 
     demisto.debug(f"AdminByRequest next_run is {last_run}")
-    return events
+
+    return events, last_run
 
 
 def main():
