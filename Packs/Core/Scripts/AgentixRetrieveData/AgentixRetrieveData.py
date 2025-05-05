@@ -15,21 +15,44 @@ def shorten_text(text: str) -> str:
     return text  # Return original if not exactly two words
 
 
-def check_status(args: dict) -> bool:
-    query_id = args["query_id"]
-    res = demisto.executeCommand(command="xdr-xql-get-query-results", args={"query_id": query_id})
-    print(res)
-    continue_to_poll = (res[0]["Contents"]['status'] == 'PENDING')
-    context_output = {
-        'QueryID': query_id,
-        'Status': res[0]["Contents"]['status']
-    }
+def check_status(args: dict) -> PollResult:
+    """
+    This function executes the xdr-xql-get-query-results command and PollResult object accordingly.
+    """
+    demisto.debug("starting check_status function")
 
-    return continue_to_poll
+    query_id = args["query_id"]
+    entry_result = demisto.executeCommand(command="xdr-xql-get-query-results", args={"query_id": query_id})
+    demisto.debug(f"This is the entry result from executing xdr-xql-get-query-results command:\n{entry_result} ")
+
+    continue_to_poll = (entry_result[0]["Contents"]['status'] == 'PENDING')
+
+    if continue_to_poll:
+        demisto.debug("continue_to_poll is True")
+        return PollResult(
+            response={},
+            continue_to_poll=continue_to_poll,
+            args_for_next_run=args,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for job ID {args["query_id"]} to finish...'
+            ),
+        )
+
+    demisto.debug("continue_to_poll is False")
+    return PollResult(
+        response=CommandResults(readable_output=f'job ID {args["query_id"]} is finished!',
+                                outputs=entry_result[0]["Contents"]["results"],
+                                outputs_prefix="PaloAltoNetworksXQL"),
+        continue_to_poll=continue_to_poll,
+        args_for_next_run=args,
+    )
 
 
 def execute_query(args: dict) -> dict:
-    print("starting execute_query")
+    """
+    This function executes the xdr-xql-generic-query command and returns the args for the next run since it's a polling command.
+    """
+    demisto.debug("starting execute_query")
     time_frame: str = args.get("time_frame", "7 days")
     data_set: str = args.get("data_set", "xdr_data")
     indicator: str = args["indicator"]
@@ -39,8 +62,7 @@ def execute_query(args: dict) -> dict:
     query: str = f'config timeframe = {time_frame_for_query} | search "{indicator}" dataset = {data_set}'
 
     entry_result = demisto.executeCommand(command="xdr-xql-generic-query", args={"query": query, "query_name": query_name})
-    print("after - executeCommand  xdr-xql-generic-query")
-    demisto.debug(f"This is the entry result from excepting xdr-xql-generic-query command:\n{entry_result} ")
+    demisto.debug(f"This is the entry result from executing xdr-xql-generic-query command:\n{entry_result} ")
     polling_args = entry_result[0]["Metadata"]["pollingArgs"]
     args_for_next_run = {"query_id": polling_args["query_id"],
                          "query_name": polling_args["query_name"],
@@ -60,36 +82,19 @@ def execute_query(args: dict) -> dict:
 )
 def polling_command(args: dict) -> PollResult:
     if "query_id" not in args:  # first time executing query
-        print("starting polling_command")
+        demisto.debug("starting polling_command function")
         args_for_next_run = execute_query(args=args)
-        print("after - execute_query func")
-        poll_result = PollResult(
+        demisto.debug("After - execute_query function")
+        return PollResult(
             response={},
             continue_to_poll=True,
             args_for_next_run=args_for_next_run | {"polling": True},
             partial_result=CommandResults(
-                readable_output=f'Waiting for commit job ID {args_for_next_run["query_id"]} to finish...'
-            )
+                readable_output=f'Waiting for job ID {args_for_next_run["query_id"]} to finish...'
+            ),
         )
     else:  # check query's status
-        continue_to_poll = check_status(args=args)
-        if continue_to_poll:
-            poll_result = PollResult(
-                response={},
-                continue_to_poll=True,
-                args_for_next_run=args,
-                partial_result=CommandResults(
-                    readable_output=f'Waiting for commit job ID {args["query_id"]} to finish...'
-                )
-            )
-        else:
-            print("3")
-            poll_result = PollResult(
-                response=CommandResults(readable_output=f'Finish!!!'),
-                continue_to_poll=False,
-                args_for_next_run=args
-                )
-    return poll_result
+        return check_status(args=args)
 
 
 def main():
