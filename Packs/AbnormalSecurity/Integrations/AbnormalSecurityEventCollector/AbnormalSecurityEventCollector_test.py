@@ -43,7 +43,7 @@ def test_get_events():
 
     """
     client = Client(base_url="url")
-    messages, last_run = get_events(client, after="2022-05-02T18:44:38Z")
+    messages, last_run = get_events(client, after="2022-05-02T18:44:38Z", next_page_number=1)
 
     assert messages == [
         {"abxMessageId": 3, "receivedTime": "2022-06-01T18:44:38Z", "threatId": "123456789-1", "toAddresses": []},
@@ -80,7 +80,8 @@ def test_fetch_events_with_nextTrigger(mocker):
     mocker.patch.object(Client, "list_threats", side_effect=mock_list_threats)
     mocker.patch("AbnormalSecurityEventCollector.format_messages", return_value=mock_responses[0]["threats"][0])
     mocker.patch("AbnormalSecurityEventCollector.get_messages_by_datetime", return_value=mock_responses[0]["threats"][0])
-    mocker.patch("AbnormalSecurityEventCollector.sorted", return_value=[threat for response in mock_responses[:9] for threat in response["threats"]])
+    mocker.patch("AbnormalSecurityEventCollector.sorted",
+                 return_value=[threat for response in mock_responses[:9] for threat in response["threats"]])
     threats, last_run = get_events(client, after="2022-05-02T18:44:38Z", next_page_number=1)
     assert len(threats) == 9000
     assert last_run.get("next_page_number") == 10
