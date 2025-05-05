@@ -11,7 +11,7 @@ def mock_client(mocker):
     client = Client(base_url='https://test.com', verify=False, proxy=False, org_name='org', username='user',
                     password='password', zone='zone')
     mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
-    mocker.patch.object(Client, 'generte_data_with_username', return_value={'grant_type': 'password', 'username': 'user',
+    mocker.patch.object(Client, 'generate_data_with_username', return_value={'grant_type': 'password', 'username': 'user',
                                                                          'password': 'password',})
     mocker.patch.object(Client, 'generate_data_with_refresh_token', return_value={'grant_type': 'refresh_token',
                                                                                  'refresh_token': 'valid'})
