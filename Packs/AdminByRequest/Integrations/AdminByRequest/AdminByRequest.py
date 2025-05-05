@@ -11,6 +11,29 @@ from CommonServerUserPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
+class EventType:
+    """
+    This class defines an AdminByRequest API Event - used to dynamically store different types of events data.
+    """
+
+    def __init__(self, suffix: str, take: int, source_log_type: str, time_field: str):
+        """
+          Prepare constructor for EventType class.
+          Args:
+              suffix: The url suffix of AdminByRequest API endpoint.
+              take: Maximum events to fetch per API call.
+              source_log_type: Key name for "source_log_type" field mapping inside XSIAM
+              time_field: Key name for "_TIME" field mapping inside XSIAM
+          """
+        self.suffix = suffix
+        self.take = take
+        self.source_log_type = source_log_type
+        self.time_field = time_field
+        self.last_run_key = "start_id_" + suffix
+        self.max_fetch = 1
+
+
 """ CONSTANTS """
 
 VENDOR = 'Admin'
@@ -18,15 +41,30 @@ PRODUCT = 'ByRequest'
 MAX_FETCH_AUDIT_LIMIT = 50000
 MAX_FETCH_EVENT_LIMIT = 50000
 MAX_FETCH_REQUEST_LIMIT = 5000
-DEFAULT_TAKE_AUDIT_LOGS = 10000
-DEFAULT_TAKE_REQUESTS = 1000
-DEFAULT_TAKE_EVENTS = 10000
-AUDIT_LOG_CALL_SUFFIX = "auditlog"
-REQUESTS_CALL_SUFFIX = "requests"
-EVENTS_CALL_SUFFIX = "events"
-
 DATE_FORMAT_ISO = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT_CALLS = "%Y-%m-%d"
+
+EVENT_TYPES : Dict[str, EventType] = {
+    "Auditlog": EventType(
+        suffix="auditlog",
+        take=10000,
+        source_log_type="auditlog",
+        time_field="startTimeUTC",
+    ),
+    "Events": EventType(
+        suffix="events",
+        take=10000,
+        source_log_type="events",
+        time_field="startTimeUTC",
+    ),
+    "Requests": EventType(
+        suffix="requests",
+        take=1000,
+        source_log_type="request",
+        time_field="requestTime",
+    )
+}
+
 """ CLIENT CLASS """
 
 
@@ -41,7 +79,7 @@ class Client(BaseClient):
           Calls the constructor of BaseClient class and updates the header with the authentication token.
 
           Args:
-              base_url: The url of ExtraHop instance.
+              base_url: The url of AdminByRequest instance.
               api_key: The Api key for AdminByRequest API - specific for every licensing.
               verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
               use_proxy: True if the proxy server needs to be used, False otherwise.
@@ -65,27 +103,6 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def get_field_mapping(suffix: str) -> tuple[str, str]:
-    """
-    Returns the XSIAM field mapping for given suffix
-    Args:
-        suffix (str): The suffix represent the type of API call to make
-    Returns:
-        tuple[str, str]: the XSIAM field correct mapping for "_time" and "source_log_type".
-    """
-    if suffix == AUDIT_LOG_CALL_SUFFIX:
-        source_log_type = "auditlog"
-        time_field = "startTimeUTC"
-    elif suffix == REQUESTS_CALL_SUFFIX:
-        source_log_type = "request"
-        time_field = "requestTime"
-    else:
-        source_log_type = "event"
-        time_field = "startTimeUTC"
-
-    return source_log_type, time_field
-
-
 def remove_first_run_params(params: Dict[str, Any]) -> None:
     """
     Remove the "First Run" items form the param dictionary.
@@ -99,13 +116,12 @@ def remove_first_run_params(params: Dict[str, Any]) -> None:
         params.pop("enddate")
 
 
-def validate_fetch_events_params(last_run: dict, call_type: str, fetch_limit: int) -> tuple[dict, str, str]:
+def validate_fetch_events_params(last_run: dict, event_type : EventType) -> tuple[dict, str, str]:
     """
     Validate and update the params needed for the api call
     Args:
         last_run (dict): The last_run dictionary having the state of previous cycle.
-        call_type (str): The type of the api call.
-        fetch_limit (int): The maximum number of events to fetch.
+        event_type (EventType): Event Type to fetch from API
     Returns:
         tuple[dict, str, str]: Correct params needed for the api call, call suffix, key to update in the last run.
     """
@@ -118,38 +134,33 @@ def validate_fetch_events_params(last_run: dict, call_type: str, fetch_limit: in
         today = get_current_time().strftime(DATE_FORMAT_CALLS)
         params = {"startdate": today, "enddate": today}
 
-    suffix = call_type
-    if call_type == AUDIT_LOG_CALL_SUFFIX:
-        take = DEFAULT_TAKE_AUDIT_LOGS
-    elif call_type == REQUESTS_CALL_SUFFIX:
-        take = DEFAULT_TAKE_REQUESTS
-    else:
-        take = DEFAULT_TAKE_EVENTS
-
+    suffix = event_type.suffix
+    take = event_type.take
     key = "start_id_" + suffix
+
     # Phase 2 Params: If a call has already been executed then use the last run params.
     if last_run.get(key):
         params = {"startid": last_run[key]}
 
-    take = min(take, fetch_limit)
+    take = min(take, event_type.max_fetch)
     params["take"] = take
 
     return params, suffix, key
 
 
-def fetch_events_list(client: Client, last_run: dict, call_type: str, fetch_limit: int) -> list[dict[str, Any]]:
+def fetch_events_list(client: Client, last_run: dict, event_type : EventType) -> list[dict[str, Any]]:
     """
     Main Function that Handles the Fetch action to the API service of AdminByRequest.
     Args:
         client (Client): The client object used to interact with the AdminByRequest service.
         last_run (dict): The last_run dictionary having the state of previous cycle.
-        call_type (str): The type of the api call.
-        fetch_limit (int): The maximum number of events to fetch.
+        event_type (EventType): Event Type to fetch from API
     Returns:
         list[dict[str, Any]]: List of records retrieved from the api call.
     """
-    params, suffix, last_run_key = validate_fetch_events_params(last_run, call_type, fetch_limit)
-    time_field, source_log_type = get_field_mapping(suffix=suffix)
+    params, suffix, last_run_key = validate_fetch_events_params(last_run, event_type)
+    time_field, source_log_type = event_type.time_field, event_type.source_log_type
+    fetch_limit = event_type.max_fetch
     last_id: int = 0
     output: list[dict[str, Any]] = []
     while True:
@@ -193,7 +204,7 @@ def fetch_events_list(client: Client, last_run: dict, call_type: str, fetch_limi
     return output
 
 
-def get_event_type_fetch_limits(params: Dict[str, Any]) -> Dict[str, int]:
+def get_event_type_fetch_limits(params: Dict[str, Any]) -> list[EventType]:
     """
     Parses the event types to fetch from parameters and returns a dictionary mapping
     each selected event type's suffix to its corresponding max fetch limit.
@@ -202,7 +213,7 @@ def get_event_type_fetch_limits(params: Dict[str, Any]) -> Dict[str, int]:
         params (Dict[str, Any]): Integration parameters.
 
     Returns:
-        Dict[str, int]: Mapping of event type suffix to max fetch count.
+        list[EventType]: List of event type to fetch from the api call.
     """
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", []))
     event_types_to_fetch = [event_type.strip() for event_type in event_types_to_fetch]
@@ -211,21 +222,24 @@ def get_event_type_fetch_limits(params: Dict[str, Any]) -> Dict[str, int]:
     max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or MAX_FETCH_EVENT_LIMIT
     max_requests_per_fetch = arg_to_number(params.get("max_requests_per_fetch")) or MAX_FETCH_REQUEST_LIMIT
 
-    fetch_limits = {}
 
+    event_types = []
     if "Auditlog" in event_types_to_fetch:
-        fetch_limits[AUDIT_LOG_CALL_SUFFIX] = max_auditlog_per_fetch
+        EVENT_TYPES["Auditlog"].max_fetch = max_auditlog_per_fetch
+        event_types.append(EVENT_TYPES["Auditlog"])
 
     if "Events" in event_types_to_fetch:
-        fetch_limits[EVENTS_CALL_SUFFIX] = max_events_per_fetch
+        EVENT_TYPES["Events"].max_fetch = max_events_per_fetch
+        event_types.append(EVENT_TYPES["Events"])
 
     if "Requests" in event_types_to_fetch:
-        fetch_limits[REQUESTS_CALL_SUFFIX] = max_requests_per_fetch
+        EVENT_TYPES["Requests"].max_fetch = max_requests_per_fetch
+        event_types.append(EVENT_TYPES["Requests"])
 
-    return fetch_limits
+    return event_types
 
 
-def prepare_list_output(records : List[dict[str, Any]]) -> str:
+def prepare_list_output(records: List[dict[str, Any]]) -> str:
     """Prepare human-readable output.
 
     Args:
@@ -262,25 +276,27 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
+    event_types = list(EVENT_TYPES.values())
+    for e in event_types:
+        e.max_fetch = 1
     last_run = {}
-    fetch_specifications = {AUDIT_LOG_CALL_SUFFIX: 1, EVENTS_CALL_SUFFIX: 1, REQUESTS_CALL_SUFFIX: 1}
-    fetch_events(client, last_run, fetch_specifications)
+    fetch_events(client, last_run, event_types)
     return "ok"
 
 
-def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> tuple[list[dict[str, Any]], dict]:
+def fetch_events(client: Client, last_run: dict, fetch_events_types: list[EventType]) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AdminByRequest entity.
 
      Args:
         client (Client): The client object used to interact with the AdminByRequest service.
-        last_run: The last_run dictionary having the state of previous cycle.
-        fetch_specifications : dictionary containing all the details of the AdminByRequest API calls tha should be executed.
+        last_run (dict): The last_run dictionary having the state of previous cycle.
+        fetch_events_types (list[EventType]) : list of Event Types to fetch from API
     """
     demisto.debug("AdminByRequest fetch_events invoked")
     events = []
 
-    for api_call, fetch_limit in fetch_specifications.items():
-        output = fetch_events_list(client, last_run, api_call, fetch_limit)
+    for event_type in fetch_events_types:
+        output = fetch_events_list(client, last_run, event_type)
         events.extend(output)
 
     demisto.debug(f"AdminByRequest next_run is {last_run}")
@@ -311,13 +327,14 @@ def get_events(client: Client, args: dict) -> CommandResults:
         else:
             max_events = MAX_FETCH_REQUEST_LIMIT
 
-    fetch_specifications = {call_type: max_events}
+    event_type = EVENT_TYPES[call_type]
+    event_type.max_fetch = max_events
 
     last_run = {
         'startdate': first_fetch_date
     }
 
-    output, _  = fetch_events(client, last_run, fetch_specifications)
+    output, _ = fetch_events(client, last_run, [event_type])
     human_readable = prepare_list_output(output)
 
     command_results = CommandResults(
@@ -326,6 +343,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
         outputs_prefix="AdminByRequest." + call_type,
     )
     return command_results
+
 
 def main():
     """main function, parses params and runs command functions"""
@@ -338,7 +356,6 @@ def main():
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     api_key = params.get("api_key", "")
-    fetch_specifications = get_event_type_fetch_limits(params)
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -352,8 +369,9 @@ def main():
             result = test_module(client)
             return_results(result)
         elif command == "fetch-events":
+            fetch_events_types = get_event_type_fetch_limits(params)
             last_run = demisto.getLastRun()
-            events, next_run = fetch_events(client, last_run, fetch_specifications)
+            events, next_run = fetch_events(client, last_run, fetch_events_types)
             if len(events):
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
