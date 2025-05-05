@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Recorded Future Feed
   version: -1
@@ -8,6 +11,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
+  section: Collect
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
@@ -19,6 +23,7 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
   required: false
+  section: Collect
 - defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -32,6 +37,7 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -42,6 +48,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  section: Collect
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -52,30 +59,39 @@ configuration:
   - indicatorType
   - suddenDeath
   required: false
+  section: Collect
 - name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
   display: ""
   required: false
+  section: Collect
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  section: Collect
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: |-
     When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type
@@ -87,17 +103,20 @@ configuration:
   - CVE(vulnerability)
   required: true
   type: 15
+  section: Collect
 - display: API token
   name: api_token
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: API Token
   name: credentials_api_token
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - defaultvalue: connectApi
   display: Services
   name: services
@@ -106,6 +125,7 @@ configuration:
   - fusion
   required: true
   type: 16
+  section: Connect
 - additionalinfo: |-
     A comma-separated list of risk rules which limits the indicators list to a specific risk rule.
     For example: 'dhsAis,phishingUrl'.
@@ -117,6 +137,7 @@ configuration:
   name: risk_rule
   type: 0
   required: false
+  section: Collect
 - additionalinfo: |-
     Load a custom risklist from a specified Recorded Future file path.
     If no file path is specified, the default risklist file is used. This parameter
@@ -125,17 +146,22 @@ configuration:
   name: fusion_file_path
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: Time in seconds before HTTP requests timeout.
   defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
   type: 0
+  section: Collect
 - additionalinfo: |-
     The minimum score from the feed in order to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
   defaultvalue: '65'
@@ -143,24 +169,32 @@ configuration:
   name: threshold
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: The minimum score from the feed in order to determine whether the indicator is Suspicious. Ranges up to the Malicious Threshold. Default is "25". For more information about Recorded Future scoring go to integration details.
   defaultvalue: '25'
   display: Suspicious Threshold
   name: suspicious_threshold
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR. Scores greater than the IOC Risk Score Threshold and less than the Suspicious Threshold will have an unknown verdict.
   defaultvalue: '0'
   display: IOC Risk Score Threshold
   name: risk_score_threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: A loss of data may occur if selecting this checkbox.'
   display: Remove rawJSON from indicators
   name: performance
   defaultvalue: "true"
   type: 8
   required: false
+  section: Collect
+  advanced: true
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed
@@ -208,7 +242,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
   script: ''
