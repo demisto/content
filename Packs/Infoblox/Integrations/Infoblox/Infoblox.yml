@@ -784,17 +784,17 @@ script:
     - contextPath: Infoblox.NetworkInfo.AdditionalFields
       description: The additional fields for network.
       type: Unknown
-  - name: infoblox-list-dns-entries
-    description: List DNS entries.
+  - name: infoblox-list-records
+    description: List DNS records.
     arguments:
     - name: name_search
-      description: Search pattern for DNS Name entries.
+      description: Search pattern for DNS Name records.
       required: false
     - name: ip4_search
-      description: Search pattern for IPv4 DNS entries.
+      description: Search pattern for IPv4 DNS records.
       required: false
     - name: ip6_search
-      description: Search pattern for IPv6 DNS entries.
+      description: Search pattern for IPv6 DNS records.
       required: false
     - name: record_type
       description: Coma seperated list of  Record types to load, e.g., 'A', 'MX'.
@@ -804,22 +804,22 @@ script:
       description: The maximum number of records to return. 0 for everything.
       defaultValue: 50
     outputs:
-    - contextPath: Infoblox.DNSEntries._ref
+    - contextPath: Infoblox.Records._ref
       description: The network reference.
       type: String
-    - contextPath: Infoblox.DNSEntries.name
+    - contextPath: Infoblox.Records.name
       description: The network name.
       type: String
-    - contextPath: Infoblox.DNSEntries.ipv4addr
+    - contextPath: Infoblox.Records.ipv4addr
       description: IPv4 address
       type: String
-    - contextPath: Infoblox.DNSEntries.ipv6addr
+    - contextPath: Infoblox.Records.ipv6addr
       description: IPv6 address
       type: String
-    - contextPath: Infoblox.DNSEntries.canonical
+    - contextPath: Infoblox.Records.canonical
       description: CName of the Searched Address
       type: String
-    - contextPath: Infoblox.DNSEntries.view
+    - contextPath: Infoblox.Records.view
       description: Internal or External DNS Entry
       type: String
   dockerimage: demisto/python3:3.11.10.116949
