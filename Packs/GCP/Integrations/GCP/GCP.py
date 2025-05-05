@@ -1,12 +1,17 @@
-import urllib3
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
-
+import urllib3
 urllib3.disable_warnings()
-API_VERSION = "v1"
+
+# API versions
+COMPUTE_API_VERSION = "v1"
+STORAGE_API_VERSION = "v1"
+CONTAINER_API_VERSION = "v1"
+RESOURCE_MANAGER_API_VERSION = "v3"
+
 SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
 REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-compute-firewall-patch": [
@@ -165,7 +170,7 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
     if disabled := args.get("disabled"):
         config["disabled"] = argToBoolean(disabled)
 
-    compute = build("compute", API_VERSION, credentials=creds)
+    compute = build("compute", COMPUTE_API_VERSION, credentials=creds)
     demisto.debug(f"Firewall patch config for {resource_name} in project {project_id}: {config}")
     response = compute.firewalls().patch(  # pylint: disable=E1101
         project=project_id,
@@ -192,7 +197,7 @@ def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> Co
     bucket = args.get("resource_name")
     entities_to_remove = set(argToList(args.get("entity", "allUsers")))
 
-    storage = build("storage", API_VERSION, credentials=creds)
+    storage = build("storage", STORAGE_API_VERSION, credentials=creds)
     policy = storage.buckets().getIamPolicy(bucket=bucket).execute()  # pylint: disable=E1101
 
     modified = False
@@ -238,7 +243,7 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
     region = args.get("region")
     resource_name = args.get("resource_name")
 
-    compute = build("compute", API_VERSION, credentials=creds)
+    compute = build("compute", COMPUTE_API_VERSION, credentials=creds)
     hr, response_patch, response_set = "", {}, {}
     patch_body = {}
     if enable_flow_logs := args.get("enable_flow_logs"):
@@ -296,7 +301,7 @@ def compute_project_metadata_add(creds: Credentials, args: dict[str, Any]) -> Co
     zone = args.get("zone")
     resource_name = args.get("resource_name")
     metadata_str: str = args.get("metadata", "")
-    compute = build("compute", API_VERSION, credentials=creds)
+    compute = build("compute", COMPUTE_API_VERSION, credentials=creds)
 
     instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
     fingerprint = instance.get("metadata", {}).get("fingerprint")
@@ -308,8 +313,8 @@ def compute_project_metadata_add(creds: Credentials, args: dict[str, Any]) -> Co
         existing_metadata[item["key"]] = item["value"]
 
     body = {"fingerprint": fingerprint, "items": [{"key": k, "value": v} for k, v in existing_metadata.items()]}
-    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name,
-                                               body=body).execute()  # pylint: disable=E1101
+    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name,   # pylint: disable=E1101
+                                               body=body).execute()
 
     hr = tableToMarkdown("Google Cloud Compute Project Metadata Update Operation Started Successfully",
                          t=response, headers=OPERATION_TABLE, removeNull=True)
@@ -343,7 +348,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     if args.get("enable_master_authorized_networks") and not cidrs:
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
 
-    container = build("container", API_VERSION, credentials=creds)
+    container = build("container", CONTAINER_API_VERSION, credentials=creds)
     update_fields: dict[str, Any] = {}
 
     if enable_intra := args.get("enable_intra_node_visibility"):
@@ -388,7 +393,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
     """
     bucket = args.get("resource_name")
 
-    storage = build("storage", API_VERSION, credentials=creds)
+    storage = build("storage", STORAGE_API_VERSION, credentials=creds)
 
     body: dict[str, Any] = {}
     if enable_versioning := args.get("enable_versioning"):
@@ -416,7 +421,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
 def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:
     """
     Checks if the provided GCP credentials have the required IAM permissions.
-    API: https://cloud.google.com/resource-manager/reference/rest/v1/projects/testIamPermissions
+    API: https://cloud.google.com/resource-manager/reference/rest/v3/projects/testIamPermissions
     Args:
         creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id'.
@@ -430,9 +435,10 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
 
     try:
-        response = build("cloudresourcemanager", API_VERSION, credentials=creds).projects().testIamPermissions(
-            # pylint: disable=E1101
-            resource=project_id, body={"permissions": permissions}
+        resource_manager = build("cloudresourcemanager", RESOURCE_MANAGER_API_VERSION, credentials=creds)
+        response = resource_manager.projects().testIamPermissions(  # pylint: disable=E1101
+            name=f"projects/{project_id}",
+            body={"permissions": permissions}
         ).execute()
     except Exception as e:
         raise DemistoException(f"Permission check failed: {e}") from e

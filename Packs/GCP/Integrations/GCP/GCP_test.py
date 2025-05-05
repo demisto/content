@@ -563,7 +563,6 @@ def test_check_required_permissions_specific_command_missing_permission(mocker):
     Then: The function should raise a DemistoException with the missing permissions
     """
     from GCP import check_required_permissions
-    import pytest
     from CommonServerPython import DemistoException
 
     # Mock arguments
@@ -604,7 +603,7 @@ def test_check_required_permissions_specific_command_missing_permission(mocker):
     # Verify correct parameters were used in the API call
     called_args, called_kwargs = mock_resourcemanager.projects().testIamPermissions.call_args
 
-    assert called_kwargs["resource"] == "test-project"
+    assert called_kwargs["name"] == "projects/test-project"
 
     # The body should contain only permissions for the firewall-patch command
     permissions = called_kwargs["body"]["permissions"]
