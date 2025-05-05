@@ -1195,11 +1195,11 @@ def process_events(
     )
     last_run_latest_events_id = last_run.get("latest_events_id", [])
     earliest_event_time = last_run.get("latest_events_time", "")
-    latest_event_time = events[-1].get("eventDateTimeUtc") if events else ""
+    latest_event_time = events[-1].get("createdDateTimeUtc") if events else ""
     latest_events_id = []
     filtered_events = []
     for event in events:
-        event_time = event.get("eventDateTimeUtc")
+        event_time = event.get("createdDateTimeUtc")
         # handle duplication
         if event_time == earliest_event_time and event.get("id") in last_run_latest_events_id:
             continue
