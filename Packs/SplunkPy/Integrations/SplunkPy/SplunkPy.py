@@ -223,10 +223,11 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
     def to_entry(self):
         """Convert data to entries.
 
-        :return: List of notables data as entries + entries (from comments and close data).
+        :return: List of notables data as entries + entries (from comments and close data),
+                 or [{}] if there are only entries and no modified notables.
         :rtype: ``list``
         """
-        return [
+        notables_entries = [
             {
                 "EntryContext": {"mirrorRemoteId": data[RULE_ID]},
                 "Contents": data,
@@ -234,7 +235,12 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
                 "ContentsFormat": EntryFormat.JSON,
             }
             for data in self.modified_notables_data
-        ] + self.entries
+        ]
+
+        if not notables_entries and self.entries:
+            return [{}] + self.entries
+
+        return notables_entries + self.entries
 
 
 # =========== Regular Fetch Mechanism ===========
@@ -1895,7 +1901,7 @@ def get_modified_remote_data_command(
         demisto.debug(f"mirror-in: no notables was changed since {last_update_splunk_timestamp}")
     if len(modified_notables_map) >= MIRROR_LIMIT:
         demisto.info(f"mirror-in: the number of mirrored notables reach the limit of: {MIRROR_LIMIT}")
-    res = SplunkGetModifiedRemoteDataResponse(modified_notables_data=modified_notables_map.values(), entries=entries)
+    res = SplunkGetModifiedRemoteDataResponse(modified_notables_data=list(modified_notables_map.values()), entries=entries)
     return_results(res)
 
 
