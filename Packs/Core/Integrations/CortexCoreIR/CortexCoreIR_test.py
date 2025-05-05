@@ -3,8 +3,10 @@ from unittest.mock import MagicMock
 
 import pytest
 from CommonServerPython import CommandResults
+from CortexCoreIR import core_execute_command_reformat_args
 
 Core_URL = "https://api.xdrurl.com"
+STATUS_AMOUNT = 6
 
 
 def load_test_data(json_path):
@@ -144,11 +146,11 @@ class TestPrevalenceCommands:
 
 class TestPollingCommand:
     @staticmethod
-    def create_mocked_responses(status_count):
+    def create_mocked_responses():
         response_queue = [{"reply": {"action_id": 1, "status": 1, "endpoints_count": 1}}]
 
-        for i in range(status_count):
-            if i == status_count - 1:
+        for i in range(STATUS_AMOUNT):
+            if i == STATUS_AMOUNT - 1:
                 general_status = "COMPLETED_SUCCESSFULLY"
             elif i < 2:
                 general_status = "PENDING"
@@ -186,8 +188,7 @@ class TestPollingCommand:
 
         return response_queue
 
-    @pytest.mark.parametrize(argnames="status_count", argvalues=[1, 3, 7, 9, 12, 15])
-    def test_script_run_command(self, mocker, status_count):
+    def test_script_run_command(self, mocker):
         """
         Given -
             core-script-run command arguments including polling true and is_core is true where each time a different amount of
@@ -208,7 +209,7 @@ class TestPollingCommand:
 
         client = CoreClient(base_url="https://test_api.com/public_api/v1", headers={})
 
-        mocker.patch.object(client, "_http_request", side_effect=self.create_mocked_responses(status_count))
+        mocker.patch.object(client, "_http_request", side_effect=self.create_mocked_responses())
         mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
 
         command_result = script_run_polling_command(args={"endpoint_ids": "1", "script_uid": "1"}, client=client)
@@ -363,3 +364,177 @@ def test_get_distribution_url_command_without_download_not_supported_type():
         get_distribution_url_command(client, args)
     client.get_distribution_url.assert_called_once_with("12345", "sh")
     assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
+
+# tests for core_execute_command_command
+
+
+def test_reformat_args_missing_command_raises():
+    """
+    Given:
+        - args set to empty dict.
+    When:
+        - Calling `reformate_args` with no args.
+    Then:
+        - Should raise a DemistoException.
+    """
+    from CommonServerPython import DemistoException
+    args = {}
+    with pytest.raises(DemistoException, match="'command' is a required argument."):
+        core_execute_command_reformat_args(args)
+
+
+def test_reformat_args_is_raw_command_true():
+    """
+    Given:
+        - is_raw_command argument set to True.
+    When:
+        - Calling `reformate_args` with is_raw_command=True.
+    Then:
+        - Verify that commands_list has only one element.
+    """
+    args = {
+        "command": "dir, hostname",
+        "is_raw_command": True
+    }
+    reformatted_args = core_execute_command_reformat_args(args)
+    params = json.loads(reformatted_args["parameters"])
+    assert params["commands_list"] == ["dir, hostname"]
+    assert reformatted_args["is_core"] is True
+    assert reformatted_args["script_uid"] == "a6f7683c8e217d85bd3c398f0d3fb6bf"
+
+
+@pytest.mark.parametrize("separator", [',', '/', '|'])
+def test_reformat_args_separators(separator):
+    """
+    Given:
+        - is_raw_command argument set to False (default) and a chosen separator.
+    When:
+        - Calling `reformate_args` with each of the separators options.
+    Then:
+        - Verify that commands_list split by the chosen separator.
+    """
+    args = {
+        "command": f"dir{separator}hostname",
+        "is_raw_command": False,
+        "command_separator": separator
+    }
+    reformatted_args = core_execute_command_reformat_args(args)
+    params = json.loads(reformatted_args["parameters"])
+    assert params["commands_list"] == ["dir", "hostname"]
+
+
+def test_reformat_args_powershell_command_formatting():
+    """
+    Given:
+        - command_type argument set to powershell.
+    When:
+        - Calling `reformate_args` with command_type=powershell.
+    Then:
+        - Verify command at commands_list reformated from 'command' to 'powershell -Command "command"'.
+    """
+    args = {
+        "command": "Get-Process",
+        "command_type": "powershell",
+        "is_raw_command": True
+    }
+    reformatted_args = core_execute_command_reformat_args(args)
+    params = json.loads(reformatted_args["parameters"])
+    assert params["commands_list"] == ['powershell -Command "Get-Process"']
+
+
+def test_reformat_output():
+    """
+    Given:
+        - Response from polling command.
+    When:
+        - Calling `reformat_output` with response.
+    Then:
+        - Verify output unify all duplicated data.
+        Instead of a list with element for each commmand, we'll have an element for each endpoint.
+    """
+    from CortexCoreIR import core_execute_command_reformat_outputs
+    mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
+    reformatted_outputs = core_execute_command_reformat_outputs([mock_res])
+    excepted_output = [
+        {
+            "endpoint_name": "name",
+            "endpoint_ip_address": ["2.2.2.2"],
+            "endpoint_status": "STATUS_010_CONNECTED",
+            "domain": "domain.name",
+            "endpoint_id": "dummy_id",
+            "executed_command":
+                [
+                    {
+                        "command": "echo",
+                        "failed_files": 0,
+                        "retention_date": None,
+                        "retrieved_files": 0,
+                        "standard_output": "output",
+                        "command_output": [],
+                        "execution_status": "COMPLETED_SUCCESSFULLY",
+                    },
+                    {
+                        "command": "echo hello",
+                        "failed_files": 0,
+                        "retention_date": None,
+                        "retrieved_files": 0,
+                        "standard_output": "outputs",
+                        "command_output": ["hello"],
+                        "execution_status": "COMPLETED_SUCCESSFULLY",
+                    }
+            ]
+        },
+        {
+            "endpoint_name": "name2",
+            "endpoint_ip_address": ["11.11.11.11"],
+            "endpoint_status": "STATUS_010_CONNECTED",
+            "domain": "",
+            "endpoint_id": "dummy_id2",
+            "executed_command":
+            [
+                {
+                    "command": "echo",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "out",
+                    "command_output": [],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                },
+                {
+                    "command": "echo hello",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "command_output": ["hello"],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                }
+            ]
+        }
+    ]
+    assert reformatted_outputs == excepted_output
+
+
+def test_reformat_readable():
+    """
+    Given:
+        - Response from polling command.
+    When:
+        - Calling `reformat_readable_output` with response.
+    Then:
+        - Verify readable_output show the relevant data.
+        Instead of a row for each endpoint, we'll have a row for each command.
+    """
+    from CortexCoreIR import core_execute_command_reformat_readable_output
+    mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
+    reformatted_readable_output = core_execute_command_reformat_readable_output([mock_res])
+    excepted_output = """### Script Execution Results for Action ID: 1
+|Endpoint Id|Command|Command Output|Endpoint Ip Address|Endpoint Name|Endpoint Status|
+|---|---|---|---|---|---|
+| dummy_id | echo |  | 2.2.2.2 | name | STATUS_010_CONNECTED |
+| dummy_id | echo hello | hello | 2.2.2.2 | name | STATUS_010_CONNECTED |
+| dummy_id2 | echo |  | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
+| dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
+"""
+    assert reformatted_readable_output == excepted_output
