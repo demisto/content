@@ -99,7 +99,7 @@ class Client(BaseClient):
        Returns:
            tuple[str, str]: token and its expiration date
         """
-        data = Client.generte_data_with_refresh_token(refresh_token) if refresh_token else self.generte_data_with_username()
+        data = Client.generate_data_with_refresh_token(refresh_token) if refresh_token else self.generte_data_with_username()
         # The "Authorization" token is a hard-coded value that the API requires in the header.
         # https://docs.apigee.com/api-platform/system-administration/management-api-tokens
         headers = {
@@ -112,7 +112,10 @@ class Client(BaseClient):
         try:
             token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
         except Exception as e:
+            demisto.debug(f'Error occured: {e}')
             if refresh_token and 'Invalid refresh token' in str(e):
+                demisto.debug('Failed to generate access token using refresh token.'
+                              'Attempting to generate a new access token using username and password.')
                 data = self.generte_data_with_username()
                 token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
             else:
@@ -120,15 +123,15 @@ class Client(BaseClient):
         return token_response.get(ACCESS_TOKEN_STR), token_response.get('expires_in'), token_response.get(REFRESH_TOKEN_STR)
 
     @staticmethod
-    def generte_data_with_refresh_token(refresh_token: str) -> dict:
-        demisto.debug('generte new token with refresh token')
+    def generate_data_with_refresh_token(refresh_token: str) -> dict:
+        demisto.debug('generates a new access token based on a refresh token.')
         return {
             'grant_type': REFRESH_TOKEN_STR,
             REFRESH_TOKEN_STR: refresh_token
         }
     
     def generte_data_with_username(self) -> dict:
-        demisto.debug('generte new token with user name')
+        demisto.debug('generates a new access token based on a username and password.')
         return {
             'grant_type': 'password',
             'username': self.username,
