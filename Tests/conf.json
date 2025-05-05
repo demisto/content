@@ -6246,6 +6246,10 @@
         "Jira",
         "Campaign"
     ],
+    "selected_nightly_tpb":
+    ["CiscoESA_dictionary_commands_tpb",
+    "Grafana-Test"
+    ],
     "parallel_integrations": [
         "AWS - ACM",
         "AWS - EC2",
