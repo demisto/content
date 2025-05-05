@@ -74,7 +74,7 @@ configuration:
   section: Collect
 - display: Polling Lag Time (in minutes)
   name: polling_lag
-  defaultvalue: "0"
+  defaultvalue: "2"
   type: 0
   required: false
   additionalinfo: Time in minutes to subtract from polling time window for data consistency
