@@ -470,10 +470,6 @@ script:
         - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
           description: The path to the custom 404 page for the bucket website.
           type: String
-
-    - name: test-module
-      description: Test connectivity and permission validation
-
   isfetch: false
   runonce: false
   script: '-'

@@ -167,7 +167,7 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
 
     compute = build("compute", API_VERSION, credentials=creds)
     demisto.debug(f"Firewall patch config for {resource_name} in project {project_id}: {config}")
-    response = compute.firewalls().patch(
+    response = compute.firewalls().patch(  # pylint: disable=E1101
         project=project_id,
         firewall=resource_name,
         body=config
@@ -193,7 +193,7 @@ def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> Co
     entities_to_remove = set(argToList(args.get("entity", "allUsers")))
 
     storage = build("storage", API_VERSION, credentials=creds)
-    policy = storage.buckets().getIamPolicy(bucket=bucket).execute()
+    policy = storage.buckets().getIamPolicy(bucket=bucket).execute()  # pylint: disable=E1101
 
     modified = False
     updated_bindings = []
@@ -214,7 +214,7 @@ def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> Co
 
     if modified:
         policy["bindings"] = updated_bindings
-        storage.buckets().setIamPolicy(bucket=bucket, body=policy).execute()
+        storage.buckets().setIamPolicy(bucket=bucket, body=policy).execute()  # pylint: disable=E1101
         hr = (f"Access permissions for {', '.join(f'`{e}`' for e in entities_to_remove)} were successfully "
               f"revoked from bucket **{bucket}**")
     else:
@@ -243,7 +243,7 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
     patch_body = {}
     if enable_flow_logs := args.get("enable_flow_logs"):
         patch_body["enableFlowLogs"] = argToBoolean(enable_flow_logs)
-        subnetwork = compute.subnetworks().get(
+        subnetwork = compute.subnetworks().get(  # pylint: disable=E1101
             project=project_id,
             region=region,
             subnetwork=resource_name
@@ -252,7 +252,7 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
         if not fingerprint:
             raise DemistoException("Fingerprint for the subnetwork is missing.")
         patch_body["fingerprint"] = fingerprint
-        response_patch = compute.subnetworks().patch(
+        response_patch = compute.subnetworks().patch(  # pylint: disable=E1101
             project=project_id,
             region=region,
             subnetwork=resource_name,
@@ -264,7 +264,7 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
             t=response_patch, headers=OPERATION_TABLE, removeNull=True
         )
     if enable_private_access := args.get("enable_private_ip_google_access"):
-        response_set = compute.subnetworks().setPrivateIpGoogleAccess(
+        response_set = compute.subnetworks().setPrivateIpGoogleAccess(  # pylint: disable=E1101
             project=project_id,
             region=region,
             subnetwork=resource_name,
@@ -298,7 +298,7 @@ def compute_project_metadata_add(creds: Credentials, args: dict[str, Any]) -> Co
     metadata_str: str = args.get("metadata", "")
     compute = build("compute", API_VERSION, credentials=creds)
 
-    instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()
+    instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
     fingerprint = instance.get("metadata", {}).get("fingerprint")
     existing_items = instance.get("metadata", {}).get("items", [])
     existing_metadata = {item["key"]: item["value"] for item in existing_items}
@@ -308,7 +308,8 @@ def compute_project_metadata_add(creds: Credentials, args: dict[str, Any]) -> Co
         existing_metadata[item["key"]] = item["value"]
 
     body = {"fingerprint": fingerprint, "items": [{"key": k, "value": v} for k, v in existing_metadata.items()]}
-    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name, body=body).execute()
+    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name,
+                                               body=body).execute()  # pylint: disable=E1101
 
     hr = tableToMarkdown("Google Cloud Compute Project Metadata Update Operation Started Successfully",
                          t=response, headers=OPERATION_TABLE, removeNull=True)
@@ -358,7 +359,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
             }
         }
 
-    response = container.projects().locations().clusters().update(
+    response = container.projects().locations().clusters().update(  # pylint: disable=E1101
         name=f"projects/{project_id}/locations/{region}/clusters/{resource_name}",
         body={
             "update": update_fields
@@ -395,7 +396,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
     if enable_uniform_access := args.get("enable_uniform_access"):
         body.setdefault("iamConfiguration", {})["uniformBucketLevelAccess"] = {"enabled": argToBoolean(enable_uniform_access)}
 
-    response = storage.buckets().patch(bucket=bucket, body=body).execute()
+    response = storage.buckets().patch(bucket=bucket, body=body).execute()  # pylint: disable=E1101
     data_res = {
         "name": response.get("name"),
         "id": response.get("id"),
@@ -430,6 +431,7 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
 
     try:
         response = build("cloudresourcemanager", API_VERSION, credentials=creds).projects().testIamPermissions(
+            # pylint: disable=E1101
             resource=project_id, body={"permissions": permissions}
         ).execute()
     except Exception as e:
@@ -439,6 +441,7 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
     if missing := '\n'.join(set(permissions) - granted):
         raise DemistoException(f"Missing permissions for '{command}': {missing}")
     return "ok"
+
 
 def main():
     """Main function to route commands and execute logic"""
