@@ -309,7 +309,7 @@ script:
     description: Returns the status of a job.
     name: splunk-job-status
     outputs:
-    - contextPath: Splunk.JobStatus.CID
+    - contextPath: Splunk.JobStatus.SID
       description: ID of the job.
       type: String
     - contextPath: Splunk.JobStatus.Status
