@@ -46,7 +46,7 @@ def get_events(client: Client, after: str, next_page_number: int):
 
     """
     before = arg_to_datetime(arg="now", arg_name="before", required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
-    demisto.debug(f"{before=}")
+    demisto.debug(f"[Abnormal] {before=}")
     next_page_number, threats_ids = get_list_threats(client, after, before, next_page_number)
     last_run = {'before': before, 'next_page_number': next_page_number}
     messages = []
@@ -97,17 +97,17 @@ def get_list_threats(client: Client, after: str, before: str, next_page_number: 
     is_next_page = True
     while len(threats) < FETCH_LIMIT and is_next_page:
         page_size = min(DEFAULT_PAGE_SIZE, FETCH_LIMIT - len(threats))
-        demisto.debug(f"fetching events: epoch {next_page_number}, {page_size=}")
+        demisto.debug(f"[Abnormal] fetching events: epoch {next_page_number}, {page_size=}")
         params = assign_params(pageSize=page_size, filter=f"receivedTime gte {after} lte {before}", pageNumber=next_page_number)
-        demisto.debug(f"{params=}")
+        demisto.debug(f"[Abnormal] {params=}")
         res = client.list_threats(params)
-        demisto.debug(f"fetched {len(res.get('threats'))} events")
+        demisto.debug(f"[Abnormal] fetched {len(res.get('threats'))} events")
         threats += res.get("threats")
         if res.get("nextPageNumber"):
             next_page_number = res.get("nextPageNumber")
-            demisto.debug(f"exist more events to fetch. {next_page_number=}")
+            demisto.debug(f"[Abnormal] exist more events to fetch. {next_page_number=}")
         else:
-            demisto.debug("no more events to fetch")
+            demisto.debug("[Abnormal] no more events to fetch")
             is_next_page = False
 
     return (next_page_number, threats) if is_next_page else (1, threats)
@@ -127,13 +127,13 @@ def main():
     )
 
     last_run = demisto.getLastRun()
-    demisto.debug(f"{last_run=}")
+    demisto.debug(f"[Abnormal] {last_run=}")
     if last_run:
         after = last_run.get('before')
         next_page_number = last_run.get('next_page_number')
 
     command = demisto.command()
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"[Abnormal] Command being called is {command}")
     try:
         threats, last_run = get_events(client, after, next_page_number)
         if command == "test-module":
@@ -143,7 +143,7 @@ def main():
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
             if last_run.get("next_page_number") > 1:
                 last_run["nextTrigger"] = "0"
-            demisto.debug(f"calling setLastRun: {last_run=}")
+            demisto.debug(f"[Abnormal] calling setLastRun: {last_run=}")
             demisto.setLastRun(last_run)
 
         elif command == "abnormal-security-event-collector-get-events":
