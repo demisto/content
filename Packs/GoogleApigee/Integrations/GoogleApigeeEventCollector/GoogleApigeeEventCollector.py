@@ -99,7 +99,7 @@ class Client(BaseClient):
        Returns:
            tuple[str, str]: token and its expiration date
         """
-        data = Client.generate_data_with_refresh_token(refresh_token) if refresh_token else self.generte_data_with_username()
+        data = Client.generate_data_with_refresh_token(refresh_token) if refresh_token else self.generate_data_with_username()
         # The "Authorization" token is a hard-coded value that the API requires in the header.
         # https://docs.apigee.com/api-platform/system-administration/management-api-tokens
         headers = {
@@ -113,7 +113,7 @@ class Client(BaseClient):
             token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
         except Exception as e:
             if refresh_token and 'Invalid refresh token' in str(e):
-                demisto.debug(f'Failed to generate access token using refresh token.'
+                demisto.debug('Failed to generate access token using refresh token.'
                               'Attempting to generate a new access token using username and password. Original error is: {str(e)}')
                 data = self.generate_data_with_username()
                 token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
