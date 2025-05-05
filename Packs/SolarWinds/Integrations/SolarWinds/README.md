@@ -22,13 +22,15 @@ Follow this [link](https://documentation.solarwinds.com/en/success_center/orionp
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name or IP address of the Orion server | Name or IP address of the Orion server you want to connect to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2 | True |
+| Port | Port number with which to connect to the Orion server. Default is 17774. | False |
 | Username of the account | Admin can create users such as guests from the Orion platform and provide access permission according to need. | True |
-| Type of incident to be fetched | Note: 'Type of incident to be fetched' and 'Incident type' should be the same to fetch similar types of incidents. | False |
+| Password |  | True |
+| Type of incident to be fetched | Note: "Type of incident to be fetched" and "Incident type" should be the same to fetch similar types of incidents. | False |
 | Maximum number of incidents per fetch | The maximum limit is 1000. | False |
-| First fetch time interval | Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. \( Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
+| First fetch time interval | Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. \(Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
 | Severity levels | Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.<br/>Note: Severity level is only available for alerts. | False |
 | Object Types | Filter alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query command. | False |
-| Event Types | Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use query 'SELECT Name FROM Orion.EventTypes' in swis-query command. | False |
+| Event Types | Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use the query 'SELECT Name FROM Orion.EventTypes' in the swis-query command. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Incident type |  | False |
