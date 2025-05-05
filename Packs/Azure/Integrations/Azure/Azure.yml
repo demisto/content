@@ -519,52 +519,52 @@ script:
     description: Sets properties for the blob service in a specific account storage.
     name: azure-storage-blob-service-properties-set
     outputs:
-    - ContextPath: Azure.Storage.BlobServiceProperties.id
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.id
       description: Fully qualified resource ID for the resource.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.name
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.name
       description: The name of the resource.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.type
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.type
       description: The type of the resource.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.cors.corsRules.allowedOrigins
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.cors.corsRules.allowedOrigins
       description: Required if CorsRule element is present. A list of origin domains that will be allowed via CORS, or "*" to allow all domains.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.cors.corsRules.allowedMethods
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.cors.corsRules.allowedMethods
       description: Required if CorsRule element is present. A list of HTTP methods that are allowed to be executed by the origin.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.cors.corsRules.maxAgeInSeconds
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.cors.corsRules.maxAgeInSeconds
       description: Required if CorsRule element is present. The number of seconds that the client/browser should cache a preflight response.
       type: Number
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.cors.corsRules.exposedHeaders
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.cors.corsRules.exposedHeaders
       description: Required if CorsRule element is present. A list of response headers to expose to CORS clients.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.cors.corsRules.allowedHeaders
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.cors.corsRules.allowedHeaders
       description: Required if CorsRule element is present. A list of headers allowed to be part of the cross-origin request.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.defaultServiceVersion
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.defaultServiceVersion
       description: Indicates the default version to use for requests to the Blob service if an incoming request\u2019s version is not specified. Possible values include version 2008-10-27 and all more recent versions.
       type: Date
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.deleteRetentionPolicy.enabled
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.deleteRetentionPolicy.enabled
       description: Indicates whether DeleteRetentionPolicy is enabled.
       type: Boolean
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.deleteRetentionPolicy.days
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.deleteRetentionPolicy.days
       description: Indicates the number of days that the deleted item should be retained. The minimum specified value can be 1 and the maximum value can be 365.
       type: Number
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.isVersioningEnabled
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.isVersioningEnabled
       description: Versioning is enabled if set to true.
       type: Boolean
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.changeFeed.enabled
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.changeFeed.enabled
       description: Indicates whether change feed event logging is enabled for the Blob service.
       type: Boolean
-    - ContextPath: Azure.Storage.BlobServiceProperties.properties.changeFeed.retentionInDays
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.properties.changeFeed.retentionInDays
       description: Indicates the duration of changeFeed retention in days. Minimum value is 1 day and maximum value is 146000 days.
       type: Number
-    - ContextPath: Azure.Storage.BlobServiceProperties.sku.name
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.sku.name
       description: The SKU name.
       type: String
-    - ContextPath: Azure.Storage.BlobServiceProperties.sku.tier
+    - ContextPath: Azure.StorageAccount.BlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
   - arguments:
@@ -573,9 +573,9 @@ script:
       description: Name of the policy assignment.
     - name: subscription_id
       type: string
-      description: "The subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      description: The subscription ID.
     - name: policy_definition_id
-      required: true
+      required: false
       type: string
       description: The ID of the policy definition or policy set definition being assigned.
     - name: display_name

@@ -28,7 +28,6 @@ SCOPE_BY_CONNECTION = {
 
 DEFAULT_LIMIT = 50
 PREFIX_URL = "https://management.azure.com/subscriptions/"
-APS_API_VERSION = "2017-08-01-preview"
 POLICY_ASSIGNMENT_API_VERSION="2023-04-01"
 POSTGRES_API_VERSION="2017-12-01"
 WEBAPP_API_VERSION="2024-04-01"
@@ -267,7 +266,7 @@ and resource group "{resource_group_name}" was not found.')
             }
         }
         ### for getting policyDefinitionId run the line below
-        # print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
+        print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
 
     def set_postgres_config(self, server_name, subscription_id, resource_group_name, configuration_name, source, value):
@@ -735,20 +734,21 @@ def storage_account_create_update_command(client: AzureClient, params: dict, arg
         "Account Name": response.get("name"),
         "Subscription ID": subscription_id,
         "Resource Group": resource_group_name,
-        "Kind": response.get("kind"),
-        "Status Primary": response.get("properties", "").get("statusOfPrimary"),
-        "Status Secondary": response.get("properties", "").get("statusOfSecondary"),
-        "Location": response.get("location"),
+        "Network Ruleset Bypass": response.get("properties", {}).get("networkAcls", {}).get("bypass") if args.get("network_ruleset_bypass") else None,
+        "Default Action": response.get("properties", {}).get("networkAcls", {}).get("defaultAction") if args.get("network_ruleset_default_action") else None,
+        "Allow Cross Tenant Replication": response.get("properties", {}).get("allowCrossTenantReplication") if args.get("allow_cross_tenant_replication") else None,
+        "Supports Https Traffic Only": response.get("properties", {}).get("supportsHttpsTrafficOnly") if args.get("supports_https_traffic_only") else None,
     }
 
     return CommandResults(
-        outputs_prefix="Azure.Storage.StorageAccount",
+        outputs_prefix="Azure.StorageAccount",
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
             "Azure Storage Account",
             readable_output,
-            ["Account Name", "Subscription ID", "Resource Group", "Kind", "Status Primary", "Status Secondary", "Location"],
+            ["Account Name", "Subscription ID", "Resource Group", "Network Ruleset Bypass", "Default Action", "Allow Cross Tenant Replication", "Supports Https Traffic Only"],
+            removeNull=True
         ),
         raw_response=response,
     )
@@ -783,7 +783,7 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     }
 
     return CommandResults(
-        outputs_prefix="Azure.Storage.BlobServiceProperties",
+        outputs_prefix="Azure.StorageAccount.BlobServiceProperties",
         outputs_key_field="id",
         outputs=response,
         readable_output=tableToMarkdown(
@@ -797,6 +797,16 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
 
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
+    """
+        Creates a policy assignment.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     name = args.get("name")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     policy_definition_id : str = args.get("policy_definition_id", "")
@@ -811,12 +821,13 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
             "Display Name": response.get("properties", {}).get("displayName", ""),
             "Description": response.get("properties", {}).get("description", ""),
             "ID": response.get("id"),
+            "Parameters": response.get("properties", {}).get("parameters") if parameters else None
         }
     ]
     md = tableToMarkdown(
         f"Azure policy assignment {name} was successfully created.",
         outputs,
-        ["ID", "Name", "Policy Definition ID", "Display Name", "Description"],
+        ["ID", "Name", "Policy Definition ID", "Display Name", "Description", "Parameters"],
         removeNull=True,
     )
     return CommandResults(
@@ -1005,7 +1016,7 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.Webapp",
+        outputs_prefix="Azure.WebApp",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -1236,7 +1247,6 @@ def main():
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-storage-account-create-update": storage_account_create_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
-            # "azure-sc-update-aps": update_aps_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-webapp-config-set": set_webapp_config_command,
