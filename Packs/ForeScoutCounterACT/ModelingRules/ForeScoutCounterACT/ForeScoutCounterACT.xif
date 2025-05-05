@@ -16,4 +16,4 @@ alter
     xdm.alert.subcategory = cefName,
     xdm.alert.severity = cefSeverity,
     xdm.observer.version = cefDeviceVersion,
-    xdm.target.resource.sub_type = cefDeviceEventClassId;:
+    xdm.target.resource.sub_type = cefDeviceEventClassId;
