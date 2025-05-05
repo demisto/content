@@ -129,7 +129,7 @@ class Client(BaseClient):
             REFRESH_TOKEN_STR: refresh_token
         }
     
-    def generte_data_with_username(self) -> dict:
+    def generate_data_with_username(self) -> dict:
         demisto.debug('generates a new access token based on a username and password.')
         return {
             'grant_type': 'password',
