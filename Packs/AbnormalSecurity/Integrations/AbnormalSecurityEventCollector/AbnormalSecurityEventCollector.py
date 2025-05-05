@@ -38,7 +38,9 @@ def get_events(client: Client, after: str, before: str, next_page_number: int):
 
     Args:
       client (Client): Abnormal Security client.
-      after (str): the start datetime to search messages
+      after (str): the start datetime to search messages.
+      before (str): the end datetime to search messages.
+      next_page_number (int): the page number of the next page to search threats.
 
     Returns:
       list:  messages ordered by datetime.
@@ -90,6 +92,7 @@ def get_list_threats(client: Client, after: str, before: str, next_page_number: 
       client (Client): Abnormal Security client.
       after (str): the datetime to search threats after that.
       before (str): the datetime to search threats before that.
+      next_page_number (int): the page number of the next page to search threats.
 
     Returns:
       list:  list of threats ids.
