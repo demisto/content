@@ -518,7 +518,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0.9955088496208191"
+              simple: "0.9961445331573486"
     continueonerrortype: ""
     view: |-
       {
@@ -797,7 +797,18 @@ tasks:
       - "38"
     scriptarguments:
       entryID:
-        simple: ${File.EntryID}
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: predictions.csv
+          accessor: EntryID
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -840,14 +851,14 @@ tasks:
           right:
             value:
               simple: Tag1
-      - - operator: containsGeneral
+      - - operator: startWith
           left:
             value:
-              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_1").Probability
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_1").[0].Probability
             iscontext: true
           right:
             value:
-              simple: "0.9843030571937561"
+              simple: "0.9"
     continueonerrortype: ""
     view: |-
       {
@@ -889,14 +900,14 @@ tasks:
           right:
             value:
               simple: Tag2
-      - - operator: containsGeneral
+      - - operator: startWith
           left:
             value:
-              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_2").Probability
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_2").[0].Probability
             iscontext: true
           right:
             value:
-              simple: "0.994461715221405"
+              simple: "0.9"
     continueonerrortype: ""
     view: |-
       {
@@ -938,14 +949,14 @@ tasks:
           right:
             value:
               simple: Tag3
-      - - operator: containsGeneral
+      - - operator: startWith
           left:
             value:
-              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_3").Probability
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "fine_tune_3").[0].Probability
             iscontext: true
           right:
             value:
-              simple: "0.9958837628364563"
+              simple: "0.9"
     continueonerrortype: ""
     view: |-
       {
