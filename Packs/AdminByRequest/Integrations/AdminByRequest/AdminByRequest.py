@@ -61,7 +61,7 @@ class Client(BaseClient):
         """Retrieve the detections from AdminByRequest  API.
         """
         return self._http_request(
-            "GET", url_suffix="/" + url_suffix, params=params, resp_type="json"
+            "GET", url_suffix=url_suffix, params=params, resp_type="json"
         )
 
 """ HELPER FUNCTIONS """
@@ -114,6 +114,11 @@ def get_field_mapping(suffix: str) -> tuple[str, str]:
 #     last_run["start_time_audit_logs"] = start_time
 #
 #     return all_entries, last_run
+
+def remove_first_run_params(params: dict) -> None:
+    if "startdate" in params:
+        params.pop("startdate")
+        params.pop("enddate")
 
 
 def validate_fetch_events_params(last_run : dict, call_type: str, fetch_limit:int) -> tuple[dict, str, str]:
@@ -189,11 +194,36 @@ def fetch_events_list(client: Client, last_run: dict, call_type: str, fetch_limi
     return output
 
 
-def remove_first_run_params(params: dict) -> None:
-    if "startdate" in params:
-        params.pop("startdate")
-        params.pop("enddate")
+def get_event_type_fetch_limits(params: Dict[str, Any]) -> Dict[str, int]:
+    """
+    Parses the event types to fetch from parameters and returns a dictionary mapping
+    each selected event type's suffix to its corresponding max fetch limit.
 
+    Args:
+        params (Dict[str, Any]): Integration parameters.
+
+    Returns:
+        Dict[str, int]: Mapping of event type suffix to max fetch count.
+    """
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", []))
+    event_types_to_fetch = [event_type.strip() for event_type in event_types_to_fetch]
+
+    max_auditlog_per_fetch = arg_to_number(params.get("max_auditlog_per_fetch")) or MAX_FETCH_AUDIT_LIMIT
+    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or MAX_FETCH_EVENT_LIMIT
+    max_requests_per_fetch = arg_to_number(params.get("max_requests_per_fetch")) or MAX_FETCH_REQUEST_LIMIT
+
+    fetch_limits = {}
+
+    if "Auditlog" in event_types_to_fetch:
+        fetch_limits[AUDIT_LOG_CALL_SUFFIX] = max_auditlog_per_fetch
+
+    if "Events" in event_types_to_fetch:
+        fetch_limits[EVENTS_CALL_SUFFIX] = max_events_per_fetch
+
+    if "Requests" in event_types_to_fetch:
+        fetch_limits[REQUESTS_CALL_SUFFIX] = max_requests_per_fetch
+
+    return fetch_limits
 
 """ COMMAND FUNCTIONS """
 
@@ -219,25 +249,24 @@ def test_module(client: Client) -> str:
     client.baseintegration_dummy("dummy", 10)  # No errors, the api is working
     return "ok"
 
+def fetch_events(client: Client, last_run: dict, fetch_specifications: dict) -> list[dict[str, Any]]:
+    """Fetch the specified AdminByRequest entity.
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
-    dummy = args.get("dummy")  # dummy is a required argument, no default
-    dummy2 = args.get("dummy2")  # dummy2 is not a required argument
+     Args:
+        client: ExtraHop client to be used.
+        last_run: The last_run dictionary having the state of previous cycle.
+        fetch_specifications : dictionary containing all the deatails of the AdminByRequest API calls tha should be execute
+    """
+    demisto.debug("AdminByRequest fetch_events invoked")
+    fetch_params = validate_fetch_events_params(last_run)
+    events = []
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy, dummy2)
+    for api_call in fetch_specifications:
+        output = fetch_events_list(client, last_run, api_call[0], api_call[1])
+        events.extend(output)
 
-    return CommandResults(
-        outputs_prefix="BaseIntegration",
-        outputs_key_field="",
-        outputs=result,
-    )
-
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+    demisto.debug(f"AdminByRequest next_run is {last_run}")
+    return events
 
 
 def main():
@@ -249,15 +278,10 @@ def main():
 
     # get the service API url
     base_url = params.get("url")
-    # TODO: this need to be API
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    api_key = params.get("api_key")
-    client_id = params.get("credentials", {}).get("identifier")
-    client_secret = params.get("credentials", {}).get("password")
-    fetch_limit_audit_logs = arg_to_number(params.get("max_events_audit_logs")) or MAX_FETCH_AUDIT_LIMIT
-    fetch_limit_events = arg_to_number(params.get("max_events_events")) or MAX_FETCH_EVENT_LIMIT
-    fetch_limit_requests = arg_to_number(params.get("max_events_requests")) or MAX_FETCH_REQUEST_LIMIT
+    api_key = params.get("api_key", "")
+    fetch_specifications = get_event_type_fetch_limits(params)
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -272,7 +296,7 @@ def main():
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            events, next_run = fetch_events(client, last_run, max_events)
+            events, next_run = fetch_events(client, last_run, fetch_specifications)
             if len(events):
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
