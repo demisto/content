@@ -14,7 +14,7 @@ POLLING = False
 class PrismaSase:
     def __init__(self, args: dict):
         self.args = args
-        self.responses = []
+        self.responses: list = []
 
     def prisma_sase_candidate_config_push(self) -> CommandResults | None:
         """ Execute the command prisma-sase-candidate-config-push if needed.
@@ -145,7 +145,7 @@ class PrismaSase:
 class PanOs:
     def __init__(self, args: dict):
         self.args = args
-        self.responses = []
+        self.responses: list = []
 
     def reduce_pan_os_responses(self) -> list[list[dict]]:
         """ Returns a list of just the information needed for later usage by the flow.
