@@ -36,17 +36,12 @@ def find_available_priorities(
         list_of_priorities_from_rules,
     )
 
-    not_in_list = set(range(100, target_rule_priority)).difference(
-        set(list_of_priorities_from_rules)
-    )
-    closest_numbers = sorted(
-        not_in_list, key=lambda entry: abs(entry - target_rule_priority)
-    )[:number_of_available_priorities_to_retrieve]
+    not_in_list = set(range(100, target_rule_priority)).difference(set(list_of_priorities_from_rules))
+    closest_numbers = sorted(not_in_list, key=lambda entry: abs(entry - target_rule_priority))[
+        :number_of_available_priorities_to_retrieve
+    ]
 
-    if (
-        not closest_numbers
-        or len(closest_numbers) != number_of_available_priorities_to_retrieve
-    ):
+    if not closest_numbers or len(closest_numbers) != number_of_available_priorities_to_retrieve:
         raise ValueError("Available priorities not found.")
 
     return closest_numbers
@@ -66,10 +61,7 @@ def validate_input(
 
     if not number_of_available_priorities_to_retrieve:
         raise ValueError("number_of_available_priorities_to_retrieve not specified.")
-    elif (
-        number_of_available_priorities_to_retrieve > 5
-        or number_of_available_priorities_to_retrieve <= 0
-    ):
+    elif number_of_available_priorities_to_retrieve > 5 or number_of_available_priorities_to_retrieve <= 0:
         raise ValueError(
             "number_of_available_priorities_to_retrieve cannot be 0 or less, or more than 5. Please use a lower number."
         )
@@ -81,9 +73,7 @@ def validate_input(
     if not isinstance(list_of_priorities_from_rules, list):
         raise ValueError("list_of_priorities_from_rules must be a list.")
     elif len(list_of_priorities_from_rules) > 999:
-        raise ValueError(
-            "list_of_priorities_from_rules does not support list over 999 entries, please reduce the list."
-        )
+        raise ValueError("list_of_priorities_from_rules does not support list over 999 entries, please reduce the list.")
 
     return list_of_priorities_from_rules
 
@@ -93,12 +83,8 @@ def main():
         args = demisto.args()
 
         target_rule_priority = int(args.get("target_rule_priority"))
-        number_of_available_priorities_to_retrieve = int(
-            args.get("number_of_available_priorities_to_retrieve")
-        )
-        list_of_priorities_from_rules = argToList(
-            args.get("list_of_priorities_from_rules")
-        )
+        number_of_available_priorities_to_retrieve = int(args.get("number_of_available_priorities_to_retrieve"))
+        list_of_priorities_from_rules = argToList(args.get("list_of_priorities_from_rules"))
 
         closest_numbers = find_available_priorities(
             target_rule_priority,
@@ -106,9 +92,7 @@ def main():
             list_of_priorities_from_rules,
         )
 
-        markdown = tableToMarkdown(
-            "Available Azure NSG Priorities", closest_numbers, headers=["priorities"]
-        )
+        markdown = tableToMarkdown("Available Azure NSG Priorities", closest_numbers, headers=["priorities"])
 
         results = CommandResults(
             outputs_prefix="AvailableAzureNSGPriorities",
@@ -120,9 +104,7 @@ def main():
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute AzureFindAvailableNSGPriorities. Error: {str(ex)}"
-        )
+        return_error(f"Failed to execute AzureFindAvailableNSGPriorities. Error: {ex!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

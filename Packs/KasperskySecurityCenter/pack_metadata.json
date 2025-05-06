@@ -2,7 +2,7 @@
     "name": "Kaspersky Security Center",
     "description": "Manage endpoints and groups through the Kaspersky Security Center.",
     "support": "xsoar",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
