@@ -1,10 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from MicrosoftApiModule import *  # noqa: E402
-
 from urllib.parse import parse_qs, urlparse
 
+import demistomock as demisto
+from CommonServerPython import *
+from MicrosoftApiModule import *  # noqa: E402
+
+from CommonServerUserPython import *
 
 """ GLOBALS/PARAMS """
 
@@ -272,9 +272,7 @@ class MsGraphClient:
         uri = ""
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
-            raise DemistoException(
-                f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one."
-            )
+            raise DemistoException(f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one.")
         if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
@@ -301,9 +299,7 @@ class MsGraphClient:
         """
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
-            raise DemistoException(
-                f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one."
-            )
+            raise DemistoException(f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one.")
         uri = ""
         # create suitable upload session
         if object_type == "drives":
@@ -537,10 +533,15 @@ def test_function(client: MsGraphClient) -> str:
     Performs basic get request to get item samples
     """
     response = "ok" if demisto.command() == "test-module" else "```✅ Success!```"
-    if (demisto.params().get("self_deployed", False) and demisto.command() == "test-module"
-        and (client.ms_client.grant_type == AUTHORIZATION_CODE
-             or demisto.params().get("redirect_uri")
-             or demisto.params().get("auth_code_creds", {}).get("password", ""))):
+    if (
+        demisto.params().get("self_deployed", False)
+        and demisto.command() == "test-module"
+        and (
+            client.ms_client.grant_type == AUTHORIZATION_CODE
+            or demisto.params().get("redirect_uri")
+            or demisto.params().get("auth_code_creds", {}).get("password", "")
+        )
+    ):
         raise DemistoException(
             "The *Test* button is not available for the `self-deployed - Authorization Code Flow`.\n "
             "Use the !msgraph-files-auth-test command instead "

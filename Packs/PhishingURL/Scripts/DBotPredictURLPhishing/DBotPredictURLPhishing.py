@@ -541,9 +541,21 @@ def get_whois_verdict(domains: list[str]) -> list:
     return default
 
 
-def get_predictions_for_urls(
-    model: Model, urls: list[str], force_model: bool, debug: bool, rasterize_timeout: int, protocol: str
-) -> Optional[list[dict]]:
+def get_predictions_for_urls(model: Model, urls: list[str], requested_urls: list[str], force_model: bool, debug: bool,
+                             rasterize_timeout: int, protocol: str) -> Optional[list[dict]]:
+    """Generate predictions for the given URL list
+
+    :param model: Prediction model to use.
+    :param urls: List of URLs to generate predictions for.
+    :param requested_urls: List of URLs requested to be checked, in their original form.
+    :param force_model: When set, the model will be run even if the URL is whitelisted.
+    :param debug: Enable debug output messages.
+    :param rasterize_timeout: Timeout for the rasterize call.
+    :param protocol: Protocol override to be used in the URLs (e.g. "http", "https")
+
+    :return: A list of dictionaries containing the prediction results for each URL, or None if no results were generated.
+    """
+
     domains = list(map(extract_domainv2, urls))
 
     rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
@@ -555,12 +567,13 @@ def get_predictions_for_urls(
     whois_results = get_whois_verdict(domains)
 
     results = []
-    for url, res_whois, output_rasterize in zip(urls, whois_results, rasterize_outputs):
+    for url, requested_url, res_whois, output_rasterize in zip(urls, requested_urls, whois_results, rasterize_outputs):
         # Check is domain in white list -  If yes we don't run the model
         if in_white_list(model, url):
             is_white_listed = True
             if not force_model:
-                results.append(create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {}))
+                results.append(create_dict_context(requested_url, BENIGN_VERDICT_WHITELIST, {},
+                                                   SCORE_BENIGN, is_white_listed, {}))
                 continue
         else:
             is_white_listed = False
@@ -577,7 +590,7 @@ def get_predictions_for_urls(
         pred_json[DOMAIN_AGE_KEY] = extract_created_date(res_whois)
 
         score, verdict = get_verdict(pred_json, is_white_listed)
-        results.append(create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize))
+        results.append(create_dict_context(requested_url, verdict, pred_json, score, is_white_listed, output_rasterize))
     return results
 
 
@@ -662,7 +675,7 @@ def get_urls_to_run(
     model: Model,
     msg_list: list[str],
     debug: bool,
-) -> tuple[list[str], list[str]]:
+) -> tuple[list[str], list[str], list[str]]:
     if email_body:
         urls_email_body = extract_urls(email_body)
     else:
@@ -688,13 +701,13 @@ def get_urls_to_run(
 
     if not urls:
         return_results('No URLs for prediction.')
-        return [], msg_list
+        return [], [], msg_list
     urls = get_final_urls(urls, max_urls, model)
     unescaped_urls = demisto.executeCommand("UnEscapeURLs", {"input": urls}) or []
-    urls = [res["Contents"] for res in unescaped_urls]  # type: ignore
+    unescaped_urls = [res["Contents"] for res in unescaped_urls]  # type: ignore
     if debug:
-        return_results(urls)
-    return urls, msg_list
+        return_results(unescaped_urls)
+    return unescaped_urls, urls, msg_list
 
 
 def main():
@@ -719,10 +732,10 @@ def main():
 
         model = load_model()
 
-        urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
+        urls, requested_urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
 
         if urls:
-            results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout, protocol)
+            results = get_predictions_for_urls(model, urls, requested_urls, force_model, debug, rasterize_timeout, protocol)
             if results:
                 general_summary = return_general_summary(results)
                 detailed_summary = return_detailed_summary(results, reliability)
