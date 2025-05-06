@@ -56,7 +56,7 @@ filter _raw_log !~= "^#.*"
     cs_categories = arrayindex(field_list, 21), // Content filtering category of the request URL
     x_virus_id = arrayindex(field_list, 22), // Identifier of a virus if one was detected.
     s_ip = arrayindex(field_list, 23), // IP address of the appliance on which the client established its connection
-    r_ip = arrayindex(field_list, 24), // IP address of the destination
+    r_ip = arrayindex(field_list, 24) // IP address of the destination
 
 | alter // post extraction processing 
     // check IP addresses formats 
@@ -65,7 +65,7 @@ filter _raw_log !~= "^#.*"
     s_ip_v4 = if(s_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", s_ip),
     s_ip_v6 = if(s_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", s_ip),
     r_ip_v4 = if(r_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", r_ip),
-    r_ip_v6 = if(r_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", r_ip)
+    r_ip_v6 = if(r_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", r_ip),
 
     // decode url-encoded spaces (%20) back to an ascii space   
     cs_username_decoded = replace(cs_username, "%20", " "),
