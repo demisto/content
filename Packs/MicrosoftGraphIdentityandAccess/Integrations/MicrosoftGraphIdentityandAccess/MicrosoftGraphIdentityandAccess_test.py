@@ -90,9 +90,53 @@ def test_detection_to_incident(incident, expected):
 
     assert MicrosoftGraphIdentityandAccess.detection_to_incident(incident, "2022-06-06") == expected
 
+@pytest.mark.parametrize(
+    "incident,expected",
+    [
+        ({}, {"name": "Azure User at Risk:  -  - ", "occurred": "2025-05-06Z", "rawJSON": "{}"}),
+        (
+            {"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"},
+            {
+                "name": "Azure User at Risk: test - atRisk - high",
+                "occurred": "2025-05-06Z",
+                "rawJSON": '{"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"}'
+            }
+        )
+    ]
+)
+def test_risky_user_to_incident(incident, expected):
+    """
+    Given:
+    -  A dict with the incident details.
 
-@pytest.mark.parametrize("last_fetch,expected", [("2022-06-06", "detectedDateTime gt 2022-06-06")])
-def test_build_filter(last_fetch, expected):
+    When:
+    -  Getting the incident.
+
+    Then:
+    - Ensure that the dict is what we expected.
+    """
+    assert MicrosoftGraphIdentityandAccess.risky_user_to_incident(incident, "2025-05-06") == expected
+
+
+#def test_risky_users_to_incidents(incident, expected):
+    #assert MicrosoftGraphIdentityandAccess.risky_users_to_incidents() == expected
+
+@pytest.mark.parametrize(
+    "last_fetch,parameters,expected",
+    [
+        (
+            "2025-05-06",
+            {"alerts_to_fetch": "Risk Detections"},
+            "detectedDateTime gt 2025-05-06"
+        ),
+        (
+            "2025-05-06",
+            {"alerts_to_fetch": "Risky Users"},
+            "riskLastUpdatedDateTime gt 2025-05-06"
+        )
+    ]
+)
+def test_build_filter(last_fetch, parameters, expected):
     """
     Given:
     -   A date to set a filter by.
@@ -104,7 +148,7 @@ def test_build_filter(last_fetch, expected):
     - Ensure that the filter is what we expected.
     """
 
-    assert MicrosoftGraphIdentityandAccess.build_filter(last_fetch, {}) == expected
+    assert MicrosoftGraphIdentityandAccess.build_filter(last_fetch, parameters) == expected
 
 
 @pytest.mark.parametrize(argnames="client_id", argvalues=["test_client_id", None])
