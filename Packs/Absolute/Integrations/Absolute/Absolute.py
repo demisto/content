@@ -1204,7 +1204,7 @@ def process_events(
         if event_time == earliest_event_time and event.get("id") in last_run_latest_events_id:
             continue
         # adding time field
-        event["_time"] = event_time
+        event["_time"] = event.get("eventDateTimeUtc")
         # latest events batch
         if should_get_latest_events and event_time == latest_event_time:
             latest_events_id.append(event.get("id"))
