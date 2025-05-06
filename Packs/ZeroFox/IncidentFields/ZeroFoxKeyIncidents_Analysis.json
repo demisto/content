@@ -5,7 +5,7 @@
     "fromVersion": "6.10.0",
     "name": "ZeroFox Key Incident Analysis",
     "ownerOnly": true,
-    "cliName": "analysis",
+    "cliName": "tzerofoxkeyincidentanalysis",
     "type": "longText",
     "closeForm": false,
     "editForm": true,

@@ -6,7 +6,7 @@
     "content": true,
     "name": "ZeroFox Key Incident Headline",
     "ownerOnly": true,
-    "cliName": "headline",
+    "cliName": "tzerofoxkeyincidentheadline",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

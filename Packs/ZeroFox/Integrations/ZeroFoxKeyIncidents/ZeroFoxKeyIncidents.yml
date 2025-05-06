@@ -108,7 +108,7 @@ script:
   ismappable: false
   isremotesyncin: true
   isremotesyncout: false
-  dockerimage: 'demisto/python3:3.12.8.1983910'
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.1.0
 marketplaces:
   - xsoar
