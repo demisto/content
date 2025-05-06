@@ -1,6 +1,6 @@
-'''
+"""
 Event Collector Source file for AdminByRequest API.
-'''
+"""
 from typing import Any, Dict, Optional
 
 import demistomock as demisto
@@ -17,7 +17,7 @@ class EventType:
     This class defines an AdminByRequest API Event - used to dynamically store different types of events data.
     """
 
-    def __init__(self, suffix: str, take: int, source_log_type: str, time_field: str):
+    def __init__(self, suffix: str, take: int, source_log_type: str, time_field: str, default_params: dict):
         """
           Prepare constructor for EventType class.
           Args:
@@ -32,6 +32,7 @@ class EventType:
         self.time_field = time_field
         self.last_run_key = "start_id_" + suffix
         self.max_fetch = 1
+        self.default_params = default_params
 
 
 """ CONSTANTS """
@@ -50,18 +51,21 @@ EVENT_TYPES: Dict[str, EventType] = {
         take=10000,
         source_log_type="auditlog",
         time_field="startTimeUTC",
+        default_params={}
     ),
     "Events": EventType(
         suffix="events",
         take=10000,
         source_log_type="events",
         time_field="startTimeUTC",
+        default_params={}
     ),
     "Requests": EventType(
         suffix="requests",
         take=1000,
         source_log_type="request",
         time_field="requestTime",
+        default_params={"wantscandetails":1}
     )
 }
 
@@ -129,18 +133,25 @@ def validate_fetch_events_params(last_run: dict, event_type: EventType, use_last
 
     suffix = event_type.suffix
     take = event_type.take
-    key = "start_id_" + suffix
-
+    key = event_type.last_run_key
 
     if use_last_run_as_params:
         params = last_run
     elif key in last_run:
-        # Phase 2 Params: If a call has already been executed then use the last run params.
-        params = {"startid": last_run[key]}
+        # Phase 2: Use last run's tracking ID as startid
+        params = {
+            **event_type.default_params,
+            "startid": last_run[key]
+        }
     else:
-        # Phase 1 Params  - use today date to get the last ID in the first run
+        # Phase 1: Use today's date for time-based fetch (unless it's requests)
         today = get_current_time().strftime(DATE_FORMAT_CALLS)
-        params = {"startdate": today, "enddate": today}
+        date_params = {} if event_type.suffix == "requests" else {"startdate": today, "enddate": today}
+
+        params = {
+            **event_type.default_params,
+            **date_params
+        }
 
 
     take = min(take, event_type.max_fetch)
@@ -149,7 +160,7 @@ def validate_fetch_events_params(last_run: dict, event_type: EventType, use_last
     return params, suffix, key
 
 
-def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use_last_run_as_params=False) -> list[
+def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use_last_run_as_params) -> list[
     dict[str, Any]]:
     """
     Main Function that Handles the Fetch action to the API service of AdminByRequest.
@@ -201,9 +212,11 @@ def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use
         remove_first_run_params(params)
         params["startid"] = last_id + 1
 
-    last_run.update({
-        last_run_key: int(last_id + 1)
-    })
+    # If we got at list one entity to add to output - update last ID
+    if last_id:
+        last_run.update({
+            last_run_key: int(last_id + 1)
+        })
 
     return output
 
@@ -287,19 +300,20 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, last_run: dict, fetch_events_types: list[EventType]) -> tuple[list[dict[str, Any]], dict]:
+def fetch_events(client: Client, last_run: dict, fetch_events_types: list[EventType], use_last_run_as_params : bool=False) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AdminByRequest entity.
 
      Args:
         client (Client): The client object used to interact with the AdminByRequest service.
         last_run (dict): The last_run dictionary having the state of previous cycle.
         fetch_events_types (list[EventType]) : list of Event Types to fetch from API
+        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
     """
     demisto.debug("AdminByRequest fetch_events invoked")
     events = []
 
     for event_type in fetch_events_types:
-        output = fetch_events_list(client, last_run, event_type)
+        output = fetch_events_list(client, last_run, event_type, use_last_run_as_params)
         events.extend(output)
 
     demisto.debug(f"AdminByRequest next_run is {last_run}")
@@ -333,11 +347,16 @@ def get_events(client: Client, args: dict) -> CommandResults:
     event_type = EVENT_TYPES[call_type]
     event_type.max_fetch = max_events
 
-    last_run = {
+    first_parm = {
         'startdate': first_fetch_date
     }
 
-    output, _ = fetch_events(client, last_run, [event_type])
+    last_run_to_use_as_params = {
+        **event_type.default_params,
+        **first_parm
+    }
+
+    output, _ = fetch_events(client, last_run_to_use_as_params, [event_type], use_last_run_as_params=True)
     human_readable = prepare_list_output(output)
 
     command_results = CommandResults(
