@@ -52,12 +52,17 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 ## Configure Dataminr Pulse in Cortex
 
 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Dataminr Pulse.
+3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Client ID | The Client ID required to authenticate to the service. | True |
 | Client Secret | The Client Secret required to authenticate to the service. | True |
 | Watchlist Names | A comma-separated string of watchlist names, from which to fetch the alerts. If not provided, then it will fetch alerts from all available watchlists on the platform. | False |
 | Query | Terms to search within Dataminr Alerts. | False |
+| Include Related Alerts | Auto include related alerts for Dataminr Pulse incidents. | False |
 | Alert Type | Filters the incoming alerts with the provided alert type. Default All. | False |
 | Max Fetch | The maximum number of alerts to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
 | Trust any certificate (not secure) | Indicates whether to allow connections without verifying the SSL certificate's validity. | False |
@@ -67,6 +72,7 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 | Incidents Fetch Interval | The incident fetch interval. | False |
 | First Fetch Time (not supported) | This parameter is not supported as Dataminr Pulse API doesn't have time based filtering for fetching of alerts. | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
 
 
 #### Note
