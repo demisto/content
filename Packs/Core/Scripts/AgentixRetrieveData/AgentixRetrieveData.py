@@ -81,6 +81,11 @@ def execute_query(args: dict) -> dict:
     requires_polling_arg=False
 )
 def retrieve_data_from_xdr(args: dict) -> PollResult:
+    """
+    This is the main function, which manages the polling.
+    If the 'query_id' argument exists, we're after executing the query and checking for the results.
+    Otherwise, we're just starting the process and should execute the query.
+    """
     if "query_id" not in args:  # first time executing query
         demisto.debug("starting polling_command function")
         args_for_next_run = execute_query(args=args)
@@ -97,7 +102,7 @@ def retrieve_data_from_xdr(args: dict) -> PollResult:
         return check_status(args=args)
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(retrieve_data_from_xdr(args=demisto.args()))
     except Exception as e:
