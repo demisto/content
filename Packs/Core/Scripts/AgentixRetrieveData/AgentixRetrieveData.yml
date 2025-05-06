@@ -14,10 +14,10 @@ args:
     description: The indicator to look for.
   - name: time_frame
     required: true
-    defaultvalue: 7 days
+    defaultValue: 7 days
     description: How many days back to search for the indicator.
   - name: data_set
-    defaultvalue: xdr_data
+    defaultValue: xdr_data
     description: The dataset to search in.
   - name: query_name
     required: true
