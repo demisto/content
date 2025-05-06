@@ -85,30 +85,24 @@ class MirrorObject:
     ticket_url: Optional[str] = None
     ticket_id: Optional[str] = None
 
+    def __post_init__(self):
+        missing_fields = []
+        if not self.ticket_url:
+            missing_fields.append('ticket_url')
+        if not self.ticket_id:
+            missing_fields.append('ticket_id')
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
     def to_context(self) -> Dict[str, Any]:
         """
-        Converts the dataclass to a dictionary suitable for placing into XSOAR context.
+        Converts the dataclass to a dict for placing into context.
 
         Returns:
             dict: Dictionary representation of the MirrorObject.
         """
         return asdict(self)
-
-    @classmethod
-    def from_command_response(cls, response: Dict[str, Any]) -> "MirrorObject":
-        """
-        Factory method to create a MirrorObject from a command response.
-
-        Args:
-            response (dict): The raw response from a command like `jira-create-issue`.
-
-        Returns:
-            MirrorObject: Populated instance.
-        """
-        return cls(
-            ticket_url=response.get("self"),
-            ticket_id=response.get("id") or response.get("ticket_id")
-        )
 
 
 class JiraBaseClient(BaseClient, metaclass=ABCMeta):
@@ -2319,7 +2313,11 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[C
     if "summary" not in issue_fields.get("fields", {}):
         raise DemistoException("The summary argument must be provided.")
     res = client.create_issue(json_data=issue_fields)
-    mirror_obj = MirrorObject.from_command_response(res)
+
+    ticket_url = res.get("self")
+    ticket_id = res.get("id") or res.get("ticket_id")
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_id)
+
     outputs = {"Id": res.get("id", ""), "Key": res.get("key", "")}
     markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": res.get("key", "").split("-")[0]}
     ticket_results = CommandResults(
