@@ -11,7 +11,9 @@
         "Network Security"
     ],
     "tags": [
-        "Security"
+        "Security",
+        "Dark Web",
+        "Alerts"
     ],
     "useCases": [
         "Breach Notification"

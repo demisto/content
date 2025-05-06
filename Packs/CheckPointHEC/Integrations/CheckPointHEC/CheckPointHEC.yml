@@ -128,13 +128,13 @@ configuration:
   name: include_denied_requests
   type: 8
   required: false
-  additionalinfo: Denied restore requests will be in the results (they are not by default).
+  additionalinfo: Include denied restore requests in the results, do not check with "Include accepted requests".
 - display: Include accepted requests
   name: include_accepted_requests
   type: 8
   required: false
   section: Collect
-  additionalinfo: Accepted restore requests will be in the results (they are not by default).
+  additionalinfo: Include accepted restore requests in the results, do not check with "Include denied requests".
 - display: Trust any certificate (not secure)
   additionalinfo: Trust server certificate.
   name: insecure
