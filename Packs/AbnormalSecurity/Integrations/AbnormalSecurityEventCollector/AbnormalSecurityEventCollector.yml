@@ -4,6 +4,9 @@ commonfields:
 name: Abnormal Security Event Collector
 display: Abnormal Security Event Collector
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 description: Abnormal Security Event Collector integration for XSIAM.
 configuration:
 - display: ""
@@ -12,21 +15,25 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: verify
+  type: 8
+  required: false
+  section: Connect
 - display: First fetch time interval
   name: after
   type: 0
   defaultvalue: 1 day
   required: false
+  section: Collect
   hidden:
   - marketplacev2
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-- display: Trust any certificate (not secure)
-  name: verify
-  type: 8
-  required: false
 script:
   script: ""
   type: python
@@ -42,7 +49,7 @@ script:
       - 'True'
       - 'False'
       required: true
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   subtype: python3
 fromversion: 6.8.0
