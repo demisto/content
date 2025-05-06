@@ -57,6 +57,14 @@ def test_get_events():
 
 @freeze_time("2022-09-14")
 def test_fetch_events_without_nextTrigger(mocker):
+    """
+    Given:
+        - The last fetch did not exceed the fetch limit.
+    When:
+        - Running the fetch-events command.
+    Then:
+        - The events list should contain the fetched threats, and the next page number should be 1.
+    """
     client = Client(base_url="url")
     mock_response = generate_mock_response(num_chunks=1)
     mock_response[0]["nextPageNumber"] = None
@@ -64,13 +72,21 @@ def test_fetch_events_without_nextTrigger(mocker):
     mocker.patch("AbnormalSecurityEventCollector.format_messages", return_value=mock_response[0]["threats"][0])
     mocker.patch("AbnormalSecurityEventCollector.get_messages_by_datetime", return_value=mock_response[0]["threats"][0])
     mocker.patch("AbnormalSecurityEventCollector.sorted", return_value=mock_response[0]["threats"])
-    threats, last_run = get_events(client, after="2022-05-02T18:44:38Z", next_page_number=1)
+    threats, last_run = get_events(client, after="2022-05-02T18:44:38Z", before="", next_page_number=1)
     assert threats == mock_response[0]["threats"]
     assert last_run.get("before") == '2022-09-14T00:00:00Z'
     assert last_run.get("next_page_number") == 1
 
 
 def test_fetch_events_with_nextTrigger(mocker):
+    """
+    Given:
+        - The last fetch did exceed the fetch limit.
+    When:
+        - Running the fetch-events command.
+    Then:
+        - The events list should contain the fetched threats, and the next page number should be 10.
+    """
     client = Client(base_url="url")
     mock_responses = generate_mock_response(num_chunks=10)
 
@@ -82,6 +98,6 @@ def test_fetch_events_with_nextTrigger(mocker):
     mocker.patch("AbnormalSecurityEventCollector.get_messages_by_datetime", return_value=mock_responses[0]["threats"][0])
     mocker.patch("AbnormalSecurityEventCollector.sorted",
                  return_value=[threat for response in mock_responses[:9] for threat in response["threats"]])
-    threats, last_run = get_events(client, after="2022-05-02T18:44:38Z", next_page_number=1)
+    threats, last_run = get_events(client, after="2022-05-02T18:44:38Z", before="", next_page_number=1)
     assert len(threats) == 9000
     assert last_run.get("next_page_number") == 10
