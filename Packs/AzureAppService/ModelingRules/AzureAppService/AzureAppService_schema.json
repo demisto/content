@@ -57,7 +57,7 @@
             "is_array": false
         },
         "ScStatus": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "Result": {

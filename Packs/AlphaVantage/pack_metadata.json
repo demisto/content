@@ -9,11 +9,17 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [],
+    "tags": [
+        "Free Feed"
+    ],
     "useCases": [],
     "keywords": [
         "AlphaVantage",
-        "stocks"
+        "stocks",
+        "API",
+        "finance",
+        "Trade",
+        "developer"
     ],
     "githubUser": [],
     "marketplaces": [

@@ -6,16 +6,19 @@
     "author": "Abnormal Security",
     "url": "",
     "email": "support@abnormalsecurity.com",
-    "tags": [],
+    "tags": [
+        "Email"
+    ],
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Email"
     ],
     "useCases": [
         "Phishing"
     ],
     "keywords": [
-        "email",
-        "phishing"
+        "Email",
+        "Phishing",
+        "AbnormalSecurity"
     ],
     "githubUser": [
         "fraankwang"

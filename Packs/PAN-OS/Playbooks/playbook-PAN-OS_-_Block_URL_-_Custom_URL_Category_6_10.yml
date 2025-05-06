@@ -869,6 +869,8 @@ tests:
 - PAN-OS - Block URL - Custom URL Category Test
 fromversion: 6.10.0
 supportedModules:
+- C3
+- X0
 - X1
 - X3
 - X5

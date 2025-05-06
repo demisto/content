@@ -27,6 +27,9 @@ The Generic Webhook integration is a long-running integration. For more informat
 The Generic Webhook integration running on a Cortex XSOAR 8 Cloud tenant or Cortex XSIAM tenant requires basic authentication. Running on an engine does not require basic authentication, but it is recommended.
 For Cortex XSOAR On-prem (6.x or 8) or when running on an engine, you can set up authentication using custom certificates. For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate).  
 
+**Note**:
+You can use header authentication only when using an engine.
+
 ## Trigger the Webhook URL 
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
@@ -78,7 +81,7 @@ The payload could then be mapped in the [Mapping wizard (Cortex XSOAR 6.13)](htt
 
 - Note that the *Store sample events for mapping* parameter needs to be set.
 
-    <img width="900" src="./../../doc_files/mapping.png" />
+    <img width="900" src="../../doc_files/mapping.png" />
 
 The response is an array containing an object with the created incident metadata, such as the incident ID.
 

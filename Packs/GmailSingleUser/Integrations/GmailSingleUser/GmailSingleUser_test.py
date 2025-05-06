@@ -3,6 +3,9 @@ import uuid
 import pytest
 from pytest_mock import MockerFixture
 import demistomock as demisto
+from datetime import datetime, UTC
+from freezegun import freeze_time
+
 
 from GmailSingleUser import Client, send_mail_command, MIMEMultipart, execute_gmail_action
 from email.utils import parsedate_to_datetime
@@ -522,3 +525,84 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     monkeypatch.setattr("GmailSingleUser.LEGACY_NAME", True)
     result = client.parse_mail_parts(part)
     assert result == expected_result
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+def test_get_incidents_command(mocker):
+    from GmailSingleUser import Client, get_incidents_command
+
+    client = Client()
+    args = {
+        "after": "24 Mar 2025 08:17:02 -0700",
+        "before": "24 Mar 2025 08:18:02 -0700"
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(
+        client,
+        "search",
+        return_value=(
+            util_load_json("test_data/search_email_list.json"),
+            "before:1742829482  after:1742829422",
+        ),
+    )
+    result = get_incidents_command(client)
+    emails: list = result.raw_response  # type: ignore
+    assert emails[0].get("internalDate") == "1742829478000"
+    assert len(emails) == 2
+    assert "2025-03-24T15:17:58.000Z | SENT | 111 |\n| test@test.com | Test message 1234 | 2025-03-24T1" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "test_input, expected_output",
+    [
+        (("2023-01-01T12:00:00Z", "date"), datetime(2023, 1, 1, 12, 0, tzinfo=UTC)),
+        ((datetime(2023, 1, 1, 12, 0), "date"), datetime(2023, 1, 1, 12, 0)),
+        ((datetime(2023, 1, 1, 12, 0), "str"), "2023-01-01T12:00:00Z"),
+        (("2023-01-01T12:00:00Z", "str"), "2023-01-01T12:00:00Z"),
+    ],
+    ids=["date_str_to_datetime", "date_datetime_pass", "datetime_to_iso_str", "iso_str_pass"]
+)
+def test_parse_date(test_input, expected_output):
+    """
+    Given:
+        - A tuple input specifying the format type ('date' or 'isoformat') and the date value.
+    When:
+        - The parse_date function is invoked with the given format type and date.
+    Then:
+        - Confirm that the output matches the expected datetime object or ISO formatted string.
+    """
+    from GmailSingleUser import Client, parse_date
+    client = Client()
+    result = parse_date(client, *test_input)
+    assert result == expected_output, f"Expected {expected_output} but got {result}"
+
+
+@pytest.mark.parametrize(
+    "input_args, expected",
+    [
+        ({"before": "now", "after": "1 day ago"},
+         ('1672574400', '1672488000')),  # Unix timestamps for '2023-01-01 12:00:00', '2022-12-31 12:00:00'
+        ({"before": "2023-01-01 12:00:00", "after": "2022-12-31 12:00:00"},
+         ('1672574400', '1672488000')),  # Unix timestamps for the same fixed dates
+        ({},
+         ('1672574400', '1672488000')),  # Default case: 'now' and '1 day ago' will be the same as the first case
+    ],
+    ids=["default_dates", "specific_dates", "no_params"]
+)
+@freeze_time("2023-01-01 12:00:00 UTC")
+def test_get_unix_date(input_args, expected):
+    """
+    Given:
+        - Dictionary with 'before' and 'after' date parameters, or defaults.
+    When:
+        - Converting dates to Unix timestamps using get_unix_date.
+    Then:
+        - Validate that the conversions match expected Unix timestamps.
+    """
+    from GmailSingleUser import get_unix_date
+    assert get_unix_date(input_args) == expected
+

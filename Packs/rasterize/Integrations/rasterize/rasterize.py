@@ -113,11 +113,7 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = "/var/chrome_instances.json"
 
-# Define constants
-PRIVATE_NETWORKS = {
-    ipaddress.ip_network('0.0.0.0/8'),     # "This" Network
-    ipaddress.ip_network('127.0.0.0/8'),   # Loopback Network
-}
+
 class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
@@ -244,10 +240,12 @@ class PychromeEventHandler:
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
             frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
-            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, checking URL {frame_url}")
+            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, Frame URL: {frame_url}, Original path: {self.path}")
 
             # Check if the loaded page is a Chrome error page, which indicates a failed load
-            if frame_url.lower().startswith(CHROME_ERROR_URL):
+            # Only retry loading when the URL is a direct file path
+            # This helps handle cases where local files fail to load on the first attempt
+            if frame_url.lower().startswith(CHROME_ERROR_URL) and self.path.lower().startswith("file://"):
                 demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
                 self.retry_loading()
             else:
@@ -285,7 +283,8 @@ class PychromeEventHandler:
 
         self.is_mailto = documentURL.lower().startswith("mailto:")
         self.is_private_network_url = is_private_network(documentURL)
-
+        demisto.debug(f"Private network URL check for {documentURL=}: {self.is_private_network_url}")
+        demisto.debug(f"mailto URL check for {documentURL=}: {self.is_mailto}")
         request_url = kwargs.get("request", {}).get("url", "")
 
         if any(value in request_url for value in BLOCKED_URLS):
@@ -307,7 +306,7 @@ class PychromeEventHandler:
 # endregion
 
 
-def count_running_chromes(port):
+def count_running_chromes(port) -> int:
     try:
         processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
 
@@ -452,7 +451,7 @@ def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}):
         demisto.debug(f"An error occurred while writing to the file: {e}")
 
 
-def opt_name(opt):
+def opt_name(opt: str) -> str:
     return opt.split("=", 1)[0]
 
 
@@ -617,7 +616,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
-def chrome_manager_one_port() -> tuple[Any | None, str | None]:
+def chrome_manager_one_port() -> tuple[pychrome. Browser | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
     ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
@@ -652,9 +651,7 @@ def chrome_manager_one_port() -> tuple[Any | None, str | None]:
         demisto.debug("chrome_manager: condition chrome_instances_contents is empty")
         return generate_new_chrome_instance(instance_id, chrome_options)
     if chrome_options in chrome_options_dict:
-        demisto.debug(
-            "chrome_manager: condition chrome_options in chrome_options_dict is true"
-        )
+        demisto.debug("chrome_manager: condition chrome_options in chrome_options_dict is true")
         browser = get_chrome_browser(chrome_port)
         return browser, chrome_port
     for chrome_port_ in chrome_instances_contents:
@@ -732,9 +729,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
         demisto.debug(f"After waiting for tab_ready_event on {tab.id=}")
 
         if wait_time > 0:
-            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}")
+            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, {tab.id=}")
         else:
-            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}")
+            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}")
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
@@ -744,14 +741,14 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
         demisto.debug(f"heapUsage after navigation {heapUsage=} on {tab.id=}")
 
     except pychrome.exceptions.TimeoutException as ex:
-        return_error(f"Navigation timeout: {ex} thrown while trying to navigate to {path}")
+        return_error(f"Navigation timeout: {ex} thrown while trying to navigate to {path}, {tab.id=}")
     except pychrome.exceptions.PyChromeException as ex:
-        return_error(f"Exception: {ex} thrown while trying to navigate to {path}")
+        return_error(f"Exception: {ex} thrown while trying to navigate to {path}, {tab.id=}")
 
     return tab_event_handler
 
 
-def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL):
+def backoff(polled_item: Any, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL) -> tuple[Any, float]:
     operation_time = 0
     while polled_item is None and operation_time < wait_time:
         time.sleep(polling_interval)  # pylint: disable=E9003
@@ -760,19 +757,58 @@ def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_P
 
 
 def screenshot_image(
-    browser, tab, path, wait_time, navigation_timeout, full_screen=False, include_url=False, include_source=False
+    browser: pychrome.Browser,
+    tab: pychrome.Tab,
+    path: str,
+    wait_time: int,
+    navigation_timeout: int,
+    full_screen=False,
+    include_url=False,
+    include_source=False,
 ):  # pragma: no cover
+    """Takes a screenshot of a web page using Chrome browser.
+
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab instance.
+        path: The URL or file path to capture.
+        wait_time: Time to wait before taking the screenshot.
+        navigation_timeout: Maximum time to wait for page load.
+        full_screen: Whether to capture full page. Defaults to False.
+        include_url: Whether to include URL in the image. Defaults to False.
+        include_source: Whether to include page source in the response. Defaults to False.
+
+    Returns:
+        tuple: A tuple containing:
+            - bytes: The captured image data.
+            - str: The page source if include_source is True, otherwise an empty string.
+
+    Raises:
+        DemistoException: If the URL is a local file or starts with "mailto:".
     """
-    :param include_source: Whether to include the page source in the response
-    """
+    command = demisto.command()
+    if path.lower().startswith("file://") and command not in [
+        "rasterize-email",
+        "rasterize-html",
+        "rasterize-image",
+        "test-module",
+    ]:
+        # In some rasterize commands we create a temporary file, and we only rasterize it
+        demisto.info(f"Rejected path: {path}. Local files cannot be rasterized for this command.")
+        return None, ("Cannot rasterize local files")
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
+        demisto.info(f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}, {tab.id=}.')
         return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
     if tab_event_handler.is_private_network_url:
+        demisto.info(
+            'URLs that belong to the "This" Network (0.0.0.0/8), or'
+            f" the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}, {tab.id=}"
+        )
         return None, (
             'URLs that belong to the "This" Network (0.0.0.0/8), or'
-            f' the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}'
+            f" the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}"
         )
 
     try:
@@ -781,7 +817,7 @@ def screenshot_image(
         demisto.info(f"Failed to get tab LayoutMetrics due to {ex}")
         raise ex
 
-    demisto.debug(f"{page_layout_metrics=}")
+    demisto.debug(f"{page_layout_metrics=} {tab.id=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
     try:
         if full_screen:
@@ -791,7 +827,7 @@ def screenshot_image(
         else:
             screenshot_data = tab.Page.captureScreenshot()["data"]
     except Exception as ex:
-        demisto.info(f"Failed to capture screenshot due to {ex}")
+        demisto.info(f"Failed to capture screenshot due to {ex}, {tab.id=}")
         raise ex
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
@@ -807,19 +843,27 @@ def screenshot_image(
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
-        demisto.info(f"Empty snapshot, {screenshot_data=}")
+        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}")
     else:
-        demisto.info(f"Captured snapshot, {len(captured_image)=}")
+        demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}")
 
     # Page URL, if needed
     if include_url:
+        demisto.debug(f"Including URL in image for path: {path}, {tab.id=}")
         captured_image_object = Image.open(BytesIO(captured_image))
+        demisto.debug(f"Original image size: {captured_image_object.size}, {tab.id=}")
+
         image_with_url = Image.new(captured_image_object.mode, (css_content_size["width"], css_content_size["height"] + 20))
+        demisto.debug(f"New image size with URL: {image_with_url.size}, {tab.id=}")
+
         image_with_url.paste(captured_image_object, (0, 20))
         ImageDraw.Draw(image_with_url).text((0, 0), path, fill=(255, 255, 255))
+
         img_byte_arr = BytesIO()
         image_with_url.save(img_byte_arr, format="PNG")
         img_byte_arr = img_byte_arr.getvalue()
+        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}")
+
         ret_value = img_byte_arr
     else:
         ret_value = captured_image
@@ -827,33 +871,35 @@ def screenshot_image(
     # Page source, if needed
     response_body = ""
     if include_source:
-        demisto.debug("screenshot_image, include_source, waiting for request_id")
+        demisto.debug(f"screenshot_image, include_source, waiting for request_id, {tab.id=}")
         request_id, request_id_operation_time = backoff(tab_event_handler.request_id)
         if request_id:
-            demisto.debug(f"request_id available after {request_id_operation_time} seconds.")
+            demisto.debug(f"request_id available after {request_id_operation_time} seconds, {tab.id=}.")
         else:
-            demisto.info(f"request_id not available after {request_id_operation_time} seconds.")
-        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds.")
+            demisto.info(f"request_id not available after {request_id_operation_time} seconds, {tab.id=}.")
+        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds, {tab.id=}.")
 
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)["body"]
-            demisto.debug(f"screenshot_image, {include_source=}, {response_body=}")
+            demisto.debug(f"screenshot_image, {include_source=}, {response_body=}, {tab.id=}")
 
             response_body, operation_time = backoff(response_body)
             if response_body:
-                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}")
+                demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}, {tab.id=}")
             else:
-                demisto.info(f"Response Body not available after {operation_time} seconds.")
+                demisto.info(f"Response Body not available after {operation_time} seconds, {tab.id=}.")
 
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
-            demisto.info(f"Exception when calling Network.getResponseBody with {request_id=}, {ex=}")
+            demisto.info(f"Exception when calling Network.getResponseBody with {request_id=}, {ex=}, {tab.id=}")
             demisto.info(f"Failed to get URL body due to {ex}")
             response_body = "Failed to get URL body"
 
     return ret_value, response_body
 
 
-def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_url):  # pragma: no cover
+def screenshot_pdf(
+    browser: pychrome.Browser, tab: pychrome.Tab, path: str, wait_time: int, navigation_timeout: int, include_url: bool
+):  # pragma: no cover
     navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     header_template = ""
     if include_url:
@@ -862,21 +908,21 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     try:
         pdf_data = tab.Page.printToPDF(headerTemplate=header_template)["data"]
     except Exception as ex:
-        demisto.info(f"Failed to get PDF due to {ex}")
+        demisto.info(f"Failed to get PDF due to {ex}, {tab.id=}")
         raise ex
     # Make sure that the (asynchronous) PDF data is available before continuing with execution
     pdf_data, operation_time = backoff(pdf_data)
     if pdf_data:
-        demisto.debug(f"PDF Data available after {operation_time} seconds.")
+        demisto.debug(f"PDF Data available after {operation_time} seconds, {tab.id=}.")
     else:
-        demisto.info(f"PDF Data not available after {operation_time} seconds.")
+        demisto.info(f"PDF Data not available after {operation_time} seconds, {tab.id=}.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value, None
 
 
 def rasterize_thread(
-    browser,
+    browser: pychrome.Browser,
     chrome_port,
     path: str,
     rasterize_type: RasterizeType = RasterizeType.PNG,
@@ -895,8 +941,9 @@ def rasterize_thread(
         except Exception as ex:
             demisto.info(f"Failed to set the chrome tab size due to {ex}")
             raise ex
-
+        demisto.debug(f"Determining rasterization type: {rasterize_type=}, for {path=}, {tab.id=}")
         if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
+            demisto.debug(f"Executing screenshot_image for PNG, {path=}, {tab.id=}")
             return screenshot_image(
                 browser,
                 tab,
@@ -908,11 +955,13 @@ def rasterize_thread(
             )
 
         elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
+            demisto.debug(f"Executing screenshot_pdf for PDF, {path=}, {tab.id=}")
             return screenshot_pdf(
                 browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout, include_url=include_url
             )
 
         elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
+            demisto.debug(f"Executing screenshot_image for JSON, {path=}, {tab.id=}")
             return screenshot_image(
                 browser,
                 tab,
@@ -929,49 +978,105 @@ def rasterize_thread(
 
 def kill_zombie_processes():
     # Iterate over all running processes
+    demisto.debug("Starting kill_zombie_processes")
+    zombie_count = 0
+    processed_count = 0
     try:
         for proc in psutil.process_iter(["pid", "name", "status"]):
+            processed_count += 1
             try:
                 # Check if the process is a zombie
                 if proc.info["status"] == psutil.STATUS_ZOMBIE:
+                    zombie_count += 1
                     demisto.info(f"found zombie process with pid {proc.pid}")
                     waitres = os.waitpid(int(proc.pid), os.WNOHANG)
                     demisto.info(f"waitpid result: {waitres}")
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
+            except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
                 # Handle cases where process may have already terminated or access is denied
-                demisto.info(f"failed to kill zombie with pid {proc.pid}")
+                demisto.info(f"failed to kill zombie with pid {proc.pid}. Error: {str(e)}")
                 continue
     except Exception as e:
         demisto.debug(f"Failed to iterate over processes. Error: {e}")
+
+    demisto.info(
+        "kill_zombie_processes completed. "
+        f"Processed {processed_count} processes, "
+        f"found and attempted to kill {zombie_count} zombies."
+    )
+
+
+def extract_hostname(url: str) -> str:
+    """
+    Extract hostname from URL, adding http:// if protocol is missing.
+
+    Args:
+        url (str): The URL to process
+
+    Returns:
+        str: The extracted hostname
+    """
+    if not url.startswith(("http://", "https://")):
+        url = "http://" + url
+    try:
+        parsed = urlparse(url)
+        return parsed.netloc.split(":")[0]  # Remove port if exists
+    except Exception:
+        return ""
 
 
 @lru_cache(maxsize=1024)
 def is_private_network(url: str) -> bool:
     """
     Check if a URL's hostname belongs to a private network.
-    
+
     Args:
         url (str): The URL to check
-        
+
     Returns:
         bool: True if the hostname is in a private network, False otherwise
     """
     try:
-        if not url.startswith(('http://', 'https://')):
-            url = 'http://' + url
-        parsed = urlparse(url)
-        hostname = parsed.netloc.split(':')[0]  # Remove port if exists
-        
-        if not hostname:  # Handle cases where netloc is empty
+        if not (hostname := extract_hostname(url)):
+            demisto.debug(f"Problematic URL detected: Unable to extract hostname from {url}")
             return False
-            
-        ip = ipaddress.ip_address(hostname)
-        return any(ip in network for network in PRIVATE_NETWORKS)
-            
+
+        return ipaddress.ip_address(hostname).is_private
+
     except (ValueError, AttributeError):
-        # ValueError: Invalid IP address
-        # AttributeError: Invalid URL format
+        demisto.debug(f"Problematic URL detected: Unable to process {url}")
         return False
+
+
+def remove_leading_zeros_from_ip_addresses(path: str) -> str:
+    """
+    Removes leading zeros from IP addresses in the given path.
+    as leading zeros is not valid in IP addresses.
+    This function will only remove leading zeros from the IP address
+    Args:
+        path (str): The path to process.
+
+    Returns:
+        str: The processed path with leading zeros removed from IP addresses.
+    """
+    if not (hostname := extract_hostname(path)):
+        return path
+
+    # If hostname contains letters, it's not an IP address
+    if bool(re.search("[a-zA-Z]", hostname)):
+        return path
+    # Check if the hostname is an IP address
+    # Check if it's a valid IP address
+    ip_pattern = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+    if re.match(ip_pattern, hostname):
+        octets = hostname.split(".")
+        normalized_ip = ".".join(str(int(octet)) for octet in octets)
+        result = path.replace(hostname, normalized_ip)
+        if result != path:
+            demisto.info(f"IP address normalized: {path} -> {result}")
+        return result
+
+    return path
+
 
 def perform_rasterize(
     path: str | list[str],
@@ -999,10 +1104,13 @@ def perform_rasterize(
 
     # convert the path param to list in case we have only one string
     paths: list[str] = argToList(path)
-
+    demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
+    paths = [remove_leading_zeros_from_ip_addresses(path_value) for path_value in paths]
     # create a list with all the paths that start with "mailto:"
     mailto_paths = [path_value for path_value in paths if path_value.startswith("mailto:")]
+    demisto.debug(f"Identified {len(mailto_paths)} mailto paths: {mailto_paths=}")
     private_network_paths = [path_value for path_value in paths if is_private_network(path_value)]
+    demisto.debug(f"Identified {len(private_network_paths)} private network paths: {private_network_paths=}")
 
     if private_network_paths or mailto_paths:
         paths = list(set(paths) - set(mailto_paths))
@@ -1022,15 +1130,12 @@ def perform_rasterize(
         return_error(message)
         return None
 
-    demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
-
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
     browser, chrome_port = chrome_manager_one_port()
 
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
             for current_path in paths:
@@ -1356,9 +1461,9 @@ def rasterize_command():  # pragma: no cover
 # endregion
 
 
-def get_width_height(args: dict):
+def get_width_height(args: dict[str, str]) -> tuple[int, int]:
     """
-    Get commomn args.
+    Get common args.
     :param args: dict to get args from
     :return: width, height, rasterize mode
     """
@@ -1369,12 +1474,16 @@ def get_width_height(args: dict):
     width = min(width, MAX_FULLSCREEN_WIDTH)
     height = min(height, MAX_FULLSCREEN_HEIGHT)
 
+    demisto.debug(f"Processed dimensions: width={width}, height={height}")
     return width, height
 
 
 def main():  # pragma: no cover
-    demisto.debug(f"main, {demisto.command()=}")
+    command = demisto.command()
+
+    demisto.debug(f"Command being called is {command}")
     demisto.debug(f"Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}")
+
     threading.excepthook = excepthook_recv_loop
 
     try:
@@ -1397,13 +1506,15 @@ def main():  # pragma: no cover
             rasterize_command()
 
         else:
-            return_error("Unrecognized command")
+            raise NotImplementedError(f"command {command} is not supported")
 
     except Exception as ex:
-        return_err_or_warn(f"Unexpected exception: {ex}\nTrace:{traceback.format_exc()}")
+        return_err_or_warn(
+            f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}"
+        )
     finally:
         kill_zombie_processes()
 
 
-if __name__ in ["__builtin__", "builtins", "__main__"]:
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
