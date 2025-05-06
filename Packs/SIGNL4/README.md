@@ -9,6 +9,6 @@ When critical systems fail, incidents happen or urgent services need to be provi
 
 In order to close an alert (command: alert_close) you need to specify the same external ID (s4_external_id) as you have used when triggering the alert (command: signl4_alert).
 
-This is how a SIGNL4 might look like in the mobile app:
+This is how a SIGNL4 alert might look like in the mobile app:
 
-![SIGNL4 Alert](./doc_files/signl4-xsoar.png)
+![SIGNL4 Alert](doc_files/signl4-xsoar.png)

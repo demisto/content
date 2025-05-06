@@ -106,3 +106,4 @@ Packs/**/ModelingRules/**/**/*_testdata.json
 .cache/
 .npm/
 pipeline_jobs_folder/
+Packs/Whois/Integrations/Whois/test_data/microsocks

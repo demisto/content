@@ -13,31 +13,61 @@ from SIGNL4 import (
     close_signl4_alert,
 )
 
-
-# Test secret
-mock_secret = "****"
-
-
-def test_signl4_alert():
-
-    client = Client(secret=mock_secret, verify=False)
-    args = {
-        "title": "Alert from Cortex XSOAR",
-        "message": "Hello world.",
-        "s4_external_id": "id1234"
+def test_send_signl4_alert_success(mocker: MockerFixture):
+    """
+    Given: A Client instance and alert data with all required fields.
+    When: The send_signl4_alert function is called with the alert data.
+    Then: The function should return a CommandResults object with the alert data.
+    """
+    # Mock client
+    client = Client(base_url="https://connect.signl4.com/webhook/mock-secret", verify=False)
+    
+    # Mock client's send_signl4_alert method
+    mock_response = {"eventId": "mock-event-id-12345"}
+    mocker.patch.object(client, 'send_signl4_alert', return_value=mock_response)
+    
+    # Test data
+    json_data = {
+        "title": "Test Alert",
+        "message": "This is a test alert",
+        "s4_external_id": "test-id-12345"
     }
-    outputs = send_signl4_alert(client, args).outputs
+    
+    # Execute
+    result = send_signl4_alert(client, json_data)
+    
+    # Assert
+    assert result.outputs_prefix == "SIGNL4.AlertCreated"
+    assert result.outputs_key_field == "eventId"
+    assert result.outputs == mock_response
+    assert isinstance(result, CommandResults)
+    assert "SIGNL4 alert created" in result.readable_output
 
-    assert "eventId" in outputs
 
-
-def test_signl4_close_alert():
-
-    client = Client(secret=mock_secret, verify=False)
-    args = {
-        "s4_external_id": "id1234"
+def test_signl4_close_alert_success(mocker: MockerFixture):
+    """
+    Given: A Client instance and alert data with all required fields.
+    When: The close_signl4_alert function is called with the alert data.
+    Then: The function should return a CommandResults object with the alert data.
+    """
+    # Mock client
+    client = Client(base_url="https://connect.signl4.com/webhook/mock-secret", verify=False)
+    
+    # Mock client's send_signl4_alert method
+    mock_response = {"eventId": "mock-event-id-12345"}
+    mocker.patch.object(client, 'close_signl4_alert', return_value=mock_response)
+    
+    # Test data
+    json_data = {
+        "s4_external_id": "test-id-12345"
     }
-    outputs = close_signl4_alert(client, args).outputs
-
-    assert "eventId" in outputs
-
+    
+    # Execute
+    result = close_signl4_alert(client, json_data)
+    
+    # Assert
+    assert result.outputs_prefix == "SIGNL4.AlertClosed"
+    assert result.outputs_key_field == "eventId"
+    assert result.outputs == mock_response
+    assert isinstance(result, CommandResults)
+    assert "SIGNL4 alert closed" in result.readable_output

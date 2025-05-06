@@ -13,7 +13,7 @@ class Client(BaseClient):
             "X-S4-Service": json_data.get('s4_service'),
             "X-S4-Location": json_data.get('s4_location'),
             "X-S4-AlertingScenario": json_data.get('s4_alerting_scenario'),
-            "X-S4-Filtering": json_data.get('s4_filtering'),
+            "X-S4-Filtering": argToBoolean(json_data.get('s4_filtering', False)),
             "X-S4-SourceSystem": "CortexXSOAR"
         }
 
@@ -84,7 +84,7 @@ def main():
     if not secret:
         raise DemistoException('Team or integration secret must be provided.')
     demisto.debug(f"Command is {command}")
-
+       
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
