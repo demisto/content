@@ -111,8 +111,8 @@ tasks:
     task:
       id: 2b12deed-65f6-4e1d-8b5e-175f07cb4c84
       version: -1
-      name: Search for additional discovery alerts in the alert
-      description: Searches for additional alerts in the alert that may further indicate user attempts to enumerate Active Directory.
+      name: Search for additional discovery alerts in the incident
+      description: Searches for additional alerts in the incident that may further indicate user attempts to enumerate Active Directory.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
