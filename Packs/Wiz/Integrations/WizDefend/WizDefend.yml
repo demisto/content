@@ -274,6 +274,9 @@ script:
     - contextPath: Wiz.Manager.Detections.id
       description: Wiz Detection ID.
       type: String
+    - contextPath: Wiz.Manager.Detections.url
+      description: Wiz Detection URL.
+      type: String
     - contextPath: Wiz.Manager.Detections.severity
       description: Wiz Detection severity.
       type: String
@@ -302,6 +305,9 @@ script:
       type: Date
     - contextPath: Wiz.Manager.Detection.resources
       description: Related resources.
+      type: String
+    - contextPath: Wiz.Manager.Detection.url
+      description: URL to the Wiz Detection in the Wiz console.
       type: String
   dockerimage: demisto/python3:3.11.10.115186
   isfetch: true

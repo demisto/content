@@ -14,6 +14,10 @@
                     "complex": null,
                     "simple": "id"
                 },
+                "Wiz Detection URL": {
+                    "complex": null,
+                    "simple": "url"
+                },
                 "Wiz Issue ID": {
                     "complex": null,
                     "simple": "issue.id"
@@ -21,97 +25,6 @@
                 "Wiz Issue URL": {
                     "complex": null,
                     "simple": "issue.url"
-                },
-                "Wiz Detection URL": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "id",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "https://app.wiz.io/findings/detections#%7E%28filters%7E%28updateTime%7E%28dateRange%7E%28past%7E%28amount%7E5%7Eunit%7E%27day%29%29%29%29%7EdetectionId%7E%27"
-                                        }
-                                    },
-                                    "suffix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "%7EstreamCols%7E%28%7E%27event%7E%27principal%7E%27principalIp%7E%27resource%29%29"
-                                        }
-                                    }
-                                },
-                                "operator": "concat"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Wiz Detection Timeline": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "startedAt",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Started at: "
-                                        }
-                                    },
-                                    "suffix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": ""
-                                        }
-                                    }
-                                },
-                                "operator": "concat"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Wiz Detection Status": {
-                    "complex": null,
-                    "simple": "status"
-                },
-                "Wiz Detection Recommended Actions": {
-                    "complex": {
-                        "accessor": "rule.name",
-                        "filters": [],
-                        "root": "ruleMatch",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Triggered by rule: "
-                                        }
-                                    },
-                                    "suffix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": ". Investigate and mitigate."
-                                        }
-                                    }
-                                },
-                                "operator": "concat"
-                            }
-                        ]
-                    },
-                    "simple": ""
                 },
                 "Wiz Cloud Account": {
                     "complex": {
@@ -184,6 +97,26 @@
                         "transformers": []
                     },
                     "simple": ""
+                },
+                "Wiz Issue Due Date": {
+                    "complex": null,
+                    "simple": "issue.dueAt"
+                },
+                "Wiz Details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Wiz Issue Projects": {
+                    "complex": null,
+                    "simple": "issue.projects"
+                },
+                "Wiz Issue Resolution Recommendation": {
+                    "complex": null,
+                    "simple": "issue.resolutionReason"
+                },
+                "Wiz Issue Note": {
+                    "complex": null,
+                    "simple": "issue.notes.text"
                 },
                 "severity": {
                     "complex": {

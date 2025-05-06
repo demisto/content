@@ -99,6 +99,7 @@ class WizApiVariables:
     RULE_MATCH = 'ruleMatch'
     ORIGIN = 'origin'
     CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID = 'cloudAccountOrCloudOrganizationId'
+    URL = 'url'
 
 
 class WizOrderByFields:
@@ -360,6 +361,15 @@ query Detections($filterBy: DetectionFilters, $first: Int, $after: String, $orde
       issue {
         id
         url
+        dueAt
+        projects {
+          id
+          name
+        }
+        resolutionReason
+        notes {
+          text
+        }
       }
       ruleMatch {
         rule {
@@ -643,32 +653,6 @@ def translate_severity(detection):
     return None
 
 
-def get_wiz_detection_url(detection_id):
-    """
-    Generates a URL for the Wiz Detection in the Wiz console
-
-    Args:
-        detection_id (str): The detection ID to include in the URL
-
-    Returns:
-        str: The complete Wiz detection URL
-    """
-    if not detection_id:
-        return ""
-
-    try:
-        # Determine if we're in test environment based on AUTH_E
-        domain = "test" if (AUTH_E and "auth.test.wiz.io" in AUTH_E) else "app"
-
-        # Construct the full URL with proper encoding
-        url = f'https://{domain}.wiz.io/findings/detections#%7E%28filters%7E%28updateTime%7E%28dateRange%7E%28past%7E%28amount%7E{MAX_DAYS_FIRST_FETCH_DETECTIONS}%7Eunit%7E%27day%29%29%29%29%7EdetectionId%7E%27{detection_id}%7EstreamCols%7E%28%7E%27event%7E%27principal%7E%27principalIp%7E%27resource%29%29'
-
-        return url
-    except Exception as e:
-        demisto.error(f"Error generating Wiz detection URL: {str(e)}")
-        return f"https://app.wiz.io/findings/detections"
-
-
 def build_incidents(detection):
     if detection is None:
         return {}
@@ -798,6 +782,21 @@ def get_fetch_timestamp(first_fetch_param):
 
     # Return the ISO formatted timestamp
     return valid_date.isoformat()[:-3] + 'Z'
+
+
+def get_detection_url(detection):
+    # Determine if this is a test environment
+    is_test_env = False
+
+    # Check if the issue URL contains test.wiz.io
+    if detection.get('issue', {}) and detection.get('issue', {}).get('url') and 'test.wiz.io' in detection.get('issue', {}).get(
+        'url'):
+        is_test_env = True
+
+    # Build the detection URL with the appropriate domain
+    domain = "test" if is_test_env else "app"
+    detection_url = f"https://{domain}.wiz.io/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}~streamCols~(~'event~'principal~'principalIp~'resource))"
+    return detection_url
 
 
 def validate_first_fetch_timestamp(first_fetch_param):
@@ -1571,7 +1570,7 @@ def apply_all_filters(variables, validated_values):
 def get_filtered_detections(detection_id=None, issue_id=None, detection_type=None, detection_platform=None,
                             detection_origin=None, detection_subscription=None, resource_id=None, severity=None,
                             creation_minutes_back=None, matched_rule=None, matched_rule_name=None, project_id=None,
-                            after_time=None):
+                            after_time=None, add_detection_url=True):
     """
     Retrieves Filtered Detections
 
@@ -1633,6 +1632,10 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
     detection_variables = apply_all_filters(detection_variables, validated_values)
 
     wiz_detections = query_api(PULL_DETECTIONS_QUERY, detection_variables)
+
+    if add_detection_url:
+        for detection in wiz_detections:
+            detection[WizApiVariables.URL] = get_detection_url(detection)
 
     return wiz_detections
 

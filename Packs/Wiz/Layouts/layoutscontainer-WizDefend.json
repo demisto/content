@@ -63,28 +63,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "playbookid",
-                                "height": 22,
-                                "id": "incident-playbookId-field",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "wizdetectionid",
                                 "height": 22,
                                 "id": "b27ad340-698a-11ec-8f54-25c02ba6665c",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "wizdetectionstatus",
-                                "height": 22,
-                                "id": "wizdefend-status-field",
-                                "index": 7,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -105,6 +87,15 @@
                                 "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                              "fieldId": "wizdetectionurl",
+                              "height": 22,
+                              "id": "6fd428b0-ebd1-11ec-840b-d17131d3a6aa",
+                              "index": 6,
+                              "sectionItemType": "field",
+                              "startCol": 0,
+                              "endCol": 2
                             },
                             {
                                 "endCol": 2,
