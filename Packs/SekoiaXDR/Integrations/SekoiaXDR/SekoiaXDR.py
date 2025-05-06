@@ -692,7 +692,7 @@ def fetch_incidents(
         else:
             # If the context is not empty, we will append the new incidents to the existing list
             fetch_cache_list = context_cache["fetch_cache"]
-            fetch_cache_list.append(cached_incidents)
+            fetch_cache_list.extend(cached_incidents)
             context_cache["fetch_cache"] = fetch_cache_list
             set_integration_context(context_cache)
 
@@ -863,16 +863,14 @@ def get_remote_data_command(
             mirroring_cache = context_cache.get("mirroring_cache")
             alert_dict = {"alert": alert, "entries": entries}
             if not mirroring_cache:
-                cached_alerts = []
-                cached_alerts.append(alert_dict)
-                context_cache["mirroring_cache"] = cached_alerts
+                context_cache["mirroring_cache"] = [alert_dict]
                 demisto.debug(
                     f"mirroring cache in the first condition : {context_cache}"
                 )
                 set_integration_context(context_cache)
             else:
-                new_context = mirroring_cache.append(alert_dict)
-                set_integration_context(new_context)
+                mirroring_cache.append(alert_dict)
+                set_integration_context(mirroring_cache)
             return None
     else:
         # If the alert id is in the context, we will get the alert from the context
@@ -891,7 +889,8 @@ def get_remote_data_command(
 
         # Delete the object from the context
         del context_cache["mirroring_cache"][index]
-
+        set_integration_context(context_cache)
+        
         return GetRemoteDataResponse(
             mirrored_object=alert_object["alert"], entries=alert_object["entries"]
         )
