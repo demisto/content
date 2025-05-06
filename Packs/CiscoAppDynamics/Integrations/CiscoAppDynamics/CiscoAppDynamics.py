@@ -84,6 +84,7 @@ class Client(BaseClient):
         Returns a valid access token, generating a new one if necessary.
         """
         if not self.token or not self.token_expiry or datetime.now(timezone.utc) >= self.token_expiry:
+            demisto.debug("Token not valid")
             return self.create_access_token()
         return self.token
 
@@ -434,6 +435,7 @@ def main() -> None:  # pragma: no cover
             last_run = create_empty_last_run(current_time)
         else:
             last_run = {log_type: datetime.fromisoformat(datetime_as_string) for log_type, datetime_as_string in last_run.items()}
+        demisto.debug(f"getLastRun return: Audit:{last_run[AUDIT]}, Health: {last_run[HEALTH_EVENT]}")
         if command == "test-module":
             return_results(test_module_command(client, last_run, events_type_to_fetch))
 
@@ -446,7 +448,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug("Sent events to XSIAM successfully")
-            next_run = {log_type: date.isoformat() for log_type, date in next_run.items()}
+            demisto.debug(f"setLastRun going to set: Audit:{next_run[AUDIT]}, Health: {next_run[HEALTH_EVENT]}")
             demisto.setLastRun(next_run)
             demisto.debug(f"Setting next run to {next_run}.")
         
