@@ -24,6 +24,8 @@
         {
             "id": "CommonPlaybooks",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -54,6 +56,7 @@
         {
             "id": "Core",
             "supportedModules": [
+                "C1",
                 "C3",
                 "X0",
                 "X1",
@@ -64,15 +67,6 @@
         },
         {
             "id": "CoreAlertFields",
-            "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS"
-            ]
-        },
-        {
-            "id": "CortexAttackSurfaceManagement",
             "supportedModules": [
                 "X1",
                 "X3",
@@ -215,6 +209,8 @@
         {
             "id": "rasterize",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
@@ -224,6 +220,8 @@
         {
             "id": "CortexResponseAndRemediation",
             "supportedModules": [
+                "C3",
+                "X0",
                 "X1",
                 "X3",
                 "X5",
