@@ -1,4 +1,4 @@
-The scrip blocks a list of IPs in supported integrations.
+The script blocks a list of IP addresses in supported integrations.
 
 ## Script Data
 
@@ -22,8 +22,7 @@ The scrip blocks a list of IPs in supported integrations.
 | auto_commit | Whether to commit the new rule. |
 | tag | The designated tag name for the IP. |
 | brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2". |
-| verbose | Whether to retrieve human readable entry for every command or only the final result. True means to retrieve human readable entry for every command. False means to human readable only for the final result. |
-
+| verbose | Whether to retrieve a human-readable entry for every command or only the final result. True retrieves a human-readable entry for every command. False retrieves a human-readable entry only for the final result. |
 
 ## Outputs
 
@@ -33,6 +32,5 @@ The scrip blocks a list of IPs in supported integrations.
 | --- | --- | --- |
 | BlockExternalIPResults.Message | A message concerning the result of the action. | String |
 | BlockExternalIPResults.Result | The result of the action Success or Failed. | String |
-| BlockExternalIPResults.Source | The name of the brand that was executed. | String |
-| BlockExternalIPResults.created_rule_name | The name of the created rule. | String |
-| BlockExternalIPResults.address_group | The address group. | String |
+| BlockExternalIPResults.Brand | The name of the brand that was executed. | String |
+| BlockExternalIPResults.IP | The IP that was blocked. | String |
