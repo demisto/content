@@ -54,7 +54,7 @@ def get_integrations_playbooks() -> None:
     accountName = incident.get('account')
     accountName = f"acc_{accountName}" if accountName != "" else ""
     enabledIntegrations = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": f"{accountName}/settings/integration/search",
             "body": {
