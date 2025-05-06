@@ -1804,7 +1804,7 @@ script:
       - contextPath: Ticket.Key
         description: The ticket key.
         type: String
-  dockerimage: demisto/btfl-soup:1.0.1.2129515
+  dockerimage: demisto/btfl-soup:1.0.1.3150379
   isfetch: true
   ismappable: true
   isremotesyncin: true
