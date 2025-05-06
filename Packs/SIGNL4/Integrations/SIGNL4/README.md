@@ -108,4 +108,4 @@ SIGNL4 alert closed
 
 This is how a SIGNL4 might look like in the mobile app:
 
-![SIGNL4 Alert](./../../doc_files/signl4-xsoar.png)
+![SIGNL4 Alert](../../doc_files/signl4-xsoar.png)
