@@ -12,7 +12,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Incident Response"
+    ],
     "useCases": [],
     "keywords": [
         "Incydr"
