@@ -73,7 +73,7 @@ Close a SIGNL4 alert.
 
 #### Base Command
 
-`signl4_close`
+`signl4_close_alert `
 
 #### Input
 
