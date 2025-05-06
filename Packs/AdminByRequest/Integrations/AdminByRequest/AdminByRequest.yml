@@ -103,7 +103,7 @@ script:
           required: false
           defaultvalue: 50000
         - description: "The UTC date or relative timestamp from where to start fetching incidents
-                      Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+                      Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd"
           name: first_fetch
           required: false
   isfetch: false
