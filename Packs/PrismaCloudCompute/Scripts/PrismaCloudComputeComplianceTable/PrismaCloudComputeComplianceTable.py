@@ -1,20 +1,19 @@
-import pandas
+import abc
+import enum
 
 import demistomock as demisto
-from CommonServerPython import *
-import enum
-import abc
+import pandas
 import pandas as pd
+from CommonServerPython import *
 
-
-INTEGRATION_NAME = 'PrismaCloudCompute'
-ISSUES_INPUT_PATH = 'EnrichedComplianceIssue'
+INTEGRATION_NAME = "PrismaCloudCompute"
+ISSUES_INPUT_PATH = "EnrichedComplianceIssue"
 
 
 class ComplianceObj(enum.Enum):
-    HOST = 'host'
-    CONTAINER = 'container'
-    IMAGE = 'image'
+    HOST = "host"
+    CONTAINER = "container"
+    IMAGE = "image"
 
 
 class ComplianceObject(abc.ABC):
@@ -22,14 +21,14 @@ class ComplianceObject(abc.ABC):
         self.object_type = object_type
         self.capitalized_type = object_type.value.capitalize()
         self.input_context_path = input_context_path
-        self.output_context_path = f'{INTEGRATION_NAME}.ComplianceTable.{self.capitalized_type}'
+        self.output_context_path = f"{INTEGRATION_NAME}.ComplianceTable.{self.capitalized_type}"
         self.output_context_id = output_context_id
 
     def get_input_context_id(self, obj: dict):
         try:
             return self._get_input_context_id(obj)
         except AttributeError as err:
-            raise Exception(f'Input context does not match provided type: {self.object_type.value}') from err
+            raise Exception(f"Input context does not match provided type: {self.object_type.value}") from err
 
     @abc.abstractmethod
     def _get_input_context_id(self, obj: dict):
@@ -41,14 +40,13 @@ class ComplianceObject(abc.ABC):
 
 
 class Host(ComplianceObject):
-
     def __init__(self):
-        super().__init__(object_type=ComplianceObj.HOST,
-                         input_context_path=f'{INTEGRATION_NAME}.ReportHostScan',
-                         output_context_id='Hostname')
+        super().__init__(
+            object_type=ComplianceObj.HOST, input_context_path=f"{INTEGRATION_NAME}.ReportHostScan", output_context_id="Hostname"
+        )
 
     def _get_input_context_id(self, obj: dict):
-        return obj.get('hostname')
+        return obj.get("hostname")
 
     def get_data(self, input_data: dict, identifier: str, issues: list) -> dict:
         """Get the host data as needed in the table.
@@ -61,28 +59,29 @@ class Host(ComplianceObject):
         Returns:
             (dict) The host data as needed in the table.
         """
-        compliance_distribution = input_data.get('complianceDistribution')
-        cloud_metadata = input_data.get('cloudMetadata')
-        cloud_metadata.pop('labels', None) if cloud_metadata else None
+        compliance_distribution = input_data.get("complianceDistribution")
+        cloud_metadata = input_data.get("cloudMetadata")
+        cloud_metadata.pop("labels", None) if cloud_metadata else None
 
         host_data = {
             self.output_context_id: identifier,
-            'ComplianceIssues': issues,
-            'ComplianceDistribution': compliance_distribution,
-            'CloudMetaData': cloud_metadata
+            "ComplianceIssues": issues,
+            "ComplianceDistribution": compliance_distribution,
+            "CloudMetaData": cloud_metadata,
         }
         return host_data
 
 
 class Container(ComplianceObject):
-
     def __init__(self):
-        super().__init__(object_type=ComplianceObj.CONTAINER,
-                         input_context_path=f'{INTEGRATION_NAME}.ContainersScanResults',
-                         output_context_id='ContainerID')
+        super().__init__(
+            object_type=ComplianceObj.CONTAINER,
+            input_context_path=f"{INTEGRATION_NAME}.ContainersScanResults",
+            output_context_id="ContainerID",
+        )
 
     def _get_input_context_id(self, obj: dict):
-        return obj.get('info', {}).get('id')
+        return obj.get("info", {}).get("id")
 
     def get_data(self, input_data: dict, identifier: str, issues: list) -> dict:
         """Get the container data as needed in the table.
@@ -95,33 +94,34 @@ class Container(ComplianceObject):
         Returns:
             (dict) The container data as needed in the table.
         """
-        container_info = input_data.get('info', {})
-        compliance_dist = container_info.get('complianceDistribution')
-        image_name = container_info.get('imageName')
-        cloud_metadata = container_info.get('cloudMetadata', {})
-        cloud_metadata.pop('labels', None)
-        hostname = input_data.get('hostname', {})
+        container_info = input_data.get("info", {})
+        compliance_dist = container_info.get("complianceDistribution")
+        image_name = container_info.get("imageName")
+        cloud_metadata = container_info.get("cloudMetadata", {})
+        cloud_metadata.pop("labels", None)
+        hostname = input_data.get("hostname", {})
 
         container_data = {
             self.output_context_id: identifier,
-            'ComplianceIssues': issues,
-            'ComplianceDistribution': compliance_dist,
-            'Hostname': hostname,
-            'ImageName': image_name,
-            'CloudMetaData': cloud_metadata
+            "ComplianceIssues": issues,
+            "ComplianceDistribution": compliance_dist,
+            "Hostname": hostname,
+            "ImageName": image_name,
+            "CloudMetaData": cloud_metadata,
         }
         return container_data
 
 
 class Image(ComplianceObject):
-
     def __init__(self):
-        super().__init__(object_type=ComplianceObj.IMAGE,
-                         input_context_path=f'{INTEGRATION_NAME}.ReportsImagesScan',
-                         output_context_id='ImageID')
+        super().__init__(
+            object_type=ComplianceObj.IMAGE,
+            input_context_path=f"{INTEGRATION_NAME}.ReportsImagesScan",
+            output_context_id="ImageID",
+        )
 
     def _get_input_context_id(self, obj: dict):
-        return obj.get('id')
+        return obj.get("id")
 
     def get_data(self, input_data: dict, identifier: str, issues: list) -> dict:
         """Get the image data as needed in the table.
@@ -134,20 +134,20 @@ class Image(ComplianceObject):
         Returns:
             (dict) The image data as needed in the table.
         """
-        compliance_dist = input_data.get('complianceDistribution')
-        hosts = list(input_data.get('hosts', {}).keys())
-        instances_data = input_data.get('instances', [])
-        image_instances = [instance_data.get('image') for instance_data in instances_data]
-        cloud_metadata = input_data.get('cloudMetadata', {})
-        cloud_metadata.pop('labels', {})
+        compliance_dist = input_data.get("complianceDistribution")
+        hosts = list(input_data.get("hosts", {}).keys())
+        instances_data = input_data.get("instances", [])
+        image_instances = [instance_data.get("image") for instance_data in instances_data]
+        cloud_metadata = input_data.get("cloudMetadata", {})
+        cloud_metadata.pop("labels", {})
 
         image_data = {
             self.output_context_id: identifier,
-            'ComplianceIssues': issues,
-            'ComplianceDistribution': compliance_dist,
-            'Hosts': hosts,
-            'ImageInstances': image_instances,
-            'CloudMetaData': cloud_metadata
+            "ComplianceIssues": issues,
+            "ComplianceDistribution": compliance_dist,
+            "Hosts": hosts,
+            "ImageInstances": image_instances,
+            "CloudMetaData": cloud_metadata,
         }
         return image_data
 
@@ -175,7 +175,7 @@ def get_input_object_list(context_data: dict, compliance_obj: ComplianceObject) 
     return [input_objects]
 
 
-def get_output_object_list(compliance_obj: ComplianceObject, grid_id: str = '') -> tuple[list, list]:
+def get_output_object_list(compliance_obj: ComplianceObject, grid_id: str = "") -> tuple[list, list]:
     """Get the already present resource list in the table.
 
     Args:
@@ -193,7 +193,7 @@ def get_output_object_list(compliance_obj: ComplianceObject, grid_id: str = '') 
 
     else:
         context_data = demisto.context()
-        compliance_table_context = context_data.get(f'{INTEGRATION_NAME}', {}).get('ComplianceTable', {})
+        compliance_table_context = context_data.get(f"{INTEGRATION_NAME}", {}).get("ComplianceTable", {})
         output_objects = compliance_table_context.get(compliance_obj.capitalized_type, [])
         output_id = compliance_obj.output_context_id
 
@@ -218,25 +218,29 @@ def update_output_obj_with_issues(compliance_obj: ComplianceObject, input_obj_id
     output_obj_index = output_objs_ids.index(input_obj_id)
     output_obj = output_objs[output_obj_index]
 
-    previous_issues = output_obj.get('ComplianceIssues', [])
+    previous_issues = output_obj.get("ComplianceIssues", [])
     previous_issues = previous_issues if type(previous_issues) is list else [previous_issues]
     non_duplicated_issues = [issue for issue in issues if issue not in previous_issues]
     if non_duplicated_issues:
-        demisto.debug(f"Updating {compliance_obj.object_type.value} in id {input_obj_id} with new issues: "
-                      f"{non_duplicated_issues}")
+        demisto.debug(
+            f"Updating {compliance_obj.object_type.value} in id {input_obj_id} with new issues: {non_duplicated_issues}"
+        )
         new_issues_list = previous_issues + non_duplicated_issues
-        output_obj.update({'ComplianceIssues': new_issues_list})
+        output_obj.update({"ComplianceIssues": new_issues_list})
         output_id_path = compliance_obj.output_context_id
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': output_obj,
-            'HumanReadable': tableToMarkdown(f'Updating {compliance_obj.object_type.value} ({input_obj_id}) with new '
-                                             f'compliance issues',
-                                             non_duplicated_issues,
-                                             'Compliance Issue'),
-            'EntryContext': {f"{context_key}(val.{output_id_path} == obj.{output_id_path})": output_obj}
-        })
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["json"],
+                "Contents": output_obj,
+                "HumanReadable": tableToMarkdown(
+                    f"Updating {compliance_obj.object_type.value} ({input_obj_id}) with new compliance issues",
+                    non_duplicated_issues,
+                    "Compliance Issue",
+                ),
+                "EntryContext": {f"{context_key}(val.{output_id_path} == obj.{output_id_path})": output_obj},
+            }
+        )
 
 
 def update_context_data(all_object_type_data: list, output_objs_to_append: dict, compliance_obj: ComplianceObject) -> None:
@@ -264,12 +268,12 @@ def turn_pd_grid_to_context_table(pd_grid: pandas.DataFrame) -> list:
     Returns: (list) of dicts of data inside the pd_grid provided.
     """
     context_table = []
-    for record in pd_grid.to_dict(orient='records'):
+    for record in pd_grid.to_dict(orient="records"):
         new_record_dict = {}
         for record_key, record_value in record.items():
             if record_value and (isinstance(record_value, dict | list) or pd.notnull(record_value)):
                 if isinstance(record_value, dict):
-                    str_record_value = "\n".join(f'{dict_key}: {dict_value}' for dict_key, dict_value in record_value.items())
+                    str_record_value = "\n".join(f"{dict_key}: {dict_value}" for dict_key, dict_value in record_value.items())
                 elif isinstance(record_value, list):
                     str_record_value = "\n\n".join(record_value)
                 else:
@@ -280,8 +284,9 @@ def turn_pd_grid_to_context_table(pd_grid: pandas.DataFrame) -> list:
     return context_table
 
 
-def update_grid_table(all_new_data: list, output_objs_to_append: dict,
-                      compliance_obj: ComplianceObject, grid_id: str, current_table: list) -> None:
+def update_grid_table(
+    all_new_data: list, output_objs_to_append: dict, compliance_obj: ComplianceObject, grid_id: str, current_table: list
+) -> None:
     """Update grid in the incident context data.
 
     Args:
@@ -291,19 +296,21 @@ def update_grid_table(all_new_data: list, output_objs_to_append: dict,
         grid_id (str): The grid id to update.
         current_table (list): The already present table in the incident.
     """
-    demisto.debug(f"Updating grid {grid_id} table with all new:\n{all_new_data}\n"
-                  f"output_objs:\n{output_objs_to_append}\ncurrent table is:\n{current_table}")
+    demisto.debug(
+        f"Updating grid {grid_id} table with all new:\n{all_new_data}\n"
+        f"output_objs:\n{output_objs_to_append}\ncurrent table is:\n{current_table}"
+    )
     current_df = pd.DataFrame(current_table) if current_table else pd.DataFrame()
     demisto.debug(f"Current dataframe {current_df}")
 
     out_id = compliance_obj.output_context_id.lower()
     for id_to_update in output_objs_to_append:
-        previous_issues = current_df.loc[current_df[out_id] == id_to_update, 'complianceissues'].iloc[0]
+        previous_issues = current_df.loc[current_df[out_id] == id_to_update, "complianceissues"].iloc[0]
         issues = output_objs_to_append[id_to_update]
         non_duplicated_issues = [issue for issue in issues if issue not in previous_issues]
         if non_duplicated_issues:
             merged_issue_list = previous_issues + "\n\n" + "\n\n".join(non_duplicated_issues)
-            current_df.loc[current_df[out_id] == id_to_update, 'complianceissues'] = merged_issue_list
+            current_df.loc[current_df[out_id] == id_to_update, "complianceissues"] = merged_issue_list
 
     new_grid = pd.concat([pd.DataFrame(all_new_data), current_df])
 
@@ -315,11 +322,14 @@ def update_grid_table(all_new_data: list, output_objs_to_append: dict,
     demisto.debug(f"New table for context: {context_table}")
 
     # Execute automation 'setIncident` which change the Context data in the incident
-    demisto.executeCommand("setIncident", {
-        'customFields': {
-            grid_id: context_table,
+    demisto.executeCommand(
+        "setIncident",
+        {
+            "customFields": {
+                grid_id: context_table,
+            },
         },
-    })
+    )
 
 
 def create_issue_record(issue_obj: dict):
@@ -327,8 +337,14 @@ def create_issue_record(issue_obj: dict):
     return f"{issue_obj.get('id')} ({issue_obj.get('severity')} | {issue_obj.get('type')}) - {issue_obj.get('title')}"
 
 
-def categorize_issue_in_object(issue: str, input_obj: dict, compliance_obj: ComplianceObject,
-                               output_objs_ids: list, output_objs_to_create: dict, output_objs_to_append: dict) -> None:
+def categorize_issue_in_object(
+    issue: str,
+    input_obj: dict,
+    compliance_obj: ComplianceObject,
+    output_objs_ids: list,
+    output_objs_to_create: dict,
+    output_objs_to_append: dict,
+) -> None:
     """Categorize the new issue information based on if the object is new or old.
 
     WARNING: Mutates output_objs_to_create and output_objs_to_append.
@@ -346,12 +362,9 @@ def categorize_issue_in_object(issue: str, input_obj: dict, compliance_obj: Comp
     if input_obj_id not in output_objs_ids:
         demisto.debug(f"Got new {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
         if input_obj_id in output_objs_to_create:
-            output_objs_to_create[input_obj_id]['issues'].append(issue)
+            output_objs_to_create[input_obj_id]["issues"].append(issue)
         else:
-            output_objs_to_create[input_obj_id] = {
-                'input_obj': input_obj,
-                'issues': [issue]
-            }
+            output_objs_to_create[input_obj_id] = {"input_obj": input_obj, "issues": [issue]}
     else:
         demisto.debug(f"Got old {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
         if input_obj_id in output_objs_to_append:
@@ -360,7 +373,7 @@ def categorize_issue_in_object(issue: str, input_obj: dict, compliance_obj: Comp
             output_objs_to_append[input_obj_id] = [issue]
 
 
-def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key: str, grid_id: str = ''):
+def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key: str, grid_id: str = ""):
     """Go over enriched issues in the context data and update the output table.
 
     Args:
@@ -385,16 +398,19 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
         demisto.debug(f"Got {len(input_objs)} {compliance_obj.object_type.value} for issue {issue}")
 
         for input_obj in input_objs:
-            categorize_issue_in_object(issue, input_obj, compliance_obj, output_objs_ids, output_objs_to_create,
-                                       output_objs_to_append)
+            categorize_issue_in_object(
+                issue, input_obj, compliance_obj, output_objs_ids, output_objs_to_create, output_objs_to_append
+            )
 
     demisto.debug(f"The new objects to create are {list(output_objs_to_create.keys())}. Creating")
 
     all_object_type_data = []
     for obj_to_create_id in output_objs_to_create:
-        output_context_data = compliance_obj.get_data(output_objs_to_create[obj_to_create_id]['input_obj'],
-                                                      obj_to_create_id,
-                                                      output_objs_to_create[obj_to_create_id]['issues'])
+        output_context_data = compliance_obj.get_data(
+            output_objs_to_create[obj_to_create_id]["input_obj"],
+            obj_to_create_id,
+            output_objs_to_create[obj_to_create_id]["issues"],
+        )
 
         all_object_type_data.append(output_context_data)
 
@@ -407,21 +423,19 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
 
 
 def update_context_paths(demisto_args: dict):
-    compliance_obj = COMPLIANCE_OBJ_CLASS[demisto_args.get('resourceType', '').lower()]
-    return update_objects_by_issues(compliance_obj,
-                                    demisto_args.get('contextPath', ''),
-                                    demisto_args.get('gridID', ''))
+    compliance_obj = COMPLIANCE_OBJ_CLASS[demisto_args.get("resourceType", "").lower()]
+    return update_objects_by_issues(compliance_obj, demisto_args.get("contextPath", ""), demisto_args.get("gridID", ""))
 
 
 def main():  # pragma: no cover
     try:
         return_results(update_context_paths(demisto_args=demisto.args()))
     except Exception as ex:
-        return_error(f'Failed to execute PrismaCloudComputeComplianceTable. Error: {str(ex)}')
+        return_error(f"Failed to execute PrismaCloudComputeComplianceTable. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

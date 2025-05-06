@@ -49,10 +49,6 @@ def test_json_to_md(alerts_fields):
         ),
     ],
 )
-def test_read_context_from_rsa_netwitness_alerts(
-    mocker, alerts_incident, expected_results
-):
-    mocker.patch(
-        "SetRSANetWitnessAlertsMD.demisto.incident", return_value=alerts_incident
-    )
+def test_read_context_from_rsa_netwitness_alerts(mocker, alerts_incident, expected_results):
+    mocker.patch("SetRSANetWitnessAlertsMD.demisto.incident", return_value=alerts_incident)
     assert read_context_from_rsa_netwitness_alerts() == expected_results

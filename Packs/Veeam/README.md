@@ -21,11 +21,11 @@ The content pack includes:
   - Start Instance VM Recovery automatically
   - Resolve alarms triggered by Veeam ONE
 
-# Documentation
+## Documentation
 
 [Veeam Helpcenter User Guide](https://helpcenter.veeam.com/docs/security_plugins_xsoar/guide/)
 
-# Screenshots
+## Screenshots
 
 ![The XSOAR Dashboard](./doc_files/Veeam_XSOAR_Dashboard.png)
 
@@ -46,7 +46,9 @@ It includes:
 - Multiple data source support.
 
 ***Information:***\
-The Monitoring Dashboards and data processing will become available at the marketplace after pending Cortex XSIAM platform updates have been implemented. To manually download and import the dashboards, reports, and correlation rules please follow [this](https://www.veeam.com/download_add_packs/vmware-esx-backup/palo-alto-xsiam-monitoring/) link.
+Consider the following:
+- Correlation rules are not included in the content pack. To download and import them manually, please follow [this](https://www.veeam.com/download_add_packs/vmware-esx-backup/palo-alto-xsiam-monitoring/) link.
+- The app supports Palo Alto Cortex XSIAM 2.5 and later.
 
 ### Automation:
 Using the data available in Palo Alto Networks Cortex XSIAM you can leverage built-in Veeam playbooks such as:
@@ -56,7 +58,7 @@ Using the data available in Palo Alto Networks Cortex XSIAM you can leverage bui
 - Resolve alarms triggered by Veeam ONE
 
 
-# Documentation
+## Documentation
 
 [Veeam Helpcenter User Guide for XSIAM Monitoring](https://helpcenter.veeam.com/docs/security_plugins_xsiam/guide/)
 
@@ -64,7 +66,7 @@ The documentation also includes examples of correlation rules for Veeam security
 
 [Veeam Helpcenter User Guide for XSOAR Automation](https://helpcenter.veeam.com/docs/security_plugins_xsiam/guide/)
 
-# Screenshots
+## Screenshots
 
 ![The Security Dashboard](./doc_files/Veeam_Security_Activities_Dashboard_image.png)
 

@@ -1,11 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-title_to_profile_id = {
-    "sales": "123",
-    "marketing": "234",
-    "engineer": "345"
-}
+title_to_profile_id = {"sales": "123", "marketing": "234", "engineer": "345"}
 
 
 def main():
@@ -23,5 +19,5 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

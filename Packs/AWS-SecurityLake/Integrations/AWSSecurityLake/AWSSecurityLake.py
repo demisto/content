@@ -1,8 +1,9 @@
+from datetime import datetime
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-from datetime import datetime
+from CommonServerUserPython import *
 
 AWS_SERVICE_NAME = "athena"
 AWS_SERVICE_NAME_LAKE = "securitylake"
