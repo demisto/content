@@ -65,7 +65,7 @@ EVENT_TYPES: Dict[str, EventType] = {
         take=1000,
         source_log_type="request",
         time_field="requestTime",
-        default_params={"wantscandetails":1}
+        default_params={"wantscandetails": 1}
     )
 }
 
@@ -152,7 +152,6 @@ def validate_fetch_events_params(last_run: dict, event_type: EventType, use_last
             **event_type.default_params,
             **date_params
         }
-
 
     take = min(take, event_type.max_fetch)
     params["take"] = take
@@ -300,7 +299,8 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, last_run: dict, fetch_events_types: list[EventType], use_last_run_as_params : bool=False) -> tuple[list[dict[str, Any]], dict]:
+def fetch_events(client: Client, last_run: dict, fetch_events_types: list[EventType], use_last_run_as_params: bool = False) -> \
+tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AdminByRequest entity.
 
      Args:
