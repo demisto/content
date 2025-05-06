@@ -1926,3 +1926,107 @@ def test_detection_type_in_full_request_flow(mocker):
         assert variables['filterBy']['type']['equals'] == [None] or variables['filterBy']['type']['equals'] == []
 
 
+def test_validate_incident_type():
+    """Test validate_incident_type function"""
+    from WizDefend import validate_incident_type
+
+    # Test with valid incident type
+    result = validate_incident_type("WizDefend Detection")
+    assert result.is_valid is True
+    assert result.value == "WizDefend Detection"
+
+    # Test with valid incident type in different case
+    result = validate_incident_type("wizdefend detection")
+    assert result.is_valid is False
+
+    # Test with no incident type (should return default)
+    result = validate_incident_type(None)
+    assert result.is_valid is False
+
+    # Test with invalid incident type
+    result = validate_incident_type("Some Other Type")
+    assert result.is_valid is False
+    assert "Invalid incident type" in result.error_message
+
+
+def test_validate_first_fetch():
+    """Test validate_first_fetch function"""
+    from WizDefend import validate_first_fetch, MAX_DAYS_FIRST_FETCH_DETECTIONS, DEFAULT_FETCH_BACK
+
+    # Test with valid duration in hours
+    result = validate_first_fetch("12 hours")
+    assert result.is_valid is True
+    assert result.value == "12 hours"
+
+    # Test with valid duration in days
+    result = validate_first_fetch("2 days")
+    assert result.is_valid is True
+    assert result.value == "2 days"
+
+    # Test with valid duration in minutes
+    result = validate_first_fetch("30 minutes")
+    assert result.is_valid is True
+    assert result.value == "30 minutes"
+
+    # Test with no duration (should return default)
+    result = validate_first_fetch(None)
+    assert result.is_valid is False
+
+    # Test with empty string
+    result = validate_first_fetch("")
+    assert result.is_valid is False
+
+    # Test with invalid format
+    result = validate_first_fetch("not a duration")
+    assert result.is_valid is False
+    assert "Invalid first fetch format" in result.error_message
+
+    # Test with invalid unit
+    result = validate_first_fetch("5 years")
+    assert result.is_valid is False
+    assert "Invalid first fetch format" in result.error_message
+
+    # Test exact maximum days
+    result = validate_first_fetch(f"{MAX_DAYS_FIRST_FETCH_DETECTIONS} days")
+    assert result.is_valid is True
+    assert result.value == f"{MAX_DAYS_FIRST_FETCH_DETECTIONS} days"
+
+    # Test exceeding maximum days
+    result = validate_first_fetch(f"{MAX_DAYS_FIRST_FETCH_DETECTIONS + 1} days")
+    assert result.is_valid is False
+    assert "Maximum allowed is" in result.error_message
+
+    # Test exact maximum hours
+    max_hours = MAX_DAYS_FIRST_FETCH_DETECTIONS * 24
+    result = validate_first_fetch(f"{max_hours} hours")
+    assert result.is_valid is True
+    assert result.value == f"{max_hours} hours"
+
+    # Test exceeding maximum hours
+    result = validate_first_fetch(f"{max_hours + 1} hours")
+    assert result.is_valid is False
+    assert "Maximum allowed is" in result.error_message
+
+    # Test exact maximum minutes
+    max_minutes = MAX_DAYS_FIRST_FETCH_DETECTIONS * 24 * 60
+    result = validate_first_fetch(f"{max_minutes} minutes")
+    assert result.is_valid is True
+    assert result.value == f"{max_minutes} minutes"
+
+    # Test exceeding maximum minutes
+    result = validate_first_fetch(f"{max_minutes + 1} minutes")
+    assert result.is_valid is False
+    assert "Maximum allowed is" in result.error_message
+
+    # Test singular units
+    result = validate_first_fetch("1 day")
+    assert result.is_valid is True
+    assert result.value == "1 day"
+
+    result = validate_first_fetch("1 hour")
+    assert result.is_valid is True
+    assert result.value == "1 hour"
+
+    result = validate_first_fetch("1 minute")
+    assert result.is_valid is True
+    assert result.value == "1 minute"

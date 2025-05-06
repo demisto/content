@@ -1,3 +1,4 @@
+import copy
 import uuid
 import traceback
 
@@ -5,14 +6,17 @@ from CommonServerPython import *
 import demistomock as demisto
 from urllib import parse
 
+WIZ_VERSION = '1.0.0'
+WIZ_DEFEND = 'wiz_defend'
+WIZ_DEFEND_INCIDENT_TYPE = 'WizDefend Detection'
+INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
+
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 WIZ_API_LIMIT = 250
-WIZ_DEFEND = 'wiz_defend'
 API_MAX_FETCH = 1000
-
-WIZ_VERSION = '1.0.0'
-INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
 MAX_DAYS_FIRST_FETCH_DETECTIONS = 5
+FETCH_INTERVAL_MINIMUM_MIN = 5
+FETCH_INTERVAL_MAXIMUM_MIN = 600
 DEFAULT_FETCH_BACK = '1 day'
 
 
@@ -68,6 +72,9 @@ class DemistoParams:
     MIRROR_ID = 'dbotMirrorId'
     AFTER_TIME = 'after_time'
     URL = 'url'
+    IS_FETCH = 'isFetch'
+    INCIDENT_FETCH_INTERVAL = 'incidentFetchInterval'
+    INCIDENT_TYPE = 'incidentType'
 
 
 class WizApiVariables:
@@ -523,7 +530,6 @@ query Detections($filterBy: DetectionFilters, $first: Int, $after: String, $orde
 """
 
 PULL_DETECTIONS_VARIABLES = {
-    WizApiVariables.FIRST: WIZ_API_LIMIT,
     WizApiVariables.ORDER_BY: {WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
                                WizApiVariables.DIRECTION: WizOrderDirection.ASC}
 }
@@ -616,15 +622,13 @@ def query_api(query, variables, paginate=True):
         demisto.info("No detection(/s) available to fetch.")
         entries = {}
 
-    while page_info[WizApiResponse.HAS_NEXT_PAGE]:
+    while page_info[WizApiResponse.HAS_NEXT_PAGE] and paginate:
         demisto.debug(f"Successfully pulled {len(entries)} detections")
 
         variables[WizApiVariables.AFTER] = page_info[WizApiResponse.END_CURSOR]
         new_entries, page_info = get_entries(query, variables)
         if new_entries is not None:
             entries += new_entries
-        if not paginate:
-            break
         if len(entries) >= API_MAX_FETCH:
             demisto.info(f"Reached the maximum fetch limit of {API_MAX_FETCH} detections.\n"
                          f"Some detections will not be processed in this fetch cycle.\n"
@@ -706,29 +710,96 @@ def get_last_run_time():
     return last_run
 
 
+def extract_params_from_integration_settings(advanced_params=False):
+    demisto_params = demisto.params()
+
+    integration_setting_params = {
+        WizInputParam.SEVERITY: demisto_params.get(WizInputParam.SEVERITY),
+        WizInputParam.TYPE: demisto_params.get(WizInputParam.TYPE),
+        WizInputParam.PLATFORM: demisto_params.get(WizInputParam.PLATFORM),
+        WizInputParam.ORIGIN: demisto_params.get(WizInputParam.ORIGIN),
+        WizInputParam.SUBSCRIPTION: demisto_params.get(WizInputParam.SUBSCRIPTION)
+    }
+
+    if advanced_params:
+        for demisto_param in [DemistoParams.FIRST_FETCH, DemistoParams.INCIDENT_FETCH_INTERVAL,
+                              DemistoParams.INCIDENT_TYPE, DemistoParams.IS_FETCH]:
+            integration_setting_params[demisto_param] = demisto_params.get(demisto_param)
+
+    return integration_setting_params
+
+
+def check_advanced_params(integration_settings_params):
+    error_message = ""
+    are_params_valid = True
+
+    is_fetch = integration_settings_params.get(DemistoParams.IS_FETCH)
+    first_fetch = integration_settings_params.get(DemistoParams.FIRST_FETCH)
+    incident_fetch_interval = integration_settings_params.get(DemistoParams.INCIDENT_FETCH_INTERVAL)
+    incident_type = integration_settings_params.get(DemistoParams.INCIDENT_TYPE)
+
+    if is_fetch:
+        first_fetch_validation = validate_first_fetch(first_fetch)
+        if not first_fetch_validation.is_valid:
+            are_params_valid = False
+            error_message += f"{first_fetch_validation.error_message}\n"
+
+        fetch_interval_validation = validate_fetch_interval(incident_fetch_interval)
+        if not fetch_interval_validation.is_valid:
+            are_params_valid = False
+            error_message += f"{fetch_interval_validation.error_message}\n"
+
+        incident_type_validation = validate_incident_type(incident_type)
+        if not incident_type_validation.is_valid:
+            are_params_valid = False
+            error_message += f"{incident_type_validation.error_message}\n"
+
+    return are_params_valid, error_message
+
+
+def test_module():
+    """
+    Test the connection to the Wiz API and validate the params
+    """
+    integration_settings_params = extract_params_from_integration_settings(advanced_params=True)
+
+    are_params_valid, error_message = check_advanced_params(integration_settings_params)
+    if not are_params_valid:
+        demisto.results(error_message)
+    else:
+        demisto.info("Advanced parameters are valid")
+
+    wiz_detection = get_filtered_detections(
+        detection_type=integration_settings_params[WizInputParam.TYPE],
+        detection_platform=integration_settings_params[WizInputParam.PLATFORM],
+        severity=integration_settings_params[WizInputParam.SEVERITY],
+        detection_origin=integration_settings_params[WizInputParam.ORIGIN],
+        detection_subscription=integration_settings_params[WizInputParam.SUBSCRIPTION],
+        api_limit=1,
+        paginate=False
+    )
+
+    if WizApiResponse.ERRORS not in wiz_detection:
+        demisto.results('ok')
+    else:
+        demisto.results(wiz_detection)
+
+
 def fetch_incidents():
     """
     Fetch all Detections (OOB XSOAR Fetch)
     """
-    demisto_params = demisto.params()
-
+    integration_settings_params = extract_params_from_integration_settings()
     last_run = get_last_run_time()
-
-    # Extract configuration parameters from integration settings
-    severity = demisto_params.get(WizInputParam.SEVERITY)
-    detection_type = demisto_params.get(WizInputParam.TYPE)
-    detection_platform = demisto_params.get(WizInputParam.PLATFORM)
-    detection_origin = demisto_params.get(WizInputParam.ORIGIN)
-    detection_subscription = demisto_params.get(WizInputParam.SUBSCRIPTION)
 
     api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
 
     wiz_detections = get_filtered_detections(
-        detection_type=detection_type,
-        detection_platform=detection_platform,
-        severity=severity,
-        detection_origin=detection_origin,
-        detection_subscription=detection_subscription,
+        detection_type=integration_settings_params[WizInputParam.TYPE],
+        detection_platform=integration_settings_params[WizInputParam.PLATFORM],
+        severity=integration_settings_params[WizInputParam.SEVERITY],
+        detection_origin=integration_settings_params[WizInputParam.ORIGIN],
+        detection_subscription=integration_settings_params[WizInputParam.SUBSCRIPTION],
         after_time=last_run
     )
 
@@ -801,7 +872,7 @@ def get_detection_url(detection):
 
 def validate_first_fetch_timestamp(first_fetch_param):
     """
-    Validates if the first fetch timestamp is within the 14-day limit
+    Validates if the first fetch timestamp is within the limit
 
     Args:
         first_fetch_param (str): The first fetch parameter (e.g., "2 days", "30 days")
@@ -825,7 +896,7 @@ def validate_first_fetch_timestamp(first_fetch_param):
 
         # Validate that first fetch is not more than MAX_DAYS_FIRST_FETCH_DETECTIONS
         if first_fetch_date < max_days_back:
-            # Instead of erroring out, set it to the maximum allowed (14 days)
+            # Instead of erroring out, set it to the maximum allowed
             return True, None, max_days_back
 
         return True, None, first_fetch_date
@@ -960,14 +1031,15 @@ def validate_creation_minutes_back(minutes_back):
         ValidationResponse: Response with validation results and minutes value
     """
     response = ValidationResponse.create_success()
-    response.minutes_value = 10
+    response.minutes_value = FETCH_INTERVAL_MINIMUM_MIN
 
     if not minutes_back:
         return response
-    error_msg = f"{WizInputParam.CREATION_MINUTES_BACK} must be a valid integer between 10 and 600."
+    error_msg = f"{WizInputParam.CREATION_MINUTES_BACK} must be a valid integer between " \
+                f"{FETCH_INTERVAL_MINIMUM_MIN} and {FETCH_INTERVAL_MAXIMUM_MIN}."
     try:
         minutes_value = int(minutes_back)
-        if 10 <= minutes_value <= 600:
+        if FETCH_INTERVAL_MINIMUM_MIN <= minutes_value <= FETCH_INTERVAL_MAXIMUM_MIN:
             response.minutes_value = minutes_value
             return response
         else:
@@ -975,6 +1047,100 @@ def validate_creation_minutes_back(minutes_back):
     except ValueError:
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
+
+
+def validate_fetch_interval(fetch_interval):
+    """
+    Validates if the creation_minutes_back parameter is valid
+
+    Args:
+        fetch_interval (int): Number of minutes back to retrieve detections
+
+    Returns:
+        ValidationResponse: Response with validation results and minutes value
+    """
+    response = ValidationResponse.create_success()
+    response.minutes_value = FETCH_INTERVAL_MINIMUM_MIN
+
+    if fetch_interval and fetch_interval >= FETCH_INTERVAL_MINIMUM_MIN:
+        response.minutes_value = fetch_interval
+        return response
+
+    error_msg = f"Invalid Incidents Fetch Interval - It must be a valid integer " \
+                f"higher or equal than {FETCH_INTERVAL_MINIMUM_MIN}. Received {fetch_interval}."
+    return ValidationResponse.create_error(error_msg)
+
+
+def validate_incident_type(incident_type):
+    """
+    Validates if the incident type is set to WizDefend Detection
+
+    Args:
+        incident_type (str): The incident type to validate
+
+    Returns:
+        ValidationResponse: Response with validation results
+    """
+    if incident_type == WIZ_DEFEND_INCIDENT_TYPE:
+        return ValidationResponse.create_success(incident_type)
+    else:
+        error_msg = f"Invalid incident type: {incident_type}. Expected '{WIZ_DEFEND_INCIDENT_TYPE}'."
+        demisto.error(error_msg)
+        return ValidationResponse.create_error(error_msg)
+
+
+def validate_first_fetch(first_fetch):
+    """
+    Validates if the first fetch timestamp is in the correct format and within the maximum days limit
+
+    Args:
+        first_fetch (str): The first fetch parameter (e.g., "2 days", "12 hours")
+
+    Returns:
+        ValidationResponse: Response with validation results and time value
+    """
+    response = ValidationResponse.create_success()
+    error_msg = f"Invalid first fetch format: {first_fetch}. " \
+                f"Expected format is '<number> <time unit>' (e.g., '12 hours', '1 day')."
+
+    if not first_fetch:
+        demisto.error(error_msg)
+        return ValidationResponse.create_error(error_msg)
+
+    # Check for valid format and duration
+    pattern = r"^(\d+)\s(hours?|days?|minutes?)$"
+    match = re.match(pattern, first_fetch, re.IGNORECASE)
+
+    if not match:
+        demisto.error(error_msg)
+        return ValidationResponse.create_error(error_msg)
+
+    number = int(match.group(1))
+    unit = match.group(2).lower()
+
+    max_hours = MAX_DAYS_FIRST_FETCH_DETECTIONS * 24
+
+    # Check if the duration is within limits
+    if unit.startswith("minute"):
+        if number > (max_hours * 60):  # Maximum minutes
+            error_msg = f"First fetch duration too long: {first_fetch}. Maximum allowed is {MAX_DAYS_FIRST_FETCH_DETECTIONS} days " \
+                        f"({max_hours * 60} minutes)."
+            demisto.error(error_msg)
+            return ValidationResponse.create_error(error_msg)
+    elif unit.startswith("hour"):
+        if number > max_hours:  # Maximum hours
+            error_msg = f"First fetch duration too long: {first_fetch}. Maximum allowed is {MAX_DAYS_FIRST_FETCH_DETECTIONS} days " \
+                        f"({max_hours} hours)."
+            demisto.error(error_msg)
+            return ValidationResponse.create_error(error_msg)
+    elif unit.startswith("day"):
+        if number > MAX_DAYS_FIRST_FETCH_DETECTIONS:
+            error_msg = f"First fetch duration too long: {first_fetch}. Maximum allowed is {MAX_DAYS_FIRST_FETCH_DETECTIONS} days."
+            demisto.error(error_msg)
+            return ValidationResponse.create_error(error_msg)
+
+    response.value = first_fetch
+    return response
 
 
 def validate_severity(severity):
@@ -1570,7 +1736,7 @@ def apply_all_filters(variables, validated_values):
 def get_filtered_detections(detection_id=None, issue_id=None, detection_type=None, detection_platform=None,
                             detection_origin=None, detection_subscription=None, resource_id=None, severity=None,
                             creation_minutes_back=None, matched_rule=None, matched_rule_name=None, project_id=None,
-                            after_time=None, add_detection_url=True):
+                            after_time=None, add_detection_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
     """
     Retrieves Filtered Detections
 
@@ -1604,7 +1770,8 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
                  f"After time is {after_time}\n"
                  f"Matched rule is {matched_rule}\n"
                  f"Matched rule name is {matched_rule_name}\n"
-                 f"Project ID is {project_id}")
+                 f"Project ID is {project_id}\n"
+                 f"First is {api_limit}\n")
 
     # Create parameters dictionary for validation
     parameters_dict = {
@@ -1629,9 +1796,10 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         return error_message
 
     detection_variables = PULL_DETECTIONS_VARIABLES.copy()
+    detection_variables[WizApiVariables.FIRST] = api_limit
     detection_variables = apply_all_filters(detection_variables, validated_values)
 
-    wiz_detections = query_api(PULL_DETECTIONS_QUERY, detection_variables)
+    wiz_detections = query_api(PULL_DETECTIONS_QUERY, detection_variables, paginate)
 
     if add_detection_url:
         for detection in wiz_detections:
@@ -1692,18 +1860,9 @@ def main():
     set_api_endpoint(params.get(DemistoParams.API_ENDPOINT, ''))
     try:
         command = demisto.command()
-        if command == DemistoCommands.TEST_MODULE:
-            auth_token = get_token()
-            if 'error' not in auth_token:
-                test_response = query_api(PULL_DETECTIONS_QUERY, PULL_DETECTIONS_VARIABLES,
-                                          paginate=False)
 
-                if WizApiResponse.ERRORS not in test_response:
-                    demisto.results('ok')
-                else:
-                    demisto.results(test_response)
-            else:
-                demisto.results("Invalid token")
+        if command == DemistoCommands.TEST_MODULE:
+            test_module()
 
         elif command == DemistoCommands.FETCH_INCIDENTS:
             fetch_incidents()
