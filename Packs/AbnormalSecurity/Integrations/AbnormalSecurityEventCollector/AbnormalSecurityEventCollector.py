@@ -103,7 +103,7 @@ def get_list_threats(client: Client, after: str, before: str, next_page_number: 
         page_size = min(DEFAULT_PAGE_SIZE, FETCH_LIMIT - len(threats))
         demisto.debug(f"fetching events: epoch {next_page_number}, {page_size=}")
         params = assign_params(pageSize=page_size, filter=f"receivedTime gte {after} lte {before}", pageNumber=next_page_number)
-        demisto.debug(f"{params=}")
+        demisto.debug(f"calling list_threats with {params=}")
         res = client.list_threats(params)
         demisto.debug(f"fetched {len(res.get('threats'))} events")
         threats += res.get("threats")
