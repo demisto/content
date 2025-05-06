@@ -12,7 +12,7 @@ filter _raw_log !~= "^#.*"
 | alter quoted_fields = regextract(_raw_log, "\"(\S[^\"]+)") 
 
 // inits a character that would be used as a temporary field separator to build a field list 
-| alter field_separator = "#" 
+| alter field_separator = "###"
 
 // split the raw log into segments, using quotes as a segment delimiter 
 | alter log_segments = split(_raw_log, "\"")
@@ -55,7 +55,8 @@ filter _raw_log !~= "^#.*"
     sc_filter_result = arrayindex(field_list, 20), // Content filtering result: Denied, Proxied, or Observed 
     cs_categories = arrayindex(field_list, 21), // Content filtering category of the request URL
     x_virus_id = arrayindex(field_list, 22), // Identifier of a virus if one was detected.
-    s_ip = arrayindex(field_list, 23) // IP address of the appliance on which the client established its connection
+    s_ip = arrayindex(field_list, 23), // IP address of the appliance on which the client established its connection
+    r_ip = arrayindex(field_list, 24), // IP address of the destination
 
 | alter // post extraction processing 
     // check IP addresses formats 
@@ -63,6 +64,8 @@ filter _raw_log !~= "^#.*"
     c_ip_v6 = if(c_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", c_ip),
     s_ip_v4 = if(s_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", s_ip),
     s_ip_v6 = if(s_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", s_ip),
+    r_ip_v4 = if(r_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", r_ip),
+    r_ip_v6 = if(r_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", r_ip)
 
     // decode url-encoded spaces (%20) back to an ascii space   
     cs_username_decoded = replace(cs_username, "%20", " "),
@@ -95,6 +98,8 @@ filter _raw_log !~= "^#.*"
     xdm.source.ipv4 = c_ip_v4,
     xdm.source.ipv6 = c_ip_v6,
     xdm.target.port = to_integer(cs_uri_port),
+    xdm.target.ipv4 = r_ip_v4,
+    xdm.target.ipv6 = r_ip_v6,
     xdm.source.sent_bytes = to_integer(cs_bytes),
     xdm.source.user_agent = cs_user_agent,
     xdm.source.user.groups = if(cs_auth_group != null, arraycreate(cs_auth_group)),
