@@ -118,11 +118,11 @@ def filter_documents(documents: List[Dict[str, Union[str, Dict]]],
     if not documents or not timestamp or not ids:
         return documents
 
-    def get_timestamp(data: Dict[str, Union[str, Dict]]) -> Union[str, None]:
+    def get_timestamp(data: Dict[str, Union[str, Dict]]) -> Optional[str | dict[Any, Any] | None]:
         if data_type == 'events':
             return data.get('endTimestamp')
         else:
-            return data.get('context', {}).get('_timestamp')
+            return data.get('context', {}).get('_timestamp')  # type: ignore[union-attr]
     if get_timestamp(documents[-1]) != timestamp:
         return documents
     filtered_documents = []
@@ -135,7 +135,7 @@ def filter_documents(documents: List[Dict[str, Union[str, Dict]]],
 
 
 def get_latest_timestamp_and_ids(documents: List[Dict[str, Union[str, Dict]]],
-                                 data_type: str) -> tuple[Union[str, None], List[str]]:
+                                 data_type: str) -> tuple[Any, list[str | dict[Any, Any] | None]]:
     """
     Retrieves the latest timestamp and the corresponding ids from the given list of documents.
     args:
@@ -240,7 +240,7 @@ def fetch_data(client, last_run, data_type):
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     account_id: str = params.get('credentials', {}).get('identifier', '')
     api_key: str = params.get('credentials', {}).get('password', '')
