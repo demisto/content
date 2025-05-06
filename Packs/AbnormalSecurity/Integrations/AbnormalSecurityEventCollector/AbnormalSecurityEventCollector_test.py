@@ -43,7 +43,7 @@ def test_get_events():
 
     """
     client = Client(base_url="url")
-    messages, last_run = get_events(client, after="2022-05-02T18:44:38Z", next_page_number=1)
+    messages, last_run = get_events(client, after="2022-05-02T18:44:38Z", before="", next_page_number=1)
 
     assert messages == [
         {"abxMessageId": 3, "receivedTime": "2022-06-01T18:44:38Z", "threatId": "123456789-1", "toAddresses": []},

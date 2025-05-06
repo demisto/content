@@ -117,7 +117,7 @@ def get_list_threats(client: Client, after: str, before: str, next_page_number: 
     return (next_page_number, threats) if is_next_page else (1, threats)
 
 
-def main():
+def main():  # pragma: no cover
     # Args is always stronger. Get last run even stronger
     params = demisto.params()
 
