@@ -606,7 +606,7 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     adjusted_end_time = fixed_current_time - polling_lag
     expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lte {expected_end_time}"
+    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lt {expected_end_time}"
 
     # Call fetch_incidents with the polling lag
     _, _ = fetch_incidents(
