@@ -402,7 +402,7 @@ def main():
         elif command == "admin_by_request_get-events":
             command_results = get_events(client, args)
             events = command_results.outputs
-            if events and argToBoolean(args.get('should_push_events')):
+            if events and argToBoolean(args.get('should_push_events', False)):
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
