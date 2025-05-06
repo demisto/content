@@ -30,7 +30,7 @@ def test_ms_ip_string_to_list(ips, expected):
     assert MicrosoftGraphIdentityandAccess.ms_ip_string_to_list(ips) == expected
 
 
-@pytest.mark.parametrize("last,expected", [({"latest_detection_found": "2022-06-06"}, "2022-06-06")])
+@pytest.mark.parametrize("last,expected", [({"latest_alert_found": "2022-06-06"}, "2022-06-06")])
 def test_get_last_fetch_time(last, expected):
     """
     Given:
