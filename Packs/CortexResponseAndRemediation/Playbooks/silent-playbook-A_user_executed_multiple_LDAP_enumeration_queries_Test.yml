@@ -64,6 +64,7 @@ issilent: true
 marketplaces:
 - marketplacev2
 - platform
+fromversion: 8.9.0
 outputs: []
 starttaskid: '0'
 tags:
