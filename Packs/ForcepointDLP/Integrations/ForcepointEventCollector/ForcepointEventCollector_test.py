@@ -1059,7 +1059,7 @@ def test_validate_authentication_get_access_token(requests_mock, mock_client: Cl
     }
     context_patch.update(context)
     requests_mock.post(
-        f"https://test.com/dlp/rest/v1/auth/access-token",
+        "https://test.com/dlp/rest/v1/auth/access-token",
         json={
             "access_token": "new-access-token",
             "access_token_expires_in": 1800,

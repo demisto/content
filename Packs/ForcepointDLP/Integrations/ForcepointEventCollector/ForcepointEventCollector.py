@@ -138,18 +138,15 @@ class Classifier:
                 f"Field 'threshold_value_from' for classifier {self.classifier_name}"
                 " should be lower than field 'threshold_value_to'."
             )
-        if self.predefined not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for classifier {self.classifier_name} 'predefined': {self.predefined}."
-                " Must be 'true' or 'false'."
-            )
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Classifier":
+        """Create an object from a given dict."""
         return cls(**{k: v for k, v in data.items() if k in inspect.signature(cls).parameters})
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "Classifier":
+        """Create an object from given user arguments."""
         return cls(
             classifier_name=args.get("classifier_name"),
             predefined=args.get("classifier_predefined"),
@@ -161,6 +158,7 @@ class Classifier:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "classifier_name" in args:
             self.classifier_name = args["classifier_name"]
         if "classifier_predefined" in args:
@@ -189,19 +187,14 @@ class SeverityActionClassifier:
     action_plan: str
     dup_severity_type: str
 
-    def __post_init__(self) -> None:
-        if self.selected not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for severity classifier {self.number_of_matches}"
-                f" 'selected': {self.selected}. Must be 'true' or 'false'."
-            )
-
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SeverityActionClassifier":
+        """Create an object from a given dict."""
         return cls(**{k: v for k, v in data.items() if k in inspect.signature(cls).parameters})
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "SeverityActionClassifier":
+        """Create an object from given user arguments."""
         return cls(
             number_of_matches=arg_to_number(args.get("severity_classifier_number_of_matches")),
             selected=args.get("severity_classifier_selected"),
@@ -211,6 +204,7 @@ class SeverityActionClassifier:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "severity_classifier_number_of_matches" in args:
             self.number_of_matches = arg_to_number(args["severity_classifier_number_of_matches"])
         if "severity_classifier_selected" in args:
@@ -235,10 +229,6 @@ class Rule:
     classifiers: list[Classifier]
 
     def __post_init__(self) -> None:
-        if self.enabled not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for {self.rule_name} 'enabled': {self.enabled}. Must be 'true' or 'false'."
-            )
         if not self.classifiers:
             raise DemistoException(f"Rule '{self.rule_name}' must have at least one classifier.")
 
@@ -254,6 +244,7 @@ class Rule:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Rule":
+        """Create an object from a given dict."""
         classifiers = data.pop("classifiers", [])
         return cls(
             **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
@@ -262,6 +253,7 @@ class Rule:
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "Rule":
+        """Create an object from given user arguments."""
         return cls(
             rule_name=args.get("rule_name"),
             enabled=args.get("rule_enabled"),
@@ -271,6 +263,7 @@ class Rule:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "rule_name" in args:
             self.rule_name = args["rule_name"]
         if "rule_enabled" in args:
@@ -287,6 +280,14 @@ class Rule:
             self.classifiers.append(Classifier.from_args(args))
 
     def find_classifier(self, position: int) -> Classifier | None:
+        """Find a classifier by position.
+
+        Args:
+            position (int): The position of the classifier.
+
+        Returns:
+            Classifier | None: The classifier if found, otherwise None.
+        """
         for classifier in self.classifiers:
             if classifier.position == position:
                 return classifier
@@ -311,6 +312,7 @@ class SeverityActionException:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SeverityActionException":
+        """Create an object from a given dict."""
         classifier_details = data.pop("classifier_details", [])
         return cls(
             max_matches=data.get("max_matches"),
@@ -319,6 +321,7 @@ class SeverityActionException:
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "SeverityActionException":
+        """Create an object from given user arguments."""
         classifier_details: list[SeverityActionClassifier] = []
 
         for i in range(0, 3):
@@ -333,6 +336,7 @@ class SeverityActionException:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "severity_classifier_max_matches" in args:
             self.max_matches = args["severity_classifier_max_matches"]
 
@@ -360,6 +364,14 @@ class SeverityActionException:
         )
 
     def find_classifier_details(self, number_of_matches: int) -> SeverityActionClassifier | None:
+        """Find a classifier by number of matches.
+
+        Args:
+            number_of_matches (int): The number of matches of the classifier.
+
+        Returns:
+            SeverityActionClassifier | None: The classifier if found, otherwise None.
+        """
         for classifier_detail in self.classifier_details:
             if classifier_detail.number_of_matches == number_of_matches:
                 return classifier_detail
@@ -385,10 +397,6 @@ class ExceptionRule:
     display_description: Optional[str] = None
 
     def __post_init__(self) -> None:
-        if self.enabled not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for 'enabled': {self.enabled}. Must be 'true' or 'false'."
-            )
         if not self.classifiers:
             raise DemistoException(
                 f"Exception Rule '{self.exception_rule_name}' must have at least one classifier."
@@ -406,6 +414,7 @@ class ExceptionRule:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ExceptionRule":
+        """Create an object from a given dict."""
         classifiers = data.pop("classifiers", [])
         severity_action = data.pop("severity_action", {})
         return cls(
@@ -424,6 +433,7 @@ class ExceptionRule:
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "ExceptionRule":
+        """Create an object from given user arguments."""
         return cls(
             exception_rule_name=args.get("exception_rule_name"),
             enabled=args.get("enabled"),
@@ -439,6 +449,7 @@ class ExceptionRule:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> "ExceptionRule":
+        """Update an object from given user arguments."""
         if "exception_rule_name" in args:
             self.exception_rule_name = args["exception_rule_name"]
         if "enabled" in args:
@@ -462,6 +473,14 @@ class ExceptionRule:
         self.severity_action.update_from_args(args)
 
     def find_classifier(self, position: int) -> Classifier | None:
+        """Find a classifier by position.
+
+        Args:
+            position (int): The position of the classifier.
+
+        Returns:
+            Classifier | None: The classifier if found, otherwise None.
+        """
         for classifier in self.classifiers:
             if classifier.position == position:
                 return classifier
@@ -485,10 +504,6 @@ class SeverityActionRule:
     count_time_period_window: Optional[str] = None
 
     def __post_init__(self) -> None:
-        if self.risk_adaptive_protection_enabled not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for 'selected': {self.risk_adaptive_protection_enabled}. Must be 'true' or 'false'."
-            )
         if self.type == "CUMULATIVE_CONDITION" and not self.count_type:
             raise DemistoException(
                 "The field `rule_count_type` is required when the type is `CUMULATIVE_CONDITION`."
@@ -510,6 +525,7 @@ class SeverityActionRule:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SeverityActionRule":
+        """Create an object from a given dict."""
         classifiers = data.pop("classifier_details", [])
         return cls(
             **{k: v for k, v in data.items() if k in inspect.signature(cls).parameters},
@@ -517,6 +533,7 @@ class SeverityActionRule:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         self.risk_adaptive_protection_enabled = "false"
 
         if "rule_name" in args:
@@ -561,6 +578,14 @@ class SeverityActionRule:
                     self.classifier_details[i].selected = "false"
 
     def find_classifier(self, number_of_matches: int) -> SeverityActionClassifier | None:
+        """Find a classifier by position.
+
+        Args:
+            position (int): The position of the classifier.
+
+        Returns:
+            Classifier | None: The classifier if found, otherwise None.
+        """
         for classifier in self.classifier_details:
             if classifier.number_of_matches == number_of_matches:
                 return classifier
@@ -577,14 +602,9 @@ class Resource:
     type: str
     include: Optional[str]
 
-    def __post_init__(self) -> None:
-        if self.include and self.include not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for resource 'include': {self.include}. Must be 'true' or 'false'."
-            )
-
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Resource":
+        """Create an object from a given dict."""
         return cls(
             resource_name=data.get("resource_name"),
             type=data.get("type"),
@@ -593,6 +613,7 @@ class Resource:
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "Resource":
+        """Create an object from given user arguments."""
         return cls(
             resource_name=args.get("resource_name"),
             type=args.get("resource_type"),
@@ -600,6 +621,7 @@ class Resource:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "resource_type" in args:
             self.type = args["resource_type"]
         if "resource_include" in args:
@@ -617,15 +639,9 @@ class Channel:
     resources: list[Resource] = dataclasses.field(default_factory=list)
     user_operations: list[str] = dataclasses.field(default_factory=list)
 
-    def __post_init__(self) -> None:
-        if self.channel_type and self.enabled not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for the channel ({self.channel_type})"
-                f" 'enabled': {self.enabled}. Must be 'true' or 'false'."
-            )
-
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "RuleDestination":
+        """Create an object from a given dict."""
         resources = data.pop("resources", [])
         return cls(
             channel_type=data.get("channel_type"),
@@ -636,6 +652,7 @@ class Channel:
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "RuleDestination":
+        """Create an object from given user arguments."""
         return cls(
             channel_type=args.get("channel_type"),
             enabled=args.get("channel_enabled"),
@@ -643,6 +660,7 @@ class Channel:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "channel_enabled" in args:
             self.enabled = args["channel_enabled"]
 
@@ -655,6 +673,14 @@ class Channel:
             self.resources.append(Resource.from_args(args))
 
     def find_resource(self, resource_name: str) -> Resource | None:
+        """Find a resource by name.
+
+        Args:
+            resource_name (str): The name of the resource.
+
+        Returns:
+            Resource | None: The resource if found, otherwise None.
+        """
         for resource in self.resources:
             if resource.resource_name == resource_name:
                 return resource
@@ -673,6 +699,7 @@ class RuleDestination:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "RuleDestination":
+        """Create an object from a given dict."""
         channels = data.pop("channels", [])
         return cls(
             email_monitor_directions=data.get("email_monitor_directions", []),
@@ -680,6 +707,7 @@ class RuleDestination:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "rule_destination_email_monitor_directions" in args:
             self.email_monitor_directions = argToList(args["rule_destination_email_monitor_directions"])
 
@@ -691,6 +719,14 @@ class RuleDestination:
             self.channels.append(Channel.from_args(args))
 
     def find_channel(self, channel_type: str) -> Channel | None:
+        """Find a channel by type.
+
+        Args:
+            channel_type (str): The type of the channel.
+
+        Returns:
+            Channel | None: The channel if found, otherwise None.
+        """
         for channel in self.channels:
             if channel.channel_type == channel_type:
                 return channel
@@ -710,6 +746,7 @@ class RuleSource:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "RuleSource":
+        """Create an object from a given dict."""
         resources = data.pop("resources", [])
         return cls(
             endpoint_channel_machine_type=data.get("endpoint_channel_machine_type"),
@@ -718,6 +755,7 @@ class RuleSource:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "rule_source_endpoint_channel_machine_type" in args:
             self.endpoint_channel_machine_type = args["rule_source_endpoint_channel_machine_type"]
         if "rule_source_endpoint_connection_type" in args:
@@ -735,6 +773,7 @@ class SourceDestinationRule:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SourceDestinationRule":
+        """Create an object from a given dict."""
         rule_source = data.pop("rule_source", {})
         rule_destination = data.pop("rule_destination", {})
         return cls(
@@ -744,6 +783,7 @@ class SourceDestinationRule:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         self.rule_source.update_from_args(args)
         self.rule_destination.update_from_args(args)
 
@@ -758,16 +798,19 @@ class PolicyLevel:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PolicyLevel":
+        """Create an object from a given dict."""
         return cls(**{k: v for k, v in data.items() if k in inspect.signature(cls).parameters})
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "PolicyLevel":
+        """Create an object from given user arguments."""
         return cls(
             level=arg_to_number(args.get("policy_level")),
             data_type=args.get("policy_data_type"),
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "policy_level" in args:
             self.level = args["policy_level"]
         if "policy_data_type" in args:
@@ -789,19 +832,12 @@ class PolicyRule:
     rules: list[Rule]
 
     def __post_init__(self) -> None:
-        if self.enabled not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for 'enabled': {self.enabled}. Must be 'true' or 'false'."
-            )
-        if self.predefined_policy not in ["true", "false"]:
-            raise DemistoException(
-                f"Invalid value for 'predefined_policy': {self.predefined_policy}. Must be 'true' or 'false'."
-            )
         if not self.rules:
             raise DemistoException("Policy must have at least one rule.")
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PolicyRule":
+        """Create an object from a given dict."""
         policy_level = data.pop("policy_level", {})
         rules = data.pop("rules", [])
 
@@ -813,6 +849,7 @@ class PolicyRule:
 
     @classmethod
     def from_args(cls, args: dict[str, Any]) -> "PolicyRule":
+        """Create an object from given user arguments."""
         return cls(
             dlp_version=args.get("dlp_version"),
             policy_name=args.get("policy_name"),
@@ -824,6 +861,7 @@ class PolicyRule:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "dlp_version" in args:
             self.dlp_version = args["dlp_version"]
         if "policy_name" in args:
@@ -845,6 +883,14 @@ class PolicyRule:
             self.rules.append(Rule.from_args(args))
 
     def find_rule(self, rule_name: str) -> Rule | None:
+        """Find a rule by name.
+
+        Args:
+            rule_name (str): The name of the rule.
+
+        Returns:
+            Rule | None: The rule if found, otherwise None.
+        """
         for rule in self.rules:
             if rule.rule_name == rule_name:
                 return rule
@@ -863,6 +909,7 @@ class PolicySeverityAction:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PolicySeverityAction":
+        """Create an object from a given dict."""
         rules = data.pop("rules", [])
         return cls(
             policy_name=data.get("policy_name"),
@@ -870,6 +917,7 @@ class PolicySeverityAction:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "policy_name" in args:
             self.policy_name = args["policy_name"]
 
@@ -882,6 +930,14 @@ class PolicySeverityAction:
         rule.update_from_args(args)
 
     def find_rule(self, rule_name: str) -> SeverityActionRule | None:
+        """Find a rule by name.
+
+        Args:
+            rule_name (str): The name of the rule.
+
+        Returns:
+            SeverityActionRule | None: The rule if found, otherwise None.
+        """
         for rule in self.rules:
             if rule.rule_name == rule_name:
                 return rule
@@ -900,6 +956,7 @@ class PolicySourceDestination:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PolicySourceDestination":
+        """Create an object from a given dict."""
         rules = data.pop("rules", [])
         return cls(
             policy_name=data.get("policy_name"),
@@ -907,6 +964,7 @@ class PolicySourceDestination:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "policy_name" in args:
             self.policy_name = args["policy_name"]
 
@@ -919,6 +977,14 @@ class PolicySourceDestination:
         rule.update_from_args(args)
 
     def find_rule(self, rule_name: str) -> SourceDestinationRule | None:
+        """Find a rule by name.
+
+        Args:
+            rule_name (str): The name of the rule.
+
+        Returns:
+            SourceDestinationRule | None: The rule if found, otherwise None.
+        """
         for rule in self.rules:
             if rule.rule_name == rule_name:
                 return rule
@@ -940,6 +1006,7 @@ class PolicyExceptionRule:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PolicyExceptionRule":
+        """Create an object from a given dict."""
         exception_rules = data.pop("exception_rules", [])
         return cls(
             parent_policy_name=data.get("parent_policy_name"),
@@ -949,6 +1016,7 @@ class PolicyExceptionRule:
         )
 
     def update_from_args(self, args: dict[str, Any]) -> None:
+        """Update an object from given user arguments."""
         if "parent_policy_name" in args:
             self.parent_policy_name = args["parent_policy_name"]
         if "parent_rule_name" in args:
@@ -966,6 +1034,14 @@ class PolicyExceptionRule:
 
 
     def find_exception_rule(self, exception_rule_name: str) -> ExceptionRule | None:
+        """Find an exception rule by name.
+
+        Args:
+            exception_rule_name (str): The name of the exception rule.
+
+        Returns:
+            ExceptionRule | None: The exception rule if found, otherwise None.
+        """
         for exception_rule in self.exception_rules:
             if exception_rule.exception_rule_name == exception_rule_name:
                 return exception_rule
@@ -1342,7 +1418,6 @@ def get_events_command(
 ) -> tuple[CommandResults, List[dict[str, Any]]]:
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
     since_time = arg_to_datetime(args.get("since_time"), settings=DATEPARSER_SETTINGS)
-    assert isinstance(since_time, datetime)
     events, _, _ = fetch_events_command_sub(client, limit, datetime.utcnow(), since_time)
 
     result = CommandResults(
@@ -1370,7 +1445,7 @@ def fetch_events_command_sub(
     incidents_response = client.list_incidents(
         from_date=to_str_time(from_time), to_date=to_str_time(to_time)
     )
-    incidents = incidents_response["incidents"]
+    incidents = incidents_response.get("incidents", [])
     for incident in incidents:
         if incident["id"] not in last_run_ids:
             incident["_collector_source"] = "API"
@@ -1461,7 +1536,7 @@ def list_policy_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Outputs for XSOAR.
     """
 
-    policy_type = args.get("type", "DLP")
+    policy_type = args.get("type")
     all_results = argToBoolean(args.get("all_results", False))
     limit = arg_to_number(args.get("limit")) or 50
 
@@ -1499,7 +1574,7 @@ def list_policy_rule_command(client: Client, args: dict) -> list[CommandResults]
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    policy_name = args["policy_name"]
+    policy_name = args.get("policy_name")
     all_results = argToBoolean(args.get("all_results", False))
     limit = arg_to_number(args.get("limit")) or 50
 
@@ -1652,7 +1727,7 @@ def get_rule_severity_action_command(client: Client, args: dict) -> list[Command
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    policy_name = args["policy_name"]
+    policy_name = args.get("policy_name")
 
     response = client.get_rule_severity_action(policy_name=policy_name)
     outputs = transform_keys(
@@ -1703,7 +1778,7 @@ def get_rule_source_destination_command(client: Client, args: dict) -> CommandRe
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    policy_name = args["policy_name"]
+    policy_name = args.get("policy_name")
     response = client.get_rule_source_destination(policy_name=policy_name)
 
     outputs = transform_keys(
@@ -1763,7 +1838,7 @@ def list_incidents_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Results to return to the war room.
     """
     incident_type = args.get("type", "INCIDENTS")
-    from_date = arg_to_datetime(args["from_date"], required=True)
+    from_date = arg_to_datetime(args.get("from_date"), required=True)
     to_date = arg_to_datetime(args.get("to_date", "now"), required=True)
     status = args.get("status")
     ids = argToList(args.get("ids"))
@@ -1809,8 +1884,8 @@ def create_rule_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    policy_name = args["policy_name"]
-    rule_name = args["rule_name"]
+    policy_name = args.get("policy_name")
+    rule_name = args.get("rule_name")
 
     enabled_policies = client.list_policies().get("enabled_policies", [])
 
@@ -1850,8 +1925,8 @@ def update_rule_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    policy_name = args["policy_name"]
-    rule_name = args["rule_name"]
+    policy_name = args.get("policy_name")
+    rule_name = args.get("rule_name")
 
     enabled_policies = client.list_policies().get("enabled_policies", [])
 
@@ -1891,8 +1966,8 @@ def update_rule_severity_action_command(client: Client, args: dict) -> CommandRe
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    policy_name = args["policy_name"]
-    rule_name = args["rule_name"]
+    policy_name = args.get("policy_name")
+    rule_name = args.get("rule_name")
 
     policy = client.get_rule_severity_action(policy_name)
     rule = find_rule(policy, rule_name)
@@ -1924,8 +1999,8 @@ def update_rule_source_destination_command(client: Client, args: dict) -> Comman
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    policy_name = args["policy_name"]
-    rule_name = args["rule_name"]
+    policy_name = args.get("policy_name")
+    rule_name = args.get("rule_name")
 
     policy = client.get_rule_source_destination(policy_name)
     rule = find_rule(policy, rule_name)
@@ -1959,10 +2034,10 @@ def create_exception_rule_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    parent_policy_name = args["parent_policy_name"]
-    parent_rule_name = args["parent_rule_name"]
-    policy_type = args["policy_type"]
-    exception_rule_name = args["exception_rule_name"]
+    parent_policy_name = args.get("parent_policy_name")
+    parent_rule_name = args.get("parent_rule_name")
+    policy_type = args.get("policy_type")
+    exception_rule_name = args.get("exception_rule_name")
 
     exception_rules_policy = client.get_exception_rule(
         policy_type=policy_type,
@@ -2003,10 +2078,10 @@ def update_exception_rule_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results to return to the war room.
     """
-    parent_policy_name = args["parent_policy_name"]
-    parent_rule_name = args["parent_rule_name"]
-    policy_type = args["policy_type"]
-    exception_rule_name = args["exception_rule_name"]
+    parent_policy_name = args.get("parent_policy_name")
+    parent_rule_name = args.get("parent_rule_name")
+    policy_type = args.get("policy_type")
+    exception_rule_name = args.get("exception_rule_name")
 
     exception_rules_policy = client.get_exception_rule(
         policy_type=policy_type,
@@ -2049,7 +2124,7 @@ def update_incident_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Command results to return to the war room.
     """
     ids = argToList(args.get("event_ids"))
-    incident_type = args["type"]
+    incident_type = args.get("type")
     comment = args.get("comment")
 
     for arg_key, action_type in INCIDENT_UPDATE_MAPPER:
@@ -2100,7 +2175,7 @@ def fetch_incidents(
 
     start_date = last_fetch or first_fetch
     start_time = start_date.strftime(DATE_FORMAT)
-    end_time = get_end_time()
+    end_time = datetime.now().strftime(DATE_FORMAT)
 
     demisto.debug(f"fetch: start time: {start_time} end time: {end_time}.")
 
@@ -2357,7 +2432,7 @@ def get_modified_remote_data_command(
         demisto.debug("get_modified_remote_data_command: first incident time not found")
         return GetModifiedRemoteDataResponse([])
 
-    end_time = get_end_time()
+    end_time = datetime.now().strftime(DATE_FORMAT)
     demisto.debug(
         f"get_modified_remote_data_command: start time: {from_date} end time: {end_time}."
     )
@@ -2401,40 +2476,7 @@ def get_modified_remote_data_command(
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
-def get_end_time():
-    return datetime.now().strftime(DATE_FORMAT)
-
-
 """ HELPER FUNCTIONS """
-
-
-def from_dict(cls: Any, data: Any) -> Any:
-    """
-    Recursively converts a dictionary or list of dictionaries into an instance of the given dataclass.
-
-    Args:
-        cls (Type[Any]): The target dataclass type to instantiate.
-        data (Any): The input data, which can be a dictionary, a list of dictionaries, or a primitive type.
-
-    Returns:
-        Any: An instance of the specified dataclass or a list of instances if the input is a list.
-
-    """
-    if isinstance(data, list):
-        return [from_dict(cls.__args__[0], item) for item in data]  # Convert list items recursively
-    elif isinstance(data, dict):
-        field_types = {
-            f.name: f.type for f in cls.__dataclass_fields__.values()
-        }  # Get expected field types
-        return cls(
-            **{
-                key: from_dict(field_types[key], value)
-                for key, value in data.items()
-                if key in field_types
-            }
-        )
-    else:
-        return data
 
 
 def get_paginated_data(data: list, limit: int, all_results: bool):
@@ -2511,7 +2553,7 @@ def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
-    base_url: str = params["url"]
+    base_url: str = params.get("url")
     username: str = params.get("credentials", {}).get("identifier", "")
     password: str = params.get("credentials", {}).get("password", "")
     commands: dict[str, Callable] = {
