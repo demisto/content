@@ -14,7 +14,7 @@ Follow these steps for a self-deployed configuration:
 3. Enter your Client/Application ID in the ***Application ID*** parameter. 
 4. Enter your Client Secret in the ***Password*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
-6. Run the ***!msgraph-apps-auth-test*** command to test the connection and the authorization process.
+6. Run the ***!microsoft-teams-auth-test*** command to test the connection and the authorization process.
 
 
 ### Device Code Flow
