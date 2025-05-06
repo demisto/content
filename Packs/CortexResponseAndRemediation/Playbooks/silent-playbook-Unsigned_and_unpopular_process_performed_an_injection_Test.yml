@@ -545,6 +545,8 @@ tasks:
                       value:
                         simple: alert.cid
                 root: foundIncidents.CustomFields
+                transformers:
+                - operator: uniq
           operator: isEqualString
           right:
             value:
