@@ -6,6 +6,7 @@ Cisco ThreatGird integration
 """
 import copy
 import hashlib
+import re
 from collections.abc import Callable, MutableMapping, MutableSequence
 from datetime import datetime
 from typing import (
@@ -56,6 +57,16 @@ DEFAULT_MALICIOUS_THRESHOLD = 85
 DEFAULT_SUSPICIOUS_THRESHOLD = 50
 
 
+
+def clean_response_urls(func):
+    """
+    Decorator to apply `remove_angle_brackets_from_urls` to the response of a function (e.g., _http_request).
+    """
+    def wrapper(*args, **kwargs):
+        response = func(*args, **kwargs)
+        return remove_angle_brackets_from_response(response)
+    return wrapper
+
 class Client(BaseClient):
     """API Client to communicate with ThreatGrid API."""
 
@@ -70,6 +81,10 @@ class Client(BaseClient):
             headers=headers,
             proxy=proxy,
         )
+        
+        @clean_response_urls
+        def _http_request(self, *args, **kwargs):
+            return super()._http_request(*args, **kwargs)
 
     def get_sample(
         self,
@@ -116,13 +131,14 @@ class Client(BaseClient):
             url_suffix = f"{url_suffix}/{artifact}"
         else:
             resp_type = "json"
-
+            
         return self._http_request(
             "GET",
             urljoin(API_V2_PREFIX, url_suffix),
             params=params,
             resp_type=resp_type,
         )
+
 
     def analysis_sample(
         self,
@@ -497,6 +513,29 @@ def search_submission_command(
         outputs=submissions,
         raw_response=response,
     )
+
+def remove_angle_brackets_from_response(response):
+    """
+    Recursively walk through any nested dict or list.
+    If a string value contains a URL wrapped in < >, remove the angle brackets.
+    Necessary to make URL un-clickable.
+    """
+    url_pattern = re.compile(r'<((http[s]?://|www\.)[^>]+)>')
+
+    if isinstance(response, dict):
+        return {
+            k: remove_angle_brackets_from_response(v)
+            for k, v in response.items()
+        }
+
+    elif isinstance(response, list):
+        return [remove_angle_brackets_from_response(item) for item in response]
+
+    elif isinstance(response, str):
+        return url_pattern.sub(r'\1', response)
+
+    else:
+        return response
 
 
 def search_command(
@@ -904,7 +943,7 @@ def get_sample_command(
         sha256=sha256,
         md5=md5,
     )
-
+    
     sample_details = response
     content_format = "json"
 
