@@ -1951,6 +1951,13 @@ function getDemistoVersion() {
         throw 'Failed retriving server version - ' + ex;
     }
 }
+
+isXSIAM = function () {
+    res = getDemistoVersion();
+    platform = res.platform;
+    return platform === "x2";
+}
+
 /**
  * Compare between two versions.
  * @param {string} a - version.
