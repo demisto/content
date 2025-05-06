@@ -97,7 +97,7 @@ def get_list_threats(client: Client, after: str, before: str, next_page_number: 
     Returns:
       list:  list of threats ids.
     """
-    threats = []
+    threats: List[dict[str, Any]] = []
     is_next_page = True
     while len(threats) < FETCH_LIMIT and is_next_page:
         page_size = min(DEFAULT_PAGE_SIZE, FETCH_LIMIT - len(threats))
@@ -125,7 +125,7 @@ def main():
     verify = params["verify"]
     proxy = params["proxy"]
     after = arg_to_datetime(arg="1 minute").strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
-    before = None
+    before: str = ""
     next_page_number = 1
     client = Client(
         base_url="https://api.abnormalplatform.com/v1", verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {token}"}
