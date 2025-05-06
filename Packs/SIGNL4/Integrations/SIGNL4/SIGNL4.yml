@@ -13,7 +13,7 @@ configuration:
   type: 8
   required: false
 description: SIGNL4 offers critical alerting, incident response and service dispatching for operating critical infrastructure. It alerts you persistently via app push, SMS text, voice calls, and email including tracking, escalation, on-call duty scheduling and collaboration.
-display: SIGNL4
+display: SIGNL4 (Beta)
 name: SIGNL4
 script:
   commands:
