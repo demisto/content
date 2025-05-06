@@ -26,8 +26,9 @@ args:
     hidden: true
     description: The id of the query.
 outputs:
-  - contextPath: GeoEvents
-    description: The calculated events for each input.
+  - contextPath: PaloAltoNetworksXQL
+    description: A list of records (dictionaries) which contain the given indicator.
+    type: List
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
