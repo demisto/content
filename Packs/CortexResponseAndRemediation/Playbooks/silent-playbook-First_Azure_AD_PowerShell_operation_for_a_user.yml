@@ -1585,7 +1585,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 1424
+          "y": 1422
         }
       }
     note: false
@@ -1683,10 +1683,10 @@ tasks:
       brand: ""
       description: ""
     nexttasks:
-      "yes":
-      - "53"
       '#default#':
       - "21"
+      "yes":
+      - "53"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1860,10 +1860,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: |2-
-
-                alert.hostip.[0]
+              simple: alert.hostip.[0]
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
