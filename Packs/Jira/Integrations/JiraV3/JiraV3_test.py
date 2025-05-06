@@ -879,9 +879,13 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
+        expected_mo_outputs = {'ticket_id': '1234', 'ticket_url': "dummy_link"}
+
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        command_result = create_issue_command(client=client, args={"summary": "test"})
-        assert command_result.to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        command_results = create_issue_command(client=client, args={"summary": "test"})
+        assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        assert command_results[1].to_context().get("EntryContext") == {'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
+
 
     def test_create_issue_command_with_issue_json(self, mocker):
         """
@@ -898,9 +902,13 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
+        expected_mo_outputs = {'ticket_id': '1234', 'ticket_url': "dummy_link"}
+
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
-        assert command_result.to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        command_results = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
+        assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        assert command_results[1].to_context().get("EntryContext") == {'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
+
 
     def test_create_issue_command_with_issue_json_and_another_arg(self):
         """

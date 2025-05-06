@@ -5,9 +5,13 @@ from collections.abc import Callable
 from copy import deepcopy
 from mimetypes import guess_type
 
+from dataclasses import asdict, dataclass
+from typing import List
+
 import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
+from CommonServerPython import CommandResults
 
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
@@ -61,6 +65,50 @@ V2_ARGS_TO_V3: Dict[str, str] = {
     "applicationName": "application_name",
     "field": "fields",
 }
+
+
+@dataclass
+class MirrorObject:
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    Fields:
+        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
+        ticket_id (Optional[str]): Unique identifier of the created ticket.
+
+    ### TODO: We will need this class in common server python,
+    but due to known performance issues, we are keeping it here for now.
+    """
+    ticket_url: Optional[str] = None
+    ticket_id: Optional[str] = None
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dictionary suitable for placing into XSOAR context.
+
+        Returns:
+            dict: Dictionary representation of the MirrorObject.
+        """
+        return asdict(self)
+
+    @classmethod
+    def from_command_response(cls, response: Dict[str, Any]) -> "MirrorObject":
+        """
+        Factory method to create a MirrorObject from a command response.
+
+        Args:
+            response (dict): The raw response from a command like `jira-create-issue`.
+
+        Returns:
+            MirrorObject: Populated instance.
+        """
+        return cls(
+            ticket_url=response.get("self"),
+            ticket_id=response.get("id") or response.get("ticket_id")
+        )
 
 
 class JiraBaseClient(BaseClient, metaclass=ABCMeta):
@@ -2244,7 +2292,7 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     return responses
 
 
-def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[CommandResults]:
     """This command is in charge of creating a new issue.
 
     Args:
@@ -2271,15 +2319,24 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     if "summary" not in issue_fields.get("fields", {}):
         raise DemistoException("The summary argument must be provided.")
     res = client.create_issue(json_data=issue_fields)
+    mirror_obj = MirrorObject.from_command_response(res)
     outputs = {"Id": res.get("id", ""), "Key": res.get("key", "")}
     markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": res.get("key", "").split("-")[0]}
-    return CommandResults(
+    ticket_results = CommandResults(
         outputs_prefix="Ticket",
         outputs=outputs,
         outputs_key_field="Id",
         readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict),
-        raw_response=res,
+        raw_response=res
     )
+
+    mirror_results = CommandResults(
+        outputs_prefix="MirrorObject",
+        outputs=mirror_obj.to_context(),
+        outputs_key_field="ticket_id"
+    )
+
+    return [ticket_results, mirror_results]
 
 
 def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
