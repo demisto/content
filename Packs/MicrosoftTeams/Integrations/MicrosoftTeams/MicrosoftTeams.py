@@ -1362,7 +1362,7 @@ def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_ti
     return channel_data
 
 
-def send_message_in_chat(content: str, message_type: str, chat_id: str, content_type: str) -> dict:
+def send_message_in_chat(content: str, chat_id: str, content_type: str) -> dict:
     """
     Sends an HTTP request to send message in chat to Microsoft Teams
     :param content: The content of the chat message.
@@ -1372,7 +1372,7 @@ def send_message_in_chat(content: str, message_type: str, chat_id: str, content_
     :return: dict of the chatMessage object
     """
     url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages"
-    request_json = {"body": {"content": content, "contentType": content_type}, "messageType": message_type}
+    request_json = {"body": {"content": content, "contentType": content_type}, "messageType": "message"}
 
     response: dict = cast(dict[Any, Any], http_request("POST", url, json_=request_json))
     return response
@@ -1713,13 +1713,12 @@ def message_send_to_chat_command():
     args = demisto.args()
     content: str = args.get("content", "")
     content_type: str = args.get("content_type", "text")
-    message_type: str = args.get("message_type", "message")
     chat: str = args.get("chat", "")
     chat_id, _ = get_chat_id_and_type(chat)
 
     add_bot_to_chat(chat_id)
 
-    message_data: dict = send_message_in_chat(content, message_type, chat_id, content_type)
+    message_data: dict = send_message_in_chat(content, chat_id, content_type)
     message_data.pop("@odata.context", "")
     hr = get_message_human_readable(message_data)
     result = CommandResults(
