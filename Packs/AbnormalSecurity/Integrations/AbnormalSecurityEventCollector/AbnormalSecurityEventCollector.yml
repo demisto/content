@@ -33,7 +33,7 @@ configuration:
   required: false
   section: Collect
   hidden:
-  - marketplacev2
+  - xsoar
 script:
   script: ""
   type: python
