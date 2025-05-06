@@ -1,4 +1,5 @@
 import ast
+import json
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -11,9 +12,9 @@ POLLING = False
 
 
 class PrismaSase:
-    def __init__(self, args: dict, responses: list):
+    def __init__(self, args: dict):
         self.args = args
-        self.responses = responses
+        self.responses = []
 
     def prisma_sase_candidate_config_push(self) -> CommandResults | None:
         """ Execute the command prisma-sase-candidate-config-push if needed.
@@ -142,9 +143,9 @@ class PrismaSase:
 
 
 class PanOs:
-    def __init__(self, args: dict, responses: list):
+    def __init__(self, args: dict):
         self.args = args
-        self.responses = responses
+        self.responses = []
 
     def reduce_pan_os_responses(self) -> list[list[dict]]:
         """ Returns a list of just the information needed for later usage by the flow.
@@ -566,8 +567,12 @@ def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
     if "Panorama" not in brands_to_run:
         return [], set(brands_to_run)
     incident_context = demisto.context()
-    executed_brands = incident_context.get('executed_brands', '')
-    executed_brands = ast.literal_eval(executed_brands) if executed_brands else []
+    executed_brands = (incident_context.get('executed_brands', '[]')).replace("'", '"')
+    try:
+        executed_brands = json.loads(executed_brands)
+    except json.JSONDecodeError:
+        demisto.debug("There was a failure in the json.loads for the executed_brands.")
+        executed_brands = []
     updated_brands_to_run = {b for b in brands_to_run if b not in executed_brands}
     demisto.debug(f"Removed {executed_brands=} from {brands_to_run=}")
     return executed_brands, updated_brands_to_run
@@ -866,7 +871,7 @@ def main():  # pragma: no cover
                             'rule_name': rule_name,
                             'auto_commit': auto_commit,
                         }
-                        prisma_sase = PrismaSase(brand_args, [])
+                        prisma_sase = PrismaSase(brand_args)
                         results.append(prisma_sase.prisma_sase_block_ip())
                     executed_brands.append(brand)
 
@@ -883,7 +888,7 @@ def main():  # pragma: no cover
                         'commit_job_id': args.get('commit_job_id'),
                         'polling': True
                     }
-                    pan_os = PanOs(brand_args, [])
+                    pan_os = PanOs(brand_args)
                     result_pan_os = pan_os.manage_pan_os_flow()
                     if not POLLING:
                         demisto.debug("Not in a polling mode, adding Panorama to the executed_brands.")
