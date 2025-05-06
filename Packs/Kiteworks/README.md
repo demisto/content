@@ -7,7 +7,7 @@ This pack includes Cortex XSIAM content.
 This section describes the configuration that needs to be done on the Kiteworks administration console in order to forward Syslog messages from Kiteworks to Cortex XSIAM. 
 
 Follow the steps below from your Kiteworks admin console web interface:
-1. Go to the **Locations** page ([https://\<your_kiteworks_instance_domain\>/admin/#/locations]()).  
+1. Go to the **Locations** page (https://\<your_kiteworks_instance_domain\>/admin/#/locations).  
    - If you are using the *legacy* admin user interface, navigate to **System** &rarr; **Locations**.
    - If you are using the *new* admin user interface, navigate to **System Setup** &rarr; **Locations**. 
 2. Select the requested location and navigate to **External Services**.

@@ -41,7 +41,14 @@ from ReversingLabsTitaniumCloudv2 import (
     yara_retro_actions_output,
     yara_retro_matches_feed_output,
     yara_ruleset_output,
+    ip_command,
+    file_command,
+    domain_command,
+    url_command
 )
+from CommonServerPython import *
+from ReversingLabs.SDK.helper import WrongInputError
+
 
 INTEGRATION_NAME = "ReversingLabs TitaniumCloud v2"
 test_hash = "21841b32c6165b27dddbd4d6eb3a672defe54271"
@@ -400,3 +407,81 @@ def test_customer_data_output():
     result = customer_usage_data_output(data_type="MONTHLY USAGE", whole_company=False, response_json=report)
 
     assert result.to_context().get("Contents").get("customer_usage_data").get("rl").get("month") == "2024-06"
+
+
+DEFAULT_PARAMS = {
+    "base": "data.reversinglabs.com",
+    "credentials": {
+        "password": "somepassword",
+        "identifier": "username"
+    },
+    "reliability": "C - Fairly reliable",
+    "verify_certs": "true"
+}
+
+
+
+@pytest.fixture
+def mock_demisto(mocker):
+    mocker.patch.object(demisto, 'getArg', return_value='8.8.8.8')
+    mocker.patch.object(demisto, 'args', return_value={'ip': '8.8.8.8'})
+    results = []
+    mocker.patch.object(demisto, 'results', side_effect=lambda r: results.append(r))
+    return results
+
+
+@pytest.fixture
+def mock_ip_response():
+    return {
+        "rl": {
+            "classification": "malicious",
+            "downloaded_files_statistics": {
+                "known": 1,
+                "malicious": 2,
+                "suspicious": 0,
+                "unknown": 0,
+                "total": 3
+            },
+            "third_party_reputations": {
+                "statistics": {
+                    "clean": 0,
+                    "malicious": 2,
+                    "undetected": 1,
+                    "total": 3
+                },
+                "sources": [
+                    {"source": "VendorA", "detection": "malicious"},
+                    {"source": "VendorB", "detection": "clean"}
+                ]
+            }
+        }
+    }
+
+
+def test_ip_command_success(mocker, mock_ip_response, mock_demisto):
+    mock_ip_ti = mocker.patch('ReversingLabsTitaniumCloudv2.IPThreatIntelligence')
+    instance = mock_ip_ti.return_value
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = mock_ip_response
+    instance.get_ip_report.return_value = mock_response
+
+    ip_command()
+
+    assert mock_demisto
+    output = mock_demisto[0]
+    assert isinstance(output, dict)
+
+
+def test_domain_command():
+    with pytest.raises(WrongInputError):
+        domain_command()
+
+
+def test_url_command():
+    with pytest.raises(WrongInputError):
+        url_command()
+
+
+def test_file_command():
+    with pytest.raises(WrongInputError):
+        file_command()

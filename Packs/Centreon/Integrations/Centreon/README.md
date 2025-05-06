@@ -175,7 +175,7 @@
                "Name":"Localhost",
                "Output":"OK - 127.0.0.1: rta 0.076ms, lost 0%",
                "State":"0",
-              "StateType":"1"            
+              "StateType":"1"
       },
                {  
                "Acknowledged":"0",
@@ -192,7 +192,7 @@
                "Name":"jumphost",
                "Output":"OK - 192.168.1.22: rta 0.379ms, lost 0%",
                "State":"0",
-               "StateType":"1"            
+               "StateType":"1"
       },
                {  
                "Acknowledged":"0",
@@ -209,8 +209,8 @@
                "Name":"jumphost_1",
                "Output":"OK - 192.168.1.22: rta 0.389ms, lost 0%",
                "State":"0",
-               "StateType":"1"            
-      }       
+               "StateType":"1"
+      }
    ]
 }
 </pre>

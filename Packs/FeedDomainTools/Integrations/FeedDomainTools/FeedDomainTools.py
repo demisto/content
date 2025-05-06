@@ -17,10 +17,11 @@ class DomainToolsClient(BaseClient):
 
     APP_PARTNER = "cortex_xsoar_feed"
     APP_NAME = "feed-plugin"
-    APP_VERSION = "1.0.0"
+    APP_VERSION = "1.0.2"
 
     NOD_FEED = "nod"
     NAD_FEED = "nad"
+    NOH_FEED = "noh"
     DOMAINRDAP = "domainrdap"
     DOMAINDISCOVERY = "domaindiscovery"
 
@@ -315,6 +316,7 @@ def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] =
     FEEDS_TO_PROCESS = [
         client.NOD_FEED,
         client.NAD_FEED,
+        client.NOH_FEED,
         client.DOMAINRDAP,
         client.DOMAINDISCOVERY
     ]

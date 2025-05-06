@@ -1,0 +1,166 @@
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: DarktraceEmail
+  version: -1
+name: DarktraceEmail
+display: DarktraceEmail
+category: Network Security
+description: "This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate critical incidents along with accompanying summaries and timelines."
+detaileddescription: "### Partner Contributed Integration\n#### Integration Author: Darktrace\nSupport and maintenance for this integration are provided by the author. Please create a ticket on the Darktrace Customer Portal:\n- **URL**: [https://customerportal.darktrace.com](https://customerportal.darktrace.com)\n***\n## Darktrace\nTo configure the connection to your Darktrace instance, you will provide:\n- Server URL of Darktrace Server (ex: darktrace.yourcompany.com) and any necessary proxy information\n- Public and Private API Tokens from Darktrace (instructions to generate these tokens can be found at: https://customerportal.darktrace.com/product-guides/main/api-tokens)\n\nBest Practices: \n- Ingest both actioned and un-actioned emails. Ingesting the un-actioned emails will give you the ability to manually hold them.\n- If you want to reduce the volume of emails ingested then we recommend starting with only inbound emails. Consider adding internal and outbound later on.\n- Ingest emails with all Darktrace Tag Severity levels.\n\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/darktrace-m-bs)"
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  defaultvalue: https://example.net
+  type: 0
+  section: Connect
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+  required: false
+- display: Public API Token
+  name: publicApiKey
+  type: 4
+  section: Connect
+  required: true
+  additionalinfo: Public token obtained by creating an API token pair on the /config configuration page.
+- display: Private API Token
+  name: privateApiKey
+  type: 4
+  section: Connect
+  required: true
+  additionalinfo: Private token obtained by creating an API token pair on the /config configuration page.
+- display: Minimum Score
+  name: min_score
+  defaultvalue: "0"
+  type: 0
+  section: Collect
+  required: true
+  additionalinfo: Minimum Darktrace score for fetched incidents (0-100).
+- display: Maximum Emails per Fetch
+  name: max_fetch
+  defaultvalue: "50"
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Maximum number of Darktrace Emails to fetch at a time.
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 1 day ago
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  section: Collect
+  required: false
+- display: Darktrace Tag Severity
+  name: tag_severity
+  defaultvalue: Critical,Warning,Informational
+  type: 16
+  section: Collect
+  required: false
+  options:
+  - Critical
+  - Warning
+  - Informational
+  additionalinfo: Fetches Emails with any tags of the desired severity level, filtering is inclusive.  By default fetches all severity levels.
+- display: Only Actioned Emails
+  name: actioned
+  defaultvalue: "false"
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Only fetch Emails that have been actioned. Disabled by default.
+- display: Direction
+  name: direction
+  type: 15
+  section: Collect
+  required: false
+  options:
+  - inbound
+  - outbound
+  - internal
+  additionalinfo: Fetch emails based on direction; either inbound, outbound or internal.  By default fetches all directions.
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: darktrace-email-get-email
+    arguments:
+    - name: uuid
+      required: true
+      description: Darktrace UUID of the Email.
+    outputs:
+    - contextPath: Darktrace.Email.uuid
+      description: UUID of email.
+      type: string
+    - contextPath: Darktrace.Email.direction
+      description: Direction of email.
+      type: string
+    - contextPath: Darktrace.Email.dtime
+      description: Timestamp of email.
+      type: string
+    - contextPath: Darktrace.Email.header_from_email
+      description: Email address of sender.
+      type: string
+    - contextPath: Darktrace.Email.header_subject
+      description: Subject of email.
+      type: string
+    - contextPath: Darktrace.Email.model_score
+      description: Anomaly score of email.
+      type: number
+    - contextPath: Darktrace.Email.receipt_status
+      description: Receipt status of email.
+      type: string
+    description: Fetch details about a specific Email.
+  - name: darktrace-email-hold-email
+    arguments:
+    - name: uuid
+      required: true
+      description: Unique ID of Email.
+    outputs:
+    - contextPath: Darktrace.Action.resp
+      description: 'Status of the hold action.'
+    description: Apply "hold" action to a specified Email.
+    execution: true
+  - name: darktrace-email-release-email
+    arguments:
+    - name: uuid
+      required: true
+      description: Unique ID of Email.
+    - name: recipient
+      description: Recipient of Email. Not required but speeds up the command.
+    outputs:
+    - contextPath: Darktrace.Action.resp
+      description: 'Status of the release action.'
+    description: 'Apply "release" action to a specified Email. '
+    execution: true
+  dockerimage: demisto/python3:3.12.8.3296088
+  isfetch: true
+  runonce: false
+  subtype: python3
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

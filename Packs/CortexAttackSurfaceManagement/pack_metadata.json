@@ -100,8 +100,7 @@
     },
     "marketplaces": [
         "marketplacev2",
-        "xpanse",
-        "platform"
+        "xpanse"
     ],
     "itemPrefix": [
         "ASM"

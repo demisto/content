@@ -1,0 +1,90 @@
+[
+    {
+      "uuid": "74AADFDC-33A9-4065-ACFC-B2493E8722BF.1",
+      "direction": "inbound",
+      "dtime": "2025-04-10T15:55:27.341Z",
+      "dtime_unix": 1744300527341,
+      "header_from": "\"gov.uk email\" <gov.uk.email@notifications.service.gov.uk>",
+      "header_from_email": "gov.uk.email@notifications.service.gov.uk",
+      "header_from_personal": "gov.uk email",
+      "header_subject": "Update from GOV.UK for: More detail announced on the Neighbourhood Policing Guarantee",
+      "in_progress": false,
+      "n_links": 6,
+      "n_attachments": 0,
+      "model_score": 100,
+      "rcpts": [
+        {
+          "rcpt_to": "leeroy.jenkins@example.com",
+          "rcpt_status": "held",
+          "is_read": false,
+          "is_group_email": false,
+          "tags": [
+            "Forged Address",
+            "Internal IT Impersonation",
+            "Phishing Attachment",
+            "VIP Impersonation",
+            "Document Anomalies",
+            "Mailer",
+            "Email Account Takeover",
+            "Credential Harvesting",
+            "Phishing Link",
+            "VIP",
+            "High Mailing History",
+            "Cloud Platform Abuse",
+            "Spam",
+            "No Association",
+            "Solicitation"
+          ],
+          "rcpt_actions_taken": [
+            "Hold message"
+          ],
+          "action_status": true
+        }
+      ],
+      "restricted_recipients": []
+    },
+    {
+      "uuid": "8EEFBFA4-6CA2-4306-B688-BA6B9F60AEEF.1",
+      "direction": "inbound",
+      "dtime": "2025-04-10T15:53:54.119Z",
+      "dtime_unix": 1744300434119,
+      "header_from": "\"gov.uk email\" <gov.uk.email@notifications.service.gov.uk>",
+      "header_from_email": "gov.uk.email@notifications.service.gov.uk",
+      "header_from_personal": "gov.uk email",
+      "header_subject": "Update from GOV.UK for: The UK welcomes the formation of the new Syrian government: UK statement at the UN Security Council",
+      "in_progress": false,
+      "n_links": 6,
+      "n_attachments": 0,
+      "model_score": 100,
+      "rcpts": [
+        {
+          "rcpt_to": "leeroy.jenkins@example.com",
+          "rcpt_status": "held",
+          "is_read": false,
+          "is_group_email": false,
+          "tags": [
+            "Forged Address",
+            "Internal IT Impersonation",
+            "Phishing Attachment",
+            "VIP Impersonation",
+            "Document Anomalies",
+            "Mailer",
+            "Email Account Takeover",
+            "Credential Harvesting",
+            "Phishing Link",
+            "VIP",
+            "High Mailing History",
+            "Cloud Platform Abuse",
+            "Spam",
+            "No Association",
+            "Solicitation"
+          ],
+          "rcpt_actions_taken": [
+            "Hold message"
+          ],
+          "action_status": true
+        }
+      ],
+      "restricted_recipients": []
+    }
+]

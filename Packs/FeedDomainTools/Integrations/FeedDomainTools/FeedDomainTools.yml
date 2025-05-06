@@ -44,6 +44,7 @@ configuration:
   - ALL
   - nod
   - nad
+  - noh
   - domainrdap
   - domaindiscovery
   additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
@@ -152,6 +153,7 @@ script:
       predefined:
       - "nod"
       - "nad"
+      - "noh"
       - "domainrdap"
       - "domaindiscovery"
       defaultValue: "nod"
@@ -212,4 +214,3 @@ marketplaces:
 - platform
 tests:
 - No tests (auto formatted)
-
