@@ -88,7 +88,7 @@ Close a SIGNL4 alert.
 | SIGNL4.AlertClosed.eventId | String | SIGNL4 event ID. | 
 
 #### Command example
-```!signl4-close name="Close Alert"```
+```!signl4_close_alert name="Close Alert"```
 #### Context Example
 ```json
 {
