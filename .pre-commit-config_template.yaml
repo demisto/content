@@ -40,6 +40,8 @@ repos:
   - id: ruff-format
     min_py_version: '3.7'
     skip:nightly: true
+    skip:docker_autoupdate: true
+    parallel: false
   - id: ruff
     parallel: false
     min_py_version: '3.7'
