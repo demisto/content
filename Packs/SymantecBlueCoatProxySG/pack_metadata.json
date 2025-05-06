@@ -7,11 +7,12 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Network Security"
     ],
-    "tags": [],
+    "tags": ["Security", "Network"],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["broadcom"],
     "marketplaces": [
         "marketplacev2",
         "platform"
