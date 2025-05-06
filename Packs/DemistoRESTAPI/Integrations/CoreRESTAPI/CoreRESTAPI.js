@@ -314,11 +314,6 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
 };
 
 var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, skip_validation) {
-    logDebug('The file_url: ' + file_url)
-    logDebug('The entry_id: ' + entry_id)
-    logDebug('The skip_verify: ' + skip_verify)
-    logDebug('The skip_validation: ' + skip_validation)
-
     if ((!packs_to_install) && (!file_url) && (!entry_id)) {
         throw 'Either packs_to_install, file_url or entry_id argument must be provided.';
     }
