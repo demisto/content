@@ -884,7 +884,8 @@ class TestJiraCreateIssueCommand:
         mocker.patch.object(client, "create_issue", return_value=raw_response)
         command_results = create_issue_command(client=client, args={"summary": "test"})
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
-        assert command_results[1].to_context().get("EntryContext") == {'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
+        assert command_results[1].to_context().get("EntryContext") == {
+            'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
 
 
     def test_create_issue_command_with_issue_json(self, mocker):
@@ -907,7 +908,8 @@ class TestJiraCreateIssueCommand:
         mocker.patch.object(client, "create_issue", return_value=raw_response)
         command_results = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
-        assert command_results[1].to_context().get("EntryContext") == {'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
+        assert command_results[1].to_context().get("EntryContext") == {
+            'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
 
 
     def test_create_issue_command_with_issue_json_and_another_arg(self):

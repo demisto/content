@@ -6,12 +6,10 @@ from copy import deepcopy
 from mimetypes import guess_type
 
 from dataclasses import asdict, dataclass
-from typing import List
 
 import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
-from CommonServerPython import CommandResults
 
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
@@ -504,7 +502,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         )
 
     # Issue Fields Requests
-    def get_issue_fields(self) -> List[Dict[str, Any]]:
+    def get_issue_fields(self) -> list[Dict[str, Any]]:
         """This method is in charge of returning system and custom issue fields
 
         Returns:
@@ -799,7 +797,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         )
 
     # Attachments Requests
-    def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+    def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> list[Dict[str, Any]]:
         """This method is in charge of uploading an attachment to an issue.
 
         Args:
@@ -861,7 +859,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     # User Requests
     @abstractmethod
-    def get_id_by_attribute(self, attribute: str, max_results: int) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int) -> list[Dict[str, Any]]:
         """This method is in charge of returning a list of users that match the attribute.
 
         Args:
@@ -958,7 +956,7 @@ class JiraCloudClient(JiraBaseClient):
     def oauth_complete(self, code: str) -> None:
         self.oauth2_retrieve_access_token(code=code)
 
-    def oauth2_start(self, scopes: List[str]) -> str:
+    def oauth2_start(self, scopes: list[str]) -> str:
         """This function is in charge of returning the URL that the user will use in order to authenticate
         himself and be redirected to the callback URL in order to retrieve the authorization code.
 
@@ -1084,7 +1082,7 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     # User Requests
-    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> list[Dict[str, Any]]:
         query = {"query": attribute, "maxResults": max_results}
         return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/user/search", params=query)
 
@@ -1231,11 +1229,11 @@ class JiraOnPremClient(JiraBaseClient):
 
     # User Requests
 
-    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> list[Dict[str, Any]]:
         query = {"username": attribute, "maxResults": max_results}
         return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/user/search", params=query)
 
-    def get_all_projects(self) -> List[Dict[str, Any]]:
+    def get_all_projects(self) -> list[Dict[str, Any]]:
         """Returns all projects which are found in the Jira instance
 
         Returns:
@@ -1243,7 +1241,7 @@ class JiraOnPremClient(JiraBaseClient):
         """
         return self.http_request(method="GET", url_suffix="rest/api/2/project")
 
-    def issue_get_forms(self, issue_id: str) -> List:
+    def issue_get_forms(self, issue_id: str) -> list:
         """Retrieve forms' data for a specified issue_id
 
         :param issue_id: Issue to pull forms for
@@ -1309,7 +1307,7 @@ class JiraIssueFieldsParser:
         return {"Created": demisto.get(issue_data, "fields.created", "") or ""}
 
     @staticmethod
-    def get_labels_context(issue_data: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_labels_context(issue_data: Dict[str, Any]) -> Dict[str, list[str]]:
         return {"Labels": demisto.get(issue_data, "fields.labels", []) or []}
 
     @staticmethod
@@ -1359,8 +1357,8 @@ class JiraIssueFieldsParser:
         return {"Description": description_text, "RawDescription": description_raw}
 
     @staticmethod
-    def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
-        attachments: List[Dict[str, Any]] = [
+    def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, list[Dict[str, Any]]]:
+        attachments: list[Dict[str, Any]] = [
             {
                 "id": attachment.get("id"),
                 "filename": attachment.get("filename"),
@@ -1372,8 +1370,8 @@ class JiraIssueFieldsParser:
         return {"Attachments": attachments}
 
     @staticmethod
-    def get_subtasks_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, str]]]:
-        subtasks: List[Dict[str, str]] = []
+    def get_subtasks_context(issue_data: Dict[str, Any]) -> Dict[str, list[Dict[str, str]]]:
+        subtasks: list[Dict[str, str]] = []
         subtasks.extend(
             {"id": subtask.get("id", "") or "", "key": subtask.get("key", "") or ""}
             for subtask in demisto.get(issue_data, "fields.subtasks", [])
@@ -1381,7 +1379,7 @@ class JiraIssueFieldsParser:
         return {"Subtasks": subtasks}
 
     @staticmethod
-    def get_components_context(issue_data: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_components_context(issue_data: Dict[str, Any]) -> Dict[str, list[str]]:
         components = [(component.get("name") or "") for component in (demisto.get(issue_data, "fields.components") or [])]
         return {"Components": components}
 
@@ -1433,7 +1431,7 @@ class JiraIssueFieldsParser:
 
     @classmethod
     def get_issue_fields_context_from_id(
-        cls, issue_data: Dict[str, Any], issue_fields_ids: List[str], issue_fields_id_to_name_mapping: Dict[str, str]
+        cls, issue_data: Dict[str, Any], issue_fields_ids: list[str], issue_fields_id_to_name_mapping: Dict[str, str]
     ) -> Dict[str, Any]:
         """This method is in charge of receiving the issue object from the API, and parse the fields that are found
         in the constant ISSUE_FIELDS_ID_TO_CONTEXT's keys to human readable outputs, and parse the corresponding fields
@@ -1475,7 +1473,7 @@ def get_project_id_from_name(client: JiraBaseClient, project_name: str) -> str:
     Returns:
         str: The project id corresponding to the project name.
     """
-    queried_projects: List[Dict[str, Any]] = []
+    queried_projects: list[Dict[str, Any]] = []
     if isinstance(client, JiraCloudClient):
         query_params = {"query": f"{project_name}"}
         cloud_res = client.run_project_query(query_params=query_params)
@@ -1754,8 +1752,8 @@ def text_to_adf(text: str) -> Dict[str, Any]:
 
 
 def get_specific_fields_ids(
-    issue_data: Dict[str, Any], specific_fields: List[str], issue_fields_id_to_name_mapping: Dict[str, str]
-) -> List[str]:
+    issue_data: Dict[str, Any], specific_fields: list[str], issue_fields_id_to_name_mapping: Dict[str, str]
+) -> list[str]:
     """This function is in charge of returning the ids of the issue fields that are specified in the
     specific_fields argument, which can hold the display name OR the id of the issue field. This will
     help map the issue fields (whether their display names or ids) that the user enters, to their respective id, so it
@@ -1773,7 +1771,7 @@ def get_specific_fields_ids(
     """
     if "all" in specific_fields:
         # By design, if the user enters `all`, then we return the ids of all the issue fields.
-        all_issue_fields_ids: List[str] = list(issue_data.get("fields", {}).keys())
+        all_issue_fields_ids: list[str] = list(issue_data.get("fields", {}).keys())
         if "comment" in all_issue_fields_ids:
             # Since the `comment` field needs further parsing, it is advised that the user calls the command
             # !jira-get-comments if they want the content of the comments.
@@ -1783,8 +1781,8 @@ def get_specific_fields_ids(
     issue_fields_name_to_id_mapping = {
         issue_name.lower(): issue_id for issue_id, issue_name in issue_fields_id_to_name_mapping.items()
     }
-    issue_fields_ids: List[str] = []
-    wrong_issue_fields_ids: List[str] = []
+    issue_fields_ids: list[str] = []
+    wrong_issue_fields_ids: list[str] = []
     for specific_field in specific_fields:
         if specific_field in issue_fields_id_to_name_mapping:
             # This means an id was given
@@ -1814,7 +1812,7 @@ def get_specific_fields_ids(
 
 def create_issue_md_and_outputs_dict(
     issue_data: Dict[str, Any],
-    specific_issue_fields: List[str] | None = None,
+    specific_issue_fields: list[str] | None = None,
     issue_fields_id_to_name_mapping: Dict[str, str] | None = None,
 ) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """Creates the markdown and outputs dictionaries (context outputs) of the issue object that is returned from the API,
@@ -1953,7 +1951,7 @@ def apply_issue_transition(
     raise DemistoException(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
 
 
-def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[List, List]:
+def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[list, list]:
     """Gets the forms from the client and processes them into a usable JSON format.
 
     :param client: Client to make the API call with
@@ -2051,7 +2049,7 @@ def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandRes
     return CommandResults(readable_output=human_readable, raw_response=res)
 
 
-def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults] | CommandResults:
+def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[CommandResults] | CommandResults:
     """This command is in charge of issuing a query on issues.
 
     Args:
@@ -2070,7 +2068,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     res = client.run_query(query_params=query_params)
     if issues := res.get("issues", []):
         issue_fields_id_to_name_mapping = res.get("names", {}) or {}
-        command_results: List[CommandResults] = []
+        command_results: list[CommandResults] = []
         for issue in issues:
             markdown_dict, outputs = create_issue_md_and_outputs_dict(
                 issue_data=issue,
@@ -2095,7 +2093,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     return CommandResults(readable_output="No issues matched the query.")
 
 
-def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults]:
+def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[CommandResults]:
     """This command is in charge of returning the data of a specific issue.
 
     Args:
@@ -2114,9 +2112,9 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     expand_links = argToBoolean(args.get("expand_links", False))
     specific_fields = argToList(args.get("fields", ""))
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
-    responses: List[Dict[str, Any]] = [res]
+    responses: list[Dict[str, Any]] = [res]
     responses.extend(get_expanded_issues(client=client, issue=res, expand_links=expand_links))
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     if get_attachments:
         download_issue_attachments_to_war_room(client=client, issue=res)
     for response in responses:
@@ -2262,7 +2260,7 @@ def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[s
         return_results(create_file_info_from_attachment(client=client, attachment_id=attachment.get("id")))
 
 
-def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_links: bool = False) -> List[Dict[str, Any]]:
+def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_links: bool = False) -> list[Dict[str, Any]]:
     """Returns a list of subtasks and linked issues corresponding to the given issue.
 
     Args:
@@ -2273,7 +2271,7 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     Returns:
         List[Dict[str, Any]]:  A list of subtasks and linked issues corresponding to the given issue.
     """
-    responses: List[Dict[str, Any]] = []
+    responses: list[Dict[str, Any]] = []
     if expand_links:
         responses.extend(
             client.get_issue(full_issue_url=sub_task.get("self", "")) for sub_task in issue.get("fields", {}).get("subtasks", [])
@@ -2536,7 +2534,7 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
         return CommandResults(readable_output="No comments were found in the ticket")
 
 
-def create_comments_command_results(comments_response: List[Dict[str, Any]], issue_id_or_key: str) -> tuple[str, Dict[str, Any]]:
+def create_comments_command_results(comments_response: list[Dict[str, Any]], issue_id_or_key: str) -> tuple[str, Dict[str, Any]]:
     """Returns the human readable and context output of the get_comments_command.
 
     Args:
@@ -2670,7 +2668,7 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     """
     issue_id_or_key = get_issue_id_or_key(issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", ""))
     res = client.get_transitions(issue_id_or_key=issue_id_or_key)
-    transitions_names: List[str] = [transition.get("name", "") for transition in res.get("transitions", [])]
+    transitions_names: list[str] = [transition.get("name", "") for transition in res.get("transitions", [])]
     readable_output = tableToMarkdown("List Transitions:", transitions_names, headers=["Transition Names"])
     outputs: Dict[str, Any] = {"Transitions": {"transitions": transitions_names, "ticketId": issue_id_or_key}}
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
@@ -2727,7 +2725,7 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
         client=client, entry_id=entry_id, attachment_name=attachment_name, issue_id_or_key=issue_id_or_key
     )
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
-    markdown_dict: List[Dict[str, str]] = []
+    markdown_dict: list[Dict[str, str]] = []
     for attachment_entry in res:
         attachment_dict = {
             "Attachment Link": attachment_entry.get("self", ""),
@@ -2740,7 +2738,7 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
 
 def upload_XSOAR_attachment_to_jira(
     client: JiraBaseClient, entry_id: str, issue_id_or_key: str, attachment_name: str | None = None
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """Uploads the given attachment (identified by the entry_id), to the jira issue
     that corresponds to the key or id issue_id_or_key.
 
@@ -2774,7 +2772,7 @@ def upload_XSOAR_attachment_to_jira(
             return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
 
 
-def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Dict[str, Any]]:
+def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Dict[str, Any]]:
     """This command is in charge of getting an attachment's content that is found in an issue.
 
     Args:
@@ -2785,7 +2783,7 @@ def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -
         Dict[str, Any]: A dictionary the represents file entries to be returned to the user.
     """
     attachments_ids = argToList(args.get("attachment_id", ""))
-    files_result: List[Dict[str, Any]] = [
+    files_result: list[Dict[str, Any]] = [
         create_file_info_from_attachment(client=client, attachment_id=attachment_id) for attachment_id in attachments_ids
     ]
     return files_result
@@ -2840,7 +2838,7 @@ def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     # Since the API does not support pagination, and the issue fields returned can carry hundreds of entries,
     # we decided to do the pagination manually.
     fields_entry = res[start_at : start_at + max_results]
-    markdown_dict: List[Dict[str, Any]] = [
+    markdown_dict: list[Dict[str, Any]] = [
         {
             "Id": field.get("id", ""),
             "Name": field.get("name", ""),
@@ -2877,7 +2875,7 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
         return CommandResults(readable_output=f"No Account ID was found for attribute: {attribute}.")
     outputs = {"Attribute": attribute}
     is_jira_cloud = isinstance(client, JiraCloudClient)
-    account_ids: List[str] = []
+    account_ids: list[str] = []
 
     if len(res) == 1:
         # Since we compare the given attribute to the email address in order to retrieve the account id, and the email address
@@ -2965,7 +2963,7 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
 
 
 def create_sprint_issues_command_results(
-    board_id: str, issues: List[Dict[str, Any]], sprint_id: str, res: Dict[str, Any]
+    board_id: str, issues: list[Dict[str, Any]], sprint_id: str, res: Dict[str, Any]
 ) -> CommandResults:
     """Create the CommandResults of the sprint_issues_list_command.
 
@@ -3053,7 +3051,7 @@ def epic_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Co
         return CommandResults(readable_output=f"No child issues were found for epic {epic_id_or_key}")
 
 
-def create_epic_issues_command_results(issues: List[Dict[str, Any]], epic_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
+def create_epic_issues_command_results(issues: list[Dict[str, Any]], epic_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
     """Creates the CommandResults of the epic_issues_list_command.
 
     Args:
@@ -3224,7 +3222,7 @@ def board_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
         page_size=arg_to_number(arg=args.get("page_size", None)),
         limit=arg_to_number(arg=args.get("limit", None)),
     )
-    boards: List[Dict[str, Any]] = []
+    boards: list[Dict[str, Any]] = []
     if board_id:
         res = client.get_board(board_id=board_id)
         boards = [res]
@@ -3503,7 +3501,7 @@ def fetch_incidents(
     comment_tag_to_jira: str,
     attachment_tag_from_jira: str,
     attachment_tag_to_jira: str,
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """This function is the entry point of fetching incidents.
 
     Args:
@@ -3532,7 +3530,7 @@ def fetch_incidents(
     # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
     # we convert the list to hold integer values
-    last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get("issue_ids", []))
+    last_fetch_issue_ids: list[int] = convert_list_of_str_to_int(last_run.get("issue_ids", []))
     last_fetch_id = last_run.get("id", id_offset)
     if last_fetch_id in [0, "0"] and issue_field_to_fetch_from == "id":
         # If last_fetch_id is equal to zero, and the user wants to fetch using the issue ID, then we automatically
@@ -3548,7 +3546,7 @@ def fetch_incidents(
         )
     new_fetch_created_time = last_fetch_created_time = last_run.get("created_date", "")
     new_fetch_updated_time = last_fetch_updated_time = last_run.get("updated_date", "")
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[Dict[str, Any]] = []
     demisto.debug("Creating the fetch query")
     fetch_incidents_query = create_fetch_incidents_query(
         issue_field_to_fetch_from=issue_field_to_fetch_from,
@@ -3561,7 +3559,7 @@ def fetch_incidents(
     )
     demisto.debug(f"The fetch query: {fetch_incidents_query}" if fetch_incidents_query else "No fetch query created")
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
-    new_issue_ids: List[int] = []
+    new_issue_ids: list[int] = []
     demisto.debug(f"Running the query with the following parameters {query_params}")
     try:
         if query_res := client.run_query(query_params=query_params):
@@ -3657,7 +3655,7 @@ def parse_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_mapping: 
             )
 
 
-def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[int]:
+def convert_list_of_str_to_int(list_to_convert: list[str] | list[int]) -> list[int]:
     """This function converts a list of strings to a list of integers.
 
     Args:
@@ -3669,7 +3667,7 @@ def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[i
     Returns:
         List[int]: A list of integers
     """
-    converted_list: List[int] = []
+    converted_list: list[int] = []
     for item in list_to_convert:
         try:
             converted_list.append(int(item))
@@ -3685,7 +3683,7 @@ def create_fetch_incidents_query(
     last_fetch_created_time: str,
     last_fetch_updated_time: str,
     first_fetch_interval: str,
-    issue_ids_to_exclude: List[int],
+    issue_ids_to_exclude: list[int],
 ) -> str:
     """This is in charge of returning the query to use to fetch the appropriate incidents.
     NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
@@ -3733,7 +3731,7 @@ def create_fetch_incidents_query(
     raise DemistoException(error_message)
 
 
-def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_or_key: str) -> List[Dict[str, str]]:
+def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_or_key: str) -> list[Dict[str, str]]:
     """Return the comments' entries, for a fetched incident.
 
     Args:
@@ -3743,7 +3741,7 @@ def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_o
     Returns:
         List[Dict[str, Any]]: The comment entries for a fetched or mirrored incident.
     """
-    comments_entries: List[Dict[str, str]] = []
+    comments_entries: list[Dict[str, str]] = []
     get_comments_response = client.get_comments(issue_id_or_key=issue_id_or_key)
     if comments_response := get_comments_response.get("comments", []):
         for comment_response in comments_response:
@@ -3754,10 +3752,10 @@ def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_o
 
 def get_attachments_entries_for_fetched_incident(
     client: JiraBaseClient,
-    attachments_metadata: List[Dict[str, Any]],
+    attachments_metadata: list[Dict[str, Any]],
     incident_modified_date: datetime | None = None,
     user_timezone_name: str = "",
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """Return the attachments' entries for a fetched and mirrored incident
 
     Args:
@@ -3770,8 +3768,8 @@ def get_attachments_entries_for_fetched_incident(
     Returns:
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
     """
-    attachment_ids: List[str] = []
-    attachments_entries: List[Dict[str, Any]] = []
+    attachment_ids: list[str] = []
+    attachments_entries: list[Dict[str, Any]] = []
     for attachment_metadata in attachments_metadata:
         if (
             incident_modified_date
@@ -3848,7 +3846,7 @@ def create_incident_from_issue(
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, "fields.priority") or {})
 
-    attachments: List[Dict[str, Any]] = []
+    attachments: list[Dict[str, Any]] = []
     if fetch_attachments:
         demisto.debug(f"Fetching attachment for {issue_id}.")
         attachments = get_fetched_attachments(client=client, issue=issue)
@@ -3885,7 +3883,7 @@ def create_incident_from_issue(
     }
 
 
-def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> List[Dict[str, Any]]:
+def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> list[Dict[str, Any]]:
     """This function is in charge of fetching the attachments when fetching an incident if the user configured to fetch
     the attachments.
 
@@ -3896,7 +3894,7 @@ def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> Li
     Returns:
         List[Dict[str, Any]]: The attachments' entries to return as part of the incident.
     """
-    attachments: List[Dict[str, Any]] = []
+    attachments: list[Dict[str, Any]] = []
     demisto.debug("Fetching attachments")
     attachments_entries = get_attachments_entries_for_fetched_incident(
         client=client,
@@ -3910,7 +3908,7 @@ def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> Li
     return attachments
 
 
-def get_fetched_comments(client: JiraBaseClient, issue_id: str) -> List[Dict[str, str]]:
+def get_fetched_comments(client: JiraBaseClient, issue_id: str) -> list[Dict[str, str]]:
     """This function is in charge of fetching the comments when fetching an incident if the user configured to fetch
     the comments.
 
@@ -4053,7 +4051,7 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
         return GetModifiedRemoteDataResponse(modified_issues_ids)
 
 
-def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezone_name: str) -> List:
+def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezone_name: str) -> list:
     last_update = convert_string_date_to_specific_format(last_update_date, dateparser_settings={"TIMEZONE": timezone_name})
     demisto.debug(f"Performing get-modified-remote-data command. Last update is: {last_update}")
     query_params = create_query_params(jql_query=f'updated > "{last_update}"', max_results=100)
@@ -4092,7 +4090,7 @@ def get_remote_data_command(
         GetRemoteDataResponse: Structured incident response.
     """
     updated_incident: Dict[str, Any] = {}
-    parsed_entries: List[Dict[str, Any]] = []
+    parsed_entries: list[Dict[str, Any]] = []
     parsed_args = GetRemoteDataArgs(args)
     try:
         issue_id = parsed_args.remote_incident_id
@@ -4159,7 +4157,7 @@ def get_updated_remote_data(
     incident_modified_date: datetime | None,
     fetch_attachments: bool,
     fetch_comments: bool,
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """This function is in charge of returning the parsed entries of the updated incident, while updating
     the content of updated_incident, which is in charge of holding the updated data of the incident (since arguments
     are passed by reference, we can update the object in this function, and the changes to the object will be reflected
@@ -4183,7 +4181,7 @@ def get_updated_remote_data(
     Returns:
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
     """
-    parsed_entries: List[Dict[str, Any]] = []
+    parsed_entries: list[Dict[str, Any]] = []
     demisto.debug(f"Update incident, Incident name: Jira issue {issue.get('id')}Reason: Issue modified in remote")
     # Close incident if the Jira issue gets resolved, or its status gets updated to Done.
     if mirror_resolved_issue and (closed_issue := handle_incoming_resolved_issue(updated_incident)):
@@ -4277,7 +4275,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     return closing_entry
 
 
-def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> List[CommandResults]:
+def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> list[CommandResults]:
     """Retrieves all forms, including corresponding questions and answers, for a specified issue.
 
     :param client: The Jira client to use for making the API calls
