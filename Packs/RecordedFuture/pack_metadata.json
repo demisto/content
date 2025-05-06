@@ -2,7 +2,7 @@
     "name": "Recorded Future Intelligence",
     "description": "Recorded Future App, this pack is previously known as 'RecordedFuture v2'",
     "support": "partner",
-    "currentVersion": "1.8.4",
+    "currentVersion": "1.8.5",
     "author": "Recorded Future",
     "url": "https://www.recordedfuture.com/support/demisto-integration/",
     "email": "support@recordedfuture.com",
@@ -15,7 +15,7 @@
     ],
     "tags": [],
     "created": "2020-05-12T13:09:02Z",
-    "updated": "2022-09-05T10:10:02Z",
+    "updated": "2025-06-27T10:10:02Z",
     "certification": "certified",
     "useCases": [],
     "keywords": [
