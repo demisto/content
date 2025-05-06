@@ -12,7 +12,7 @@ from collections.abc import Callable
 def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
 
     flags = {
-        "base_64_encoded": False,
+        "base64_encoding": False,
         "obfuscated": False,
         "double_encoding": False,
         "reversed": False,
@@ -27,11 +27,11 @@ def check_for_obfuscation(command_line: str) -> tuple[dict[str, bool], str]:
             reversed_command_line  # Use the reversed command line for further analysis
         )
 
-    decoded_command_line, flags["base_64_encoded"], flags["double_encoding"] = (
+    decoded_command_line, flags["base64_encoding"], flags["double_encoding"] = (
         identify_and_decode_base64(parsed_command_line)
     )
 
-    if flags["double_encoding"] or flags["base_64_encoded"]:
+    if flags["double_encoding"] or flags["base64_encoding"]:
         parsed_command_line = decoded_command_line
 
     decoded_command_line, flags["obfuscated"] = encode_hex_and_oct_chars(parsed_command_line)
@@ -865,7 +865,6 @@ def calculate_score(results: dict[str, Any]) -> dict[str, Any]:
         "suspicious_parameters",
         "windows_temp_path",
         "reconnaissance",
-        "base64_encoding",
     }
 
     risk_bonuses: dict[str, int] = {
