@@ -1227,7 +1227,8 @@ class Client(BaseClient):
 
         url_suffix = f"{NAMESERVER_REPUTATION}/{nameserver}"
 
-        params = remove_nulls_from_dictionary({'explain': explain, 'limit': limit})
+        params = {'explain': explain, 'limit': limit}
+        remove_nulls_from_dictionary(params)
 
         response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
@@ -1252,8 +1253,7 @@ class Client(BaseClient):
             "explain": str(explain).lower() if explain else None,
             "limit": limit
         }
-
-        params = remove_nulls_from_dictionary(params)
+        remove_nulls_from_dictionary(params)
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
@@ -1286,7 +1286,8 @@ class Client(BaseClient):
         """
         url_suffix = f"{DENSITY_LOOKUP}/{qtype}/{query}"
 
-        params = remove_nulls_from_dictionary(kwargs)
+        params = kwargs
+        remove_nulls_from_dictionary(params)
 
         return self._http_request(
             method="GET",
@@ -1327,7 +1328,7 @@ class Client(BaseClient):
         url_suffix = SEARCH_DOMAIN
 
         # Prepare parameters and filter out None values using remove_nulls_from_dictionary function
-        params = remove_nulls_from_dictionary({
+        params = {
             'domain': query,
             'start_date': start_date,
             'end_date': end_date,
@@ -1344,7 +1345,8 @@ class Client(BaseClient):
             'cert_issuer': certificate_issuer,
             'whois_date_after': whois_date_after,
             'skip': skip,
-        })
+        }
+        remove_nulls_from_dictionary(params)
 
         # Make the request with the filtered parameters
         return self._http_request('GET', url_suffix, params=params)
@@ -1381,8 +1383,7 @@ class Client(BaseClient):
             'as_of': as_of,
             'origin_uid': origin_uid
         }
-
-        params = remove_nulls_from_dictionary(params)
+        remove_nulls_from_dictionary(params)
 
         payload = {'domains': domains}
         return self._http_request(
@@ -1497,7 +1498,9 @@ class Client(BaseClient):
             Dict[str, Any]: SSL certificate details for the specified domain.
         """
         url_suffix = f"{DOMAIN_CERTIFICATE}/{domain}"
-        params = remove_nulls_from_dictionary(kwargs)
+        params = kwargs
+        remove_nulls_from_dictionary(params)
+
         return self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -1687,7 +1690,8 @@ class Client(BaseClient):
         """
         url_suffix = f"{FORWARD_PADNS}/{qtype}/{qname}"
 
-        params = remove_nulls_from_dictionary(kwargs)
+        params = kwargs
+        remove_nulls_from_dictionary(params)
 
         return self._http_request(
             method="GET",
@@ -1731,14 +1735,14 @@ class Client(BaseClient):
         if not query:
             raise DemistoException("Query parameter is required for search scan data.")
 
-        query_params = {
+        params = {
             'limit': params.get('limit'),
             'fields': params.get('fields'),
             'sort': params.get('sort'),
             'skip': params.get('skip'),
             'with_metadata': params.get('with_metadata')
         }
-        params = remove_nulls_from_dictionary(query_params)
+        remove_nulls_from_dictionary(params)
         url_suffix = SEARCH_SCAN
 
         payload = {
@@ -1776,13 +1780,12 @@ class Client(BaseClient):
             'browser': browser,
             'region': region
         }
-
-        filtered_params = remove_nulls_from_dictionary(params)
+        remove_nulls_from_dictionary(params)
 
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
-            params=filtered_params
+            params=params
         )
 
     def get_future_attack_indicators(self, feed_uuid: str, page_no: int = 1, page_size: int = 10000) -> Dict[str, Any]:
@@ -1822,7 +1825,8 @@ class Client(BaseClient):
             Dict[str, Any]: Response containing screenshot information and vault details
         """
         endpoint = SCREENSHOT_URL
-        params = remove_nulls_from_dictionary({"url": url})
+        params = {"url": url}
+        remove_nulls_from_dictionary(params)
 
         response = self._http_request(
             method="GET",
@@ -2392,7 +2396,7 @@ def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> Com
     if not domain:
         raise DemistoException("The 'domain' parameter is required.")
 
-    params = remove_nulls_from_dictionary({
+    params = {
         'domain_regex': args.get('domain_regex'),
         'cert_issuer': args.get('certificate_issuer'),
         'date_min': args.get('date_min'),
@@ -2402,7 +2406,9 @@ def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> Com
         'with_metadata': argToBoolean(args.get('with_metadata')) if 'with_metadata' in args else None,
         'skip': arg_to_number(args.get('skip')),
         'limit': arg_to_number(args.get('limit'))
-    })
+    }
+    remove_nulls_from_dictionary(params)
+
     raw_response = client.get_domain_certificates(domain, **(params or {}))
 
     if raw_response.get('response', {}).get('job_status', {}):
@@ -3006,7 +3012,8 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     if not qtype or not qname:
         raise DemistoException("Both 'qtype' and 'qname' are required parameters.")
 
-    filtered_args = remove_nulls_from_dictionary({key: value for key, value in args.items() if key not in ('qtype', 'qname')})
+    filtered_args = {key: value for key, value in args.items() if key not in ('qtype', 'qname')}
+    remove_nulls_from_dictionary(filtered_args)
 
     raw_response = client.reverse_padns_lookup(
         qtype=qtype,
@@ -3075,14 +3082,16 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
         scan_data,
         removeNull=True
     )
+    outputs = {
+        'records': scan_data,
+        'query': query
+    }
+    remove_nulls_from_dictionary(outputs)
 
     return CommandResults(
         outputs_prefix='SilentPush.ScanData',
         outputs_key_field='domain',
-        outputs=remove_nulls_from_dictionary({
-            'records': scan_data,
-            'query': query
-        }),
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=raw_response
     )
@@ -3265,8 +3274,7 @@ def screenshot_url_command(client: Client, args: Dict[str, Any]) -> CommandResul
         "screenshot_url": result["screenshot_url"],
         "file_name": "filename"
     }
-
-    result_data = remove_nulls_from_dictionary(result_data)
+    remove_nulls_from_dictionary(result_data)
 
     # Download link of the image
     return_results(fileResult(filename, image_response.content))
