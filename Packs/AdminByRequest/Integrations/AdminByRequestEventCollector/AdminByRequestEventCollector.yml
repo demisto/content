@@ -102,7 +102,7 @@ script:
           name: limit
           required: false
           defaultvalue: 50000
-        - description: "The UTC date or relative timestamp from where to start fetching incidents
+        - description: "The UTC date or relative timestamp from where to start fetching incidents. Notice that for event types 'Requests' there is option to set a start date. 
                       Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd"
           name: first_fetch
           required: false

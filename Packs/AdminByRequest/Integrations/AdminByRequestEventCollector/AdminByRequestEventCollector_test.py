@@ -16,6 +16,7 @@ from AdminByRequestEventCollector import (
     set_event_type_fetch_limit,
     fetch_events_list,
     fetch_events,
+    get_events,
     EVENT_TYPES
 )
 
@@ -265,7 +266,7 @@ class TestFetchEvents:
         )
 
         output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types,
-                                             use_last_run_as_params=False)
+                                        use_last_run_as_params=False)
 
         assert len(output) == len(raw_detections)
         assert last_run.get("start_id_auditlog") == self.raw_detections_audit[-1]["id"] + 1
@@ -307,3 +308,27 @@ class TestFetchEvents:
         assert last_run.get("start_id_events") == self.raw_detections_events[-2]["id"] + 1
         assert last_run.get("start_id_requests") == self.raw_detections_requests[-3]["id"] + 1
 
+    @freeze_time("2025-01-01 01:00:00")
+    def test_get_events(self, client, mocker):
+        """
+        Given: A mock raw response containing audit logs.
+        When: fetching events.
+        Then: Make sure that the last run object was updated as expected
+        """
+
+        raw_detections = self.raw_detections_events[:-1]
+
+        first_response = self.raw_detections_events
+        second_response = []
+
+        args = {"limit": 2, "event_type": "Events"}
+
+        mocker.patch(
+            "AdminByRequestEventCollector.Client.retrieve_from_api",
+            side_effect=[first_response, second_response]
+        )
+
+        output = get_events(client, args=args)
+
+        assert len(output.outputs) == len(raw_detections)
+        assert output.outputs_prefix == "AdminByRequest." + "Events"
