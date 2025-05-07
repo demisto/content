@@ -4,7 +4,6 @@ from GetDataCollectionLink import (
     encode_string,
     generate_url,
     get_data_collection_url,
-    is_xsoar_saas,
 )
 
 
