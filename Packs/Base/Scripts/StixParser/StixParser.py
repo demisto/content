@@ -1443,12 +1443,12 @@ class StixDecode:
             for o in observables:
                 gprops = observable_extract_properties(o)
 
-                obj = next((ob for ob in o if ob.name == "Object"), None)
+                obj = next((ob for ob in o if ob.name == "Object"), None)  # type: ignore
                 if obj is None:
                     continue
 
                 # main properties
-                properties = next((c for c in obj if c.name == "Properties"), None)
+                properties = next((c for c in obj if c.name == "Properties"), None)  # type: ignore
                 if properties is not None:
                     for r in StixDecode.object_extract_properties(properties, kwargs):
                         r.update(gprops)
@@ -1457,13 +1457,13 @@ class StixDecode:
                         observable_result.append(r)
 
                 # then related objects
-                related = next((c for c in obj if c.name == "Related_Objects"), None)
+                related = next((c for c in obj if c.name == "Related_Objects"), None)  # type: ignore
                 if related is not None:
                     for robj in related:
-                        if robj.name != "Related_Object":
+                        if robj.name != "Related_Object":  # type: ignore
                             continue
 
-                        properties = next((c for c in robj if c.name == "Properties"), None)
+                        properties = next((c for c in robj if c.name == "Properties"), None)  # type: ignore
                         if properties is None:
                             continue
 
@@ -1474,36 +1474,36 @@ class StixDecode:
 
         # extract the Indicator info
         if (indicators := package.find_all("Indicator")) and observables:
-            indicator_ref = observables[0].get("idref")
+            indicator_ref = observables[0].get("idref")  # type: ignore
 
             if indicator_ref:
                 indicator_info = indicator_extract_properties(indicators[0])
-                indicator_result[indicator_ref] = indicator_info
+                indicator_result[indicator_ref] = indicator_info  # type: ignore
 
         # extract the TTP info
         if ttp := package.find_all("TTP"):
             ttp_info: Dict[str, str] = {}
 
-            id_ref = ttp[0].get("id")
+            id_ref = ttp[0].get("id")  # type: ignore
 
-            title = next((c for c in ttp[0] if c.name == "Title"), None)
+            title = next((c for c in ttp[0] if c.name == "Title"), None)  # type: ignore
             if title is not None:
-                title = title.text
+                title = title.text  # type: ignore
                 ttp_info["stix_ttp_title"] = title
 
-            description = next((c for c in ttp[0] if c.name == "Description"), None)
+            description = next((c for c in ttp[0] if c.name == "Description"), None)  # type: ignore
             if description is not None:
                 description = description.text
                 ttp_info["ttp_description"] = description
 
             if behavior := package.find_all("Behavior"):
-                if behavior[0].find_all("Malware"):
+                if behavior[0].find_all("Malware"):  # type: ignore
                     ttp_info.update(ttp_extract_properties(package.find_all("Malware_Instance")[0], "Malware"))
 
-                elif behavior[0].find_all("Attack_Patterns"):
+                elif behavior[0].find_all("Attack_Patterns"):  # type: ignore
                     ttp_info.update(ttp_extract_properties(package.find_all("Attack_Pattern")[0], "Attack Pattern"))
 
-                ttp_result[id_ref] = ttp_info
+                ttp_result[id_ref] = ttp_info  # type: ignore
 
         return timestamp, StixDecode._deduplicate(observable_result), indicator_result, ttp_result
 
