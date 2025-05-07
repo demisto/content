@@ -348,18 +348,18 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "wizresourcecloudid",
+                                "fieldId": "wizdetails",
                                 "height": 53,
-                                "id": "0bb4a990-6c9c-11ec-8550-af1c0da9783d",
+                                "id": "a9ef5340-698a-11ec-8f54-25c02ba6665c",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "wizdetails",
+                                "fieldId": "wizresourcecloudid",
                                 "height": 53,
-                                "id": "a9ef5340-698a-11ec-8f54-25c02ba6665c",
+                                "id": "0bb4a990-6c9c-11ec-8550-af1c0da9783d",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0

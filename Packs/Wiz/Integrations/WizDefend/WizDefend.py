@@ -779,10 +779,11 @@ def test_module():
         paginate=False
     )
 
-    if WizApiResponse.ERRORS not in wiz_detection:
-        demisto.results('ok')
-    else:
+    if WizApiResponse.ERRORS in wiz_detection or type(wiz_detection) is not list:
         demisto.results(wiz_detection)
+    else:
+        demisto.results('ok')
+
 
 
 def fetch_incidents():

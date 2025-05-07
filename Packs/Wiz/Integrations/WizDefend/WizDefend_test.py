@@ -7,7 +7,7 @@ from unittest.mock import patch
 import demistomock as demisto
 
 from CommonServerPython import DemistoException
-from Packs.Wiz.Integrations.WizDefend.WizDefend import WizApiVariables
+from Packs.Wiz.Integrations.WizDefend.WizDefend import WizApiVariables, get_filtered_detections
 
 integration_params = {
     'api_endpoint': 'http://test.io',
@@ -1996,6 +1996,8 @@ def test_validate_first_fetch():
     assert result.is_valid is False
     assert "Maximum allowed is" in result.error_message
 
+    result = get_filtered_detections(detection_origin=['dfaf'])
+    print(result)
     # Test exact maximum hours
     max_hours = MAX_DAYS_FIRST_FETCH_DETECTIONS * 24
     result = validate_first_fetch(f"{max_hours} hours")
