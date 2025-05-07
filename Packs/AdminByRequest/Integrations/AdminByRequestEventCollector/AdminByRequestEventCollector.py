@@ -221,7 +221,7 @@ def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use
     return output
 
 
-def get_event_type_fetch_limits(params: Dict[str, Any]) -> list[EventType]:
+def set_event_type_fetch_limit(params: Dict[str, Any]) -> list[EventType]:
     """
     Parses the event types to fetch from parameters and returns a dictionary mapping
     each selected event type's suffix to its corresponding max fetch limit.
@@ -392,7 +392,7 @@ def main():
             result = test_module(client)
             return_results(result)
         elif command == "fetch-events":
-            fetch_events_types = get_event_type_fetch_limits(params)
+            fetch_events_types = set_event_type_fetch_limit(params)
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, last_run, fetch_events_types)
             if len(events):

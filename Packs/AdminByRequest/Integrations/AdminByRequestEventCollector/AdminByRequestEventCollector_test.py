@@ -13,6 +13,7 @@ from AdminByRequestEventCollector import (
     EventType,
     remove_first_run_params,
     validate_fetch_events_params,
+    set_event_type_fetch_limit,
     EVENT_TYPES
 )
 
@@ -79,7 +80,6 @@ class TestHelperFunction:
     date_params = {"startdate": "2025-01-01", "enddate": "2025-01-01"}
     result_param_no_start_id = {"take": 1}
 
-
     case4_validate_fetch_events_params = (({}, audit_log_event, False),
                                           ({
                                                **date_params,
@@ -119,8 +119,40 @@ class TestHelperFunction:
         ]
     )
     @freeze_time("2025-01-01 01:00:00")
-    def test_validate_fetch_events_params(self, input_params: tuple[dict, EventType, bool], expected_results: tuple[dict, str, str]):
+    def test_validate_fetch_events_params(self, input_params: tuple[dict, EventType, bool],
+                                          expected_results: tuple[dict, str, str]) -> None:
         results = validate_fetch_events_params(*input_params)
         assert results == expected_results
 
-# TODO: ADD HERE unit tests for every command
+    case1_set_event_type_fetch_limit = (
+        {"event_types_to_fetch": ["Auditlog", "Events", "Requests"], "max_auditlog_per_fetch": 50000,
+         "max_events_per_fetch": 50000, "max_requests_per_fetch": 5000}, 3, (50000, 50000, 5000))
+    case2_set_event_type_fetch_limit = (
+        {"event_types_to_fetch": ["Auditlog", "Events"], "max_auditlog_per_fetch": 50000,
+         "max_events_per_fetch": 50000, "max_requests_per_fetch": 5000}, 2, (50000, 50000))
+    case3_set_event_type_fetch_limit = (
+        {"event_types_to_fetch": ["Auditlog", "Requests"], "max_auditlog_per_fetch": 50000,
+         "max_events_per_fetch": 10, "max_requests_per_fetch": 10}, 2, (50000, 10))
+    case4_set_event_type_fetch_limit = (
+        {"event_types_to_fetch": [], "max_auditlog_per_fetch": 50000,
+         "max_events_per_fetch": 50000, "max_requests_per_fetch": 5000}, 0, ())
+
+    @pytest.mark.parametrize(
+        "input_params, expected_len, expected_limits",
+        [
+            case1_set_event_type_fetch_limit,
+            case2_set_event_type_fetch_limit,
+            case3_set_event_type_fetch_limit,
+            case4_set_event_type_fetch_limit
+        ]
+    )
+    def test_set_event_type_fetch_limit(self, input_params: Dict[str, Any], expected_len: int,
+                                        expected_limits: tuple[int, int, int]) -> None:
+        event_types = set_event_type_fetch_limit(input_params)
+        assert len(event_types) == expected_len
+        for i in range(expected_len):
+            assert event_types[i].max_fetch == expected_limits[i]
+
+class TestFetchEvents:
+    pass
+
