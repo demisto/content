@@ -109,7 +109,7 @@ def get_list_threats(client: Client, after: str, before: str, next_page_number: 
         threats += res.get("threats")
         if res.get("nextPageNumber"):
             next_page_number = res.get("nextPageNumber")
-            demisto.debug(f"exist more events to fetch. {next_page_number=}")
+            demisto.debug(f"There are more events to fetch. {next_page_number=}")
         else:
             demisto.debug("no more events to fetch")
             is_next_page = False
