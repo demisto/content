@@ -58,15 +58,6 @@ DEFAULT_SUSPICIOUS_THRESHOLD = 50
 
 
 
-def clean_response_urls(func):
-    """
-    Decorator to apply `remove_angle_brackets_from_urls` to the response of _http_request.
-    """
-    def wrapper(*args, **kwargs):
-        response = func(*args, **kwargs)
-        return remove_angle_brackets_from_response(response)
-    return wrapper
-
 class Client(BaseClient):
     """API Client to communicate with ThreatGrid API."""
 
@@ -81,11 +72,11 @@ class Client(BaseClient):
             headers=headers,
             proxy=proxy,
         )
-        
-        @clean_response_urls
-        def _http_request(self, *args, **kwargs):
-            return super()._http_request(*args, **kwargs)
 
+    def _http_request(self, *args, **kwargs) -> Any:
+        """Wrapper for _http_request to remove angle brackets from response"""
+        return remove_angle_brackets_from_response(super()._http_request(*args, **kwargs))
+    
     def get_sample(
         self,
         sample_id: str | None = None,
