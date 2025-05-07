@@ -1493,7 +1493,7 @@ class StixDecode:
 
             description = next((c for c in ttp[0] if c.name == "Description"), None)  # type: ignore
             if description is not None:
-                description = description.text  # type: ignoref
+                description = description.text  # type: ignore
                 ttp_info["ttp_description"] = description
 
             if behavior := package.find_all("Behavior"):
