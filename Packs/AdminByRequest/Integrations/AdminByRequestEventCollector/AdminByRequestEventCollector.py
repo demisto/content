@@ -117,6 +117,7 @@ def remove_first_run_params(params: Dict[str, Any]) -> None:
     """
     if "startdate" in params:
         params.pop("startdate")
+    if "enddate" in params:
         params.pop("enddate")
 
 
@@ -144,9 +145,9 @@ def validate_fetch_events_params(last_run: dict, event_type: EventType, use_last
             "startid": last_run[key]
         }
     else:
-        # Phase 1: Use today's date for time-based fetch (unless it's requests)
+        # Phase 1: First Run params -  Use today's date for time-based fetch (unless it's requests)
         today = get_current_time().strftime(DATE_FORMAT_CALLS)
-        date_params = {} if event_type.suffix == "requests" else {"startdate": today, "enddate": today}
+        date_params = {} if suffix == "requests" else {"startdate": today, "enddate": today}
 
         params = {
             **event_type.default_params,
