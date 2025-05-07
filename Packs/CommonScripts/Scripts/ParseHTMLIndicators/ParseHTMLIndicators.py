@@ -45,7 +45,7 @@ def main():
     # Allow domain regex replacement between "[.]" and "."
     domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
     if unescape_domain:
-        domain_regex = domain_regex.replace(r"\\[\.\]", r"\.")
+        domain_regex = domain_regex.replace(r"\[\.\]", r"\.")
 
     # Declare indicator regexs
     url_regex = r"([https|ftp|hxxps]+:[//|\\\\]+[\w\d:#@%/;$()~_\+-=\\\[\.\]&]*)"
