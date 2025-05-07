@@ -14,7 +14,7 @@ system: true
 args:
 - name: url
   required: true
-  description: The full URL of the blog
+  description: The full URL of the blog.
 - name: exclude_indicators
   description: The indicators to be excluded from the results.
   isArray: true
@@ -31,9 +31,9 @@ args:
   defaultValue: "False"
 outputs:
 - contextPath: http.parsedBlog.indicators
-  description: The extracted indicators
+  description: The extracted indicators.
 - contextPath: http.parsedBlog.sourceLink
-  description: The link for the source of the indicators
+  description: The link for the source of the indicators.
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/bs4-tld:1.0.0.3151339
