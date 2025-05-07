@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: AdminByRequest
+  id: AdminByRequestEventCollector
   version: -1
 configuration:
 - defaultvalue: https://dc2api.adminbyrequest.com/
@@ -73,8 +73,8 @@ configuration:
   section: Collect
   advanced: true
 description: 'AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.'
-display: Admin By Request
-name: AdminByRequest
+display: Admin By Request Event Collector
+name: AdminByRequestEventCollector
 supportlevelheader: xsoar
 script:
   commands:

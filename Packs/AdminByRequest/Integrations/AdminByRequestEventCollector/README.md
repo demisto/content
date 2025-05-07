@@ -1,4 +1,5 @@
 AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.
+This integration collects events from the AdminByRequest API.
 
 ### Prerequisites 
 In order to  use the API , you must first enable the API and set up an API key. This is done by logging into your portal account and navigating to Settings -> Data -> API. You can use the copy icon to the right of the api key to copy it to the clipboard.
