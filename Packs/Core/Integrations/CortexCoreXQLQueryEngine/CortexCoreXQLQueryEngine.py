@@ -85,13 +85,8 @@ def set_playbook_metadata_headers(command: str):
     playbook_name = entry_task.get('playbookName', 'missing_playbook_name') if entry_task else ''
     task_name = entry_task.get('taskName', 'missing_task_name') if entry_task else ''
     task_id = entry_task.get('taskId', 'missing_task_id') if entry_task else ''
-    headers = {'playbook_metadata': {
-        'playbook_name': playbook_name,
-        'playbook_id': playbook_id,
-        'task_name': task_name,
-        'task_id': task_id,
-        'integration_name': INTEGRATION_NAME,
-        'command_name': command}}
+    # playbook_metadata = {'playbook_name': playbook_name, 'playbook_id': playbook_id, 'task_name': task_name, 'task_id': task_id, 'integration_name': INTEGRATION_NAME,'command_name': command}
+    headers = {'playbook_metadata' :"{'playbook_name': 'playbook_name', 'playbook_id': 'playbook_id', 'task_name': 'task_name', 'task_id': 'task_id', 'integration_name': 'INTEGRATION_NAME','command_name': 'command'}"}
     print(f"DANF: headers: {headers}")
     return headers
 
@@ -110,7 +105,7 @@ def main() -> None:
     try:
         url = "/api/webapp/"
         base_url = urljoin(url, url_suffix)
-        client = Client(base_url=base_url, proxy=proxy, verify=verify_certificate, headers=headers, is_core=True)        
+        client = Client(base_url=base_url, proxy=proxy, verify=verify_certificate, headers=headers, is_core=True)
         if command in GENERIC_QUERY_COMMANDS:
             return_results(GENERIC_QUERY_COMMANDS[command](client, args))
         elif command in BUILT_IN_QUERY_COMMANDS:

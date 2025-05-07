@@ -153,6 +153,14 @@ sendMultipart = function (uri, entryID, body) {
 };
 
 var sendRequest = function(method, uri, body, raw) {
+    
+    logDebug("DANF get getIntegrationContext" + getIntegrationContext())
+    logDebug("DANF type of  getIntegrationContext" + typeof getIntegrationContext())
+    logDebug("DANF keys of  getIntegrationContext" + Object.keys(getIntegrationContext()))
+    logDebug("DANF invContext" + invContext)
+    logDebug("DANF type of  invContext" + typeof invContext)
+    logDebug("DANF keys of  invContext" + Object.keys(invContext))
+
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
@@ -553,16 +561,12 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
 };
 
 
-
 switch (command) {
     case 'test-module':
         res = sendRequest('GET','user');
         if (res.response.id == undefined){
             throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
         }
-        var cache = getIntegrationContext();
-        console.log(`DANF cache: ${cache}`)
-        logDebug(`DANF cache: ${cache}`)
         return 'ok';
     case 'demisto-api-post':
     case 'core-api-post':
@@ -574,21 +578,7 @@ switch (command) {
         return sendRequest('POST',args.uri, args.body);
     case 'demisto-api-get':
     case 'core-api-get':
-        flattenFields(invContext,undefined,flat);
-        keysArr = Object.keys(flat);
-        for (var i = 0; i < keysArr.length; i++) {
-            currentValue=flat[keysArr[i]];
-            logDebug(`DANF: ${currentValue}`)
-        // var contextData = getIntegrationContext();
-        return keysArr
-        // logDebug(`DANF ParentEntry: ${invContext['ParentEntry']}`)
-        // for (const key in invContext) {
-        //     logDebug(`DANF ${key} : ${invContext[key]}`)
-        // }
-        // logDebug(`DANF taskId: ${invContext['ParentEntry']['entryTask']['taskId']}`)
-        // logDebug(`DANF taskName: ${invContext['ParentEntry']['entryTask']['taskName']}`)
-        // return "DANF"
-        // return sendRequest('GET',args.uri);
+        return sendRequest('GET',args.uri);
     case 'demisto-api-put':
     case 'core-api-put':
         var body = JSON.parse(args.body);
