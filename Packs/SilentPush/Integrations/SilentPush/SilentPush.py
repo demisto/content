@@ -4,7 +4,7 @@ import requests
 import json
 import urllib3
 import traceback
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 import ast
 from urllib.parse import urlencode
 
@@ -100,56 +100,56 @@ DENSITY_LOOKUP_INPUTS = [
                             description='Match level (optional).')
             ]
 SEARCH_DOMAIN_INPUTS = [
-                InputArgument(name='domain', 
+                InputArgument(name='domain',
                             description='Name or wildcard pattern of domain names to search for.'),
-                InputArgument(name='domain_regex', 
+                InputArgument(name='domain_regex',
                             description='A valid RE2 regex pattern to match domains. Overrides the domain argument.'),
-                InputArgument(name='name_server', 
+                InputArgument(name='name_server',
                             description='Name server name or wildcard pattern of the name server used by domains.'),
-                InputArgument(name='asnum', 
+                InputArgument(name='asnum',
                             description='Autonomous System (AS) number to filter domains.'),
-                InputArgument(name='asname', 
+                InputArgument(name='asname',
                             description='Search for all AS numbers where the AS Name begins with the specified value.'),
-                InputArgument(name='min_ip_diversity', 
+                InputArgument(name='min_ip_diversity',
                             description='Minimum IP diversity limit to filter domains.'),
-                InputArgument(name='registrar', 
+                InputArgument(name='registrar',
                             description='Name or partial name of the registrar used to register domains.'),
-                InputArgument(name='min_asn_diversity', 
+                InputArgument(name='min_asn_diversity',
                             description='Minimum ASN diversity limit to filter domains.'),
-                InputArgument(name='certificate_issuer', 
+                InputArgument(name='certificate_issuer',
                             description='Filter domains that had SSL certificates issued by the specified certificate issuer. Wildcards supported.'),
-                InputArgument(name='whois_date_after', 
+                InputArgument(name='whois_date_after',
                             description='Filter domains with a WHOIS creation date after this date (YYYY-MM-DD).'),
-                InputArgument(name='skip', 
+                InputArgument(name='skip',
                             description='Number of results to skip in the search query.'),
-                InputArgument(name='limit', 
+                InputArgument(name='limit',
                             description='Number of results to return. Defaults to the SilentPush API\'s behavior.')
             ]
 DOMAIN_INFRATAGS_INPUTS = [
-                InputArgument(name='domains', 
-                            description='Comma-separated list of domains.', 
+                InputArgument(name='domains',
+                            description='Comma-separated list of domains.',
                             required=True),
-                InputArgument(name='cluster', 
+                InputArgument(name='cluster',
                             description='Whether to cluster the results.'),
-                InputArgument(name='mode', 
-                            description='Mode for lookup (live/padns). Defaults to "live".', 
+                InputArgument(name='mode',
+                            description='Mode for lookup (live/padns). Defaults to "live".',
                             default='live'),
-                InputArgument(name='match', 
-                            description='Handling of self-hosted infrastructure. Defaults to "self".', 
+                InputArgument(name='match',
+                            description='Handling of self-hosted infrastructure. Defaults to "self".',
                             default='self'),
-                InputArgument(name='as_of', 
-                            description='Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago', 
+                InputArgument(name='as_of',
+                            description='Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago',
                             default='self')
             ]
 LIST_DOMAIN_INPUTS = [
-                InputArgument(name='domains', 
-                            description='Comma-separated list of domains to query.', 
+                InputArgument(name='domains',
+                            description='Comma-separated list of domains to query.',
                             required=True),
-                InputArgument(name='fetch_risk_score', 
-                            description='Whether to fetch risk scores for the domains.', 
+                InputArgument(name='fetch_risk_score',
+                            description='Whether to fetch risk scores for the domains.',
                             required=False),
-                InputArgument(name='fetch_whois_info', 
-                            description='Whether to fetch WHOIS information for the domains.', 
+                InputArgument(name='fetch_whois_info',
+                            description='Whether to fetch WHOIS information for the domains.',
                             required=False)
             ]
 DOMAIN_CERTIFICATE_INPUTS = [
@@ -176,38 +176,38 @@ DOMAIN_CERTIFICATE_INPUTS = [
                             description='Number of results to return.')
             ]
 ENRICHMENT_INPUTS = [
-                InputArgument(name='resource', 
-                            description='Type of resource for which information needs to be retrieved {e.g. domain}.', 
+                InputArgument(name='resource',
+                            description='Type of resource for which information needs to be retrieved {e.g. domain}.',
                             required=True),
-                InputArgument(name='value', 
-                            description='Value corresponding to the selected "resource" for which information needs to be retrieved{e.g. silentpush.com}.', 
+                InputArgument(name='value',
+                            description='Value corresponding to the selected "resource" for which information needs to be retrieved{e.g. silentpush.com}.',
                             required=True),
-                InputArgument(name='explain', 
+                InputArgument(name='explain',
                             description='Include explanation of data calculations.'),
-                InputArgument(name='scan_data', 
+                InputArgument(name='scan_data',
                             description='Include scan data (IPv4 only).')
             ]
 LIST_IP_INPUTS = [
-            InputArgument(name='ips', 
+            InputArgument(name='ips',
                         description='Comma-separated list of IP addresses.',
                         required=True)
         ]
 ASN_REPUTATION_INPUTS = [
-            InputArgument(name='asn', 
+            InputArgument(name='asn',
                         description='The ASN to lookup.',
                         required=True),
-            InputArgument(name='explain', 
+            InputArgument(name='explain',
                         description='Show the information used to calculate the reputation score.'),
-            InputArgument(name='limit', 
+            InputArgument(name='limit',
                         description='The maximum number of reputation history records to retrieve.')
         ]
 ASN_TAKEDOWN_REPUTATION_INPUTS = [
-            InputArgument(name='asn', 
-                        description='The ASN to lookup.', 
+            InputArgument(name='asn',
+                        description='The ASN to lookup.',
                         required=True),
-            InputArgument(name='explain', 
+            InputArgument(name='explain',
                         description='Show the information used to calculate the reputation score.'),
-            InputArgument(name='limit', 
+            InputArgument(name='limit',
                         description='The maximum number of reputation history records to retrieve.')
         ]
 IPV4_REPUTATION_INPUTS = [
@@ -220,43 +220,43 @@ IPV4_REPUTATION_INPUTS = [
                         description='The maximum number of reputation history to retrieve')
         ]
 FORWARD_PADNS_INPUTS = [
-            InputArgument(name='qtype', 
-                        description='DNS record type', 
+            InputArgument(name='qtype',
+                        description='DNS record type',
                         required=True),
-            InputArgument(name='qname', 
-                        description='The DNS record name to lookup', 
+            InputArgument(name='qname',
+                        description='The DNS record name to lookup',
                         required=True),
-            InputArgument(name='netmask', 
+            InputArgument(name='netmask',
                         description='The netmask to filter the lookup results.'),
-            InputArgument(name='subdomains', 
+            InputArgument(name='subdomains',
                         description='Flag to include subdomains in the lookup results.'),
-            InputArgument(name='regex', 
+            InputArgument(name='regex',
                         description='Regular expression to filter the DNS records.'),
-            InputArgument(name='match', 
+            InputArgument(name='match',
                         description='Type of match for the query (e.g., exact, partial).'),
-            InputArgument(name='first_seen_after', 
+            InputArgument(name='first_seen_after',
                         description='Filter results to include only records first seen after this date.'),
-            InputArgument(name='first_seen_before', 
+            InputArgument(name='first_seen_before',
                         description='Filter results to include only records first seen before this date.'),
-            InputArgument(name='last_seen_after', 
+            InputArgument(name='last_seen_after',
                         description='Filter results to include only records last seen after this date.'),
-            InputArgument(name='last_seen_before', 
+            InputArgument(name='last_seen_before',
                         description='Filter results to include only records last seen before this date.'),
-            InputArgument(name='as_of', 
+            InputArgument(name='as_of',
                         description='Date or time to get the DNS records as of a specific point in time.'),
-            InputArgument(name='sort', 
+            InputArgument(name='sort',
                         description='Sort the results by the specified field (e.g., date, score).'),
-            InputArgument(name='output_format', 
+            InputArgument(name='output_format',
                         description='The format in which the results should be returned (e.g., JSON, XML).'),
-            InputArgument(name='prefer', 
+            InputArgument(name='prefer',
                         description='Preference for specific DNS servers or sources.'),
-            InputArgument(name='with_metadata', 
+            InputArgument(name='with_metadata',
                         description='Flag to include metadata in the DNS records.'),
-            InputArgument(name='max_wait', 
+            InputArgument(name='max_wait',
                         description='Maximum number of seconds to wait for results before timing out.'),
-            InputArgument(name='skip', 
+            InputArgument(name='skip',
                         description='Number of results to skip for pagination purposes.'),
-            InputArgument(name='limit', 
+            InputArgument(name='limit',
                         description='Maximum number of results to return.')
         ]
 REVERSE_PADNS_INPUTS = [
@@ -391,42 +391,42 @@ SEARCH_DOMAIN_OUTPUTS = [
                         OutputArgument(name='ip_diversity_groups', output_type=int, description='The number of unique IP groups associated with the domain.')
                     ]
 DOMAIN_INFRATAGS_OUTPUTS = [
-                        OutputArgument(name='infratags.domain', 
-                                    output_type=str, 
+                        OutputArgument(name='infratags.domain',
+                                    output_type=str,
                                     description='The domain associated with the infratag.'),
-                        OutputArgument(name='infratags.mode', 
-                                    output_type=str, 
+                        OutputArgument(name='infratags.mode',
+                                    output_type=str,
                                     description='The mode associated with the domain infratag.'),
-                        OutputArgument(name='infratags.tag', 
-                                    output_type=str, 
+                        OutputArgument(name='infratags.tag',
+                                    output_type=str,
                                     description='The tag associated with the domain infratag.'),
                         
-                        OutputArgument(name='tag_clusters.25.domains', 
-                                    output_type=list, 
+                        OutputArgument(name='tag_clusters.25.domains',
+                                    output_type=list,
                                     description='List of domains in the tag cluster with score 25.'),
-                        OutputArgument(name='tag_clusters.25.match', 
-                                    output_type=str, 
+                        OutputArgument(name='tag_clusters.25.match',
+                                    output_type=str,
                                     description='The match string associated with the domains in the tag cluster with score 25.'),
                         
-                        OutputArgument(name='tag_clusters.50.domains', 
-                                    output_type=list, 
+                        OutputArgument(name='tag_clusters.50.domains',
+                                    output_type=list,
                                     description='List of domains in the tag cluster with score 50.'),
-                        OutputArgument(name='tag_clusters.50.match', 
-                                    output_type=str, 
+                        OutputArgument(name='tag_clusters.50.match',
+                                    output_type=str,
                                     description='The match string associated with the domains in the tag cluster with score 50.'),
                         
-                        OutputArgument(name='tag_clusters.75.domains', 
-                                    output_type=list, 
+                        OutputArgument(name='tag_clusters.75.domains',
+                                    output_type=list,
                                     description='List of domains in the tag cluster with score 75.'),
-                        OutputArgument(name='tag_clusters.75.match', 
-                                    output_type=str, 
+                        OutputArgument(name='tag_clusters.75.match',
+                                    output_type=str,
                                     description='The match string associated with the domains in the tag cluster with score 75.'),
                         
-                        OutputArgument(name='tag_clusters.100.domains', 
-                                    output_type=list, 
+                        OutputArgument(name='tag_clusters.100.domains',
+                                    output_type=list,
                                     description='List of domains in the tag cluster with score 100.'),
-                        OutputArgument(name='tag_clusters.100.match', 
-                                    output_type=str, 
+                        OutputArgument(name='tag_clusters.100.match',
+                                    output_type=str,
                                     description='The match string associated with the domains in the tag cluster with score 100.')
                     ]
 LIST_DOMAIN_OUTPUTS = [
@@ -736,67 +736,67 @@ IPV4_REPUTATION_OUTPUTS = [
                         OutputArgument(name='ip_reputation_explain.names_num_listed', output_type=int, description='The number of domain names linked to this IP that are flagged or listed in security threat databases.')
                     ]
 FORWARD_PADNS_OUTPUTS = [
-                        OutputArgument(name='qname', 
-                                    output_type=str, 
+                        OutputArgument(name='qname',
+                                    output_type=str,
                                     description='The DNS record name that was looked up.'),
-                        OutputArgument(name='qtype', 
-                                    output_type=str, 
+                        OutputArgument(name='qtype',
+                                    output_type=str,
                                     description='The DNS record type queried (e.g., NS).'),
-                        OutputArgument(name='records.answer', 
-                                        output_type=str, 
+                        OutputArgument(name='records.answer',
+                                        output_type=str,
                                         description='The answer (e.g., name server) for the DNS record.'),
-                        OutputArgument(name='records.count', 
-                                        output_type=int, 
+                        OutputArgument(name='records.count',
+                                        output_type=int,
                                         description='The number of occurrences for this DNS record.'),
-                        OutputArgument(name='records.first_seen', 
-                                        output_type=str, 
+                        OutputArgument(name='records.first_seen',
+                                        output_type=str,
                                         description='The timestamp when this DNS record was first seen.'),
-                        OutputArgument(name='records.last_seen', 
-                                        output_type=str, 
+                        OutputArgument(name='records.last_seen',
+                                        output_type=str,
                                         description='The timestamp when this DNS record was last seen.'),
-                        OutputArgument(name='records.nshash', 
-                                        output_type=str, 
+                        OutputArgument(name='records.nshash',
+                                        output_type=str,
                                         description='Unique hash for the DNS record.'),
-                        OutputArgument(name='records.query', 
-                                        output_type=str, 
+                        OutputArgument(name='records.query',
+                                        output_type=str,
                                         description='The DNS record query name (e.g., silentpush.com).'),
-                        OutputArgument(name='records.ttl', 
-                                        output_type=int, 
+                        OutputArgument(name='records.ttl',
+                                        output_type=int,
                                         description='Time to live (TTL) value for the DNS record.'),
-                        OutputArgument(name='records.type', 
-                                        output_type=str, 
+                        OutputArgument(name='records.type',
+                                        output_type=str,
                                         description='The type of the DNS record (e.g., NS).')
                     ]
 REVERSE_PADNS_OUTPUTS = [
-                        OutputArgument(name='qname', 
-                                    output_type=str, 
+                        OutputArgument(name='qname',
+                                    output_type=str,
                                     description='The DNS record name looked up.'),
-                        OutputArgument(name='qtype', 
-                                    output_type=str, 
+                        OutputArgument(name='qtype',
+                                    output_type=str,
                                     description='The type of the DNS record.'),
-                        OutputArgument(name='records.answer', 
-                                        output_type=str, 
+                        OutputArgument(name='records.answer',
+                                        output_type=str,
                                         description='The answer for the DNS query.'),
-                        OutputArgument(name='records.count', 
-                                        output_type=int, 
+                        OutputArgument(name='records.count',
+                                        output_type=int,
                                         description='The number of occurrences of the DNS record.'),
-                        OutputArgument(name='records.first_seen', 
-                                        output_type=str, 
+                        OutputArgument(name='records.first_seen',
+                                        output_type=str,
                                         description='Timestamp of when the record was first seen.'),
-                        OutputArgument(name='records.last_seen', 
-                                        output_type=str, 
+                        OutputArgument(name='records.last_seen',
+                                        output_type=str,
                                         description='Timestamp of the most recent occurrence of the record.'),
-                        OutputArgument(name='records.nshash', 
-                                        output_type=str, 
+                        OutputArgument(name='records.nshash',
+                                        output_type=str,
                                         description='The hash of the NS record.'),
-                        OutputArgument(name='records.query', 
-                                        output_type=str, 
+                        OutputArgument(name='records.query',
+                                        output_type=str,
                                         description='The DNS query associated with the record.'),
-                        OutputArgument(name='records.ttl', 
-                                        output_type=int, 
+                        OutputArgument(name='records.ttl',
+                                        output_type=int,
                                         description='Time-to-live (TTL) of the DNS record.'),
-                        OutputArgument(name='records.type', 
-                                        output_type=str, 
+                        OutputArgument(name='records.type',
+                                        output_type=str,
                                         description='The type of DNS record (e.g., NS).')]
 SEARCH_SCAN_OUTPUTS = [
                         OutputArgument(name='HHV', output_type=str, description='Unique identifier for the scan data entry.'),
@@ -1194,7 +1194,7 @@ class Client(BaseClient):
             raise DemistoException(f"Request error: {str(e)}")
 
 
-    def get_job_status(self, job_id: str, params: Optional[dict] = None) -> Dict[str, Any]:
+    def get_job_status(self, job_id: str, params: dict | None = None) -> dict[str, Any]:
         """
             Retrieve the status of a specific job.
 
@@ -1239,7 +1239,7 @@ class Client(BaseClient):
         # Return the reputation history, or an empty list if not found
         return response.get('response', {}).get('ns_server_reputation', [])
 
-    def get_subnet_reputation(self, subnet: str, explain: bool = False, limit: Optional[int] = None) -> Dict[str, Any]:
+    def get_subnet_reputation(self, subnet: str, explain: bool = False, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieve reputation history for a specific subnet.
 
@@ -1261,7 +1261,7 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
-    def get_asns_for_domain(self, domain: str) -> Dict[str, Any]:
+    def get_asns_for_domain(self, domain: str) -> dict[str, Any]:
         """
         Retrieve Autonomous System Numbers (ASNs) associated with the specified domain.
 
@@ -1276,7 +1276,7 @@ class Client(BaseClient):
         # Send the request and return the response directly
         return self._http_request(method="GET", url_suffix=url_suffix)
 
-    def density_lookup(self, qtype: str, query: str, **kwargs) -> Dict[str, Any]:
+    def density_lookup(self, qtype: str, query: str, **kwargs) -> dict[str, Any]:
         """
         Perform a density lookup based on various query types and optional parameters.
 
@@ -1299,12 +1299,12 @@ class Client(BaseClient):
             params=params
         )
 
-    def search_domains(self, query: Optional[str] = None, start_date: Optional[str] = None, end_date: Optional[str] = None,
-                    risk_score_min: Optional[int] = None, risk_score_max: Optional[int] = None, limit: int = 100, 
-                    domain_regex: Optional[str] = None, name_server: Optional[str] = None, asnum: Optional[int] = None, 
-                    asname: Optional[str] = None, min_ip_diversity: Optional[int] = None, registrar: Optional[str] = None, 
-                    min_asn_diversity: Optional[int] = None, certificate_issuer: Optional[str] = None, 
-                    whois_date_after: Optional[str] = None, skip: Optional[int] = None) -> dict:
+    def search_domains(self, query: str | None = None, start_date: str | None = None, end_date: str | None = None,
+                    risk_score_min: int | None = None, risk_score_max: int | None = None, limit: int = 100,
+                    domain_regex: str | None = None, name_server: str | None = None, asnum: int | None = None,
+                    asname: str | None = None, min_ip_diversity: int | None = None, registrar: str | None = None,
+                    min_asn_diversity: int | None = None, certificate_issuer: str | None = None,
+                    whois_date_after: str | None = None, skip: int | None = None) -> dict:
         """
         Search for domains based on various filtering criteria.
 
@@ -1361,8 +1361,8 @@ class Client(BaseClient):
         cluster: bool = False,
         mode: str = 'live',
         match: str = 'self',
-        as_of: Optional[str] = None,
-        origin_uid: Optional[str] = None        
+        as_of: str | None = None,
+        origin_uid: str | None = None
     ) -> dict:
         """
         Retrieve infrastructure tags for specified domains, supporting both GET and POST methods.
@@ -1397,7 +1397,7 @@ class Client(BaseClient):
             data=payload
         )
 
-    def fetch_bulk_domain_info(self, domains: List[str]) -> Dict[str, Any]:
+    def fetch_bulk_domain_info(self, domains: list[str]) -> dict[str, Any]:
         """Fetch basic domain information for a list of domains."""
         response = self._http_request(
             method='POST',
@@ -1407,7 +1407,7 @@ class Client(BaseClient):
         domain_info_list = response.get('response', {}).get('domaininfo', [])
         return {item['domain']: item for item in domain_info_list}
 
-    def fetch_risk_scores(self, domains: List[str]) -> Dict[str, Any]:
+    def fetch_risk_scores(self, domains: list[str]) -> dict[str, Any]:
         """Fetch risk scores for a list of domains."""
         response = self._http_request(
             method='POST',
@@ -1417,7 +1417,7 @@ class Client(BaseClient):
         risk_score_list = response.get('response', [])
         return {item['domain']: item for item in risk_score_list}
 
-    def fetch_whois_info(self, domain: str) -> Dict[str, Any]:
+    def fetch_whois_info(self, domain: str) -> dict[str, Any]:
         """Fetch WHOIS information for a single domain."""
         try:
             response = self._http_request(
@@ -1445,7 +1445,7 @@ class Client(BaseClient):
         except Exception as e:
             return {'error': str(e)}
 
-    def list_domain_information(self, domains: List[str], fetch_risk_score: Optional[bool] = False, fetch_whois_info: Optional[bool] = False) -> Dict[str, Any]:
+    def list_domain_information(self, domains: list[str], fetch_risk_score: bool | None = False, fetch_whois_info: bool | None = False) -> dict[str, Any]:
         """
         Retrieve domain information along with optional risk scores and WHOIS data.
 
@@ -1490,7 +1490,7 @@ class Client(BaseClient):
 
         return {'domains': results}
 
-    def get_domain_certificates(self, domain: str, **kwargs) -> Dict[str, Any]:
+    def get_domain_certificates(self, domain: str, **kwargs) -> dict[str, Any]:
         """
         Retrieve SSL certificate details associated with a given domain.
 
@@ -1511,7 +1511,7 @@ class Client(BaseClient):
             params=params
         )
     
-    def parse_subject(self, subject: Any) -> Dict[str, Any]:
+    def parse_subject(self, subject: Any) -> dict[str, Any]:
         """
         Parse the subject of a certificate or domain record.
 
@@ -1549,7 +1549,7 @@ class Client(BaseClient):
             except ValueError:
                 return False
 
-    def get_enrichment_data(self, resource: str, value: str, explain: Optional[bool] = False, scan_data: Optional[bool] = False) -> dict:
+    def get_enrichment_data(self, resource: str, value: str, explain: bool | None = False, scan_data: bool | None = False) -> dict:
         """
         Retrieve enrichment data for a specific resource.
 
@@ -1579,12 +1579,12 @@ class Client(BaseClient):
             return ip2asn_data[0] if isinstance(ip2asn_data, list) and ip2asn_data else {}
         return response.get("response", {})
 
-    def validate_ips(self, ips: List[str]) -> None:
+    def validate_ips(self, ips: list[str]) -> None:
         """Validates the number of IPs in the list."""
         if len(ips) > 100:
             raise DemistoException("Maximum of 100 IPs can be submitted in a single request.")
 
-    def list_ip_information(self, ips: List[str], resource: str) -> Dict:
+    def list_ip_information(self, ips: list[str], resource: str) -> dict:
         """
         Retrieve information for multiple IP addresses.
 
@@ -1602,7 +1602,7 @@ class Client(BaseClient):
         
         return self._http_request("POST", url_suffix, data=ip_data)
 
-    def get_asn_reputation(self, asn: int, limit: Optional[int] = None, explain: Optional[bool] = False) -> Dict[str, Any]:
+    def get_asn_reputation(self, asn: int, limit: int | None = None, explain: bool | None = False) -> dict[str, Any]:
         """
         Retrieve reputation history for a specific Autonomous System Number (ASN).
 
@@ -1626,7 +1626,7 @@ class Client(BaseClient):
             params=query_params
         )
     
-    def get_asn_takedown_reputation(self, asn: str, explain: int = 0, limit: int = None) -> Dict[str, Any]:
+    def get_asn_takedown_reputation(self, asn: str, explain: int = 0, limit: int = None) -> dict[str, Any]:
         """
         Retrieve takedown reputation for a specific Autonomous System Number (ASN).
 
@@ -1662,7 +1662,7 @@ class Client(BaseClient):
             # Log or wrap the unexpected response type for debugging or display
             return {'error': response if isinstance(response, str) else 'Unexpected response type'}
 
-    def get_ipv4_reputation(self, ipv4: str, explain: int = 0, limit: int = None) -> List[Dict[str, Any]]:
+    def get_ipv4_reputation(self, ipv4: str, explain: int = 0, limit: int = None) -> list[dict[str, Any]]:
         """
         Retrieve reputation information for an IPv4 address.
         """
@@ -1680,7 +1680,7 @@ class Client(BaseClient):
         ipv4_reputation = raw_response.get('response', {}).get('ip_reputation_history', [])
         return ipv4_reputation
 
-    def forward_padns_lookup(self, qtype: str, qname: str, **kwargs) -> Dict[str, Any]:
+    def forward_padns_lookup(self, qtype: str, qname: str, **kwargs) -> dict[str, Any]:
         """
         Perform a forward PADNS lookup using various filtering parameters.
 
@@ -1703,7 +1703,7 @@ class Client(BaseClient):
             params=params
         )
 
-    def reverse_padns_lookup(self, qtype: str, qname: str, **kwargs) -> Dict[str, Any]:
+    def reverse_padns_lookup(self, qtype: str, qname: str, **kwargs) -> dict[str, Any]:
         """
         Perform a reverse PADNS lookup using various filtering parameters.
 
@@ -1723,7 +1723,7 @@ class Client(BaseClient):
             params=kwargs
         )
 
-    def search_scan_data(self, query: str, params: dict) -> Dict[str, Any]:
+    def search_scan_data(self, query: str, params: dict) -> dict[str, Any]:
         """
         Search the Silent Push scan data repositories.
 
@@ -1760,8 +1760,8 @@ class Client(BaseClient):
             params=params
         )
         
-    def live_url_scan(self, url: str, platform: Optional[str] = None, os: Optional[str] = None,
-                  browser: Optional[str] = None, region: Optional[str] = None) -> Dict[str, Any]:
+    def live_url_scan(self, url: str, platform: str | None = None, os: str | None = None,
+                  browser: str | None = None, region: str | None = None) -> dict[str, Any]:
         """
         Perform a live scan of a URL to get hosting metadata.
 
@@ -1792,7 +1792,7 @@ class Client(BaseClient):
             params=params
         )
 
-    def get_future_attack_indicators(self, feed_uuid: str, page_no: int = 1, page_size: int = 10000) -> Dict[str, Any]:
+    def get_future_attack_indicators(self, feed_uuid: str, page_no: int = 1, page_size: int = 10000) -> dict[str, Any]:
         """
         Retrieve indicators of future attack feed from SilentPush.
 
@@ -1818,7 +1818,7 @@ class Client(BaseClient):
             url=url
         )
 
-    def screenshot_url(self, url: str) -> Dict[str, Any]:
+    def screenshot_url(self, url: str) -> dict[str, Any]:
         """
         Generate a screenshot for a given URL and store it in the vault using GET request.
 
@@ -2286,7 +2286,7 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
     outputs_list=LIST_DOMAIN_OUTPUTS,
     description="This command get domain information along with Silent Push risk score and live whois information for multiple domains."
 )
-def list_domain_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_domain_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Handle the list-domain-information command execution.
 
@@ -2309,7 +2309,7 @@ def list_domain_information_command(client: Client, args: Dict[str, Any]) -> Com
         raw_response=response
     )
 
-def parse_arguments(args: Dict[str, Any]) -> Tuple[List[str], bool, bool]:
+def parse_arguments(args: dict[str, Any]) -> tuple[list[str], bool, bool]:
     """
     Parse and validate command arguments.
 
@@ -2329,7 +2329,7 @@ def parse_arguments(args: Dict[str, Any]) -> Tuple[List[str], bool, bool]:
     
     return domains, fetch_risk_score, fetch_whois_info
 
-def format_domain_information(response: Dict[str, Any], fetch_risk_score: bool, fetch_whois_info: bool) -> str:
+def format_domain_information(response: dict[str, Any], fetch_risk_score: bool, fetch_whois_info: bool) -> str:
     """
     Format the response data into markdown format.
 
@@ -2375,7 +2375,7 @@ def format_domain_information(response: Dict[str, Any], fetch_risk_score: bool, 
     outputs_list=DOMAIN_CERTIFICATE_OUTPUTS,
     description="This command get certificate data collected from domain scanning."
 )
-def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves SSL/TLS certificates for a given domain.
 
@@ -2451,7 +2451,7 @@ def get_domain_certificates_command(client: Client, args: Dict[str, Any]) -> Com
         raw_response=raw_response
     )
 
-def format_certificate_info(cert: Dict[str, Any]) -> Dict[str, str]:
+def format_certificate_info(cert: dict[str, Any]) -> dict[str, str]:
     """
     Formats certificate information into a structured dictionary.
 
@@ -2552,7 +2552,7 @@ def validate_ip(client: Client, resource: str, value: str) -> None:
     outputs_list=LIST_IP_OUTPUTS,
     description="This command get IP information for multiple IPv4s and IPv6s."
 )
-def list_ip_information_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_ip_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command to list IP information for a given set of IP addresses, categorized by IPv4 and IPv6.
 
@@ -2839,7 +2839,7 @@ def get_asn_takedown_reputation_command(client, args):
     outputs_list=IPV4_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation information for an IPv4."
 )
-def get_ipv4_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the reputation data for a given IPv4 address from the client.
 
@@ -3196,7 +3196,7 @@ def format_scan_results(scan_results: dict, url: str) -> tuple:
     outputs_list=FUTURE_ATTACK_INDICATOR_OUTPUTS,
     description="This command fetch indicators of potential future attacks using a feed UUID."
 )
-def get_future_attack_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_future_attack_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command handler for retrieving indicators of future attack feed.
 
@@ -3239,7 +3239,7 @@ def get_future_attack_indicators_command(client: Client, args: Dict[str, Any]) -
     outputs_list=SCREENSHOT_URL_OUTPUTS,
     description="This commandGenerate screenshot of a URL."
 )
-def screenshot_url_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command handler for taking URL screenshots.
 
