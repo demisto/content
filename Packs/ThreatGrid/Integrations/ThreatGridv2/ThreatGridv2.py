@@ -72,10 +72,6 @@ class Client(BaseClient):
             proxy=proxy,
         )
 
-    def _http_request(self, *args, **kwargs) -> Any:
-        """Wrapper for _http_request that removes angle brackets from the response to prevent clickable URLs."""
-        return remove_angle_brackets_from_response(super()._http_request(*args, **kwargs))
-
     def get_sample(
         self,
         sample_id: str | None = None,
@@ -504,7 +500,7 @@ def search_submission_command(
     )
 
 
-def remove_angle_brackets_from_response(response):
+def remove_angle_brackets(response):
     """
     Recursively walk through any nested dict or list.
     If a string value contains a URL wrapped in < >, remove the angle brackets.
@@ -514,12 +510,12 @@ def remove_angle_brackets_from_response(response):
 
     if isinstance(response, dict):
         return {
-            k: remove_angle_brackets_from_response(v)
+            k: remove_angle_brackets(v)
             for k, v in response.items()
         }
 
     elif isinstance(response, list):
-        return [remove_angle_brackets_from_response(item) for item in response]
+        return [remove_angle_brackets(item) for item in response]
 
     elif isinstance(response, str):
         return url_pattern.sub(r'\1', response)
@@ -635,14 +631,16 @@ def analysis_sample_command(
     items = response["data"]["items"] if response["data"].get("items") else response["data"]
 
     items_to_display = parse_output(items, url_param) if isinstance(items, dict) else items
-
+    items_to_display_no_clickable_url = remove_angle_brackets(items_to_display)
+    
     response["data"].update({"sample_id": sample_id})
 
     readable_output = tableToMarkdown(
         name="List of samples analysis:",
-        t=items_to_display,
+        t=items_to_display_no_clickable_url,
         headerTransform=string_to_table_header,
     )
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'ThreatGrid.{ANALYSIS_OUTPUTS[url_param]["output"]}',
@@ -942,10 +940,11 @@ def get_sample_command(
         return fileResult(filename=f"{sample_id}-{artifact}", data=response)
     else:
         sample_details = dict_safe_get(response, ["data", "items"]) or response.get("data")  # type: ignore[assignment]
-
+    sample_details_no_clickable_url = remove_angle_brackets(sample_details)
+    
     readable_output = tableToMarkdown(
         name=SAMPLE_ARGS[arg_name]["name"],
-        t=sample_details,
+        t=sample_details_no_clickable_url,
         metadata=pagination_message,
         headerTransform=string_to_table_header,
     )

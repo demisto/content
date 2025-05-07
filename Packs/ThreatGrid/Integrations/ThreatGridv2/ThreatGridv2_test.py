@@ -892,5 +892,5 @@ def test_remove_angle_brackets_from_urls(input_data, expected_output):
         - All other strings and non-URL values should remain unchanged
         - The function should work recursively for nested lists and dictionaries
     """
-    from ThreatGridv2 import remove_angle_brackets_from_response
-    assert remove_angle_brackets_from_response(input_data) == expected_output
+    from ThreatGridv2 import remove_angle_brackets
+    assert remove_angle_brackets(input_data) == expected_output
