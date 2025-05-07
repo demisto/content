@@ -44,7 +44,7 @@ script:
     - contextPath: dnstwist.Domain.Domains.WhoisCreated
       description: Whois created for domain name variations.
       type: string
-  dockerimage: demisto/dnstwist:1.0.0.117168
+  dockerimage: demisto/dnstwist:1.0.0.2064306
   runonce: false
   script: '-'
   type: python
