@@ -12,9 +12,6 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.10,<3.13"
 
-[tool.poetry.include]
-files = ["README.md", "LICENSE"]
-
 [tool.poetry.dev-dependencies]
 pytest = "^8.0"
 
