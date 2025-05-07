@@ -1,5 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = Threat Vault by Palo Alto Networks, pack version = 2.0.19')
+
+
 
 SCORE_TABLE_FILE = {
     "unknown": Common.DBotScore.NONE,
@@ -787,6 +790,10 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     page_size = arg_to_number(args.get("page_size"))
     offset, limit = pagination(page, page_size, arg_to_number(args.get("limit", 50)))
 
+    # if limit is None - set to 50 (default)
+    if limit is None:
+        limit = 50
+
     validate_arguments_search_command(
         cve,
         vendor,
@@ -828,7 +835,43 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
             raise
 
     if response:
+
+        # grab summary information about next/previous pages, results
+        count = int(response.get("count") or 0)
+
+        # get initial results
         command_results_list.extend(parse_resp_by_type(response, True))
+
+        # do we have any additional result pages to get?
+        if limit < count:
+            # we have more results than the limit (need to get pages)
+
+            while offset < (count - limit):
+
+                # while there is still more results to get
+                offset = offset + limit
+
+                query = assign_params(
+                    cve=cve,
+                    vendor=vendor,
+                    name=name,
+                    fromReleaseDate=from_release_date,
+                    toReleaseDate=to_release_date,
+                    fromReleaseVersion=from_release_version,
+                    toRelaseVersion=to_release_version,
+                    releaseDate=release_date,
+                    releaseVersion=release_version,
+                    type=type_,
+                    offset=offset,
+                    limit=limit,
+                )
+
+                response = client.threat_search_request(args=query)
+
+                if response:
+                    # grab summary information about next/previous pages, results
+                    command_results_list.extend(parse_resp_by_type(response, True))
+
     return command_results_list
 
 
@@ -1056,3 +1099,4 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+
