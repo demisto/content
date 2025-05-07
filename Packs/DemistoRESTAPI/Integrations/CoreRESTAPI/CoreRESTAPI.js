@@ -16,16 +16,7 @@ isHosted = function () {
     return false
 }
 
-
-var marketplace_url;
-
-if (params.marketplace_url) {
-    marketplace_url = params.marketplace_url;
-} else if (isXSIAM()) {
-    marketplace_url = 'https://storage.googleapis.com/marketplace-dist/content/packs/';
-} else {
-    marketplace_url = 'https://marketplace.xsoar.paloaltonetworks.com/content/packs/';
-}
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/content/packs/'
 
 getTenantAccountName = function () {
     // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
@@ -336,8 +327,14 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             let pack_id = Object.keys(pack)[0]
             let pack_version = pack[pack_id]
 
-            let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
-            installPack(pack_url, undefined, skip_verify, skip_validation)
+            if (isHosted()) {
+
+
+            }
+            else {
+                let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
+                installPack(pack_url, undefined, skip_verify, skip_validation)
+            }
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }

@@ -168,9 +168,14 @@ class ContentPackInstaller:
             pack_id = pack["id"]
             pack_payload = json.dumps([{pack_id: pack["version"]}])
 
-            args = {"packs_to_install": str(pack_payload)}
+            if is_xsiam_or_xsoar_saas():  # install packs for XSOAR 8.X or XSIAM
+                data = {'packs': packs_to_install, 'ignoreWarnings': True}
+                args = {'uri': '/contentpacks/marketplace/install', 'body': data}
+                status, res = self._call_execute_command("core-api-post", args)
 
-            status, res = self._call_execute_command("core-api-install-packs", args)
+            else:  # install packs for XSOAR 6.X
+                args = {"packs_to_install": str(pack_payload)}
+                status, res = self._call_execute_command("core-api-install-packs", args)
 
             if not status:
                 demisto.error(f"{SCRIPT_NAME} - Failed to install the pack {pack_id} - {res!s}")
@@ -178,6 +183,7 @@ class ContentPackInstaller:
             else:
                 self.installed_packs[pack_id] = packs_names_versions[pack_id]
                 self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore
+
 
     def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:  # pragma: no cover
         """Retrieves the packs' dependencies from the marketplace data.
