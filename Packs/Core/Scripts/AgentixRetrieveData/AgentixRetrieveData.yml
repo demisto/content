@@ -22,9 +22,15 @@ args:
   - name: query_name
     required: true
     description: The name of the query.
+  - description: The interval in seconds between each poll.
+    name: interval_in_seconds
+    defaultValue: '30'
+  - description: The timeout in seconds until polling ends.
+    name: timeout_in_seconds
+    defaultValue: '600'
   - name: query_id
     hidden: true
-    description: The id of the query.
+    description: The id of the query (should not be inserted by the user).
 outputs:
   - contextPath: PaloAltoNetworksXQL
     description: A list of records (dictionaries) which contain the given indicator.

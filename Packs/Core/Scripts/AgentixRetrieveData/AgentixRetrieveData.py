@@ -4,8 +4,8 @@ import urllib3
 from CoreXQLApiModule import *
 
 urllib3.disable_warnings()
-
-XDR = "PaloAltoNetworksXQL.GenericQuery(val.execution_id && val.execution_id == obj.execution_id)"
+DEFAULT_TIMEOUT = 600
+DEFAULT_INTERVAL = 30
 
 
 def shorten_text(text: str) -> str:
@@ -76,8 +76,8 @@ def execute_query(args: dict) -> dict:
 
 @polling_function(
     name='AgentixRetrieveData',
-    interval=30,
-    timeout=600,
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False
 )
 def retrieve_data_from_xdr(args: dict) -> PollResult:

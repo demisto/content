@@ -20,11 +20,13 @@ Gets an indicator data set and timeframe, and searches for the indicator.
 | time_frame | How many days back to search for the indicator. |
 | data_set | The dataset to search in. |
 | query_name | The name of the query. |
+| interval_in_seconds | The interval in seconds between each poll. |
+| timeout_in_seconds | The timeout in seconds until polling ends. |
 
 ## Outputs
 
 ---
 
-| **Path** | **Description**                                                       | **Type** |
-| --- |-----------------------------------------------------------------------| --- |
-| PaloAltoNetworksXQL | A list of records (dictionaries) which contain the given indicator. | List |
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PaloAltoNetworksXQL | A list of records \(dictionaries\) which contain the given indicator. | List |
