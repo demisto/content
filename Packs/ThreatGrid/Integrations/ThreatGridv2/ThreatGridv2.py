@@ -73,7 +73,7 @@ class Client(BaseClient):
         )
 
     def _http_request(self, *args, **kwargs) -> Any:
-        """Wrapper for _http_request to remove angle brackets from response"""
+        """Wrapper for _http_request that removes angle brackets from the response to prevent clickable URLs."""
         return remove_angle_brackets_from_response(super()._http_request(*args, **kwargs))
 
     def get_sample(
