@@ -14,6 +14,8 @@ from AdminByRequestEventCollector import (
     remove_first_run_params,
     validate_fetch_events_params,
     set_event_type_fetch_limit,
+    fetch_events_list,
+    fetch_events,
     EVENT_TYPES
 )
 
@@ -153,6 +155,155 @@ class TestHelperFunction:
         for i in range(expected_len):
             assert event_types[i].max_fetch == expected_limits[i]
 
+
 class TestFetchEvents:
-    pass
+    event_requests = EVENT_TYPES["Requests"]
+    event_events = EVENT_TYPES["Events"]
+    event_audit = EVENT_TYPES["Auditlog"]
+
+    raw_detections_audit = util_load_json("test_data/auditlogs_response.json")
+    raw_detections_events = util_load_json("test_data/events_response.json")
+    raw_detections_requests = util_load_json("test_data/events_response.json")
+
+    def test_fetch_events_update_last_run(self, client, mocker):
+        """
+        Given: A mock raw response containing audit logs.
+        When: fetching events.
+        Then: Make sure that the last run object was updated as expected
+        """
+        self.event_audit.max_fetch = 3
+        raw_detections = self.raw_detections_audit
+        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        last_run = {}
+
+        output = fetch_events_list(client, last_run=last_run, event_type=self.event_audit, use_last_run_as_params=False)
+
+        assert len(output) == 3
+        assert last_run.get("start_id_auditlog") == raw_detections[-1]["id"] + 1
+
+    def test_fetch_events_update_last_run_with_old_params(self, client, mocker):
+        """
+        Given: A mock raw response containing audit logs.
+        When: fetching events.
+        Then: Make sure that the last run object was updated as expected
+        """
+        self.event_audit.max_fetch = 3
+        raw_detections = self.raw_detections_audit
+        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        last_run = {"start_id_auditlog": 1, "start_id_events": 1, "start_id_requests": 1}
+
+        output = fetch_events_list(client, last_run=last_run, event_type=self.event_audit, use_last_run_as_params=False)
+
+        assert len(output) == 3
+        assert last_run.get("start_id_auditlog") == raw_detections[-1]["id"] + 1
+        assert last_run.get("start_id_events") == 1
+        assert last_run.get("start_id_requests") == 1
+
+    def test_fetch_response_bigger_then_limit(self, client, mocker):
+        """
+        Given: A mock raw response containing audit logs.
+        When: fetching events.
+        Then: Make sure that the last run object was updated as expected
+        """
+        self.event_events.max_fetch = 2
+        raw_detections = self.raw_detections_events
+        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        last_run = {"start_id_auditlog": 1, "start_id_events": 1, "start_id_requests": 1}
+
+        output = fetch_events_list(client, last_run=last_run, event_type=self.event_events, use_last_run_as_params=False)
+
+        assert len(output) == 2
+        assert last_run.get("start_id_events") == raw_detections[-1]["id"]
+
+    def test_fetch_limit_bigger_then_response(self, client, mocker):
+        """
+        Given: A mock raw response containing audit logs.
+        When: fetching events.
+        Then: Make sure that the last run object was updated as expected
+        """
+        self.event_requests.max_fetch = 3
+        raw_detections = self.raw_detections_requests[:-1]
+        first_response = raw_detections
+        second_response = []
+
+        mocker.patch(
+            "AdminByRequestEventCollector.Client.retrieve_from_api",
+            side_effect=[first_response, second_response]
+        )
+        last_run = {"start_id_auditlog": 1, "start_id_events": 1, "start_id_requests": 1}
+
+        output = fetch_events_list(client, last_run=last_run, event_type=self.event_requests, use_last_run_as_params=False)
+
+        assert len(output) == len(raw_detections)
+        assert last_run.get("start_id_requests") == raw_detections[-1]["id"] + 1
+
+    def test_fetch_all_types(self, client, mocker):
+        """
+        Given: A mock raw response containing audit logs.
+        When: fetching events.
+        Then: Make sure that the last run object was updated as expected
+        """
+        self.event_requests.max_fetch = 3
+        self.event_events.max_fetch = 3
+        self.event_audit.max_fetch = 3
+
+        raw_detections = raw_detections = (
+            self.raw_detections_audit +
+            self.raw_detections_events +
+            self.raw_detections_requests
+        )
+
+        first_response = self.raw_detections_audit
+        second_response = self.raw_detections_events
+        third_response = self.raw_detections_requests
+
+        events_types = [self.event_audit, self.event_events, self.event_requests]
+
+        mocker.patch(
+            "AdminByRequestEventCollector.Client.retrieve_from_api",
+            side_effect=[first_response, second_response, third_response]
+        )
+
+        output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types,
+                                             use_last_run_as_params=False)
+
+        assert len(output) == len(raw_detections)
+        assert last_run.get("start_id_auditlog") == self.raw_detections_audit[-1]["id"] + 1
+        assert last_run.get("start_id_events") == self.raw_detections_events[-1]["id"] + 1
+        assert last_run.get("start_id_requests") == self.raw_detections_requests[-1]["id"] + 1
+
+    def test_fetch_all_types_different_lengths(self, client, mocker):
+        """
+        Given: A mock raw response containing audit logs.
+        When: fetching events.
+        Then: Make sure that the last run object was updated as expected
+        """
+        self.event_audit.max_fetch = 3
+        self.event_events.max_fetch = 2
+        self.event_requests.max_fetch = 1
+
+        raw_detections = raw_detections = (
+            self.raw_detections_audit +
+            self.raw_detections_events[:-1] +
+            self.raw_detections_requests[:-2]
+        )
+
+        first_response = self.raw_detections_audit
+        second_response = self.raw_detections_events
+        third_response = self.raw_detections_requests
+
+        events_types = [self.event_audit, self.event_events, self.event_requests]
+
+        mocker.patch(
+            "AdminByRequestEventCollector.Client.retrieve_from_api",
+            side_effect=[first_response, second_response, third_response]
+        )
+
+        output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types,
+                                        use_last_run_as_params=False)
+
+        assert len(output) == len(raw_detections)
+        assert last_run.get("start_id_auditlog") == self.raw_detections_audit[-1]["id"] + 1
+        assert last_run.get("start_id_events") == self.raw_detections_events[-2]["id"] + 1
+        assert last_run.get("start_id_requests") == self.raw_detections_requests[-3]["id"] + 1
 
