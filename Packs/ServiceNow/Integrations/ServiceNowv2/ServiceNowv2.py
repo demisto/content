@@ -2,6 +2,8 @@ import mimetypes
 import re
 from collections.abc import Callable, Iterable
 
+from dataclasses import asdict, dataclass
+
 import demistomock as demisto  # noqa: F401
 
 # disable insecure warnings
@@ -188,6 +190,44 @@ DEFAULT_RECORD_FIELDS = {
 }
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+
+
+@dataclass
+class MirrorObject:
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    Fields:
+        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
+        ticket_id (Optional[str]): Unique identifier of the created ticket.
+
+    ### TODO: We will need this class in common server python,
+    but due to known performance issues, we are keeping it here for now.
+    """
+    ticket_url: Optional[str] = None
+    ticket_id: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = []
+        if not self.ticket_url:
+            missing_fields.append('ticket_url')
+        if not self.ticket_id:
+            missing_fields.append('ticket_id')
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+
+        Returns:
+            dict: Dictionary representation of the MirrorObject.
+        """
+        return asdict(self)
 
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
@@ -1457,10 +1497,18 @@ def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     else:
         additional_fields_keys = list(args.keys())
 
+    instance_url = demisto.params().get("url", "").rstrip('/')
+    ticket_type = ticket.get("type")
+    ticket_sys_id = ticket.get("sys_id")
+
+    ticket_url = f"{instance_url}/nav_to.do?uri={ticket_type}.do?sys_id={ticket_sys_id}"
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_sys_id)
+
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         "Ticket(val.ID===obj.ID)": created_ticket_context,
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
+        "MirrorObject": mirror_obj.to_context(),
     }
 
     return human_readable, entry_context, result, True
