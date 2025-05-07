@@ -57,7 +57,7 @@ EVENT_TYPES: Dict[str, EventType] = {
         suffix="events",
         take=10000,
         source_log_type="events",
-        time_field="startTimeUTC",
+        time_field="eventTimeUTC",
         default_params={}
     ),
     "Requests": EventType(
