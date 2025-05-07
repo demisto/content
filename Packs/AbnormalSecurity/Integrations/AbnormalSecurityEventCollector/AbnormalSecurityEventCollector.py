@@ -150,8 +150,6 @@ def main():  # pragma: no cover
 
         elif command == "fetch-events":
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
-            if last_run.get("next_page_number") > 1:
-                last_run["nextTrigger"] = "0"
             demisto.debug(f"calling setLastRun: {last_run=}")
             demisto.setLastRun(last_run)
 
