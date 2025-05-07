@@ -77,16 +77,26 @@ class Client(BaseClient):
         self.token = access_token
         self.token_expiry = datetime.now(timezone.utc) + timedelta(seconds=int(expires_in) - 10)
         demisto.debug(f"Access token obtained, expires at {self.token_expiry.isoformat()}")
+        set_integration_context({"access_token":access_token,
+                                 "token_expiry": self.token_expiry.isoformat()})
         return access_token
 
     def _get_valid_token(self) -> str:
         """
         Returns a valid access token, generating a new one if necessary.
         """
-        if not self.token or not self.token_expiry or datetime.now(timezone.utc) >= self.token_expiry:
-            demisto.debug("Token not valid")
+        integration_context = get_integration_context()
+        access_token = integration_context.get("access_token","")
+        token_expiry = integration_context.get("token_expiry","")
+        
+        if not access_token or not token_expiry:
+            demisto.debug("Token doesn't exists")
             return self.create_access_token()
-        return self.token
+        
+        elif datetime.now(timezone.utc) >= datetime.fromisoformat(token_expiry):
+            demisto.debug("Token Expired")
+            return self.create_access_token()
+        return access_token
 
     def _authorized_request(self, url_suffix: str, params: dict) -> list[dict]:
         """
