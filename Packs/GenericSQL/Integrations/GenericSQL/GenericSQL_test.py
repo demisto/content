@@ -396,7 +396,7 @@ def test_trino_connection(mocker, port: str, expected_url: str):
         ssl_connect=False,
         use_ldap=False,
     )
-    assert mock_create_engine.called_once_with(expected_url)
+    mock_create_engine.assert_called_once(expected_url)
 
 
 @pytest.mark.parametrize(
