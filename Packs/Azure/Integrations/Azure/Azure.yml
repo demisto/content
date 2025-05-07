@@ -669,22 +669,7 @@ script:
       description: Value of the configuration.
     name: azure-postgres-config-set
     description: Updates a configuration of a server.
-    outputs:
-    - contextPath: Azure.Postgres.Configuration.id
-      description: The resource ID of the configuration.
-      type: string
-    - contextPath: Azure.Postgres.Configuration.name
-      description: The name of the configuration setting.
-      type: string
-    - contextPath: Azure.Postgres.Configuration.type
-      description: The type of the resource.
-      type: string
-    - contextPath: Azure.Postgres.Configuration.properties.value
-      description: The value of the configuration setting.
-      type: string
-    - contextPath: Azure.Postgres.Configuration.properties.source
-      description: The source of the configuration value.
-      type: string
+    outputs: []
   - arguments:
     - name: resource_group_name
       type: string
@@ -1247,13 +1232,144 @@ script:
       name: resource_group_name
     description: Updates the properties of an existing Azure Cosmos DB database account.
     name: azure-cosmos-db-update
-    outputs: []
+    outputs:
+    - contextPath: Azure.CosmosDB.id
+      description: The unique resource identifier of the ARM resource.
+      type: String
+    - contextPath: Azure.CosmosDB.name
+      description: The name of the ARM resource.
+      type: String
+    - contextPath: Azure.CosmosDB.location
+      description: The location of the resource group to which the resource belongs.
+      type: String
+    - contextPath: Azure.CosmosDB.kind
+      description: Indicates the type of database account.
+      type: String
+    - contextPath: Azure.CosmosDB.identity.type
+      description: The type of identity used for the resource.
+      type: String
+    - contextPath: Azure.CosmosDB.identity.userAssignedIdentities
+      description: The list of user identities associated with the resource.
+      type: Dictionary
+    - contextPath: Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType
+      description: Describes the types of schema for analytical storage.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.apiProperties
+      description: API specific properties.
+      type: Dictionary
+    - contextPath: Azure.CosmosDB.properties.backupPolicy
+      description: The policy for taking backups on an account.
+    - contextPath: Azure.CosmosDB.properties.capabilities
+      description: List of Cosmos DB capabilities for the account.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.capacity
+      description: Properties related to capacity enforcement on an account.
+      type: Integer
+    - contextPath: Azure.CosmosDB.properties.connectorOffer
+      description: The Cassandra connector offer type for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.consistencyPolicy
+      description: The consistency policy for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.cors
+      description: The CORS policy for the Cosmos DB database account.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.createMode
+      description: The mode of account creation.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.customerManagedKeyStatus
+      description: Status of the Customer Managed Key feature on the account.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.databaseAccountOfferType
+      description: The offer type for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.defaultIdentity
+      description: The default identity for accessing key vault used in features like customer managed keys.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess
+      description: Disable write operations on metadata resources via account keys.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.disableLocalAuth
+      description: Opt-out of local authentication.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.documentEndpoint
+      description: The connection endpoint for the Cosmos DB database account.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.enableAnalyticalStorage
+      description: Flag to indicate whether to enable storage analytics.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.enableAutomaticFailover
+      description: Enables automatic failover of the write region.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.enableBurstCapacity
+      description: Flag to indicate enabling/disabling of Burst Capacity feature.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.enableCassandraConnector
+      description: Enables the Cassandra connector on the Cosmos DB account.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.enableFreeTier
+      description: Flag to indicate whether Free Tier is enabled.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.enableMultipleWriteLocations
+      description: Enables the account to write in multiple locations.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.enablePartitionMerge
+      description: Flag to indicate enabling/disabling of Partition Merge feature.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale
+      description: Flag to indicate enabling/disabling of PerRegionPerPartitionAutoscale feature.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.failoverPolicies
+      description: An array that contains the regions ordered by their failover priorities.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.instanceId
+      description: A unique identifier assigned to the database account.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.ipRules
+      description: List of IP rules.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled
+      description: Flag to indicate whether to enable/disable Virtual Network ACL rules.
+      type: Boolean
+    - contextPath: Azure.CosmosDB.properties.keyVaultKeyUri
+      description: The URI of the key vault.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.keysMetadata
+      description: Metadata related to each access key for the given Cosmos DB database account.
+      type: Dictionary
+    - contextPath: Azure.CosmosDB.properties.locations
+      description: An array that contains all of the locations enabled for the Cosmos DB account.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.minimalTlsVersion
+      description: Indicates the minimum allowed TLS version.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.networkAclBypass
+      description: Indicates what services are allowed to bypass firewall checks.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.networkAclBypassResourceIds
+      description: List of resource IDs that are allowed to bypass firewall checks.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.privateEndpointConnections
+      description: List of private endpoint connections.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.provisioningState
+      description: The status of the Cosmos DB account at the time the operation was called.
+      type: String
+    - contextPath: Azure.CosmosDB.properties.readLocations
+      description: An array that contains the read locations enabled for the Cosmos DB account.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.virtualNetworkRules
+      description: List of Virtual Network ACL rules.
+      type: List
+    - contextPath: Azure.CosmosDB.properties.writeLocations
+      description: An array that contains the write locations enabled for the Cosmos DB account.
+      type: List
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/azure-cli:1.0.0.3254609
+  dockerimage: demisto/crypto:1.0.0.2005673
 fromversion: 6.1.0
 marketplaces:
 - xsoar

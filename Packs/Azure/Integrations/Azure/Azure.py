@@ -6,7 +6,7 @@ import subprocess
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
-
+import time
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -39,6 +39,7 @@ DISKS_API_VERSION="2024-03-02"
 ACR_API_VERSION="2023-01-01-preview"
 KEY_VAULT_API_VERSION="2022-07-01"
 SQL_DB_API_VERSION="2021-11-01"
+COSMOS_DB_API_VERSION="2024-11-15"
 """ CLIENT CLASS """
 
 
@@ -266,25 +267,24 @@ and resource group "{resource_group_name}" was not found.')
             }
         }
         ### for getting policyDefinitionId run the line below
-        print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
+        # print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
-
-    def set_postgres_config(self, server_name, subscription_id, resource_group_name, configuration_name, source, value):
-        full_url=(
-                f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
-                f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}/configurations/{configuration_name}"
-            )
-        params = {"api-version": POSTGRES_API_VERSION}
     
+    def set_postgres_config(self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str,
+                            source: str, value: str):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}/configurations/{configuration_name}"
+        )
+        params = {"api-version": POSTGRES_API_VERSION}
         data = {
             "properties":
             {
                 "source": source,
-                "value": value,
+                "value": value
             }
         }
-        ### for getting policyDefinitionId run the line below
-        # print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
+        data = remove_empty_elements(data)
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
 
     def set_webapp_config(self, name, subscription_id, resource_group_name, http20_enabled, remote_debugging_enabled, min_tls_version):
@@ -555,12 +555,12 @@ and resource group "{resource_group_name}" was not found.')
     
     def cosmos_db_update(self, subscription_id, resource_group_name, account_name, disable_key_based_metadata_write_access):
         data = {
-            "properties":
-                {
-                    "disableKeyBasedMetadataWriteAccess": disable_key_based_metadata_write_access
-                }
+            "properties": {
+                "disableKeyBasedMetadataWriteAccess": disable_key_based_metadata_write_access
             }
-        params = {"api-version": SQL_DB_API_VERSION}
+        }
+        data = remove_empty_elements(data)
+        params = {"api-version": COSMOS_DB_API_VERSION}
         full_url=(
             f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DocumentDB/databaseAccounts/{account_name}"
@@ -839,15 +839,27 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
     )
     
 def set_postgres_config_command(client: AzureClient, params: dict, args: dict):
-    server_name = args.get("server_name")
+    """
+        Updates a configuration of PostgreSQL server.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+    server_name = args.get("server_name", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     configuration_name = args.get("configuration_name", "")
     source = args.get("source", "")
-    value = json.loads(args.get("value", "{}"))
-    response = client.set_postgres_config(server_name, subscription_id, resource_group_name, configuration_name, source, value)
-    print(response)
+    value = args.get("value", "")
+    client.set_postgres_config(server_name, subscription_id, resource_group_name, configuration_name, source, value)
 
+    return CommandResults(
+        readable_output=f"Updated the configuration {configuration_name} of the server {server_name}."
+    )
 
 def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
     name = args.get("name")
@@ -1182,12 +1194,29 @@ def sql_db_tde_set_command(
 def cosmosdb_update_command(
     client: AzureClient, args: Dict[str, Any], params: dict[str, Any]
 ) -> CommandResults:
+    """
+        Update a Cosmos DB.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     account_name = args.get("account_name")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     disable_key_based_metadata_write_access = args.get("disable_key_based_metadata_write_access")
     response = client.cosmos_db_update(subscription_id, resource_group_name, account_name, disable_key_based_metadata_write_access)
-    print(response)
+    
+    return CommandResults(
+        readable_output=f"Updated Cosmos DB {account_name}.", # doesn't contain a table because it takes time for the resource to be updated.
+        outputs_prefix="Azure.CosmosDB",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
     
     
 def test_module(client: AzureClient) -> str:
@@ -1240,9 +1269,7 @@ def main():
             redirect_uri=params.get("redirect_uri"),
             managed_identities_client_id=get_azure_managed_identities_client_id(params),
         )
-        if command == "azure-acr-authentication-as-arm-update" or command == "azure-functionapp-identity-assign":
-            client.azure_login()
-            
+    
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-storage-account-create-update": storage_account_create_update_command,
