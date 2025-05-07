@@ -60,7 +60,7 @@ DEFAULT_SUSPICIOUS_THRESHOLD = 50
 
 def clean_response_urls(func):
     """
-    Decorator to apply `remove_angle_brackets_from_urls` to the response of a function (e.g., _http_request).
+    Decorator to apply `remove_angle_brackets_from_urls` to the response of _http_request.
     """
     def wrapper(*args, **kwargs):
         response = func(*args, **kwargs)
