@@ -1952,12 +1952,6 @@ function getDemistoVersion() {
     }
 }
 
-isXSIAM = function () {
-    res = getDemistoVersion();
-    platform = res.platform;
-    return platform === "x2";
-}
-
 /**
  * Compare between two versions.
  * @param {string} a - version.
