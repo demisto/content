@@ -327,14 +327,8 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             let pack_id = Object.keys(pack)[0]
             let pack_version = pack[pack_id]
 
-            if (isHosted()) {
-
-
-            }
-            else {
-                let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
-                installPack(pack_url, undefined, skip_verify, skip_validation)
-            }
+            let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
+            installPack(pack_url, undefined, skip_verify, skip_validation)
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }

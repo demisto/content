@@ -18,6 +18,7 @@ configuration:
   required: false
 - display: Base marketplace url
   name: marketplace_url
+  defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/content/packs/
   type: 0
   required: false
 - display: Trust any certificate (not secure)
