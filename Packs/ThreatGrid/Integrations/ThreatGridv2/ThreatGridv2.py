@@ -57,7 +57,6 @@ DEFAULT_MALICIOUS_THRESHOLD = 85
 DEFAULT_SUSPICIOUS_THRESHOLD = 50
 
 
-
 class Client(BaseClient):
     """API Client to communicate with ThreatGrid API."""
 
@@ -76,7 +75,7 @@ class Client(BaseClient):
     def _http_request(self, *args, **kwargs) -> Any:
         """Wrapper for _http_request to remove angle brackets from response"""
         return remove_angle_brackets_from_response(super()._http_request(*args, **kwargs))
-    
+
     def get_sample(
         self,
         sample_id: str | None = None,
@@ -122,14 +121,13 @@ class Client(BaseClient):
             url_suffix = f"{url_suffix}/{artifact}"
         else:
             resp_type = "json"
-            
+
         return self._http_request(
             "GET",
             urljoin(API_V2_PREFIX, url_suffix),
             params=params,
             resp_type=resp_type,
         )
-
 
     def analysis_sample(
         self,
@@ -504,6 +502,7 @@ def search_submission_command(
         outputs=submissions,
         raw_response=response,
     )
+
 
 def remove_angle_brackets_from_response(response):
     """
@@ -934,7 +933,7 @@ def get_sample_command(
         sha256=sha256,
         md5=md5,
     )
-    
+
     sample_details = response
     content_format = "json"
 
