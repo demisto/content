@@ -22,7 +22,7 @@ var marketplace_url;
 if (params.marketplace_url) {
     marketplace_url = params.marketplace_url;
 } else if (isXSIAM()) {
-    marketplace_url = 'https://marketplace-v2.xsoar.paloaltonetworks.com/content/packs/';
+    marketplace_url = 'https://storage.googleapis.com/marketplace-dist/content/packs/';
 } else {
     marketplace_url = 'https://marketplace.xsoar.paloaltonetworks.com/content/packs/';
 }
