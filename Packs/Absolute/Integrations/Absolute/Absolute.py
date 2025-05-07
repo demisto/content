@@ -390,8 +390,8 @@ class ClientV3(BaseClient):
         return query
 
 
-def sign(key, msg):
-    return hmac.new(key, msg.encode("utf-8"), hashlib.sha256).digest()
+# def sign(key, msg):
+#     return hmac.new(key, msg.encode("utf-8"), hashlib.sha256).digest()
 
 
 def validate_absolute_api_url(base_url: str) -> str:
