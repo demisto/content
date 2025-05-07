@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cortex-module-test"
-version = "0.0.3"
+version = "0.0.4"
 description = "A test cortex module package."
 authors = ["Cortex"]
 license = "MIT"
@@ -12,12 +12,11 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.10,<3.13"
 
+[tool.poetry.include]
+files = ["README.md", "LICENSE"]
+
 [tool.poetry.dev-dependencies]
 pytest = "^8.0"
-
-[tool.poetry.include]
-# Optional: explicitly include files
-files = ["README.md", "LICENSE", "pyproject.toml"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
