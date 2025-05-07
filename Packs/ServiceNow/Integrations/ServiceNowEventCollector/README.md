@@ -87,3 +87,21 @@ There is no context output for this command.
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
+
+
+### service-now-reset-auth
+
+***
+Resets the integration context, including stored OAuth tokens. Use this command to delete an expired refresh token, especially when encountering access_denied or other errors during access token generation.
+
+#### Base Command
+
+`service-now-reset-auth`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

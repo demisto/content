@@ -127,6 +127,8 @@ script:
       required: false
       isArray: false
       defaultValue: ""
+  - name: service-now-reset-auth
+    description: Resets the integration context, including stored OAuth tokens. Use this command to delete an expired refresh token, especially when encountering access_denied or other errors during access token generation.
     outputs: []
   dockerimage: demisto/python3:3.11.10.115186
   isfetchevents: true
