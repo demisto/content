@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0.1 of Nexthink
 
 ## Configure Nexthink in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Engine Host (e.g. connector.nexthink.com) |  | True |
@@ -14,23 +13,25 @@ This integration was integrated and tested with version 1.0.1 of Nexthink
 | Use system proxy settings | Use system proxy settings. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nt-compliance-check
+
 ***
 Verify antivirus/antispyware status.
-
 
 #### Base Command
 
 `nt-compliance-check`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ipaddress | Endpoint IP Address. | Optional |
 | hostname | Endpoint Hostname. | Optional |
-
 
 #### Context Output
 
@@ -47,29 +48,27 @@ Verify antivirus/antispyware status.
 | Nexthink.Compliance.DeviceAntispywareRTP | string | Endpoint Antispyware real time protection status. |
 | Nexthink.Compliance.DeviceAntispywareUpdated | string | Endpoint Antispyware update status. |
 
-
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### nt-installed-packages
+
 ***
 Query installed software in endpoint.
-
 
 #### Base Command
 
 `nt-installed-packages`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | Endpoint Hostname. | Required |
 | package | Installed Software Name. Default is agent. | Required |
-
 
 #### Context Output
 
@@ -83,29 +82,27 @@ Query installed software in endpoint.
 | Nexthink.Package.IPAddress | string | Endpoint IP address. |
 | Nexthink.Package.MACAddress | string | Endpoint MAC address. |
 
-
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### nt-endpoint-details
+
 ***
 Get endpoint details.
-
 
 #### Base Command
 
 `nt-endpoint-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | Endpoint hostname. | Optional |
 | ipaddress | Endpoint IP Address. | Optional |
-
 
 #### Context Output
 
@@ -116,9 +113,8 @@ Get endpoint details.
 | Nexthink.Endpoint.IPAddress | string | Endpoint IP address. |
 | Nexthink.Endpoint.MACAddress | string | Endpoint MAC address. |
 
-
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
-
