@@ -1,6 +1,7 @@
+import pytest
 import demistomock as demisto
 from CommonServerPython import formats
-from HTMLtoMD import main
+from HTMLtoMD import main, html_to_md_command
 
 
 def test_main(mocker):
@@ -13,3 +14,16 @@ def test_main(mocker):
     assert len(results) == 1
     assert results[0]["ContentsFormat"] == formats["markdown"]
     assert results[0]["Contents"]["Result"] == "[Demisto](http://demisto.com)"
+
+
+@pytest.mark.parametrize(
+    'escape_misc, expected_results',
+    [
+        (True, "**\\+**"),
+        (False, "**+**")
+    ]
+)
+def test_escape_miscs(escape_misc, expected_results):
+    args = {"html": '<b>+</b>', "escape_misc": escape_misc}
+    results = html_to_md_command(args)
+    assert results[1] == expected_results
