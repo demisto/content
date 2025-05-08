@@ -20,9 +20,10 @@ def get_audit_logs(timeframe: int) -> Dict:
         uri = "/public_api/v1/audits/management_logs"
         body = {
             "request_data": {
-                "search_to": 1000,
+                "search_from": 0,
+                "search_to": 100,
                 "filters": [
-                    {"field": "modification_time", "operator": "gte", "value": date_to_timestamp(timestring)},
+                    {"field": "timestamp", "operator": "gte", "value": date_to_timestamp(timestring)},
                 ],
             }
         }
