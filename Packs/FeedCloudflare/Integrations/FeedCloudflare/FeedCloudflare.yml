@@ -124,6 +124,13 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- additionalinfo: When enabled, each /32 CIDR will also be returned as an IP indicator. Only relevant if the integration fetches /32 CIDR indicators.
+  display: Set /32 CIDRs as IP Indicators
+  name: cidr_32_to_ip
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 description: Use the Cloudflare feed integration to fetch indicators from the feed.
 display: Cloudflare Feed
 name: Cloudflare Feed
