@@ -283,8 +283,8 @@ def reset_auth() -> CommandResults:
     demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
     set_integration_context({})
     return CommandResults(
-        readable_output="Authorization was reset successfully. Please regenerate the credentials, "
-        "and then click **Test** to validate the credentials and connection."
+        readable_output="Authorization was reset successfully. You can continue working, "
+        "and a new refresh token will be generated automatically."
     )
 
 
@@ -378,7 +378,7 @@ def main() -> None:  # pragma: no cover
                     # saves next_run for the time fetch-events is invoked
                     demisto.debug(f"Setting new last_run to {next_run}")
                     demisto.setLastRun(next_run)
-        elif command == "reset-auth":
+        elif command == "service-now-reset-auth":
             return_results(reset_auth())
             
         else:

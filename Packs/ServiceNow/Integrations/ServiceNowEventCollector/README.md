@@ -92,7 +92,7 @@ There is no context output for this command.
 ### service-now-reset-auth
 
 ***
-Resets the integration context, including stored OAuth tokens. Use this command to delete an expired refresh token, especially when encountering access_denied or other errors during access token generation.
+Resets the integration context, including stored OAuth refresh token. Use this command when encountering access_denied or other errors during access token generation.
 
 #### Base Command
 
