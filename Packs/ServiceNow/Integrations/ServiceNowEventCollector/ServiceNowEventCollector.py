@@ -277,10 +277,9 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
 def reset_auth() -> CommandResults:
     """
     This command resets the integration context.
-    After running the command, a new token/auth-code will need to be given by the user to regenerate the access token.
-    :return: Message about resetting the authorization process.
+    After running the command, running any other command will generate new refresh token automatically.
     """
-    demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
+    demisto.debug("Reset integration-context")
     set_integration_context({})
     return CommandResults(
         readable_output="Authorization was reset successfully. You can continue working, "

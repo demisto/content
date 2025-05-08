@@ -92,8 +92,7 @@ There is no context output for this command.
 ### service-now-reset-auth
 
 ***
-Resets the integration context, including stored OAuth refresh token. Use this command when encountering access_denied or other errors during access token generation.
-
+Resets the integration context, including stored OAuth refresh token. Use this command when using OAuth 2.0 and encounter access_denied with access token related errors.
 #### Base Command
 
 `service-now-reset-auth`
