@@ -56,6 +56,17 @@ class TestHelperFunction:
         ]
     )
     def test_remove_first_run_params(self, input_params: Dict[str, Any], expected_params: Dict[str, Any]):
+        """
+                Test remove_first_run_params function behavior on initial fetch.
+
+                Given:
+                    - Dictionary Containing params from "last_run"
+
+                When:
+                    - Checking if to update the params or not
+                Then:
+                    - Make sure the correct params are coming back - not containing "first run" params"
+                """
         # make a copy to avoid modifying original test data
         params_copy = input_params.copy()
         remove_first_run_params(params_copy)
@@ -124,6 +135,18 @@ class TestHelperFunction:
     @freeze_time("2025-01-01 01:00:00")
     def test_validate_fetch_events_params(self, input_params: tuple[dict, EventType, bool],
                                           expected_results: tuple[dict, str, str]) -> None:
+        """
+            Test validate_fetch_events_params function behavior on initial fetch.
+
+            Given:
+                - An input params containing params from "last_run", event type and a flag mention should
+                 we use lat run as params.
+
+            When:
+                - Validating params before fetch action.
+            Then:
+                - Make sure the request is sent with right parameters.
+        """
         results = validate_fetch_events_params(*input_params)
         assert results == expected_results
 
@@ -151,6 +174,17 @@ class TestHelperFunction:
     )
     def test_set_event_type_fetch_limit(self, input_params: Dict[str, Any], expected_len: int,
                                         expected_limits: tuple[int, int, int]) -> None:
+        """
+            Test set_event_type_fetch_limit function behavior.
+
+            Given:
+                - An input params containing integration params from integration configuration.
+
+            When:
+                - VUpdating Event types before making a fetch action
+            Then:
+                - Make dure each event type has the correct max_fetch limit.
+        """
         event_types = set_event_type_fetch_limit(input_params)
         assert len(event_types) == expected_len
         for i in range(expected_len):
@@ -202,9 +236,9 @@ class TestFetchEvents:
 
     def test_fetch_response_bigger_then_limit(self, client, mocker):
         """
-        Given: A mock raw response containing audit logs.
-        When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        Given: A mock raw response containing events.
+        When: Fetching events with a fetch limit smaller than the number of available logs.
+        Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
         """
         self.event_events.max_fetch = 2
         raw_detections = self.raw_detections_events
@@ -218,9 +252,9 @@ class TestFetchEvents:
 
     def test_fetch_limit_bigger_then_response(self, client, mocker):
         """
-        Given: A mock raw response containing audit logs.
-        When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        Given: A mock raw response containing events.
+        When: Fetching events with a fetch limit higher than the number of available logs.
+        Then: Ensure the function returns exactly the requested number of events and updates the last run timestamp correctly.
         """
         self.event_requests.max_fetch = 3
         raw_detections = self.raw_detections_requests[:-1]
@@ -241,8 +275,8 @@ class TestFetchEvents:
     def test_fetch_all_types(self, client, mocker):
         """
         Given: A mock raw response containing audit logs.
-        When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        When: fetching events from all types of EventType
+        Then: Ensure the function returns exactly the requested number of events and updates the last run correctly.
         """
         self.event_requests.max_fetch = 3
         self.event_events.max_fetch = 3
@@ -276,8 +310,8 @@ class TestFetchEvents:
     def test_fetch_all_types_different_lengths(self, client, mocker):
         """
         Given: A mock raw response containing audit logs.
-        When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        When: fetching events from all types of EventType
+        Then: Ensure the function returns exactly the requested number of events and updates the last run correctly.
         """
         self.event_audit.max_fetch = 3
         self.event_events.max_fetch = 2
@@ -312,7 +346,7 @@ class TestFetchEvents:
         """
         Given: A mock raw response containing audit logs.
         When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        Then: Make sure that the special XSIAM fields was updated as expected
         """
         self.event_audit.max_fetch = 3
         raw_detections = self.raw_detections_audit
@@ -329,7 +363,7 @@ class TestFetchEvents:
         """
         Given: A mock raw response containing audit logs.
         When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        Then: Make sure that the special XSIAM fields was updated as expected
         """
         self.event_events.max_fetch = 3
         raw_detections = self.raw_detections_events
@@ -346,7 +380,7 @@ class TestFetchEvents:
         """
         Given: A mock raw response containing audit logs.
         When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        Then: Make sure that the special XSIAM fields was updated as expected
         """
         self.event_requests.max_fetch = 3
         raw_detections = self.raw_detections_requests
@@ -363,8 +397,8 @@ class TestFetchEvents:
     def test_get_events(self, client, mocker):
         """
         Given: A mock raw response containing audit logs.
-        When: fetching events.
-        Then: Make sure that the last run object was updated as expected
+        When: fetching events using the get events function.
+        Then: Make sure that output is as expected.
         """
 
         raw_detections = self.raw_detections_events[:-1]
