@@ -1,11 +1,13 @@
 Predict phishing URLs using a pre-trained model.
 
 ## Security Recommendations
+
 ---
 
 This script uses the [Rasterize](https://xsoar.pan.dev/docs/reference/integrations/rasterize) integration. If this script is used to rasterize untrusted URLs, we strongly recommend following the security recommendations included at the [Rasterize Documentation](https://xsoar.pan.dev/docs/reference/integrations/rasterize).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -22,6 +24,7 @@ This script is used in the following playbooks and scripts.
 Phishing - Machine Learning Analysis
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -37,6 +40,7 @@ Phishing - Machine Learning Analysis
 | reliability | Reliability of the source providing the intelligence data. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -51,11 +55,14 @@ Phishing - Machine Learning Analysis
 | DBotPredictURLPhishing.TopMajesticDomain | Whether the domain belongs to the top Majestic domain list. If it does, we will always consider this domain as benign. | String |
 | DBotScore.Score | Severity score. | Number |
 
-
 ## Script Examples
+
 ### Example command
+
 ```!DBotPredictURLPhishing urls="http://google.com"```
+
 ### Context Example
+
 ```json
 {
   "DBotPredictURLPhishing": [
@@ -71,7 +78,7 @@ Phishing - Machine Learning Analysis
 ### Human Readable Output
 
 >### Phishing prediction summary for URLs
+>
 >|URL|Final Verdict|
 >|---|---|
 >| http://google.com | **Benign - whitelisted** |
-
