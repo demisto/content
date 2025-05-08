@@ -1351,7 +1351,8 @@ outputs:
   description: The isolated endpoint ID.
 tests:
 - Containment Plan - Test
-- Containment_Plan_use_case_test
+- SearchAlerts/Containment_Plan_alerts_use_case_test
+- ListIndicators/Containment_Plan_indicators_use_case_test
 # modified playbook file
 fromversion: 6.6.0
 marketplaces:
