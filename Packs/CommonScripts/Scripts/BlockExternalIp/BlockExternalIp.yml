@@ -1,0 +1,93 @@
+args:
+- description: List of IPs to block.
+  isArray: true
+  name: ip_list
+  required: true
+- defaultValue: 'XSIAM - Block IP'
+  description: The name of the rule which will be created in the relevant products.
+  isArray: false
+  name: rule_name
+  required: false
+- description: Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
+  isArray: false
+  name: log_forwarding_name
+  required: false
+- description: This input determines whether PANW Panorama or Firewall or Prisma SASE Address Groups are used. Specify the Address Group name for IPs list handling.
+  isArray: false
+  name: address_group
+  required: false
+  defaultValue: 'Blocked IPs - XSIAM'
+- description: Whether to commit the new rule.
+  isArray: false
+  name: auto_commit
+  required: false
+  defaultValue: 'true'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: The designated tag name for the IP.
+  isArray: false
+  name: tag
+  required: false
+  defaultValue: 'xsiam-blocked-external-ip'
+- description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2".
+  isArray: true
+  defaultValue: 'Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler'
+  name: brands
+  required: false
+  auto: PREDEFINED
+  predefined:
+  - 'Palo Alto Networks - Prisma SASE'
+  - 'Panorama'
+  - 'FortiGate'
+  - 'F5Silverline'
+  - 'Cisco ASA'
+  - 'Zscaler'
+- description: Whether to retrieve a human-readable entry for every command or only the final result. True retrieves a human-readable entry for every command. False retrieves a human-readable entry only for the final result.
+  name: verbose
+  defaultValue: 'false'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: commit job ID to use in polling commands. (automatically filled by polling).
+  name: commit_job_id
+  hidden: true
+- description: publish job ID to use in polling commands. (automatically filled by polling).
+  name: publish_job_id
+  hidden: true
+comment: The script blocks a list of IP addresses in supported integrations.
+commonfields:
+  id: block-external-ip
+  version: -1
+enabled: false
+name: block-external-ip
+outputs:
+- contextPath: BlockExternalIPResults.Message
+  description: A message concerning the result of the action.
+  type: String
+- contextPath: BlockExternalIPResults.Result
+  description: The result of the action Success or Failed.
+  type: String
+- contextPath: BlockExternalIPResults.Brand
+  description: The name of the brand that was executed.
+  type: String
+- contextPath: BlockExternalIPResults.IP
+  description: The IP that was blocked.
+  type: String
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+polling: true
+tests:
+- No tests (auto formatted)
