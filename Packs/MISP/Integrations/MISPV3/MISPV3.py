@@ -41,7 +41,7 @@ def handle_connection_errors(error):
     return_error(error)
 
 
-def warn(*args):
+def warn(*args, **kwargs):
     """
     Do nothing with warnings
     """
