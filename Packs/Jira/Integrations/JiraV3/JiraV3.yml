@@ -1766,13 +1766,9 @@ script:
       isArray: true
       name: labels
     - description: Indicates if the ticket should be mirrored.
-      isArray: false
       name: mirroring
       type: mirroring
-      required: false
-      hidden: false
-      default: false
-      secret: false
+      required: true
     - name: priority
       description: Priority of the ticket.
       predefined:
