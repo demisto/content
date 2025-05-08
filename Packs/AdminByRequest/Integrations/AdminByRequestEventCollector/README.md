@@ -1,14 +1,46 @@
 AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.
-This integration collects events from the AdminByRequest API.
+This integration was integrated and tested with version xx of AdminByRequestEventCollector.
 
-### Prerequisites 
-In order to  use the API , you must first enable the API and set up an API key. This is done by logging into your portal account and navigating to Settings -> Data -> API. You can use the copy icon to the right of the api key to copy it to the clipboard.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-### Quota
-Daily quota: 100,000 API calls (approximately 60 calls per minute max)
+## Configure Admin By Request in Cortex
 
-### Warning
-Please DO NOT consistently use a high “take” number or flood the api.  The account will be automatically throttled
 
-### Authentication and authorization :
-The authentication method used by the REST API is API Keys(apikey header)
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| API Key | The API Key allows you to programmatically integrate with the Armis ecosystem. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch events |  | False |
+| Event types to fetch |  | True |
+| Maximum number of Auditlog per fetch | Maximum number of audit log entries to retrieve per fetch cycle. Applies only if the "Auditlog" event type is enabled for fetching. | False |
+| Maximum number of Events per fetch | Maximum number of events entries to retrieve per fetch cycle. Applies only if the "Events" event type is enabled for fetching. | False |
+| Maximum number of Requests per fetch | Maximum number of requests entries to retrieve per fetch cycle. Applies only if the "Requests" event type is enabled for fetching. | False |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### admin_by_request_get-events
+
+***
+Retrieves a list of entries logs events from the AdminByRequest instance.
+
+#### Base Command
+
+`admin_by_request_get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | Set this argument to true in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+| event_type | The type of event to fetch. Possible values are: Auditlog, Events, Requests. Default is Auditlog. | Optional | 
+| limit | Returns no more than the specified number of events (for entries of type 'Requests' the default value is 5000). | Optional | 
+| first_fetch | The UTC date or relative timestamp from where to start fetching incidents. Notice that for event types 'Requests' there is option to set a start date. Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

@@ -102,9 +102,8 @@ script:
         - description: Returns no more than the specified number of events (for entries of type 'Requests' the default value is 5000).
           name: limit
           required: false
-          defaultvalue: 50000
         - description: "The UTC date or relative timestamp from where to start fetching incidents. Notice that for event types 'Requests' there is option to set a start date. 
-                      Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd"
+                      Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd."
           name: first_fetch
           required: false
   isfetch: false
@@ -113,7 +112,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.1.0
 marketplaces:
 - marketplacev2
