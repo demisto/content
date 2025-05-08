@@ -114,7 +114,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- defaultvalue: 0
+- defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching (Warning: exceeding 720 could lead to issues with fetching)'
   additionalinfo: Use this parameter to determine how far back in time to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
@@ -144,6 +144,8 @@ script:
       - colocated_on_ip
       - directly_discovery
       - unknown
+    - description: Tags on which to search.
+      name: tags
     description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
     name: asm-list-external-service
     outputs:
@@ -593,12 +595,11 @@ script:
       required: true
       description: The custom note to be added to the notes section of the asset in Cortex Xpanse.
     - name: should_append
-      required: false
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      defaultValue: true
+      defaultValue: 'true'
       description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note.
     description: Adds a note to an asset in Xpanse.
     outputs:
@@ -859,8 +860,7 @@ script:
     - contextPath: ASM.TIM.IP.score
       description: The existing indicator score recently updated in the Cortex XSOAR indicators.
       type: Number
-    description: (Deprecated) Returns enrichment for an IP address.
-    deprecated: true
+    description: Returns enrichment for an IP address.
   - name: domain
     arguments:
     - name: domain
@@ -927,8 +927,7 @@ script:
     - contextPath: ASM.TIM.Domain.score
       description: The existing indicator score recently updated in the Cortex XSOAR indicators.
       type: Number
-    description: (Deprecated) Returns enrichment for a domain.
-    deprecated: true
+    description: Returns enrichment for a domain.
   - name: asm-get-incident
     arguments:
     - name: incident_id
@@ -972,14 +971,13 @@ script:
   - name: asm-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isFetchSamples: true
   isfetch: true
   script: ''
   subtype: python3
   type: python
-defaultmapperin: Xpanse - Incoming Mapper
-defaultclassifier: Xpanse - Classifier
+  runonce: false
 fromversion: 6.5.0
 tests:
 - CortexXpanse_Test
