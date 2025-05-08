@@ -69,6 +69,18 @@ script:
       required: true
       description: The new password.
     description: "Sets a user's password. Further password details available here: https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
+  - name: pingone-set-password-quick-action
+    quickaction: true
+    hidden: true
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to change the password for.
+    - name: password
+      required: true
+      description: The new password.
+    description: "Sets a user's password. Further password details available here: https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
   - name: pingone-add-to-group
     arguments:
     - name: username
@@ -213,6 +225,48 @@ script:
     - name: Type
       description: Account type.
     description: Update a PingOne user.
+
+  - name: pingone-update-user-quick-action
+    quickaction: true
+    hidden: true
+    arguments:
+    - name: username
+      required: true
+      description: The username to be updated.
+    - name: formatted
+      description: Formatted PingOne name.
+    - name: given
+      description: Given name.
+    - name: middle
+      description: Middle name.
+    - name: family
+      description: Family name.
+    - name: nickname
+      description: Nickname.
+    - name: title
+      description: Title.
+    - name: locale
+      description: Locale.
+    - name: email
+      description: Email.
+    - name: primaryPhone
+      description: Primary phone number.
+    - name: mobilePhone
+      description: Mobile phone number.
+    - name: streetAddress
+      description: Street address.
+    - name: locality
+      description: Locality.
+    - name: region
+      description: Region.
+    - name: postalCode
+      description: Zip code.
+    - name: countryCode
+      description: Country code.
+    - name: Type
+      description: Account type.
+    description: Update a PingOne user.
+
   - name: pingone-delete-user
     arguments:
     - name: username

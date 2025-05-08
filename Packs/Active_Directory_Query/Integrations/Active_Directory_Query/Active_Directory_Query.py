@@ -1869,6 +1869,9 @@ def main():
 
         elif command == "ad-disable-account":
             disable_user(default_base_dn, default_page_size)
+            
+        elif command == "ad-disable-account-quick-action":
+            disable_user(default_base_dn, default_page_size)
 
         elif command == "ad-enable-account":
             enable_user(default_base_dn, default_page_size)

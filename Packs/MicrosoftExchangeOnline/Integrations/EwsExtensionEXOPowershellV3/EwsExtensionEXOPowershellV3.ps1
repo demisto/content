@@ -2531,6 +2531,9 @@ function Main
             "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items-quick-action" {
+                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
             }
@@ -2540,6 +2543,9 @@ function Main
             "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
                 ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items-quick-action" {
+                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
+            }
             "$script:COMMAND_PREFIX-export-quarantinemessage" {
                 ($human_readable, $entry_context, $raw_response) = EXOExportQuarantineMessageCommand $exo_client $command_arguments
             }
@@ -2547,6 +2553,9 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = EXOGetQuarantineMessageCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-release-quarantinemessage" {
+                ($human_readable, $entry_context, $raw_response) = EXOReleaseQuarantineMessageCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-release-quarantinemessage-quick-action" {
                 ($human_readable, $entry_context, $raw_response) = EXOReleaseQuarantineMessageCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-junk-rules-get" {

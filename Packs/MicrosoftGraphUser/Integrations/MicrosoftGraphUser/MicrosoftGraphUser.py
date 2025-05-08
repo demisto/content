@@ -489,6 +489,7 @@ def main():
         "msgraph-user-unblock": unblock_user_command,
         "msgraph-user-terminate-session": disable_user_account_command,
         "msgraph-user-account-disable": disable_user_account_command,
+        "msgraph-user-account-disable-quick-action": disable_user_account_command,
         "msgraph-user-update": update_user_command,
         "msgraph-user-change-password": change_password_user_command,
         "msgraph-user-delete": delete_user_command,
