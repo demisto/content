@@ -483,11 +483,13 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
 
         if tlp_color:
             attributes['trafficlightprotocol'] = tlp_color
+    else:
+        extracted_indicator = []
 
     return attributes, extracted_indicator
 
 
-def process_indicator_type(client: Client, value: str, url: str, itype: str, auto_detect: bool, cidr_32_to_ip: bool) -> Tuple[
+def process_indicator_type(client: Client, value: str, url: str, itype: str, auto_detect: bool, cidr_32_to_ip: bool) -> tuple[
     str, bool]:
     """
     Processes the indicator value and configuration parameters to determine the indicator type.
