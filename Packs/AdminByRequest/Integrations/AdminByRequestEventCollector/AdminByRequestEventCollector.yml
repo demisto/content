@@ -13,7 +13,8 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: API Key
-  name: api_key
+  additionalinfo: The API Key allows you to programmatically integrate with the Armis ecosystem.
+  name: credentials
   required: true
   hiddenusername: true
   type: 9
@@ -73,7 +74,7 @@ configuration:
   section: Collect
   advanced: true
 description: 'AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.'
-display: Admin By Request Event Collector
+display: Admin By Request
 name: AdminByRequestEventCollector
 supportlevelheader: xsoar
 script:

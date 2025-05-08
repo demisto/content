@@ -378,7 +378,7 @@ def main():
     base_url = params.get("url")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    api_key = params.get("api_key", "")
+    api_key = params.get("credentials", {}).get("password")
 
     demisto.debug(f"Command being called is {command}")
     try:
