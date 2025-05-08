@@ -238,7 +238,15 @@ class MsGraphClient:
             user_id (str): The Azure AD user ID.
 
         Returns:
-            list.
+            list: A list that contains a dictionary representing the TAP policy info with the following keys:
+            - id (str): The unique identifier for the TAP policy.
+            - isUsable (bool): Indicates whether the TAP is currently usable.
+            - methodUsabilityReason (str): Explanation of why the TAP is or is not usable (e.g., 'Expired', 'NotYetValid).
+            - temporaryAccessPass (str or None): The generated password for the TAP policy.
+            - createdDateTime (str): The ISO 8601 timestamp when the TAP was created.
+            - startDateTime (str): The ISO 8601 timestamp when the TAP becomes valid.
+            - lifetimeInMinutes (int): The validity duration of the TAP in minutes.
+            - isUsableOnce (bool): Indicates whether the TAP can be used only once.
             
         API Reference:
             https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
@@ -259,7 +267,15 @@ class MsGraphClient:
             body (dict): A dictionary containing the input arguments.
 
         Returns:
-            dict.
+            dict: A dictionary representing the newly created TAP policy with the following keys:
+            - id (str): The unique identifier for the TAP policy.
+            - isUsable (bool): Indicates whether the TAP is currently usable.
+            - methodUsabilityReason (str): Explanation of why the TAP is or is not usable (e.g., 'Expired', 'NotYetValid).
+            - temporaryAccessPass (str): The generated password for the TAP policy.
+            - createdDateTime (str): The ISO 8601 timestamp when the TAP was created.
+            - startDateTime (str): The ISO 8601 timestamp when the TAP becomes valid.
+            - lifetimeInMinutes (int): The validity duration of the TAP in minutes.
+            - isUsableOnce (bool): Indicates whether the TAP can be used only once.
             
         API Reference:
             https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
@@ -730,10 +746,21 @@ def create_zip_with_password(generated_tap_password: str, zip_password: str):
             
     return_results(file_res)
     
-def generate_password_protected_zip(zip_file_name, zip_password, generated_tap_password):
+def generate_password_protected_zip(zip_file_name, zip_password, generated_tap_password) -> dict:
+    """
+    Generates a password-protected ZIP file containing the TAP policy password.
+
+    Args:
+        zip_file_name (str): The name of the ZIP file to be created.
+        zip_password (str): The password for the password-protected ZIP file.
+        generated_tap_password (str): The TAP policy password to include in the ZIP file.
+
+    Returns:
+        dict: A file result object containing the ZIP file content.
+    """
     with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
-            zf.pwd = bytes(zip_password, 'utf-8')
-            zf.writestr('TAPPolicyPass.txt', generated_tap_password)
+        zf.pwd = bytes(zip_password, 'utf-8')
+        zf.writestr('TAPPolicyPass.txt', generated_tap_password)
 
     with open(zip_file_name, 'rb') as zip_file:
         zip_content = zip_file.read()
