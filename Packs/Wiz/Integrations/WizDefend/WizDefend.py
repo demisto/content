@@ -1855,6 +1855,69 @@ def is_valid_param_id(detection_id, param_name=WizInputParam.DETECTION_ID):
     return True, f"{param_name}: {detection_id} is in a valid format"
 
 
+def get_detections():
+    """
+    Retrieves detections based on command arguments.
+
+    Returns:
+        CommandResults: Command results object containing the detections
+    """
+    demisto_args = demisto.args()
+    detection_type = demisto_args.get(WizInputParam.TYPE)
+    detection_platform = demisto_args.get(WizInputParam.PLATFORM)
+    detection_origin = demisto_args.get(WizInputParam.ORIGIN)
+    detection_subscription = demisto_args.get(WizInputParam.SUBSCRIPTION)
+    resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+    severity = demisto_args.get(WizInputParam.SEVERITY)
+    creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, '10')
+    matched_rule = demisto_args.get(WizInputParam.MATCHED_RULE)
+    matched_rule_name = demisto_args.get(WizInputParam.MATCHED_RULE_NAME)
+    project_id = demisto_args.get(WizInputParam.PROJECT_ID)
+
+    detections = get_filtered_detections(
+        detection_type=detection_type,
+        detection_platform=detection_platform,
+        detection_origin=detection_origin,
+        detection_subscription=detection_subscription,
+        resource_id=resource_id,
+        severity=severity,
+        creation_minutes_back=creation_minutes_back,
+        matched_rule=matched_rule,
+        matched_rule_name=matched_rule_name,
+        project_id=project_id
+    )
+
+    if isinstance(detections, str):
+        # this means the Detection is an error
+        return_error(detections)
+    else:
+        return CommandResults(outputs_prefix=OutputPrefix.DETECTIONS, outputs=detections,
+                            raw_response=detections)
+
+
+def get_single_detection():
+    """
+    Retrieves a single detection by ID.
+
+    Returns:
+        CommandResults: Command results object containing the detection
+    """
+    demisto_args = demisto.args()
+    detection_id = demisto_args.get(WizInputParam.DETECTION_ID)
+    if not detection_id:
+        return_error(f"Missing required argument: {WizInputParam.DETECTION_ID}")
+
+    detection = get_filtered_detections(
+        detection_id=detection_id
+    )
+    if isinstance(detection, str):
+        # this means the Detection is an error
+        return_error(detection)
+    else:
+        return CommandResults(outputs_prefix=OutputPrefix.DETECTION, outputs=detection,
+                            readable_output=detection, raw_response=detection)
+
+
 def main():
     params = demisto.params()
     set_authentication_endpoint(params.get(DemistoParams.AUTH_ENDPOINT))
@@ -1869,50 +1932,11 @@ def main():
             fetch_incidents()
 
         elif command == DemistoCommands.WIZ_GET_DETECTIONS:
-            demisto_args = demisto.args()
-            detection_type = demisto_args.get(WizInputParam.TYPE)
-            detection_platform = demisto_args.get(WizInputParam.PLATFORM)
-            detection_origin = demisto_args.get(WizInputParam.ORIGIN)
-            detection_subscription = demisto_args.get(WizInputParam.SUBSCRIPTION)
-            resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
-            severity = demisto_args.get(WizInputParam.SEVERITY)
-            creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, '10')
-            matched_rule = demisto_args.get(WizInputParam.MATCHED_RULE)
-            matched_rule_name = demisto_args.get(WizInputParam.MATCHED_RULE_NAME)
-            project_id = demisto_args.get(WizInputParam.PROJECT_ID)
-
-            detections = get_filtered_detections(
-                detection_type=detection_type,
-                detection_platform=detection_platform,
-                detection_origin=detection_origin,
-                detection_subscription=detection_subscription,
-                resource_id=resource_id,
-                severity=severity,
-                creation_minutes_back=creation_minutes_back,
-                matched_rule=matched_rule,
-                matched_rule_name=matched_rule_name,
-                project_id=project_id
-            )
-
-            if isinstance(detections, str):
-                #  this means the Detection is an error
-                return_error(detections)
-            else:
-                command_result = CommandResults(outputs_prefix=OutputPrefix.DETECTIONS, outputs=detections,
-                                                raw_response=detections)
-                return_results(command_result)
+            command_result = get_detections()
+            return_results(command_result)
 
         elif command == DemistoCommands.WIZ_GET_DETECTION:
-            demisto_args = demisto.args()
-            detection_id = demisto_args.get(WizInputParam.DETECTION_ID)
-            if not detection_id:
-                return_error(f"Missing required argument: {WizInputParam.DETECTION_ID}")
-
-            detection_result = get_filtered_detections(
-                detection_id=detection_id
-            )
-            command_result = CommandResults(outputs_prefix=OutputPrefix.DETECTION, outputs=detection_result,
-                                            readable_output=detection_result, raw_response=detection_result)
+            command_result = get_single_detection()
             return_results(command_result)
 
         else:
