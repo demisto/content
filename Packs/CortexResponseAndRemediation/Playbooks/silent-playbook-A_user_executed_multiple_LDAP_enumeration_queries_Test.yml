@@ -17,7 +17,7 @@ description: 'This playbook addresses the following alerts:
 
   - Get endpoint information for the client IP
 
-  - Check preconditions for continuing investigation based on the number of suspicious attributes, attack tool queries, and vulnerable certificate templates
+  - Check preconditions for continuing the investigation based on the number of suspicious attributes, attack tool queries, and vulnerable certificate templates.
 
 
 
@@ -42,11 +42,11 @@ description: 'This playbook addresses the following alerts:
   Remediation:
 
 
-  - With analyst approval, disable the user in Active Directory if user-related anomalies are found and the alert is a True Positive.
+  - With analyst approval, disable the user in Active Directory if user-related anomalies are found and the alert is a true positive.
 
-  - With analyst approval, isolate the endpoint if host-related anomalies are found and the alert is a True Positive.
+  - With analyst approval, isolate the endpoint if host-related anomalies are found and the alert is a true positive.
 
-  - Logoff user from client host if an active session is detected and the alert is a True Positive.
+  - Log off the user from the client host if an active session is detected and the alert is a true positive.
 
 
   Requirements:
@@ -1431,7 +1431,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Ensures that the client is not a server, not the domain controller, and runs the Windows operating system (required for automatic remediation).
+      description: Ensures that the client is not a server or domain controller and is running the Windows operating system, which is necessary for automatic remediation.
       id: e64d505f-b741-489d-8513-9b68a04129f1
       iscommand: false
       name: Check that client OS is Windows and client role is not Server
@@ -1540,7 +1540,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Searches for alerts that happened in the past day with Malware category where the host IP is the client IP of the current alert.
+      description: Searches for Malware category alerts that occurred in the past day with host IP equal to the client IP of the current alert.
       id: 2967545d-ba7a-4934-89fc-84f4a41ff124
       iscommand: false
       name: Search for recent malware alerts on client IP
@@ -1670,7 +1670,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Retrieves results from the "quser" command for the user - which can be used to tell if the user is currently logged in.
+      description: Retrieves the output of the "quser" command for the user, which can indicate whether the user is currently logged in.
       id: 9cdd928b-40cc-4abe-9f62-11968d3d8326
       iscommand: true
       name: Get user session results
@@ -1735,7 +1735,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks if the execution results show that there is currently an active session for the user - which means the user is currently logged in.
+      description: Checks whether the execution results indicate an active session for the user, confirming the user is currently logged in.
       id: e53a7044-64ba-47db-8470-d9d23b475850
       iscommand: false
       name: Check for active session of the user
