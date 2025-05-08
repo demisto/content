@@ -556,6 +556,7 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
