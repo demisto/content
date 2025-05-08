@@ -549,6 +549,7 @@ def get_token():
     """
     Retrieve the token using the credentials
     """
+    global TOKEN
     audience = 'wiz-api'
 
     demisto_params = demisto.params()
@@ -766,6 +767,7 @@ def test_module():
     are_params_valid, error_message = check_advanced_params(integration_settings_params)
     if not are_params_valid:
         demisto.results(error_message)
+        return
     else:
         demisto.info("Advanced parameters are valid")
 
@@ -783,7 +785,6 @@ def test_module():
         demisto.results(wiz_detection)
     else:
         demisto.results('ok')
-
 
 
 def fetch_incidents():
@@ -975,7 +976,7 @@ def validate_detection_subscription(subscription):
     Returns:
         ValidationResponse: Response with validation results
     """
-    if not subscription:
+    if not subscription and not isinstance(subscription, str):
         return ValidationResponse.create_success()
 
     # For subscription, we just validate that it's a string
@@ -1192,7 +1193,7 @@ def validate_resource_id(resource_id):
     Returns:
         ValidationResponse: Response with validation results
     """
-    if not resource_id:
+    if not resource_id and not isinstance(resource_id, str):
         return ValidationResponse.create_success()
 
     return ValidationResponse.create_success(resource_id)
@@ -1229,7 +1230,7 @@ def validate_rule_match_name(rule_match_name):
     Returns:
         ValidationResponse: Response with validation results
     """
-    if not rule_match_name:
+    if not rule_match_name and not isinstance(rule_match_name, str):
         return ValidationResponse.create_success()
 
     return ValidationResponse.create_success(rule_match_name)
@@ -1245,7 +1246,7 @@ def validate_project(project):
     Returns:
         ValidationResponse: Response with validation results
     """
-    if not project:
+    if not project and not isinstance(project, str):
         return ValidationResponse.create_success()
 
     return ValidationResponse.create_success(project)
@@ -1892,7 +1893,7 @@ def get_detections():
         return_error(detections)
     else:
         return CommandResults(outputs_prefix=OutputPrefix.DETECTIONS, outputs=detections,
-                            raw_response=detections)
+                              raw_response=detections)
 
 
 def get_single_detection():
@@ -1915,7 +1916,7 @@ def get_single_detection():
         return_error(detection)
     else:
         return CommandResults(outputs_prefix=OutputPrefix.DETECTION, outputs=detection,
-                            readable_output=detection, raw_response=detection)
+                              readable_output=detection, raw_response=detection)
 
 
 def main():
