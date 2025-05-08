@@ -94,7 +94,7 @@ To use OAuth 2.0 authorization follow the next steps:
 3. Create a JWT provider with a JWT signing key
 (Customer required to set in Standard Claims the same values for aud, iss and sub that will be used as integration parameters. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles)
 
-(All→System OAuth→JWT providers)
+(**All** > **System OAuth** > **JWT providers**)
 4. Connect to an OAuth provider and create an OAuth application registry (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. The value of kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key. The value can be updated if necessary.)
 (All→System OAuth→Application Registry)
 
