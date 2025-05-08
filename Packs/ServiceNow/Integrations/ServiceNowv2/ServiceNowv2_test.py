@@ -1787,8 +1787,8 @@ def test_jwt_init(mocker):
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                 'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                 get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS, jwt_params = JWT_PARAMS)
-    client.create_jwt()
-    assert client.jwt == 'test'
+    jwt = client.create_jwt()
+    assert jwt == 'test'
     
 
     

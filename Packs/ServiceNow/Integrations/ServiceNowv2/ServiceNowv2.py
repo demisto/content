@@ -692,7 +692,7 @@ class Client(BaseClient):
             )
             if jwt_params:
                 self.jwt_params = jwt_params
-                self.jwt = self.create_jwt()
+                self.snow_client.set_jwt(self.create_jwt())
         else:
             self._auth = (self._username, self._password)
             
@@ -814,8 +814,7 @@ class Client(BaseClient):
             with open(file_path, "rb") as f:
                 file_info = (file_name, f, self.get_content_type(file_name))
                 if self.use_oauth:
-                    access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt \
-                        else self.snow_client.get_access_token()
+                    access_token = self.snow_client.get_access_token()
                     headers.update({"Authorization": f"Bearer {access_token}"})
                     return requests.request(
                         method,
@@ -844,7 +843,7 @@ class Client(BaseClient):
 
     def _send_regular_request(self, url: str, method: str, headers: dict, body: dict, params: dict) -> requests.Response:
         if self.use_oauth:
-            access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt else self.snow_client.get_access_token()
+            access_token = self.snow_client.get_access_token()
             headers.update({"Authorization": f"Bearer {access_token}"})
             return requests.request(
                 method,
@@ -1030,7 +1029,7 @@ class Client(BaseClient):
         query = f"table_sys_id={ticket_id}"
         if sys_created_on:
             query += f"^sys_created_on>{sys_created_on}"
-        return self.send_request("attachment", "GET", params={"sysparm_query": query}, get_attachments=True) # type: ignore
+        return self.send_request("attachment", "GET", params={"sysparm_query": query}, get_attachments=True)
 
     def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on: Optional[str] = None) -> list:
         """Get ticket attachments, including file attachments
@@ -1053,8 +1052,7 @@ class Client(BaseClient):
 
         for link in links:
             if self.use_oauth:
-                access_token = self.snow_client.get_access_token(self.jwt) if self.use_jwt \
-                    else self.snow_client.get_access_token()
+                access_token = self.snow_client.get_access_token()
                 headers.update({"Authorization": f"Bearer {access_token}"})
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
             else:
