@@ -1,8 +1,6 @@
-Support for AWS cloud
 This integration was integrated and tested with version 1.0.0 of AWS.
 
 ## Configure AWS in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -47,6 +45,7 @@ Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-iam-account-password-policy-get
 
 ***
@@ -99,6 +98,7 @@ Modify the EC2 instance metadata parameters on a running or stopped instance.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-iam-account-password-policy-update
 
 ***
@@ -126,3 +126,7 @@ Create/update password policy.
 #### Context Output
 
 There is no context output for this command.
+
+
+# TODO - REMOVE
+![AWS](doc_files/AWS.png)
