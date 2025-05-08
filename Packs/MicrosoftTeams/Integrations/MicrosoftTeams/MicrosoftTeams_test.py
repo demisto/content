@@ -3063,3 +3063,245 @@ def test_integration_context_format_migration_auth_override(mocker, requests_moc
             }
     
     assert get_graph_access_token() == 'mock_cached_token'
+
+def test_team_deleted_message_handler(mocker):
+    """
+    Given:
+        - Integration context contains team entries with some name.
+    When:
+        - An event message is received about that team's name changing.
+    Then:
+        - The team name is changed in the integration cache.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "channelData": {
+            "eventType": 'teamDeleted',
+            "team": {
+                "aadGroupId": "33333333-3333-3333-3333-333333333333",
+                "id": '19:333333333333333333333333333333333333333333333333333333333',
+                "name": 'Test3',
+            },
+            "tenant": {
+                "id": '00000000-0000-0000-0000-000000000000',
+            },
+        },
+        "channelId": 'msteams',
+        "conversation": {
+            "conversationType": 'channel',
+            "id": '19:000000000000000000000000000000000000000000000000000000000',
+            "isGroup": True,
+            "tenantId": '00000000-0000-0000-0000-000000000000',
+        },
+        "from": {
+            "aadObjectId": '00000000-0000-0000-0000-000000000000',
+            "id": '29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+        },
+        "id": 'f:00000000-0000-0000-0000-000000000000',
+        "recipient": {
+            "id": '28:000000000000000000000000000000000000',
+            "name": 'TestBot',
+        },
+        "type": 'conversationUpdate',
+    }
+
+    mock_teams_cache = [
+            {
+                "team_aad_id": "11111111-1111-1111-1111-111111111111",
+                "team_id": "19:111111111111111111111111111111111111111111111111111111111",
+                "team_members": [],
+                "team_name": "Test"
+            },
+            {
+                "team_aad_id": "22222222-2222-2222-2222-222222222222",
+                "team_id": "19:222222222222222222222222222222222222222222222222222222222",
+                "team_members": [],
+                "team_name": "Test2"
+            },
+            {
+                "team_aad_id": "33333333-3333-3333-3333-333333333333",
+                "team_id": "19:333333333333333333333333333333333333333333333333333333333",
+                "team_members": [],
+                "team_name": "Test3"
+            }
+        ]
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+
+    APP.testing = True
+    app = APP.test_client()
+    app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    set_context_mock.assert_called_once_with({"teams": json.dumps(mock_teams_cache[:2])})
+
+
+def test_team_renamed_message_handler(mocker):
+    """
+    Given:
+        - Integration context contains team entries with some name.
+    When:
+        - An event message is received about that team's name changing.
+    Then:
+        - The team name is changed in the integration cache.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "channelData": {
+            "eventType": 'teamRenamed',
+            "team": {
+                "aadGroupId": "33333333-3333-3333-3333-333333333333",
+                "id": '19:333333333333333333333333333333333333333333333333333333333',
+                "name": 'Test30',
+            },
+            "tenant": {
+                "id": '00000000-0000-0000-0000-000000000000',
+            },
+        },
+        "channelId": 'msteams',
+        "conversation": {
+            "conversationType": 'channel',
+            "id": '19:000000000000000000000000000000000000000000000000000000000',
+            "isGroup": True,
+            "tenantId": '00000000-0000-0000-0000-000000000000',
+        },
+        "from": {
+            "aadObjectId": '00000000-0000-0000-0000-000000000000',
+            "id": '29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+        },
+        "id": 'f:00000000-0000-0000-0000-000000000000',
+        "recipient": {
+            "id": '28:000000000000000000000000000000000000',
+            "name": 'TestBot',
+        },
+        "type": 'conversationUpdate',
+    }
+
+    mock_teams_cache = [
+            {
+                "team_aad_id": "11111111-1111-1111-1111-111111111111",
+                "team_id": "19:111111111111111111111111111111111111111111111111111111111",
+                "team_members": [],
+                "team_name": "Test"
+            },
+            {
+                "team_aad_id": "22222222-2222-2222-2222-222222222222",
+                "team_id": "19:222222222222222222222222222222222222222222222222222222222",
+                "team_members": [],
+                "team_name": "Test2"
+            },
+            {
+                "team_aad_id": "33333333-3333-3333-3333-333333333333",
+                "team_id": "19:333333333333333333333333333333333333333333333333333333333",
+                "team_members": [],
+                "team_name": "Test3"
+            }
+        ]
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+
+    APP.testing = True
+    app = APP.test_client()
+    app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    mock_teams_cache[2]["team_name"] = "Test30"
+    set_context_mock.assert_called_once_with({"teams": json.dumps(mock_teams_cache)})
+
+
+def test_message_handler_filters_invalid_cache_entries(mocker, requests_mock):
+    """
+    Given:
+        - Integration context contains multiple team entries with the same name.
+    When:
+        - An event message is received about a team with that name.
+        - One of the cached teams no longer exists.
+    Then:
+        - The validity of each entry is tested and invalid entries are removed.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "channelData": {
+            "eventType": 'teamRenamed',
+            "team": {
+                "aadGroupId": "33333333-3333-3333-3333-333333333333",
+                "id": '19:333333333333333333333333333333333333333333333333333333333',
+                "name": 'Test2',
+            },
+            "tenant": {
+                "id": '00000000-0000-0000-0000-000000000000',
+            },
+        },
+        "channelId": 'msteams',
+        "conversation": {
+            "conversationType": 'channel',
+            "id": '19:000000000000000000000000000000000000000000000000000000000',
+            "isGroup": True,
+            "tenantId": '00000000-0000-0000-0000-000000000000',
+        },
+        "from": {
+            "aadObjectId": '00000000-0000-0000-0000-000000000000',
+            "id": '29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+        },
+        "id": 'f:00000000-0000-0000-0000-000000000000',
+        "recipient": {
+            "id": '28:000000000000000000000000000000000000',
+            "name": 'TestBot',
+        },
+        "type": 'conversationUpdate',
+    }
+
+    mock_teams_cache = [
+            {
+                "team_aad_id": "11111111-1111-1111-1111-111111111111",
+                "team_id": "19:111111111111111111111111111111111111111111111111111111111",
+                "team_members": [],
+                "team_name": "Test"
+            },
+            {
+                "team_aad_id": "22222222-2222-2222-2222-222222222222",
+                "team_id": "19:222222222222222222222222222222222222222222222222222222222",
+                "team_members": [],
+                "team_name": "Test2"
+            },
+            {
+                "team_aad_id": "33333333-3333-3333-3333-333333333333",
+                "team_id": "19:333333333333333333333333333333333333333333333333333333333",
+                "team_members": [],
+                "team_name": "Test3"
+            }
+        ]
+
+    mock_team_query_response = {
+        "value": [
+            {
+                "displayName": "Test2",
+                "id": "33333333-3333-3333-3333-333333333333",
+            },
+        ]
+    }
+
+    url = (
+        f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq 'Test2' "
+        f"and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    )
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={"teams": json.dumps(mock_teams_cache)})
+    mocker.patch("MicrosoftTeams.get_graph_access_token", return_value="mock_token")
+    set_context_mock = mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+    requests_mock.get(url, json=mock_team_query_response)
+
+    APP.testing = True
+    app = APP.test_client()
+    app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    # Check that the old invalid Test2 was removed, and "Test3" name was changed to "Test2"
+    mock_teams_cache[2]["team_name"] = "Test2"
+    mock_teams_cache.pop(1)
+    set_context_mock.assert_called_once_with({"teams": json.dumps(mock_teams_cache)})
