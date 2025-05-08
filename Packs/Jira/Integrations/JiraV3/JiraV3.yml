@@ -1754,20 +1754,25 @@ script:
       name: project_key
       prettyname: Project Key
       required: true
-      type: mirroring
     - description: 'Selects an issue type by name, for example: "Bug" or "Task".'
       name: issue_type_name
       prettyname: Issue Type
       required: true
-      type: mirroring
     - description: 'A description of the issue. Use issue fields as variables to enrich the text. Example: ${issue.details}.'
       name: description
       prettyname: Description
       required: true
-      type: mirroring
     - description: A CSV list of labels.
       isArray: true
       name: labels
+    - description: Indicates if the ticket should be mirrored.
+      isArray: false
+      name: mirroring
+      type: mirroring
+      required: false
+      hidden: false
+      default: false
+      secret: false
     - name: priority
       description: Priority of the ticket.
       predefined:
