@@ -83,6 +83,18 @@ configuration:
   type: 0
   section: Collect
   required: false
+- defaultvalue: earliest_time
+  additionalinfo: The name of the Splunk field whose value defines the query's earliest time to fetch.
+  display: Earliest Occurence Time Fieldname 
+  name: earliest_occurrence_time_fieldname
+  required: false
+  type: 0
+- defaultvalue: latest_time
+  additionalinfo: The name of the Splunk field whose value defines the query's latest time to fetch.
+  display: Latest Occurence Time Fieldname
+  name: latest_occurrence_time_fieldname
+  required: false
+  type: 0
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   type: 12
