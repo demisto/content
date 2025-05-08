@@ -1,8 +1,12 @@
-## BaseIntegration Help
+# RDAP Integration
 
-Markdown file for integration configuration help snippet. In this file add:
+## Overview
+The Registration Data Access Protocol (RDAP) integration enables you to query registration data for internet resources such as domain names, IP addresses, and autonomous system numbers. This integration provides structured information about these resources, including ownership details, registration dates, and nameserver information.
 
-- Brief information about how to retrieve the API key of your product.
-- Other useful information on how to configure your integration in Cortex XSOAR.
+## Configuration
+No API key is required for this integration as RDAP is a public protocol that replaces the older WHOIS protocol with structured data responses.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Integration Settings
+- **Base URL**: Use the default RDAP bootstrap server URL or specify a different RDAP server if needed.
+- **Trust any certificate**: Select this option to trust any SSL certificate (not recommended for production environments).
+- **Use system proxy settings**: Select if your organization uses a proxy to connect to the internet.
