@@ -16,7 +16,7 @@ from AdminByRequestEventCollector import (
     fetch_events_list,
     fetch_events,
     get_events,
-    EVENT_TYPES
+    EVENT_TYPES,
 )
 
 
@@ -52,20 +52,20 @@ class TestHelperFunction:
             ({"other": 1}, {"other": 1}),
             # Case 5: empty dict
             ({}, {}),
-        ]
+        ],
     )
     def test_remove_first_run_params(self, input_params: Dict[str, Any], expected_params: Dict[str, Any]):
         """
-                Test remove_first_run_params function behavior on initial fetch.
+        Test remove_first_run_params function behavior on initial fetch.
 
-                Given:
-                    - Dictionary Containing params from "last_run"
+        Given:
+            - Dictionary Containing params from "last_run"
 
-                When:
-                    - Checking if to update the params or not
-                Then:
-                    - Make sure the correct params are coming back - not containing "first run" params"
-                """
+        When:
+            - Checking if to update the params or not
+        Then:
+            - Make sure the correct params are coming back - not containing "first run" params"
+        """
         # make a copy to avoid modifying original test data
         params_copy = input_params.copy()
         remove_first_run_params(params_copy)
@@ -73,51 +73,44 @@ class TestHelperFunction:
 
     result_param = {"startid": 1, "take": 1}
 
-    case1_validate_fetch_events_params = (({"start_id_auditlog": 1}, audit_log_event, False),
-                                          ({
-                                               **audit_log_event.default_params,
-                                               **result_param
-                                           }, "auditlog", "start_id_auditlog"))
-    case2_validate_fetch_events_params = (({"start_id_events": 1}, events_event, False),
-                                          ({
-                                               **events_event.default_params,
-                                               **result_param
-                                           }, "events", "start_id_events"))
-    case3_validate_fetch_events_params = (({"start_id_requests": 1}, requests_event, False),
-                                          ({
-                                               **requests_event.default_params,
-                                               **result_param
-                                           }, "requests", "start_id_requests"))
+    case1_validate_fetch_events_params = (
+        ({"start_id_auditlog": 1}, audit_log_event, False),
+        ({**audit_log_event.default_params, **result_param}, "auditlog", "start_id_auditlog"),
+    )
+    case2_validate_fetch_events_params = (
+        ({"start_id_events": 1}, events_event, False),
+        ({**events_event.default_params, **result_param}, "events", "start_id_events"),
+    )
+    case3_validate_fetch_events_params = (
+        ({"start_id_requests": 1}, requests_event, False),
+        ({**requests_event.default_params, **result_param}, "requests", "start_id_requests"),
+    )
 
     # cases where we dont have key then use date 2025-01-01 01:00:00
     date_params = {"startdate": "2025-01-01", "enddate": "2025-01-01"}
     result_param_no_start_id = {"take": 1}
 
-    case4_validate_fetch_events_params = (({}, audit_log_event, False),
-                                          ({
-                                               **date_params,
-                                               **result_param_no_start_id
-                                           }, "auditlog", "start_id_auditlog"))
-    case5_validate_fetch_events_params = (({}, events_event, False),
-                                          ({
-                                               **date_params,
-                                               **result_param_no_start_id
-                                           }, "events", "start_id_events"))
-    case6_validate_fetch_events_params = (({}, requests_event, False),
-                                          ({
-                                               **requests_event.default_params,
-                                               **result_param_no_start_id
-                                           }, "requests", "start_id_requests"))
+    case4_validate_fetch_events_params = (
+        ({}, audit_log_event, False),
+        ({**date_params, **result_param_no_start_id}, "auditlog", "start_id_auditlog"),
+    )
+    case5_validate_fetch_events_params = (
+        ({}, events_event, False),
+        ({**date_params, **result_param_no_start_id}, "events", "start_id_events"),
+    )
+    case6_validate_fetch_events_params = (
+        ({}, requests_event, False),
+        ({**requests_event.default_params, **result_param_no_start_id}, "requests", "start_id_requests"),
+    )
 
     # cases where we dont have key then use date 2025-01-01 01:00:00
     last_run_start_date = {"startdate": "2025-01-01"}
 
     # using
-    case7_validate_fetch_events_params = ((last_run_start_date, audit_log_event, True),
-                                          ({
-                                               **last_run_start_date,
-                                               **result_param_no_start_id
-                                           }, "auditlog", "start_id_auditlog"))
+    case7_validate_fetch_events_params = (
+        (last_run_start_date, audit_log_event, True),
+        ({**last_run_start_date, **result_param_no_start_id}, "auditlog", "start_id_auditlog"),
+    )
 
     @pytest.mark.parametrize(
         "input_params, expected_results",
@@ -129,38 +122,67 @@ class TestHelperFunction:
             case5_validate_fetch_events_params,
             case6_validate_fetch_events_params,
             case7_validate_fetch_events_params,
-        ]
+        ],
     )
     @freeze_time("2025-01-01 01:00:00")
-    def test_validate_fetch_events_params(self, input_params: tuple[dict, EventType, bool],
-                                          expected_results: tuple[dict, str, str]) -> None:
+    def test_validate_fetch_events_params(
+        self, input_params: tuple[dict, EventType, bool], expected_results: tuple[dict, str, str]
+    ) -> None:
         """
-            Test validate_fetch_events_params function behavior on initial fetch.
+        Test validate_fetch_events_params function behavior on initial fetch.
 
-            Given:
-                - An input params containing params from "last_run", event type and a flag mention should
-                 we use lat run as params.
+        Given:
+            - An input params containing params from "last_run", event type and a flag mention should
+             we use lat run as params.
 
-            When:
-                - Validating params before fetch action.
-            Then:
-                - Make sure the request is sent with right parameters.
+        When:
+            - Validating params before fetch action.
+        Then:
+            - Make sure the request is sent with right parameters.
         """
         results = validate_fetch_events_params(*input_params)
         assert results == expected_results
 
     case1_set_event_type_fetch_limit = (
-        {"event_types_to_fetch": ["Auditlog", "Events", "Requests"], "max_auditlog_per_fetch": 50000,
-         "max_events_per_fetch": 50000, "max_requests_per_fetch": 5000}, 3, (50000, 50000, 5000))
+        {
+            "event_types_to_fetch": ["Auditlog", "Events", "Requests"],
+            "max_auditlog_per_fetch": 50000,
+            "max_events_per_fetch": 50000,
+            "max_requests_per_fetch": 5000,
+        },
+        3,
+        (50000, 50000, 5000),
+    )
     case2_set_event_type_fetch_limit = (
-        {"event_types_to_fetch": ["Auditlog", "Events"], "max_auditlog_per_fetch": 50000,
-         "max_events_per_fetch": 50000, "max_requests_per_fetch": 5000}, 2, (50000, 50000))
+        {
+            "event_types_to_fetch": ["Auditlog", "Events"],
+            "max_auditlog_per_fetch": 50000,
+            "max_events_per_fetch": 50000,
+            "max_requests_per_fetch": 5000,
+        },
+        2,
+        (50000, 50000),
+    )
     case3_set_event_type_fetch_limit = (
-        {"event_types_to_fetch": ["Auditlog", "Requests"], "max_auditlog_per_fetch": 50000,
-         "max_events_per_fetch": 10, "max_requests_per_fetch": 10}, 2, (50000, 10))
+        {
+            "event_types_to_fetch": ["Auditlog", "Requests"],
+            "max_auditlog_per_fetch": 50000,
+            "max_events_per_fetch": 10,
+            "max_requests_per_fetch": 10,
+        },
+        2,
+        (50000, 10),
+    )
     case4_set_event_type_fetch_limit = (
-        {"event_types_to_fetch": [], "max_auditlog_per_fetch": 50000,
-         "max_events_per_fetch": 50000, "max_requests_per_fetch": 5000}, 0, ())
+        {
+            "event_types_to_fetch": [],
+            "max_auditlog_per_fetch": 50000,
+            "max_events_per_fetch": 50000,
+            "max_requests_per_fetch": 5000,
+        },
+        0,
+        (),
+    )
 
     @pytest.mark.parametrize(
         "input_params, expected_len, expected_limits",
@@ -168,21 +190,22 @@ class TestHelperFunction:
             case1_set_event_type_fetch_limit,
             case2_set_event_type_fetch_limit,
             case3_set_event_type_fetch_limit,
-            case4_set_event_type_fetch_limit
-        ]
+            case4_set_event_type_fetch_limit,
+        ],
     )
-    def test_set_event_type_fetch_limit(self, input_params: Dict[str, Any], expected_len: int,
-                                        expected_limits: tuple[int, int, int]) -> None:
+    def test_set_event_type_fetch_limit(
+        self, input_params: Dict[str, Any], expected_len: int, expected_limits: tuple[int, int, int]
+    ) -> None:
         """
-            Test set_event_type_fetch_limit function behavior.
+        Test set_event_type_fetch_limit function behavior.
 
-            Given:
-                - An input params containing integration params from integration configuration.
+        Given:
+            - An input params containing integration params from integration configuration.
 
-            When:
-                - VUpdating Event types before making a fetch action
-            Then:
-                - Make dure each event type has the correct max_fetch limit.
+        When:
+            - VUpdating Event types before making a fetch action
+        Then:
+            - Make dure each event type has the correct max_fetch limit.
         """
         event_types = set_event_type_fetch_limit(input_params)
         assert len(event_types) == expected_len
@@ -260,10 +283,7 @@ class TestFetchEvents:
         first_response = raw_detections
         second_response = []
 
-        mocker.patch(
-            "AdminByRequestEventCollector.Client.retrieve_from_api",
-            side_effect=[first_response, second_response]
-        )
+        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response])
         last_run = {"start_id_auditlog": 1, "start_id_events": 1, "start_id_requests": 1}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_requests, use_last_run_as_params=False)
@@ -281,11 +301,7 @@ class TestFetchEvents:
         self.event_events.max_fetch = 3
         self.event_audit.max_fetch = 3
 
-        raw_detections = (
-            self.raw_detections_audit +
-            self.raw_detections_events +
-            self.raw_detections_requests
-        )
+        raw_detections = self.raw_detections_audit + self.raw_detections_events + self.raw_detections_requests
 
         first_response = self.raw_detections_audit
         second_response = self.raw_detections_events
@@ -294,12 +310,10 @@ class TestFetchEvents:
         events_types = [self.event_audit, self.event_events, self.event_requests]
 
         mocker.patch(
-            "AdminByRequestEventCollector.Client.retrieve_from_api",
-            side_effect=[first_response, second_response, third_response]
+            "AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response, third_response]
         )
 
-        output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types,
-                                        use_last_run_as_params=False)
+        output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types, use_last_run_as_params=False)
 
         assert len(output) == len(raw_detections)
         assert last_run.get("start_id_auditlog") == self.raw_detections_audit[-1]["id"] + 1
@@ -316,11 +330,7 @@ class TestFetchEvents:
         self.event_events.max_fetch = 2
         self.event_requests.max_fetch = 1
 
-        raw_detections = (
-            self.raw_detections_audit +
-            self.raw_detections_events[:-1] +
-            self.raw_detections_requests[:-2]
-        )
+        raw_detections = self.raw_detections_audit + self.raw_detections_events[:-1] + self.raw_detections_requests[:-2]
 
         first_response = self.raw_detections_audit
         second_response = self.raw_detections_events
@@ -329,12 +339,10 @@ class TestFetchEvents:
         events_types = [self.event_audit, self.event_events, self.event_requests]
 
         mocker.patch(
-            "AdminByRequestEventCollector.Client.retrieve_from_api",
-            side_effect=[first_response, second_response, third_response]
+            "AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response, third_response]
         )
 
-        output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types,
-                                        use_last_run_as_params=False)
+        output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types, use_last_run_as_params=False)
 
         assert len(output) == len(raw_detections)
         assert last_run.get("start_id_auditlog") == self.raw_detections_audit[-1]["id"] + 1
@@ -355,7 +363,7 @@ class TestFetchEvents:
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_audit, use_last_run_as_params=False)
 
         for i in range(len(output)):
-            assert output[i].get(self.event_audit.time_field) == raw_detections[i]['startTimeUTC']
+            assert output[i].get(self.event_audit.time_field) == raw_detections[i]["startTimeUTC"]
             assert output[i].get("source_log_type") == self.event_audit.source_log_type
 
     def test_fetch_all_types_field_values_events(self, client, mocker):
@@ -372,7 +380,7 @@ class TestFetchEvents:
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_events, use_last_run_as_params=False)
 
         for i in range(len(output)):
-            assert output[i].get(self.event_events.time_field) == raw_detections[i]['eventTimeUTC']
+            assert output[i].get(self.event_events.time_field) == raw_detections[i]["eventTimeUTC"]
             assert output[i].get("source_log_type") == self.event_events.source_log_type
 
     def test_fetch_all_types_field_values_requests(self, client, mocker):
@@ -389,7 +397,7 @@ class TestFetchEvents:
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_requests, use_last_run_as_params=False)
 
         for i in range(len(output)):
-            assert output[i].get(self.event_requests.time_field) == raw_detections[i]['requestTime']
+            assert output[i].get(self.event_requests.time_field) == raw_detections[i]["requestTime"]
             assert output[i].get("source_log_type") == self.event_requests.source_log_type
 
     @freeze_time("2025-01-01 01:00:00")
@@ -407,10 +415,7 @@ class TestFetchEvents:
 
         args = {"limit": 2, "event_type": "Events"}
 
-        mocker.patch(
-            "AdminByRequestEventCollector.Client.retrieve_from_api",
-            side_effect=[first_response, second_response]
-        )
+        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response])
 
         output = get_events(client, args=args)
 
