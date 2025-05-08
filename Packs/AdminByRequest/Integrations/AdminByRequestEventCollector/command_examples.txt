@@ -1,1 +1,1 @@
-!admin_by_request_get-events should_push_events=false limit=5 first_fetch="3 days" event_type="Auditlog"
+!admin_by_request-get-events should_push_events=false limit=5 first_fetch="3 days" event_type="Auditlog"
