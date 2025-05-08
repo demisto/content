@@ -1,3 +1,3 @@
 # Cortex Module Test
 
-This is a test cortex module package. v.0.0.4
+This is a test cortex module package. v.0.0.5
