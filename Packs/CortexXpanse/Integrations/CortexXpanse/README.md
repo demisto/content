@@ -44,6 +44,7 @@ Get a list of all your external services filtered by business units, externally 
 | domain | Domain on which to search. | Optional | 
 | is_active | Whether the service is active. Possible values are: yes, no. | Optional | 
 | discovery_type | How service was discovered. Possible values are: colocated_on_ip, directly_discovery, unknown. | Optional | 
+| tags | Tags on which to search. | Optional | 
 
 #### Context Output
 
@@ -63,139 +64,6 @@ Get a list of all your external services filtered by business units, externally 
 | ASM.ExternalService.discovery_type | String | How the external service was discovered. | 
 | ASM.ExternalService.business_units | String | External service associated business units. | 
 | ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
-
-#### Command example
-
-```!asm-list-external-service domain=acme.com is_active=yes discovery_type=directly_discovery```
-
-#### Context Example
-
-```json
-{
-    "ASM": {
-        "ExternalService": [
-            {
-                "active_classifications": [
-                    "HttpServer",
-                    "MicrosoftOWAServer",
-                    "ServerSoftware",
-                    "MicrosoftIisWebServer",
-                    "ApplicationServerSoftware"
-                ],
-                "business_units": [
-                    "Acme",
-                    "VanDelay Industries"
-                ],
-                "discovery_type": "DirectlyDiscovered",
-                "domain": [
-                    "autodiscover.acme.com"
-                ],
-                "externally_detected_providers": [
-                    "Microsoft Azure"
-                ],
-                "externally_inferred_cves": [],
-                "externally_inferred_vulnerability_score": null,
-                "first_observed": 1659395040000,
-                "inactive_classifications": [],
-                "ip_address": [
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1"
-                ],
-                "is_active": "Active",
-                "last_observed": 1663024320000,
-                "port": 80,
-                "protocol": "TCP",
-                "service_id": "4c755fea-59e8-3719-8829-9f6adde65068",
-                "service_name": "HTTP Server at autodiscover.acme.com:80",
-                "service_type": "HttpServer"
-            },
-            {
-                "active_classifications": [
-                    "HttpServer",
-                    "ServerSoftware"
-                ],
-                "business_units": [
-                    "Acme",
-                    "VanDelay Industries"
-                ],
-                "discovery_type": "DirectlyDiscovered",
-                "domain": [
-                    "web.acme.com"
-                ],
-                "externally_detected_providers": [
-                    "Amazon Web Services"
-                ],
-                "externally_inferred_cves": [],
-                "externally_inferred_vulnerability_score": null,
-                "first_observed": 1659396480000,
-                "inactive_classifications": [],
-                "ip_address": [
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1",
-                    "1.1.1.1"
-                ],
-                "is_active": "Active",
-                "last_observed": 1663029060000,
-                "port": 80,
-                "protocol": "TCP",
-                "service_id": "32c85ab1-fc98-3061-a813-2fe5daf7e7c5",
-                "service_name": "HTTP Server at web.acme.com:80",
-                "service_type": "HttpServer"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### External Services
->
->|Active Classifications|Business Units|Discovery Type|Domain|Externally Detected Providers|First Observed|Ip Address|Is Active|Last Observed|Port|Protocol|Service Id|Service Name|Service Type|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| HttpServer,<br/>MicrosoftOWAServer,<br/>ServerSoftware,<br/>MicrosoftIisWebServer,<br/>ApplicationServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | autodiscover.acme.com | Microsoft Azure | 1659395040000 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Active | 1663024320000 | 80 | TCP | 4c755fea-59e8-3719-8829-9f6adde65068 | HTTP Server at autodiscover.acme.com:80 | HttpServer |
->| HttpServer,<br/>ServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | web.acme.com | Amazon Web Services | 1659396480000 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Active | 1663029060000 | 80 | TCP | 32c85ab1-fc98-3061-a813-2fe5daf7e7c5 | HTTP Server at web.acme.com:80 | HttpServer |
-
 
 ### asm-get-external-service
 
@@ -2217,181 +2085,49 @@ If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the las
 {
     "ASM": {
         "TIM": {
-            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
-            "indicator_type": "IP",
-            "name": "1.1.1.2",
-            "reliability": "A+ - 3rd party enrichment",
-            "score": 0
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
-If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
-
-> ### Xpanse Discovered IP List
->
-> |asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|ip|last_observed|name|recent_ips|service_type|tags|
-> |---|---|---|---|---|---|---|---|---|---|---|---|
-> | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
-
-If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
-
-> ### Xpanse Discovered IP List (Existing Indicators)
->
-> This domain list is from existing records found in Cortex XSOAR within the last 3 days.
-> If you would additional Cortex Xpanse specific information about these, use asm-list-asset-internet-exposure.
->
-> |id|indicator_type|name|reliability|score|
-> |---|---|---|---|---|
-> | abcd1b2abcd1a0b20c7a8bc5d67e8eea | IP | 1.1.1.2 | A+ - 3rd party enrichment | 0 |
-
-If the indicator was updated in Cortex XSOAR in the last 3 days:
-
-> ### XSOAR Indicator Discovered IP List (Not Related to Cortex Xpanse)
-> 
-> This IP list is from existing records found in Cortex XSOAR within the last 3 days.
-> These IPs have not been found to be attributed to Cortex Xpanse.
-> 
-> |integrations|name|
-> |---|---|
-> | VirusTotal (API v3) | 8.8.8.8 |
-
-
-### domain
+### ip
 
 ***
-(Deprecated as of version 1.2.7) Returns reputation lookup for an domain found in Cortex Xpanse.
+Returns enrichment for an IP address.
 
 #### Base Command
 
-`domain`
+`ip`
 
 #### Input
 
-| **Argument Name** | **Description**   | **Required** |
-|-------------------|-------------------|--------------|
-| domain            | Domain to enrich. | Required     | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address to enrich. | Required | 
 
 #### Context Output
 
-| **Path**                      | **Type** | **Description**                                                            |
-|-------------------------------|----------|----------------------------------------------------------------------------|
-| ASM.Domain.domain             | String   | The domain affiliated with an asset.                                       |
-| ASM.Domain.name               | String   | The asset name.                                                            |
-| ASM.Domain.asset_type         | String   | The asset type.                                                            |
-| ASM.Domain.first_observed     | unknown  | When the asset was first observed.                                         |
-| ASM.Domain.last_observed      | unknown  | When the asset was last observed.                                          |
-| ASM.Domain.asm_ids            | unknown  | The ID of the asset.                                                       |
-| ASM.Domain.service_type       | unknown  | Affiliated service types for the asset.                                    |
-| ASM.Domain.tags               | unknown  | A list of tags that have been assigned to the asset.                       |
-| ASM.Domain.asset_explainers   | unknown  | The asset explanation details.                                             |
-| ASM.Domain.domain_details     | unknown  | Additional domain details.                                                 |
-| ASM.Domain.recent_ips         | unknown  | Details about the recent IP observations.                                  |
-| DBotScore.Vendor              | String   | The vendor reporting the score of the indicator.                           |
-| DBotScore.Score               | Number   | An integer regarding the status of the indicator.                          |
-| DBotScore.Indicator           | String   | The indicator value.                                                       |
-| DBotScore.Type                | String   | The vendor used to calculate the score.                                    |
-| DBotScore.Reliability         | String   | Reliability of the source providing the intelligence data.                 |
-| Domain.Name                   | String   | Name of the domain.                                                        |
-| ASM.TIM.Domain.name           | String   | The existing Cortex Xpanse domain recently updated in the Cortex XSOAR indicators            |
-| ASM.TIM.Domain.indicator_type | String   | The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators                     |
-| ASM.TIM.Domain.id             | String   | The existing indicator ID in the Cortex XSOAR indicators                              |
-| ASM.TIM.Domain.reliability    | String   | The existing indicator reliability recently updated in the Cortex XSOAR indicators    |
-| ASM.TIM.Domain.score          | Integer  | The existing indicator score recently updated in the Cortex XSOAR indicators          |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.IP.ip | string | The IP address of the asset. | 
+| ASM.IP.domain | string | The domain affiliated with an asset. | 
+| ASM.IP.name | string | The asset name. | 
+| ASM.IP.asset_type | string | The asset type. | 
+| ASM.IP.first_observed | unknown | When the asset was first observed. | 
+| ASM.IP.last_observed | unknown | When the asset was last observed. | 
+| ASM.IP.asm_ids | unknown | The ID of the asset. | 
+| ASM.IP.service_type | unknown | Affiliated service types for the asset. | 
+| ASM.IP.tags | unknown | A list of tags that have been assigned to the asset. | 
+| ASM.IP.asset_explainers | unknown | The asset explanation details. | 
+| ASM.IP.domain_details | unknown | Additional domain details. | 
+| ASM.IP.recent_ips | unknown | Details about the recent IP observations. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
+| IP.Address | String | IP address. | 
+| ASM.TIM.IP.name | String | The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators. | 
+| ASM.TIM.IP.indicator_type | String | The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators. | 
+| ASM.TIM.IP.id | String | The existing indicator ID in the Cortex XSOAR indicators. | 
+| ASM.TIM.IP.reliability | String | The existing indicator reliability recently updated in the Cortex XSOAR indicators. | 
+| ASM.TIM.IP.score | Number | The existing indicator score recently updated in the Cortex XSOAR indicators. | 
 
-#### Command example
-
-```!domain domain="*.acme.com, www.example.com, www.fakedomain.com"```
-
-#### Context Example
-
-If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
-
-```json
-{
-    "ASM": {
-        "Domain": {
-            "asm_ids": [
-                "4b1f3765-de40-3a1a-8535-667420408fd9"
-            ],
-            "asset_explainers": [],
-            "asset_type": "DOMAIN",
-            "domain": "*.acme.com",
-            "domain_details": {
-                "admin": {
-                    "city": "",
-                    "country": "us",
-                    "emailAddress": "",
-                    "faxExtension": null,
-                    "faxNumber": "",
-                    "name": "",
-                    "organization": "Acme, Inc.",
-                    "phoneExtension": null,
-                    "phoneNumber": "",
-                    "postalCode": "",
-                    "province": "AZ",
-                    "registryId": null,
-                    "street": ""
-                },
-                "alignedRegistrar": "MarkMonitor",
-                "collectionTime": 1695942091000,
-                "creationDate": 785376000000,
-                "dnssec": null,
-                "domainName": "acme.com",
-                "domainStatuses": [
-                    "clientUpdateProhibited",
-                    "clientTransferProhibited",
-                    "clientDeleteProhibited"
-                ],
-                "dropped": false,
-                "nameServers": []
-            },
-            "first_observed": 1679457579382,
-            "last_observed": 1697361335282,
-            "name": "*.acme.com",
-            "recent_ips": [
-                {
-                    "firstObserved": 1692418207732,
-                    "id": "218b3cc9-2d26-3a17-aadd-9eac08cc30ec",
-                    "ip": "1.1.1.1",
-                    "ipv6": null,
-                    "lastObserved": 1697361335282,
-                    "provider": {
-                        "additionalProviderInfo": null,
-                        "cdn": false,
-                        "displayName": "Amazon Web Services",
-                        "isCdn": false,
-                        "legacyName": "AWS",
-                        "name": "AWS"
-                    },
-                    "source": {
-                        "name": "DOMAIN_RESOLUTION"
-                    }
-                }
-            ],
-            "service_type": [
-                "HttpServer"
-            ],
-            "tags": [
-                "BU:Xpanse VanDelay Demo 3"
-            ]
-        }
-    }
-}
-```
-
-If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
-
-```json
-{
-    "ASM": {
-        "TIM": {
-            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
-            "indicator_type": "Domain",
-            "name": "www.example.com",
             "reliability": "A+ - 3rd party enrichment",
             "score": 0
         }
@@ -2524,177 +2260,48 @@ Get a list of all your external websites filtered by authentication type. Maximu
                         }
                     },
                     {
-                        "name": "No Mixed Content",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
-                        }
-                    },
-                    {
-                        "name": "Protocol Downgrade",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "Redirects never downgrade from HTTPS to HTTP."
-                        }
-                    },
-                    {
-                        "name": "Sets valid X-Frame-Options Header",
-                        "priority": 10,
-                        "score": 0,
-                        "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
-                        }
-                    },
-                    {
-                        "name": "Sets valid X-Content-Type-Options Header",
-                        "priority": 10,
-                        "score": 0,
-                        "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content."
-                        }
-                    },
-                    {
-                        "name": "Sets valid Content-Type Header",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages."
-                        }
-                    },
-                    {
-                        "name": "Sets HTTP Strict Transport Security Header",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters."
-                        }
-                    },
-                    {
-                        "name": "Sets valid Referrer-Policy Header",
-                        "priority": 10,
-                        "score": 0,
-                        "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests."
-                        }
-                    }
-                ],
-                "authentication": [
-                    "Form Based Auth"
-                ],
-                "rootPageHttpStatusCode": "302",
-                "isNonConfiguredHost": false,
-                "externally_inferred_vulnerability_score": null,
-                "externally_inferred_cves": [],
-                "tags": [
-                    "nemo"
-                ]
-            },
-            {
-                "website_id": null,
-                "host": "example.com",
-                "protocol": "HTTPS",
-                "is_active": "ACTIVE",
-                "site_categories": [],
-                "technology_ids": [
-                    "http-2",
-                    "google-font-api",
-                    "hsts"
-                ],
-                "first_observed": 1704494700000,
-                "last_observed": 1705363560000,
-                "provider_names": [
-                    "Google"
-                ],
-                "ips": [
-                    "1.1.1.1"
-                ],
-                "port": 443,
-                "active_service_ids": [
-                    null
-                ],
-                "http_type": "HTTPS",
-                "third_party_script_domains": [],
-                "security_assessments": [
-                    {
-                        "name": "Has HTTPS Enabled",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
-                        }
-                    },
-                    {
-                        "name": "Secure Forms",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "Forms on this website are submitted over HTTPS."
-                        }
-                    },
-                    {
-                        "name": "No Mixed Content",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
-                        }
-                    },
-                    {
-                        "name": "Protocol Downgrade",
-                        "priority": 10,
-                        "score": 1,
-                        "securityAssessmentDetails": {
-                            "pages": [],
-                            "description": "Redirects never downgrade from HTTPS to HTTP."
-                        }
-                    },
-                    {
-                        "name": "Sets valid X-Frame-Options Header",
-                        "priority": 10,
-                        "score": 0,
-                        "securityAssessmentDetails": {
-                            "pages": [
-                                {
-                                    "url": "https://example.com",
-                                    "message": "not_set",
-                                    "elements": []
-                                }
-                            ],
-                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
-                        }
-                    },
-                    {
-                        "name": "Sets valid X-Content-Type-Options Header",
+### domain
+
+***
+Returns enrichment for a domain.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain to enrich. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.Domain.domain | string | The domain affiliated with an asset. | 
+| ASM.Domain.name | string | The asset name. | 
+| ASM.Domain.asset_type | string | The asset type. | 
+| ASM.Domain.first_observed | unknown | When the asset was first observed. | 
+| ASM.Domain.last_observed | unknown | When the asset was last observed. | 
+| ASM.Domain.asm_ids | unknown | The ID of the asset. | 
+| ASM.Domain.service_type | unknown | Affiliated service types for the asset. | 
+| ASM.Domain.tags | unknown | A list of tags that have been assigned to the asset. | 
+| ASM.Domain.asset_explainers | unknown | The asset explanation details. | 
+| ASM.Domain.domain_details | unknown | Additional domain details. | 
+| ASM.Domain.recent_ips | unknown | Details about the recent IP observations. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| ASM.TIM.Domain.name | String | The existing Cortex Xpanse domain recently updated in XSOAR indicators. | 
+| ASM.TIM.Domain.indicator_type | String | The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators. | 
+| ASM.TIM.Domain.id | String | The existing indicator ID in the Cortex XSOAR indicators. | 
+| ASM.TIM.Domain.reliability | String | The existing indicator reliability recently updated in the Cortex XSOAR indicators. | 
+| ASM.TIM.Domain.score | Number | The existing indicator score recently updated in the Cortex XSOAR indicators. | 
+
                         "priority": 10,
                         "score": 0,
                         "securityAssessmentDetails": {
@@ -2968,3 +2575,26 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 #### Context Output
 
 There is no context output for this command.
+### asm-add-note-to-asset
+
+***
+Adds a note to an asset in Xpanse.
+
+#### Base Command
+
+`asm-add-note-to-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | The asset ID to add a note to. | Required | 
+| entity_type | The type of Xpanse asset. Allowed values are: 'asset' or 'ip_range'. Possible values are: ip_range, asset. | Required | 
+| note_to_add | The custom note to be added to the notes section of the asset in Cortex Xpanse. | Required | 
+| should_append | Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. Possible values are: True, False. Default is true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.AssetAnnotation.status | String | Status of the note being added to the asset in Cortex Xpanse. | 
