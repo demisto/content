@@ -369,15 +369,6 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 """ HELPER FUNCTIONS """
 
-def is_fetch_events():
-    """
-    Determines whether or not the command is fetch_events.
-
-    Returns:
-        bool: True if the command is fetch-events.
-    """
-    return demisto.command() == "fetch-events"
-
 def disable_for_xsiam():
     """Validates if command is not running on an unsupported Cortex platform.
 
@@ -760,7 +751,25 @@ def add_mirroring_fields(incident: dict):
     incident["mirror_direction"] = MIRROR_DIRECTION
     incident["mirror_instance"] = INTEGRATION_INSTANCE
 
-
+def add_response_to_dataset(resp: dict, raw: dict) -> None:
+    """
+    Adds response data info to specific dataset raw.
+    
+    This function processes response keys and adds them to the raw ad new column.
+    The "name" column is typically used for displaying "<fetched type> ID: <id>" format,
+    The function renames the "name" key to "_name" column to avoid conflicts.
+    
+    Args:
+        resp (dict): Response dictionary to process (events/incident)
+        raw (dict): Target dataset raw to update
+    """
+    for key, val in resp.items():
+        if key == "name":
+            key = "_name"
+        if not isinstance(val, str):
+            val = json.dumps(val)
+        raw[key] = val
+    
 def detection_to_incident(detection, is_fetch_events: bool = False):
     """
     Creates an incident of a detection.
@@ -778,11 +787,12 @@ def detection_to_incident(detection, is_fetch_events: bool = False):
     incident = {
         "name": "Detection ID: " + str(detection_id),
         "occurred": str(detection.get("created_timestamp")),
-        "severity": severity_string_to_int(severity)
+        "severity": severity_string_to_int(severity),
+        "rawJSON": json.dumps(detection)
     }
     if is_fetch_events:
         incident["_source_log_type"] = detection.get("incident_type")
-        incident.update({key: val if isinstance(val, str) else json.dumps(val) for key, val in detection.items()})
+        add_response_to_dataset(resp=detection, raw=incident)
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident["_time"] = detection.get("timestamp")
@@ -791,8 +801,6 @@ def detection_to_incident(detection, is_fetch_events: bool = False):
         else:
             incident["_time"] = detection.get("updated_timestamp")
             incident['_entry_status'] = "updated"
-    else:
-        incident["rawJSON"] = json.dumps(detection)
     return incident
 
 
@@ -813,11 +821,12 @@ def incident_to_incident_context(incident, is_fetch_events: bool = False):
     incident_id = str(incident.get("incident_id"))
     incident_context = {
         "name": f"Incident ID: {incident_id}",
-        "occurred": str(incident.get("start"))
+        "occurred": str(incident.get("start")),
+        "rawJSON": json.dumps(incident)
     }
     if is_fetch_events:
         incident_context["_source_log_type"] = incident.get("incident_type")
-        incident_context.update({key: val if isinstance(val, str) else json.dumps(val) for key, val in incident.items()})
+        add_response_to_dataset(resp=incident, raw=incident_context)
         # new incident
         if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created")):
             incident_context["_time"] = incident.get("created_timestamp")
@@ -826,8 +835,6 @@ def incident_to_incident_context(incident, is_fetch_events: bool = False):
         else:
             incident_context["_time"] = incident.get("modified_timestamp")
             incident_context['_entry_status'] = "updated"
-    else:
-        incident_context["rawJSON"] = json.dumps(incident)
     return incident_context
 
 
@@ -868,7 +875,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
 
-    incident_context = {"occurred": detection.get(start_time_key)}
+    incident_context = {"occurred": detection.get(start_time_key), "rawJSON": json.dumps(detection)}
     if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE, OFP_DETECTION_TYPE):
         incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context["last_updated"] = detection.get("updated_timestamp")
@@ -878,7 +885,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
-        incident_context.update({key: val if isinstance(val, str) else json.dumps(val) for key, val in detection.items()})
+        add_response_to_dataset(resp=detection, raw=incident_context)
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident_context["_time"] = detection.get("timestamp")
@@ -887,8 +894,6 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         else:
             incident_context["_time"] = detection.get("updated_timestamp")
             incident_context['_entry_status'] = "updated"
-    else:
-        incident_context["rawJSON"] = json.dumps(detection)
     return incident_context
 
 
@@ -2885,7 +2890,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 """ COMMANDS FUNCTIONS """
 
 
-def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
+def migrate_last_run(last_run: dict[str, str] | list[dict],  is_fetch_events: bool = False) -> list[dict]:
     """This function migrated from old last run object to new last run object
 
     Args:
@@ -2909,6 +2914,8 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         ):
             updated_last_run_incidents["time"] = incident_time_date.strftime(DATE_FORMAT)
 
+        if is_fetch_events:
+            return [updated_last_run_detections, updated_last_run_incidents, {}, {}, {}, {}]
         return [updated_last_run_detections, updated_last_run_incidents, {}, {}, {}]
 
 
@@ -3240,14 +3247,14 @@ def fetch_events():
     last_run = demisto.getLastRun()
     demisto.debug(f"CrowdStrikeFalconMsg: Current last run object is {last_run}")
     if not last_run:
-        last_run = [{}, {}, {}, {}, {}, {}, {}]
-    last_run = migrate_last_run(last_run)
+        last_run = [{}, {}, {}, {}, {}, {}]
+    last_run = migrate_last_run(last_run, is_fetch_events=True)
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
     current_fetch_info_idp_detections: dict = {} if len(last_run) < 3 else last_run[2]
-    current_fetch_info_mobile_detections: dict = {} if len(last_run) < 6 else last_run[5]
-    current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
-    current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
+    current_fetch_info_mobile_detections: dict = {} if len(last_run) < 4 else last_run[3]
+    current_fetch_on_demand_detections: dict = {} if len(last_run) < 5 else last_run[4]
+    current_fetch_ofp_detection: dict = {} if len(last_run) < 6 else last_run[5]
     params = demisto.params()
     
     fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
