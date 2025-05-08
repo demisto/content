@@ -16,13 +16,7 @@ def test_main(mocker):
     assert results[0]["Contents"]["Result"] == "[Demisto](http://demisto.com)"
 
 
-@pytest.mark.parametrize(
-    'escape_misc, expected_results',
-    [
-        (True, "**\\+ \\- \\&**"),
-        (False, "**+ - &**")
-    ]
-)
+@pytest.mark.parametrize("escape_misc, expected_results", [(True, "**\\+ \\- \\&**"), (False, "**+ - &**")])
 def test_escape_miscs(escape_misc, expected_results):
     """
     Given:
@@ -36,6 +30,6 @@ def test_escape_miscs(escape_misc, expected_results):
         - Case 1: should escape miscellaneous punctuation characters.
         - Case 2: should not escape miscellaneous punctuation characters.
     """
-    args = {"html": '<b>+ - &</b>', "escape_misc": escape_misc}
+    args = {"html": "<b>+ - &</b>", "escape_misc": escape_misc}
     results = html_to_md_command(args)
     assert results[1] == expected_results
