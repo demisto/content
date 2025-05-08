@@ -19,11 +19,10 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 910,
           "y": 50
         }
       }
@@ -32,6 +31,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -55,12 +55,11 @@ tasks:
       numberOfIncidents:
         simple: "100"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 370
+          "x": 910,
+          "y": 545
         }
       }
     note: false
@@ -68,6 +67,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -92,10 +92,6 @@ tasks:
           closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           fall
-      extend-context:
-        simple: SinglePred1=.
-      ignore-outputs:
-        simple: "true"
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -104,13 +100,16 @@ tasks:
         simple: test_phishing_model
       modelStoreType:
         simple: mlModel
+      extend-context:
+        simple: SinglePred1=.
+      ignore-outputs:
+        simple: "true"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -118,6 +117,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -133,12 +133,11 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1740
+          "y": 1915
         }
       }
     note: false
@@ -146,6 +145,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -162,16 +162,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "39"
+      - "40"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 910,
           "y": 195
         }
       }
@@ -180,14 +180,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 861ca03d-b094-49c3-8608-372658ea60a8
+    taskid: 69d7098a-0a6b-4c2b-89d1-5606cea8686f
     type: playbook
     task:
-      id: 861ca03d-b094-49c3-8608-372658ea60a8
+      id: 69d7098a-0a6b-4c2b-89d1-5606cea8686f
       version: -1
       name: DBot Create Phishing Classifier V2
       description: Create a phishing classifier using machine learning techniques, based on email content.
@@ -212,23 +213,37 @@ tasks:
       incidentTypes:
         simple: Simulation
       incidentsQuery:
-        simple: ${IncidentsQuery}
+        complex:
+          root: IncidentsQuery
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' and (tags:Tag1 or tags:Tag2 or tags:Tag3) and occurred:>='
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TimeNow
+                iscontext: true
       maxIncidentsToFetchOnTraining:
         simple: "3000"
       modelName:
         simple: fine_tune
-      modelTargetAccuracy:
-        simple: "0.8"
-      outputFormat:
-        simple: pickle
       overrideModel:
         simple: "true"
       phishingLabels:
         simple: '*'
       removeShortTextThreshold:
         simple: "15"
+      modelTargetAccuracy:
+        simple: "0.8"
+      outputFormat:
+        simple: pickle
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -237,8 +252,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 545
+          "x": 910,
+          "y": 720
         }
       }
     note: false
@@ -246,6 +261,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -272,12 +288,11 @@ tasks:
             value:
               simple: DBotPhishingClassifier.EvaluationScores.Precision.All
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 720
+          "x": 910,
+          "y": 895
         }
       }
     note: false
@@ -285,6 +300,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -321,12 +337,11 @@ tasks:
           right:
             value:
               simple: "0.9930823445320129"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 1740
         }
       }
     note: false
@@ -334,6 +349,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -370,12 +386,11 @@ tasks:
           right:
             value:
               simple: "0.9941679239273071"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1565
+          "y": 1740
         }
       }
     note: false
@@ -383,6 +398,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -407,10 +423,6 @@ tasks:
           ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           closed
-      extend-context:
-        simple: SinglePred2=.
-      ignore-outputs:
-        simple: "true"
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -419,13 +431,16 @@ tasks:
         simple: test_phishing_model
       modelStoreType:
         simple: mlModel
+      extend-context:
+        simple: SinglePred2=.
+      ignore-outputs:
+        simple: "true"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -433,6 +448,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -457,10 +473,6 @@ tasks:
           suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           boat
-      extend-context:
-        simple: SinglePred3=.
-      ignore-outputs:
-        simple: "true"
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -469,13 +481,16 @@ tasks:
         simple: test_phishing_model
       modelStoreType:
         simple: mlModel
+      extend-context:
+        simple: SinglePred3=.
+      ignore-outputs:
+        simple: "true"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -483,6 +498,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -519,12 +535,11 @@ tasks:
           right:
             value:
               simple: "0.9961445331573486"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1565
+          "y": 1740
         }
       }
     note: false
@@ -532,6 +547,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -556,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 895
+          "x": 1770,
+          "y": 1070
         }
       }
     note: false
@@ -569,10 +586,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 5c180aa8-da4d-42b2-8479-fc0e2013f509
+    taskid: 56e950c8-df46-47aa-818a-c36be1ca8394
     type: regular
     task:
-      id: 5c180aa8-da4d-42b2-8479-fc0e2013f509
+      id: 56e950c8-df46-47aa-818a-c36be1ca8394
       version: -1
       name: Predict batch
       description: Apply a trained ML model on multiple incidents at once, to compare incidents how the incidents were labeled by analysts, to the predictions of the model. This script is aimed to help evaluate a trained model using past incidents.
@@ -593,7 +610,15 @@ tasks:
       modelName:
         simple: ${DBotPhishingClassifier.ModelName}
       query:
-        simple: name:fine_tune_1|fine_tune_2|fine_tune_3
+        complex:
+          root: GeneratedUUID
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'name:fine_tune_1|fine_tune_2|fine_tune_3 and uuid:'
+              suffix: {}
       tagField:
         simple: name
     separatecontext: false
@@ -602,7 +627,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1215
+          "y": 1390
         }
       }
     note: false
@@ -635,7 +660,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1230
+          "y": 1405
         }
       }
     note: false
@@ -647,10 +672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 34b73063-4e92-457a-891d-47484f3eecbe
+    taskid: 08a73b27-d71e-48d5-8bc5-6ede96a323d8
     type: regular
     task:
-      id: 34b73063-4e92-457a-891d-47484f3eecbe
+      id: 08a73b27-d71e-48d5-8bc5-6ede96a323d8
       version: -1
       name: 'Create incident #1'
       description: commands.local.cmd.create.inc
@@ -673,13 +698,15 @@ tasks:
         simple: fine_tune_1
       type:
         simple: Simulation
+      uuid:
+        simple: ${GeneratedUUID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 807.5,
-          "y": 1040
+          "y": 1215
         }
       }
     note: false
@@ -691,10 +718,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: e7fa4db4-9ad3-4852-88c5-20dba79f74db
+    taskid: b19494be-d333-4d13-8f4a-905fc4557727
     type: regular
     task:
-      id: e7fa4db4-9ad3-4852-88c5-20dba79f74db
+      id: b19494be-d333-4d13-8f4a-905fc4557727
       version: -1
       name: 'Create incident #2'
       description: commands.local.cmd.create.inc
@@ -717,13 +744,15 @@ tasks:
         simple: fine_tune_2
       type:
         simple: Simulation
+      uuid:
+        simple: ${GeneratedUUID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1555,
-          "y": 1040
+          "y": 1215
         }
       }
     note: false
@@ -735,10 +764,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9dfe9918-d472-4c72-89b0-747864ac3346
+    taskid: 4a350b30-4a82-425c-89f6-0b823ef90991
     type: regular
     task:
-      id: 9dfe9918-d472-4c72-89b0-747864ac3346
+      id: 4a350b30-4a82-425c-89f6-0b823ef90991
       version: -1
       name: 'Create incident #3'
       description: commands.local.cmd.create.inc
@@ -761,13 +790,15 @@ tasks:
         simple: fine_tune_3
       type:
         simple: Simulation
+      uuid:
+        simple: ${GeneratedUUID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1985,
-          "y": 1040
+          "y": 1215
         }
       }
     note: false
@@ -815,7 +846,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -864,7 +895,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1565
+          "y": 1740
         }
       }
     note: false
@@ -913,7 +944,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1565
+          "y": 1740
         }
       }
     note: false
@@ -962,7 +993,75 @@ tasks:
       {
         "position": {
           "x": 2200,
-          "y": 1565
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: cdd6b7ae-64c7-4185-8cf0-c9a647fd62da
+    type: regular
+    task:
+      id: cdd6b7ae-64c7-4185-8cf0-c9a647fd62da
+      version: -1
+      name: Generate UUID
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: c3238b43-74ce-44e9-8305-f87c6d74efae
+    type: regular
+    task:
+      id: c3238b43-74ce-44e9-8305-f87c6d74efae
+      version: -1
+      name: Get Current Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      dateFormat:
+        simple: iso
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
         }
       }
     note: false
@@ -977,7 +1076,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1755,
+        "height": 1930,
         "width": 2530,
         "x": 50,
         "y": 50
@@ -986,4 +1085,7 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
+fromversion: 6.1.0
+contentitemexportablefields:
+  contentitemfields: {}
+sourceplaybookid: Create Phishing Classifier V2 ML Test
