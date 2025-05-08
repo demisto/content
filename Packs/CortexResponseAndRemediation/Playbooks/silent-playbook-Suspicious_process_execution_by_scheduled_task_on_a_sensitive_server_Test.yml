@@ -443,6 +443,7 @@ tasks:
       file:
         simple: ${alert.targetprocesssha256}
     separatecontext: false
+    continueonerror: true
     skipunavailable: false
     task:
       brand: ''
