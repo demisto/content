@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import demistomock as demisto
 import pytest
-from CommonServerPython import CommandResults, DemistoException, arg_to_datetime, pascalToSpace, tableToMarkdown
+from CommonServerPython import CommandResults, DemistoException, arg_to_datetime, pascalToSpace, tableToMarkdown, stringUnEscape
 from freezegun import freeze_time
 from OracleCloudInfrastructureEventCollector import DATE_FORMAT, Client
 
@@ -409,9 +409,9 @@ class TestEventRelatedFunctions:
             "compartmentId": dummy_client.compartment_id,
             "startTime": "2023-01-01T10:10:10.000Z",
             "endTime": datetime.datetime.now().strftime(DATE_FORMAT),
-            "next_page": "dummy_next_page",
+            "opc-next-page": "dummy_next_page",
         }
-        assert mocked_http_request.called_with(expected_params)
+        assert mocked_http_request.call_args[1]["params"] == expected_params
 
     @freeze_time("2023-01-01T10:10:10.000Z")
     def test_audit_log_api_request_check_compartment_id(self, mocker):
@@ -445,10 +445,10 @@ class TestEventRelatedFunctions:
             "compartmentId": client.compartment_id,
             "startTime": "2023-01-01T10:10:10.000Z",
             "endTime": datetime.datetime.now().strftime(DATE_FORMAT),
-            "next_page": "dummy_next_page",
+            "opc-next-page": "dummy_next_page",
         }
         assert client.compartment_id == "dummy_compartment_id"
-        assert mocked_http_request.called_with(expected_params)
+        assert mocked_http_request.call_args[1]["params"] == expected_params
 
     @pytest.mark.parametrize("events", ([{"dummy_data": "dummy_data"}], []))
     def test_handle_fetched_events(self, mocker, events):
@@ -633,3 +633,53 @@ class TestFetchEventsFlows:
         mocked_handle_fetched_events = mocker.patch("OracleCloudInfrastructureEventCollector.handle_fetched_events")
         main()
         mocked_handle_fetched_events.assert_called_once_with(expected_list, expected_time)
+
+
+class BugDummy:
+    def original_validate_private_key_syntax(self, private_key_parameter: str, private_key_type: str) -> str:
+        private_key = stringUnEscape(private_key_parameter)
+        private_key = private_key.replace("\n\n", "\n")
+
+        if " " not in private_key:
+            return private_key
+
+        if private_key_type == "PKCS#8":
+            prefix = "-----BEGIN PRIVATE KEY-----\n"
+            postfix = "\n-----END PRIVATE KEY-----"
+        else:
+            prefix = "-----BEGIN RSA PRIVATE KEY-----\n"
+            postfix = "\n-----END RSA PRIVATE KEY-----"
+
+        private_key = private_key.replace(prefix, "").replace(postfix, "")
+        private_key_sections = private_key.strip().split(" ")
+        striped_private_key = "".join(private_key_sections)
+        return prefix + striped_private_key + postfix
+
+
+def test_validate_private_key_syntax_fix(dummy_client):
+    """
+    Given:
+        - A private key string that includes both PEM markers and inline key data with spaces.
+        - A private key type of 'PKCS#8'.
+    When:
+        - The original (buggy) `validate_private_key_syntax` is called.
+        - The fixed version of `validate_private_key_syntax` is called from the module under test.
+    Then:
+        - Assert that the buggy function incorrectly nests BEGIN/END markers.
+        - Assert that the fixed function returns the correctly formatted PEM string with newlines.
+    """
+    dummy = BugDummy()
+    key_type = "PKCS#8"
+    input_key = "-----BEGIN PRIVATE KEY----- THIS-IS-A-PRIVATE-KEY -----END PRIVATE KEY-----"
+
+    # Run buggy function
+    buggy_result = dummy.original_validate_private_key_syntax(input_key, key_type)
+    # Assert buggy result is incorrect
+    assert buggy_result == (
+        "-----BEGIN PRIVATE KEY-----\n"
+        "-----BEGINPRIVATEKEY-----THIS-IS-A-PRIVATE-KEY-----ENDPRIVATEKEY-----\n"
+        "-----END PRIVATE KEY-----"
+    )
+    # Run actual (fixed) function from your code
+    fixed_result = dummy_client.validate_private_key_syntax(input_key, key_type)
+    assert fixed_result == "-----BEGIN PRIVATE KEY-----\nTHIS-IS-A-PRIVATE-KEY\n-----END PRIVATE KEY-----"
