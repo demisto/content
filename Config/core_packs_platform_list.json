@@ -275,6 +275,14 @@
                 "X5",
                 "ENT_PLUS"
             ]
+        },
+        {
+            "id": "AWS",
+            "supportedModules":[
+                "C1", 
+                "C3",
+                "X5"
+            ]
         }
     ]
 }
