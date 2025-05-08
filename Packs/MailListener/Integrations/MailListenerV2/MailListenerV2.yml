@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Mail Listener v2
+  id: Mail Listener v2-AddLog
   version: -1
 configuration:
 - display: Mail Server Hostname / IP address
@@ -110,8 +110,8 @@ configuration:
   advanced: true
   required: false
 description: Listens to a mailbox and enables incident triggering via e-mail.
-display: Mail Listener v2
-name: Mail Listener v2
+display: Mail Listener v2-AddLog
+name: Mail Listener v2-AddLog
 script:
   commands:
   - description: Retrieves emails according to the configuration.
