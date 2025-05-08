@@ -4096,6 +4096,7 @@ def get_remote_data_command(
     mirror_resolved_issue: bool,
     fetch_attachments: bool,
     fetch_comments: bool,
+    get_preview: bool = False
 ) -> GetRemoteDataResponse:
     """Mirror-in data to incident from Jira into XSOAR 'JiraV3 Incident' incident.
 
@@ -4108,6 +4109,7 @@ def get_remote_data_command(
         fetch_attachments (bool): Whether to fetch the attachments or not.
         fetch_comments (bool): Whether to fetch the comments or not.
         mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
+        get_preview (bool): Indicates if the command should return a preview object used in QuickActionData
         args:
             id: Remote incident id.
             lastUpdate: Server last sync time with remote server.
@@ -4155,7 +4157,10 @@ def get_remote_data_command(
         else:
             demisto.debug("No new entries to update.")
 
-        return GetRemoteDataResponse(updated_incident, parsed_entries)
+        if get_preview:
+            ...
+        else:
+            return GetRemoteDataResponse(updated_incident, parsed_entries)
 
     except Exception as e:
         demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id}Error message: {e!s}")
@@ -4704,7 +4709,8 @@ def main():  # pragma: no cover
                 ),
             )
 
-        elif command == "get-remote-data":
+        elif command == "get-remote-data" or "get-remote-data-preview":
+            get_preview = True if command == "get-remote-data-preview" else False
             return_results(
                 get_remote_data_command(
                     client=client,
@@ -4714,6 +4720,7 @@ def main():  # pragma: no cover
                     mirror_resolved_issue=mirror_resolved_issue,
                     fetch_attachments=fetch_attachments,
                     fetch_comments=fetch_comments,
+                    get_preview=get_preview
                 )
             )
         elif command == "get-modified-remote-data":
