@@ -394,7 +394,7 @@ def main():
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
-        elif command == "admin_by_request-get-events":
+        elif command == "adminbyrequest-get-events":
             command_results = get_events(client, args)
             events = cast(List[Dict[str, Any]], command_results.outputs)
             if events and argToBoolean(args.get('should_push_events', False)):

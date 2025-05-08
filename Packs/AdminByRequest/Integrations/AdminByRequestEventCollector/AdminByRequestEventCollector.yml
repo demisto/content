@@ -79,7 +79,7 @@ name: AdminByRequestEventCollector
 supportlevelheader: xsoar
 script:
   commands:
-    - name: admin_by_request-get-events
+    - name: adminbyrequest-get-events
       description: Retrieves a list of entries logs events from the AdminByRequest instance.
       arguments:
         - auto: PREDEFINED
