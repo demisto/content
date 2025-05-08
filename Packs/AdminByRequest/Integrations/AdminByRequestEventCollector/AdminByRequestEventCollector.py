@@ -1,7 +1,7 @@
 """
 Event Collector Source file for AdminByRequest API.
 """
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import demistomock as demisto
 import urllib3
@@ -182,14 +182,8 @@ def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use
         try:
             # API call
             events = list(client.retrieve_from_api(url_suffix=suffix, params=params))
-        except DemistoException as e:
-            if e.res.status_code == 429:
-                retry_after = int(e.res.headers.get("x-ratelimit-reset", 2))
-                demisto.debug(f"Rate limit reached. Waiting {retry_after} seconds before retrying.")
-                time.sleep(retry_after)
-                continue
-            else:
-                raise e
+        except DemistoException as error:
+            raise DemistoException(f"AdminByRequestEventCollector: During fetch, exception occurred {str(error)}")
 
         if not events:
             break
@@ -295,7 +289,7 @@ def test_module(client: Client) -> str:
     event_types = list(EVENT_TYPES.values())
     for e in event_types:
         e.max_fetch = 1
-    last_run = {}
+    last_run : dict[str, Any] = {}
     fetch_events(client, last_run, event_types)
     return "ok"
 
@@ -336,7 +330,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
     first_fetch = arg_to_datetime(args.get("first_fetch")) or get_current_time()
     first_fetch_date = first_fetch.strftime(DATE_FORMAT_CALLS)
 
-    call_type = args.get("event_type")
+    call_type: str = args.get("event_type", "")
     if not max_events:
         if call_type == "Auditlog":
             max_events = MAX_FETCH_AUDIT_LIMIT
@@ -386,7 +380,7 @@ def main():
         client = Client(
             base_url=base_url, api_key=api_key, verify=verify_certificate, use_proxy=proxy
         )
-
+        events : List[Dict[str, Any]]
         if command == "test-module":
             # Command made to test the integration
             result = test_module(client)
@@ -402,7 +396,7 @@ def main():
             demisto.debug(f'Successfully saved last_run= {demisto.getLastRun()}')
         elif command == "admin_by_request_get-events":
             command_results = get_events(client, args)
-            events = command_results.outputs
+            events = cast(List[Dict[str, Any]], command_results.outputs)
             if events and argToBoolean(args.get('should_push_events', False)):
                 demisto.debug(f'Sending {len(events)} events.')
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)

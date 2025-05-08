@@ -1,5 +1,4 @@
 import pytest
-from demisto_sdk.commands.common.handlers import JSON_Handler
 from CommonServerPython import *
 from freezegun import freeze_time
 
