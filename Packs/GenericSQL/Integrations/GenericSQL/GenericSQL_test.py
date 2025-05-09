@@ -369,8 +369,8 @@ def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
 @pytest.mark.parametrize(
     "port, expected_url",
     [
-        ("", pytest.param("trino://username:password@host:8080/schema")),
-        ("1234", pytest.param("trino://username:password@host:1234/schema")),
+        ("", "trino://username:***@host/schema?verify=true"),
+        ("1234", "trino://username:***@host:1234/schema?verify=true"),
     ],
 )
 def test_trino_connection(mocker, port: str, expected_url: str):
@@ -396,7 +396,7 @@ def test_trino_connection(mocker, port: str, expected_url: str):
         ssl_connect=False,
         use_ldap=False,
     )
-    mock_create_engine.assert_called_once(expected_url)
+    assert str(mock_create_engine.call_args.args[0]) == expected_url
 
 
 @pytest.mark.parametrize(
