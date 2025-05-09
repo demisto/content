@@ -1,0 +1,730 @@
+id: 62374b53-6e1b-4c9c-8ba8-0ec3889d64a1
+version: 114
+vcShouldKeepItemLegacyProdMachine: false
+name: Cortex Cloud - AWS EC2 Instance Misconfigurations Remediation
+description: |-
+  This playbook remediates cloud security misconfigurations related to an AWS EC2 Instance. You can choose to fully automate the remediation or have an analyst-in-the-loop review and approval step before remediating the issue. The following misconfigurations can be remediated through this playbook.
+
+  - AWS EC2 instance not configured with Instance Metadata Service v2 (IMDSv2)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f8d23417-8520-4a28-8929-ad0c7dd858ae
+    type: start
+    task:
+      id: f8d23417-8520-4a28-8929-ad0c7dd858ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 40067a07-7fa0-4601-8d37-7f89f1c624d1
+    type: collection
+    task:
+      id: 40067a07-7fa0-4601-8d37-7f89f1c624d1
+      version: -1
+      name: Execute remediation or Assign for review ?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: collection
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: {}
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Execute
+      - Review
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Remediation action ?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Execute
+        - simple: Review
+        - simple: Exit
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: If review required ?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: john@example.com
+        tooltip: Provide reviewer email address
+        readonly: false
+      title: Execute remediation or Assign for a review ?
+      description: |-
+        Select an action to proceed with the detected issue,
+
+        1. Execute: Run the remediation automatically
+        2. Review : Assign a reviewer for manual approval
+        3 Exit:  Stop further remediation steps
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+      isexternalrtl: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 61e76dad-bd1e-4c2c-ac01-34c7646ce23e
+    type: regular
+    task:
+      id: 61e76dad-bd1e-4c2c-ac01-34c7646ce23e
+      version: -1
+      name: Get Asset details
+      description: Get asset information.
+      script: '|||core-get-asset-details'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      asset_id:
+        simple: ${issue.asset_ids}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: fdcd9b7d-c34e-461a-82e5-a71fce7566b8
+    type: title
+    task:
+      id: fdcd9b7d-c34e-461a-82e5-a71fce7566b8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: cf63666d-b03c-459d-b764-7097646f81ea
+    type: condition
+    task:
+      id: cf63666d-b03c-459d-b764-7097646f81ea
+      version: -1
+      name: Send review request email
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      "No":
+      - "19"
+      "Yes":
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${Execute remediation or Assign for a review ?.Answers.name}
+      subject:
+        simple: Detected Issue - ${issue.details}
+      body:
+        simple: |-
+          A cloud misconfiguration has been detected and requires your review.<br><br>
+          <b>Issue ID</b>: ${issue.id}<br>
+          <b>Issue Details</b>: ${issue.details}<br>
+          <b>Resource</b>: ${Core.CoreAsset.xdm__asset__name}<br>
+          <b>Cloud Provider</b>: ${Core.CoreAsset.xdm__asset__provider}<br>
+          <b>Misconfiguration Type</b>: CSPM<br>
+          <b>Severity Level</b>: ${issue.severity}<br>
+          <b>Region</b>: ${Core.CoreAsset.xdm__asset__cloud__region}<br>
+          <b>Issue URL</b>: ${demistoUrls.workPlan}<br><br>
+          Please select <b>Yes</b> to approve the recommended remediation in the issue work plan, or <b>No</b> to reject and handle it manually.<br><br>
+      methods:
+      - email
+      format: html
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6bf6deb0-2cc5-4e0e-824b-3cb24aefb603
+    type: condition
+    task:
+      id: 6bf6deb0-2cc5-4e0e-824b-3cb24aefb603
+      version: -1
+      name: Is remediation available ?
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: issue.ruleid
+            iscontext: true
+          right:
+            value:
+              simple: 81c165ce-f66e-441a-8ea0-56a107175ccc
+        - operator: isEqualString
+          left:
+            value:
+              simple: issue.matching_service_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: 81c165ce-f66e-441a-8ea0-56a107175ccc
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 508601bc-0b51-4224-b5e9-027fb215fe17
+    type: regular
+    task:
+      id: 508601bc-0b51-4224-b5e9-027fb215fe17
+      version: -1
+      name: Update Issue  details to War Room
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      value:
+        simple: |-
+          Issue - ${issue.details}
+          Asset Name - ${Core.CoreAsset.xdm__asset__name}
+          Remediation - Success
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 5e132c51-374a-4c38-8f6c-7c860eb49659
+    type: playbook
+    task:
+      id: 5e132c51-374a-4c38-8f6c-7c860eb49659
+      version: -1
+      name: Create Issue ticket
+      description: 'This playbook automates the dispatching of issues through ServiceNow
+        or Jira and notifies stakeholders via Slack, MS Teams, and/or email. With
+        this playbook you can choose to create or update a ticket using Jira or ServiceNOW,
+        notify other teams using Slack or MS Teams, and/or by sending an Email. It
+        gives you the flexibility to create a ticket only and skip the notification
+        step, skip the creation of a ticket and notify only, or choose to create a
+        ticket and notify stakeholders. The playbook checks for and requires existing
+        Jira, ServiceNOW, Slack, or MS Teams integrations to perform the ticketing
+        and notification actions. If none of these integrations are found in your
+        account, then the playbook sends an email with the issue details to the selected
+        issue owner. '
+      playbookName: Cortex Cloud - Manage Ticket and Notify
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      Asset details:
+        simple: ${Core.CoreAsset}
+      Issue State:
+        simple: Create
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c3ae039a-86e3-443e-ad6a-c665944de881
+    type: playbook
+    task:
+      id: c3ae039a-86e3-443e-ad6a-c665944de881
+      version: -1
+      name: Update Issue ticket and notify
+      description: 'This playbook automates the dispatching of issues through ServiceNow
+        or Jira and notifies stakeholders via Slack, MS Teams, and/or email. With
+        this playbook you can choose to create or update a ticket using Jira or ServiceNOW,
+        notify other teams using Slack or MS Teams, and/or by sending an Email. It
+        gives you the flexibility to create a ticket only and skip the notification
+        step, skip the creation of a ticket and notify only, or choose to create a
+        ticket and notify stakeholders. The playbook checks for and requires existing
+        Jira, ServiceNOW, Slack, or MS Teams integrations to perform the ticketing
+        and notification actions. If none of these integrations are found in your
+        account, then the playbook sends an email with the issue details to the selected
+        issue owner. '
+      playbookName: Cortex Cloud - Manage Ticket and Notify
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      Asset details:
+        simple: ${Core.CoreAsset}
+      Issue State:
+        simple: Update
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2d821b96-791a-4275-8c9f-cc075c37e9ff
+    type: regular
+    task:
+      id: 2d821b96-791a-4275-8c9f-cc075c37e9ff
+      version: -1
+      name: Update Issue status to Resolved - Fixed
+      description: commands.local.cmd.set.alert.status
+      script: Builtin|||setIssueStatus
+      type: regular
+      iscommand: true
+      brand: Builtin
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      status:
+        simple: Resolved - Fixed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9a1ddffa-5096-4b40-b8c7-a9f0f6fb9584
+    type: playbook
+    task:
+      id: 9a1ddffa-5096-4b40-b8c7-a9f0f6fb9584
+      version: -1
+      name: Update Issue ticket and notify
+      description: 'This playbook automates the dispatching of issues through ServiceNow
+        or Jira and notifies stakeholders via Slack, MS Teams, and/or email. With
+        this playbook you can choose to create or update a ticket using Jira or ServiceNOW,
+        notify other teams using Slack or MS Teams, and/or by sending an Email. It
+        gives you the flexibility to create a ticket only and skip the notification
+        step, skip the creation of a ticket and notify only, or choose to create a
+        ticket and notify stakeholders. The playbook checks for and requires existing
+        Jira, ServiceNOW, Slack, or MS Teams integrations to perform the ticketing
+        and notification actions. If none of these integrations are found in your
+        account, then the playbook sends an email with the issue details to the selected
+        issue owner. '
+      playbookName: Cortex Cloud - Manage Ticket and Notify
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      Asset details:
+        simple: ${Core.CoreAsset}
+      Issue State:
+        simple: Update
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e0599146-b979-4a44-83eb-473203c31cfc
+    type: condition
+    task:
+      id: e0599146-b979-4a44-83eb-473203c31cfc
+      version: -1
+      name: Check selected remediation action
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#default#':
+      - "19"
+      Execute:
+      - "23"
+      Review:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Execute
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Execute remediation or Assign for a review ?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Execute
+    - label: Review
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Execute remediation or Assign for a review ?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Review
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Execute remediation or Assign for a review ?.Answers.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: fd8137d4-9e59-4ec6-bad5-7cd6209215c4
+    type: regular
+    task:
+      id: fd8137d4-9e59-4ec6-bad5-7cd6209215c4
+      version: -1
+      name: aws-ec2-instance-metadata-options-modify
+      description: Modify the EC2 instance metadata parameters on a running or stopped
+        instance.
+      script: AWS Cloud Automations|||aws-ec2-instance-metadata-options-modify
+      type: regular
+      iscommand: true
+      brand: AWS Cloud Automations
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      account_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      http_endpoint:
+        simple: enabled
+      http_tokens:
+        simple: required
+      instance_id:
+        simple: ${Core.CoreAsset.xdm__asset__raw_fields.Platform Discovery.instanceId}
+      region:
+        simple: ${Core.CoreAsset.xdm__asset__cloud__region}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0056e69d-c396-4bea-89aa-636ed9eb561f
+    type: condition
+    task:
+      id: 0056e69d-c396-4bea-89aa-636ed9eb561f
+      version: -1
+      name: Is integration available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      "no":
+      - "19"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: AWS Cloud Automations
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1920,
+        "width": 870,
+        "x": 60,
+        "y": -60
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true
+adopted: true
