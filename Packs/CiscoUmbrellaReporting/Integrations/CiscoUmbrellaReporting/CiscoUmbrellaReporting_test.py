@@ -309,7 +309,7 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response, expected
     assert e.value.args[0] == (
         "Invalid optional parameter is selected for traffic type dns.\nSupported optional "
         "parameters for dns traffic type are: traffic_type, limit, from, to, offset,"
-        " domains, ip, verdict, threats, threat_types, identity_types, page, page_size, categories."
+        " domains, ip, verdict, threats, threat_types, identity_types, page, page_size, categories, identityids."
     )
 
 
@@ -354,7 +354,7 @@ def test_get_activity_proxy_by_traffic_type(mocker, raw_response, expected):
         "Invalid optional parameter is selected for traffic type proxy.\nSupported optional "
         "parameters for proxy traffic type are: traffic_type, limit, from, to, offset, domains,"
         " ip, verdict, threats, threat_types, urls, ports, identity_types, file_name,"
-        " amp_disposition, page, page_size, categories."
+        " amp_disposition, page, page_size, categories, identityids."
     )
 
 
@@ -398,7 +398,7 @@ def test_get_activity_ip_by_traffic_type(mocker, raw_response, expected):
     assert e.value.args[0] == (
         "Invalid optional parameter is selected for traffic type ip.\nSupported optional"
         " parameters for ip traffic type are: traffic_type, limit, from, to, offset, ip, ports,"
-        " identity_types, verdict, page, page_size, categories."
+        " identity_types, verdict, page, page_size, categories, identityids."
     )
 
 
@@ -442,7 +442,7 @@ def test_get_activity_firewall_by_traffic_type(mocker, raw_response, expected):
     assert e.value.args[0] == (
         "Invalid optional parameter is selected for traffic type firewall.\nSupported optional"
         " parameters for firewall traffic type are: traffic_type, limit, from, to, offset, ip,"
-        " ports, verdict, page, page_size."
+        " ports, verdict, page, page_size, identityids."
     )
 
 
@@ -530,7 +530,7 @@ def test_get_activity_intrusion_by_traffic_type(mocker, raw_response, expected):
     assert e.value.args[0] == (
         "Invalid optional parameter is selected for traffic type intrusion.\nSupported"
         " optional parameters for intrusion traffic type are: traffic_type, limit, from,"
-        " to, offset, ip, ports, signatures, intrusion_action, page, page_size."
+        " to, offset, ip, ports, signatures, intrusion_action, page, page_size, identityids."
     )
 
 
@@ -597,7 +597,7 @@ def test_get_category_summary_list(mocker, raw_response, expected):
         "Invalid optional parameter is selected for summary type category.\nSupported "
         "optional parameters for category summary type are: summary_type, limit, from, to,"
         " offset, domains, urls, ip, identity_types, verdict, file_name, threats, threat_types,"
-        " amp_disposition, page, page_size, categories."
+        " amp_disposition, page, page_size, categories, identityids."
     )
 
 
@@ -636,7 +636,7 @@ def test_get_destination_summary_list(mocker, raw_response, expected):
         "Invalid optional parameter is selected for summary type destination.\nSupported"
         " optional parameters for destination summary type are: summary_type, limit, from,"
         " to, offset, domains, urls, ip, identity_types, verdict, file_name, threats,"
-        " threat_types, amp_disposition, page, page_size, categories."
+        " threat_types, amp_disposition, page, page_size, categories, identityids."
     )
 
 
@@ -674,7 +674,7 @@ def test_get_intrusion_rule_summary_list(mocker, raw_response, expected):
     assert e.value.args[0] == (
         "Invalid optional parameter is selected for summary type intrusion_rule.\nSupported"
         " optional parameters for intrusion_rule summary type are: summary_type, limit, from,"
-        " to, offset, signatures, ip, identity_types, intrusion_action, ports, page, page_size."
+        " to, offset, signatures, ip, identity_types, intrusion_action, ports, page, page_size, identityids."
     )
 
 
@@ -957,6 +957,7 @@ def test_create_cisco_umbrella_args():
         "signatures": None,
         "sha256": None,
         "categories": [],
+        "identityids": []
     }
     result = create_cisco_umbrella_args(50, 1, args)
     assert result == expected_output

@@ -1,6 +1,4 @@
 category: Network Security
-sectionOrder:
-- Connect
 commonfields:
   id: Cisco Umbrella Reporting
   version: -1
@@ -88,6 +86,8 @@ script:
       name: page_size
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: List of destinations ordered by the number of requests made in descending order.
     name: umbrella-reporting-destination-list
     outputs:
@@ -187,6 +187,8 @@ script:
       name: page
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: List of categories ordered by the number of requests made matching the categories in descending order.
     name: umbrella-reporting-category-list
     outputs:
@@ -266,6 +268,8 @@ script:
       name: page_size
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: List of identities ordered by the number of requests made matching the categories in descending order.
     name: umbrella-reporting-identity-list
     outputs:
@@ -342,6 +346,8 @@ script:
       name: page_size
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: 'List of event types ordered by the number of requests made for each type of event in descending order. The event types are: domain_security, domain_integration, url_security, url_integration, cisco_amp and antivirus.'
     name: umbrella-reporting-event-type-list
     outputs:
@@ -388,6 +394,8 @@ script:
       name: page_size
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: List of files within a time frame. Only returns proxy data.
     name: umbrella-reporting-file-list
     outputs:
@@ -458,6 +466,8 @@ script:
       name: page_size
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: List of top threats within a time frame. Returns both DNS and Proxy data.
     name: umbrella-reporting-threat-list
     outputs:
@@ -513,6 +523,8 @@ script:
       name: page_size
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time frame.
     name: umbrella-reporting-activity-list
     outputs:
@@ -712,6 +724,8 @@ script:
       name: intrusion_action
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: |-
       List all entries within a time frame based on the traffic type selected. Valid activity types are dns, proxy, firewall, intrusion, ip, amp.
       Only one activity type can be selected at a time.
@@ -1386,6 +1400,8 @@ script:
       name: intrusion_action
     - description: A comma-separated list of category ids to filter on.
       name: categories
+    - description: 'A comma-separated list of identity ids to filter on.'
+      name: identityids
     description: Get the summary.
     name: umbrella-reporting-summary-list
     outputs:
@@ -1562,3 +1578,5 @@ script:
 tests:
 - Cisco Umbrella Reporting Test
 fromversion: 6.5.0
+sectionOrder:
+- Connect
