@@ -47,7 +47,7 @@ script:
     - name: file_path
       required: true
       default: true
-      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
     - name: username
@@ -88,7 +88,7 @@ script:
     - name: file_path
       required: true
       default: true
-      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
     - name: username
@@ -105,7 +105,7 @@ script:
     - name: path
       required: true
       default: true
-      description: 'The path to the directory, starting from the share, for example: Share/Folder. This field is case-insensitive'
+      description: 'The path to the directory, starting from the share, for example: Share/Folder. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
     - name: username
@@ -128,7 +128,7 @@ script:
     - name: file_path
       required: true
       default: true
-      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
@@ -141,7 +141,7 @@ script:
     - name: path
       required: true
       default: true
-      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive'
+      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
@@ -154,7 +154,7 @@ script:
     - name: path
       required: true
       default: true
-      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive'
+      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
