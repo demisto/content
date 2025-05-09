@@ -16,7 +16,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "41"
+      - "39"
     separatecontext: false
     view: |-
       {
@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 340
         }
       }
     note: false
@@ -90,12 +90,16 @@ tasks:
         simple: 'Re: PO# OP848784204'
       emailSubject:
         simple: 'Dear office, Kindly find attached our new order (Po# OP848784204) and the attached letter for the bank payment. Please sign, stamp and resend.   Kindly ship our order by using the service DHL EXPRESS WORLDWIDE. Our DHL account number is: 950389383   Thanks  Best Regards,  Cristina Cadano Marketing Officer - Procurement Officer Marketing@trustm.tv Tel. +974 4431 3336 Fax +974 4435 3336 P.O. Box 10536 Doha,'
+      retry-count:
+        simple: "2"
+      retry-interval:
+        simple: "5"    
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 690
+          "y": 515
         }
       }
     note: false
@@ -152,7 +156,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 865
+          "y": 690
         }
       }
     note: false
@@ -180,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3110
+          "y": 2935
         }
       }
     note: false
@@ -219,7 +223,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1215
+          "y": 1040
         }
       }
     note: false
@@ -254,7 +258,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1040
+          "y": 865
         }
       }
     note: false
@@ -289,7 +293,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1565
+          "y": 1390
         }
       }
     note: false
@@ -328,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1740
+          "y": 1565
         }
       }
     note: false
@@ -385,7 +389,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1390
+          "y": 1215
         }
       }
     note: false
@@ -442,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1915
+          "y": 1740
         }
       }
     note: false
@@ -474,7 +478,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2090
+          "y": 1915
         }
       }
     note: false
@@ -515,7 +519,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2585
+          "y": 2410
         }
       }
     note: false
@@ -558,7 +562,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 2060
         }
       }
     note: false
@@ -601,7 +605,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2235
+          "y": 2060
         }
       }
     note: false
@@ -637,7 +641,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2760
+          "y": 2585
         }
       }
     note: false
@@ -686,7 +690,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2935
+          "y": 2760
         }
       }
     note: false
@@ -735,7 +739,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2935
+          "y": 2760
         }
       }
     note: false
@@ -759,14 +763,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 195
         }
       }
     note: false
@@ -801,42 +805,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: 8efeb1f1-081e-40d8-8bd0-188d608e4c00
-    type: regular
-    task:
-      id: 8efeb1f1-081e-40d8-8bd0-188d608e4c00
-      version: -1
-      name: Delete OOTB Model
-      description: ''
-      scriptName: deleteMLModel
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      modelName:
-        simple: demisto_out_of_the_box_model_v2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
+          "y": 2235
         }
       }
     note: false
@@ -851,7 +820,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3125,
+        "height": 2950,
         "width": 810,
         "x": 50,
         "y": 50
@@ -861,7 +830,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
-contentitemexportablefields:
-  contentitemfields: {}
-sourceplaybookid: DbotPredictOufOfTheBoxTestV2
 description: ''
