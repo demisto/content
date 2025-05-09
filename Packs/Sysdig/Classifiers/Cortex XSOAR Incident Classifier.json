@@ -1,0 +1,52 @@
+{
+	"description": "Maps Sysdig Runtime Event fields for use in Integration Playbooks.",
+	
+	"id": "Sysdig Mapper Runtime Event",
+	"mapping": {
+		"Sysdig Runtime Event": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Container ID": {
+					"complex": {
+						"filters": [],
+						"root": "containerId",
+						"transformers": []
+					}
+				},
+				"Host Name": {
+					"complex": {
+						"accessor": "host\\.hostName",
+						"filters": [],
+						"root": "labels",
+						"transformers": []
+					}
+				},
+				"MAC Address": {
+					"complex": {
+						"filters": [],
+						"root": "machineId",
+						"transformers": []
+					}
+				},
+				"Sysdig Agent ID": {
+					"complex": {
+						"filters": [],
+						"root": "agentId",
+						"transformers": []
+					}
+				},
+				"Sysdig Customer ID": {
+					"complex": {
+						"filters": [],
+						"root": "customerId",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "Sysdig Mapper Runtime Event",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

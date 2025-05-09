@@ -1,0 +1,26 @@
+{
+    "name": "Sysdig Response Actions",
+    "description": "This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Sysdig",
+    "url": "https://sysdig.com/support/",
+    "email": "support@sysdig.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "runtime",
+        "response-actions",
+        "falco"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "S3B4SZ17"
+    ]
+}
