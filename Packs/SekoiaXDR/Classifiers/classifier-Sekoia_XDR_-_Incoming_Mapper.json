@@ -46,6 +46,9 @@
                 "SekoiaXDR MirrorOut": {
 					"simple": "mirrorOut"
 				},
+                "SekoiaXDR Events": {
+					"simple": "events"
+				},
 				"Source Create time": {
 					"complex": {
 						"filters": [],
