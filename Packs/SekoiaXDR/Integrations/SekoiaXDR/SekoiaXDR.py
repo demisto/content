@@ -550,20 +550,37 @@ def fetch_incidents(
             # If the status is finished, we will add it to the incidents list
             for incident in fetch_context:
                 incident_job_uuid = incident["rawJSON"]["job_uuid"]
-                query_status = client.query_events_status(
-                    event_search_job_uuid=incident_job_uuid
-                )
-                finished_status = query_status["status"] == 2
+                try:
+                    query_status = client.query_events_status(
+                        event_search_job_uuid=incident_job_uuid
+                    )
+                    finished_status = query_status["status"] == 2
 
-                if not finished_status:
+                    if not finished_status:
+                        not_finished_incident.append(incident)
+                        continue
+
+                    events = client.retrieve_events(event_search_job_uuid=incident_job_uuid)
+                    incident["rawJSON"]["events"] = events
+                    # Serialize the rawJSON to a string
+                    incident["rawJSON"] = json.dumps(incident["rawJSON"])
+                    incidents.append(incident)
+                except Exception as e:
+                    # Case where the job uuid is not valid anymore
+                    demisto.debug(
+                        f"Error fetching incident {incident['rawJSON']['short_id']}: {e}"
+                    )
+                    # Rerun command to get events
+                    earliest_time = incident['rawJSON']["first_seen_at"]
+                    latest_time = "now"
+                    term = f"alert_short_ids:{incident['rawJSON']['short_id']}"
+
+                    alert = handle_alert_events_query(
+                        client, alert, earliest_time, latest_time, term
+                    )
+                    incident['rawJSON'] = alert
+                    # If the incident is not finished, we will keep it in the cache
                     not_finished_incident.append(incident)
-                    continue
-
-                events = client.retrieve_events(event_search_job_uuid=incident_job_uuid)
-                incident["rawJSON"]["events"] = events
-                # Serialize the rawJSON to a string
-                incident["rawJSON"] = json.dumps(incident["rawJSON"])
-                incidents.append(incident)
 
         # If there are any incidents that are not finished, we will keep them in the cache
         cached_context["fetch_cache"] = not_finished_incident
@@ -875,25 +892,45 @@ def get_remote_data_command(
     else:
         # If the alert id is in the context, we will get the alert from the context
         alert_object, index = check_id
-        alert_job_uuid = alert_object["alert"]["job_uuid"]
-        query_status = client.query_events_status(event_search_job_uuid=alert_job_uuid)
-        finished_status = query_status["status"] == 2
+        try:
+            alert_job_uuid = alert_object["alert"]["job_uuid"]
+            query_status = client.query_events_status(event_search_job_uuid=alert_job_uuid)
+            finished_status = query_status["status"] == 2
 
-        # If the alert is not finished, we will not return it
-        if not finished_status:
+            # If the alert is not finished, we will not return it
+            if not finished_status:
+                return None
+
+            # If the alert is finished, we will get the events
+            events = client.retrieve_events(event_search_job_uuid=alert_job_uuid)
+            alert_object["alert"]["events"] = events
+
+            # Delete the object from the context
+            del context_cache["mirroring_cache"][index]
+            set_integration_context(context_cache)
+            
+            return GetRemoteDataResponse(
+                mirrored_object=alert_object["alert"], entries=alert_object["entries"]
+            )
+        except Exception as e:
+            # Case where the job uuid is not valid anymore
+            demisto.debug(
+                f"Error fetching incident {alert_object['alert']['short_id']}: {e}"
+            )
+            # Rerun command to get events
+            earliest_time = alert_object["alert"]["first_seen_at"]
+            latest_time = "now"
+            term = f"alert_short_ids:{alert_object['alert']['short_id']}"
+
+            alert = handle_alert_events_query(
+                client, alert_object["alert"], earliest_time, latest_time, term
+            )
+            alert_object["alert"] = alert
+
+            # Update the cached alert in the context
+            context_cache["mirroring_cache"][index]["alert"] = alert_object["alert"]
+            
             return None
-
-        # If the alert is finished, we will get the events
-        events = client.retrieve_events(event_search_job_uuid=alert_job_uuid)
-        alert_object["alert"]["events"] = events
-
-        # Delete the object from the context
-        del context_cache["mirroring_cache"][index]
-        set_integration_context(context_cache)
-        
-        return GetRemoteDataResponse(
-            mirrored_object=alert_object["alert"], entries=alert_object["entries"]
-        )
 
 
 def get_modified_remote_data_command(client: Client, args):
