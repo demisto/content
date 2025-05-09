@@ -1,5 +1,5 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.1.9 of CheckPointHEC
+This integration was integrated and tested with version 1.1.10 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) in Cortex
 
@@ -313,6 +313,7 @@ Send notification about user exposition for the specific entity to the list of e
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CheckPointHEC.Notification.ok | Boolean | Result of the operation. | 
+
 ### checkpointhec-get-events
 
 ***
@@ -354,6 +355,7 @@ Retrieve security events.
 | CheckPointHEC.Event.actions | unknown | Performed actions related to the security event. | 
 | CheckPointHEC.Event.senderAddress | String | Sender of email related to the security event. | 
 | CheckPointHEC.Event.entityLink | String | Email link. | 
+
 ### checkpointhec-get-ctp-list
 
 ***
@@ -398,6 +400,7 @@ Delete Avanan URL exceptions.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-delete-avdlp-exception
 
 ***
@@ -419,6 +422,7 @@ Delete Avanan URL exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-anomaly-exceptions
 
 ***
@@ -469,6 +473,7 @@ Update Anti-Malware exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-create-avdlp-exception
 
 ***
@@ -495,6 +500,7 @@ Create Avanan DLP exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-delete-ctp-list-items
 
 ***
@@ -513,6 +519,7 @@ Delete Click Time Protection list items.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-update-avdlp-exception
 
 ***
@@ -534,6 +541,7 @@ Update Avanan URL exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-ap-exceptions
 
 ***
@@ -618,6 +626,7 @@ Create Avanan URL exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-avdlp-exceptions
 
 ***
@@ -666,6 +675,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-create-anomaly-exception
 
 ***
@@ -685,6 +695,7 @@ Create Anomaly exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-delete-cp2-exception
 
 ***
@@ -706,6 +717,7 @@ Delete Anti-Malware exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-delete-anomaly-exceptions
 
 ***
@@ -724,6 +736,7 @@ Delete Anomaly exceptions.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-report-mis-classification
 
 ***
@@ -744,6 +757,7 @@ Report email mis-classification.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-avdlp-exception
 
 ***
@@ -789,6 +803,7 @@ Delete Click Time Protection list item.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-ctp-list-item
 
 ***
@@ -836,6 +851,7 @@ Update Avanan URL exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-create-ctp-list-item
 
 ***
@@ -856,6 +872,7 @@ Create Click Time Protection list item.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-delete-ap-exception
 
 ***
@@ -875,6 +892,7 @@ Delete Anti-Phishing and Anti-Spam exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-delete-avurl-exception
 
 ***
@@ -896,6 +914,7 @@ Delete Avanan URL exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-cp2-exception
 
 ***
@@ -961,6 +980,7 @@ Update Anti-Phishing and Anti-Spam exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-create-cp2-exception
 
 ***
@@ -987,6 +1007,7 @@ Create Anti-Malware exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-delete-cp2-exceptions
 
 ***
@@ -1008,6 +1029,7 @@ Delete Anti-Malware exceptions.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-ctp-lists
 
 ***
@@ -1050,6 +1072,7 @@ Update Click Time Protection list item.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-create-ap-exception
 
 ***
@@ -1087,6 +1110,7 @@ Create Anti-Phishing and Anti-Spam exception.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-get-avurl-exceptions
 
 ***
@@ -1223,6 +1247,7 @@ Delete Avanan DLP exceptions.
 #### Context Output
 
 There is no context output for this command.
+
 ### checkpointhec-download-email
 
 ***
