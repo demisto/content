@@ -33,7 +33,7 @@ def handle_path(path):
 
 
 def create_share_path(hostname, path):
-    """
+    r"""
     Create a path to the shared folder according to the smbprotocol convention: '\\server\share'.
     For reference see https://github.com/jborean93/smbprotocol/blob/master/examples/high-level/directory-management.py
     """
