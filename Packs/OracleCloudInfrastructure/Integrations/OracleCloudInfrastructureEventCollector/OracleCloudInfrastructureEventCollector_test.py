@@ -409,9 +409,9 @@ class TestEventRelatedFunctions:
             "compartmentId": dummy_client.compartment_id,
             "startTime": "2023-01-01T10:10:10.000Z",
             "endTime": datetime.datetime.now().strftime(DATE_FORMAT),
-            "next_page": "dummy_next_page",
+            "opc-next-page": "dummy_next_page",
         }
-        mocked_http_request.assert_called_with(expected_params)
+        mocked_http_request.assert_called_with(method='GET', params=expected_params, resp_type='response')
 
     @freeze_time("2023-01-01T10:10:10.000Z")
     def test_audit_log_api_request_check_compartment_id(self, mocker):
@@ -445,10 +445,10 @@ class TestEventRelatedFunctions:
             "compartmentId": client.compartment_id,
             "startTime": "2023-01-01T10:10:10.000Z",
             "endTime": datetime.datetime.now().strftime(DATE_FORMAT),
-            "next_page": "dummy_next_page",
+            "opc-next-page": "dummy_next_page",
         }
         assert client.compartment_id == "dummy_compartment_id"
-        mocked_http_request.assert_called_with(expected_params)
+        mocked_http_request.assert_called_with(method='GET', params=expected_params, resp_type='response')
 
     @pytest.mark.parametrize("events", ([{"dummy_data": "dummy_data"}], []))
     def test_handle_fetched_events(self, mocker, events):
