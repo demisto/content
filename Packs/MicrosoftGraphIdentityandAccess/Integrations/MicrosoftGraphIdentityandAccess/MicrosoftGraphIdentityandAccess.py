@@ -244,13 +244,14 @@ class Client:  # pragma: no cover
             odata_query += f"$filter={odata_filter}"
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskDetections{odata_query}")["value"]
 
-    def list_risky_users(self, limit: str, odata: str) -> list:
+    def list_risky_users(self, limit: str, odata: str, odata_filter: str) -> list:
         """Get a list of all risky users
 
         Args:
             limit: Maximum IP named locations to get.
             page: The page to take the data from.
             odata: An odata query to use in the api call.
+            odata_filter: An odata filter
 
         Returns:
             a list of dictionaries with the object from the api
@@ -263,6 +264,8 @@ class Client:  # pragma: no cover
             odata_query += f"$top={limit}&"
         if odata:
             odata_query += odata
+        if odata_filter:
+            odata_query += f'$filter={odata_filter}'
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskyUsers{odata_query}")["value"]
 
     def list_risky_users_history(self, limit: str, odata: str, user_id: str) -> list:
@@ -744,7 +747,7 @@ def ms_ip_string_to_list(ips: str) -> list:
 
 
 def get_last_fetch_time(last_run: dict, params: dict):
-    last_fetch = last_run.get("latest_detection_found")
+    last_fetch = last_run.get("latest_alert_found")
     if not last_fetch:
         demisto.debug("[AzureADIdentityProtection] First run")
         # handle first time fetch
@@ -809,8 +812,47 @@ def detections_to_incidents(
     return incidents, latest_incident_time
 
 
+def risky_user_to_incident(riskyuser: dict, riskyuser_date: str) -> dict:
+    riskyuser_upn: str = riskyuser.get("userPrincipalName", "")
+    riskyuser_risk_level: str = riskyuser.get("riskLevel", "")
+    riskyuser_risk_state: str = riskyuser.get("riskState", "")
+    incident = {
+        "name": f"Azure User at Risk:"
+                f" {riskyuser_upn} - {riskyuser_risk_state} - {riskyuser_risk_level}",
+        "occurred": f"{riskyuser_date}Z",
+        "rawJSON": json.dumps(riskyuser)
+    }
+
+    return incident
+
+
+def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_datetime: str) -> tuple[List[Dict[str, str]], str]:
+    """
+    Given the risky users retrieved from Azure Identity Protection, transforms their data to incidents format.
+    """
+
+    incidents: List[Dict[str, str]] = []
+    latest_incident_time = last_fetch_datetime
+
+    for riskyuser in riskyusers:
+        riskyuser_datetime = riskyuser.get("riskLastUpdatedDateTime", "")
+        riskyuser_datetime_in_azure_format = date_str_to_azure_format(riskyuser_datetime)
+        incident = risky_user_to_incident(riskyuser, riskyuser_datetime_in_azure_format)
+        incidents.append(incident)
+
+        if datetime.strptime(riskyuser_datetime_in_azure_format, DATE_FORMAT) > \
+                datetime.strptime(date_str_to_azure_format(latest_incident_time), DATE_FORMAT):
+            latest_incident_time = riskyuser_datetime
+
+    return incidents, latest_incident_time
+
+
 def build_filter(last_fetch: datetime, params: dict) -> str:
-    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}"
+    if params.get("alerts_to_fetch", "Risk Detections") == "Risky Users":
+        start_time_enforcing_filter = f"riskLastUpdatedDateTime gt {last_fetch}"
+    else:
+        start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}"
+
     user_supplied_filter = params.get("fetch_filter_expression", "")
     query_filter = (
         f"({user_supplied_filter}) and {start_time_enforcing_filter}" if user_supplied_filter else start_time_enforcing_filter
@@ -830,14 +872,18 @@ def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
     limit = params.get("max_fetch", "50")
     filter_expression = query_filter
 
-    detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
+    if params.get("alerts_to_fetch", "Risk Detections") == "Risky Users":
+        riskyusers: list = client.list_risky_users(limit, None, filter_expression) # type: ignore
+        incidents, latest_alert_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch) # type: ignore
+    else:
+        detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
+        incidents, latest_alert_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
 
-    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
     demisto.debug(f"Fetched {len(incidents)} incidents")
 
-    demisto.debug(f"next run latest_detection_found: {latest_detection_time}")
+    demisto.debug(f"next run latest_alert_found: {latest_alert_time}")
     last_run = {
-        "latest_detection_found": latest_detection_time,
+        "latest_alert_found": latest_alert_time,
     }
 
     return incidents, last_run
