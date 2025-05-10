@@ -6,7 +6,7 @@ from CiscoAppDynamics import (
     Client,
     fetch_events,
     get_max_event_time,
-    create_empty_last_run,
+    normalize_last_run,
     main,
     AUDIT,
     HEALTH_EVENT,
@@ -53,39 +53,42 @@ def test_create_access_token(client:Client):
     assert client.token_expiry > datetime.now(UTC)
     
     
-    
-@pytest.mark.parametrize("token, expiry_offset_minutes, should_create_new", [
-    (None, None, True),
-    ("valid-token", 10, False),
-    ("expired-token", -1, True),
+@pytest.mark.parametrize("ctx, should_create_new", [
+    ({},                                        True),   # no keys → new
+    ({"access_token": "valid",                   # valid & not expired
+      "token_expiry": (datetime.now(UTC) + timedelta(minutes=5)).isoformat()},
+                                                 False),
+    ({"access_token": "expired",                 # valid but expired
+      "token_expiry": (datetime.now(UTC) - timedelta(minutes=5)).isoformat()},
+                                                 True),
 ])
-def test_get_valid_token(client, mocker, token, expiry_offset_minutes, should_create_new):
+def test__get_valid_token(client, mocker, ctx, should_create_new):
     """
     Given
-        - Various token and expiry setups.
+        - Various integration context payloads.
     When
         - _get_valid_token is called.
     Then
-        - Returns new token if missing or expired.
-        - Returns existing token if still valid.
+        - It should create a new token if missing or expired.
+        - Otherwise return the existing one.
     """
-    client.token = token
-    if expiry_offset_minutes is not None:
-        client.token_expiry = datetime.now(UTC) + timedelta(minutes=expiry_offset_minutes)
-    else:
-        client.token_expiry = None
+    # 1) Patch get_integration_context in the module where your Client is defined
+    module_path = client.__class__.__module__
+    mocker.patch(f"{module_path}.get_integration_context", return_value=ctx)
 
-    mock_create = mocker.patch.object(client, 'create_access_token', return_value="new-token")
+    # 2) Spy on create_access_token
+    create_spy = mocker.patch.object(client, "create_access_token", return_value="NEW_TOKEN")
 
-    result_token = client._get_valid_token()
+    # 3) Call the method under test
+    result = client._get_valid_token()
 
+    # 4) Assertions
     if should_create_new:
-        mock_create.assert_called_once()
-        assert result_token == "new-token"
+        create_spy.assert_called_once()
+        assert result == "NEW_TOKEN"
     else:
-        mock_create.assert_not_called()
-        assert result_token == token
-        
+        create_spy.assert_not_called()
+        assert result == ctx["access_token"]
 
 
 def test_error_creating_token(requests_mock, mocker):
@@ -148,6 +151,12 @@ def test_get_audit_logs_various_cases(client, mocker, api_response, expected_cou
     assert len(events) == expected_count
 
 
+def test_get_audit_logs_start_after_end(client, mocker):
+    mock_call = mocker.patch.object(client, "_authorized_request")
+    now = datetime.now(UTC)
+    result = client.get_audit_logs(now, now)
+    assert result == []
+    mock_call.assert_not_called()
 
 
 @pytest.mark.parametrize("start_delta_hours, expected_start_delta", [
@@ -300,22 +309,54 @@ def test_get_max_event_time():
     assert isinstance(result, datetime)
     assert result == expected_datetime
     
-def test_create_empty_last_run():
+@pytest.fixture
+def fixed_now():
+    return datetime(2025, 5, 8, 12, 0, 0, tzinfo=UTC)
+
+def test_normalize_last_run_empty(fixed_now):
     """
-    Given
-        - A current datetime.
-    When
-        - create_empty_last_run is called.
-    Then
-        - Both AUDIT and HEALTH_EVENT keys map to that datetime.
+    If raw_last_run is empty, both AUDIT and HEALTH_EVENT
+    should default to (now - 1 minute).
     """
-    now = datetime.now(UTC)
-    last_run = create_empty_last_run(now)
-    start_time = now + timedelta(minutes=-1)
-    assert "Audit" in last_run
-    assert "Healthrule Violations Events" in last_run
-    assert last_run["Audit"] == start_time
-    assert last_run["Healthrule Violations Events"] == start_time
+    raw = {}
+    result = normalize_last_run(raw, now=fixed_now)
+
+    default = fixed_now - timedelta(minutes=1)
+    assert isinstance(result[AUDIT], datetime)
+    assert isinstance(result[HEALTH_EVENT], datetime)
+    assert result[AUDIT] == default
+    assert result[HEALTH_EVENT] == default
+
+def test_normalize_last_run_full(fixed_now):
+    """
+    Valid ISO‐8601 strings should be parsed exactly,
+    regardless of the `now` parameter.
+    """
+    audit_dt  = datetime(2025, 5, 8, 8, 30, tzinfo=UTC)
+    health_dt = datetime(2025, 5, 8,  9,  0, tzinfo=UTC)
+
+    raw = {
+        AUDIT:        audit_dt.isoformat(),
+        HEALTH_EVENT: health_dt.isoformat(),
+    }
+
+    result = normalize_last_run(raw, now=fixed_now)
+    assert result[AUDIT] == audit_dt
+    assert result[HEALTH_EVENT] == health_dt
+
+def test_normalize_last_run_missing_one_key(fixed_now):
+    """
+    If one key is present and the other is missing,
+    present key is parsed, missing key defaults.
+    """
+    audit_dt = datetime(2025, 5, 8, 11, 45, tzinfo=UTC)
+    raw = {AUDIT: audit_dt.isoformat()}
+
+    result = normalize_last_run(raw, now=fixed_now)
+    default = fixed_now - timedelta(minutes=1)
+
+    assert result[AUDIT] == audit_dt
+    assert result[HEALTH_EVENT] == default
     
 
 
@@ -358,3 +399,4 @@ def test_error_audit_logs_main(type_to_fetch, excepted_url, requests_mock, mocke
     
     return_error_mock.assert_called_once()
     assert "Internal Server Error" in return_error_mock.call_args[0][0]
+

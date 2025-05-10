@@ -296,21 +296,26 @@ def add_fields_to_events(
         event["SOURCE_LOG_TYPE"] = source_log_type
 
     return events
-
-
-def create_empty_last_run(current_time: datetime) -> Dict[str, datetime]:
+    
+def normalize_last_run(raw_last_run: dict[str, str], now: datetime) -> dict[str, datetime]:
     """
-    Create last run for first fetch with time interval of one minute.
-    Args:
-        current_time: datetime
-    Returns:
-        Dict with log_type: datetime
-        Where datetime = current_time less one minute
+    Take the dict from demisto.getLastRun() (str→ISO-8601 or empty strings),
+    and return a dict of log_type→datetime, where any missing or falsy
+    timestamp is replaced by (now − 1 minute), matching create_empty_last_run().
     """
-    start_time = current_time + timedelta(minutes=-1)
-    return {AUDIT: start_time,
-            HEALTH_EVENT: start_time}
+    default_start = now - timedelta(minutes=1)
 
+    parsed: dict[str, datetime] = {}
+    for log_type in (AUDIT, HEALTH_EVENT):
+        ts = raw_last_run.get(log_type, "")
+        if ts:
+            parsed_dt = datetime.fromisoformat(ts)
+        else:
+            parsed_dt = default_start
+
+        parsed[log_type] = parsed_dt
+
+    return parsed
 
 def test_module_command(client: Client, last_run: dict, events_type_to_fetch: list[str]):
     """
@@ -440,12 +445,9 @@ def main() -> None:  # pragma: no cover
                         proxy=proxy,
                         )
         current_time = datetime.now(timezone.utc)
-        last_run = demisto.getLastRun()
-        if not last_run:
-            last_run = create_empty_last_run(current_time)
-        else:
-            last_run = {log_type: datetime.fromisoformat(datetime_as_string) for log_type, datetime_as_string in last_run.items()}
-        demisto.debug(f"getLastRun return: Audit:{last_run[AUDIT]}, Health: {last_run[HEALTH_EVENT]}")
+        last_run = normalize_last_run(demisto.getLastRun(),current_time)
+        
+        demisto.debug(f"getLastRun return: Audit:{last_run.get(AUDIT,'')}, Health: {last_run.get(HEALTH_EVENT,'')}")
         if command == "test-module":
             return_results(test_module_command(client, last_run, events_type_to_fetch))
 
@@ -458,7 +460,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug("Sent events to XSIAM successfully")
-            demisto.debug(f"setLastRun going to set: Audit:{next_run[AUDIT]}, Health: {next_run[HEALTH_EVENT]}")
+            demisto.debug(f"setLastRun going to set: Audit:{last_run.get(AUDIT,'')}, Health: {last_run.get(HEALTH_EVENT,'')}")
             demisto.setLastRun(next_run)
             demisto.debug(f"Setting next run to {next_run}.")
         
