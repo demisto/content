@@ -1968,7 +1968,7 @@ class Client(BaseClient):
                 )
 
             if fetch_whois_info:
-                domain_info["whois_info"] = whois_info_dict.get(domain, {})  # type ignore
+                domain_info["whois_info"] = whois_info_dict.get(domain, {})  # type: ignore
 
             results.append(domain_info)
 
