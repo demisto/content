@@ -270,15 +270,15 @@ def fetch_events(
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AdminByRequest entity records.
 
-    Args:
-       client (Client): The client object used to interact with the AdminByRequest service.
-       last_run (dict): The last_run dictionary having the state of previous cycle.
-       fetch_events_types (list[EventType]) : list of Event Types to fetch from API
-       use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+     Args:
+        client (Client): The client object used to interact with the AdminByRequest service.
+        last_run (dict): The last_run dictionary having the state of previous cycle.
+        fetch_events_types (list[EventType]) : list of Event Types to fetch from API
+        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
 
-   Returns:
-        - List of new records to be pushed into XSIAM.
-        - Updated last_run dictionary.
+    Returns:
+         - List of new records to be pushed into XSIAM.
+         - Updated last_run dictionary.
     """
     demisto.debug("AdminByRequest fetch_events invoked")
     events = []
