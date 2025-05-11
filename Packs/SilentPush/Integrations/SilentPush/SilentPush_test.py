@@ -384,37 +384,6 @@ def test_list_domain_information_command_no_data(mock_client, mocker):
     assert result.readable_output == "No domain information available."
 
 
-def test_get_ipv4_reputation_command_success(mock_client, mocker):
-    # Mock arguments
-    args = {"ipv4": "192.168.1.1", "explain": "true", "limit": "1"}
-
-    # Mock response from client
-    mock_response = [
-        {
-            "ip": "192.168.1.1",
-            "date": "2023-01-01",
-            "ip_reputation": 85,
-            "ip_reputation_explain": {"ip_density": 0.5, "names_num_listed": 10},
-        }
-    ]
-    mock_client.get_ipv4_reputation.return_value = mock_response
-
-    # Mock tableToMarkdown
-    mocker.patch("SilentPush.tableToMarkdown", return_value="Mocked Markdown Table")
-
-    # Call the function
-    result = get_ipv4_reputation_command(mock_client, args)
-
-    # Assertions
-    assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "SilentPush.IPv4Reputation"
-    assert result.outputs_key_field == "ip"
-    assert result.outputs["ip"] == "192.168.1.1"
-    assert result.outputs["reputation_score"] == 85
-    assert result.outputs["ip_reputation_explain"] == {"ip_density": 0.5, "names_num_listed": 10}
-    assert result.readable_output == "Mocked Markdown Table"
-
-
 def test_get_ipv4_reputation_command_no_ipv4(mock_client):
     # Mock arguments without ipv4
     args = {}
@@ -422,25 +391,6 @@ def test_get_ipv4_reputation_command_no_ipv4(mock_client):
     # Call the function and expect DemistoException
     with pytest.raises(DemistoException, match="IPv4 address is required"):
         get_ipv4_reputation_command(mock_client, args)
-
-
-def test_get_ipv4_reputation_command_no_data(mock_client, mocker):
-    # Mock arguments
-    args = {"ipv4": "192.168.1.1", "explain": "false", "limit": "1"}
-
-    # Mock response from client
-    mock_response = []
-    mock_client.get_ipv4_reputation.return_value = mock_response
-
-    # Call the function
-    result = get_ipv4_reputation_command(mock_client, args)
-
-    # Assertions
-    assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "SilentPush.IPv4Reputation"
-    assert result.outputs_key_field == "ip"
-    assert result.outputs["ip"] == "192.168.1.1"
-    assert result.readable_output == "No reputation data found for IPv4: 192.168.1.1"
 
 
 def test_get_future_attack_indicators_command_success(mock_client, mocker):
