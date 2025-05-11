@@ -1153,6 +1153,7 @@ View the file retrieved by the core-retrieve-files command according to the acti
 #### Human Readable Output
 
 >### Action id : 1763
+
 >
 > Retrieved 0 files from 0 endpoints.
 > To get the exact action status run the core-action-status-get command
@@ -3177,3 +3178,124 @@ Get asset information.
 xdm__asset__type__name | xdm__asset__strong_id |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
+
+
+### core-execute-command
+
+***
+Run a shell command on a specific endpoint and return its result.
+
+#### Base Command
+
+`core-execute-command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
+| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional | 
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command. | Required | 
+| command | List of shell commands to execute separeted by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the chosen separator. | Required | 
+| timeout | The maximum running time of the command. Default is 600. | Optional | 
+| incident_id | Link the response action to the triggered incident. | Optional | 
+| is_raw_command | Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently. | Optional | 
+| command_separator | The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually. Possible values are: ,, \|, /. Default is ,. | Optional | 
+| command_type | Type of shell command. Possible values are: powershell, native. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ScriptResult.action_id | Number | ID of the action initiated. | 
+| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
+| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
+| Core.ScriptResult.results.endpoint_name | String | Endpoint name. | 
+| Core.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
+| Core.ScriptResult.results.endpoint_status | String | Endpoint status. | 
+| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
+| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
+| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
+| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
+| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
+| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+| Core.ScriptResult.results.command | String | The command that was executed by the script. | 
+
+##### Context Example
+
+```
+{
+    "Core.ScriptResult": [
+        {
+            "action_id": 1,
+            "results": [
+                {
+                    'endpoint_name': 'name',
+                    'endpoint_ip_address': ['2.2.2.2'],
+                    'endpoint_status': 'STATUS_010_CONNECTED',
+                    'domain': 'domain.name',
+                    'endpoint_id':'dummy_id',
+                    'executed_command': 
+                    [
+                        {
+                            'command': 'echo', 
+                            'failed_files': 0, 
+                            'retention_date': None,
+                            'retrieved_files': 0,
+                            'standard_output': 'output',
+                            'command_output': [''],
+                            'execution_status': 'COMPLETED_SUCCESSFULLY',
+                        }, 
+                        {
+                            'command': 'echo hello',
+                            'failed_files': 0, 
+                            'retention_date': None, 
+                            'retrieved_files': 0, 
+                            'standard_output': 'outputs',
+                            'command_output': ['hello'],
+                            'execution_status': 'COMPLETED_SUCCESSFULLY',
+                        }
+                    ]
+                    }, 
+                    {
+                        'endpoint_name': 'name2',
+                        'endpoint_ip_address': ['11.11.11.11'],
+                        'endpoint_status': 'STATUS_010_CONNECTED',
+                        'domain': '', 
+                        'endpoint_id':'dummy_id2',
+                        'executed_command': 
+                        [
+                            {
+                                'command': 'echo',
+                                'failed_files': 0,
+                                'retention_date': None,
+                                'retrieved_files': 0,
+                                'standard_output': 'out',
+                                'command_output': [],
+                                'execution_status': 'COMPLETED_SUCCESSFULLY',
+                            },
+                            {
+                                'command': 'echo hello',
+                                'failed_files': 0,
+                                'retention_date': None,
+                                'retrieved_files': 0,
+                                'standard_output': 'output',
+                                'command_output': ['hello'],
+                                'execution_status': 'COMPLETED_SUCCESSFULLY',
+                            }
+                        ]
+                    }
+            ]
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+|Command|Command Output|Endpoint Id|Endpoint Ip Address|Endpoint Name|Endpoint Status|Execution Status|
+|---|---|---|---|---|---|---|
+| echo | | dummy_id | 2.2.2.2 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo hello | hello | dummy_id | 2.2.2.2 | name | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo |  | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
+| echo hello | hello | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |

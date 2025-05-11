@@ -6,7 +6,7 @@
 !reversinglabs-titaniumcloud-file-analysis hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
 !reversinglabs-titaniumcloud-file-download hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
 !reversinglabs-titaniumcloud-file-reputation hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
-!reversinglabs-titaniumcloud-file-upload entryId=7612@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59
+!reversinglabs-titaniumcloud-file-upload entryId=859@b26c8c3a-8d0e-459f-8f2c-c0b8783a8422
 !reversinglabs-titaniumcloud-imphash-similarity imphash=fb815acbc7109e8c83537d7d9c7020be max_results=2
 !reversinglabs-titaniumcloud-reanalyze-sample hash=21841b32c6165b27dddbd4d6eb3a672defe54271
 !reversinglabs-titaniumcloud-rha1-analytics hash=21841b32c6165b27dddbd4d6eb3a672defe54271
@@ -39,3 +39,7 @@
 !reversinglabs-titaniumcloud-submit-url-for-dynamic-analysis url=http://classicairjordanshoes.com/classic-air-jordan-9-c-7.html?zenid=egbmmbi039iqms5ho5dt2qnunm0mettt platform=windows10
 !reversinglabs-titaniumcloud-customer-usage-data data_type="MONTHLY USAGE" whole_company="false"
 !reversinglabs-titaniumcloud-customer-usage-yara
+!file file="2288a7dab2cd1b34b9969e8c8e0fa1cad238869c"
+!ip ip="8.8.8.8"
+!domain domain="index.hr"
+!url url="http://xiaomi-mall.com/system/config/adobe/images/favicon.ico"

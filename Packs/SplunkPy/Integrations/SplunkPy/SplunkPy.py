@@ -2556,10 +2556,19 @@ class ResponseReaderWrapper(io.RawIOBase):
     def readinto(self, b):
         sz = len(b)
         data = self.responseReader.read(sz)
-        for idx, ch in enumerate(data):
+
+        # Remove non utf-8 characters to avoid decode errors in JSONResultsReader
+        # See resolution section from: https://splunk.my.site.com/customer/s/article/Search-Failed-Due-to
+        cleaned_data = data.decode("utf-8", errors="ignore").encode("utf-8")
+        if len(cleaned_data) != len(data): # Check if any bytes were removed
+            demisto.debug("Removed non utf-8 characters in incoming Splunk data:\n"
+                          f"Original Splunk data: {data}\n"
+                          f"Modified data: {cleaned_data}\n")
+
+        for idx, ch in enumerate(cleaned_data):
             b[idx] = ch
 
-        return len(data)
+        return len(cleaned_data)
 
 
 def get_current_splunk_time(splunk_service: client.Service):
@@ -3016,8 +3025,9 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
 
     status_cmd_result: CommandResults | None = None
     if polling:
-        status_cmd_result = splunk_job_status(service, args)
-        assert status_cmd_result  # if polling is true, status_cmd_result should not be None
+        status_cmd_results = splunk_job_status(service, args)
+        assert status_cmd_results # if polling is true, status_cmd_result should not be an empty list
+        status_cmd_result = status_cmd_results[0]
         status = status_cmd_result.outputs["Status"]  # type: ignore[index]
         if status.lower() != "done":
             # Job is still running, schedule the next run of the command.
@@ -3372,23 +3382,27 @@ def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str
         return_results(f'Splunk ES Notable events: {response_info.get("message")}')
 
 
-def splunk_job_status(service: client.Service, args: dict) -> CommandResults | None:
-    sid = args.get("sid")
-    try:
-        job = service.job(sid)
-    except HTTPError as error:
-        if str(error) == "HTTP 404 Not Found -- Unknown sid.":
-            return CommandResults(readable_output=f"Not found job for SID: {sid}")
+def splunk_job_status(service: client.Service, args: dict) -> list[CommandResults]:
+    sids = argToList(args.get("sid"))
+    job_results = []
+    for sid in sids:
+        try:
+            job = service.job(sid)
+        except HTTPError as error:
+            if str(error) == "HTTP 404 Not Found -- Unknown sid.":
+                job_results.append(CommandResults(readable_output=f"Not found job for SID: {sid}"))
+            else:
+                job_results.append(CommandResults(
+                    readable_output=f"Querying splunk for SID: {sid} resulted in the following error {str(error)}")
+                )
         else:
-            return_error(error)  # pylint: disable=no-member
-        return None
-    else:
-        status = job.state.content.get("dispatchState")
-        entry_context = {"SID": sid, "Status": status}
-        human_readable = tableToMarkdown("Splunk Job Status", entry_context)
-        return CommandResults(
-            outputs=entry_context, readable_output=human_readable, outputs_prefix="Splunk.JobStatus", outputs_key_field="SID"
-        )
+            status = job.state.content.get("dispatchState")
+            entry_context = {"SID": sid, "Status": status}
+            human_readable = tableToMarkdown("Splunk Job Status", entry_context)
+            job_results.append(CommandResults(
+                outputs=entry_context, readable_output=human_readable, outputs_prefix="Splunk.JobStatus", outputs_key_field="SID"
+            ))
+    return job_results
 
 
 def splunk_parse_raw_command(args: dict):
