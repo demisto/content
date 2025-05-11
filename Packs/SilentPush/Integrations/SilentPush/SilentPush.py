@@ -77,7 +77,8 @@ SUBNET_REPUTATION_INPUTS = [
 ASNS_DOMAIN_INPUTS = [
     InputArgument(
         name="domain",  # option 1
-        description="Domain name to search ASNs for. Retrieves ASNs associated with a records for the specified domain and its subdomains in the last 30 days.",
+        description="Domain name to search ASNs for. Retrieves ASNs associated with a records for the specified domain "
+                    "and its subdomains in the last 30 days.",
         required=True,
     )
 ]
@@ -110,7 +111,10 @@ DOMAIN_INFRATAGS_INPUTS = [
     InputArgument(name="match", description='Handling of self-hosted infrastructure. Defaults to "self".', default="self"),
     InputArgument(
         name="as_of",
-        description="Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago",
+        description="Build infratags from padns data where the as_of timestamp equivalent is between the first_seen "
+                    "and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - "
+                    "fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - "
+                    "relative time <sec> seconds ago",
         default="self",
     ),
 ]
@@ -127,7 +131,8 @@ DOMAIN_CERTIFICATE_INPUTS = [
     InputArgument(name="date_max", description="Filter certificates issued on or before this date."),
     InputArgument(
         name="prefer",
-        description="Prefer to wait for results for longer running queries or to return job_id immediately (Defaults to Silent Push API behaviour).",
+        description="Prefer to wait for results for longer running queries or to return job_id immediately "
+                    "(Defaults to Silent Push API behaviour).",
     ),
     InputArgument(
         name="max_wait",
@@ -146,7 +151,8 @@ ENRICHMENT_INPUTS = [
     ),
     InputArgument(
         name="value",
-        description='Value corresponding to the selected "resource" for which information needs to be retrieved{e.g. silentpush.com}.',
+        description='Value corresponding to the selected "resource" for which information needs to be retrieved '
+                    '{e.g. silentpush.com}.',
         required=True,
     ),
     InputArgument(name="explain", description="Include explanation of data calculations."),
@@ -440,7 +446,6 @@ ENRICHMENT_OUTPUTS = [
         output_type=bool,
         description="Indicates if the domain is in the Alexa top 10k.",
     ),
-    # OutputArgument(name='domain_urls.results_summary.alexa_top10k_score', output_type=int, description='Score indicating domain’s Alexa top 10k ranking.'),
     OutputArgument(
         name="domain_urls.results_summary.alexa_top10k_score",
         output_type=int,
@@ -1647,9 +1652,9 @@ class Client(BaseClient):
 
         self._headers = {"X-API-Key": api_key, "Content-Type": "application/json"}
 
-    def _http_request(
+    def _http_request(  # type: ignore[override]
         self, method: str, url_suffix: str = "", params: dict = None, data: dict = None, url: str = None, **kwargs
-    ) -> Any:  # type ignore
+    ) -> Any:
         """
         Perform an HTTP request to the SilentPush API.
 
