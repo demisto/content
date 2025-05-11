@@ -75,7 +75,5 @@ script:
   isfetchevents: true
   subtype: python3
 fromversion: 6.8.0
-marketplaces:
-- marketplacev2
 tests:
 - No tests
