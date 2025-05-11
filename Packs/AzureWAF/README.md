@@ -33,9 +33,12 @@ Azure WAF integrates with Azure services like Azure Application Gateway, Azure F
 
 ### Supported Timestamp Formats:
 
-1. yyyy-MM-ddThh:mm:ssZ
-2. yyyy-MM-ddThh:mm:ssEz 
-3. MMM dd yyyy HH:mm:ss
+1. MMM dd yyyy HH:mm:ss
+2. yyyy-MM-ddThh:mm:ssEz
+3. yyyy-MM-ddThh:mm:ssZ
+4. yyyy-MM-ddThh:mm:ss.E7SZ
+
+<sub>_Format #4 can support up to 9 digits after the dot (.)._</sub>
 
 For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. 
 
@@ -47,15 +50,15 @@ For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below i
 
 Examples:
 
-- 2025-03-26T05:39:46Z
-- 2024-11-19T10:50:39+05:00
-- Nov 19 2024 12:50:39
+- May 03 2025 04:00:00
+- 2025-05-03T00:27:53+00:00
+- 2025-05-03T00:27:53Z
+- 2025-05-02T13:26:25.3391768Z
 
 
-> [!NOTE] 
-> Time offsets from UTC is supported. 
->
-> See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.
+#### Time offsets from UTC is supported. 
+
+See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.
 
 
 ***
