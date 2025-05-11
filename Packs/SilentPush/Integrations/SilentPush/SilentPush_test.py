@@ -559,7 +559,7 @@ def test_list_ip_information_command_no_data(mock_client, mocker):
     assert result.readable_output == "No information found for IPs: 192.168.1.1"
 
 
-def test_get_ipv4_reputation_command_success(mock_client, mocker):
+def test_get_ipv4_reputation_command_success_second(mock_client, mocker):
     # Mock arguments
     args = {"ipv4": "192.168.1.1", "explain": "true", "limit": "1"}
 
@@ -604,7 +604,7 @@ def test_get_ipv4_reputation_command_no_ipv4(mock_client):
         get_ipv4_reputation_command(mock_client, args)
 
 
-def test_get_ipv4_reputation_command_no_data(mock_client, mocker):
+def test_get_ipv4_reputation_command_no_data_second(mock_client, mocker):
     # Mock arguments
     args = {"ipv4": "192.168.1.1", "explain": "false", "limit": "1"}
 

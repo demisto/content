@@ -78,7 +78,7 @@ ASNS_DOMAIN_INPUTS = [
     InputArgument(
         name="domain",  # option 1
         description="Domain name to search ASNs for. Retrieves ASNs associated with a records for the specified domain "
-                    "and its subdomains in the last 30 days.",
+        "and its subdomains in the last 30 days.",
         required=True,
     )
 ]
@@ -112,9 +112,9 @@ DOMAIN_INFRATAGS_INPUTS = [
     InputArgument(
         name="as_of",
         description="Build infratags from padns data where the as_of timestamp equivalent is between the first_seen "
-                    "and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - "
-                    "fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - "
-                    "relative time <sec> seconds ago",
+        "and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - "
+        "fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - "
+        "relative time <sec> seconds ago",
         default="self",
     ),
 ]
@@ -132,7 +132,7 @@ DOMAIN_CERTIFICATE_INPUTS = [
     InputArgument(
         name="prefer",
         description="Prefer to wait for results for longer running queries or to return job_id immediately "
-                    "(Defaults to Silent Push API behaviour).",
+        "(Defaults to Silent Push API behaviour).",
     ),
     InputArgument(
         name="max_wait",
@@ -152,7 +152,7 @@ ENRICHMENT_INPUTS = [
     InputArgument(
         name="value",
         description='Value corresponding to the selected "resource" for which information needs to be retrieved '
-                    '{e.g. silentpush.com}.',
+        "{e.g. silentpush.com}.",
         required=True,
     ),
     InputArgument(name="explain", description="Include explanation of data calculations."),
@@ -1688,7 +1688,7 @@ class Client(BaseClient):
         except requests.exceptions.RequestException as e:
             raise DemistoException(f"Request error: {str(e)}")
 
-    def get_job_status(self, job_id: str, params: dict | None = None) -> dict[str, Any]:
+    def get_job_status(self, job_id: str, params: dict) -> dict[str, Any]:
         """
         Retrieve the status of a specific job.
 
@@ -1968,7 +1968,7 @@ class Client(BaseClient):
                 )
 
             if fetch_whois_info:
-                domain_info["whois_info"] = whois_info_dict.get(domain, {})
+                domain_info["whois_info"] = whois_info_dict.get(domain, {})  # type ignore
 
             results.append(domain_info)
 
