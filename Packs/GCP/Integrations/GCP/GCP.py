@@ -4,6 +4,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import urllib3
+
 urllib3.disable_warnings()
 
 # API versions
@@ -12,38 +13,25 @@ STORAGE_API_VERSION = "v1"
 CONTAINER_API_VERSION = "v1"
 RESOURCE_MANAGER_API_VERSION = "v3"
 
-SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
+SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-compute-firewall-patch": [
         "compute.firewalls.update",
         "compute.firewalls.get",
         "compute.firewalls.list",
         "compute.networks.updatePolicy",
-        "compute.networks.list"
+        "compute.networks.list",
     ],
     "gcp-compute-subnet-update": [
         "compute.subnetworks.setPrivateIpGoogleAccess",
         "compute.subnetworks.update",
         "compute.subnetworks.get",
-        "compute.subnetworks.list"
+        "compute.subnetworks.list",
     ],
-    "gcp-compute-project-metadata-add": [
-        "compute.instances.setMetadata",
-        "compute.instances.get",
-        "compute.instances.list"
-    ],
-    "gcp-storage-bucket-policy-delete": [
-        "storage.buckets.getIamPolicy",
-        "storage.buckets.setIamPolicy"
-    ],
-    "gcp-container-cluster-security-update": [
-        "container.clusters.update",
-        "container.clusters.get",
-        "container.clusters.list"
-    ],
-    "gcp-storage-bucket-metadata-update": [
-        "storage.buckets.update"
-    ],
+    "gcp-compute-project-metadata-add": ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list"],
+    "gcp-storage-bucket-policy-delete": ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
+    "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+    "gcp-storage-bucket-metadata-update": ["storage.buckets.update"],
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
@@ -101,8 +89,7 @@ def parse_metadata_items(tags_str: str) -> list[dict[str, str]]:
 ##########
 
 
-def get_access_token(
-    args: dict[str, Any]) -> str:
+def get_access_token(args: dict[str, Any]) -> str:
     """
     Retrieves a valid access token using the default GCP configuration.
 
@@ -172,14 +159,18 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
 
     compute = build("compute", COMPUTE_API_VERSION, credentials=creds)
     demisto.debug(f"Firewall patch config for {resource_name} in project {project_id}: {config}")
-    response = compute.firewalls().patch(  # pylint: disable=E1101
-        project=project_id,
-        firewall=resource_name,
-        body=config
-    ).execute()
+    response = (
+        compute.firewalls()  # pylint: disable=E1101
+        .patch(project=project_id, firewall=resource_name, body=config)
+        .execute()
+    )
 
-    hr = tableToMarkdown("Google Cloud Compute Firewall Rule Update Operation Started Successfully",
-                         t=response, headers=OPERATION_TABLE, removeNull=True)
+    hr = tableToMarkdown(
+        "Google Cloud Compute Firewall Rule Update Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
@@ -212,16 +203,15 @@ def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> Co
             modified = True
             demisto.debug(f"Removing members {removed} from role '{role}'.")
         if filtered_members:
-            updated_bindings.append({
-                "role": role,
-                "members": list(filtered_members)
-            })
+            updated_bindings.append({"role": role, "members": list(filtered_members)})
 
     if modified:
         policy["bindings"] = updated_bindings
         storage.buckets().setIamPolicy(bucket=bucket, body=policy).execute()  # pylint: disable=E1101
-        hr = (f"Access permissions for {', '.join(f'`{e}`' for e in entities_to_remove)} were successfully "
-              f"revoked from bucket **{bucket}**")
+        hr = (
+            f"Access permissions for {', '.join(f'`{e}`' for e in entities_to_remove)} were successfully "
+            f"revoked from bucket **{bucket}**"
+        )
     else:
         hr = f"No IAM changes made for bucket '{bucket}'."
     return CommandResults(readable_output=hr)
@@ -248,36 +238,43 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
     patch_body = {}
     if enable_flow_logs := args.get("enable_flow_logs"):
         patch_body["enableFlowLogs"] = argToBoolean(enable_flow_logs)
-        subnetwork = compute.subnetworks().get(  # pylint: disable=E1101
-            project=project_id,
-            region=region,
-            subnetwork=resource_name
-        ).execute()
+        subnetwork = (
+            compute.subnetworks()  # pylint: disable=E1101
+            .get(project=project_id, region=region, subnetwork=resource_name)
+            .execute()
+        )
         fingerprint = subnetwork.get("fingerprint")
         if not fingerprint:
             raise DemistoException("Fingerprint for the subnetwork is missing.")
         patch_body["fingerprint"] = fingerprint
-        response_patch = compute.subnetworks().patch(  # pylint: disable=E1101
-            project=project_id,
-            region=region,
-            subnetwork=resource_name,
-            body=patch_body
-        ).execute()
+        response_patch = (
+            compute.subnetworks()  # pylint: disable=E1101
+            .patch(project=project_id, region=region, subnetwork=resource_name, body=patch_body)
+            .execute()
+        )
 
         hr += tableToMarkdown(
             f"Flow Logs configuration for subnet {resource_name} in project {project_id}",
-            t=response_patch, headers=OPERATION_TABLE, removeNull=True
+            t=response_patch,
+            headers=OPERATION_TABLE,
+            removeNull=True,
         )
     if enable_private_access := args.get("enable_private_ip_google_access"):
-        response_set = compute.subnetworks().setPrivateIpGoogleAccess(  # pylint: disable=E1101
-            project=project_id,
-            region=region,
-            subnetwork=resource_name,
-            body={"privateIpGoogleAccess": argToBoolean(enable_private_access)}
-        ).execute()
+        response_set = (
+            compute.subnetworks()  # pylint: disable=E1101
+            .setPrivateIpGoogleAccess(
+                project=project_id,
+                region=region,
+                subnetwork=resource_name,
+                body={"privateIpGoogleAccess": argToBoolean(enable_private_access)},
+            )
+            .execute()
+        )
         hr += tableToMarkdown(
             f"Private IP Google Access configuration for subnet {resource_name} in project {project_id}",
-            t=response_set, headers=OPERATION_TABLE, removeNull=True
+            t=response_set,
+            headers=OPERATION_TABLE,
+            removeNull=True,
         )
 
     if not hr:
@@ -313,11 +310,23 @@ def compute_project_metadata_add(creds: Credentials, args: dict[str, Any]) -> Co
         existing_metadata[item["key"]] = item["value"]
 
     body = {"fingerprint": fingerprint, "items": [{"key": k, "value": v} for k, v in existing_metadata.items()]}
-    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=resource_name,   # pylint: disable=E1101
-                                               body=body).execute()
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setMetadata(
+            project=project_id,
+            zone=zone,
+            instance=resource_name,
+            body=body,
+        )
+        .execute()
+    )
 
-    hr = tableToMarkdown("Google Cloud Compute Project Metadata Update Operation Started Successfully",
-                         t=response, headers=OPERATION_TABLE, removeNull=True)
+    hr = tableToMarkdown(
+        "Google Cloud Compute Project Metadata Update Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
@@ -341,9 +350,11 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     resource_name = args.get("resource_name")
     cidrs = argToList(args.get("cidrs"))
     if "enable_master_authorized_networks" in args and "enable_intra_node_visibility" in args:
-        raise DemistoException("Only one update can be applied to a cluster with each request. "
-                               "Please provide either 'enable_intra_node_visibility' "
-                               "or 'enable_master_authorized_networks', not both.")
+        raise DemistoException(
+            "Only one update can be applied to a cluster with each request. "
+            "Please provide either 'enable_intra_node_visibility' "
+            "or 'enable_master_authorized_networks', not both."
+        )
 
     if args.get("enable_master_authorized_networks") and not cidrs:
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
@@ -359,22 +370,24 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
             "ipEndpointsConfig": {
                 "authorizedNetworksConfig": {
                     "enabled": argToBoolean(enable_master),
-                    "cidrBlocks": [{"cidrBlock": cidr} for cidr in cidrs]
+                    "cidrBlocks": [{"cidrBlock": cidr} for cidr in cidrs],
                 }
             }
         }
 
-    response = container.projects().locations().clusters().update(  # pylint: disable=E1101
-        name=f"projects/{project_id}/locations/{region}/clusters/{resource_name}",
-        body={
-            "update": update_fields
-        }
-    ).execute()
+    response = (
+        container.projects()  # pylint: disable=E1101
+        .locations()
+        .clusters()
+        .update(name=f"projects/{project_id}/locations/{region}/clusters/{resource_name}", body={"update": update_fields})
+        .execute()
+    )
 
     hr = tableToMarkdown(
         "Google Cloud Container Cluster Security Update Operation Started Successfully",
-        t=response, headers=OPERATION_TABLE,
-        removeNull=True
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
     )
 
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
@@ -411,11 +424,12 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
         "updated": response.get("updated"),
         "location": response.get("location"),
         "versioning": response.get("versioning", {}).get("enabled"),
-        "uniformBucketLevelAccess": response.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled")
+        "uniformBucketLevelAccess": response.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled"),
     }
     hr = tableToMarkdown(f"Metadata for bucket {bucket} was successfully updated.", data_res, removeNull=True)
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response,
-                          outputs_key_field="name")
+    return CommandResults(
+        readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response, outputs_key_field="name"
+    )
 
 
 def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:
@@ -436,15 +450,16 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
 
     try:
         resource_manager = build("cloudresourcemanager", RESOURCE_MANAGER_API_VERSION, credentials=creds)
-        response = resource_manager.projects().testIamPermissions(  # pylint: disable=E1101
-            name=f"projects/{project_id}",
-            body={"permissions": permissions}
-        ).execute()
+        response = (
+            resource_manager.projects()  # pylint: disable=E1101
+            .testIamPermissions(name=f"projects/{project_id}", body={"permissions": permissions})
+            .execute()
+        )
     except Exception as e:
         raise DemistoException(f"Permission check failed: {e}") from e
 
     granted = set(response.get("permissions", []))
-    if missing := '\n'.join(set(permissions) - granted):
+    if missing := "\n".join(set(permissions) - granted):
         raise DemistoException(f"Missing permissions for '{command}': {missing}")
     return "ok"
 

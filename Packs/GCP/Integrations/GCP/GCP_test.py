@@ -12,10 +12,7 @@ def test_parse_firewall_rule_valid_input():
     from GCP import parse_firewall_rule
 
     input_str = "ipprotocol=tcp,ports=80,443;ipprotocol=udp,ports=53"
-    expected = [
-        {"IPProtocol": "tcp", "ports": ["80", "443"]},
-        {"IPProtocol": "udp", "ports": ["53"]}
-    ]
+    expected = [{"IPProtocol": "tcp", "ports": ["80", "443"]}, {"IPProtocol": "udp", "ports": ["53"]}]
 
     result = parse_firewall_rule(input_str)
     assert result == expected
@@ -46,10 +43,7 @@ def test_parse_metadata_items_valid_input():
     from GCP import parse_metadata_items
 
     input_str = "key=enable-oslogin,value=true;key=serial-port-enable,value=false"
-    expected = [
-        {"key": "enable-oslogin", "value": "true"},
-        {"key": "serial-port-enable", "value": "false"}
-    ]
+    expected = [{"key": "enable-oslogin", "value": "true"}, {"key": "serial-port-enable", "value": "false"}]
 
     result = parse_metadata_items(input_str)
     assert result == expected
@@ -96,19 +90,12 @@ def test_compute_firewall_patch_edge_cases(mocker):
     mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
 
     # Test case 1: Empty configuration
-    empty_args = {
-        "project_id": "test-project",
-        "resource_name": "fw-rule"
-    }
+    empty_args = {"project_id": "test-project", "resource_name": "fw-rule"}
 
     compute_firewall_patch(mock_creds, empty_args)
 
     # Should call with empty config
-    mock_firewalls.patch.assert_called_with(
-        project="test-project",
-        firewall="fw-rule",
-        body={}
-    )
+    mock_firewalls.patch.assert_called_with(project="test-project", firewall="fw-rule", body={})
 
     # Reset mock for next test
     mock_firewalls.patch.reset_mock()
@@ -120,13 +107,13 @@ def test_compute_firewall_patch_edge_cases(mocker):
         "disabled": "true",  # String boolean that should be converted
         "logConfigEnable": "false",  # Another string boolean
         "sourceTags": "single-tag",  # Single item that should become a list
-        "allowed": "ipprotocol=all,ports=*"  # Special format for allowed
+        "allowed": "ipprotocol=all,ports=*",  # Special format for allowed
     }
 
     result = compute_firewall_patch(mock_creds, bool_args)
 
     # Get the body passed to patch
-    called_with = mock_firewalls.patch.call_args[1]['body']
+    called_with = mock_firewalls.patch.call_args[1]["body"]
 
     # Verify boolean conversions
     assert called_with["disabled"] is True
@@ -151,21 +138,12 @@ def test_storage_bucket_policy_delete_multiple_entities(mocker):
     from GCP import storage_bucket_policy_delete
 
     # Mock data
-    args = {
-        "resource_name": "test-bucket",
-        "entity": "allUsers,user:test@mail.com"
-    }
+    args = {"resource_name": "test-bucket", "entity": "allUsers,user:test@mail.com"}
 
     policy = {
         "bindings": [
-            {
-                "role": "roles/storage.objectViewer",
-                "members": ["allUsers", "user:test@mail.com", "user:other@example.com"]
-            },
-            {
-                "role": "roles/storage.admin",
-                "members": ["user:admin@example.com", "user:test@mail.com"]
-            }
+            {"role": "roles/storage.objectViewer", "members": ["allUsers", "user:test@mail.com", "user:other@example.com"]},
+            {"role": "roles/storage.admin", "members": ["user:admin@example.com", "user:test@mail.com"]},
         ]
     }
 
@@ -179,7 +157,7 @@ def test_storage_bucket_policy_delete_multiple_entities(mocker):
 
     # Mock the build function
     mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch('GCP.build', return_value=mock_storage)
+    mocker.patch("GCP.build", return_value=mock_storage)
 
     # Run the function
     result = storage_bucket_policy_delete(mock_creds, args)
@@ -191,10 +169,10 @@ def test_storage_bucket_policy_delete_multiple_entities(mocker):
     mock_buckets.setIamPolicy.assert_called_once()
     # Verify that the removed entities are no longer in the policy
     call_args = mock_buckets.setIamPolicy.call_args[1]
-    updated_policy = call_args['body']
-    for binding in updated_policy['bindings']:
-        assert "allUsers" not in binding.get('members', [])
-        assert "user:test@mail.com" not in binding.get('members', [])
+    updated_policy = call_args["body"]
+    for binding in updated_policy["bindings"]:
+        assert "allUsers" not in binding.get("members", [])
+        assert "user:test@mail.com" not in binding.get("members", [])
 
 
 def test_compute_subnet_update_flow_logs(mocker):
@@ -206,19 +184,10 @@ def test_compute_subnet_update_flow_logs(mocker):
     from GCP import compute_subnet_update
 
     # Mock data
-    args = {
-        "project_id": "test-project",
-        "region": "us-east1",
-        "resource_name": "test-subnet",
-        "enable_flow_logs": "true"
-    }
+    args = {"project_id": "test-project", "region": "us-east1", "resource_name": "test-subnet", "enable_flow_logs": "true"}
 
     # Subnet response with fingerprint
-    subnet_response = {
-        "name": "test-subnet",
-        "fingerprint": "test-fingerprint-123",
-        "enableFlowLogs": False
-    }
+    subnet_response = {"name": "test-subnet", "fingerprint": "test-fingerprint-123", "enableFlowLogs": False}
 
     # Expected patch operation response
     patch_response = {
@@ -228,7 +197,7 @@ def test_compute_subnet_update_flow_logs(mocker):
         "operationType": "patch",
         "progress": "100",
         "zone": "us-east1",
-        "status": "RUNNING"
+        "status": "RUNNING",
     }
 
     # Mock the GCP API calls
@@ -241,7 +210,7 @@ def test_compute_subnet_update_flow_logs(mocker):
 
     # Mock the build function
     mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch('GCP.build', return_value=mock_compute)
+    mocker.patch("GCP.build", return_value=mock_compute)
 
     # Run the function
     result = compute_subnet_update(mock_creds, args)
@@ -251,17 +220,13 @@ def test_compute_subnet_update_flow_logs(mocker):
     assert result.outputs[0] == patch_response
 
     # Check that the correct API calls were made
-    mock_subnetworks.get.assert_called_once_with(
-        project="test-project",
-        region="us-east1",
-        subnetwork="test-subnet"
-    )
+    mock_subnetworks.get.assert_called_once_with(project="test-project", region="us-east1", subnetwork="test-subnet")
 
     mock_subnetworks.patch.assert_called_once_with(
         project="test-project",
         region="us-east1",
         subnetwork="test-subnet",
-        body={"enableFlowLogs": True, "fingerprint": "test-fingerprint-123"}
+        body={"enableFlowLogs": True, "fingerprint": "test-fingerprint-123"},
     )
 
 
@@ -278,7 +243,7 @@ def test_compute_subnet_update_private_access(mocker):
         "project_id": "test-project",
         "region": "us-east1",
         "resource_name": "test-subnet",
-        "enable_private_ip_google_access": "true"
+        "enable_private_ip_google_access": "true",
     }
 
     # Expected operation response
@@ -289,7 +254,7 @@ def test_compute_subnet_update_private_access(mocker):
         "operationType": "setPrivateIpGoogleAccess",
         "progress": "100",
         "zone": "us-east1",
-        "status": "RUNNING"
+        "status": "RUNNING",
     }
 
     # Mock the GCP API calls
@@ -301,7 +266,7 @@ def test_compute_subnet_update_private_access(mocker):
 
     # Mock the build function
     mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch('GCP.build', return_value=mock_compute)
+    mocker.patch("GCP.build", return_value=mock_compute)
 
     # Run the function
     result = compute_subnet_update(mock_creds, args)
@@ -312,10 +277,7 @@ def test_compute_subnet_update_private_access(mocker):
 
     # Check that the correct API calls were made
     mock_subnetworks.setPrivateIpGoogleAccess.assert_called_once_with(
-        project="test-project",
-        region="us-east1",
-        subnetwork="test-subnet",
-        body={"privateIpGoogleAccess": True}
+        project="test-project", region="us-east1", subnetwork="test-subnet", body={"privateIpGoogleAccess": True}
     )
 
 
@@ -332,7 +294,7 @@ def test_compute_project_metadata_add_new_item(mocker):
         "project_id": "test-project",
         "zone": "us-central1-c",
         "resource_name": "gke-test-instance",
-        "metadata": "key=enable-oslogin,value=true"
+        "metadata": "key=enable-oslogin,value=true",
     }
 
     # Mock credentials
@@ -340,19 +302,10 @@ def test_compute_project_metadata_add_new_item(mocker):
 
     # Setup mock instance and response
     mock_instance = {
-        "metadata": {
-            "fingerprint": "test-fingerprint",
-            "items": [
-                {"key": "existing-key", "value": "existing-value"}
-            ]
-        }
+        "metadata": {"fingerprint": "test-fingerprint", "items": [{"key": "existing-key", "value": "existing-value"}]}
     }
 
-    mock_response = {
-        "id": "operation-123",
-        "name": "operation-name",
-        "status": "RUNNING"
-    }
+    mock_response = {"id": "operation-123", "name": "operation-name", "status": "RUNNING"}
 
     # Use MagicMock for compute
     mock_compute = MagicMock()
@@ -398,7 +351,7 @@ def test_compute_project_metadata_add_update_existing(mocker):
         "project_id": "test-project",
         "zone": "us-central1-c",
         "resource_name": "gke-test-instance",
-        "metadata": "key=enable-oslogin,value=false;key=new-key,value=new-value"
+        "metadata": "key=enable-oslogin,value=false;key=new-key,value=new-value",
     }
 
     # Mock credentials
@@ -408,18 +361,11 @@ def test_compute_project_metadata_add_update_existing(mocker):
     mock_instance = {
         "metadata": {
             "fingerprint": "test-fingerprint",
-            "items": [
-                {"key": "enable-oslogin", "value": "true"},
-                {"key": "existing-key", "value": "existing-value"}
-            ]
+            "items": [{"key": "enable-oslogin", "value": "true"}, {"key": "existing-key", "value": "existing-value"}],
         }
     }
 
-    mock_response = {
-        "id": "operation-123",
-        "name": "operation-name",
-        "status": "RUNNING"
-    }
+    mock_response = {"id": "operation-123", "name": "operation-name", "status": "RUNNING"}
 
     # Use MagicMock for compute
     mock_compute = MagicMock()
@@ -443,6 +389,7 @@ def test_compute_project_metadata_add_update_existing(mocker):
 
     assert result.outputs == mock_response
 
+
 def test_container_cluster_security_update_master_auth_networks(mocker):
     """
     Given: A GKE cluster needs to update its master authorized networks
@@ -457,17 +404,14 @@ def test_container_cluster_security_update_master_auth_networks(mocker):
         "region": "us-central1-c",
         "resource_name": "test-cluster-1",
         "enable_master_authorized_networks": "true",
-        "cidrs": "192.168.0.0/24,10.0.0.0/32"
+        "cidrs": "192.168.0.0/24,10.0.0.0/32",
     }
 
     # Mock credentials
     mock_creds = mocker.Mock(spec=Credentials)
 
     # Mock response
-    mock_response = {
-        "name": "operation-123",
-        "status": "RUNNING"
-    }
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
 
     # Use MagicMock for container
     mock_container = MagicMock()
@@ -510,7 +454,7 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
         "project_id": "test-project",
         "resource_name": "test-bucket",
         "enable_versioning": "true",
-        "enable_uniform_access": "false"
+        "enable_uniform_access": "false",
     }
 
     # Mock credentials
@@ -526,9 +470,7 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
         "updated": "2023-01-01T00:00:00Z",
         "location": "us-central1",
         "versioning": {"enabled": True},
-        "iamConfiguration": {
-            "uniformBucketLevelAccess": {"enabled": False}
-        }
+        "iamConfiguration": {"uniformBucketLevelAccess": {"enabled": False}},
     }
 
     # Use MagicMock for storage
@@ -566,9 +508,7 @@ def test_check_required_permissions_specific_command_missing_permission(mocker):
     from CommonServerPython import DemistoException
 
     # Mock arguments
-    args = {
-        "project_id": "test-project"
-    }
+    args = {"project_id": "test-project"}
 
     # Mock credentials
     mock_creds = mocker.Mock(spec=Credentials)
