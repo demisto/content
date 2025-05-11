@@ -183,6 +183,7 @@ class ClientV3(BaseClient):
             resp_type (str, optional): The response type of the request. Defaults to "json".
         """
         signed = self.prepare_request(method=method, url_suffix=url_suffix, query_string=query_string, payload=payload)
+        demisto.info(f"[test] {signed=}")
         return self._http_request(
             method="POST",
             data=signed,
@@ -248,9 +249,14 @@ class ClientV3(BaseClient):
             ok_codes (tuple): An HTTP status code of success.
         """
         next_page = ""
-        page_size = 1
+        # page_size = 1
+        demisto.info(f"[test] {query_string=}")
+        next_page_addition = self.add_pagination(next_page, page_size)
+        demisto.info(f"[test] {next_page_addition=}")
+        query_string = query_string + next_page_addition
+        
         response = self.send_request_to_api(
-            "GET", url_suffix, query_string + self.add_pagination(next_page, page_size), ok_codes=tuple(ok_codes)
+            "GET", url_suffix, query_string, ok_codes=tuple(ok_codes)
         )
         demisto.info(f"[test] response first execution with {response=} and {page_size=}")
         data = response.get("data")
