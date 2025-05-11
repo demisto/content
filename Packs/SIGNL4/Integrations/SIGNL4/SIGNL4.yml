@@ -1,4 +1,6 @@
 category: Messaging and Conferencing
+sectionOrder:
+- Connect
 commonfields:
   id: SIGNL4
   version: -1
@@ -8,10 +10,13 @@ configuration:
   hiddenusername: true
   type: 9
   required: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: SIGNL4 offers critical alerting, incident response and service dispatching for operating critical infrastructure. It alerts you persistently via app push, SMS text, voice calls, and email including tracking, escalation, on-call duty scheduling and collaboration.
 display: SIGNL4 (Beta)
 name: SIGNL4
@@ -53,7 +58,7 @@ script:
       - contextPath: SIGNL4.AlertClosed.eventId
         description: The event ID.
         type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   type: python

@@ -6,12 +6,14 @@ PARAMS:
 
 """
 
-from CommonServerPython import DemistoException
+from CommonServerPython import *
+from pytest_mock import MockerFixture
 from SIGNL4 import (
     Client,
     send_signl4_alert,
     close_signl4_alert,
 )
+
 
 def test_send_signl4_alert_success(mocker: MockerFixture):
     """
@@ -21,21 +23,17 @@ def test_send_signl4_alert_success(mocker: MockerFixture):
     """
     # Mock client
     client = Client(base_url="https://connect.signl4.com/webhook/mock-secret", verify=False)
-    
+
     # Mock client's send_signl4_alert method
     mock_response = {"eventId": "mock-event-id-12345"}
-    mocker.patch.object(client, 'send_signl4_alert', return_value=mock_response)
-    
+    mocker.patch.object(client, "send_signl4_alert", return_value=mock_response)
+
     # Test data
-    json_data = {
-        "title": "Test Alert",
-        "message": "This is a test alert",
-        "s4_external_id": "test-id-12345"
-    }
-    
+    json_data = {"title": "Test Alert", "message": "This is a test alert", "s4_external_id": "test-id-12345"}
+
     # Execute
     result = send_signl4_alert(client, json_data)
-    
+
     # Assert
     assert result.outputs_prefix == "SIGNL4.AlertCreated"
     assert result.outputs_key_field == "eventId"
@@ -52,19 +50,17 @@ def test_signl4_close_alert_success(mocker: MockerFixture):
     """
     # Mock client
     client = Client(base_url="https://connect.signl4.com/webhook/mock-secret", verify=False)
-    
+
     # Mock client's send_signl4_alert method
     mock_response = {"eventId": "mock-event-id-12345"}
-    mocker.patch.object(client, 'close_signl4_alert', return_value=mock_response)
-    
+    mocker.patch.object(client, "close_signl4_alert", return_value=mock_response)
+
     # Test data
-    json_data = {
-        "s4_external_id": "test-id-12345"
-    }
-    
+    json_data = {"s4_external_id": "test-id-12345"}
+
     # Execute
     result = close_signl4_alert(client, json_data)
-    
+
     # Assert
     assert result.outputs_prefix == "SIGNL4.AlertClosed"
     assert result.outputs_key_field == "eventId"
