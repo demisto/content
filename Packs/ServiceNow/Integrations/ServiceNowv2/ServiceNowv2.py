@@ -630,7 +630,8 @@ class Client(BaseClient):
         look_back: int = 0,
         use_display_value: bool = False,
         display_date_format: str = "",
-        jwt_params: dict | None = None):
+        jwt_params: dict | None = None,
+    ):
         """
 
         Args:
@@ -678,7 +679,7 @@ class Client(BaseClient):
                 "A display date format must be selected in the instance configuration when "
                 "using the `Use Display Value` option."
             )
-                                             
+
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(
                 credentials=oauth_params.get("credentials", {}),
@@ -695,7 +696,6 @@ class Client(BaseClient):
                 self.snow_client.set_jwt(self.create_jwt())
         else:
             self._auth = (self._username, self._password)
-            
 
     def check_private_key(self, private_key) -> str:
         """_summary_
@@ -712,17 +712,18 @@ class Client(BaseClient):
         start_marker = "-----BEGIN PRIVATE KEY-----"
         end_marker = "-----END PRIVATE KEY-----"
         if isinstance(private_key, dict):
-            private_key = private_key.get('password')
-        
+            private_key = private_key.get("password")
+
         if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
             raise ValueError("Invalid private key format")
         # Remove the markers and replace whitespaces with '\n'
-        key_content = private_key.replace(start_marker, "").replace(end_marker, "")\
-            .replace(" ", "\n").replace("\n\n", "\n").strip()
+        key_content = (
+            private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
+        )
         # Reattach the markers
         processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
         return processed_key
-    
+
     def create_jwt(self):
         """
         This function generate the JWT from the use credential
@@ -737,24 +738,24 @@ class Client(BaseClient):
         header = {
             "alg": "RS256",  # Signing algorithm
             "typ": "JWT",  # Token type
-            "kid": self.jwt_params.get('kid'), #From ServiceNow (see Jwt Verifier Maps )
+            "kid": self.jwt_params.get("kid"),  # From ServiceNow (see Jwt Verifier Maps )
         }
         self.exp_time = datetime.now(UTC) + timedelta(hours=1)  # Expiry time 1 hour
         # Payload
         payload = {
             "sub": self.jwt_params.get("sub"),  # Subject (e.g., user ID)
-            "aud": self.snow_client.client_id, # serviceNow client_id
-            "iss": self.snow_client.client_id,# can be serviceNow client_id
+            "aud": self.snow_client.client_id,  # serviceNow client_id
+            "iss": self.snow_client.client_id,  # can be serviceNow client_id
             "iat": datetime.now(UTC),  # Issued at
             "exp": self.exp_time,
-            "jti": str(uuid.uuid4())    # Unique JWT ID
+            "jti": str(uuid.uuid4()),  # Unique JWT ID
         }
         try:
-        # Generate the JWT
-            jwt_token= jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+            # Generate the JWT
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
         except Exception:
-            #Generate again if failed
-            jwt_token= jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+            # Generate again if failed
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
         return jwt_token
 
     def generic_request(
@@ -1136,7 +1137,7 @@ class Client(BaseClient):
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-     
+
         query_params = {"sysparm_input_display_value": input_display_value}
         return self.send_request(f"table/{table_name}", "POST", params=query_params, body=body)
 
@@ -3121,9 +3122,10 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta {parsed_args.delta}')
-        demisto.debug('The following keys appears in data but not in delta '
-                      f'{set(parsed_args.data.keys())-set(parsed_args.delta.keys())}')
+        demisto.debug(f"Got the following delta {parsed_args.delta}")
+        demisto.debug(
+            f"The following keys appears in data but not in delta {set(parsed_args.data.keys())-set(parsed_args.delta.keys())}"
+        )
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
@@ -3556,13 +3558,12 @@ def main():
     args = demisto.args()
     verify = not params.get("insecure", False)
     use_oauth = params.get("use_oauth", False)
-    use_jwt = params.get('use_jwt', False)
+    use_jwt = params.get("use_jwt", False)
     oauth_params = {}
-    
-    
-    #use jwt only with OAuth
+
+    # use jwt only with OAuth
     if use_jwt and use_oauth:
-        raise ValueError('choose only one authentication method (OAuth ot JWT)')
+        raise ValueError("choose only one authentication method (OAuth ot JWT)")
     elif use_jwt and not use_oauth:
         use_oauth = True
     jwt_params = {}
@@ -3582,12 +3583,12 @@ def main():
             "use_oauth": use_oauth,
         }
         if use_jwt:
-            if not params.get('private_key') or not params.get('kid') or not params.get('sub'):
-                raise Exception('When using JWT, fill private key, kid and sub fields')
+            if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
+                raise Exception("When using JWT, fill private key, kid and sub fields")
             jwt_params = {
-                'private_key': params.get('private_key'),
-                'kid': params.get('kid'),
-                'sub': params.get('sub'),
+                "private_key": params.get("private_key"),
+                "kid": params.get("kid"),
+                "sub": params.get("sub"),
             }
 
     else:  # use basic authentication
@@ -3675,7 +3676,8 @@ def main():
             version=version,
             look_back=look_back,
             use_display_value=use_display_value,
-            display_date_format=display_date_format, jwt_params=jwt_params,
+            display_date_format=display_date_format,
+            jwt_params=jwt_params,
         )
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             "test-module": test_module,
