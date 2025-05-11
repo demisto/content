@@ -261,7 +261,6 @@ class ClientV3(BaseClient):
             )
             demisto.info(f"[test] response second execution with {response=} and {page_size=}")
             data += response.get("data")
-            break
         return data
 
     def api_request_absolute(
