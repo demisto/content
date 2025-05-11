@@ -405,13 +405,17 @@ def main():
             SERVER.starttls()  # type: ignore
         user, password = get_user_pass()
         if user:
+            retry_login = False
             try:
                 demisto.debug("Authenticating with smtp server")
                 SERVER.login(user, password)  # type: ignore[union-attr]
-            except UnicodeEncodeError as e:
-                demisto.debug(f"Authentication failed with encode error: {e}\n"
-                              "Retrying using utf-8 patch")
+            except UnicodeEncodeError:
+                demisto.debug("Authentication failed with encode error, applying utf-8 patch")
+                retry_login = True
                 support_utf8_patch(SERVER)
+
+            if retry_login: # retry out of except clause to suppress the previous exception if another one is thrown
+                demisto.debug("Retrying authenticating with smtp server")
                 SERVER.login(user, password)  # type: ignore[union-attr]
 
     except Exception as e:
