@@ -165,7 +165,7 @@ def test_suppress_errors(mocker):
         update_user_command,
         list_tap_policy_command,
         delete_tap_policy_command,
-        create_tap_policy_command
+        create_tap_policy_command,
     )
 
     TEST_SUPPRESS_ERRORS = [
@@ -240,26 +240,26 @@ def test_suppress_errors(mocker):
             "expected_result": "#### User -> 123456789 does not exist",
         },
         {
-           'fun': list_tap_policy_command,
-           'mock_fun': 'list_tap_policy',
-           'mock_value': NotFoundError('The specified user could not be found.'),
-           'args': {'user_id': '123456789'},
-           'expected_result': '#### User -> 123456789 does not exist',
+            "fun": list_tap_policy_command,
+            "mock_fun": "list_tap_policy",
+            "mock_value": NotFoundError("The specified user could not be found."),
+            "args": {"user_id": "123456789"},
+            "expected_result": "#### User -> 123456789 does not exist",
         },
         {
-            'fun': delete_tap_policy_command,
-            'mock_fun': 'delete_tap_policy',
-            'mock_value': NotFoundError('The specified user could not be found.'),
-            'args': {'user_id': '123456789', 'policy_id': '987654321'},
-            'expected_result': '#### User -> 123456789 does not exist'
+            "fun": delete_tap_policy_command,
+            "mock_fun": "delete_tap_policy",
+            "mock_value": NotFoundError("The specified user could not be found."),
+            "args": {"user_id": "123456789", "policy_id": "987654321"},
+            "expected_result": "#### User -> 123456789 does not exist",
         },
         {
-            'fun': create_tap_policy_command,
-            'mock_fun': 'create_tap_policy',
-            'mock_value': NotFoundError('The specified user could not be found.'),
-            'args': {'user_id': '123456789', 'zip_password': '12345'},
-            'expected_result': '#### User -> 123456789 does not exist'
-        }
+            "fun": create_tap_policy_command,
+            "mock_fun": "create_tap_policy",
+            "mock_value": NotFoundError("The specified user could not be found."),
+            "args": {"user_id": "123456789", "zip_password": "12345"},
+            "expected_result": "#### User -> 123456789 does not exist",
+        },
     ]
 
     client = MsGraphClient(
@@ -528,6 +528,7 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
         result = test_function(client, {})
         assert result == expected_result
 
+
 def test_create_zip_with_password():
     """
     Tests the creation of a password-protected ZIP file containing a Temporary Access Pass (TAP) password.
@@ -560,29 +561,29 @@ def test_create_zip_with_password():
                     except Exception as e:
                         pytest.fail(f"Error removing {file_path}: {e}")
 
-    generated_tap_password = 'test_password_123'
-    zip_password = 'kldsjflk453lksdf'
-    zip_file_name = os.path.join(os.getcwd(), 'TAPPolicyInfo.zip')
-    txt_file_name = 'TAPPolicyPass.txt'
+    generated_tap_password = "test_password_123"
+    zip_password = "kldsjflk453lksdf"
+    zip_file_name = os.path.join(os.getcwd(), "TAPPolicyInfo.zip")
+    txt_file_name = "TAPPolicyPass.txt"
     start_time = time.time()
 
-    zip_res = generate_password_protected_zip('TAPPolicyInfo.zip', zip_password, generated_tap_password)
-    assert zip_res['File'] == 'TAPPolicyInfo.zip'
-    assert zip_res['ContentsFormat'] == 'text'
-    
+    zip_res = generate_password_protected_zip("TAPPolicyInfo.zip", zip_password, generated_tap_password)
+    assert zip_res["File"] == "TAPPolicyInfo.zip"
+    assert zip_res["ContentsFormat"] == "text"
+
     try:
-        with AESZipFile(zip_file_name, mode='r', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
-            zf.pwd = bytes(zip_password, 'utf-8')
+        with AESZipFile(zip_file_name, mode="r", compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+            zf.pwd = bytes(zip_password, "utf-8")
             zip_content = zf.read(txt_file_name)
-            assert zip_content.decode('utf-8') == generated_tap_password
+            assert zip_content.decode("utf-8") == generated_tap_password
 
     except Exception as e:
         pytest.fail(f"Unexpected error during ZIP file handling: {e}")
 
     finally:
         clean_up_files(start_time)
-        
-        
+
+
 def test_create_tap_policy_command_failure_on_empty_response(mocker):
     """
     Tests the behavior of the create_tap_policy_command function when an empty response is returned
@@ -614,18 +615,15 @@ def test_create_tap_policy_command_failure_on_empty_response(mocker):
         azure_cloud=AZURE_WORLDWIDE_CLOUD,
     )
 
-    args = {
-        'user_id': '123456789',
-        'zip_password': '12345'
-    }
+    args = {"user_id": "123456789", "zip_password": "12345"}
 
-    mock_create_tap_policy = mocker.patch.object(client, 'create_tap_policy', return_value=None)
+    mock_create_tap_policy = mocker.patch.object(client, "create_tap_policy", return_value=None)
     result = create_tap_policy_command(client, args)
-    
-    assert result.readable_output == 'Failed to create TAP policy for user: 123456789.'
+
+    assert result.readable_output == "Failed to create TAP policy for user: 123456789."
     assert mock_create_tap_policy.call_count == 1
-    
-    
+
+
 def test_delete_tap_policy_command_success(mocker):
     """
     Tests the behavior of the delete_tap_policy_command function.
@@ -655,15 +653,12 @@ def test_delete_tap_policy_command_success(mocker):
         azure_cloud=AZURE_WORLDWIDE_CLOUD,
     )
 
-    args = {
-        'user_id': '123456789',
-        'policy_id': '987654321'
-    }
+    args = {"user_id": "123456789", "policy_id": "987654321"}
 
-    mocker.patch.object(client, 'delete_tap_policy', return_value=None)
+    mocker.patch.object(client, "delete_tap_policy", return_value=None)
     result = delete_tap_policy_command(client, args)
-    
-    expected_output = 'Temporary Access Pass Authentication methods policy 987654321 was successfully deleted.'
+
+    expected_output = "Temporary Access Pass Authentication methods policy 987654321 was successfully deleted."
     assert result.readable_output == expected_output
 
 
@@ -701,28 +696,28 @@ def test_list_tap_policy_command_success(mocker):
         azure_cloud=AZURE_WORLDWIDE_CLOUD,
     )
 
-    args = {
-        'user_id': '123456789'
-    }
+    args = {"user_id": "123456789"}
 
-    mock_tap_data = [{
-        "id": "987654321",
-        "startDateTime": "2025-04-28T12:00:00Z",
-        "lifetimeInMinutes": 60,
-        "isUsableOnce": True,
-        "isUsable": True,
-        "methodUsabilityReason": "Enabled",
-        "TemporaryAccessPass": 'test123'
-    }]
+    mock_tap_data = [
+        {
+            "id": "987654321",
+            "startDateTime": "2025-04-28T12:00:00Z",
+            "lifetimeInMinutes": 60,
+            "isUsableOnce": True,
+            "isUsable": True,
+            "methodUsabilityReason": "Enabled",
+            "TemporaryAccessPass": "test123",
+        }
+    ]
 
-    mocker.patch.object(client, 'list_tap_policy', return_value=mock_tap_data)
+    mocker.patch.object(client, "list_tap_policy", return_value=mock_tap_data)
     result = list_tap_policy_command(client, args)
-    
-    assert result.outputs_prefix == 'MSGraphUser.TAPPolicy'
-    assert result.outputs_key_field == 'ID'
-    assert result.outputs['ID'] == '987654321'
-    assert 'Policy ID' in result.readable_output
-    assert 'TAP Policy for User ID 123456789' in result.readable_output
+
+    assert result.outputs_prefix == "MSGraphUser.TAPPolicy"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["ID"] == "987654321"
+    assert "Policy ID" in result.readable_output
+    assert "TAP Policy for User ID 123456789" in result.readable_output
 
 
 def test_create_tap_policy_command_success(mocker):
@@ -761,29 +756,29 @@ def test_create_tap_policy_command_success(mocker):
     )
 
     args = {
-        'user_id': '123456789',
-        'zip_password': 'securepass123',
-        'lifetime_in_minutes': '60',
-        'is_usable_once': 'true',
-        'start_time': '2025-04-29T10:00:00Z'
+        "user_id": "123456789",
+        "zip_password": "securepass123",
+        "lifetime_in_minutes": "60",
+        "is_usable_once": "true",
+        "start_time": "2025-04-29T10:00:00Z",
     }
 
     mock_api_response = {
-        'id': '987654321',
-        'startDateTime': '2025-04-29T10:00:00.000Z',
-        'lifetimeInMinutes': 60,
-        'isUsableOnce': True,
-        'isUsable': True,
-        'methodUsabilityReason': 'Enabled',
-        'temporaryAccessPass': 'Generated-P@ssword1!'
+        "id": "987654321",
+        "startDateTime": "2025-04-29T10:00:00.000Z",
+        "lifetimeInMinutes": 60,
+        "isUsableOnce": True,
+        "isUsable": True,
+        "methodUsabilityReason": "Enabled",
+        "temporaryAccessPass": "Generated-P@ssword1!",
     }
 
-    mocker.patch.object(client, 'create_tap_policy', return_value=mock_api_response)
-    mocker.patch('MicrosoftGraphUser.create_zip_with_password')
+    mocker.patch.object(client, "create_tap_policy", return_value=mock_api_response)
+    mocker.patch("MicrosoftGraphUser.create_zip_with_password")
     result = create_tap_policy_command(client, args)
 
     expected_output = "Temporary Access Pass Authentication methods policy for user: 123456789 was successfully created."
     assert result.readable_output == expected_output
-    assert result.outputs_prefix == 'MSGraphUser.TAPPolicy'
-    assert result.outputs_key_field == 'ID'
-    assert result.outputs['ID'] == '987654321'
+    assert result.outputs_prefix == "MSGraphUser.TAPPolicy"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["ID"] == "987654321"

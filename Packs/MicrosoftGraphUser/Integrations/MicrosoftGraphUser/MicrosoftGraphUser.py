@@ -247,17 +247,14 @@ class MsGraphClient:
             - startDateTime (str): The ISO 8601 timestamp when the TAP becomes valid.
             - lifetimeInMinutes (int): The validity duration of the TAP in minutes.
             - isUsableOnce (bool): Indicates whether the TAP can be used only once.
-            
+
         API Reference:
             https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
         """
-        url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
-        
-        res = self.ms_client.http_request(
-            method='GET',
-            url_suffix=url_suffix
-        )
-        return res.get('value', [])
+        url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods"
+
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        return res.get("value", [])
 
     #  If successful, this method returns 201
     def create_tap_policy(self, user_id, body):
@@ -276,16 +273,12 @@ class MsGraphClient:
             - startDateTime (str): The ISO 8601 timestamp when the TAP becomes valid.
             - lifetimeInMinutes (int): The validity duration of the TAP in minutes.
             - isUsableOnce (bool): Indicates whether the TAP can be used only once.
-            
+
         API Reference:
             https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods
         """
-        url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods'
-        res = self.ms_client.http_request(
-            method='POST',
-            url_suffix=url_suffix,
-            json_data=body
-        )
+        url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods"
+        res = self.ms_client.http_request(method="POST", url_suffix=url_suffix, json_data=body)
         res.pop("@odata.context", None)
         return res
 
@@ -298,16 +291,12 @@ class MsGraphClient:
 
         Returns:
             None.
-            
+
         API Reference:
             https://graph.microsoft.com/v1.0/users/[user_id]/authentication/temporaryAccessPassMethods/[policy_id]
         """
-        url_suffix = f'users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}'
-        self.ms_client.http_request(
-            method='DELETE',
-            url_suffix=url_suffix,
-            resp_type="text"
-        )
+        url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
+        self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
 
 
 def suppress_errors_with_404_code(func):
@@ -323,8 +312,8 @@ def suppress_errors_with_404_code(func):
                     human_readable = f"#### Manager -> {manager} does not exist"
                     return human_readable
                 elif "The specified user could not be found." in str(e.message):
-                    user = args.get('user_id', '___')
-                    human_readable = f'#### User -> {user} does not exist'
+                    user = args.get("user_id", "___")
+                    human_readable = f"#### User -> {user} does not exist"
                     return human_readable
             raise
 
@@ -349,7 +338,7 @@ def test_function(client, _):
         else:
             response = "```✅ Success!```"
 
-    client.ms_client.http_request(method='GET', url_suffix='users/')
+    client.ms_client.http_request(method="GET", url_suffix="users/")
     return response
 
 
@@ -359,9 +348,7 @@ def disable_user_account_command(client: MsGraphClient, args: dict):
     client.disable_user_account_session(user)
     human_readable = f'user: "{user}" account has been disabled successfully.'
 
-    return CommandResults(
-        readable_output=human_readable
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 @suppress_errors_with_404_code
@@ -370,9 +357,7 @@ def unblock_user_command(client: MsGraphClient, args: dict):
     client.unblock_user(user)
     human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take effect across all applications.'
 
-    return CommandResults(
-        readable_output=human_readable
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 @suppress_errors_with_404_code
@@ -381,9 +366,7 @@ def delete_user_command(client: MsGraphClient, args: dict):
     client.delete_user(user)
     human_readable = f'user: "{user}" was deleted successfully.'
 
-    return CommandResults(
-        readable_output=human_readable
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 def create_user_command(client: MsGraphClient, args: dict):
@@ -410,20 +393,11 @@ def create_user_command(client: MsGraphClient, args: dict):
     user_data = client.get_user(user, "*")
 
     user_readable, user_outputs = parse_outputs(user_data)
-    human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable,
-                                     removeNull=True)
+    human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
     accounts = create_account_outputs(user_outputs)
-    outputs = {
-        'MSGraphUser': user_outputs,
-        'Account': accounts[0] if accounts else []
-    }
+    outputs = {"MSGraphUser": user_outputs, "Account": accounts[0] if accounts else []}
 
-    return CommandResults(
-        outputs=outputs,
-        outputs_key_field='ID',
-        readable_output=human_readable,
-        raw_response=user_data
-    )
+    return CommandResults(outputs=outputs, outputs_key_field="ID", readable_output=human_readable, raw_response=user_data)
 
 
 @suppress_errors_with_404_code
@@ -446,9 +420,7 @@ def change_password_user_command(client: MsGraphClient, args: dict):
     client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
     human_readable = f"User {user} password was changed successfully."
 
-    return CommandResults(
-        readable_output=human_readable
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 def get_delta_command(client: MsGraphClient, args: dict):
@@ -460,12 +432,13 @@ def get_delta_command(client: MsGraphClient, args: dict):
     human_readable = tableToMarkdown(name="All Graph Users", headers=headers, t=users_readable, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='MSGraphUser',
-        outputs_key_field='ID',
+        outputs_prefix="MSGraphUser",
+        outputs_key_field="ID",
         outputs=users_outputs,
         readable_output=human_readable,
-        raw_response=users_data
+        raw_response=users_data,
     )
+
 
 def get_user_command(client: MsGraphClient, args: dict):
     user = args.get("user")
@@ -477,10 +450,7 @@ def get_user_command(client: MsGraphClient, args: dict):
             invalid_chars = get_unsupported_chars_in_user(user)
             if len(invalid_chars) > 0:
                 error = f"Request failed because the user contains unsupported characters: {invalid_chars}\n{e!s}"
-                return CommandResults(
-                    readable_output=error,
-                    raw_response=error
-                )
+                return CommandResults(readable_output=error, raw_response=error)
         raise e
 
     # In case the request returned a 404 error display a proper message to the war room
@@ -488,25 +458,14 @@ def get_user_command(client: MsGraphClient, args: dict):
         error_message = user_data.get("NotFound")
         human_readable = f"### User {user} was not found.\nMicrosoft Graph Response: {error_message}"
 
-        return CommandResults(
-            readable_output=human_readable,
-            raw_response=error_message
-        )
+        return CommandResults(readable_output=human_readable, raw_response=error_message)
 
     user_readable, user_outputs = parse_outputs(user_data)
     accounts = create_account_outputs(user_outputs)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
-    outputs = {
-        'MSGraphUser': user_outputs,
-        'Account': accounts[0] if accounts else []
-    }
+    outputs = {"MSGraphUser": user_outputs, "Account": accounts[0] if accounts else []}
 
-    return CommandResults(
-        outputs_key_field='ID',
-        outputs=outputs,
-        readable_output=human_readable,
-        raw_response=user_data
-    )
+    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=user_data)
 
 
 def list_users_command(client: MsGraphClient, args: dict):
@@ -518,23 +477,15 @@ def list_users_command(client: MsGraphClient, args: dict):
     accounts = create_account_outputs(users_outputs)
     metadata = None
 
-    outputs = {
-        'MSGraphUser': users_outputs,
-        'Account': accounts
-    }
+    outputs = {"MSGraphUser": users_outputs, "Account": accounts}
 
     if result_next_page:
         metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
         # Ensures the NextPage token is inserted as the first element only if it's a valid URL
-        outputs['MSGraphUser'].insert(0, {'NextPage': result_next_page})
-    human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
+        outputs["MSGraphUser"].insert(0, {"NextPage": result_next_page})
+    human_readable = tableToMarkdown(name="All Graph Users", t=users_readable, removeNull=True, metadata=metadata)
 
-    return CommandResults(
-        outputs_key_field='ID',
-        outputs=outputs,
-        readable_output=human_readable,
-        raw_response=users_data
-    )
+    return CommandResults(outputs_key_field="ID", outputs=outputs, readable_output=human_readable, raw_response=users_data)
 
 
 @suppress_errors_with_404_code
@@ -545,16 +496,13 @@ def get_direct_reports_command(client: MsGraphClient, args: dict):
 
     reports_readable, reports = parse_outputs(raw_reports)
     human_readable = tableToMarkdown(name=f"{user} - direct reports", t=reports_readable, removeNull=True)
-    outputs = {
-        'Manager': user,
-        'Reports': reports
-    }
+    outputs = {"Manager": user, "Reports": reports}
     return CommandResults(
-        outputs_prefix='MSGraphUserDirectReports',
-        outputs_key_field='ID',
+        outputs_prefix="MSGraphUserDirectReports",
+        outputs_key_field="ID",
         outputs=outputs,
         readable_output=human_readable,
-        raw_response=raw_reports
+        raw_response=raw_reports,
     )
 
 
@@ -564,17 +512,14 @@ def get_manager_command(client: MsGraphClient, args: dict):
     manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
     human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
-    outputs = {
-        'User': user,
-        'Manager': manager_outputs
-    }
+    outputs = {"User": user, "Manager": manager_outputs}
 
     return CommandResults(
-        outputs_prefix='MSGraphUserManager',
-        outputs_key_field='ID',
+        outputs_prefix="MSGraphUserManager",
+        outputs_key_field="ID",
         outputs=outputs,
         readable_output=human_readable,
-        raw_response=manager_data
+        raw_response=manager_data,
     )
 
 
@@ -588,9 +533,7 @@ def assign_manager_command(client: MsGraphClient, args: dict):
         "to take affect across all applications."
     )
 
-    return CommandResults(
-        readable_output=human_readable
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 @suppress_errors_with_404_code
@@ -599,9 +542,7 @@ def revoke_user_session_command(client: MsGraphClient, args: dict):
     client.revoke_user_session(user)
     human_readable = f'User: "{user}" sessions have been revoked successfully.'
 
-    return CommandResults(
-        readable_output=human_readable
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 @suppress_errors_with_404_code
@@ -617,31 +558,29 @@ def list_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResults
     Returns:
         CommandResults: The Temporary Access Pass (TAP) policies associated with a specific user.
     """
-    user_id = args.get('user_id')
+    user_id = args.get("user_id")
     tap_data = client.list_tap_policy(user_id)
     if not tap_data:
-        return CommandResults(
-            readable_output=f'Failed to get TAP policy for the user {user_id}.'
-        )
-    
+        return CommandResults(readable_output=f"Failed to get TAP policy for the user {user_id}.")
+
     tap_readable, tap_policy_output = parse_outputs(tap_data)
-    
+
     tap_readable_dict = tap_readable[0]
     tap_policy_output_dict = tap_policy_output[0]
 
     # Remove the 'temporaryAccessPass' value as it confidential and thus should be removed from context
-    tap_policy_output_dict.pop('TemporaryAccessPass')
+    tap_policy_output_dict.pop("TemporaryAccessPass")
     # change HR from ID to Policy ID
-    tap_readable_dict['Policy ID'] = tap_readable_dict.pop('ID')
-        
-    headers = ['Policy ID', 'Start Date Time', 'Lifetime In Minutes', 'Is Usable Once', 'Is Usable', 'Method Usability Reason']
-    human_readable = tableToMarkdown(name=f'TAP Policy for User ID {user_id}:', headers=headers, t=tap_readable_dict)
-    
+    tap_readable_dict["Policy ID"] = tap_readable_dict.pop("ID")
+
+    headers = ["Policy ID", "Start Date Time", "Lifetime In Minutes", "Is Usable Once", "Is Usable", "Method Usability Reason"]
+    human_readable = tableToMarkdown(name=f"TAP Policy for User ID {user_id}:", headers=headers, t=tap_readable_dict)
+
     return CommandResults(
-        outputs_prefix='MSGraphUser.TAPPolicy',
-        outputs_key_field='ID',
+        outputs_prefix="MSGraphUser.TAPPolicy",
+        outputs_key_field="ID",
         outputs=tap_policy_output_dict,
-        readable_output=human_readable
+        readable_output=human_readable,
     )
 
 
@@ -663,36 +602,31 @@ def create_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
     Returns:
         CommandResults: New Temporary Access Pass (TAP) policies created for a specific user.
     """
-    user_id = args.get('user_id')
-    zip_password = args.get('zip_password', '')
-    lifetime_in_minutes = arg_to_number(args.get('lifetime_in_minutes'))
-    is_usable_once = argToBoolean(args.get('is_usable_once', False))
-    start_time = args.get('start_time')
+    user_id = args.get("user_id")
+    zip_password = args.get("zip_password", "")
+    lifetime_in_minutes = arg_to_number(args.get("lifetime_in_minutes"))
+    is_usable_once = argToBoolean(args.get("is_usable_once", False))
+    start_time = args.get("start_time")
     start_time_iso = arg_to_datetime(start_time, required=False)
 
     fields = {
-        'lifetimeInMinutes': lifetime_in_minutes,
-        'isUsableOnce': is_usable_once,
-        'startDateTime': start_time_iso.strftime("%Y-%m-%dT%H:%M:%S.000Z") if start_time_iso else None
+        "lifetimeInMinutes": lifetime_in_minutes,
+        "isUsableOnce": is_usable_once,
+        "startDateTime": start_time_iso.strftime("%Y-%m-%dT%H:%M:%S.000Z") if start_time_iso else None,
     }
     res = client.create_tap_policy(user_id, fields)
     if not res:
-        return CommandResults(
-        readable_output=f'Failed to create TAP policy for user: {user_id}.'
-    )
+        return CommandResults(readable_output=f"Failed to create TAP policy for user: {user_id}.")
 
     # Remove the 'temporaryAccessPass' value as it confidential and thus should be removed from context
-    generated_password = res.pop('temporaryAccessPass')
+    generated_password = res.pop("temporaryAccessPass")
 
     create_zip_with_password(generated_tap_password=generated_password, zip_password=zip_password)
-    human_readable = f'Temporary Access Pass Authentication methods policy for user: {user_id} was successfully created.'
+    human_readable = f"Temporary Access Pass Authentication methods policy for user: {user_id} was successfully created."
     _, tap_policy_output = parse_outputs(res)
 
     return CommandResults(
-        outputs_prefix='MSGraphUser.TAPPolicy',
-        outputs_key_field='ID',
-        outputs=tap_policy_output,
-        readable_output=human_readable
+        outputs_prefix="MSGraphUser.TAPPolicy", outputs_key_field="ID", outputs=tap_policy_output, readable_output=human_readable
     )
 
 
@@ -710,14 +644,12 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
     Returns:
         CommandResults: Delete the Temporary Access Pass (TAP) police associated with a specific user.
     """
-    user_id = args.get('user_id')
-    policy_id = args.get('policy_id')
+    user_id = args.get("user_id")
+    policy_id = args.get("policy_id")
     client.delete_tap_policy(user_id, policy_id)
-    human_readable = f'Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted.'
+    human_readable = f"Temporary Access Pass Authentication methods policy {policy_id} was successfully deleted."
 
-    return CommandResults(
-        readable_output=human_readable
-    )
+    return CommandResults(readable_output=human_readable)
 
 
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
@@ -731,21 +663,22 @@ def create_zip_with_password(generated_tap_password: str, zip_password: str):
     Returns:
         return_results
     """
-    zip_file_name = 'TAPPolicyInfo.zip'
+    zip_file_name = "TAPPolicyInfo.zip"
 
     try:
-        demisto.debug('Creating password-protected zip file')
+        demisto.debug("Creating password-protected zip file")
         file_res = generate_password_protected_zip(zip_file_name, zip_password, generated_tap_password)
-        
+
     except Exception as e:
-        raise DemistoException(f'Could not generate zip file. Error:\n{str(e)}')
+        raise DemistoException(f"Could not generate zip file. Error:\n{str(e)}")
 
     finally:
         if os.path.exists(zip_file_name):
             os.remove(zip_file_name)
-            
+
     return_results(file_res)
-    
+
+
 def generate_password_protected_zip(zip_file_name, zip_password, generated_tap_password) -> dict:
     """
     Generates a password-protected ZIP file containing the TAP policy password.
@@ -758,13 +691,13 @@ def generate_password_protected_zip(zip_file_name, zip_password, generated_tap_p
     Returns:
         dict: A file result object containing the ZIP file content.
     """
-    with AESZipFile(zip_file_name, mode='w', compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
-        zf.pwd = bytes(zip_password, 'utf-8')
-        zf.writestr('TAPPolicyPass.txt', generated_tap_password)
+    with AESZipFile(zip_file_name, mode="w", compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+        zf.pwd = bytes(zip_password, "utf-8")
+        zf.writestr("TAPPolicyPass.txt", generated_tap_password)
 
-    with open(zip_file_name, 'rb') as zip_file:
+    with open(zip_file_name, "rb") as zip_file:
         zip_content = zip_file.read()
-    
+
     return fileResult(zip_file_name, zip_content)
 
 
@@ -818,9 +751,9 @@ def main():
         "msgraph-user-get-manager": get_manager_command,
         "msgraph-user-assign-manager": assign_manager_command,
         "msgraph-user-session-revoke": revoke_user_session_command,
-        'msgraph-user-tap-policy-list': list_tap_policy_command,
-        'msgraph-user-tap-policy-create': create_tap_policy_command,
-        'msgraph-user-tap-policy-delete': delete_tap_policy_command,
+        "msgraph-user-tap-policy-list": list_tap_policy_command,
+        "msgraph-user-tap-policy-create": create_tap_policy_command,
+        "msgraph-user-tap-policy-delete": delete_tap_policy_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
