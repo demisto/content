@@ -153,7 +153,7 @@ def get_endpoint_context(res=None, endpoint_id=None):
 
 def get_endpoint_user_context(res=None, endpoint_user_id=None):
     if res is None:
-        res = http_get(f"/endpoint_users/{endpoint_user_id}")["data"]
+        res = http_get(f"/endpoint_users/{endpoint_user_id}").get("data", [])
 
     endpoint_users = []
     for endpoint_user in res:
@@ -194,7 +194,6 @@ def get_full_timeline(detection_id, per_page=100):
         activities.extend(current_data)
         last_data = current_data
         page += 1
-
     return activities
 
 
@@ -206,14 +205,13 @@ def process_timeline(detection_id):
     ips = []
     processes = []
     for activity in res:
-        if activity["type"] != "activity_timelines.ActivityOccurred":
+        if activity.get('type') not in ["activity_timelines.LatestIndicationSeen", "activity_timelines.EventActivityOccurred"]:
             continue
-
         activity_time = get_time_str(get_time_obj(activity["attributes"]["occurred_at"]))
         notes = activity["attributes"]["analyst_notes"]
         additional_data = {}  # type:ignore
 
-        if activity["attributes"]["type"] == "process_activity_occurred":
+        if activity.get("attributes", {}).get("type") == "process_activity_occurred":
             process = activity["attributes"]["process_execution"]["attributes"].get("operating_system_process", {})
             if not process:
                 demisto.debug(
@@ -250,7 +248,7 @@ def process_timeline(detection_id):
                     }
                 )
 
-        elif activity["attributes"]["type"] == "network_connection_activity_occurred":
+        elif activity.get("attributes", {}).get("type") == "network_connection_activity_occurred":
             network = activity["attributes"]["network_connection"]["attributes"]
             additional_data = {
                 "IP": network["ip_address"]["attributes"]["ip_address"],
@@ -269,11 +267,27 @@ def process_timeline(detection_id):
                     "Port": network["port"],
                 }
             )
+        elif activity.get("attributes", {}).get("type") == "primitive_activities.network_connection":
+            network = activity["attributes"].get("activity", {})
+            additional_data["Domain"] = network["domain"]
+            additional_data["IP"] = network["remote_ip"]
+            domains.append(
+                {
+                    "Name": network["domain"],
+                }
+            )
+
+            ips.append(
+                {
+                    "Address": network["remote_ip"],
+                    "Port": network.get("remote_port", "Unknown"),
+                }
+            )
 
         activities.append(
             {
                 "Time": activity_time,
-                "Type": activity["attributes"]["type"].replace("_", " "),
+                "Type": activity.get("attributes", {}).get("type") and activity["attributes"].get("type").replace("_", " ") or None,
                 "Notes": notes,
                 "Activity Details": createContext(additional_data, removeNull=True),
             }
@@ -425,7 +439,7 @@ def get_detection_command():
 @logger
 def get_detection(_id):
     res = http_get(f"/detections/{_id}")
-    return res["data"]
+    return res.get("data", [])
 
 
 def acknowledge_detection_command():
