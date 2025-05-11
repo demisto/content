@@ -3,11 +3,10 @@
 The Google Cloud Logging Cortex <~XSOAR>XSOAR</~XSOAR><~XSIAM>XSIAM</~XSIAM> pack helps users to centralize all their GCP logs in a single location, making it easier to troubleshoot issues and gain insights from their data.
 
 ### Google Cloud Logging Integration
+The *Google Cloud Logging Integration* enables you to retrieve selected log entries that originated from a project/folder/organization/billing account. See the [Google Cloud Logging integration documentation](https://xsoar.pan.dev/docs/reference/integrations/google-cloud-logging) for additional details.   
 
-The *Google Cloud Logging Integration* enables you to retrieve selected log entries that originated from a project/folder/organization/billing account. See the [Google Cloud Logging integration documentation](https://xsoar.pan.dev/docs/reference/integrations/google-cloud-logging) for additional details.
 
 <~XSIAM>
-
 ### Google Cloud Logging SIEM Content
 The SIEM content includes *Cortex Data Modeling (XDM) Rules* and *Parsing Rules* which are applied on [*Google Cloud Audit Logs*](https://cloud.google.com/logging/docs/audit), [*Google Cloud DNS Query Logs*](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format) and [*Google Cloud VPC Flow Logs*](https://cloud.google.com/vpc/docs/flow-logs). *Audit* and *VPC Flow* logs are ingested into the *`google_cloud_logging_raw`* dataset, *DNS* logs are ingested into the *`google_dns_raw`* dataset. Log are ingested via the *Google Cloud Platform Pub/Sub* data source on Cortex XSIAM. See [*Ingest Logs and Data from a GCP Pub/Sub*](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-and-Data-from-a-GCP-Pub/Sub) for additional details.
 
@@ -17,9 +16,7 @@ The SIEM content includes *Cortex Data Modeling (XDM) Rules* and *Parsing Rules*
   ```
      logName:"cloudaudit.googleapis.com"
   ```
-
-  - Sample filter for including only [*Google Cloud DNS Query Logs*](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format):
-
+  -  Sample filter for including only [*Google Cloud DNS Query Logs*](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format):
   ```
     log_id("dns.googleapis.com/dns_queries") 
   ```
