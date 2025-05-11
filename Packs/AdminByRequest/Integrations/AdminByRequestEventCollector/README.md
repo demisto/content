@@ -43,3 +43,7 @@ Retrieves a list of entries logs events from the AdminByRequest instance.
 #### Context Output
 
 There is no context output for this command.
+
+### API Limitations 
+
+Daily quota: 100,000 API calls (approximately 60 calls per minute max)
