@@ -3,6 +3,7 @@ Extract text from QR codes.
 The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
 
 This script uses the following python libraries to decode:
+
 - `pyzbar`
 - `opencv-contrib-python`
 
@@ -59,7 +60,8 @@ This script uses the following python libraries to decode:
 ### Human Readable Output
 
 >### QR Code Read
+
 >|Text|
 >|---|
->| https://xsoar.pan.dev/ |
+>| <https://xsoar.pan.dev/> |
 
