@@ -5,11 +5,36 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
+
 import json
 import pytest
-from SilentPush import Client, CommandResults, get_job_status_command, get_nameserver_reputation_command, get_subnet_reputation_command, get_asns_for_domain_command, list_domain_infratags_command, list_domain_information_command, get_ipv4_reputation_command, get_future_attack_indicators_command, list_ip_information_command, get_asn_takedown_reputation_command, get_asn_reputation_command, get_enrichment_data_command, get_domain_certificates_command, screenshot_url_command, live_url_scan_command, search_scan_data_command, reverse_padns_lookup_command, forward_padns_lookup_command, search_domains_command, density_lookup_command
+from SilentPush import (
+    Client,
+    CommandResults,
+    get_job_status_command,
+    get_nameserver_reputation_command,
+    get_subnet_reputation_command,
+    get_asns_for_domain_command,
+    list_domain_infratags_command,
+    list_domain_information_command,
+    get_ipv4_reputation_command,
+    get_future_attack_indicators_command,
+    list_ip_information_command,
+    get_asn_takedown_reputation_command,
+    get_asn_reputation_command,
+    get_enrichment_data_command,
+    get_domain_certificates_command,
+    screenshot_url_command,
+    live_url_scan_command,
+    search_scan_data_command,
+    reverse_padns_lookup_command,
+    forward_padns_lookup_command,
+    search_domains_command,
+    density_lookup_command,
+)
 from CommonServerPython import DemistoException
-from requests.models import Response, Request
+from requests.models import Response
+
 
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
@@ -31,15 +56,12 @@ def test_get_job_status_command_success(mock_client):
         "max_wait": "10",
         "status_only": "false",
         "force_metadata_on": "true",
-        "force_metadata_off": "false"
+        "force_metadata_off": "false",
     }
     mock_response_success = {
         "response": {
             "job_id": "d4067541-eafb-424c-98d3-de12d7a91331",
-            "job_status": {
-                "job_id": "d4067541-eafb-424c-98d3-de12d7a91331",
-                "status": "PENDING"
-            }
+            "job_status": {"job_id": "d4067541-eafb-424c-98d3-de12d7a91331", "status": "PENDING"},
         }
     }
     mock_client.get_job_status.return_value = mock_response_success
@@ -63,12 +85,8 @@ def test_get_job_status_command_no_status_found(mock_client):
     """
     Test case: No job status found for the given job ID.
     """
-    args_no_status = {
-        "job_id": "d4067541-eafb-424c-98d3-de12d7a91331"
-    }
-    mock_response_no_status = {
-        "response": {}
-    }
+    args_no_status = {"job_id": "d4067541-eafb-424c-98d3-de12d7a91331"}
+    mock_response_no_status = {"response": {}}
     mock_client.get_job_status.return_value = mock_response_no_status
     with pytest.raises(DemistoException, match="No job status found for Job ID: d4067541-eafb-424c-98d3-de12d7a91331"):
         get_job_status_command(mock_client, args_no_status)
@@ -76,16 +94,10 @@ def test_get_job_status_command_no_status_found(mock_client):
 
 def test_get_nameserver_reputation_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "nameserver": "example.com",
-        "explain": "true",
-        "limit": "10"
-    }
+    args = {"nameserver": "example.com", "explain": "true", "limit": "10"}
 
     # Mock response from client
-    mock_response = [
-        {"ns_server": "example.com", "reputation": "good", "details": "No issues found"}
-    ]
+    mock_response = [{"ns_server": "example.com", "reputation": "good", "details": "No issues found"}]
     mock_client.get_nameserver_reputation.return_value = mock_response
 
     # Mock tableToMarkdown
@@ -114,11 +126,7 @@ def test_get_nameserver_reputation_command_no_nameserver(mock_client):
 
 def test_get_nameserver_reputation_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "nameserver": "example.com",
-        "explain": "false",
-        "limit": "5"
-    }
+    args = {"nameserver": "example.com", "explain": "false", "limit": "5"}
 
     # Mock response from client
     mock_client.get_nameserver_reputation.return_value = []
@@ -137,11 +145,7 @@ def test_get_nameserver_reputation_command_no_data(mock_client, mocker):
 
 def test_get_subnet_reputation_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "subnet": "192.168.1.0/24",
-        "explain": "true",
-        "limit": "5"
-    }
+    args = {"subnet": "192.168.1.0/24", "explain": "true", "limit": "5"}
 
     # Mock response from client
     mock_response = {
@@ -179,18 +183,10 @@ def test_get_subnet_reputation_command_no_subnet(mock_client):
 
 def test_get_subnet_reputation_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "subnet": "192.168.1.0/24",
-        "explain": "false",
-        "limit": "5"
-    }
+    args = {"subnet": "192.168.1.0/24", "explain": "false", "limit": "5"}
 
     # Mock response from client
-    mock_response = {
-        "response": {
-            "subnet_reputation_history": []
-        }
-    }
+    mock_response = {"response": {"subnet_reputation_history": []}}
     mock_client.get_subnet_reputation.return_value = mock_response
 
     # Call the function
@@ -207,22 +203,11 @@ def test_get_subnet_reputation_command_no_data(mock_client, mocker):
 
 def test_get_asns_for_domain_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domain": "example.com"
-    }
+    args = {"domain": "example.com"}
 
     # Mock response from client
     mock_response = {
-        "response": {
-            "records": [
-                {
-                    "domain_asns": {
-                        "12345": "Example ASN Description",
-                        "67890": "Another ASN Description"
-                    }
-                }
-            ]
-        }
+        "response": {"records": [{"domain_asns": {"12345": "Example ASN Description", "67890": "Another ASN Description"}}]}
     }
     mock_client.get_asns_for_domain.return_value = mock_response
 
@@ -239,7 +224,7 @@ def test_get_asns_for_domain_command_success(mock_client, mocker):
     assert result.outputs["domain"] == "example.com"
     assert result.outputs["asns"] == [
         {"ASN": "12345", "Description": "Example ASN Description"},
-        {"ASN": "67890", "Description": "Another ASN Description"}
+        {"ASN": "67890", "Description": "Another ASN Description"},
     ]
     assert result.readable_output == "Mocked Markdown Table"
 
@@ -255,16 +240,10 @@ def test_get_asns_for_domain_command_no_domain(mock_client):
 
 def test_get_asns_for_domain_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domain": "example.com"
-    }
+    args = {"domain": "example.com"}
 
     # Mock response from client
-    mock_response = {
-        "response": {
-            "records": []
-        }
-    }
+    mock_response = {"response": {"records": []}}
     mock_client.get_asns_for_domain.return_value = mock_response
 
     # Call the function
@@ -288,19 +267,14 @@ def test_list_domain_infratags_command_success(mock_client, mocker):
         "match": "self",
         "as_of": "2023-01-01",
         "origin_uid": "12345",
-        "use_get": "false"
+        "use_get": "false",
     }
 
     # Mock response from client
     mock_response = {
         "response": {
-            "infratags": [
-                {"domain": "example.com", "tag": "tag1"},
-                {"domain": "example.org", "tag": "tag2"}
-            ],
-            "tag_clusters": [
-                {"cluster_name": "Cluster1", "tags": ["tag1", "tag2"]}
-            ]
+            "infratags": [{"domain": "example.com", "tag": "tag1"}, {"domain": "example.org", "tag": "tag2"}],
+            "tag_clusters": [{"cluster_name": "Cluster1", "tags": ["tag1", "tag2"]}],
         }
     }
     mock_client.list_domain_infratags.return_value = mock_response
@@ -323,9 +297,7 @@ def test_list_domain_infratags_command_success(mock_client, mocker):
 
 def test_list_domain_infratags_command_no_domains(mock_client):
     # Mock arguments without domains
-    args = {
-        "use_get": "false"
-    }
+    args = {"use_get": "false"}
 
     # Call the function and expect ValueError
     with pytest.raises(ValueError, match='"domains" argument is required when using POST.'):
@@ -334,19 +306,10 @@ def test_list_domain_infratags_command_no_domains(mock_client):
 
 def test_list_domain_infratags_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domains": "example.com",
-        "cluster": "false",
-        "use_get": "true"
-    }
+    args = {"domains": "example.com", "cluster": "false", "use_get": "true"}
 
     # Mock response from client
-    mock_response = {
-        "response": {
-            "infratags": [],
-            "tag_clusters": []
-        }
-    }
+    mock_response = {"response": {"infratags": [], "tag_clusters": []}}
     mock_client.list_domain_infratags.return_value = mock_response
 
     # Call the function
@@ -362,17 +325,13 @@ def test_list_domain_infratags_command_no_data(mock_client, mocker):
 
 def test_list_domain_information_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domains": "example.com,example.org",
-        "fetch_risk_score": "true",
-        "fetch_whois_info": "true"
-    }
+    args = {"domains": "example.com,example.org", "fetch_risk_score": "true", "fetch_whois_info": "true"}
 
     # Mock response from client
     mock_response = {
         "domains": [
             {"domain": "example.com", "risk_score": 85, "whois_info": {"registrar": "Example Registrar"}},
-            {"domain": "example.org", "risk_score": 70, "whois_info": {"registrar": "Another Registrar"}}
+            {"domain": "example.org", "risk_score": 70, "whois_info": {"registrar": "Another Registrar"}},
         ]
     }
     mock_client.list_domain_information.return_value = mock_response
@@ -405,16 +364,10 @@ def test_list_domain_information_command_no_domains(mock_client, mocker):
 
 def test_list_domain_information_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domains": "example.com",
-        "fetch_risk_score": "false",
-        "fetch_whois_info": "false"
-    }
+    args = {"domains": "example.com", "fetch_risk_score": "false", "fetch_whois_info": "false"}
 
     # Mock response from client
-    mock_response = {
-        "domains": []
-    }
+    mock_response = {"domains": []}
     mock_client.list_domain_information.return_value = mock_response
 
     # Mock format_domain_information
@@ -433,11 +386,7 @@ def test_list_domain_information_command_no_data(mock_client, mocker):
 
 def test_get_ipv4_reputation_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "ipv4": "192.168.1.1",
-        "explain": "true",
-        "limit": "1"
-    }
+    args = {"ipv4": "192.168.1.1", "explain": "true", "limit": "1"}
 
     # Mock response from client
     mock_response = [
@@ -445,10 +394,7 @@ def test_get_ipv4_reputation_command_success(mock_client, mocker):
             "ip": "192.168.1.1",
             "date": "2023-01-01",
             "ip_reputation": 85,
-            "ip_reputation_explain": {
-                "ip_density": 0.5,
-                "names_num_listed": 10
-            }
+            "ip_reputation_explain": {"ip_density": 0.5, "names_num_listed": 10},
         }
     ]
     mock_client.get_ipv4_reputation.return_value = mock_response
@@ -465,10 +411,7 @@ def test_get_ipv4_reputation_command_success(mock_client, mocker):
     assert result.outputs_key_field == "ip"
     assert result.outputs["ip"] == "192.168.1.1"
     assert result.outputs["reputation_score"] == 85
-    assert result.outputs["ip_reputation_explain"] == {
-        "ip_density": 0.5,
-        "names_num_listed": 10
-    }
+    assert result.outputs["ip_reputation_explain"] == {"ip_density": 0.5, "names_num_listed": 10}
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -483,11 +426,7 @@ def test_get_ipv4_reputation_command_no_ipv4(mock_client):
 
 def test_get_ipv4_reputation_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "ipv4": "192.168.1.1",
-        "explain": "false",
-        "limit": "1"
-    }
+    args = {"ipv4": "192.168.1.1", "explain": "false", "limit": "1"}
 
     # Mock response from client
     mock_response = []
@@ -506,16 +445,12 @@ def test_get_ipv4_reputation_command_no_data(mock_client, mocker):
 
 def test_get_future_attack_indicators_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "feed_uuid": "test-feed-uuid",
-        "page_no": "1",
-        "page_size": "10"
-    }
+    args = {"feed_uuid": "test-feed-uuid", "page_no": "1", "page_size": "10"}
 
     # Mock response from client
     mock_response = [
         {"indicator": "192.168.1.1", "type": "IP", "confidence": "high"},
-        {"indicator": "example.com", "type": "Domain", "confidence": "medium"}
+        {"indicator": "example.com", "type": "Domain", "confidence": "medium"},
     ]
     mock_client.get_future_attack_indicators.return_value = mock_response
 
@@ -544,11 +479,7 @@ def test_get_future_attack_indicators_command_no_feed_uuid(mock_client):
 
 def test_get_future_attack_indicators_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "feed_uuid": "test-feed-uuid",
-        "page_no": "1",
-        "page_size": "10"
-    }
+    args = {"feed_uuid": "test-feed-uuid", "page_no": "1", "page_size": "10"}
 
     # Mock response from client
     mock_response = []
@@ -567,18 +498,16 @@ def test_get_future_attack_indicators_command_no_data(mock_client, mocker):
 
 def test_list_ip_information_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "ips": "192.168.1.1,2001:db8::ff00:42:8329"
-    }
+    args = {"ips": "192.168.1.1,2001:db8::ff00:42:8329"}
 
     # Mock validate_ips
     mocker.patch("SilentPush.validate_ips", return_value=(["192.168.1.1"], ["2001:db8::ff00:42:8329"]))
 
     # Mock gather_ip_information
-    mocker.patch("SilentPush.gather_ip_information", side_effect=[
-        [{"ip": "192.168.1.1", "info": "IPv4 info"}],
-        [{"ip": "2001:db8::ff00:42:8329", "info": "IPv6 info"}]
-    ])
+    mocker.patch(
+        "SilentPush.gather_ip_information",
+        side_effect=[[{"ip": "192.168.1.1", "info": "IPv4 info"}], [{"ip": "2001:db8::ff00:42:8329", "info": "IPv6 info"}]],
+    )
 
     # Mock tableToMarkdown
     mocker.patch("SilentPush.tableToMarkdown", return_value="Mocked Markdown Table")
@@ -590,10 +519,7 @@ def test_list_ip_information_command_success(mock_client, mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.IPInformation"
     assert result.outputs_key_field == "ip"
-    assert result.outputs == [
-        {"ip": "192.168.1.1", "info": "IPv4 info"},
-        {"ip": "2001:db8::ff00:42:8329", "info": "IPv6 info"}
-    ]
+    assert result.outputs == [{"ip": "192.168.1.1", "info": "IPv4 info"}, {"ip": "2001:db8::ff00:42:8329", "info": "IPv6 info"}]
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -614,9 +540,7 @@ def test_list_ip_information_command_no_ips(mock_client):
 
 def test_list_ip_information_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "ips": "192.168.1.1"
-    }
+    args = {"ips": "192.168.1.1"}
 
     # Mock validate_ips
     mocker.patch("SilentPush.validate_ips", return_value=(["192.168.1.1"], []))
@@ -637,11 +561,7 @@ def test_list_ip_information_command_no_data(mock_client, mocker):
 
 def test_get_ipv4_reputation_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "ipv4": "192.168.1.1",
-        "explain": "true",
-        "limit": "1"
-    }
+    args = {"ipv4": "192.168.1.1", "explain": "true", "limit": "1"}
 
     # Mock validate_ip
     mocker.patch("SilentPush.validate_ip", return_value=True)
@@ -653,10 +573,7 @@ def test_get_ipv4_reputation_command_success(mock_client, mocker):
                 "ip": "192.168.1.1",
                 "date": "2023-01-01",
                 "ip_reputation": 85,
-                "ip_reputation_explain": {
-                    "ip_density": 0.5,
-                    "names_num_listed": 10
-                }
+                "ip_reputation_explain": {"ip_density": 0.5, "names_num_listed": 10},
             }
         }
     }
@@ -674,10 +591,7 @@ def test_get_ipv4_reputation_command_success(mock_client, mocker):
     assert result.outputs_key_field == "ip"
     assert result.outputs["ip"] == "192.168.1.1"
     assert result.outputs["reputation_score"] == 85
-    assert result.outputs["ip_reputation_explain"] == {
-        "ip_density": 0.5,
-        "names_num_listed": 10
-    }
+    assert result.outputs["ip_reputation_explain"] == {"ip_density": 0.5, "names_num_listed": 10}
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -692,11 +606,7 @@ def test_get_ipv4_reputation_command_no_ipv4(mock_client):
 
 def test_get_ipv4_reputation_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "ipv4": "192.168.1.1",
-        "explain": "false",
-        "limit": "1"
-    }
+    args = {"ipv4": "192.168.1.1", "explain": "false", "limit": "1"}
 
     # Mock validate_ip
     mocker.patch("SilentPush.validate_ip", return_value=True)
@@ -718,18 +628,10 @@ def test_get_ipv4_reputation_command_no_data(mock_client, mocker):
 
 def test_get_asn_takedown_reputation_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "asn": "12345",
-        "limit": "10",
-        "explain": "true"
-    }
+    args = {"asn": "12345", "limit": "10", "explain": "true"}
 
     # Mock response from client
-    mock_response = {
-        "asn": "12345",
-        "reputation_score": 85,
-        "details": "ASN is associated with malicious activity"
-    }
+    mock_response = {"asn": "12345", "reputation_score": 85, "details": "ASN is associated with malicious activity"}
     mock_client.get_asn_takedown_reputation.return_value = mock_response
 
     # Mock tableToMarkdown
@@ -757,10 +659,7 @@ def test_get_asn_takedown_reputation_command_no_asn(mock_client):
 
 def test_get_asn_takedown_reputation_command_invalid_limit(mock_client):
     # Mock arguments with invalid limit
-    args = {
-        "asn": "12345",
-        "limit": "invalid"
-    }
+    args = {"asn": "12345", "limit": "invalid"}
 
     # Call the function and expect ValueError
     with pytest.raises(ValueError, match='"invalid" is not a valid number'):
@@ -769,11 +668,7 @@ def test_get_asn_takedown_reputation_command_invalid_limit(mock_client):
 
 def test_get_asn_takedown_reputation_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "asn": "12345",
-        "limit": "10",
-        "explain": "false"
-    }
+    args = {"asn": "12345", "limit": "10", "explain": "false"}
 
     # Mock response from client
     mock_client.get_asn_takedown_reputation.return_value = None
@@ -784,26 +679,23 @@ def test_get_asn_takedown_reputation_command_no_data(mock_client, mocker):
     # Assertions
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.ASNTakedownReputation"
-    assert result.outputs == [{'error': 'Invalid response format'}]
-    assert result.readable_output == """### Takedown Reputation for ASN 12345
+    assert result.outputs == [{"error": "Invalid response format"}]
+    assert (
+        result.readable_output
+        == """### Takedown Reputation for ASN 12345
 |error|
 |---|
 | Invalid response format |
 """
+    )
 
 
 def test_get_asn_reputation_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "asn": "12345",
-        "limit": "10",
-        "explain": "true"
-    }
+    args = {"asn": "12345", "limit": "10", "explain": "true"}
 
     # Mock response from client
-    mock_response = [
-        {"asn": "12345", "reputation_score": 85, "details": "ASN is associated with suspicious activity"}
-    ]
+    mock_response = [{"asn": "12345", "reputation_score": 85, "details": "ASN is associated with suspicious activity"}]
     mock_client.get_asn_reputation.return_value = mock_response
 
     # Mock helper functions
@@ -834,11 +726,7 @@ def test_get_asn_reputation_command_no_asn(mock_client):
 
 def test_get_asn_reputation_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "asn": "12345",
-        "limit": "10",
-        "explain": "false"
-    }
+    args = {"asn": "12345", "limit": "10", "explain": "false"}
 
     # Mock response from client
     mock_response = []
@@ -846,11 +734,12 @@ def test_get_asn_reputation_command_no_data(mock_client, mocker):
 
     # Mock helper functions
     mocker.patch("SilentPush.extract_and_sort_asn_reputation", return_value=[])
-    mocker.patch("SilentPush.generate_no_reputation_response", return_value=CommandResults(
-        readable_output="No reputation data found for ASN 12345",
-        outputs_prefix="SilentPush.ASNReputation",
-        outputs=None
-    ))
+    mocker.patch(
+        "SilentPush.generate_no_reputation_response",
+        return_value=CommandResults(
+            readable_output="No reputation data found for ASN 12345", outputs_prefix="SilentPush.ASNReputation", outputs=None
+        ),
+    )
 
     # Call the function
     result = get_asn_reputation_command(mock_client, args)
@@ -864,19 +753,10 @@ def test_get_asn_reputation_command_no_data(mock_client, mocker):
 
 def test_get_enrichment_data_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "resource": "ipv4",
-        "value": "192.168.1.1",
-        "explain": "true",
-        "scan_data": "false"
-    }
+    args = {"resource": "ipv4", "value": "192.168.1.1", "explain": "true", "scan_data": "false"}
 
     # Mock response from client
-    mock_response = {
-        "value": "192.168.1.1",
-        "reputation": "good",
-        "details": "No malicious activity detected"
-    }
+    mock_response = {"value": "192.168.1.1", "reputation": "good", "details": "No malicious activity detected"}
     mock_client.get_enrichment_data.return_value = mock_response
 
     # Mock tableToMarkdown
@@ -896,10 +776,7 @@ def test_get_enrichment_data_command_success(mock_client, mocker):
 
 def test_get_enrichment_data_command_invalid_resource(mock_client):
     # Mock arguments with invalid resource
-    args = {
-        "resource": "invalid_resource",
-        "value": "192.168.1.1"
-    }
+    args = {"resource": "invalid_resource", "value": "192.168.1.1"}
 
     # Call the function and expect ValueError
     with pytest.raises(ValueError, match="Invalid input: invalid_resource. Allowed values are"):
@@ -908,12 +785,7 @@ def test_get_enrichment_data_command_invalid_resource(mock_client):
 
 def test_get_enrichment_data_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "resource": "ipv4",
-        "value": "192.168.1.1",
-        "explain": "false",
-        "scan_data": "false"
-    }
+    args = {"resource": "ipv4", "value": "192.168.1.1", "explain": "false", "scan_data": "false"}
 
     # Mock response from client
     mock_response = {}
@@ -932,19 +804,16 @@ def test_get_enrichment_data_command_no_data(mock_client, mocker):
 
 def test_get_domain_certificates_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domain": "example.com",
-        "limit": "5"
-    }
+    args = {"domain": "example.com", "limit": "5"}
 
     # Mock response from client
     mock_response = {
         "response": {
             "domain_certificates": [
                 {"certificate_id": "123", "issuer": "Example Issuer", "valid_from": "2023-01-01", "valid_to": "2024-01-01"},
-                {"certificate_id": "456", "issuer": "Another Issuer", "valid_from": "2022-01-01", "valid_to": "2023-01-01"}
+                {"certificate_id": "456", "issuer": "Another Issuer", "valid_from": "2022-01-01", "valid_to": "2023-01-01"},
             ],
-            "metadata": {"total": 2}
+            "metadata": {"total": 2},
         }
     }
     mock_client.get_domain_certificates.return_value = mock_response
@@ -978,18 +847,10 @@ def test_get_domain_certificates_command_no_domain(mock_client):
 
 def test_get_domain_certificates_command_no_certificates(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domain": "example.com",
-        "limit": "5"
-    }
+    args = {"domain": "example.com", "limit": "5"}
 
     # Mock response from client
-    mock_response = {
-        "response": {
-            "domain_certificates": [],
-            "metadata": {"total": 0}
-        }
-    }
+    mock_response = {"response": {"domain_certificates": [], "metadata": {"total": 0}}}
     mock_client.get_domain_certificates.return_value = mock_response
 
     # Call the function
@@ -1006,17 +867,10 @@ def test_get_domain_certificates_command_no_certificates(mock_client, mocker):
 
 def test_get_domain_certificates_command_job_status(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domain": "example.com",
-        "limit": "5"
-    }
+    args = {"domain": "example.com", "limit": "5"}
 
     # Mock response from client
-    mock_response = {
-        "response": {
-            "job_status": {"status": "in_progress", "job_id": "12345"}
-        }
-    }
+    mock_response = {"response": {"job_status": {"status": "in_progress", "job_id": "12345"}}}
     mock_client.get_domain_certificates.return_value = mock_response
 
     # Mock tableToMarkdown
@@ -1036,15 +890,10 @@ def test_get_domain_certificates_command_job_status(mock_client, mocker):
 
 def test_screenshot_url_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "url": "https://example.com"
-    }
+    args = {"url": "https://example.com"}
 
     # Mock response from client
-    mock_response = {
-        "screenshot_url": "https://example.com/screenshot.jpg",
-        "status_code": 200
-    }
+    mock_response = {"screenshot_url": "https://example.com/screenshot.jpg", "status_code": 200}
     mock_client.screenshot_url.return_value = mock_response
 
     # Mock requests.get
@@ -1080,14 +929,10 @@ def test_screenshot_url_command_no_url(mock_client):
 
 def test_screenshot_url_command_error_from_api(mock_client):
     # Mock arguments
-    args = {
-        "url": "https://example.com"
-    }
+    args = {"url": "https://example.com"}
 
     # Mock response from client with error
-    mock_response = {
-        "error": "Invalid URL"
-    }
+    mock_response = {"error": "Invalid URL"}
     mock_client.screenshot_url.return_value = mock_response
 
     # Call the function and expect Exception
@@ -1097,15 +942,10 @@ def test_screenshot_url_command_error_from_api(mock_client):
 
 def test_screenshot_url_command_failed_image_download(mock_client, mocker):
     # Mock arguments
-    args = {
-        "url": "https://example.com"
-    }
+    args = {"url": "https://example.com"}
 
     # Mock response from client
-    mock_response = {
-        "screenshot_url": "https://example.com/screenshot.jpg",
-        "status_code": 200
-    }
+    mock_response = {"screenshot_url": "https://example.com/screenshot.jpg", "status_code": 200}
     mock_client.screenshot_url.return_value = mock_response
 
     # Mock requests.get with failed status code
@@ -1122,13 +962,7 @@ def test_screenshot_url_command_failed_image_download(mock_client, mocker):
 
 def test_live_url_scan_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "url": "https://example.com",
-        "platform": "Desktop",
-        "os": "Windows",
-        "browser": "Chrome",
-        "region": "US"
-    }
+    args = {"url": "https://example.com", "platform": "Desktop", "os": "Windows", "browser": "Chrome", "region": "US"}
 
     # Mock response from client
     mock_response = {
@@ -1136,7 +970,7 @@ def test_live_url_scan_command_success(mock_client, mocker):
             "scan": {
                 "status": "completed",
                 "details": "Scan completed successfully",
-                "screenshot_url": "https://example.com/screenshot.jpg"
+                "screenshot_url": "https://example.com/screenshot.jpg",
             }
         }
     }
@@ -1173,7 +1007,7 @@ def test_live_url_scan_command_invalid_parameters(mock_client, mocker):
         "platform": "invalid_platform",
         "os": "invalid_os",
         "browser": "invalid_browser",
-        "region": "invalid_region"
+        "region": "invalid_region",
     }
 
     # Mock validate_parameters to return validation errors
@@ -1186,20 +1020,10 @@ def test_live_url_scan_command_invalid_parameters(mock_client, mocker):
 
 def test_live_url_scan_command_no_scan_results(mock_client, mocker):
     # Mock arguments
-    args = {
-        "url": "https://example.com",
-        "platform": "Desktop",
-        "os": "Windows",
-        "browser": "Chrome",
-        "region": "US"
-    }
+    args = {"url": "https://example.com", "platform": "Desktop", "os": "Windows", "browser": "Chrome", "region": "US"}
 
     # Mock response from client with no scan results
-    mock_response = {
-        "response": {
-            "scan": {}
-        }
-    }
+    mock_response = {"response": {"scan": {}}}
     mock_client.live_url_scan.return_value = mock_response
 
     # Mock format_scan_results
@@ -1219,16 +1043,14 @@ def test_live_url_scan_command_no_scan_results(mock_client, mocker):
 
 def test_search_scan_data_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "query": "domain:example.com"
-    }
+    args = {"query": "domain:example.com"}
 
     # Mock response from client
     mock_response = {
         "response": {
             "scandata_raw": [
                 {"domain": "example.com", "ip": "192.168.1.1", "status": "active"},
-                {"domain": "example.org", "ip": "192.168.1.2", "status": "inactive"}
+                {"domain": "example.org", "ip": "192.168.1.2", "status": "inactive"},
             ]
         }
     }
@@ -1260,16 +1082,10 @@ def test_search_scan_data_command_no_query(mock_client):
 
 def test_search_scan_data_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {
-        "query": "domain:example.com"
-    }
+    args = {"query": "domain:example.com"}
 
     # Mock response from client with no data
-    mock_response = {
-        "response": {
-            "scandata_raw": []
-        }
-    }
+    mock_response = {"response": {"scandata_raw": []}}
     mock_client.search_scan_data.return_value = mock_response
 
     # Call the function
@@ -1284,18 +1100,12 @@ def test_search_scan_data_command_no_data(mock_client, mocker):
 
 def test_reverse_padns_lookup_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "qtype": "A",
-        "qname": "example.com"
-    }
+    args = {"qtype": "A", "qname": "example.com"}
 
     # Mock response from client
     mock_response = {
         "response": {
-            "records": [
-                {"answer": "192.168.1.1", "type": "A", "ttl": 3600},
-                {"answer": "192.168.1.2", "type": "A", "ttl": 3600}
-            ]
+            "records": [{"answer": "192.168.1.1", "type": "A", "ttl": 3600}, {"answer": "192.168.1.2", "type": "A", "ttl": 3600}]
         }
     }
     mock_client.reverse_padns_lookup.return_value = mock_response
@@ -1327,17 +1137,10 @@ def test_reverse_padns_lookup_command_no_qtype_or_qname(mock_client):
 
 def test_reverse_padns_lookup_command_no_records(mock_client, mocker):
     # Mock arguments
-    args = {
-        "qtype": "A",
-        "qname": "example.com"
-    }
+    args = {"qtype": "A", "qname": "example.com"}
 
     # Mock response from client with no records
-    mock_response = {
-        "response": {
-            "records": []
-        }
-    }
+    mock_response = {"response": {"records": []}}
     mock_client.reverse_padns_lookup.return_value = mock_response
 
     # Call the function
@@ -1355,15 +1158,10 @@ def test_reverse_padns_lookup_command_no_records(mock_client, mocker):
 
 def test_reverse_padns_lookup_command_api_error(mock_client):
     # Mock arguments
-    args = {
-        "qtype": "A",
-        "qname": "example.com"
-    }
+    args = {"qtype": "A", "qname": "example.com"}
 
     # Mock response from client with an error
-    mock_response = {
-        "error": "Invalid query"
-    }
+    mock_response = {"error": "Invalid query"}
     mock_client.reverse_padns_lookup.return_value = mock_response
 
     # Call the function and expect DemistoException
@@ -1373,19 +1171,12 @@ def test_reverse_padns_lookup_command_api_error(mock_client):
 
 def test_forward_padns_lookup_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "qtype": "A",
-        "qname": "example.com",
-        "limit": "10"
-    }
+    args = {"qtype": "A", "qname": "example.com", "limit": "10"}
 
     # Mock response from client
     mock_response = {
         "response": {
-            "records": [
-                {"answer": "192.168.1.1", "type": "A", "ttl": 3600},
-                {"answer": "192.168.1.2", "type": "A", "ttl": 3600}
-            ]
+            "records": [{"answer": "192.168.1.1", "type": "A", "ttl": 3600}, {"answer": "192.168.1.2", "type": "A", "ttl": 3600}]
         }
     }
     mock_client.forward_padns_lookup.return_value = mock_response
@@ -1417,17 +1208,10 @@ def test_forward_padns_lookup_command_no_qtype_or_qname(mock_client):
 
 def test_forward_padns_lookup_command_no_records(mock_client, mocker):
     # Mock arguments
-    args = {
-        "qtype": "A",
-        "qname": "example.com"
-    }
+    args = {"qtype": "A", "qname": "example.com"}
 
     # Mock response from client with no records
-    mock_response = {
-        "response": {
-            "records": []
-        }
-    }
+    mock_response = {"response": {"records": []}}
     mock_client.forward_padns_lookup.return_value = mock_response
 
     # Call the function
@@ -1445,15 +1229,10 @@ def test_forward_padns_lookup_command_no_records(mock_client, mocker):
 
 def test_forward_padns_lookup_command_api_error(mock_client):
     # Mock arguments
-    args = {
-        "qtype": "A",
-        "qname": "example.com"
-    }
+    args = {"qtype": "A", "qname": "example.com"}
 
     # Mock response from client with an error
-    mock_response = {
-        "error": "Invalid query"
-    }
+    mock_response = {"error": "Invalid query"}
     mock_client.forward_padns_lookup.return_value = mock_response
 
     # Call the function and expect DemistoException
@@ -1469,7 +1248,7 @@ def test_search_domains_command_success(mock_client, mocker):
         "end_date": "2023-12-31",
         "risk_score_min": "10",
         "risk_score_max": "90",
-        "limit": "5"
+        "limit": "5",
     }
 
     # Mock response from client
@@ -1477,7 +1256,7 @@ def test_search_domains_command_success(mock_client, mocker):
         "response": {
             "records": [
                 {"domain": "example.com", "risk_score": 85, "registrar": "Example Registrar"},
-                {"domain": "example.org", "risk_score": 70, "registrar": "Another Registrar"}
+                {"domain": "example.org", "risk_score": 70, "registrar": "Another Registrar"},
             ]
         }
     }
@@ -1500,17 +1279,10 @@ def test_search_domains_command_success(mock_client, mocker):
 
 def test_search_domains_command_no_records(mock_client, mocker):
     # Mock arguments
-    args = {
-        "domain": "nonexistent.com",
-        "limit": "5"
-    }
+    args = {"domain": "nonexistent.com", "limit": "5"}
 
     # Mock response from client with no records
-    mock_response = {
-        "response": {
-            "records": []
-        }
-    }
+    mock_response = {"response": {"records": []}}
     mock_client.search_domains.return_value = mock_response
 
     # Call the function
@@ -1525,10 +1297,7 @@ def test_search_domains_command_no_records(mock_client, mocker):
 
 def test_search_domains_command_invalid_arguments(mock_client):
     # Mock arguments with invalid data
-    args = {
-        "risk_score_min": "invalid",
-        "risk_score_max": "invalid"
-    }
+    args = {"risk_score_min": "invalid", "risk_score_max": "invalid"}
 
     # Call the function and expect ValueError
     with pytest.raises(ValueError):
@@ -1537,20 +1306,11 @@ def test_search_domains_command_invalid_arguments(mock_client):
 
 def test_density_lookup_command_success(mock_client, mocker):
     # Mock arguments
-    args = {
-        "qtype": "nssrv",
-        "query": "example.com",
-        "scope": "global"
-    }
+    args = {"qtype": "nssrv", "query": "example.com", "scope": "global"}
 
     # Mock response from client
     mock_response = {
-        "response": {
-            "records": [
-                {"name": "ns1.example.com", "density": 10},
-                {"name": "ns2.example.com", "density": 5}
-            ]
-        }
+        "response": {"records": [{"name": "ns1.example.com", "density": 10}, {"name": "ns2.example.com", "density": 5}]}
     }
     mock_client.density_lookup.return_value = mock_response
 
@@ -1581,17 +1341,10 @@ def test_density_lookup_command_no_qtype_or_query(mock_client):
 
 def test_density_lookup_command_no_records(mock_client, mocker):
     # Mock arguments
-    args = {
-        "qtype": "nssrv",
-        "query": "nonexistent.com"
-    }
+    args = {"qtype": "nssrv", "query": "nonexistent.com"}
 
     # Mock response from client with no records
-    mock_response = {
-        "response": {
-            "records": []
-        }
-    }
+    mock_response = {"response": {"records": []}}
     mock_client.density_lookup.return_value = mock_response
 
     # Call the function
@@ -1609,15 +1362,10 @@ def test_density_lookup_command_no_records(mock_client, mocker):
 
 def test_density_lookup_command_api_error(mock_client):
     # Mock arguments
-    args = {
-        "qtype": "nssrv",
-        "query": "example.com"
-    }
+    args = {"qtype": "nssrv", "query": "example.com"}
 
     # Mock response from client with an error
-    mock_response = {
-        "error": "Invalid query"
-    }
+    mock_response = {"error": "Invalid query"}
     mock_client.density_lookup.return_value = mock_response
 
     # Call the function and expect DemistoException
