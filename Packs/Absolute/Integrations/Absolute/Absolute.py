@@ -248,7 +248,7 @@ class ClientV3(BaseClient):
             ok_codes (tuple): An HTTP status code of success.
         """
         next_page = ""
-        # page_size = 11
+        page_size = 11
         response = self.send_request_to_api(
             "GET", url_suffix, query_string + self.add_pagination(next_page, page_size), ok_codes=tuple(ok_codes)
         )
