@@ -53,6 +53,13 @@ configuration:
   required: false
   section: Collect
   advanced: true
+- additionalinfo: When enabled, each /32 CIDR will also be returned as an IP indicator. Only relevant if the integration fetches /32 CIDR indicators.
+  display: Set /32 CIDRs as IP Indicators
+  name: cidr_32_to_ip
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 - additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the Indicator Type field.
   display: Custom Indicator Type
   name: custom_indicator_type
@@ -200,13 +207,6 @@ configuration:
   hidden:
   - xsoar_on_prem
   section: Collect
-- additionalinfo: When enabled, each /32 CIDR will also be returned as an IP indicator. Only relevant if the integration fetches /32 CIDR indicators.
-  display: Set /32 CIDRs as IP Indicators
-  name: cidr_32_to_ip
-  required: false
-  type: 8
-  section: Collect
-  advanced: true
 description: Fetches indicators from a plain text feed.
 display: Plain Text Feed
 name: Plain Text Feed
