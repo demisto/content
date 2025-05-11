@@ -756,7 +756,7 @@ def add_response_to_dataset(resp: dict, raw: dict) -> None:
     Adds response data info to specific dataset raw.
     
     This function processes response keys and adds them to the raw ad new column.
-    The "name" column is typically used for displaying "<fetched type> ID: <id>" format,
+    The "name" column is typically used for displaying "(fetched type) ID: (id)" format,
     The function renames the "name" key to "_name" column to avoid conflicts.
     
     Args:
