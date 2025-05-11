@@ -76,6 +76,9 @@ Packs/**/Scripts/**/Pipfile
 # neo4j
 neo4j-data
 
+# MicroSocks (Potentially harmful)
+Packs/Whois/Integrations/Whois/test_data/microsocks
+
 # Precommit configs
 .pre-commit
 .pre-commit-config-content.yaml
