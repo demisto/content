@@ -3,6 +3,54 @@
     "feed": false,
     "id": "CheckPointHEC Incoming Mapper",
     "mapping": {
+        "CheckPointHEC Restore Request": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"CheckPointHEC Entity": {
+					"simple": "entityId"
+				},
+				"CheckPointHEC Parent": {
+					"simple": "emailSplitParent"
+				},
+				"CheckPointHEC Request Child": {
+					"complex": {
+						"filters": [],
+						"root": "emailSplit",
+						"transformers": [
+							{
+								"args": {
+									"else": {
+										"isContext": false,
+										"value": {
+											"simple": "false"
+										}
+									},
+									"equals": {
+										"isContext": false,
+										"value": {
+											"simple": "copy"
+										}
+									},
+									"then": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "If-Then-Else"
+							}
+						]
+					}
+				},
+				"CheckPointHEC Request Comment": {
+					"simple": "restoreCommentary"
+				},
+				"CheckPointHEC Request Time": {
+					"simple": "restoreRequestTime"
+				}
+			}
+		},
         "CheckPointHEC Security Event": {
             "dontMapEventToLabels": true,
             "internalMapping": {
