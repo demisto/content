@@ -6,6 +6,7 @@ from typing import Any
 import csv
 import io
 import requests
+import signal
 
 from urllib3 import disable_warnings
 
@@ -33,7 +34,7 @@ ASSETS_FETCH_FROM = "90 days"
 HOST_LIMIT = 1000
 ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
-HOST_LIST_DETECTIONS_THREAD_TIME_OUT = 150
+HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT = 150
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
 
@@ -3017,7 +3018,7 @@ def get_client_host_list_detection_with_timeout(
     since_datetime: str,
     next_page: str | None,
     limit: int,
-    thread_timeout: int = HOST_LIST_DETECTIONS_THREAD_TIME_OUT,
+    execution_timeout: int = HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT,
 ) -> tuple[str, bool]:
     """Starts a timed thread that runs `Client.get_host_list_detection`.
     If the thread execution time is exceeded, it returns an empty API response and `set_new_limit` = True.
@@ -3027,13 +3028,11 @@ def get_client_host_list_detection_with_timeout(
         since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
         next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
         limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
-        thread_timeout (int): Maximum number of seconds to wait for the `Client.get_host_list_detection` to finish execution.
+        execution_timeout (int): Maximum number of seconds to wait for the `Client.get_host_list_detection` to finish execution.
 
     Returns:
         tuple[str, bool]: A tuple of raw API response body string and set_new_limit boolean (to make next API call smaller).
     """
-    import signal
-
     demisto.debug("Starting to get host list dectections via timed alarm signal.")
 
     class SignalTimeoutError(BaseException):
@@ -3043,15 +3042,15 @@ def get_client_host_list_detection_with_timeout(
         raise SignalTimeoutError
 
     signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(thread_timeout)
+    signal.alarm(execution_timeout)
 
     try:
-        demisto.debug(f"Running host list dectections with timeout: {thread_timeout}.")
+        demisto.debug(f"Running host list dectections with timeout: {execution_timeout}.")
         raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
         demisto.debug("Finished host list dectections.")
 
     except SignalTimeoutError:
-        demisto.debug(f"Exceeded host list dectections timeout: {thread_timeout}. Setting new limit.")
+        demisto.debug(f"Exceeded host list dectections timeout: {execution_timeout}. Setting new limit.")
         raw_response, set_new_limit = "", True  # empty response and set_new_limit = True due to timeout
 
     finally:
@@ -3079,9 +3078,9 @@ def get_host_list_detections_events(client, since_datetime, next_page="", limit=
     demisto.debug("Pulling host list detections")
     assets: list = []
 
-    demisto.debug(f"Starting to get client host list dections with thread timeout: {HOST_LIST_DETECTIONS_THREAD_TIME_OUT}.")
+    demisto.debug(f"Starting to get client host list dections with thread timeout: {HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT}.")
     host_list_detections, set_new_limit = get_client_host_list_detection_with_timeout(client, since_datetime, next_page, limit)
-    demisto.debug(f"Finished getting client host list dections with thread timeout: {HOST_LIST_DETECTIONS_THREAD_TIME_OUT}.")
+    demisto.debug(f"Finished getting client host list dections with thread timeout: {HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT}.")
 
     if not set_new_limit:
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)

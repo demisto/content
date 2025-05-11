@@ -1925,6 +1925,7 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
 @pytest.mark.parametrize(
     "sleep_time, expected_response, expected_set_new_limit",
     [
@@ -1952,7 +1953,7 @@ def test_get_client_host_list_detection_with_timeout(
     """
     from Qualysv2 import get_client_host_list_detection_with_timeout
 
-    thread_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
 
     mocker.patch.object(
         client,
@@ -1965,7 +1966,7 @@ def test_get_client_host_list_detection_with_timeout(
         since_datetime="2025-01-25",
         next_page="",
         limit=HOST_LIMIT,
-        thread_timeout=thread_timeout,
+        execution_timeout=execution_timeout,
     )
 
     assert raw_response == expected_response
