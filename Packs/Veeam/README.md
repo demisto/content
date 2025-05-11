@@ -21,11 +21,11 @@ The content pack includes:
   - Start Instance VM Recovery automatically
   - Resolve alarms triggered by Veeam ONE
 
-# Documentation
+## Documentation
 
 [Veeam Helpcenter User Guide](https://helpcenter.veeam.com/docs/security_plugins_xsoar/guide/)
 
-# Screenshots
+## Screenshots
 
 ![The XSOAR Dashboard](./doc_files/Veeam_XSOAR_Dashboard.png)
 
@@ -58,7 +58,7 @@ Using the data available in Palo Alto Networks Cortex XSIAM you can leverage bui
 - Resolve alarms triggered by Veeam ONE
 
 
-# Documentation
+## Documentation
 
 [Veeam Helpcenter User Guide for XSIAM Monitoring](https://helpcenter.veeam.com/docs/security_plugins_xsiam/guide/)
 
@@ -66,7 +66,7 @@ The documentation also includes examples of correlation rules for Veeam security
 
 [Veeam Helpcenter User Guide for XSOAR Automation](https://helpcenter.veeam.com/docs/security_plugins_xsiam/guide/)
 
-# Screenshots
+## Screenshots
 
 ![The Security Dashboard](./doc_files/Veeam_Security_Activities_Dashboard_image.png)
 

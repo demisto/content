@@ -14,6 +14,7 @@ from FeedNVDv2 import (
     get_cvss_version_and_score,
     parse_cpe_command,
     retrieve_cves,
+    LATEST_CVSS_VERSION_SEVERITY
 )
 
 BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
@@ -27,7 +28,7 @@ client = Client(
     has_kev=False,
     feed_tags=[],
     first_fetch="1 day",
-    cvssv3severity=[],
+    cvss_severity=[],
     keyword_search="",
 )
 
@@ -71,10 +72,12 @@ def test_calculate_dbotscore(cvss_score, expected_result):
 @pytest.mark.parametrize(
     "input_metrics, expected_version, expected_score",
     [
+        ({"cvssMetricV40": [{"cvssData": {"version": "4.0", "baseScore": 6.0}}]}, "4.0", 6.0),
         ({"cvssMetricV31": [{"cvssData": {"version": "3.1", "baseScore": 7.5}}]}, "3.1", 7.5),
         ({"cvssMetricV30": [{"cvssData": {"version": "3.0", "baseScore": 8.0}}]}, "3.0", 8.0),
         ({"cvssMetricV2": [{"cvssData": {"version": "2.0", "baseScore": 5.0}}]}, "2.0", 5.0),
         ({}, "", ""),
+        ({"cvssMetricV40": [{}]}, "", ""),
         ({"cvssMetricV31": [{}]}, "", ""),
         ({"cvssMetricV30": [{}]}, "", ""),
         ({"cvssMetricV2": [{}]}, "", ""),
@@ -133,13 +136,14 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
 @pytest.mark.parametrize(
     "input_params, expected_param_string",
     [
-        ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
-        ({"noRejected": "None"}, "noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
-        ({"hasKev": "True"}, "hasKev&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
+        ({"param1": "value1", "noRejected": "None"},
+         f"param1=value1&noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
+        ({"noRejected": "None"}, f"noRejected&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
+        ({"hasKev": "True"}, f"hasKev&{LATEST_CVSS_VERSION_SEVERITY}=LOW&{LATEST_CVSS_VERSION_SEVERITY}=MEDIUM"),
     ],
 )
 def test_build_param_string(input_params, expected_param_string):
-    client.cvssv3severity = ["LOW", "MEDIUM"]
+    client.cvss_severity = ["LOW", "MEDIUM"]
     result = client.build_param_string(input_params)
     assert result == expected_param_string
 
