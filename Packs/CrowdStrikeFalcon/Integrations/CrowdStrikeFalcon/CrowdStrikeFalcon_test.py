@@ -7691,3 +7691,4 @@ def test_fetch_events_reads_last_run_indexes_correctly(mocker):
 
     # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
     assert last_run_identifiers_result == last_run_identifiers
+    
