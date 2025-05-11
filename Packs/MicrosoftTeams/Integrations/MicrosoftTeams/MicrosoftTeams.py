@@ -2583,13 +2583,14 @@ def filter_invalid_teams(teams: list[dict], team_name: str) -> list[dict]:
         demisto.debug(f"aad_ids of discovered valid teams: {valid_team_aad_ids}")
 
         # Keep only teams with different team names, or ones with ids found in the query
-        valid_teams = [team for team in teams if (team.get("team_name") != team_name or
-                                                  team.get("team_aad_id") in valid_team_aad_ids)]
-        if len(valid_teams) < len(teams):
-            filtered_ids = [team.get("team_aad_id", "") for team in teams if team not in valid_teams]
+        invalid_teams = [team for team in teams if (team.get("team_name") == team_name and
+                                                    team.get("team_aad_id") not in valid_team_aad_ids)]
+        if invalid_teams:
+            filtered_ids = [team.get("team_aad_id", "") for team in invalid_teams]
             demisto.debug(f"Invalid team aad_ids filtered: {filtered_ids}")
+            teams = [team for team in teams if team not in invalid_teams]
 
-        return valid_teams
+        return teams
 
     except Exception as e:
         demisto.debug(f"Got error while trying to update the team cache: {e}")
@@ -2666,19 +2667,19 @@ def team_renamed_handler(integration_context: dict, channel_data: dict):
     :param channel_data: Channel data dict containing relevant data of the event.
     :return: None
     """
-    team = channel_data.get("team", {})
-    team_aad_id = team.get("aadGroupId")
-    team_new_name = team.get("name")
-    team_id = team.get("id", "")
-    demisto.debug(f"Renamed team aad_id is {team_aad_id}")
+    renamed_team = channel_data.get("team", {})
+    renamed_team_aad_id = renamed_team.get("aadGroupId")
+    team_new_name = renamed_team.get("name")
+    renamed_team_id = renamed_team.get("id", "")
+    demisto.debug(f"Renamed team aad_id is {renamed_team_aad_id}")
 
-    teams: list = json.loads(integration_context.get("teams", "[]"))
+    context_teams: list = json.loads(integration_context.get("teams", "[]"))
     service_url: str = integration_context.get("service_url", "")
 
     found_team: bool = False
     found_duplicate_name: bool = False
-    for team in teams:
-        if team.get("team_aad_id", "") == team_aad_id:
+    for team in context_teams:
+        if team.get("team_aad_id", "") == renamed_team_aad_id:
             team["team_name"] = team_new_name
             found_team = True
             demisto.info(f"Team {team['team_name']} has been renamed to {team_new_name}")
@@ -2687,13 +2688,15 @@ def team_renamed_handler(integration_context: dict, channel_data: dict):
             found_duplicate_name = True
 
     if found_duplicate_name:
-        teams = filter_invalid_teams(teams, team_new_name)
+        context_teams = filter_invalid_teams(context_teams, team_new_name)
 
     if not found_team and service_url:
-        team_members: list = get_team_members(service_url, team_id)
-        teams.append({"team_aad_id": team_aad_id, "team_id": team_id, "team_name": team_new_name, "team_members": team_members})
+        demisto.debug("Did not find the team in context, creating a new cache entry")
+        team_members: list = get_team_members(service_url, renamed_team_id)
+        context_teams.append({"team_aad_id": renamed_team_aad_id, "team_id": renamed_team_id,
+                              "team_name": team_new_name, "team_members": team_members})
 
-    integration_context["teams"] = json.dumps(teams)
+    integration_context["teams"] = json.dumps(context_teams)
     set_integration_context(integration_context)
 
 def team_deleted_handler(integration_context: dict, channel_data: dict):
