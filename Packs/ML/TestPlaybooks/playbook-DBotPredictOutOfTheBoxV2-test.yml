@@ -510,7 +510,7 @@ tasks:
       modelName:
         simple: demisto_out_of_the_box_model_v2
       query:
-        simple: name:ootb_1|ootb_2
+        simple: (name:ootb_1 or name:ootb_2)
       tagField:
         simple: name
     separatecontext: false
