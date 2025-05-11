@@ -7663,3 +7663,31 @@ def test_enrich_groups_no_resources(mocker):
     mocker.patch.object(CrowdStrikeFalcon, "http_request", return_value={"resources": None})
 
     assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}
+    
+
+def test_fetch_events_reads_last_run_indexes_correctly(mocker):
+    """
+    Ensure that fetch_events correctly accesses each index of last_run based on its data type.
+
+    Each index in last_run is mocked with the appropriate identifiers.
+    The test verifies that these identifiers appear in the same order in the last_run output,
+    indicating correct index usage within the function.
+    """
+    
+    last_run_identifiers = [
+        "Detection",
+        "Incident",
+        "IDP",
+        "Mobile",
+        "ODS",
+        "OFP"
+        ]
+        
+    mocker.patch("CrowdStrikeFalcon.demisto.getLastRun", return_value=last_run_identifiers)
+    mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
+
+    from CrowdStrikeFalcon import fetch_events
+    last_run_identifiers_result, _ = fetch_events()
+
+    # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
+    assert last_run_identifiers_result == last_run_identifiers
