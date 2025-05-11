@@ -48,10 +48,9 @@ class ServiceNowClient(BaseClient):
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
-    
-    def set_jwt(self, jwt:str):
+
+    def set_jwt(self, jwt: str):
         self.jwt = jwt
-        
 
     def http_request(
         self,
@@ -173,9 +172,9 @@ class ServiceNowClient(BaseClient):
             try:
                 headers = {"Content-Type": "application/x-www-form-urlencoded"}
                 if self.jwt:
-                    data['assertion'] = self.jwt
-                    data['grant_type'] = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                    
+                    data["assertion"] = self.jwt
+                    data["grant_type"] = "urn:ietf:params:oauth:grant-type:jwt-bearer"
+
                 res = super()._http_request(
                     method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data, ok_codes=ok_codes
                 )
