@@ -506,7 +506,7 @@ ENRICHMENT_OUTPUTS = [
         description="The number of distinct IP groups (e.g., IPs belonging to different ranges or providers).",
     ),
     OutputArgument(
-        name="ns_reputation.is_expired", output_type=bool, description="Indicates if the domain’s nameserver is expired."
+        name="ns_reputation.is_expired", output_type=bool, description="Indicates if the domain`s nameserver is expired."
     ),
     OutputArgument(
         name="ns_reputation.is_parked",
@@ -516,13 +516,13 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="ns_reputation.is_sinkholed",
         output_type=bool,
-        description="The domain is not sinkholed (not forcibly redirected to a security researcher’s trap).",
+        description="The domain is not sinkholed (not forcibly redirected to a security researcher`s trap).",
     ),
     OutputArgument(
         name="ns_reputation.ns_reputation_max", output_type=int, description="Maximum reputation score for nameservers."
     ),
     OutputArgument(
-        name="ns_reputation.ns_reputation_score", output_type=int, description="Reputation score of the domain’s nameservers."
+        name="ns_reputation.ns_reputation_score", output_type=int, description="Reputation score of the domain`s nameservers."
     ),
     OutputArgument(name="ns_reputation.ns_srv_reputation.domain", output_type=str, description="The nameservers of domain."),
     OutputArgument(name="ns_reputation.ns_srv_reputation.ns_server", output_type=str, description="Provided nameserver."),
