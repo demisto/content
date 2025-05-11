@@ -676,7 +676,7 @@ ENRICHMENT_OUTPUTS = [
         name="ip2asn.benign_info.known_benign",
         output_type=bool,
         description="Indicates whether this IP/ASN is explicitly known to be safe "
-                    "(e.g., a reputable cloud provider or public service)",
+        "(e.g., a reputable cloud provider or public service)",
     ),
     OutputArgument(
         name="ip2asn.benign_info.tags",
@@ -1037,7 +1037,7 @@ IPV4_REPUTATION_OUTPUTS = [
         name="ip_reputation_explain.ip_density",
         output_type=int,
         description="The number of domain names or services associated with this IP. "
-                    "A higher value may indicate shared hosting or potential abuse.",
+        "A higher value may indicate shared hosting or potential abuse.",
     ),
     OutputArgument(
         name="ip_reputation_explain.names_num_listed",
@@ -1649,7 +1649,7 @@ class Client(BaseClient):
 
     def _http_request(
         self, method: str, url_suffix: str = "", params: dict = None, data: dict = None, url: str = None, **kwargs
-    ) -> Any:
+    ) -> Any:  # type ignore
         """
         Perform an HTTP request to the SilentPush API.
 
@@ -2361,7 +2361,7 @@ def get_job_status_command(client: Client, args: dict) -> CommandResults:
     outputs_prefix="SilentPush.SubnetReputation",
     outputs_list=NAMESERVER_REPUTATION_OUTPUTS,
     description="This command retrieve historical reputation data for a specified nameserver, "
-                "including reputation scores and optional detailed calculation information.",
+    "including reputation scores and optional detailed calculation information.",
 )
 def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResults:
     """
@@ -2498,7 +2498,7 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
     outputs_prefix="SilentPush.DensityLookup",
     outputs_list=DENSITY_LOOKUP_OUTPUTS,
     description="This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density "
-                "information.",
+    "information.",
 )
 def density_lookup_command(client: Client, args: dict) -> CommandResults:
     """
@@ -2690,7 +2690,7 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
     outputs_prefix="SilentPush.Domain",
     outputs_list=LIST_DOMAIN_OUTPUTS,
     description="This command get domain information along with Silent Push risk score "
-                "and live whois information for multiple domains.",
+    "and live whois information for multiple domains.",
 )
 def list_domain_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
