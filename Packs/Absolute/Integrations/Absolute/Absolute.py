@@ -249,7 +249,7 @@ class ClientV3(BaseClient):
             ok_codes (tuple): An HTTP status code of success.
         """
         next_page = ""
-        # page_size = 1
+        page_size = 1
         demisto.info(f"[test] {query_string=}")
         next_page_addition = self.add_pagination(next_page, page_size)
         demisto.info(f"[test] {next_page_addition=}")
@@ -267,6 +267,7 @@ class ClientV3(BaseClient):
             )
             demisto.info(f"[test] response second execution with {response=} and {page_size=}")
             data += response.get("data")
+            break
         return data
 
     def api_request_absolute(
