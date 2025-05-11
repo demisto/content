@@ -5,9 +5,12 @@ from collections.abc import Callable
 from copy import deepcopy
 from mimetypes import guess_type
 
+from dataclasses import asdict, dataclass
+
 import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
+from Packs.Jira.Integrations.JiraV3.CommonServerPython import CommandResults, GetRemoteDataResponse
 
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
@@ -61,6 +64,48 @@ V2_ARGS_TO_V3: Dict[str, str] = {
     "applicationName": "application_name",
     "field": "fields",
 }
+
+
+@dataclass
+class QuickActionPreview:
+    """
+        A container class for storing quick action data previews.
+        This class is intended to be populated by commands like `!get-remote-data-preview`
+        and placed directly into the root context under `QuickActionPreview`.
+
+        Fields:
+            id (Optional[str]): The ID of the ticket.
+            title (Optional[str]): The title or summary of the ticket or action.
+            description (Optional[str]): A brief description or details about the action.
+            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+            assignee (Optional[str]): The user or entity assigned to the action.
+            creation_date (Optional[str]): The date and time when the item was created.
+            severity (Optional[str]): Indicates the priority or severity level.
+
+        TODO: We will need this class in common server python,
+        but due to known performance issues, we are keeping it here for now.
+        """
+    id: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    assignee: Optional[str] = None
+    creation_date: Optional[str] = None
+    severity: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+        Returns:
+            dict: Dictionary representation of the QuickActionPreview.
+        """
+        return asdict(self)
 
 
 class JiraBaseClient(BaseClient, metaclass=ABCMeta):
@@ -1233,6 +1278,12 @@ class JiraIssueFieldsParser:
     The issue_data: Dict[str, Any] is the full issue object that is returned from the API, which holds all the data about the
     issue.
     """
+
+    @staticmethod
+    def get_value_from_context(context_method, issue_data: Dict[str, Any]) -> Any:
+        """Extracts the value from the result of a context method."""
+        context_dict = context_method(issue_data)
+        return next(iter(context_dict.values()))
 
     @staticmethod
     def get_id_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
@@ -4097,7 +4148,7 @@ def get_remote_data_command(
     fetch_attachments: bool,
     fetch_comments: bool,
     get_preview: bool = False
-) -> GetRemoteDataResponse:
+) -> CommandResults | GetRemoteDataResponse:
     """Mirror-in data to incident from Jira into XSOAR 'JiraV3 Incident' incident.
 
     NOTE: Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
@@ -4158,7 +4209,27 @@ def get_remote_data_command(
             demisto.debug("No new entries to update.")
 
         if get_preview:
-            ...
+            context_methods = {
+                "id": JiraIssueFieldsParser.get_id_context,
+                "title": JiraIssueFieldsParser.get_description_context,
+                "description": JiraIssueFieldsParser.get_summary_context,
+                "status": JiraIssueFieldsParser.get_status_context,
+                "assignee": JiraIssueFieldsParser.get_assignee_context,
+                "creation_date": JiraIssueFieldsParser.get_created_date_context,
+                "severity": JiraIssueFieldsParser.get_priority_context,
+            }
+
+            qa_preview_data = {
+                attr: JiraIssueFieldsParser.get_value_from_context(method, issue)
+                for attr, method in context_methods.items()
+            }
+
+            qa_preview = QuickActionPreview(**qa_preview_data)
+            return CommandResults(
+                outputs_prefix="QuickActionPreview",
+                outputs=qa_preview.to_context(),
+                outputs_key_field="id"
+            )
         else:
             return GetRemoteDataResponse(updated_incident, parsed_entries)
 
@@ -4709,7 +4780,7 @@ def main():  # pragma: no cover
                 ),
             )
 
-        elif command == "get-remote-data" or "get-remote-data-preview":
+        elif command in ["get-remote-data", "get-remote-data-preview"]:
             get_preview = True if command == "get-remote-data-preview" else False
             return_results(
                 get_remote_data_command(

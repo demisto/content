@@ -2352,6 +2352,47 @@ class TestJiraGetRemoteData:
         assert remote_data_response.entries == expected_parsed_entries
 
 
+    def test_get_remote_data_preview_is_returned(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command
+        Then
+            - Validate that correct entries are indeed returned
+        """
+        from JiraV3 import get_remote_data_command
+
+        client = jira_base_client_mock()
+        issue_response = {"id": "1234", "fields": {"summary": "dummy summary", "updated": "2023-01-01"}}
+        mocker.patch.object(client, "get_issue", return_value=issue_response)
+        mocker.patch("JiraV3.get_cached_user_timezone", return_value="Asia/Jerusalem")
+        close_reason = 'Issue was marked as "Resolved", or status was changed to "Done"'
+        expected_parsed_entries = [
+            {
+                "Type": 1,
+                "Contents": "Comment 3\nJira Author: None",
+                "ContentsFormat": "text",
+                "Tags": ["comment from jira"],
+                "Note": True,
+            },
+            {"File": "dummy_file_name", "FileID": "id1", "Tags": ["attachment from jira"]},
+            {"Type": 1, "Contents": {"dbotIncidentClose": True, "closeReason": close_reason}, "ContentsFormat": "json"},
+        ]
+        mocker.patch("JiraV3.get_updated_remote_data", return_value=expected_parsed_entries)
+        remote_data_response = get_remote_data_command(
+            client=client,
+            args={"id": "1234", "lastUpdate": "2023-01-01"},
+            attachment_tag_from_jira="",
+            comment_tag_from_jira="",
+            mirror_resolved_issue=True,
+            fetch_comments=True,
+            fetch_attachments=True,
+            get_preview=True
+        )
+        assert remote_data_response.to_context() == expected_parsed_entries
+
+
 class TestJiraFetchIncidents:
     FETCH_INCIDENTS_QUERY_CASES = [
         (
