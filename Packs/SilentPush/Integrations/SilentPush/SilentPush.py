@@ -1645,7 +1645,9 @@ class Client(BaseClient):
 
         self._headers = {"X-API-Key": api_key, "Content-Type": "application/json"}
 
-    def _http_request(self, method: str, url_suffix: str = "", params: dict = None, data: dict = None, url: str = None) -> Any:
+    def _http_request(
+        self, method: str, url_suffix: str = "", params: dict = None, data: dict = None, url: str = None, **kwargs
+    ) -> Any:
         """
         Perform an HTTP request to the SilentPush API.
 
@@ -1694,7 +1696,7 @@ class Client(BaseClient):
             ValueError: If max_wait is invalid.
         """
         url_suffix = f"{JOB_STATUS}/{job_id}"
-        max_wait = arg_to_number(params.get("max_wait"))
+        max_wait = arg_to_number(params.get("max_wait", 20))
 
         if max_wait is not None and not (0 <= max_wait <= 25):
             raise ValueError("max_wait must be an integer between 0 and 25")
@@ -1784,7 +1786,7 @@ class Client(BaseClient):
         end_date: str | None = None,
         risk_score_min: int | None = None,
         risk_score_max: int | None = None,
-        limit: int = 100,
+        limit: int | None = 100,
         domain_regex: str | None = None,
         name_server: str | None = None,
         asnum: int | None = None,
@@ -2893,7 +2895,7 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: The results of the enrichment data retrieval, including readable output and raw response.
     """
-    resource = args.get("resource").lower()
+    resource = args.get("resource", "").lower()
     value = args.get("value")
     explain = argToBoolean(args.get("explain", False))
     scan_data = argToBoolean(args.get("scan_data", False))
@@ -3500,10 +3502,10 @@ def live_url_scan_command(client: Client, args: dict) -> CommandResults:
     if not url:
         raise DemistoException("URL is a required parameter")
 
-    platform = args.get("platform")
-    os = args.get("os")
-    browser = args.get("browser")
-    region = args.get("region")
+    platform = args.get("platform", "")
+    os = args.get("os", "")
+    browser = args.get("browser", "")
+    region = args.get("region", "")
 
     # Validate platform, os, browser, and region
     validation_errors = validate_parameters(platform, os, browser, region)
