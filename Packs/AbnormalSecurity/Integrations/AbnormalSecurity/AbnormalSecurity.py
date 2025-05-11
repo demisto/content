@@ -922,7 +922,7 @@ def fetch_incidents(
 ):
     """
     Fetch incidents from various sources (threats, abuse campaigns, and account takeovers).
-
+# com
     Parameters:
     - client (Client): Client object to interact with the API.
     - last_run (Dict[str, Any]): Dictionary containing details about the last time incidents were fetched.
