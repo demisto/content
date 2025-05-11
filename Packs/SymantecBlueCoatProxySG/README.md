@@ -9,7 +9,7 @@ Go to the ProxySG software and open the "Configuration" tab [Product Doc](https:
 ![Server Screenshot](doc_files/SymantecBlueCoatProxySG_image3.png)
 
 ```bash
-   date time time-taken c-ip sc-status s-action sc-bytes cs-bytes cs-method cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query cs-username cs-auth-group s-supplier-name rs(Content-Type) cs(Referer) cs(User-Agent) sc-filter-result cs-categories x-virus-id s-ip
+   date time time-taken c-ip sc-status s-action sc-bytes cs-bytes cs-method cs-uri-scheme cs-host cs-uri-port cs-uri-path cs-uri-query cs-username cs-auth-group s-supplier-name rs(Content-Type) cs(Referer) cs(User-Agent) sc-filter-result cs-categories x-virus-id s-ip r-ip
 ```
 2.  Click the **Upload Client** tab and configure your log as follows:
 
