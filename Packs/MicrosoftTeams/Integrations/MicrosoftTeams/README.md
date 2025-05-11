@@ -183,7 +183,7 @@ Perform the following steps to add the needed permissions:
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-   **Application permissions required to use all credential flow supported commands:**
+    **Application permissions required to use all credential flow supported commands:**
 
     - `User.Read.All`
     - `GroupMember.Read.All`
@@ -210,7 +210,7 @@ Perform the following steps to add the needed permissions:
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions** > **Add a permission** > **Microsoft Graph** > **Delegated permissions**.
 4. For each permission, search for the permission, select the checkbox, and click **Add permissions**.
-   **Delegated permissions required to use all auth code flow supported commands:**
+    **Delegated permissions required to use all auth code flow supported commands:**
 
     - `User.Read.All`
     - `GroupMember.Read.All`
@@ -218,6 +218,7 @@ Perform the following steps to add the needed permissions:
     - `ChannelMember.ReadWrite.All`
     - `Channel.Create`
     - `Channel.Delete.All`
+    - `ChannelMessage.Send`
     - `OnlineMeetings.ReadWrite.All`
     - `Chat.ReadWrite`
     - `AppCatalog.Read.All`
@@ -373,6 +374,8 @@ and picture to match the bot will make it appear to be from the same source.
 `GroupMember.Read.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
 
 `Channel.ReadBasic.All` - *Application (Client Credentials) / Delegated (Authorization Code)*
+
+`ChannelMessage.Send` - *Delegated (Authorization Code) - Only needed for sending replies to messages*
 
 ##### Input
 
@@ -826,6 +829,7 @@ Notes:
 - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
 - This command will fail if the consent user is not a member of the destination chat.
 - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
+- This command can only send messages from type 'message'
 
 ##### Base Command
 
@@ -852,7 +856,6 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 | chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. |  Required     |
 | content           | The content of the chat message.                                                 | Required     | 
 | content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     | 
-| message_type      | The type of chat message. Default is message.                                    | Optional     | 
 
 
 #### Context Output
@@ -1174,7 +1177,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
->1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+>1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 >You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
@@ -1294,6 +1297,7 @@ Message was sent successfully.
 
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
+For Microsoft Teams integration commands to be sent to Cortex XSIAM, you need to have role/access to Cortex XSIAM and your Teams email needs to match the email/user in Cortex XSIAM. External users can create incidents if the flag is set in the integration, but the rest of the commands require a valid Cortex XSIAM user and role.
 
 ## Direct messages commands
 You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
