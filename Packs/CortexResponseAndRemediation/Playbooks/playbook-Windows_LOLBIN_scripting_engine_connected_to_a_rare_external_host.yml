@@ -1,0 +1,1237 @@
+id: Windows LOLBIN scripting engine connected to a rare external host
+version: -1
+name: Windows LOLBIN scripting engine connected to a rare external host
+description: |-
+  This playbook handles "Windows LOLBIN scripting engine connected to a rare external host" alerts.
+
+  Playbook Stages:
+
+  Analysis:
+  - Retrieve all alert-related alerts to consolidate context for further analysis.
+  - Analyze the command line used.
+
+
+  Investigation:
+  - Check the maliciousness of any URLs found in the command line.
+  - Check related alerts for known threats.
+
+  Remediation:
+  - Isolate the affected endpoint if necessary (with analyst approval).
+  - Block the malicious external host (with analyst approval).
+  - Terminate the suspicious causality chain.
+
+tags:
+- T1071 - Application Layer Protocol
+- T1059 - Command and Scripting Interpreter
+- TA0011 - Command and Control
+- TA0002 - Execution
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 95bfd32e-7cb1-4baf-88e1-dd12a3f2d6b4
+    type: start
+    task:
+      id: 95bfd32e-7cb1-4baf-88e1-dd12a3f2d6b4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d64dad13-a886-4db1-8b28-2ca0f60c59eb
+    type: title
+    task:
+      id: d64dad13-a886-4db1-8b28-2ca0f60c59eb
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "121"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 65b9abc6-c0e1-4d10-8b22-fcafc48cd70b
+    type: title
+    task:
+      id: 65b9abc6-c0e1-4d10-8b22-fcafc48cd70b
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "116"
+      - "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: e1c7754b-e72c-463d-873d-a0e28d82316a
+    type: title
+    task:
+      id: e1c7754b-e72c-463d-873d-a0e28d82316a
+      version: -1
+      name: Block URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 576,
+          "y": 1636
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 73701a47-784b-4530-86e5-ba5d9abd9ba4
+    type: condition
+    task:
+      id: 73701a47-784b-4530-86e5-ba5d9abd9ba4
+      version: -1
+      name: Check for URLs to block
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "125"
+      "yes":
+      - "139"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: badUrls
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 576,
+          "y": 1828
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: f485f4fb-cbf9-46af-8fd0-51912d31e54b
+    type: title
+    task:
+      id: f485f4fb-cbf9-46af-8fd0-51912d31e54b
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+      - "136"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 06f9e291-88a6-4567-8135-c8934bf56c05
+    type: regular
+    task:
+      id: 06f9e291-88a6-4567-8135-c8934bf56c05
+      version: -1
+      name: Get related alerts
+      description: This task searches for Cortex XSIAM related alerts to the current alert.
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 5dc51d1b-4c76-4068-89a2-5dfe99aca84f
+    type: condition
+    task:
+      id: 5dc51d1b-4c76-4068-89a2-5dfe99aca84f
+      version: -1
+      name: Check if the causality was blocked by the agent
+      description: Check the alert's alerts for an alert that blocked the causality using the agent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "123"
+      Blocked:
+      - "128"
+    separatecontext: false
+    conditions:
+    - label: Blocked
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.CustomFields.cid
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.cid
+                    ignorecase: true
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 33,
+          "y": 1828
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: d9e5b3d2-766d-40e2-bd64-a6217537a8c4
+    type: condition
+    task:
+      id: d9e5b3d2-766d-40e2-bd64-a6217537a8c4
+      version: -1
+      name: Check known related BTP alerts, bad URLs, or suspicious commands found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "137"
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: WildFire Malware
+        - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Local Analysis Malware
+        - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Powershell Activity
+        - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Script Activity
+        - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Script Engine Activity
+        - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Staged Malware Activity
+        - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious .NET Behavior
+        - operator: containsGeneral
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+          right:
+            value:
+              simple: Malware Activity
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "40"
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: badUrls
+            iscontext: true
+        - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: url
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 3f67a023-0cc2-420b-8cf0-9d9c5c4d4ff0
+    type: regular
+    task:
+      id: 3f67a023-0cc2-420b-8cf0-9d9c5c4d4ff0
+      version: -1
+      name: Analyze command line
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      command_line:
+        simple: ${alert.initiatorcmd}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 576,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 36903aec-5044-483f-8a12-d9baaeed1074
+    type: condition
+    task:
+      id: 36903aec-5044-483f-8a12-d9baaeed1074
+      version: -1
+      name: Check if any URLS were found in the command line
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "118"
+      "yes":
+      - "122"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CommandLineAnalysis.analysis.original.indicators.URL}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 669
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 54a65a72-5860-45f3-8938-49926b5f656f
+    type: regular
+    task:
+      id: 54a65a72-5860-45f3-8938-49926b5f656f
+      version: -1
+      name: Enrich URLs
+      description: Gets a URL category from URL filtering.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      url:
+        simple: ${CommandLineAnalysis.analysis.original.indicators.URL}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 576,
+          "y": 812
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: b45f00bc-31d4-4390-8360-b7b4fb3651f6
+    type: regular
+    task:
+      id: b45f00bc-31d4-4390-8360-b7b4fb3651f6
+      version: -1
+      name: Terminate Causality
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "124"
+      '#none#':
+      - "128"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${Core.OriginalAlert.event.action_process_instance_id}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -239,
+          "y": 2028
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 59dc9219-bafc-4b81-8d72-e9fc6adb026c
+    type: regular
+    task:
+      id: 59dc9219-bafc-4b81-8d72-e9fc6adb026c
+      version: -1
+      name: Terminate Process Manually
+      description: |-
+        Dear Analyst,
+
+        During the containment phase, the playbook couldn’t terminate the process: ${Core.OriginalAlert.event.action_process_image_name}
+
+        Please terminate the process manually if possible.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "128"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -239,
+          "y": 2334
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 3d7774e6-93fd-4eb9-b6df-b9ab62d61356
+    type: title
+    task:
+      id: 3d7774e6-93fd-4eb9-b6df-b9ab62d61356
+      version: -1
+      name: Close the Alert as True Positive
+      description: commands.local.cmd.close.inv
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "141"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 3234
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: 8661eb05-e496-4b77-87db-97f55ae3784c
+    type: condition
+    task:
+      id: 8661eb05-e496-4b77-87db-97f55ae3784c
+      version: -1
+      name: Approval Required – Malicious Activity Detected
+      description: |-
+        **Recommendation: Isolation Required – Malicious Activity Detected**
+
+        The detection meets high-confidence criteria for malicious activity based on the following conditions:
+
+        **Matched Verdicts:**
+        * Matches for high-risk command line analysis profiles: mixed_case_powershell, double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.
+
+        * Malicious IP address detected.
+        Score >= 30, indicating high confidence probability for malicious behavior.
+
+        * Score >= 10 with a prevention rule detected in the same alert, correlating to malicious activity.
+
+        **Action Required:**
+
+        * Isolate the remote host: ${Endpoint.Hostname}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "125"
+      Isolate:
+      - "127"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 33,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Isolate
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 242f5b3c-7fc9-48f7-8023-3c206c8b38e6
+    type: regular
+    task:
+      id: 242f5b3c-7fc9-48f7-8023-3c206c8b38e6
+      version: -1
+      name: Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      endpoint_id:
+        simple: ${Endpoint.ID}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -348,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 6a91f368-f7b2-4915-8b15-759e3271ad75
+    type: condition
+    task:
+      id: 6a91f368-f7b2-4915-8b15-759e3271ad75
+      version: -1
+      name: Check if the endpoint is workstation or a server
+      description: Checks whether the endpoint is a workstation or a server.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "129"
+      WORKSTATION:
+      - "126"
+    separatecontext: false
+    conditions:
+    - label: WORKSTATION
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 33,
+          "y": 2482
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 88df1210-2baf-4e75-8f28-c1442375db38
+    type: regular
+    task:
+      id: 88df1210-2baf-4e75-8f28-c1442375db38
+      version: -1
+      name: Manual remediation actions for a server or a disconnected endpoint
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook didn't isolate the following host: ${Endpoint.Hostname} \n\nThis is due to one of the following reasons:\n- The device disconnected.\n- The device has been identified as a server.\n\nPlease take manual action to contain the attack and prevent the attacker from executing lateral movement before closing this alert."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 2627
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 839ce8f3-8e75-4036-831c-a78c2bfb45c6
+    type: playbook
+    task:
+      id: 839ce8f3-8e75-4036-831c-a78c2bfb45c6
+      version: -1
+      name: PAN-OS - Block URL - Custom URL Category
+      description: |-
+        This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.
+        The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
+      playbookName: PAN-OS - Block URL - Custom URL Category
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      AutoCommit:
+        simple: "Yes"
+      CustomURLCategory:
+        simple: XSIAM - Malicious URLs
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      pre-post:
+        simple: pre-rulebase
+      type:
+        simple: URL List
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1013,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: 126dd84f-b188-454d-8ae3-7e2673057d3e
+    type: regular
+    task:
+      id: 126dd84f-b188-454d-8ae3-7e2673057d3e
+      version: -1
+      name: Close the Alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a False Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Windows LOLBIN scripting engine connected to a rare external host" as False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11,
+          "y": 1246
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 808836bb-81d3-4dab-aa6a-0e952ea1fc85
+    type: title
+    task:
+      id: 808836bb-81d3-4dab-aa6a-0e952ea1fc85
+      version: -1
+      name: Terminate Process
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "117"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 33,
+          "y": 1636
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 7a2ffd31-32b3-40bf-8206-3239f72103b8
+    type: title
+    task:
+      id: 7a2ffd31-32b3-40bf-8206-3239f72103b8
+      version: -1
+      name: Closed Alert As False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "135"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11,
+          "y": 1116
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: fe41233e-d2da-4970-848c-c20412043108
+    type: collection
+    task:
+      id: fe41233e-d2da-4970-848c-c20412043108
+      version: -1
+      name: Approve the URL block using PAN-OS
+      description: Analyst approval is required to block the malicious URL.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "140"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1013,
+          "y": 2028
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Block the following malicious URL using PAN-OS? \n- ${badUrls}"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This will block URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories. The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
+        readonly: false
+      title: UrlBlockApproval
+      description: Blocking the URL is recommended, as its reputation is malicious.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: 24fa14dd-0124-4263-ad28-ac335f8734a2
+    type: condition
+    task:
+      id: 24fa14dd-0124-4263-ad28-ac335f8734a2
+      version: -1
+      name: Check analyst answers
+      description: Check the analyst's answers and execute the appropriate actions based on the responses.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "125"
+      Block URL:
+      - "132"
+    separatecontext: false
+    conditions:
+    - label: Block URL
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UrlBlockApproval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1013,
+          "y": 2482
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: a597a3da-bff7-44f0-830b-4f518839e231
+    type: regular
+    task:
+      id: a597a3da-bff7-44f0-830b-4f518839e231
+      version: -1
+      name: Close the Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: The alert has been resolved, confirmed as a True Positive
+      closeReason:
+        simple: Resolved - Handled by the playbook "Windows LOLBIN scripting engine connected to a rare external host" as True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 3365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "117_128_Blocked": 0.44,
+      "118_110_yes": 0.45,
+      "121_118_#default#": 0.59,
+      "121_122_yes": 0.48,
+      "123_124_#error#": 0.62,
+      "126_125_#default#": 0.25,
+      "126_127_Isolate": 0.5,
+      "128_129_#default#": 0.61,
+      "140_125_#default#": 0.41,
+      "140_132_Block URL": 0.44,
+      "47_125_#default#": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3385,
+        "width": 1742,
+        "x": -348,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
