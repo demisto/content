@@ -1662,7 +1662,7 @@ class Client(BaseClient):
             # Log or wrap the unexpected response type for debugging or display
             return {'error': response if isinstance(response, str) else 'Unexpected response type'}
 
-    def get_ipv4_reputation(self, ipv4: str, explain: int = 0, limit: int = None) -> list[dict[str, Any]]:
+    def get_ipv4_reputation(self, ipv4: str, explain: int = 0, limit: int = None) -> dict[str, Any]:
         """
         Retrieve reputation information for an IPv4 address.
         """
@@ -1677,8 +1677,8 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             params=query_params
         )
-        ipv4_reputation = raw_response.get('response', {}).get('ip_reputation_history', [])
-        return ipv4_reputation
+
+        return raw_response
 
     def forward_padns_lookup(self, qtype: str, qname: str, **kwargs) -> dict[str, Any]:
         """
@@ -2803,7 +2803,7 @@ def get_asn_takedown_reputation_command(client, args):
     if not asn:
         raise ValueError('ASN is a required parameter')
     
-    explain = arg_to_number(args.get('explain', 0))
+    explain = argToBoolean(args.get('explain', False))
     limit = arg_to_number(args.get('limit'))
 
     response = client.get_asn_takedown_reputation(asn, explain, limit)
@@ -2827,7 +2827,7 @@ def get_asn_takedown_reputation_command(client, args):
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="SilentPush.TakedownReputation",
+        outputs_prefix="SilentPush.ASNTakedownReputation",
         outputs_key_field="asn",
         outputs=table_data
     )
@@ -3214,6 +3214,9 @@ def get_future_attack_indicators_command(client: Client, args: dict[str, Any]) -
     page_no = int(args.get('page_no', 1))
     page_size = int(args.get('page_size', 10000))
 
+    if not feed_uuid:
+        raise ValueError("feed_uuid is a required parameter")
+
     raw_response = client.get_future_attack_indicators(feed_uuid, page_no, page_size)
 
     # Handle list or dict gracefully
@@ -3224,8 +3227,8 @@ def get_future_attack_indicators_command(client: Client, args: dict[str, Any]) -
 
     return CommandResults(
         readable_output=tableToMarkdown("SilentPush Future Attack Indicators", indicators),
-        outputs_prefix="SilentPush.FutureAttackIndicator",
-        outputs_key_field="id",  # replace with appropriate key like "uuid" if needed
+        outputs_prefix="SilentPush.FutureAttackIndicators",
+        outputs_key_field="feed_uuid",  # replace with appropriate key like "uuid" if needed
         outputs=indicators,
         raw_response=raw_response
     )
@@ -3239,7 +3242,7 @@ def get_future_attack_indicators_command(client: Client, args: dict[str, Any]) -
     outputs_list=SCREENSHOT_URL_OUTPUTS,
     description="This commandGenerate screenshot of a URL."
 )
-def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
     """
     Command handler for taking URL screenshots.
 
@@ -3258,7 +3261,7 @@ def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResul
     if result.get("error"):
         raise Exception(result.get("error"))
 
-    image_response = generic_http_request(result['screenshot_url'])
+    image_response = generic_http_request("GET", result['screenshot_url'], url_suffix='', resp_type='response')
     if image_response.status_code != 200:
         return {"error": f"Failed to download screenshot image: HTTP {image_response.status_code}"}
 

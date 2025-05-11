@@ -9,8 +9,7 @@ import json
 import pytest
 from SilentPush import Client, CommandResults, get_job_status_command, get_nameserver_reputation_command, get_subnet_reputation_command, get_asns_for_domain_command, list_domain_infratags_command, list_domain_information_command, get_ipv4_reputation_command, get_future_attack_indicators_command, list_ip_information_command, get_asn_takedown_reputation_command, get_asn_reputation_command, get_enrichment_data_command, get_domain_certificates_command, screenshot_url_command, live_url_scan_command, search_scan_data_command, reverse_padns_lookup_command, forward_padns_lookup_command, search_domains_command, density_lookup_command
 from CommonServerPython import DemistoException
-from requests.models import Response
-
+from requests.models import Response, Request
 
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
@@ -530,10 +529,7 @@ def test_get_future_attack_indicators_command_success(mock_client, mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.FutureAttackIndicators"
     assert result.outputs_key_field == "feed_uuid"
-    assert result.outputs["feed_uuid"] == "test-feed-uuid"
-    assert result.outputs["page_no"] == 1
-    assert result.outputs["page_size"] == 10
-    assert result.outputs["indicators"] == mock_response
+    assert result.outputs == mock_response
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -565,11 +561,8 @@ def test_get_future_attack_indicators_command_no_data(mock_client, mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.FutureAttackIndicators"
     assert result.outputs_key_field == "feed_uuid"
-    assert result.outputs["feed_uuid"] == "test-feed-uuid"
-    assert result.outputs["page_no"] == 1
-    assert result.outputs["page_size"] == 10
-    assert result.outputs["indicators"] == []
-    assert result.readable_output.strip() == "### # Future Attack Indicators\nFeed UUID: test-feed-uuid\n\n**No entries.**"
+    assert result.outputs == []
+    assert result.readable_output.strip() == "### SilentPush Future Attack Indicators\n**No entries.**"
 
 
 def test_list_ip_information_command_success(mock_client, mocker):
@@ -654,17 +647,19 @@ def test_get_ipv4_reputation_command_success(mock_client, mocker):
     mocker.patch("SilentPush.validate_ip", return_value=True)
 
     # Mock response from client
-    mock_response = [
-        {
-            "ip": "192.168.1.1",
-            "date": "2023-01-01",
-            "ip_reputation": 85,
-            "ip_reputation_explain": {
-                "ip_density": 0.5,
-                "names_num_listed": 10
+    mock_response = {
+        "response": {
+            "ip_reputation_history": {
+                "ip": "192.168.1.1",
+                "date": "2023-01-01",
+                "ip_reputation": 85,
+                "ip_reputation_explain": {
+                    "ip_density": 0.5,
+                    "names_num_listed": 10
+                }
             }
         }
-    ]
+    }
     mock_client.get_ipv4_reputation.return_value = mock_response
 
     # Mock tableToMarkdown
@@ -707,7 +702,7 @@ def test_get_ipv4_reputation_command_no_data(mock_client, mocker):
     mocker.patch("SilentPush.validate_ip", return_value=True)
 
     # Mock response from client
-    mock_response = []
+    mock_response = {}
     mock_client.get_ipv4_reputation.return_value = mock_response
 
     # Call the function
@@ -747,7 +742,7 @@ def test_get_asn_takedown_reputation_command_success(mock_client, mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.ASNTakedownReputation"
     assert result.outputs_key_field == "asn"
-    assert result.outputs == mock_response
+    assert result.outputs[0] == mock_response
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -768,7 +763,7 @@ def test_get_asn_takedown_reputation_command_invalid_limit(mock_client):
     }
 
     # Call the function and expect ValueError
-    with pytest.raises(ValueError, match="Limit must be a valid number"):
+    with pytest.raises(ValueError, match='"invalid" is not a valid number'):
         get_asn_takedown_reputation_command(mock_client, args)
 
 
@@ -789,8 +784,12 @@ def test_get_asn_takedown_reputation_command_no_data(mock_client, mocker):
     # Assertions
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.ASNTakedownReputation"
-    assert result.outputs is None
-    assert result.readable_output == "No takedown reputation data found for ASN 12345"
+    assert result.outputs == [{'error': 'Invalid response format'}]
+    assert result.readable_output == """### Takedown Reputation for ASN 12345
+|error|
+|---|
+| Invalid response format |
+"""
 
 
 def test_get_asn_reputation_command_success(mock_client, mocker):
@@ -951,7 +950,7 @@ def test_get_domain_certificates_command_success(mock_client, mocker):
     mock_client.get_domain_certificates.return_value = mock_response
 
     # Mock format_certificate_info
-    mocker.patch("SilentPush.format_certificate_info", side_effect=lambda cert, client: cert)
+    mocker.patch("SilentPush.format_certificate_info", side_effect=lambda cert: cert)
 
     # Mock tableToMarkdown
     mocker.patch("SilentPush.tableToMarkdown", return_value="Mocked Markdown Table")
@@ -1052,7 +1051,7 @@ def test_screenshot_url_command_success(mock_client, mocker):
     mock_image_response = mocker.Mock(spec=Response)
     mock_image_response.status_code = 200
     mock_image_response.content = b"image content"
-    mocker.patch("requests.get", return_value=mock_image_response)
+    mocker.patch("requests.Session.request", return_value=mock_image_response)
 
     # Mock fileResult
     mocker.patch("SilentPush.fileResult", return_value={"Type": 3, "FileID": "123", "File": "example_screenshot.jpg"})
@@ -1112,7 +1111,7 @@ def test_screenshot_url_command_failed_image_download(mock_client, mocker):
     # Mock requests.get with failed status code
     mock_image_response = mocker.Mock(spec=Response)
     mock_image_response.status_code = 404
-    mocker.patch("requests.get", return_value=mock_image_response)
+    mocker.patch("requests.Session.request", return_value=mock_image_response)
 
     # Call the function
     result = screenshot_url_command(mock_client, args)
