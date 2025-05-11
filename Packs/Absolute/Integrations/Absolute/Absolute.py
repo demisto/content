@@ -248,17 +248,20 @@ class ClientV3(BaseClient):
             ok_codes (tuple): An HTTP status code of success.
         """
         next_page = ""
+        # page_size = 11
         response = self.send_request_to_api(
             "GET", url_suffix, query_string + self.add_pagination(next_page, page_size), ok_codes=tuple(ok_codes)
         )
+        demisto.info(f"[test] response first execution with {response=} and {page_size=}")
         data = response.get("data")
 
         while next_page := response.get("metadata", {}).get("pagination", {}).get("nextPage", ""):
             response = self.send_request_to_api(
                 "GET", url_suffix, query_string + self.add_pagination(next_page, page_size), ok_codes=tuple(ok_codes)
             )
+            demisto.info(f"[test] response second execution with {response=} and {page_size=}")
             data += response.get("data")
-
+            break
         return data
 
     def api_request_absolute(
