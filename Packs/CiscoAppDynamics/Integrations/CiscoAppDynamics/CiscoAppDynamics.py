@@ -28,16 +28,17 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def __init__(self,
-                 base_url: str,
-                 client_id: str,
-                 client_secret: str,
-                 application_id: str,
-                 max_audit_fetch: int,
-                 max_healthrule_fetch: int,
-                 verify: bool,
-                 proxy: bool,
-                 ) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        client_id: str,
+        client_secret: str,
+        application_id: str,
+        max_audit_fetch: int,
+        max_healthrule_fetch: int,
+        verify: bool,
+        proxy: bool,
+    ) -> None:
         """
         Initializes the Client.
         """
@@ -61,24 +62,15 @@ class Client(BaseClient):
         demisto.debug("Requesting new access token from AppDynamics OAuth API")
         url_suffix = "/controller/api/oauth/access_token"
         params = {"grant_type": "client_credentials"}
-        payload = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret
-        }
-        response = self._http_request(
-            method=POST_REQUEST,
-            url_suffix=url_suffix,
-            params=params,
-            json_data=payload
-        )
+        payload = {"client_id": self.client_id, "client_secret": self.client_secret}
+        response = self._http_request(method=POST_REQUEST, url_suffix=url_suffix, params=params, json_data=payload)
         access_token = response.get("access_token")
         expires_in = response.get("expires_in")
-        demisto.debug(f"Access token expire in: {expires_in}") #TODO
+        demisto.debug(f"Access token expire in: {expires_in}")  # TODO
         self.token = access_token
         self.token_expiry = datetime.now(timezone.utc) + timedelta(seconds=int(expires_in) - 10)
         demisto.debug(f"Access token obtained, expires at {self.token_expiry.isoformat()}")
-        set_integration_context({"access_token":access_token,
-                                 "token_expiry": self.token_expiry.isoformat()})
+        set_integration_context({"access_token": access_token, "token_expiry": self.token_expiry.isoformat()})
         return access_token
 
     def _get_valid_token(self) -> str:
@@ -86,13 +78,13 @@ class Client(BaseClient):
         Returns a valid access token, generating a new one if necessary.
         """
         integration_context = get_integration_context()
-        access_token = integration_context.get("access_token","")
-        token_expiry = integration_context.get("token_expiry","")
-        
+        access_token = integration_context.get("access_token", "")
+        token_expiry = integration_context.get("token_expiry", "")
+
         if not access_token or not token_expiry:
             demisto.debug("Token doesn't exists")
             return self.create_access_token()
-        
+
         elif datetime.now(timezone.utc) >= datetime.fromisoformat(token_expiry):
             demisto.debug("Token Expired")
             return self.create_access_token()
@@ -111,12 +103,13 @@ class Client(BaseClient):
         token = self._get_valid_token()
         headers = {"Authorization": f"Bearer {token}"}
         params["output"] = "JSON"
-        response = self._http_request(method=GET_REQUEST,
-                                      url_suffix=url_suffix,
-                                      params=params,
-                                      headers=headers,
-                                      resp_type="json",
-                                      )
+        response = self._http_request(
+            method=GET_REQUEST,
+            url_suffix=url_suffix,
+            params=params,
+            headers=headers,
+            resp_type="json",
+        )
 
         return response
 
@@ -137,24 +130,21 @@ class Client(BaseClient):
         if end_dt - start_dt > max_delta:
             demisto.debug("Start time is more than 24 hours before end time. Adjusting start time to end time minus 24 hours.")
             start_dt = end_dt - max_delta
-        
+
         if start_dt >= end_dt:
             demisto.debug("Start time is bigger than or equal to end time")
             return []
 
-        params = {
-            "startTime": start_dt.strftime(DATE_FORMAT)[:-3] + 'Z',
-            "endTime": end_dt.strftime(DATE_FORMAT)[:-3] + 'Z'
-        }
+        params = {"startTime": start_dt.strftime(DATE_FORMAT)[:-3] + "Z", "endTime": end_dt.strftime(DATE_FORMAT)[:-3] + "Z"}
         demisto.debug(f"Fetching audit logs from {params['startTime']} to {params['endTime']}")
         events = self._authorized_request(
             url_suffix="/controller/ControllerAuditHistory",
             params=params,
         )
         demisto.debug(f"Received {len(events)} audit logs from API.")
-        return events[:self.max_audit_fetch]
+        return events[: self.max_audit_fetch]
 
-    def get_health_events(self, start_time: datetime,end_time: datetime) -> list[dict]:
+    def get_health_events(self, start_time: datetime, end_time: datetime) -> list[dict]:
         """
         Fetches all Healthrule Violations Events in a loop,
         using the API's BETWEEN_TIMES.
@@ -173,11 +163,10 @@ class Client(BaseClient):
                 "time-range-type": "BETWEEN_TIMES",
                 "start-time": str(int(start_time.timestamp() * 1000)),
                 "end-time": str(int(end_time.timestamp() * 1000)),
-                "output": "JSON"
+                "output": "JSON",
             }
             url = f"/controller/rest/applications/{self.application_id}/problems/healthrule-violations"
-            batch = self._authorized_request(url_suffix=url,
-                                             params=params)
+            batch = self._authorized_request(url_suffix=url, params=params)
             demisto.debug(f"Fetched {len(batch)} events successfully.")
             if not batch:
                 break
@@ -186,7 +175,7 @@ class Client(BaseClient):
                 break
             start_time = get_max_event_time(events, HEALTH_EVENT)
         demisto.debug(f"Fetched {len(events)} Healthrule Violations Events from API.")
-        return events[:self.max_healthrule_fetch]
+        return events[: self.max_healthrule_fetch]
 
 
 def get_max_event_time(
@@ -205,10 +194,7 @@ def get_max_event_time(
     Returns:
         datetime: The maximum datetime value found.
     """
-    field = {
-        AUDIT: "timeStamp",
-        HEALTH_EVENT: "detectedTimeInMillis"
-    }.get(log_type, "eventTime")
+    field = {AUDIT: "timeStamp", HEALTH_EVENT: "detectedTimeInMillis"}.get(log_type, "eventTime")
     max_time_ms = max(int(ev.get(field, 0)) for ev in events)
     return datetime.fromtimestamp(max_time_ms / 1000, tz=timezone.utc)
 
@@ -230,10 +216,7 @@ def fetch_events(
         tuple[List[Dict], Dict]: A tuple containing a list of fetched events and a dictionary with the next run times.
     """
 
-    next_run: dict[str, str] = {
-        AUDIT: "",
-        HEALTH_EVENT: ""
-    }
+    next_run: dict[str, str] = {AUDIT: "", HEALTH_EVENT: ""}
     events = []
     current_time = datetime.now(timezone.utc)
     demisto.debug(f"fetch_events::Current time: {current_time}")
@@ -270,10 +253,7 @@ def fetch_events(
     return events, next_run
 
 
-def add_fields_to_events(
-    events: list[dict],
-    source_log_type: str
-) -> list[dict]:
+def add_fields_to_events(events: list[dict], source_log_type: str) -> list[dict]:
     """
     Enriches each event dict with XSIAM fields, based on the provided source type.
     Args:
@@ -286,17 +266,15 @@ def add_fields_to_events(
           - '_time'           (int) timestamp taken from the correct field
           - 'SOURCE_LOG_TYPE' (str) set to source_log_type
     """
-    key = {
-        AUDIT: "timeStamp",
-        HEALTH_EVENT: "detectedTimeInMillis"
-    }.get(source_log_type)
+    key = {AUDIT: "timeStamp", HEALTH_EVENT: "detectedTimeInMillis"}.get(source_log_type)
 
     for event in events:
         event["_time"] = event.get(key)
         event["SOURCE_LOG_TYPE"] = source_log_type
 
     return events
-    
+
+
 def normalize_last_run(raw_last_run: dict[str, str], now: datetime) -> dict[str, datetime]:
     """
     Take the dict from demisto.getLastRun() (str→ISO-8601 or empty strings),
@@ -317,6 +295,7 @@ def normalize_last_run(raw_last_run: dict[str, str], now: datetime) -> dict[str,
 
     return parsed
 
+
 def test_module_command(client: Client, last_run: dict, events_type_to_fetch: list[str]):
     """
     Tests API connectivity and authentication
@@ -335,6 +314,7 @@ def test_module_command(client: Client, last_run: dict, events_type_to_fetch: li
     fetch_events(client, last_run, events_type_to_fetch)
     return "ok"
 
+
 def iso_to_dt(iso_time: str) -> datetime:
     """Convert datetime string with the following format 2025-04-27T10:00:00Z to datetime object.
 
@@ -347,6 +327,7 @@ def iso_to_dt(iso_time: str) -> datetime:
     if iso_time.endswith("Z"):
         iso_time = iso_time.replace("Z", "+00:00")
     return datetime.fromisoformat(iso_time)
+
 
 def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
     """
@@ -365,16 +346,16 @@ def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
       - CommandResults: include human readable from the events.
     """
     fetch_types = argToList(args.get("types", f"{AUDIT},{HEALTH_EVENT}"))
-    original_max_audit  = client.max_audit_fetch
+    original_max_audit = client.max_audit_fetch
     original_max_health = client.max_healthrule_fetch
-    client.max_audit_fetch      = arg_to_number(args.get("max_audit"))  or original_max_audit
+    client.max_audit_fetch = arg_to_number(args.get("max_audit")) or original_max_audit
     client.max_healthrule_fetch = arg_to_number(args.get("max_health")) or original_max_health
     should_push_events = argToBoolean(args.get("should_push_events")) or False
-    
+
     start_time = datetime.now(timezone.utc)
-    start_dt = iso_to_dt(args.get("start_time", "")) or start_time + timedelta(minutes= - 1)
-    end_dt   = iso_to_dt(args.get("end_time", "")) or start_time
-    events   = []
+    start_dt = iso_to_dt(args.get("start_time", "")) or start_time + timedelta(minutes=-1)
+    end_dt = iso_to_dt(args.get("end_time", "")) or start_time
+    events = []
     next_run = {}
 
     if AUDIT in fetch_types:
@@ -386,9 +367,8 @@ def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
             next_run[AUDIT] = get_max_event_time(audit_events, AUDIT).isoformat()
         else:
             next_run[AUDIT] = end_dt.isoformat()
-            
-        demisto.debug(f"Total {len(events)} Audit logs Fetched. With max time{next_run[AUDIT]}."
-                      )
+
+        demisto.debug(f"Total {len(events)} Audit logs Fetched. With max time{next_run[AUDIT]}.")
     if HEALTH_EVENT in fetch_types:
         demisto.debug(f"Fetching Health Events from {start_dt} to {end_dt}.")
         health_events = client.get_health_events(start_dt, end_dt)
@@ -404,11 +384,12 @@ def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
         demisto.debug(f"Sending {len(events)} events to XSIAM.")
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
         demisto.debug("Sent events to XSIAM successfully")
-    
-    client.max_audit_fetch      = original_max_audit
+
+    client.max_audit_fetch = original_max_audit
     client.max_healthrule_fetch = original_max_health
     hr = tableToMarkdown(name="Events", t=events)
     return CommandResults(readable_output=hr)
+
 
 """ MAIN FUNCTION """
 
@@ -421,32 +402,33 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-    
+
     base_url = params.get("url", "")
     client_id = params.get("client_id", "")
     client_secret = params.get("client_secret", {}).get("password")
     application_id = params.get("application_id", "")
-    verify = argToBoolean(not params.get('insecure', False))
-    proxy = argToBoolean(params.get('proxy', False))
+    verify = argToBoolean(not params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
 
-    events_type_to_fetch = argToList(params.get('events_type_to_fetch', [AUDIT, HEALTH_EVENT]))
+    events_type_to_fetch = argToList(params.get("events_type_to_fetch", [AUDIT, HEALTH_EVENT]))
     max_audit_fetch = arg_to_number(params.get("max_audit_fetch")) or DEFAULT_MAX_AUDIT
     max_healthrule_fetch = arg_to_number(params.get("max_healthrule_fetch")) or DEFAULT_MAX_HEALTH
 
     demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(base_url=base_url,
-                        client_id=client_id,
-                        client_secret=client_secret,
-                        application_id=application_id,
-                        max_audit_fetch=max_audit_fetch,
-                        max_healthrule_fetch=max_healthrule_fetch,
-                        verify=verify,
-                        proxy=proxy,
-                        )
+        client = Client(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            application_id=application_id,
+            max_audit_fetch=max_audit_fetch,
+            max_healthrule_fetch=max_healthrule_fetch,
+            verify=verify,
+            proxy=proxy,
+        )
         current_time = datetime.now(timezone.utc)
-        last_run = normalize_last_run(demisto.getLastRun(),current_time)
-        
+        last_run = normalize_last_run(demisto.getLastRun(), current_time)
+
         demisto.debug(f"getLastRun return: Audit:{last_run.get(AUDIT,'')}, Health: {last_run.get(HEALTH_EVENT,'')}")
         if command == "test-module":
             return_results(test_module_command(client, last_run, events_type_to_fetch))
@@ -463,11 +445,10 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"setLastRun going to set: Audit:{last_run.get(AUDIT,'')}, Health: {last_run.get(HEALTH_EVENT,'')}")
             demisto.setLastRun(next_run)
             demisto.debug(f"Setting next run to {next_run}.")
-        
+
         elif command == "cisappdynamics-get-events":
             command_results = get_events(client, args)
             return_results(command_results)
-
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")

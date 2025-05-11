@@ -12,7 +12,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-  tooltip: The Sever url is the controller API Address
+  additionalinfo: The Sever url is the controller API Address
 - display: Client ID
   name: client_id
   required: true
@@ -58,14 +58,14 @@ configuration:
   - Healthrule Violations Events
 - display: The maximum number of Audit History API per fetch
   name: max_audit_fetch
-  defalutvalue: '100' #TODO 
+  defaultvalue: '100'
   type: 0
   required: false
   advanced: true
   section: Collect
 - display: The maximum number of Healthrule Violations Events per fetch
   name: max_healthrule_fetch
-  defalutvalue: '3000'
+  defaultvalue: '3000'
   type: 0
   required: false
   advanced: true
@@ -79,7 +79,7 @@ script:
     description: Retrieves a list of events from the cisappdynamics instance.
     arguments:
     - auto: PREDEFINED
-      defaultValue: 'False'
+      defaultValue: False
       description: Set this argument to True in order to create events, otherwise it will only display them.
       name: should_push_events
       predefined:
@@ -88,18 +88,18 @@ script:
       required: true
     - description: 'The maximum number of Audit History logs per fetch.'
       name: max_audit_fetch
-      defaultvalue: '1000'
+      defaultValue: 1000
       required: false
     - description: 'The maximum number of Healthrule Violations Events per fetch.'
       name: max_healthrule_fetch
-      defaultvalue: '3000'
+      defaultValue: 3000
       required: false
     - description: 'Which events to fetch.'
       name: events_type_to_fetch
       predefined:
         - 'Audit'
         - 'Healthrule Violations Events'
-      defalutvalue: 'Audit,Healthrule Violations Events'
+      defaultValue: 'Audit,Healthrule Violations Events'
     - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.'
       name: start_date
       required: false
@@ -110,7 +110,7 @@ script:
       - contextPath: CiscoAppDynamics
         description: The list of events.
         type: List
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
   script: '-'
