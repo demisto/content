@@ -1199,3 +1199,4 @@ def test_rasterize_email_command_error_handling(mocker):
         rasterize_email_command()
 
     mock_error.assert_called_once_with("Test error")
+    
