@@ -1,18 +1,30 @@
-!wiz-get-detection detection_id="12345678-1234-1234-1234-cc0a24716e0b"
-!wiz-get-detection issue_id="98765432-4321-4321-4321-ff5fa2ff7f78"
-!wiz-get-detection detection_id="12345678-1234-1234-1234-cc0a24716e0b" issue_id="98765432-4321-4321-4321-ff5fa2ff7f78"
+!wiz-get-detection detection_id="12345678-1234-1234-1234-d25e16359c19"
 
-!wiz-get-detections
-!wiz-get-detections creation_days_back="5"
-!wiz-get-detections detection_type="GENERATED_THREAT"
+!wiz-get-detections severity=CRITICAL
+
+!wiz-get-detections detection_type="GENERATED THREAT"
+
 !wiz-get-detections detection_platform="AWS"
-!wiz-get-detections detection_platform="ACK, GCP"
-!wiz-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098/i-0g03j4h5gd123d456"
-!wiz-get-detections severity="CRITICAL"
-!wiz-get-detections rule_match_id="12345678-1234-1234-1234-cc0a24716e0b"
-!wiz-get-detections rule_match_name="Suspicious EC2 Activity"
-!wiz-get-detections project="production_project"
+!wiz-get-detections detection_platform="AWS,Azure,GCP"
 
-!wiz-get-detections detection_type="GENERATED_THREAT" detection_platform="AWS" severity="HIGH" creation_days_back="7"
-!wiz-get-detections detection_platform="Kubernetes" resource_id="cluster-123" rule_match_name="Privilege Escalation"
-!wiz-get-detections detection_platform=ACK,GCP creation_days_back=1 severity=CRITICAL
+!wiz-get-detections detection_origin="WIZ_SENSOR"
+!wiz-get-detections detection_origin="WIZ_SENSOR,AWS_GUARD_DUTY"
+
+!wiz-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
+!wiz-get-detections resource_id="i-0g03j4h5gd123d456"
+
+!wiz-get-detections creation_minutes_back="60"
+
+!wiz-get-detections matched_rule="12345678-1234-1234-1234-3792e8a03318"
+
+!wiz-get-detections project_id="production-project"
+
+!wiz-get-detections detection_subscription="subscription-123"
+
+!wiz-get-detections severity=CRITICAL detection_platform="AWS" creation_minutes_back="60"
+!wiz-get-detections detection_type="GENERATED THREAT" detection_platform="Azure" severity=HIGH
+!wiz-get-detections detection_origin="WIZ_SENSOR" resource_id="i-0g03j4h5gd123d456" creation_minutes_back="120"
+!wiz-get-detections detection_type="GENERATED THREAT" detection_platform="AWS,Azure,GCP" severity=CRITICAL
+!wiz-get-detections severity=CRITICAL detection_platform="AWS" creation_minutes_back="60"
+!wiz-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" creation_minutes_back="600"
+!wiz-get-detections detection_origin="AWS_GUARD_DUTY" severity=HIGH
