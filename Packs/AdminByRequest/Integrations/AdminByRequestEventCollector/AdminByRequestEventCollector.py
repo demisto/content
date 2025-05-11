@@ -43,7 +43,6 @@ PRODUCT = "ByRequest"
 MAX_FETCH_AUDIT_LIMIT = 50000
 MAX_FETCH_EVENT_LIMIT = 50000
 MAX_FETCH_REQUEST_LIMIT = 5000
-DATE_FORMAT_ISO = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT_CALLS = "%Y-%m-%d"
 
 EVENT_TYPES: dict[str, EventType] = {
@@ -163,6 +162,8 @@ def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use
             break
 
         for event in events:
+            #  Updates each records in the list with _TIME and source_log_type fields
+            #  based on specific fields for each EventType.
             last_id = event["id"]
             event["_TIME"] = time_field
             event["source_log_type"] = source_log_type
@@ -267,13 +268,17 @@ def test_module(client: Client) -> str:
 def fetch_events(
     client: Client, last_run: dict, fetch_events_types: list[EventType], use_last_run_as_params: bool = False
 ) -> tuple[list[dict[str, Any]], dict]:
-    """Fetch the specified AdminByRequest entity.
+    """Fetch the specified AdminByRequest entity records.
 
     Args:
        client (Client): The client object used to interact with the AdminByRequest service.
        last_run (dict): The last_run dictionary having the state of previous cycle.
        fetch_events_types (list[EventType]) : list of Event Types to fetch from API
        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+
+   Returns:
+        - List of new records to be pushed into XSIAM.
+        - Updated last_run dictionary.
     """
     demisto.debug("AdminByRequest fetch_events invoked")
     events = []
