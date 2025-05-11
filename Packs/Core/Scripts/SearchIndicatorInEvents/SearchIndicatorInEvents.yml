@@ -22,7 +22,6 @@ args:
   - name: query_name
     required: true
     description: A user-defined name. The query results will appear under the query_name in the context data of the current war room.
-    isGeneratable: true
   - name: query_id
     hidden: true
     description: Internal Id of the query, hidden from inserting manually.
