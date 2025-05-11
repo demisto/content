@@ -10,7 +10,10 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Security",
+        "Network"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
