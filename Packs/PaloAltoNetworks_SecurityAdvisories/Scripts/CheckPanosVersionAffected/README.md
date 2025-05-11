@@ -1,6 +1,7 @@
 Checks if the given PAN-OS version number is affected by the given list of vulnerabilities from the pan-advisories-get-advisories command.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Checks if the given PAN-OS version number is affected by the given list of vulne
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Checks if the given PAN-OS version number is affected by the given list of vulne
 | advisories | The list of advisories, produced by pan-advisories-get-advisories |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
