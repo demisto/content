@@ -675,7 +675,8 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="ip2asn.benign_info.known_benign",
         output_type=bool,
-        description="Indicates whether this IP/ASN is explicitly known to be safe (e.g., a reputable cloud provider or public service)",
+        description="Indicates whether this IP/ASN is explicitly known to be safe "
+                    "(e.g., a reputable cloud provider or public service)",
     ),
     OutputArgument(
         name="ip2asn.benign_info.tags",
@@ -1035,7 +1036,8 @@ IPV4_REPUTATION_OUTPUTS = [
     OutputArgument(
         name="ip_reputation_explain.ip_density",
         output_type=int,
-        description="The number of domain names or services associated with this IP. A higher value may indicate shared hosting or potential abuse.",
+        description="The number of domain names or services associated with this IP. "
+                    "A higher value may indicate shared hosting or potential abuse.",
     ),
     OutputArgument(
         name="ip_reputation_explain.names_num_listed",
@@ -1584,12 +1586,12 @@ SCREENSHOT_URL_OUTPUTS = [
 metadata_collector = YMLMetadataCollector(
     integration_name="SilentPush",
     description=(
-        "The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data "
-        "with risk and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, "
-        "and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push system "
-        "to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. It also provides "
-        "functionality to live-scan URLs and take screenshots of them. Additionally, it allows fetching future attack feeds "
-        "from the Silent Push system."
+        "The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data with risk "
+        "and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, "
+        "and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push "
+        "system to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. "
+        "It also provides functionality to live-scan URLs and take screenshots of them. Additionally, "
+        "it allows fetching future attack feeds from the Silent Push system."
     ),
     display="SilentPush",
     category="Data Enrichment & Threat Intelligence",
@@ -1696,7 +1698,7 @@ class Client(BaseClient):
             ValueError: If max_wait is invalid.
         """
         url_suffix = f"{JOB_STATUS}/{job_id}"
-        max_wait = arg_to_number(params.get("max_wait", 20))
+        max_wait = arg_to_number(params.get("max_wait", 20))  # type ignore
 
         if max_wait is not None and not (0 <= max_wait <= 25):
             raise ValueError("max_wait must be an integer between 0 and 25")
@@ -2358,7 +2360,8 @@ def get_job_status_command(client: Client, args: dict) -> CommandResults:
     inputs_list=NAMESERVER_REPUTATION_INPUTS,
     outputs_prefix="SilentPush.SubnetReputation",
     outputs_list=NAMESERVER_REPUTATION_OUTPUTS,
-    description="This command retrieve historical reputation data for a specified nameserver, including reputation scores and optional detailed calculation information.",
+    description="This command retrieve historical reputation data for a specified nameserver, "
+                "including reputation scores and optional detailed calculation information.",
 )
 def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResults:
     """
@@ -2494,7 +2497,8 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
     inputs_list=DENSITY_LOOKUP_INPUTS,
     outputs_prefix="SilentPush.DensityLookup",
     outputs_list=DENSITY_LOOKUP_OUTPUTS,
-    description="This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.",
+    description="This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density "
+                "information.",
 )
 def density_lookup_command(client: Client, args: dict) -> CommandResults:
     """
@@ -2685,7 +2689,8 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
     inputs_list=LIST_DOMAIN_INPUTS,
     outputs_prefix="SilentPush.Domain",
     outputs_list=LIST_DOMAIN_OUTPUTS,
-    description="This command get domain information along with Silent Push risk score and live whois information for multiple domains.",
+    description="This command get domain information along with Silent Push risk score "
+                "and live whois information for multiple domains.",
 )
 def list_domain_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
