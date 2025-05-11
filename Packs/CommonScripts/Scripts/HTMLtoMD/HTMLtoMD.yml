@@ -9,7 +9,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-  default: 'true'
+  default: true
 comment: Converts HTML to Markdown.
 commonfields:
   id: HTMLtoMD
