@@ -31,9 +31,10 @@ def test_retrieve_data_from_xdr_sanity_check(mocker):
     }]
 
     # Patching dependencies
-    mock_execute = mocker.patch("AgentixRetrieveData.demisto.executeCommand", side_effect=[initial_response, completed_response])
+    mock_execute = mocker.patch("SearchIndicatorInEvents.demisto.executeCommand",
+                                side_effect=[initial_response, completed_response])
 
-    from AgentixRetrieveData import retrieve_data_from_xdr
+    from SearchIndicatorInEvents import retrieve_data_from_xdr
     poll_result = retrieve_data_from_xdr(args)
 
     assert mock_execute.call_count == 1
@@ -70,9 +71,9 @@ def test_check_status(mocker):
     }]
 
     # Patching dependencies
-    mock_execute = mocker.patch("AgentixRetrieveData.demisto.executeCommand", side_effect=[completed_response])
+    mock_execute = mocker.patch("SearchIndicatorInEvents.demisto.executeCommand", side_effect=[completed_response])
 
-    from AgentixRetrieveData import retrieve_data_from_xdr
+    from SearchIndicatorInEvents import retrieve_data_from_xdr
     poll_result = retrieve_data_from_xdr(args)
 
     assert mock_execute.call_count == 1

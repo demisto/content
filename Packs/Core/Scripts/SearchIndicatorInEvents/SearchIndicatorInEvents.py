@@ -75,7 +75,7 @@ def execute_query(args: dict) -> dict:
 
 
 @polling_function(
-    name='AgentixRetrieveData',
+    name='SearchIndicatorInEvents',
     interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL)),
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False
@@ -89,7 +89,6 @@ def retrieve_data_from_xdr(args: dict) -> PollResult:
     if "query_id" not in args:  # first time executing query
         demisto.debug("starting polling_command function")
         args_for_next_run = execute_query(args=args)
-        demisto.debug("After - execute_query function")
         return PollResult(
             response={},
             continue_to_poll=True,
