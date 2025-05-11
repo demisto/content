@@ -38,6 +38,7 @@ def main():
         "columns": incident_columns,
     }
 
+    demisto.debug(f"{incident_query=}, {incident_fetch_back_days=}")
     # generate the file
     export_to_csv_result = demisto.executeCommand("core-api-post", {"uri": "/incident/batch/exportToCsv", "body": incident_body})
     if not export_to_csv_result:
