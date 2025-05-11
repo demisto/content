@@ -156,7 +156,13 @@ def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use
             # API call
             events = list(client.retrieve_from_api(url_suffix=suffix, params=params))
         except DemistoException as error:
-            raise DemistoException(f"AdminByRequestEventCollector: During fetch, exception occurred {str(error)}")
+            err_type = getattr(error, "exception", None)
+            # If we have a Connection error then retunr clean error message
+            if isinstance(err_type, requests.exceptions.ConnectionError):
+                clean_msg = str(error).split("\nError Type")[0]
+                raise DemistoException(f"AdminByRequestEventCollector: During fetch, exception occurred {clean_msg}")
+            else:
+                raise DemistoException(f"AdminByRequestEventCollector: During fetch, exception occurred {str(error)}")
 
         if not events:
             break
