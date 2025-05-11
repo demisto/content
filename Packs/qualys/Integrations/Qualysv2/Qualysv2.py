@@ -2799,7 +2799,11 @@ def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional
     if isinstance(response_requested_value, dict):
         response_requested_value = [response_requested_value]
 
-    demisto.debug(f"Extracted a list of {len(response_requested_value)} hosts, and next url - {response_next_url}")
+    host_count = len(response_requested_value) if response_requested_value else 0
+    demisto.debug(f"Extracted a list of {host_count} hosts, and next URL - {response_next_url}")
+
+
+
 
     return response_requested_value, str(response_next_url)
 

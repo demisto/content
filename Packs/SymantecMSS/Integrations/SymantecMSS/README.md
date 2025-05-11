@@ -202,10 +202,10 @@
    "NumberNotBlocked":"0",
    "SignatureName":"Symantec AV Alert"
 }
-]", 
+]",
 "Incident Number":"565656",
 "Number of Analyzed Signatures":"5",
-"Analyst Assessment":"Lorem ipsum dolor sit amet, consectetur 
+"Analyst Assessment":"Lorem ipsum dolor sit amet, consectetur
  adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 "Status":"",
 "Description":"Scans for Web Servers have been detected",

@@ -1,7 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
-
 import PyPDF2
+from CommonServerPython import *
 
 
 def is_pdf_encrypted(file_path: str) -> bool:
@@ -14,8 +13,8 @@ def is_pdf_encrypted(file_path: str) -> bool:
 
 def main():  # pragma: no cover
     args = demisto.args()
-    entry_id = args.get('EntryID')
-    file_path = demisto.getFilePath(entry_id).get('path')
+    entry_id = args.get("EntryID")
+    file_path = demisto.getFilePath(entry_id).get("path")
     if not file_path:
         raise DemistoException("File not found. Please enter a valid entry ID.")
     try:

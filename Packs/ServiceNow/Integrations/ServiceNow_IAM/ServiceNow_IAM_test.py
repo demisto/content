@@ -1,8 +1,14 @@
-from requests import Response, Session
-from ServiceNow_IAM import Client, get_user_command, create_user_command, update_user_command, \
-    disable_user_command, get_mapping_fields_command
-from IAMApiModule import *
 import pytest
+from IAMApiModule import *
+from requests import Response, Session
+from ServiceNow_IAM import (
+    Client,
+    create_user_command,
+    disable_user_command,
+    get_mapping_fields_command,
+    get_user_command,
+    update_user_command,
+)
 
 SERVICENOW_USER_OUTPUT = {
     "sys_id": "mock_id",
@@ -10,7 +16,7 @@ SERVICENOW_USER_OUTPUT = {
     "first_name": "mock_first_name",
     "last_name": "mock_last_name",
     "active": "true",
-    "email": "testdemisto2@paloaltonetworks.com"
+    "email": "testdemisto2@paloaltonetworks.com",
 }
 
 SERVICENOW_DISABLED_USER_OUTPUT = {
@@ -19,10 +25,10 @@ SERVICENOW_DISABLED_USER_OUTPUT = {
     "first_name": "mock_first_name",
     "last_name": "mock_last_name",
     "active": "false",
-    "email": "testdemisto2@paloaltonetworks.com"
+    "email": "testdemisto2@paloaltonetworks.com",
 }
 
-BASE_URL = 'https://test.com'
+BASE_URL = "https://test.com"
 
 
 def mock_client():
@@ -32,18 +38,27 @@ def mock_client():
 
 def get_outputs_from_user_profile(user_profile):
     entry_context = user_profile.to_entry()
-    outputs = entry_context.get('Contents')
+    outputs = entry_context.get("Contents")
     return outputs
 
 
-@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}},
-                                             f'{BASE_URL}/table/sys_user?email=testdemisto2@paloaltonetworks.com'),
-                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
-                                                               'user_name': 'mock_user_name'}},
-                                             f'{BASE_URL}/table/sys_user?user_name=mock_user_name'),
-                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
-                                                               'id': 'mock_id', 'user_name': 'mock_user_name'}},
-                                             f'{BASE_URL}/table/sys_user?sys_id=mock_id')])
+@pytest.mark.parametrize(
+    "args, mock_url",
+    [
+        (
+            {"user-profile": {"email": "testdemisto2@paloaltonetworks.com"}},
+            f"{BASE_URL}/table/sys_user?email=testdemisto2@paloaltonetworks.com",
+        ),
+        (
+            {"user-profile": {"email": "testdemisto2@paloaltonetworks.com", "user_name": "mock_user_name"}},
+            f"{BASE_URL}/table/sys_user?user_name=mock_user_name",
+        ),
+        (
+            {"user-profile": {"email": "testdemisto2@paloaltonetworks.com", "id": "mock_id", "user_name": "mock_user_name"}},
+            f"{BASE_URL}/table/sys_user?sys_id=mock_id",
+        ),
+    ],
+)
 def test_get_user_command__existing_user(mocker, args, mock_url, requests_mock):
     """
     Given:
@@ -64,22 +79,19 @@ def test_get_user_command__existing_user(mocker, args, mock_url, requests_mock):
         Case c: Mocked URL querying by ID is called.
     """
     client = mock_client()
-    requests_mock.get(
-        mock_url,
-        json={'result': [SERVICENOW_USER_OUTPUT]}
-    )
-    mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
+    requests_mock.get(mock_url, json={"result": [SERVICENOW_USER_OUTPUT]})
+    mocker.patch.object(IAMUserProfile, "update_with_app_data", return_value={})
 
-    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
+    user_profile = get_user_command(client, args, "mapper_in", "mapper_out")
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.GET_USER
-    assert outputs.get('success') is True
-    assert outputs.get('active') is True
-    assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'mock_user_name'
-    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
-    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+    assert outputs.get("action") == IAMActions.GET_USER
+    assert outputs.get("success") is True
+    assert outputs.get("active") is True
+    assert outputs.get("id") == "mock_id"
+    assert outputs.get("username") == "mock_user_name"
+    assert outputs.get("details", {}).get("first_name") == "mock_first_name"
+    assert outputs.get("details", {}).get("last_name") == "mock_last_name"
 
 
 def test_get_user_command__non_existing_user(mocker):
@@ -94,17 +106,17 @@ def test_get_user_command__non_existing_user(mocker):
         - Ensure the resulted User Profile object holds information about an unsuccessful result.
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+    args = {"user-profile": {"email": "testdemisto2@paloaltonetworks.com"}}
 
-    mocker.patch.object(client, 'get_user', return_value=None)
+    mocker.patch.object(client, "get_user", return_value=None)
 
-    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
+    user_profile = get_user_command(client, args, "mapper_in", "mapper_out")
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.GET_USER
-    assert outputs.get('success') is False
-    assert outputs.get('errorCode') == IAMErrors.USER_DOES_NOT_EXIST[0]
-    assert outputs.get('errorMessage') == IAMErrors.USER_DOES_NOT_EXIST[1]
+    assert outputs.get("action") == IAMActions.GET_USER
+    assert outputs.get("success") is False
+    assert outputs.get("errorCode") == IAMErrors.USER_DOES_NOT_EXIST[0]
+    assert outputs.get("errorMessage") == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
 def test_get_user_command__bad_response(mocker):
@@ -121,22 +133,22 @@ def test_get_user_command__bad_response(mocker):
     import demistomock as demisto
 
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+    args = {"user-profile": {"email": "testdemisto2@paloaltonetworks.com"}}
 
     bad_response = Response()
     bad_response.status_code = 500
     bad_response._content = b'{"error": {"detail": "details", "message": "message"}}'
 
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(Session, 'request', return_value=bad_response)
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(Session, "request", return_value=bad_response)
 
-    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
+    user_profile = get_user_command(client, args, "mapper_in", "mapper_out")
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.GET_USER
-    assert outputs.get('success') is False
-    assert outputs.get('errorCode') == 500
-    assert outputs.get('errorMessage') == 'message: details'
+    assert outputs.get("action") == IAMActions.GET_USER
+    assert outputs.get("success") is False
+    assert outputs.get("errorCode") == 500
+    assert outputs.get("errorMessage") == "message: details"
 
 
 def test_create_user_command__success(mocker):
@@ -150,22 +162,23 @@ def test_create_user_command__success(mocker):
         - Ensure a User Profile object with the user data is returned
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+    args = {"user-profile": {"email": "testdemisto2@paloaltonetworks.com"}}
 
-    mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(client, 'create_user', return_value=SERVICENOW_USER_OUTPUT)
+    mocker.patch.object(client, "get_user", return_value=None)
+    mocker.patch.object(client, "create_user", return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True,
-                                       is_update_enabled=False, is_enable_enabled=False)
+    user_profile = create_user_command(
+        client, args, "mapper_out", is_command_enabled=True, is_update_enabled=False, is_enable_enabled=False
+    )
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.CREATE_USER
-    assert outputs.get('success') is True
-    assert outputs.get('active') is True
-    assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'mock_user_name'
-    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
-    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+    assert outputs.get("action") == IAMActions.CREATE_USER
+    assert outputs.get("success") is True
+    assert outputs.get("active") is True
+    assert outputs.get("id") == "mock_id"
+    assert outputs.get("username") == "mock_user_name"
+    assert outputs.get("details", {}).get("first_name") == "mock_first_name"
+    assert outputs.get("details", {}).get("last_name") == "mock_last_name"
 
 
 def test_create_user_command__user_already_exists(mocker):
@@ -181,22 +194,23 @@ def test_create_user_command__user_already_exists(mocker):
         - Ensure the command is considered successful and the user is still disabled
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}, 'allow-enable': 'false'}
+    args = {"user-profile": {"email": "testdemisto2@paloaltonetworks.com"}, "allow-enable": "false"}
 
-    mocker.patch.object(client, 'get_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
-    mocker.patch.object(client, 'update_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
+    mocker.patch.object(client, "get_user", return_value=SERVICENOW_DISABLED_USER_OUTPUT)
+    mocker.patch.object(client, "update_user", return_value=SERVICENOW_DISABLED_USER_OUTPUT)
 
-    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True,
-                                       is_update_enabled=True, is_enable_enabled=True)
+    user_profile = create_user_command(
+        client, args, "mapper_out", is_command_enabled=True, is_update_enabled=True, is_enable_enabled=True
+    )
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.UPDATE_USER
-    assert outputs.get('success') is True
-    assert outputs.get('active') is False
-    assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'mock_user_name'
-    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
-    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+    assert outputs.get("action") == IAMActions.UPDATE_USER
+    assert outputs.get("success") is True
+    assert outputs.get("active") is False
+    assert outputs.get("id") == "mock_id"
+    assert outputs.get("username") == "mock_user_name"
+    assert outputs.get("details", {}).get("first_name") == "mock_first_name"
+    assert outputs.get("details", {}).get("last_name") == "mock_last_name"
 
 
 def test_update_user_command__non_existing_user(mocker):
@@ -214,22 +228,29 @@ def test_update_user_command__non_existing_user(mocker):
         - Ensure a User Profile object with the user data is returned
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+    args = {"user-profile": {"email": "testdemisto2@paloaltonetworks.com", "givenname": "mock_first_name"}}
 
-    mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(client, 'create_user', return_value=SERVICENOW_USER_OUTPUT)
+    mocker.patch.object(client, "get_user", return_value=None)
+    mocker.patch.object(client, "create_user", return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=False,
-                                       is_create_user_enabled=True, create_if_not_exists=True)
+    user_profile = update_user_command(
+        client,
+        args,
+        "mapper_out",
+        is_command_enabled=True,
+        is_enable_enabled=False,
+        is_create_user_enabled=True,
+        create_if_not_exists=True,
+    )
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.CREATE_USER
-    assert outputs.get('success') is True
-    assert outputs.get('active') is True
-    assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'mock_user_name'
-    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
-    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+    assert outputs.get("action") == IAMActions.CREATE_USER
+    assert outputs.get("success") is True
+    assert outputs.get("active") is True
+    assert outputs.get("id") == "mock_id"
+    assert outputs.get("username") == "mock_user_name"
+    assert outputs.get("details", {}).get("first_name") == "mock_first_name"
+    assert outputs.get("details", {}).get("last_name") == "mock_last_name"
 
 
 def test_update_user_command__command_is_disabled(mocker):
@@ -244,20 +265,27 @@ def test_update_user_command__command_is_disabled(mocker):
         - Ensure the command is considered successful and skipped
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+    args = {"user-profile": {"email": "testdemisto2@paloaltonetworks.com", "givenname": "mock_first_name"}}
 
-    mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
-    mocker.patch.object(client, 'update_user', return_value=SERVICENOW_USER_OUTPUT)
+    mocker.patch.object(client, "get_user", return_value=None)
+    mocker.patch.object(IAMUserProfile, "map_object", return_value={})
+    mocker.patch.object(client, "update_user", return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False, is_enable_enabled=False,
-                                       is_create_user_enabled=False, create_if_not_exists=False)
+    user_profile = update_user_command(
+        client,
+        args,
+        "mapper_out",
+        is_command_enabled=False,
+        is_enable_enabled=False,
+        is_create_user_enabled=False,
+        create_if_not_exists=False,
+    )
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.UPDATE_USER
-    assert outputs.get('success') is True
-    assert outputs.get('skipped') is True
-    assert outputs.get('reason') == 'Command is disabled.'
+    assert outputs.get("action") == IAMActions.UPDATE_USER
+    assert outputs.get("success") is True
+    assert outputs.get("skipped") is True
+    assert outputs.get("reason") == "Command is disabled."
 
 
 def test_update_user_command__allow_enable(mocker):
@@ -273,23 +301,32 @@ def test_update_user_command__allow_enable(mocker):
         - Ensure the user is enabled at the end of the command execution.
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
-            'allow-enable': 'true'}
+    args = {
+        "user-profile": {"email": "testdemisto2@paloaltonetworks.com", "givenname": "mock_first_name"},
+        "allow-enable": "true",
+    }
 
-    mocker.patch.object(client, 'get_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
-    mocker.patch.object(client, 'update_user', return_value=SERVICENOW_USER_OUTPUT)
+    mocker.patch.object(client, "get_user", return_value=SERVICENOW_DISABLED_USER_OUTPUT)
+    mocker.patch.object(client, "update_user", return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
-                                       is_create_user_enabled=False, create_if_not_exists=False)
+    user_profile = update_user_command(
+        client,
+        args,
+        "mapper_out",
+        is_command_enabled=True,
+        is_enable_enabled=True,
+        is_create_user_enabled=False,
+        create_if_not_exists=False,
+    )
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.UPDATE_USER
-    assert outputs.get('success') is True
-    assert outputs.get('active') is True
-    assert outputs.get('id') == 'mock_id'
-    assert outputs.get('username') == 'mock_user_name'
-    assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
-    assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+    assert outputs.get("action") == IAMActions.UPDATE_USER
+    assert outputs.get("success") is True
+    assert outputs.get("active") is True
+    assert outputs.get("id") == "mock_id"
+    assert outputs.get("username") == "mock_user_name"
+    assert outputs.get("details", {}).get("first_name") == "mock_first_name"
+    assert outputs.get("details", {}).get("last_name") == "mock_last_name"
 
 
 def test_disable_user_command__non_existing_user(mocker):
@@ -305,17 +342,17 @@ def test_disable_user_command__non_existing_user(mocker):
         - Ensure the command is considered successful and skipped
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+    args = {"user-profile": {"email": "testdemisto2@paloaltonetworks.com"}}
 
-    mocker.patch.object(client, 'get_user', return_value=None)
+    mocker.patch.object(client, "get_user", return_value=None)
 
-    user_profile = disable_user_command(client, args, is_command_enabled=True, mapper_out='mapper_out')
+    user_profile = disable_user_command(client, args, is_command_enabled=True, mapper_out="mapper_out")
     outputs = get_outputs_from_user_profile(user_profile)
 
-    assert outputs.get('action') == IAMActions.DISABLE_USER
-    assert outputs.get('success') is True
-    assert outputs.get('skipped') is True
-    assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
+    assert outputs.get("action") == IAMActions.DISABLE_USER
+    assert outputs.get("success") is True
+    assert outputs.get("skipped") is True
+    assert outputs.get("reason") == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
 def test_get_mapping_fields_command(mocker):
@@ -329,10 +366,10 @@ def test_get_mapping_fields_command(mocker):
         - Ensure a GetMappingFieldsResponse object that contains the ServiceNow fields is returned
     """
     client = mock_client()
-    mocker.patch.object(client, 'get_service_now_fields', return_value={'field1': 'desc1', 'field2': 'desc2'})
+    mocker.patch.object(client, "get_service_now_fields", return_value={"field1": "desc1", "field2": "desc2"})
 
     mapping_response = get_mapping_fields_command(client)
     mapping = mapping_response.extract_mapping()
 
-    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
-    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get("field1") == "desc1"
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get("field2") == "desc2"

@@ -5528,6 +5528,7 @@
                 "legacy_context_output"
             ],
             "memory_threshold": 300,
+            "timeout": 600,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
         },
@@ -5743,7 +5744,8 @@
                 "LOLBAS Feed",
                 "Core REST API"
             ],
-            "playbookID": "FeedLOLBas_test"
+            "playbookID": "FeedLOLBas_test",
+            "timeout": 500
         },
         {
             "integrations": "CIRCL CVE Search",
@@ -6035,10 +6037,14 @@
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
-        "Mail Sender (New) Test": "Creds not working CRTX-160174",
-        "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
         "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
-        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
+        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "The creds were expired CIAC-13447",
+        "PAN-OS URL Filtering enrichment - Test": "The creds were expired CIAC-11260",
+        "PAN-OS-panorama-topology-test-pb": "The creds were expired CIAC-13553",
+        "OpenPhish Test Playbook": "API issue CIAC-13583",
+        "SaasSecurity-Test": "blocked by SCA-8028",
+        "Mail-Listener Test Playbook": " invalid creds CRTX-171878"
 
 
     },
@@ -6180,7 +6186,8 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
         "DSPM": "No instance",
-        "Symantec Email Security Cloud": "No instance"
+        "Symantec Email Security Cloud": "No instance",
+        "Absolute": "No instance"
     },
     "native_nightly_packs": [
         "Palo_Alto_Networks_WildFire",

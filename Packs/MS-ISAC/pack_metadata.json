@@ -2,7 +2,7 @@
     "name": "MS-ISAC",
     "description": "This content pack's purpose is to integrate with the MS-ISAC private API to fetch MS-ISAC events and alert details. ",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "North Dakota Information Technology Department",
     "url": "",
     "email": "",

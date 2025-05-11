@@ -2,16 +2,15 @@ import unittest
 from unittest.mock import patch
 
 from CommonServerPython import DemistoException
+from WorkdaySignonEventGenerator import APP as app
 from WorkdaySignonEventGenerator import (
+    main,
+    mock_workday_endpoint,
+    module_of_testing,
     random_datetime_in_range,
     random_string,
     xml_generator,
-    mock_workday_endpoint,
-    module_of_testing,
-    main,
 )
-
-from WorkdaySignonEventGenerator import APP as app
 
 
 class TestWorkdaySignonEventGenerator(unittest.TestCase):
@@ -26,9 +25,7 @@ class TestWorkdaySignonEventGenerator(unittest.TestCase):
         Then:
             - Ensure that the random datetime generated falls within the specified range
         """
-        random_date = random_datetime_in_range(
-            "2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z"
-        )
+        random_date = random_datetime_in_range("2023-08-21T11:46:02Z", "2023-08-21T11:47:02Z")
         assert "2023-08-21T11:46:02Z" <= random_date <= "2023-08-21T11:47:02Z"
 
     def test_random_string(self) -> None:
@@ -103,10 +100,7 @@ class TestModuleOfTesting(unittest.TestCase):
         try:
             module_of_testing(False, None)
         except DemistoException as e:
-            assert (
-                str(e)
-                == "Please make sure the long running port is filled and the long running checkbox is marked."
-            )
+            assert str(e) == "Please make sure the long running port is filled and the long running checkbox is marked."
         else:
             raise AssertionError("Expected DemistoException but did not get one")
 
@@ -120,13 +114,9 @@ class TestMainTestingFunction(unittest.TestCase):
         }
         MockDemisto.command.return_value = "test-module"
 
-        with patch(
-            "WorkdaySignonEventGenerator.module_of_testing"
-        ) as MockModuleTesting:
+        with patch("WorkdaySignonEventGenerator.module_of_testing") as MockModuleTesting:
             main()
-            MockModuleTesting.assert_called_with(
-                longrunning_port=5000, is_longrunning=True
-            )
+            MockModuleTesting.assert_called_with(longrunning_port=5000, is_longrunning=True)
 
 
 if __name__ == "__main__":

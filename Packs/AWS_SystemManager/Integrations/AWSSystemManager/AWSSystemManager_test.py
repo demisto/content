@@ -30,9 +30,8 @@ from AWSSystemManager import (
     update_if_value,
     validate_args,
 )
-from pytest_mock import MockerFixture
-
 from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
+from pytest_mock import MockerFixture
 
 
 class MockClient:
@@ -463,10 +462,7 @@ def test_remove_tags_from_resource_command(mocker: MockerFixture) -> None:
         return_value={"ResponseMetadata": {"HTTPStatusCode": 200}},
     )
     res = remove_tags_from_resource_command(args, MockClient())
-    assert (
-        res.readable_output
-        == f"Tag {args['tag_key']} removed from resource {args['resource_id']} successfully."
-    )
+    assert res.readable_output == f"Tag {args['tag_key']} removed from resource {args['resource_id']} successfully."
 
 
 def test_list_inventory_command(mocker: MockerFixture) -> None:

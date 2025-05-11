@@ -16,5 +16,8 @@ filter _raw_log ~= "\w+\s+\d+\s+\d+\:\d+\:\d+" or _raw_log ~= "\>\d+\s+\d+\-\d+\
 // Parsing time format 2
 | alter tmp_time2 = arrayindex(regextract(_raw_log , "\>\d+\s+(\d+\-\d+\-\d+T\d+\:\d+\:\d+\.\d+)"),0)
 | alter tmp_time2 = parse_timestamp("%Y-%m-%dT%H:%M:%E3S", tmp_time2)
-| alter _time = coalesce(tmp_time1, tmp_time2)
-| fields -tmp_time1, tmp_Year, tmp_time1_1, tmp_timeDiff, tmp_Year2, tmp_time1_2, tmp_time2;
+// Parsing time format 3 offset
+| alter tmp_time3 = arrayindex(regextract(_raw_log, "\>\d+\s+(\d+\-\d+\-\d+T\d+\:\d+\:\d+\.\d+[-+]\d+\:\d+)"),0)
+| alter tmp_time3 = parse_timestamp("%Y-%m-%dT%H:%M:%E3S%Ez", tmp_time3)
+| alter _time = coalesce(tmp_time3, tmp_time1, tmp_time2)
+| fields -tmp_time1, tmp_Year, tmp_time1_1, tmp_timeDiff, tmp_Year2, tmp_time1_2, tmp_time2, tmp_time3;

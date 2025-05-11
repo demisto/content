@@ -2,7 +2,7 @@
     "name": "Cyjax Feed",
     "description": "This pack is used to pull indicators of compromise from the Cyjax Threat Intelligence Platform.",
     "support": "partner",
-    "currentVersion": "1.0.29",
+    "currentVersion": "1.0.30",
     "author": "Cyjax",
     "url": "https://cyjax.com",
     "email": "devs@cyjax.com",

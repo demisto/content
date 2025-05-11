@@ -248,11 +248,12 @@ def remedy_get_ticket(service_request_id):
     date = now.strftime("%Y-%m-%d")
     time = now.strftime("%H:%M:%S")
 
-    salt = os.urandom(16)
-    base64_binary = base64.b64encode(salt).decode("ascii")
-    # Password_Digest = Base64 (PBKDF2 (password, salt, iterations, dklen, hash_name))
-    password_digest = hashlib.pbkdf2_hmac('sha256', PASSWORD.encode('utf-8'), salt, 100000, dklen=32)
-    password_digest = base64.b64encode(password_digest).decode('ascii')
+    nonce = os.urandom(16)
+    base64_binary = base64.b64encode(nonce).decode("ascii")
+    # Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
+    hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))  # nosec
+    digest_string = hash_object.digest()
+    password_digest = base64.b64encode(digest_string).decode("ascii")
 
     body = GET_TICKET_BODY.format(
         xml_ns=XML_NS,
@@ -323,11 +324,12 @@ def remedy_create_ticket(
     date = now.strftime("%Y-%m-%d")
     time = now.strftime("%H:%M:%S")
 
-    salt = os.urandom(16)
-    base64_binary = base64.b64encode(salt).decode("ascii")
-    # Password_Digest = Base64 (PBKDF2 (password, salt, iterations, dklen, hash_name))
-    password_digest = hashlib.pbkdf2_hmac('sha256', PASSWORD.encode('utf-8'), salt, 100000, dklen=32)
-    password_digest = base64.b64encode(password_digest).decode('ascii')
+    nonce = os.urandom(16)
+    base64_binary = base64.b64encode(nonce).decode("ascii")
+    # Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
+    hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))  # nosec
+    digest_string = hash_object.digest()
+    password_digest = base64.b64encode(digest_string).decode("ascii")
 
     body = CREATE_TICKET_BODY.format(
         xml_ns=XML_NS,

@@ -2,7 +2,7 @@
     "name": "Cisco WSA",
     "description": "Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.",
     "support": "xsoar",
-    "currentVersion": "2.0.14",
+    "currentVersion": "2.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

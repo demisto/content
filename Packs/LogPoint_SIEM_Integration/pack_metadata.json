@@ -2,7 +2,7 @@
     "name": "LogPoint SIEM Integration",
     "description": "Use this Content Pack to fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.",
     "support": "partner",
-    "currentVersion": "1.2.12",
+    "currentVersion": "1.2.13",
     "author": "LogPoint",
     "authorImage": "content/Packs/LogPoint_SIEM_Integration/doc_files/LogPoint_image.png",
     "url": "https://servicedesk.logpoint.com",

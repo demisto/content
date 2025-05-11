@@ -39,8 +39,8 @@ configuration:
   type: 0
   required: false
   section: Collect
-- defaultvalue: MALOP CREATION TIME
-  display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents)
+- defaultvalue: MALOP UPDATE TIME
+  display: Fetch by "MALOP UPDATE TIME" (Fetching by Malop creation time is no longer supported)
   name: fetch_by
   type: 0
   required: false
@@ -395,6 +395,30 @@ script:
       type: string
     - contextPath: Cybereason.Malops.Status
       description: Malop managemant status.
+      type: string
+    - contextPath: Cybereason.Malops.Severity
+      description: Severity of Malop.
+      type: string
+    - contextPath: Cybereason.Malops.Machines
+      description: List of Machines involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.Users
+      description: List of Users involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.DecisionStatuses
+      description: List of Decision Statuses involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.DetectionTypes
+      description: List of Detection Types involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.DetectionEngines
+      description: List of Detection Engines involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.MitreTechniques
+      description: List of Mitre Techniques involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.MalopCloserName
+      description: List of Malop Closer Name involved in this Malop.
       type: string
   - arguments:
     - description: processGuid of the Cybereason Malop (can accept multiple guids separated by comma).
@@ -869,7 +893,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - Cybereason Test
 fromversion: 5.0.0

@@ -68,6 +68,7 @@ class MainTester:
         mocker.patch.object(demisto, "executeCommand", side_effect=self.__demisto_execute_command)
         mocker.patch.object(XQLDSHelper, "execute_command", side_effect=self.__execute_command)
         mocker.patch.object(XQLDSHelper, "return_error", side_effect=self.__return_error)
+        mocker.patch.object(demisto, "get", side_effect=self.__demisto_get)
         mocker.patch.object(demisto, "dt", side_effect=self.__demisto_dt)
         mocker.patch.object(demisto, "context", return_value=ent.get("context") or {})
         mocker.patch.object(demisto, "results")
@@ -232,6 +233,30 @@ class MainTester:
                 return v["results"]
         raise RuntimeError(f"Unable to get query results - {self.__xql_last_resp}")
 
+    def __demisto_get(
+        self,
+        obj: Any,
+        path: str,
+        default: Any = None,
+    ) -> Any:
+        for part in path.split('.'):
+            if isinstance(obj, dict):
+                if part in obj:
+                    obj = obj[part]
+                else:
+                    return default
+            elif isinstance(obj, list):
+                if m := re.fullmatch(r'\[(\d+)\]', part):
+                    idx = int(m[1])
+                    obj = obj[idx] if idx < len(obj) else []
+                else:
+                    obj = [x[part] for x in obj if isinstance(x, dict) and part in x]
+                if not obj:
+                    return default
+            else:
+                return default
+        return obj
+
     def __demisto_dt(
         self,
         obj: dict[str, Any],
@@ -263,6 +288,10 @@ class MainTester:
             )
             if var == "".join(func.strip().split()):
                 return "\n".join(f" - {x[0]+1}: " + x[1].get("text") for x in enumerate(recordset))
+
+        var = '>JSON.stringify(val)'
+        if var == func:
+            return json.dumps(val, sort_keys=True)
 
         var = r"""encodeURIComponent(val).replace('"', '%22')"""
         if var == func:

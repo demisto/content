@@ -1,7 +1,7 @@
-import pytest
-from pytest_mock import MockerFixture
 import demistomock as demisto
-from CommonServerPython import EntryType, DemistoException
+import pytest
+from CommonServerPython import DemistoException, EntryType
+from pytest_mock import MockerFixture
 
 
 def test_print_to_parent_incident(mocker: MockerFixture):
