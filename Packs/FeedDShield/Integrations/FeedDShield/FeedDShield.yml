@@ -57,7 +57,6 @@ configuration:
   name: cidr_32_to_ip
   required: false
   type: 8
-  section: Collect
   advanced: true
 - defaultvalue: '20160'
   display: ''
