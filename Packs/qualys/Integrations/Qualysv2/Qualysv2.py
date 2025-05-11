@@ -3045,6 +3045,7 @@ def get_client_host_list_detection_with_timeout(
     signal.alarm(execution_timeout)
 
     try:
+        # Specify request max execution time for the whole request
         demisto.debug(f"Running host list dectections with timeout: {execution_timeout}.")
         raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
         demisto.debug("Finished host list dectections.")
