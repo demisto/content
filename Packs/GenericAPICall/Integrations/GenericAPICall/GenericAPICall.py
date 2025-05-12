@@ -8,31 +8,41 @@ import json
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 CONTENT_TYPE_MAPPER = {
     "json": "application/json",
     "xml": "text/xml",
     "form": "application/x-www-form-urlencoded",
-    "data": "multipart/form-data"
+    "data": "multipart/form-data",
 }
 
-RAW_RESPONSE = 'raw_response'
+RAW_RESPONSE = "raw_response"
 
 
 class Client(BaseClient):
     def __init__(self, base_url: str, auth, verify: bool, proxy: bool):
-
         super().__init__(base_url=base_url, auth=auth, verify=verify, proxy=proxy)
 
-    def http_request(self, method: str, full_url: str = '', headers: dict = None, resp_type: str = RAW_RESPONSE,
-                     params: dict = None, data: str = None, timeout: int = 10, retries: int = 0,
-                     status_list_to_retry: list = None, raise_on_status: bool = False, allow_redirects: bool = True,
-                     backoff_factor: int = 5):
+    def http_request(
+        self,
+        method: str,
+        full_url: str = "",
+        headers: dict = None,
+        resp_type: str = RAW_RESPONSE,
+        params: dict = None,
+        data: str = None,
+        timeout: int = 10,
+        retries: int = 0,
+        status_list_to_retry: list = None,
+        raise_on_status: bool = False,
+        allow_redirects: bool = True,
+        backoff_factor: int = 5,
+    ):
         try:
             res = self._http_request(
                 method=method,
@@ -47,7 +57,7 @@ class Client(BaseClient):
                 data=data,
                 error_handler=self._generic_error_handler,
                 allow_redirects=allow_redirects,
-                backoff_factor=backoff_factor
+                backoff_factor=backoff_factor,
             )
         except Exception as e:
             return_error(f"Failed to execute API call. Error: {str(e)}")
@@ -63,22 +73,25 @@ class Client(BaseClient):
             raise DemistoException(f"Unauthorized. Status code: {status_code}. Origin response from server: {res.text}")
 
         if status_code == 403:
-            raise DemistoException(f"Invalid permissions. Status code: {status_code}. "
-                                   f"Origin response from server: {res.text}")
+            raise DemistoException(
+                f"Invalid permissions. Status code: {status_code}. Origin response from server: {res.text}"
+            )
 
         if status_code == 404:
-            raise DemistoException(f"The server has not found anything matching the request URI. Status code:"
-                                   f" {status_code}. Origin response from server: {res.text}")
+            raise DemistoException(
+                f"The server has not found anything matching the request URI. Status code:"
+                f" {status_code}. Origin response from server: {res.text}"
+            )
         if status_code == 500:
-            raise DemistoException(f"Internal server error. Status code: {status_code}."
-                                   f" Origin response from server: {res.text}")
+            raise DemistoException(
+                f"Internal server error. Status code: {status_code}. Origin response from server: {res.text}"
+            )
 
         if status_code == 502:
             raise DemistoException(f"Bad gateway. Status code: {status_code}. Origin response from server: {res.text}")
 
 
-def create_headers(headers: Dict, request_content_type_header: str, response_content_type_header: str) \
-        -> Dict[str, str]:
+def create_headers(headers: Dict, request_content_type_header: str, response_content_type_header: str) -> Dict[str, str]:
     """
     Create a dictionary of headers. It will map the header if it exists in the CONTENT_TYPE_MAPPER.
     Args:
@@ -93,10 +106,10 @@ def create_headers(headers: Dict, request_content_type_header: str, response_con
         request_content_type_header = CONTENT_TYPE_MAPPER[request_content_type_header]
     if response_content_type_header in CONTENT_TYPE_MAPPER:
         response_content_type_header = CONTENT_TYPE_MAPPER[response_content_type_header]
-    if request_content_type_header and not headers.get('Content-Type'):
-        headers['Content-Type'] = request_content_type_header
-    if response_content_type_header and not headers.get('Accept'):
-        headers['Accept'] = response_content_type_header
+    if request_content_type_header and not headers.get("Content-Type"):
+        headers["Content-Type"] = request_content_type_header
+    if response_content_type_header and not headers.get("Accept"):
+        headers["Accept"] = response_content_type_header
 
     return headers
 
@@ -104,15 +117,15 @@ def create_headers(headers: Dict, request_content_type_header: str, response_con
 def get_parsed_response(res, resp_type: str) -> Any:
     try:
         resp_type = resp_type.lower()
-        if resp_type == 'json':
+        if resp_type == "json":
             res = res.json()
-        elif resp_type == 'xml':
+        elif resp_type == "xml":
             res = json.loads(xml2json(res.content))
         else:
             res = res.text
         return res
     except ValueError as e:
-        raise DemistoException(f'Failed to parse json object from response: {res.content}\n\nError Message: {e}')
+        raise DemistoException(f"Failed to parse json object from response: {res.content}\n\nError Message: {e}")
 
 
 def format_status_list(status_list: list) -> List[int]:
@@ -129,8 +142,8 @@ def format_status_list(status_list: list) -> List[int]:
     final_status_list = []
     for status in status_list:
         # Checks if the status is a range of statuses
-        if '-' in status:
-            range_numbers = status.split('-')
+        if "-" in status:
+            range_numbers = status.split("-")
             status_range = list(range(int(range_numbers[0]), int(range_numbers[1]) + 1))
             final_status_list.extend(status_range)
         elif status.isdigit():
@@ -139,23 +152,25 @@ def format_status_list(status_list: list) -> List[int]:
 
 
 def build_outputs(parsed_res, res: requests.Response) -> Dict:
-    return {'ParsedBody': parsed_res,
-            'Body': res.text,
-            'StatusCode': res.status_code,
-            'StatusText': res.reason,
-            'URL': res.url,
-            'Headers': dict(res.headers)}
+    return {
+        "ParsedBody": parsed_res,
+        "Body": res.text,
+        "StatusCode": res.status_code,
+        "StatusText": res.reason,
+        "URL": res.url,
+        "Headers": dict(res.headers),
+    }
 
 
 def parse_headers(headers: str) -> Dict:
     """
-        Parsing headers from str type to dict.
-        The allowed format are:
-        1. {"key": "value"}
-        2. "key": "value"
+    Parsing headers from str type to dict.
+    The allowed format are:
+    1. {"key": "value"}
+    2. "key": "value"
     """
-    if not headers.startswith('{') and not headers.endswith('}'):
-        headers = '{' + headers + '}'
+    if not headers.startswith("{") and not headers.endswith("}"):
+        headers = "{" + headers + "}"
     try:
         headers_dict = json.loads(headers)
     except json.decoder.JSONDecodeError:
@@ -165,62 +180,56 @@ def parse_headers(headers: str) -> Dict:
 
 def api_call_command(client: Client):
     dmst_params = demisto.params()
-    apikey_in_header = dmst_params.get('apikey_in_header', True)
-    api_call_key = dmst_params.get('api_call_key', '')
-    is_auth = argToBoolean(dmst_params.get('is_auth', 'False'))
+    apikey_in_header = dmst_params.get("apikey_in_header", True)
+    api_call_key = dmst_params.get("api_call_key", "")
+    is_auth = argToBoolean(dmst_params.get("is_auth", "False"))
 
     cmd_args = demisto.args()
-    method = cmd_args.get('method', '')
-    body = cmd_args.get('body', '')
-    request_content_type = cmd_args.get('request_content_type', '')
-    response_content_type = cmd_args.get('response_content_type', '')
-    parse_response_as = cmd_args.get('parse_response_as', RAW_RESPONSE)
-    params = cmd_args.get('params', {})
-    headers = cmd_args.get('headers', {})
+    method = cmd_args.get("method", "")
+    body = cmd_args.get("body", "")
+    request_content_type = cmd_args.get("request_content_type", "")
+    response_content_type = cmd_args.get("response_content_type", "")
+    parse_response_as = cmd_args.get("parse_response_as", RAW_RESPONSE)
+    params = cmd_args.get("params", {})
+    headers = cmd_args.get("headers", {})
     if not api_call_key and is_auth:
         demisto.error("Parameter/Header key used for API call must be specified")
     elif is_auth:
         if apikey_in_header:
-            headers.update({api_call_key: demisto.getParam('credentials')['password']})
+            headers.update({api_call_key: demisto.getParam("credentials")["password"]})
         else:
-            params.update({api_call_key: demisto.getParam('credentials')['password']})
-    url_path = cmd_args.get('urlpath', '/')
+            params.update({api_call_key: demisto.getParam("credentials")["password"]})
+    url_path = cmd_args.get("urlpath", "/")
     if isinstance(headers, str):
         headers = parse_headers(headers)
     headers = create_headers(headers, request_content_type, response_content_type)
-    save_as_file = argToBoolean(cmd_args.get('save_as_file', False))
-    file_name = cmd_args.get('filename', 'http-file')
-    timeout = arg_to_number(cmd_args.get('timeout', 10))
-    timeout_between_retries = cmd_args.get('timeout_between_retries', 5)
-    retry_count = arg_to_number(cmd_args.get('retry_count', 3))
+    save_as_file = argToBoolean(cmd_args.get("save_as_file", False))
+    file_name = cmd_args.get("filename", "http-file")
+    timeout = arg_to_number(cmd_args.get("timeout", 10))
+    timeout_between_retries = cmd_args.get("timeout_between_retries", 5)
+    retry_count = arg_to_number(cmd_args.get("retry_count", 3))
 
     kwargs = {
-        'method': method,
-        'full_url': client._base_url + url_path,
-        'headers': headers,
-        'data': body,
-        'timeout': timeout,
-        'params': params,
-        'backoff_factor': timeout_between_retries
+        "method": method,
+        "full_url": client._base_url + url_path,
+        "headers": headers,
+        "data": body,
+        "timeout": timeout,
+        "params": params,
+        "backoff_factor": timeout_between_retries,
     }
 
-    retry_on_status = cmd_args.get('retry_on_status', None)
+    retry_on_status = cmd_args.get("retry_on_status", None)
     raise_on_status = bool(retry_on_status)
     retry_status_list = format_status_list(argToList(retry_on_status))
 
     if raise_on_status:
-        kwargs.update({
-            'retries': retry_count,
-            'status_list_to_retry': retry_status_list,
-            'raise_on_status': raise_on_status
-        })
+        kwargs.update({"retries": retry_count, "status_list_to_retry": retry_status_list, "raise_on_status": raise_on_status})
 
-    enable_redirect = argToBoolean(cmd_args.get('enable_redirect', True))
+    enable_redirect = argToBoolean(cmd_args.get("enable_redirect", True))
 
     if not enable_redirect:
-        kwargs.update({
-            'allow_redirects': enable_redirect
-        })
+        kwargs.update({"allow_redirects": enable_redirect})
 
     res = client.http_request(**kwargs)
     parsed_res = get_parsed_response(res, parse_response_as)
@@ -232,50 +241,49 @@ def api_call_command(client: Client):
 
     return CommandResults(
         readable_output=f"Sent a {method} request to {client._base_url}",
-        outputs_prefix='APICall',
+        outputs_prefix="APICall",
         outputs=outputs,
-        raw_response={'data': parsed_res}
+        raw_response={"data": parsed_res},
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
         params = demisto.params()
-        results = ''
-        auth = ''
-        base_url = params.get('base_url', '')
-        is_auth = params.get('is_auth', True)
-        creds = params.get('credentials', '')
-        proxy = params.get('proxy', False)
-        verify = not params.get('insecure', True)
+        results = ""
+        auth = ""
+        base_url = params.get("base_url", "")
+        is_auth = params.get("is_auth", True)
+        creds = params.get("credentials", "")
+        proxy = params.get("proxy", False)
+        verify = not params.get("insecure", True)
 
         command = demisto.command()
 
-        if command == 'generic-api-call':
-
+        if command == "generic-api-call":
             if is_auth:
                 # Credential object - API Key or HTTP Basic Auth
-                if 'credentials' in creds and creds['credentials']['name']:
-                    auth = (creds['credentials']['user'], creds['credentials']['password'])
+                if "credentials" in creds and creds["credentials"]["name"]:
+                    auth = (creds["credentials"]["user"], creds["credentials"]["password"])
                 # Creds configured in integration instance
-                elif 'credentials' not in creds:
-                    auth = (creds['identifier'], creds['password'])
+                elif "credentials" not in creds:
+                    auth = (creds["identifier"], creds["password"])
             else:
                 auth = ()
 
             client = Client(base_url, auth=auth, verify=verify, proxy=proxy)
 
-            demisto.debug(f'Command being called is {command}')
+            demisto.debug(f"Command being called is {command}")
             results = api_call_command(client)
 
         return_results(results)
 
     except Exception as e:
-        return_error(f'Failed to execute generic API call. Error: {str(e)}')
+        return_error(f"Failed to execute generic API call. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
