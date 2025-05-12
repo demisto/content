@@ -8,19 +8,19 @@ For more details about the authentication used in this integration, see [Microso
 
 When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
 
-## Important Notes:
+## Important Notes
+
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
-- As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration. 
+- As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration.
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
-    - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
-     
+  - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
+
   | **Operation** | **Limit per tenant** | **Limit per resource (email, URL, file)** |
     | --- | --- | --- |
     | POST | 150 requests per 15 minutes and 10000 requests per 24 hours. | 1 request per 15 minutes and 3 requests per 24 hours. |
-
 
 ### Required Permissions
 
@@ -100,7 +100,7 @@ Tests connectivity to Microsoft Graph Security.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| permission_type | Which permissions the integration should have. Possible values are: ediscovery, alerts, alerts, ediscovery. Default is ediscovery. | Optional | 
+| permission_type | Which permissions the integration should have. Possible values are: ediscovery, alerts, alerts, ediscovery. Default is ediscovery. | Optional |
 
 #### Context Output
 
@@ -127,77 +127,77 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| last_modified | When the alert was last modified in the following string format - YYYY-MM-DD. Possible values are: Last24Hours, Last48Hours, LastWeek. | Optional | 
-| severity | Alert severity - set by vendor/provider. Possible values are: unknown, informational, low, medium, high. | Optional | 
-| category | Category of the alert, e.g., credentialTheft, ransomware (Categories can be added or removed by vendors.). | Optional | 
-| time_from | The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD. | Optional | 
-| time_to | The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD. | Optional | 
-| filter | Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'". | Optional | 
-| classification | Relevant only for Alerts v2. Use this field to filter by alert's classification. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional | 
-| service_source | Relevant only for Alerts v2. Use this field to filter the alerts by the service or product that created this alert. Possible values are: microsoftDefenderForEndpoint, microsoftDefenderForIdentity, microsoftDefenderForOffice365, microsoft365Defender, microsoftAppGovernance, microsoftDefenderForCloudApps. | Optional | 
-| status | Relevant only for Alerts v2. Use this field to filter by alert's status. Possible values are: unknown, new, inProgress, resolved. | Optional | 
-| page | Page number to return, zero indexed. The maximum number of alerts that can be skipped for Legacy Alerts is 500 (i.e., page * page_size must be &lt;= 500). | Optional | 
-| page_size | Number of results in a page. Default is 50, the limit for Legacy Alerts is 1000, the limit for Alerts v2 is 2000. When using Legacy Alerts, the response will provide <page_size> results for each provider. | Optional | 
-| limit | Number of total results to return. Default is 50. Default is 50. | Optional | 
+| last_modified | When the alert was last modified in the following string format - YYYY-MM-DD. Possible values are: Last24Hours, Last48Hours, LastWeek. | Optional |
+| severity | Alert severity - set by vendor/provider. Possible values are: unknown, informational, low, medium, high. | Optional |
+| category | Category of the alert, e.g., credentialTheft, ransomware (Categories can be added or removed by vendors.). | Optional |
+| time_from | The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD. | Optional |
+| time_to | The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD. | Optional |
+| filter | Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'". | Optional |
+| classification | Relevant only for Alerts v2. Use this field to filter by alert's classification. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional |
+| service_source | Relevant only for Alerts v2. Use this field to filter the alerts by the service or product that created this alert. Possible values are: microsoftDefenderForEndpoint, microsoftDefenderForIdentity, microsoftDefenderForOffice365, microsoft365Defender, microsoftAppGovernance, microsoftDefenderForCloudApps. | Optional |
+| status | Relevant only for Alerts v2. Use this field to filter by alert's status. Possible values are: unknown, new, inProgress, resolved. | Optional |
+| page | Page number to return, zero indexed. The maximum number of alerts that can be skipped for Legacy Alerts is 500 (i.e., page * page_size must be &lt;= 500). | Optional |
+| page_size | Number of results in a page. Default is 50, the limit for Legacy Alerts is 1000, the limit for Alerts v2 is 2000. When using Legacy Alerts, the response will provide <page_size> results for each provider. | Optional |
+| limit | Number of total results to return. Default is 50. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Alert.ID | string | Alert ID. | 
-| MsGraph.Alert.Title | string | Alert title. | 
-| MsGraph.Alert.Category | string | Alert category. | 
-| MsGraph.Alert.Severity | string | Alert severity. | 
-| MsGraph.Alert.CreatedDate | date | Alert created date. | 
-| MsGraph.Alert.EventDate | date | Relevant only for Legacy Alerts. Alert event time. | 
-| MsGraph.Alert.Status | string | Alert status. | 
-| MsGraph.Alert.Vendor | string | Relevant only for Legacy Alerts. Alert vendor. | 
+| MsGraph.Alert.ID | string | Alert ID. |
+| MsGraph.Alert.Title | string | Alert title. |
+| MsGraph.Alert.Category | string | Alert category. |
+| MsGraph.Alert.Severity | string | Alert severity. |
+| MsGraph.Alert.CreatedDate | date | Alert created date. |
+| MsGraph.Alert.EventDate | date | Relevant only for Legacy Alerts. Alert event time. |
+| MsGraph.Alert.Status | string | Alert status. |
+| MsGraph.Alert.Vendor | string | Relevant only for Legacy Alerts. Alert vendor. |
 | MsGraph.Alert.MalwareStates | string | Relevant only for Legacy Alerts. Alert malware states. |
-| MsGraph.Alert.Provider | string | Relevant only for Legacy Alerts. Alert provider. | 
-| MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for Alerts v2. Alert actor name. | 
-| MsGraph.Alert.AlertWebUrl | String | Relevant only for Alerts v2. Alert web URL. | 
-| MsGraph.Alert.AssignedTo | Unknown | Relevant only for Alerts v2. Alert assignee. | 
-| MsGraph.Alert.Classification | Unknown | Relevant only for Alerts v2. Alert classification. | 
-| MsGraph.Alert.Description | String | Relevant only for Alerts v2. Alert description. | 
-| MsGraph.Alert.DetectionSource | String | Relevant only for Alerts v2. Alert detection source. | 
-| MsGraph.Alert.DetectorId | String | Relevant only for Alerts v2. Alert detector ID. | 
-| MsGraph.Alert.Determination | Unknown | Relevant only for Alerts v2. Alert determination. | 
-| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for Alerts v2. Alert evidence. | 
-| MsGraph.Alert.Evidence.AzureAdDeviceId | String | Relevant only for Alerts v2. Evidence Azure device ID. | 
-| MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for Alerts v2. Evidence creation time. | 
-| MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for Alerts v2. Evidence Defender AV status. | 
-| MsGraph.Alert.Evidence.DeviceDnsName | String | Relevant only for Alerts v2. Evidence device DNS name. | 
-| MsGraph.Alert.Evidence.FirstSeenDateTime | Date | Relevant only for Alerts v2. Evidence first seen time. | 
-| MsGraph.Alert.Evidence.HealthStatus | String | Relevant only for Alerts v2. Evidence health status. | 
-| MsGraph.Alert.Evidence.MdeDeviceId | String | Relevant only for Alerts v2. Evidence MDE device ID. | 
-| MsGraph.Alert.Evidence.OnboardingStatus | String | Relevant only for Alerts v2. Evidence onboarding status. | 
-| MsGraph.Alert.Evidence.OsBuild | Number | Relevant only for Alerts v2. Evidence OS build. | 
-| MsGraph.Alert.Evidence.OsPlatform | String | Relevant only for Alerts v2. Evidence OS platform. | 
-| MsGraph.Alert.Evidence.RbacGroupId | Number | Relevant only for Alerts v2. Evidence RBAC group ID. | 
-| MsGraph.Alert.Evidence.RbacGroupName | String | Relevant only for Alerts v2. Evidence RBAC group name. | 
-| MsGraph.Alert.Evidence.RemediationStatus | String | Relevant only for Alerts v2. Evidence remediation status. | 
-| MsGraph.Alert.Evidence.RemediationStatusDetails | Unknown | Relevant only for Alerts v2. Evidence remediation status details. | 
-| MsGraph.Alert.Evidence.RiskScore | String | Relevant only for Alerts v2. Evidence risk score. | 
-| MsGraph.Alert.Evidence.Tags | String | Relevant only for Alerts v2. Evidence tags. | 
-| MsGraph.Alert.Evidence.Verdict | String | Relevant only for Alerts v2. Evidence verdict. | 
-| MsGraph.Alert.Evidence.Version | String | Relevant only for Alerts v2. Evidence version. | 
-| MsGraph.Alert.Evidence.VmMetadata | Unknown | Relevant only for Alerts v2. Evidence VM metadata. | 
-| MsGraph.Alert.FirstActivityDateTime | Date | Relevant only for Alerts v2. Evidence first activity time. | 
-| MsGraph.Alert.IncidentId | String | Relevant only for Alerts v2. Alert incident ID. | 
-| MsGraph.Alert.IncidentWebUrl | String | Relevant only for Alerts v2. Alert incident URL. | 
-| MsGraph.Alert.LastActivityDateTime | Date | Relevant only for Alerts v2. Alert last activity time. | 
-| MsGraph.Alert.LastUpdateDateTime | Date | Relevant only for Alerts v2. Alert last update time. | 
-| MsGraph.Alert.ProviderAlertId | String | Relevant only for Alerts v2. Alert provider ID. | 
-| MsGraph.Alert.RecommendedActions | String | Relevant only for Alerts v2. Alert recommended action. | 
-| MsGraph.Alert.ResolvedDateTime | Date | Relevant only for Alerts v2. Alert closing time. | 
-| MsGraph.Alert.ServiceSource | String | Relevant only for Alerts v2. Alert service source. | 
-| MsGraph.Alert.TenantId | String | Relevant only for Alerts v2. Alert tenant ID. | 
-| MsGraph.Alert.ThreatDisplayName | Unknown | Relevant only for Alerts v2. Alert threat display name. | 
-| MsGraph.Alert.ThreatFamilyName | Unknown | Relevant only for Alerts v2. Alert threat family name. | 
+| MsGraph.Alert.Provider | string | Relevant only for Legacy Alerts. Alert provider. |
+| MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for Alerts v2. Alert actor name. |
+| MsGraph.Alert.AlertWebUrl | String | Relevant only for Alerts v2. Alert web URL. |
+| MsGraph.Alert.AssignedTo | Unknown | Relevant only for Alerts v2. Alert assignee. |
+| MsGraph.Alert.Classification | Unknown | Relevant only for Alerts v2. Alert classification. |
+| MsGraph.Alert.Description | String | Relevant only for Alerts v2. Alert description. |
+| MsGraph.Alert.DetectionSource | String | Relevant only for Alerts v2. Alert detection source. |
+| MsGraph.Alert.DetectorId | String | Relevant only for Alerts v2. Alert detector ID. |
+| MsGraph.Alert.Determination | Unknown | Relevant only for Alerts v2. Alert determination. |
+| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for Alerts v2. Alert evidence. |
+| MsGraph.Alert.Evidence.AzureAdDeviceId | String | Relevant only for Alerts v2. Evidence Azure device ID. |
+| MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for Alerts v2. Evidence creation time. |
+| MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for Alerts v2. Evidence Defender AV status. |
+| MsGraph.Alert.Evidence.DeviceDnsName | String | Relevant only for Alerts v2. Evidence device DNS name. |
+| MsGraph.Alert.Evidence.FirstSeenDateTime | Date | Relevant only for Alerts v2. Evidence first seen time. |
+| MsGraph.Alert.Evidence.HealthStatus | String | Relevant only for Alerts v2. Evidence health status. |
+| MsGraph.Alert.Evidence.MdeDeviceId | String | Relevant only for Alerts v2. Evidence MDE device ID. |
+| MsGraph.Alert.Evidence.OnboardingStatus | String | Relevant only for Alerts v2. Evidence onboarding status. |
+| MsGraph.Alert.Evidence.OsBuild | Number | Relevant only for Alerts v2. Evidence OS build. |
+| MsGraph.Alert.Evidence.OsPlatform | String | Relevant only for Alerts v2. Evidence OS platform. |
+| MsGraph.Alert.Evidence.RbacGroupId | Number | Relevant only for Alerts v2. Evidence RBAC group ID. |
+| MsGraph.Alert.Evidence.RbacGroupName | String | Relevant only for Alerts v2. Evidence RBAC group name. |
+| MsGraph.Alert.Evidence.RemediationStatus | String | Relevant only for Alerts v2. Evidence remediation status. |
+| MsGraph.Alert.Evidence.RemediationStatusDetails | Unknown | Relevant only for Alerts v2. Evidence remediation status details. |
+| MsGraph.Alert.Evidence.RiskScore | String | Relevant only for Alerts v2. Evidence risk score. |
+| MsGraph.Alert.Evidence.Tags | String | Relevant only for Alerts v2. Evidence tags. |
+| MsGraph.Alert.Evidence.Verdict | String | Relevant only for Alerts v2. Evidence verdict. |
+| MsGraph.Alert.Evidence.Version | String | Relevant only for Alerts v2. Evidence version. |
+| MsGraph.Alert.Evidence.VmMetadata | Unknown | Relevant only for Alerts v2. Evidence VM metadata. |
+| MsGraph.Alert.FirstActivityDateTime | Date | Relevant only for Alerts v2. Evidence first activity time. |
+| MsGraph.Alert.IncidentId | String | Relevant only for Alerts v2. Alert incident ID. |
+| MsGraph.Alert.IncidentWebUrl | String | Relevant only for Alerts v2. Alert incident URL. |
+| MsGraph.Alert.LastActivityDateTime | Date | Relevant only for Alerts v2. Alert last activity time. |
+| MsGraph.Alert.LastUpdateDateTime | Date | Relevant only for Alerts v2. Alert last update time. |
+| MsGraph.Alert.ProviderAlertId | String | Relevant only for Alerts v2. Alert provider ID. |
+| MsGraph.Alert.RecommendedActions | String | Relevant only for Alerts v2. Alert recommended action. |
+| MsGraph.Alert.ResolvedDateTime | Date | Relevant only for Alerts v2. Alert closing time. |
+| MsGraph.Alert.ServiceSource | String | Relevant only for Alerts v2. Alert service source. |
+| MsGraph.Alert.TenantId | String | Relevant only for Alerts v2. Alert tenant ID. |
+| MsGraph.Alert.ThreatDisplayName | Unknown | Relevant only for Alerts v2. Alert threat display name. |
+| MsGraph.Alert.ThreatFamilyName | Unknown | Relevant only for Alerts v2. Alert threat family name. |
 
 #### Human Readable Output
 
->## Using Legacy Alerts:
+>## Using Legacy Alerts
 
 >### Microsoft Security Graph Alerts
 
@@ -205,7 +205,7 @@ List alerts (security issues) within a customer's tenant that Microsoft or part
 >|---|---|---|---|---|---|---|---|---|
 >| id | Microsoft | IPC | Atypical travel | ImpossibleTravel | high | 2023-03-30T20:45:14.259Z | 2023-03-30T15:07:21.4705248Z | newAlert |
 
->## Using Alerts v2:
+>## Using Alerts v2
 
 >### Microsoft Security Graph Alerts
 
@@ -226,101 +226,101 @@ Get details for a specific alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert ID - Provider-generated GUID/unique identifier. | Required | 
+| alert_id | The alert ID - Provider-generated GUID/unique identifier. | Required |
 | fields_to_include | Relevant only for Legacy Alerts. Fields to fetch for a specified alert apart from the basic properties, given as comma separated values, e.g., NetworkConnections,Processes. The possible values are: All, NetworkConnections, Processes, RegistryKeys, UserStates, HostStates, FileStates, CloudAppStates, MalwareStates, CustomerComments, Triggers, VendorInformation, VulnerabilityStates. Default is All. | Optional |  
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Alert.ID | string | Alert ID. | 
-| MsGraph.Alert.Title | string | Alert title. | 
-| MsGraph.Alert.Category | string | Alert category. | 
-| MsGraph.Alert.Severity | string | Alert severity. | 
-| MsGraph.Alert.CreatedDate | date | Relevant only for Legacy Alerts. Alert created date. | 
-| MsGraph.Alert.EventDate | date | Relevant only for Legacy Alerts. Alert event time. | 
-| MsGraph.Alert.Status | string | Alert status. | 
-| MsGraph.Alert.Vendor | string | Relevant only for Legacy Alerts. Alert vendor. | 
-| MsGraph.Alert.Provider | string | Relevant only for Legacy Alerts. Alert provider. | 
-| MsGraph.Alert.@odata.Context | String | Relevant only for Alerts v2. Alert odata context. | 
-| MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for Alerts v2. Alert actor name. | 
-| MsGraph.Alert.AlertWebUrl | String | Relevant only for Alerts v2. Alert web URL. | 
-| MsGraph.Alert.AssignedTo | Unknown | Relevant only for Alerts v2. Alert assignee. | 
-| MsGraph.Alert.Classification | Unknown | Relevant only for Alerts v2. Alert classification. | 
-| MsGraph.Alert.Comments.Comment | String | Relevant only for Alerts v2. Alert comment. | 
-| MsGraph.Alert.Comments.CreatedByDisplayName | String | Relevant only for Alerts v2. Alert comment creator name. | 
-| MsGraph.Alert.Comments.CreatedDate | Date | Relevant only for Alerts v2. Alert comment creation time. | 
-| MsGraph.Alert.CreatedDate | Date | Relevant only for Alerts v2. Alert creation time. | 
-| MsGraph.Alert.Description | String | Relevant only for Alerts v2. Alert description. | 
-| MsGraph.Alert.DetectionSource | String | Relevant only for Alerts v2. Alert detection source. | 
-| MsGraph.Alert.DetectorId | String | Relevant only for Alerts v2. Alert detector ID. | 
-| MsGraph.Alert.Determination | Unknown | Relevant only for Alerts v2. Alert determination. | 
-| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for Alerts v2. Alert evidence. | 
-| MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for Alerts v2. Evidence creation time. | 
-| MsGraph.Alert.Evidence.DetectionStatus | Unknown | Relevant only for Alerts v2. Evidence detection status. | 
-| MsGraph.Alert.Evidence.ImageFile.FileName | String | Relevant only for Alerts v2. Evidence image file name. | 
-| MsGraph.Alert.Evidence.ImageFile.FilePath | String | Relevant only for Alerts v2. Evidence image file path. | 
-| MsGraph.Alert.Evidence.ImageFile.FilePublisher | Unknown | Relevant only for Alerts v2. Evidence image file publisher. | 
-| MsGraph.Alert.Evidence.ImageFile.FileSize | Unknown | Relevant only for Alerts v2. Evidence image file size. | 
-| MsGraph.Alert.Evidence.ImageFile.Issuer | Unknown | Relevant only for Alerts v2. Evidence image file issuer. | 
-| MsGraph.Alert.Evidence.ImageFile.Sha1 | String | Relevant only for Alerts v2. Evidence image file SHA1 hash. | 
-| MsGraph.Alert.Evidence.ImageFile.Sha256 | String | Relevant only for Alerts v2. Evidence image file SHA256 hash. | 
-| MsGraph.Alert.Evidence.ImageFile.Signer | Unknown | Relevant only for Alerts v2. Evidence image file signer. | 
-| MsGraph.Alert.Evidence.MdeDeviceId | Unknown | Relevant only for Alerts v2. Evidence MDE device ID. | 
-| MsGraph.Alert.Evidence.ParentProcessCreationDateTime | Date | Relevant only for Alerts v2. Evidence parent process creation time. | 
-| MsGraph.Alert.Evidence.ParentProcessId | Number | Relevant only for Alerts v2. Evidence parent process process ID. | 
-| MsGraph.Alert.Evidence.ParentProcessImageFile | Unknown | Relevant only for Alerts v2. Evidence parent process image file. | 
-| MsGraph.Alert.Evidence.ProcessCommandLine | String | Relevant only for Alerts v2. Evidence process command line. | 
-| MsGraph.Alert.Evidence.ProcessCreationDateTime | Date | Relevant only for Alerts v2.  Evidence process creation time. | 
-| MsGraph.Alert.Evidence.ProcessId | Number | Relevant only for Alerts v2.  Evidence process ID. | 
-| MsGraph.Alert.Evidence.RemediationStatus | String | Relevant only for Alerts v2. Evidence remediation status. | 
-| MsGraph.Alert.Evidence.RemediationStatusDetails | Unknown | Relevant only for Alerts v2. Evidence remediation status details. | 
-| MsGraph.Alert.Evidence.UserAccount.AccountName | String | Relevant only for Alerts v2. Evidence user account name. | 
-| MsGraph.Alert.Evidence.UserAccount.AzureAdUserId | Unknown | Relevant only for Alerts v2. Evidence user account Azure AD user ID. | 
-| MsGraph.Alert.Evidence.UserAccount.DisplayName | String | Relevant only for Alerts v2. Evidence user account display name. | 
-| MsGraph.Alert.Evidence.UserAccount.DomainName | Unknown | Relevant only for Alerts v2. Evidence user account domain name. | 
-| MsGraph.Alert.Evidence.UserAccount.UserPrincipalName | Unknown | Relevant only for Alerts v2. Evidence user account user principal name. | 
-| MsGraph.Alert.Evidence.UserAccount.UserSid | String | Relevant only for Alerts v2. Evidence user account user SID. | 
-| MsGraph.Alert.Evidence.Verdict | String | Relevant only for Alerts v2. Evidence verdict. | 
-| MsGraph.Alert.Evidence.FileDetails.FileName | String | Relevant only for Alerts v2. Evidence file details file name. | 
-| MsGraph.Alert.Evidence.FileDetails.FilePath | String | Relevant only for Alerts v2. Evidence file details file path. | 
-| MsGraph.Alert.Evidence.FileDetails.FilePublisher | Unknown | Relevant only for Alerts v2. Evidence file details file publisher. | 
-| MsGraph.Alert.Evidence.FileDetails.FileSize | Unknown | Relevant only for Alerts v2. Evidence file details file size. | 
-| MsGraph.Alert.Evidence.FileDetails.Issuer | Unknown | Relevant only for Alerts v2. Evidence file details file issuer. | 
-| MsGraph.Alert.Evidence.FileDetails.Sha1 | String | Relevant only for Alerts v2. Evidence file details SHA1 hash. | 
-| MsGraph.Alert.Evidence.FileDetails.Sha256 | String | Relevant only for Alerts v2. Evidence file details SHA256 hash. | 
-| MsGraph.Alert.Evidence.FileDetails.Signer | Unknown | Relevant only for Alerts v2. Evidence file details file signer. | 
-| MsGraph.Alert.Evidence.CֹountryLetterCode | Unknown | Relevant only for Alerts v2. Evidence country letter code. | 
-| MsGraph.Alert.Evidence.IpAddress | String | Relevant only for Alerts v2. Evidence IP address. | 
-| MsGraph.Alert.Evidence.AzureAdDeviceId | Unknown | Relevant only for Alerts v2. Evidence Azure AD device ID. | 
-| MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for Alerts v2. Evidence Defender AV status. | 
-| MsGraph.Alert.Evidence.DeviceDnsName | String | Relevant only for Alerts v2. Evidence device DNS name. | 
-| MsGraph.Alert.Evidence.FirstSeenDateTime | Date | Relevant only for Alerts v2. Evidence first seen time. | 
-| MsGraph.Alert.Evidence.HealthStatus | String | Relevant only for Alerts v2. Evidence health status. | 
-| MsGraph.Alert.Evidence.OnboardingStatus | String | Relevant only for Alerts v2. Evidence onboarding status. | 
-| MsGraph.Alert.Evidence.OsBuild | Unknown | Relevant only for Alerts v2. Evidence OS build. | 
-| MsGraph.Alert.Evidence.OsPlatform | String | Relevant only for Alerts v2. Evidence OS platform. | 
-| MsGraph.Alert.Evidence.RbacGroupId | Number | Relevant only for Alerts v2. Evidence RBAC group ID. | 
-| MsGraph.Alert.Evidence.RbacGroupName | String | Relevant only for Alerts v2. Evidence RBAC group name. | 
-| MsGraph.Alert.Evidence.RiskScore | String | Relevant only for Alerts v2. Evidence risk score. | 
-| MsGraph.Alert.Evidence.Version | String | Relevant only for Alerts v2. Evidence version. | 
-| MsGraph.Alert.Evidence.VmMetadata | Unknown | Relevant only for Alerts v2. Evidence VM metadata. | 
-| MsGraph.Alert.FirstActivityDateTime | Date | Relevant only for Alerts v2. Evidence first activity time. | 
-| MsGraph.Alert.IncidentId | String | Relevant only for Alerts v2. Alert incident ID. | 
-| MsGraph.Alert.IncidentWebUrl | String | Relevant only for Alerts v2. Alert incident URL. | 
-| MsGraph.Alert.LastActivityDateTime | Date | Relevant only for Alerts v2. Alert last activity time. | 
-| MsGraph.Alert.LastUpdateDateTime | Date | Relevant only for Alerts v2. Alert last update time. | 
-| MsGraph.Alert.ProviderAlertId | String | Relevant only for Alerts v2. Alert provider ID. | 
-| MsGraph.Alert.RecommendedActions | String | Relevant only for Alerts v2. Alert recommended action. | 
-| MsGraph.Alert.ResolvedDateTime | Date | Relevant only for Alerts v2. Alert closing time. | 
-| MsGraph.Alert.ServiceSource | String | Relevant only for Alerts v2. Alert service source. | 
-| MsGraph.Alert.TenantId | String | Relevant only for Alerts v2. Alert tenant ID. | 
-| MsGraph.Alert.ThreatDisplayName | Unknown | Relevant only for Alerts v2. Alert threat display name. | 
-| MsGraph.Alert.ThreatFamilyName | Unknown | Relevant only for Alerts v2. Alert threat family name. | 
+| MsGraph.Alert.ID | string | Alert ID. |
+| MsGraph.Alert.Title | string | Alert title. |
+| MsGraph.Alert.Category | string | Alert category. |
+| MsGraph.Alert.Severity | string | Alert severity. |
+| MsGraph.Alert.CreatedDate | date | Relevant only for Legacy Alerts. Alert created date. |
+| MsGraph.Alert.EventDate | date | Relevant only for Legacy Alerts. Alert event time. |
+| MsGraph.Alert.Status | string | Alert status. |
+| MsGraph.Alert.Vendor | string | Relevant only for Legacy Alerts. Alert vendor. |
+| MsGraph.Alert.Provider | string | Relevant only for Legacy Alerts. Alert provider. |
+| MsGraph.Alert.@odata.Context | String | Relevant only for Alerts v2. Alert odata context. |
+| MsGraph.Alert.ActorDisplayName | Unknown | Relevant only for Alerts v2. Alert actor name. |
+| MsGraph.Alert.AlertWebUrl | String | Relevant only for Alerts v2. Alert web URL. |
+| MsGraph.Alert.AssignedTo | Unknown | Relevant only for Alerts v2. Alert assignee. |
+| MsGraph.Alert.Classification | Unknown | Relevant only for Alerts v2. Alert classification. |
+| MsGraph.Alert.Comments.Comment | String | Relevant only for Alerts v2. Alert comment. |
+| MsGraph.Alert.Comments.CreatedByDisplayName | String | Relevant only for Alerts v2. Alert comment creator name. |
+| MsGraph.Alert.Comments.CreatedDate | Date | Relevant only for Alerts v2. Alert comment creation time. |
+| MsGraph.Alert.CreatedDate | Date | Relevant only for Alerts v2. Alert creation time. |
+| MsGraph.Alert.Description | String | Relevant only for Alerts v2. Alert description. |
+| MsGraph.Alert.DetectionSource | String | Relevant only for Alerts v2. Alert detection source. |
+| MsGraph.Alert.DetectorId | String | Relevant only for Alerts v2. Alert detector ID. |
+| MsGraph.Alert.Determination | Unknown | Relevant only for Alerts v2. Alert determination. |
+| MsGraph.Alert.Evidence.@odata.Type | String | Relevant only for Alerts v2. Alert evidence. |
+| MsGraph.Alert.Evidence.CreatedDate | Date | Relevant only for Alerts v2. Evidence creation time. |
+| MsGraph.Alert.Evidence.DetectionStatus | Unknown | Relevant only for Alerts v2. Evidence detection status. |
+| MsGraph.Alert.Evidence.ImageFile.FileName | String | Relevant only for Alerts v2. Evidence image file name. |
+| MsGraph.Alert.Evidence.ImageFile.FilePath | String | Relevant only for Alerts v2. Evidence image file path. |
+| MsGraph.Alert.Evidence.ImageFile.FilePublisher | Unknown | Relevant only for Alerts v2. Evidence image file publisher. |
+| MsGraph.Alert.Evidence.ImageFile.FileSize | Unknown | Relevant only for Alerts v2. Evidence image file size. |
+| MsGraph.Alert.Evidence.ImageFile.Issuer | Unknown | Relevant only for Alerts v2. Evidence image file issuer. |
+| MsGraph.Alert.Evidence.ImageFile.Sha1 | String | Relevant only for Alerts v2. Evidence image file SHA1 hash. |
+| MsGraph.Alert.Evidence.ImageFile.Sha256 | String | Relevant only for Alerts v2. Evidence image file SHA256 hash. |
+| MsGraph.Alert.Evidence.ImageFile.Signer | Unknown | Relevant only for Alerts v2. Evidence image file signer. |
+| MsGraph.Alert.Evidence.MdeDeviceId | Unknown | Relevant only for Alerts v2. Evidence MDE device ID. |
+| MsGraph.Alert.Evidence.ParentProcessCreationDateTime | Date | Relevant only for Alerts v2. Evidence parent process creation time. |
+| MsGraph.Alert.Evidence.ParentProcessId | Number | Relevant only for Alerts v2. Evidence parent process process ID. |
+| MsGraph.Alert.Evidence.ParentProcessImageFile | Unknown | Relevant only for Alerts v2. Evidence parent process image file. |
+| MsGraph.Alert.Evidence.ProcessCommandLine | String | Relevant only for Alerts v2. Evidence process command line. |
+| MsGraph.Alert.Evidence.ProcessCreationDateTime | Date | Relevant only for Alerts v2.  Evidence process creation time. |
+| MsGraph.Alert.Evidence.ProcessId | Number | Relevant only for Alerts v2.  Evidence process ID. |
+| MsGraph.Alert.Evidence.RemediationStatus | String | Relevant only for Alerts v2. Evidence remediation status. |
+| MsGraph.Alert.Evidence.RemediationStatusDetails | Unknown | Relevant only for Alerts v2. Evidence remediation status details. |
+| MsGraph.Alert.Evidence.UserAccount.AccountName | String | Relevant only for Alerts v2. Evidence user account name. |
+| MsGraph.Alert.Evidence.UserAccount.AzureAdUserId | Unknown | Relevant only for Alerts v2. Evidence user account Azure AD user ID. |
+| MsGraph.Alert.Evidence.UserAccount.DisplayName | String | Relevant only for Alerts v2. Evidence user account display name. |
+| MsGraph.Alert.Evidence.UserAccount.DomainName | Unknown | Relevant only for Alerts v2. Evidence user account domain name. |
+| MsGraph.Alert.Evidence.UserAccount.UserPrincipalName | Unknown | Relevant only for Alerts v2. Evidence user account user principal name. |
+| MsGraph.Alert.Evidence.UserAccount.UserSid | String | Relevant only for Alerts v2. Evidence user account user SID. |
+| MsGraph.Alert.Evidence.Verdict | String | Relevant only for Alerts v2. Evidence verdict. |
+| MsGraph.Alert.Evidence.FileDetails.FileName | String | Relevant only for Alerts v2. Evidence file details file name. |
+| MsGraph.Alert.Evidence.FileDetails.FilePath | String | Relevant only for Alerts v2. Evidence file details file path. |
+| MsGraph.Alert.Evidence.FileDetails.FilePublisher | Unknown | Relevant only for Alerts v2. Evidence file details file publisher. |
+| MsGraph.Alert.Evidence.FileDetails.FileSize | Unknown | Relevant only for Alerts v2. Evidence file details file size. |
+| MsGraph.Alert.Evidence.FileDetails.Issuer | Unknown | Relevant only for Alerts v2. Evidence file details file issuer. |
+| MsGraph.Alert.Evidence.FileDetails.Sha1 | String | Relevant only for Alerts v2. Evidence file details SHA1 hash. |
+| MsGraph.Alert.Evidence.FileDetails.Sha256 | String | Relevant only for Alerts v2. Evidence file details SHA256 hash. |
+| MsGraph.Alert.Evidence.FileDetails.Signer | Unknown | Relevant only for Alerts v2. Evidence file details file signer. |
+| MsGraph.Alert.Evidence.CֹountryLetterCode | Unknown | Relevant only for Alerts v2. Evidence country letter code. |
+| MsGraph.Alert.Evidence.IpAddress | String | Relevant only for Alerts v2. Evidence IP address. |
+| MsGraph.Alert.Evidence.AzureAdDeviceId | Unknown | Relevant only for Alerts v2. Evidence Azure AD device ID. |
+| MsGraph.Alert.Evidence.DefenderAvStatus | String | Relevant only for Alerts v2. Evidence Defender AV status. |
+| MsGraph.Alert.Evidence.DeviceDnsName | String | Relevant only for Alerts v2. Evidence device DNS name. |
+| MsGraph.Alert.Evidence.FirstSeenDateTime | Date | Relevant only for Alerts v2. Evidence first seen time. |
+| MsGraph.Alert.Evidence.HealthStatus | String | Relevant only for Alerts v2. Evidence health status. |
+| MsGraph.Alert.Evidence.OnboardingStatus | String | Relevant only for Alerts v2. Evidence onboarding status. |
+| MsGraph.Alert.Evidence.OsBuild | Unknown | Relevant only for Alerts v2. Evidence OS build. |
+| MsGraph.Alert.Evidence.OsPlatform | String | Relevant only for Alerts v2. Evidence OS platform. |
+| MsGraph.Alert.Evidence.RbacGroupId | Number | Relevant only for Alerts v2. Evidence RBAC group ID. |
+| MsGraph.Alert.Evidence.RbacGroupName | String | Relevant only for Alerts v2. Evidence RBAC group name. |
+| MsGraph.Alert.Evidence.RiskScore | String | Relevant only for Alerts v2. Evidence risk score. |
+| MsGraph.Alert.Evidence.Version | String | Relevant only for Alerts v2. Evidence version. |
+| MsGraph.Alert.Evidence.VmMetadata | Unknown | Relevant only for Alerts v2. Evidence VM metadata. |
+| MsGraph.Alert.FirstActivityDateTime | Date | Relevant only for Alerts v2. Evidence first activity time. |
+| MsGraph.Alert.IncidentId | String | Relevant only for Alerts v2. Alert incident ID. |
+| MsGraph.Alert.IncidentWebUrl | String | Relevant only for Alerts v2. Alert incident URL. |
+| MsGraph.Alert.LastActivityDateTime | Date | Relevant only for Alerts v2. Alert last activity time. |
+| MsGraph.Alert.LastUpdateDateTime | Date | Relevant only for Alerts v2. Alert last update time. |
+| MsGraph.Alert.ProviderAlertId | String | Relevant only for Alerts v2. Alert provider ID. |
+| MsGraph.Alert.RecommendedActions | String | Relevant only for Alerts v2. Alert recommended action. |
+| MsGraph.Alert.ResolvedDateTime | Date | Relevant only for Alerts v2. Alert closing time. |
+| MsGraph.Alert.ServiceSource | String | Relevant only for Alerts v2. Alert service source. |
+| MsGraph.Alert.TenantId | String | Relevant only for Alerts v2. Alert tenant ID. |
+| MsGraph.Alert.ThreatDisplayName | Unknown | Relevant only for Alerts v2. Alert threat display name. |
+| MsGraph.Alert.ThreatFamilyName | Unknown | Relevant only for Alerts v2. Alert threat family name. |
 
 #### Human Readable Output
 
->## Using Legacy Alerts:
+>## Using Legacy Alerts
 
 >### Microsoft Security Graph Alerts
 
@@ -361,7 +361,7 @@ Get details for a specific alert.
 >|---|---|---|
 >| Microsoft Defender ATP | MicrosoftDefenderATP | Microsoft |
 
->## Using Alerts v2:
+>## Using Alerts v2
 
 >### Microsoft Security Graph Alerts
 
@@ -384,24 +384,24 @@ Update an editable alert property within any integrated solution to keep alert s
 
 | **Argument Name**    | **Description**                                                                                                                                                                                                                                  | **Required** |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| alert_id             | The Alert ID. Provider-generated GUID/unique identifier.                                                                                                                                                                                         | Required     | 
-| assigned_to          | Name of the analyst the alert is assigned to for triage, investigation, or remediation.                                                                                                                                                          | Optional     | 
-| closed_date_time     | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.                                                                                                                                                      | Optional     | 
-| comments             | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).                                                                                                                                                  | Optional     | 
-| feedback             | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive.                                                                                                       | Optional     | 
-| status               | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new.                                                                                                                                               | Optional     | 
-| tags                 | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).                                                                                             | Optional     | 
-| vendor_information   | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.                                                                                                                                               | Optional     | 
-| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.                                                                                                                                    | Optional     | 
-| classification       | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, informationalExpectedActivity.                                                                      | Optional     | 
-| determination        | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, malware, phishing, other, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional     | 
+| alert_id             | The Alert ID. Provider-generated GUID/unique identifier.                                                                                                                                                                                         | Required     |
+| assigned_to          | Name of the analyst the alert is assigned to for triage, investigation, or remediation.                                                                                                                                                          | Optional     |
+| closed_date_time     | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.                                                                                                                                                      | Optional     |
+| comments             | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).                                                                                                                                                  | Optional     |
+| feedback             | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive.                                                                                                       | Optional     |
+| status               | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new.                                                                                                                                               | Optional     |
+| tags                 | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).                                                                                             | Optional     |
+| vendor_information   | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.                                                                                                                                               | Optional     |
+| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.                                                                                                                                    | Optional     |
+| classification       | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, informationalExpectedActivity.                                                                      | Optional     |
+| determination        | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, malware, phishing, other, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Alert.ID | string | Alert ID. | 
-| MsGraph.Alert.Status | string | Alert status, will appear only if changed. | 
+| MsGraph.Alert.ID | string | Alert ID. |
+| MsGraph.Alert.Status | string | Alert status, will appear only if changed. |
 
 #### Human Readable Output
 
@@ -420,17 +420,17 @@ Relevant only for Alerts v2, create a comment for an existing alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The Alert ID - Provider-generated GUID/unique identifier. | Required | 
-| comment | The comment to add to each alert. | Required | 
+| alert_id | The Alert ID - Provider-generated GUID/unique identifier. | Required |
+| comment | The comment to add to each alert. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.AlertComment.ID | String | The alert ID that the comment was added to. | 
-| MsGraph.AlertComment.Comments.Comment | String | The comment itself | 
-| MsGraph.AlertComment.Comments.CreatedByDisplayName | String | The comment's creator display name | 
-| MsGraph.AlertComment.Comments.CreatedDate | Date | The comment's creation time | 
+| MsGraph.AlertComment.ID | String | The alert ID that the comment was added to. |
+| MsGraph.AlertComment.Comments.Comment | String | The comment itself |
+| MsGraph.AlertComment.Comments.CreatedByDisplayName | String | The comment's creator display name |
+| MsGraph.AlertComment.Comments.CreatedDate | Date | The comment's creation time |
 
 #### Human Readable Output
 
@@ -441,7 +441,6 @@ Relevant only for Alerts v2, create a comment for an existing alert.
 >| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T10:57:18.5231438Z |
 >| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T11:01:31.7427859Z |
 >| comment | Cortex XSOAR MS Graph Dev | 2023-04-17T13:30:22.3995128Z |
-
 
 ### ms-graph-security-auth-reset
 
@@ -461,6 +460,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### eDiscovery Commands
+
 ### msg-list-ediscovery-cases
 
 ***
@@ -474,24 +474,24 @@ Lists edicovery cases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. If provided, only this id will be returned. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
-| all_results | Show all results if true. Possible values are: true, false. | Optional | 
+| case_id | The ID of the eDiscovery case. If provided, only this id will be returned. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| all_results | Show all results if true. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryCase.CaseId | String | The ID of the eDiscovery case. | 
-| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError. | 
-| MsGraph.eDiscoveryCase.CreatedDateTime | Date | The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z | 
-| MsGraph.eDiscoveryCase.Description | String | The case description. | 
-| MsGraph.eDiscoveryCase.DisplayName | String | The case name. | 
-| MsGraph.eDiscoveryCase.ExternalId | String | The external case number for customer reference. | 
-| MsGraph.eDiscoveryCase.LastModifiedDateTime | Date | The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z | 
-| MsGraph.eDiscoveryCase.ClosedBy.User.DisplayName | String | The user who closed the case. | 
-| MsGraph.eDiscoveryCase.LastModifiedBy.User.DisplayName | String | The user who last modified the case. | 
-| MsGraph.eDiscoveryCase.ClosedDateTime | Date | The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z | 
+| MsGraph.eDiscoveryCase.CaseId | String | The ID of the eDiscovery case. |
+| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError. |
+| MsGraph.eDiscoveryCase.CreatedDateTime | Date | The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z |
+| MsGraph.eDiscoveryCase.Description | String | The case description. |
+| MsGraph.eDiscoveryCase.DisplayName | String | The case name. |
+| MsGraph.eDiscoveryCase.ExternalId | String | The external case number for customer reference. |
+| MsGraph.eDiscoveryCase.LastModifiedDateTime | Date | The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z |
+| MsGraph.eDiscoveryCase.ClosedBy.User.DisplayName | String | The user who closed the case. |
+| MsGraph.eDiscoveryCase.LastModifiedBy.User.DisplayName | String | The user who last modified the case. |
+| MsGraph.eDiscoveryCase.ClosedDateTime | Date | The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z |
 
 #### Command example
 
@@ -605,7 +605,7 @@ Lists edicovery cases.
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Description|External Id|Case Status|Case Id|Created Date Time|Last Modified Date Time|Last Modified By Name|
 >|---|---|---|---|---|---|---|---|
@@ -628,21 +628,21 @@ Create a new eDiscovery case. This command only creates an eDiscovery (Premium) 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| display_name | The name of the eDiscovery case. | Required | 
-| description | The case description. | Optional | 
-| external_id | The external case number for customer reference. | Optional | 
+| display_name | The name of the eDiscovery case. | Required |
+| description | The case description. | Optional |
+| external_id | The external case number for customer reference. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryCase.CaseId | String | The ID of the eDiscovery case. | 
-| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are unknown, active, pendingDelete, closing, closed, and closedWithError. | 
-| MsGraph.eDiscoveryCase.CreatedDateTime | Date | The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z | 
-| MsGraph.eDiscoveryCase.Description | String | The case description. | 
-| MsGraph.eDiscoveryCase.DisplayName | String | The case name. | 
-| MsGraph.eDiscoveryCase.ExternalId | String | The external case number for customer reference. | 
-| MsGraph.eDiscoveryCase.LastModifiedDateTime | Date | The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z | 
+| MsGraph.eDiscoveryCase.CaseId | String | The ID of the eDiscovery case. |
+| MsGraph.eDiscoveryCase.CaseStatus | String | The case status. Possible values are unknown, active, pendingDelete, closing, closed, and closedWithError. |
+| MsGraph.eDiscoveryCase.CreatedDateTime | Date | The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z |
+| MsGraph.eDiscoveryCase.Description | String | The case description. |
+| MsGraph.eDiscoveryCase.DisplayName | String | The case name. |
+| MsGraph.eDiscoveryCase.ExternalId | String | The external case number for customer reference. |
+| MsGraph.eDiscoveryCase.LastModifiedDateTime | Date | The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z |
 
 #### Command example
 
@@ -668,7 +668,7 @@ Create a new eDiscovery case. This command only creates an eDiscovery (Premium) 
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Description|External Id|Case Status|Case Id|Created Date Time|Last Modified Date Time|
 >|---|---|---|---|---|---|---|
@@ -687,10 +687,10 @@ Update an eDiscovery case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| display_name | The name of the eDiscovery case. | Required | 
-| description | The case description. | Optional | 
-| external_id | The external case number for customer reference. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| display_name | The name of the eDiscovery case. | Required |
+| description | The case description. | Optional |
+| external_id | The external case number for customer reference. | Optional |
 
 #### Context Output
 
@@ -707,7 +707,7 @@ There is no context output for this command.
 ### msg-close-ediscovery-case
 
 ***
-Close an eDiscovery case. 
+Close an eDiscovery case.
 When the legal case or investigation supported by a eDiscovery (Standard) case is completed, you can close the case. Here's what happens when you close a case:
       If the case contains any eDiscovery holds, they'll be turned off. After the hold is turned off, a 30-day grace period (called a delay hold) is applied to content locations that were on hold. This helps prevent content from being immediately deleted and provides admins the opportunity to search for and restore content before it may be permanently deleted after the delay hold period expires. For more information, see Removing content locations from an eDiscovery hold.
       Closing a case only turns off the holds that are associated with that case. If other holds are placed on a content location (such as a Litigation Hold, a retention policy, or a hold from a different eDiscovery (Standard) case) those holds will still be maintained.
@@ -722,7 +722,7 @@ When the legal case or investigation supported by a eDiscovery (Standard) case i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
 
 #### Context Output
 
@@ -749,7 +749,7 @@ Reopen an eDiscovery case. When you reopen an eDiscovery (Premium) case, any hol
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
 
 #### Context Output
 
@@ -776,7 +776,7 @@ Delete an eDiscovery case. Before you can delete a case, you must first delete a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
 
 #### Context Output
 
@@ -803,20 +803,20 @@ Create a new ediscoveryCustodian object. After the custodian object is created, 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| email | Custodian's primary SMTP address. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| email | Custodian's primary SMTP address. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryCustodian.CreatedDateTime | Date | Date and time when the custodian was added to the case. | 
-| MsGraph.eDiscoveryCustodian.CustodianId | String | The ID for the custodian in the specified case. Read-only. | 
-| MsGraph.eDiscoveryCustodian.CustodianStatus | String | Status of the custodian. Possible values are: active, released. | 
-| MsGraph.eDiscoveryCustodian.DisplayName | String | Display name of the custodian. | 
-| MsGraph.eDiscoveryCustodian.Email | String | Email address of the custodian. | 
-| MsGraph.eDiscoveryCustodian.HoldStatus | String | The hold status of the custodian.The possible values are: notApplied, applied, applying, removing, partial. | 
-| MsGraph.eDiscoveryCustodian.LastModifiedDateTime | Date | Date and time the custodian object was last modified. | 
+| MsGraph.eDiscoveryCustodian.CreatedDateTime | Date | Date and time when the custodian was added to the case. |
+| MsGraph.eDiscoveryCustodian.CustodianId | String | The ID for the custodian in the specified case. Read-only. |
+| MsGraph.eDiscoveryCustodian.CustodianStatus | String | Status of the custodian. Possible values are: active, released. |
+| MsGraph.eDiscoveryCustodian.DisplayName | String | Display name of the custodian. |
+| MsGraph.eDiscoveryCustodian.Email | String | Email address of the custodian. |
+| MsGraph.eDiscoveryCustodian.HoldStatus | String | The hold status of the custodian.The possible values are: notApplied, applied, applying, removing, partial. |
+| MsGraph.eDiscoveryCustodian.LastModifiedDateTime | Date | Date and time the custodian object was last modified. |
 
 #### Command example
 
@@ -842,7 +842,7 @@ Create a new ediscoveryCustodian object. After the custodian object is created, 
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name| Email                             |Custodian Status|Custodian Id|Created Date Time|Last Modified Date Time|Hold Status|
 >|-----------------------------------|---|---|---|---|---|---|
@@ -861,23 +861,23 @@ List custodians on a given eDiscovery case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | The ID of the custodian on the given eDiscovery case. If provided, only this ID will be returned. | Optional | 
-| limit | Number of total results to return. Default is 50. | Optional | 
-| all_results | Show all results if true. Possible values are: true, false. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | The ID of the custodian on the given eDiscovery case. If provided, only this ID will be returned. | Optional |
+| limit | Number of total results to return. Default is 50. | Optional |
+| all_results | Show all results if true. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoveryCustodian.CreatedDateTime | Date | Date and time when the custodian was added to the case. | 
-| MsGraph.eDiscoveryCustodian.CustodianId | String | The ID for the custodian in the specified case. Read-only. | 
-| MsGraph.eDiscoveryCustodian.CustodianStatus | String | Status of the custodian. Possible values are: active, released. | 
-| MsGraph.eDiscoveryCustodian.DisplayName | String | Display name of the custodian. | 
-| MsGraph.eDiscoveryCustodian.Email | String | Email address of the custodian. | 
-| MsGraph.eDiscoveryCustodian.HoldStatus | String | The hold status of the custodian. The possible values are: notApplied, applied, applying, removing, partial. | 
-| MsGraph.eDiscoveryCustodian.LastModifiedDateTime | Date | Date and time the custodian object was last modified. | 
-| MsGraph.eDiscoveryCustodian.ReleasedDateTime | Date | Date and time the custodian was released from the case. | 
+| MsGraph.eDiscoveryCustodian.CreatedDateTime | Date | Date and time when the custodian was added to the case. |
+| MsGraph.eDiscoveryCustodian.CustodianId | String | The ID for the custodian in the specified case. Read-only. |
+| MsGraph.eDiscoveryCustodian.CustodianStatus | String | Status of the custodian. Possible values are: active, released. |
+| MsGraph.eDiscoveryCustodian.DisplayName | String | Display name of the custodian. |
+| MsGraph.eDiscoveryCustodian.Email | String | Email address of the custodian. |
+| MsGraph.eDiscoveryCustodian.HoldStatus | String | The hold status of the custodian. The possible values are: notApplied, applied, applying, removing, partial. |
+| MsGraph.eDiscoveryCustodian.LastModifiedDateTime | Date | Date and time the custodian object was last modified. |
+| MsGraph.eDiscoveryCustodian.ReleasedDateTime | Date | Date and time the custodian was released from the case. |
 
 #### Command example
 
@@ -903,7 +903,7 @@ List custodians on a given eDiscovery case.
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name| Email                         |Custodian Status|Custodian Id|Created Date Time|Last Modified Date Time|Hold Status|
 >|-------------------------------|---|---|---|---|---|---|
@@ -922,8 +922,8 @@ Activate a custodian that has been released from a case to make them part of the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required |
 
 #### Context Output
 
@@ -950,8 +950,8 @@ Release a custodian from a case. For details, see <https://learn.microsoft.com/e
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required |
 
 #### Context Output
 
@@ -978,23 +978,23 @@ Create a new siteSource object associated with an eDiscovery custodian. Use the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
-| site | URL of the site; for example, <https://contoso.sharepoint.com/sites/HumanResources>. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required |
+| site | URL of the site; for example, <https://contoso.sharepoint.com/sites/HumanResources>. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The ID of the application who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The ID of the user who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedDateTime | Date | The date and time the siteSource was created. | 
-| MsGraph.CustodianSiteSource.DisplayName | String | The display name of the siteSource. This will be the name of the SharePoint site. | 
-| MsGraph.CustodianSiteSource.HoldStatus | String | The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial. | 
-| MsGraph.CustodianSiteSource.SiteSourceId | String | The ID of the siteSource. | 
+| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The ID of the application who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The ID of the user who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedDateTime | Date | The date and time the siteSource was created. |
+| MsGraph.CustodianSiteSource.DisplayName | String | The display name of the siteSource. This will be the name of the SharePoint site. |
+| MsGraph.CustodianSiteSource.HoldStatus | String | The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial. |
+| MsGraph.CustodianSiteSource.SiteSourceId | String | The ID of the siteSource. |
 
 #### Command example
 
@@ -1028,7 +1028,7 @@ Create a new siteSource object associated with an eDiscovery custodian. Use the 
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Site Source Id|Hold Status|Created Date Time|Created By Name|Created By UPN|Created By App Name|
 >|---|---|---|---|---|---|---|
@@ -1047,26 +1047,26 @@ Create a new userSource object associated with an eDiscovery custodian. Use the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
-| email | SMTP address of the user. | Required | 
-| included_sources | Specifies which sources are included in this group. Possible values are: mailbox, site, mailbox, site. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required |
+| email | SMTP address of the user. | Required |
+| included_sources | Specifies which sources are included in this group. Possible values are: mailbox, site, mailbox, site. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName | String | The name of the application who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The ID of the application who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.DisplayName | String | The name of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The ID of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedDateTime | Date | The date and time the userSource was created. | 
-| MsGraph.CustodianUserSource.DisplayName | String | The display name associated with the mailbox and site. | 
-| MsGraph.CustodianUserSource.Email | String | Email address of the user's mailbox. | 
-| MsGraph.CustodianUserSource.HoldStatus | String | The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial. | 
-| MsGraph.CustodianUserSource.IncludedSources | String | Specifies which sources are included in this group. Possible values are: mailbox, site. | 
-| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not The ID of the actual group. | 
+| MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName | String | The name of the application who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The ID of the application who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.User.DisplayName | String | The name of the user who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The ID of the user who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedDateTime | Date | The date and time the userSource was created. |
+| MsGraph.CustodianUserSource.DisplayName | String | The display name associated with the mailbox and site. |
+| MsGraph.CustodianUserSource.Email | String | Email address of the user's mailbox. |
+| MsGraph.CustodianUserSource.HoldStatus | String | The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial. |
+| MsGraph.CustodianUserSource.IncludedSources | String | Specifies which sources are included in this group. Possible values are: mailbox, site. |
+| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not The ID of the actual group. |
 
 #### Command example
 
@@ -1102,7 +1102,7 @@ Create a new userSource object associated with an eDiscovery custodian. Use the 
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Email|User Source Id|Hold Status|Created Date Time|Created By Name|Created By UPN|Created By App Name|Included Sources|
 >|---|---|---|---|---|---|---|---|---|
@@ -1121,28 +1121,28 @@ Get a list of the userSource objects associated with an eDiscoveryCustodian. Use
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
-| user_source_id | The ID of the userSource. If provided, only this id will be returned. | Optional | 
-| limit | Number of total results to return. Default is 50. | Optional | 
-| all_results | Show all results if true. Possible values are: true, false. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required |
+| user_source_id | The ID of the userSource. If provided, only this id will be returned. | Optional |
+| limit | Number of total results to return. Default is 50. | Optional |
+| all_results | Show all results if true. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName | String | The name of the application who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The ID of the application who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.DisplayName | String | The name of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The ID of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the userSource. | 
-| MsGraph.CustodianUserSource.CreatedDateTime | Date | The date and time the userSource was created. | 
-| MsGraph.CustodianUserSource.DisplayName | String | The display name associated with the mailbox and site. | 
-| MsGraph.CustodianUserSource.Email | String | Email address of the user's mailbox. | 
-| MsGraph.CustodianUserSource.HoldStatus | String | The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial. | 
-| MsGraph.CustodianUserSource.IncludedSources | String | Specifies which sources are included in this group. Possible values are: mailbox, site. | 
-| MsGraph.CustodianUserSource.SiteWebUrl | String | The URL of the user's OneDrive for Business site. Read-only. | 
-| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not The ID of the actual group. | 
+| MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName | String | The name of the application who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.Application.ID | String | The ID of the application who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.User.DisplayName | String | The name of the user who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.User.ID | String | The ID of the user who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the userSource. |
+| MsGraph.CustodianUserSource.CreatedDateTime | Date | The date and time the userSource was created. |
+| MsGraph.CustodianUserSource.DisplayName | String | The display name associated with the mailbox and site. |
+| MsGraph.CustodianUserSource.Email | String | Email address of the user's mailbox. |
+| MsGraph.CustodianUserSource.HoldStatus | String | The hold status of the userSource. The possible values are: notApplied, applied, applying, removing, partial. |
+| MsGraph.CustodianUserSource.IncludedSources | String | Specifies which sources are included in this group. Possible values are: mailbox, site. |
+| MsGraph.CustodianUserSource.SiteWebUrl | String | The URL of the user's OneDrive for Business site. Read-only. |
+| MsGraph.CustodianUserSource.UserSourceId | String | The ID of the userSource. This is not The ID of the actual group. |
 
 #### Command example
 
@@ -1179,7 +1179,7 @@ Get a list of the userSource objects associated with an eDiscoveryCustodian. Use
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Email|User Source Id|Hold Status|Created Date Time|Created By Name|Created By UPN|Created By App Name|Site Web Url|Included Sources|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -1198,28 +1198,28 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required | 
-| site_source_id | The ID of the siteSource. If provided, only this id will be returned. | Optional | 
-| limit | Number of total results to return. Default is 50. Default is 50. | Optional | 
-| all_results | Show all results if true. Possible values are: true, false. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | The ID of the eDiscovery case. on the given eDiscovery case. | Required |
+| site_source_id | The ID of the siteSource. If provided, only this id will be returned. | Optional |
+| limit | Number of total results to return. Default is 50. Default is 50. | Optional |
+| all_results | Show all results if true. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The ID of the application who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The ID of the user who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the siteSource. | 
-| MsGraph.CustodianSiteSource.CreatedDateTime | Date | The date and time the siteSource was created. | 
-| MsGraph.CustodianSiteSource.DisplayName | String | The display name of the siteSource. This will be the name of the SharePoint site. | 
-| MsGraph.CustodianSiteSource.HoldStatus | String | The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial. | 
-| MsGraph.CustodianSiteSource.SiteSourceId | String | The ID of the siteSource. | 
-| MsGraph.CustodianSiteSource.Site.ID | String | The unique identifier of the item. Read-only. | 
-| MsGraph.CustodianSiteSource.Site.WebUrl | String | URL that displays the item in the browser. Read-only. | 
-| MsGraph.CustodianSiteSource.Site.CreatedDate | Date | The date and time the siteSource was created. | 
+| MsGraph.CustodianSiteSource.CreatedBy.Application.DisplayName | String | The name of the application who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.Application.ID | String | The ID of the application who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.User.DisplayName | String | The name of the user who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.User.ID | String | The ID of the user who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the siteSource. |
+| MsGraph.CustodianSiteSource.CreatedDateTime | Date | The date and time the siteSource was created. |
+| MsGraph.CustodianSiteSource.DisplayName | String | The display name of the siteSource. This will be the name of the SharePoint site. |
+| MsGraph.CustodianSiteSource.HoldStatus | String | The hold status of the siteSource. The possible values are: notApplied, applied, applying, removing, partial. |
+| MsGraph.CustodianSiteSource.SiteSourceId | String | The ID of the siteSource. |
+| MsGraph.CustodianSiteSource.Site.ID | String | The unique identifier of the item. Read-only. |
+| MsGraph.CustodianSiteSource.Site.WebUrl | String | URL that displays the item in the browser. Read-only. |
+| MsGraph.CustodianSiteSource.Site.CreatedDate | Date | The date and time the siteSource was created. |
 
 #### Command example
 
@@ -1252,18 +1252,17 @@ Get a list of the siteSource objects associated with an eDiscoveryCustodian. Use
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Site Source Id|Hold Status|Created Date Time|
 >|---|---|---|---|
 >| site_test_1 | 862f0a64-e7db-46e0-a97f-9156b4f693ee | removing | 2023-07-06T08:02:28.5670187Z |
 
-
 ### msg-apply-hold-ediscovery-custodian
 
 ***
 Start the process of applying hold on eDiscovery custodians.
-Available return statuses: 
+Available return statuses:
 notApplied - The custodian is not on hold (all sources in it are not on hold).
 applied - The custodian is on hold (all sources are on hold).
 applying - The custodian is in applying hold state (applyHold operation triggered).
@@ -1278,8 +1277,8 @@ partial - The custodian is in mixed state where some sources are on hold and som
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | A comma-seperated list of custodians ids to apply a hold to. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | A comma-seperated list of custodians ids to apply a hold to. | Required |
 
 #### Context Output
 
@@ -1306,8 +1305,8 @@ Start the process of removing hold from eDiscovery custodians.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| custodian_id | A comma-seperated list of custodians ids to remove a hold from. | Required | 
+| case_id | The ID of the eDiscovery case. | Required |
+| custodian_id | A comma-seperated list of custodians ids to remove a hold from. | Required |
 
 #### Context Output
 
@@ -1334,21 +1333,21 @@ Create a new eDiscoveryNoncustodialDataSource object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| site | URL of the site, for example, <https://contoso.sharepoint.com/sites/HumanResources>. | Optional | 
-| email | Email address of the user's mailbox. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| site | URL of the site, for example, <https://contoso.sharepoint.com/sites/HumanResources>. | Optional |
+| email | Email address of the user's mailbox. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.NoncustodialDataSource.CreatedDateTime | Date | Created date and time of the nonCustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.DataSourceId | String | Unique identifier of the nonCustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.DataSourceStatus | String | Latest status of the nonCustodialDataSource. Possible values are: Active, Released. | 
-| MsGraph.NoncustodialDataSource.DisplayName | String | Display name of the noncustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.HoldStatus | String | The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial | 
-| MsGraph.NoncustodialDataSource.LastModifiedDateTime | Date | Last modified date and time of the nonCustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.ReleasedDateTime | Date | Date and time that the nonCustodialDataSource was released from the case. | 
+| MsGraph.NoncustodialDataSource.CreatedDateTime | Date | Created date and time of the nonCustodialDataSource. |
+| MsGraph.NoncustodialDataSource.DataSourceId | String | Unique identifier of the nonCustodialDataSource. |
+| MsGraph.NoncustodialDataSource.DataSourceStatus | String | Latest status of the nonCustodialDataSource. Possible values are: Active, Released. |
+| MsGraph.NoncustodialDataSource.DisplayName | String | Display name of the noncustodialDataSource. |
+| MsGraph.NoncustodialDataSource.HoldStatus | String | The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial |
+| MsGraph.NoncustodialDataSource.LastModifiedDateTime | Date | Last modified date and time of the nonCustodialDataSource. |
+| MsGraph.NoncustodialDataSource.ReleasedDateTime | Date | Date and time that the nonCustodialDataSource was released from the case. |
 
 #### Command example
 
@@ -1374,7 +1373,7 @@ Create a new eDiscoveryNoncustodialDataSource object.
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Created Date Time|Data Source Id|Data Source Status|Display Name|Hold Status|Last Modified Date Time|Released Date Time|
 >|---|---|---|---|---|---|---|
@@ -1393,22 +1392,22 @@ Get a list of the non-custodial data sources and their properties.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| data_source_id | The ID of the dataSource. If provided, only this id will be returned. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
-| all_results | Show all results if true. Possible values are: true, false. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| data_source_id | The ID of the dataSource. If provided, only this id will be returned. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| all_results | Show all results if true. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.NoncustodialDataSource.CreatedDateTime | Date | Created date and time of the nonCustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.DataSourceId | String | Unique identifier of the nonCustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.DataSourceStatus | String | Latest status of the nonCustodialDataSource. Possible values are: Active, Released. | 
-| MsGraph.NoncustodialDataSource.DisplayName | String | Display name of the noncustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.HoldStatus | String | The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial | 
-| MsGraph.NoncustodialDataSource.LastModifiedDateTime | Date | Last modified date and time of the nonCustodialDataSource. | 
-| MsGraph.NoncustodialDataSource.ReleasedDateTime | Date | Date and time that the nonCustodialDataSource was released from the case. | 
+| MsGraph.NoncustodialDataSource.CreatedDateTime | Date | Created date and time of the nonCustodialDataSource. |
+| MsGraph.NoncustodialDataSource.DataSourceId | String | Unique identifier of the nonCustodialDataSource. |
+| MsGraph.NoncustodialDataSource.DataSourceStatus | String | Latest status of the nonCustodialDataSource. Possible values are: Active, Released. |
+| MsGraph.NoncustodialDataSource.DisplayName | String | Display name of the noncustodialDataSource. |
+| MsGraph.NoncustodialDataSource.HoldStatus | String | The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial |
+| MsGraph.NoncustodialDataSource.LastModifiedDateTime | Date | Last modified date and time of the nonCustodialDataSource. |
+| MsGraph.NoncustodialDataSource.ReleasedDateTime | Date | Date and time that the nonCustodialDataSource was released from the case. |
 
 #### Command example
 
@@ -1434,7 +1433,7 @@ Get a list of the non-custodial data sources and their properties.
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Data Source Id|Hold Status|Created Date Time|Last Modified Date Time|Released Date Time|Status|
 >|---|---|---|---|---|---|---|
@@ -1453,28 +1452,28 @@ Create a new eDiscoverySearch object.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                   | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| case_id | The ID of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required | 
-| display_name | The display name of the search.                                                                                                                                                                                                                                                                                                                   | Required | 
-| description | The description of the search.                                                                                                                                                                                                                                                                                                                    | Optional | 
-| content_query | The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see <https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions.>. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional | 
-| data_source_scopes | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.                                                                                                                                               | Optional | 
+| case_id | The ID of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required |
+| display_name | The display name of the search.                                                                                                                                                                                                                                                                                                                   | Required |
+| description | The description of the search.                                                                                                                                                                                                                                                                                                                    | Optional |
+| content_query | The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see <https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions.>. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional |
+| data_source_scopes | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.                                                                                                                                               | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoverySearch.ContentQuery | String | The query string in KQL \(Keyword Query Language\) query. For details, see  see <https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions.>. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | 
-| MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName | String | Name of the application who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.Application.ID | String | ID of the application who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName | String | Name of the user who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.User.ID | String | ID of the user who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedDateTime | Date | The date and time the eDiscovery search was created. | 
-| MsGraph.eDiscoverySearch.DataSourceScopes | String | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources. | 
-| MsGraph.eDiscoverySearch.Description | String | The description of the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.DisplayName | String | The display name of the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.LastModifiedDateTime | Date | The last date and time the eDiscovery search was modified. | 
-| MsGraph.eDiscoverySearch.SearchId | String | The ID for the eDiscovery search. | 
+| MsGraph.eDiscoverySearch.ContentQuery | String | The query string in KQL \(Keyword Query Language\) query. For details, see  see <https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions.>. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. |
+| MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName | String | Name of the application who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.Application.ID | String | ID of the application who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName | String | Name of the user who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.User.ID | String | ID of the user who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedDateTime | Date | The date and time the eDiscovery search was created. |
+| MsGraph.eDiscoverySearch.DataSourceScopes | String | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources. |
+| MsGraph.eDiscoverySearch.Description | String | The description of the eDiscovery search. |
+| MsGraph.eDiscoverySearch.DisplayName | String | The display name of the eDiscovery search. |
+| MsGraph.eDiscoverySearch.LastModifiedDateTime | Date | The last date and time the eDiscovery search was modified. |
+| MsGraph.eDiscoverySearch.SearchId | String | The ID for the eDiscovery search. |
 
 #### Command example
 
@@ -1511,7 +1510,7 @@ Create a new eDiscoverySearch object.
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Data Source Scopes|Search Id|Created By Name|Created By App Name|Created By UPN|Created Date Time|Last Modified Date Time|
 >|---|---|---|---|---|---|---|---|
@@ -1530,12 +1529,12 @@ Update an eDiscoverySearch object.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                   | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| case_id | The ID of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required | 
-| search_id | The ID of the eDiscovery search.                                                                                                                                                                                                                                                                                                                  | Required | 
-| display_name | The display name of the search.                                                                                                                                                                                                                                                                                                                   | Required | 
-| description | The description of the search.                                                                                                                                                                                                                                                                                                                    | Optional | 
-| content_query | The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional | 
-| data_source_scopes | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.                                                                                                                                               | Optional | 
+| case_id | The ID of the eDiscovery case.                                                                                                                                                                                                                                                                                                                    | Required |
+| search_id | The ID of the eDiscovery search.                                                                                                                                                                                                                                                                                                                  | Required |
+| display_name | The display name of the search.                                                                                                                                                                                                                                                                                                                   | Required |
+| description | The description of the search.                                                                                                                                                                                                                                                                                                                    | Optional |
+| content_query | The query string used for the search. The query string format is KQL (Keyword Query Language). For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | Optional |
+| data_source_scopes | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources.                                                                                                                                               | Optional |
 
 #### Context Output
 
@@ -1562,32 +1561,32 @@ Get the list of eDiscoverySearch resources from an eDiscovery case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| search_id | The ID of the eDiscovery search. If provided, only this id will be returned. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
-| all_results | Show all results if true. Possible values are: true, false. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| search_id | The ID of the eDiscovery search. If provided, only this id will be returned. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| all_results | Show all results if true. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.eDiscoverySearch.ContentQuery | String | The query string in KQL \(Keyword Query Language\) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. | 
-| MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName | String | Name of the application who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.Application.ID | String | ID of the application who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName | String | Name of the user who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.User.ID | String | ID of the user who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.CreatedDateTime | Date | The date and time the eDiscovery search was created. | 
-| MsGraph.eDiscoverySearch.DataSourceScopes | String | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources. | 
-| MsGraph.eDiscoverySearch.Description | String | The description of the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.DisplayName | String | The display name of the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.SearchId | String | The ID for the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.LastModifiedDateTime | String | The last date and time the eDiscovery search was modified. | 
-| MsGraph.eDiscoverySearch.LastModifiedBy.Application.DisplayName | String | Name of the application who last modified the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.LastModifiedBy.Application.ID | String | ID of the application who last modified the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.LastModifiedBy.User.DisplayName | String | Name of the user who last modified the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.LastModifiedBy.User.ID | String | ID of the user who last modified the eDiscovery search. | 
-| MsGraph.eDiscoverySearch.LastModifiedBy.User.UserPrincipalName | String | Internet-style login name of the user who last modified the eDiscovery search. | 
+| MsGraph.eDiscoverySearch.ContentQuery | String | The query string in KQL \(Keyword Query Language\) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date&gt;=06/01/2016 AND Date&lt;=07/01/2016. |
+| MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName | String | Name of the application who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.Application.ID | String | ID of the application who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.User.DisplayName | String | Name of the user who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.User.ID | String | ID of the user who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName | String | Internet-style login name of the user who created the eDiscovery search. |
+| MsGraph.eDiscoverySearch.CreatedDateTime | Date | The date and time the eDiscovery search was created. |
+| MsGraph.eDiscoverySearch.DataSourceScopes | String | When specified, the collection will span across a service for an entire workload. Possible values are: none, allTenantMailboxes, allTenantSites, allCaseCustodians, allCaseNoncustodialDataSources. |
+| MsGraph.eDiscoverySearch.Description | String | The description of the eDiscovery search. |
+| MsGraph.eDiscoverySearch.DisplayName | String | The display name of the eDiscovery search. |
+| MsGraph.eDiscoverySearch.SearchId | String | The ID for the eDiscovery search. |
+| MsGraph.eDiscoverySearch.LastModifiedDateTime | String | The last date and time the eDiscovery search was modified. |
+| MsGraph.eDiscoverySearch.LastModifiedBy.Application.DisplayName | String | Name of the application who last modified the eDiscovery search. |
+| MsGraph.eDiscoverySearch.LastModifiedBy.Application.ID | String | ID of the application who last modified the eDiscovery search. |
+| MsGraph.eDiscoverySearch.LastModifiedBy.User.DisplayName | String | Name of the user who last modified the eDiscovery search. |
+| MsGraph.eDiscoverySearch.LastModifiedBy.User.ID | String | ID of the user who last modified the eDiscovery search. |
+| MsGraph.eDiscoverySearch.LastModifiedBy.User.UserPrincipalName | String | Internet-style login name of the user who last modified the eDiscovery search. |
 
 #### Command example
 
@@ -1635,7 +1634,7 @@ Get the list of eDiscoverySearch resources from an eDiscovery case.
 
 #### Human Readable Output
 
->### Results:
+>### Results
 
 >|Display Name|Data Source Scopes|Search Id|Created By Name|Created By App Name|Created By UPN|Created Date Time|Last Modified Date Time|
 >|---|---|---|---|---|---|---|---|
@@ -1663,10 +1662,10 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| search_id | The ID of the eDiscovery search. | Required | 
-| purge_type | The ID of the eDiscovery search. Possible values are: permanentlyDelete. | Optional | 
-| purge_areas | The ID of the eDiscovery search. Possible values are: teamsMessages. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| search_id | The ID of the eDiscovery search. | Required |
+| purge_type | The ID of the eDiscovery search. Possible values are: permanentlyDelete. | Optional |
+| purge_areas | The ID of the eDiscovery search. Possible values are: teamsMessages. | Optional |
 
 #### Context Output
 
@@ -1693,8 +1692,8 @@ Delete an eDiscoverySearch object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| search_id | The ID of the eDiscovery search. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| search_id | The ID of the eDiscovery search. | Optional |
 
 #### Context Output
 
@@ -1708,14 +1707,15 @@ There is no context output for this command.
 
 >eDiscovery search e7282eff-ba81-43cb-9027-522a343f6692 was deleted successfully.
 
-
 ### Threat Assessment Commands
+
 ### msg-create-mail-assessment-request
 
 ***
 Create and retrieve a mail threat assessment.
 
 Note:
+
 - The message given in the command's argument *message_id* has to contain *X-MS-Exchange-Organization-Network-Message-Id* header in the message or in the *X-MS-Office365-Filtering-Correlation-Id* header in quarantined messages.
 - Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
 
@@ -1736,10 +1736,10 @@ Note:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| recipient_email | The email of the user who recieved the mail. | Required | 
-| expected_assessment | the expected assessment: blocked or unblocked | Required | 
-| category | The category of the threat: phishing, malware or spam. | Required | 
-| message_user | Message user, the user's id or the user's email. | Required | 
+| recipient_email | The email of the user who recieved the mail. | Required |
+| expected_assessment | the expected assessment: blocked or unblocked | Required |
+| category | The category of the threat: phishing, malware or spam. | Required |
+| message_user | Message user, the user's id or the user's email. | Required |
 | message_id | Message id, Message has to contain 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. | Required |
 
 #### Context Output
@@ -1747,19 +1747,19 @@ Note:
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGraphMail.MailAssessment.ID | String | Request id. |
-| MSGraphMail.MailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
-| MSGraphMail.MailAssessment.ContentType | String | The content type of threat assessment. | 
-| MSGraphMail.MailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
-| MSGraphMail.MailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
-| MSGraphMail.MailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
-| MSGraphMail.MailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
-| MSGraphMail.MailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
-| MSGraphMail.MailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
-| MSGraphMail.MailAssessment.MessageID | String | Extracted from the message URI which is The resource URI of the mail message for assessment. | 
-| MSGraphMail.MailAssessment.CreatedUserID | String | User id. | 
-| MSGraphMail.MailAssessment.CreatedUsername | String | Username. | 
-| MSGraphMail.MailAssessment.ResultType | String | Result of the request. | 
-| MSGraphMail.MailAssessment.ResultMessage | String | Message of the result. | 
+| MSGraphMail.MailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. |
+| MSGraphMail.MailAssessment.ContentType | String | The content type of threat assessment. |
+| MSGraphMail.MailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. |
+| MSGraphMail.MailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. |
+| MSGraphMail.MailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. |
+| MSGraphMail.MailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. |
+| MSGraphMail.MailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. |
+| MSGraphMail.MailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. |
+| MSGraphMail.MailAssessment.MessageID | String | Extracted from the message URI which is The resource URI of the mail message for assessment. |
+| MSGraphMail.MailAssessment.CreatedUserID | String | User id. |
+| MSGraphMail.MailAssessment.CreatedUsername | String | Username. |
+| MSGraphMail.MailAssessment.ResultType | String | Result of the request. |
+| MSGraphMail.MailAssessment.ResultMessage | String | Message of the result. |
 
 #### Command example
 
@@ -1805,12 +1805,11 @@ Note:
 
 #### Human Readable Output
 
->### Mail assessment request:
+>### Mail assessment request
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 11922306-b25b-4605-ff0d-08d772fcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| spam| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|No policy was hit.|
-
 
 ### msg-create-email-file-assessment-request
 
@@ -1827,10 +1826,10 @@ Note: File has to contain X-MS-Exchange-Organization-Network-Message-Id header i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| recipient_email | The email of the user who recieved the mail. | Required | 
-| expected_assessment | the expected assessment: blocked or unblocked | Required | 
-| category | The category of the threat: phishing, malware or spam. | Required | 
-| content_data | content of an email file. | Optional | 
+| recipient_email | The email of the user who recieved the mail. | Required |
+| expected_assessment | the expected assessment: blocked or unblocked | Required |
+| category | The category of the threat: phishing, malware or spam. | Required |
+| content_data | content of an email file. | Optional |
 | entry_id | entry id of file uploaded in the war room. | Optional |
 
 #### Context Output
@@ -1838,18 +1837,18 @@ Note: File has to contain X-MS-Exchange-Organization-Network-Message-Id header i
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGraphMail.EmailAssessment.ID | String | Request id. |
-| MSGraphMail.EmailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
-| MSGraphMail.EmailAssessment.ContentType | String | The content type of threat assessment. | 
-| MSGraphMail.EmailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
-| MSGraphMail.EmailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
-| MSGraphMail.EmailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
-| MSGraphMail.EmailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
-| MSGraphMail.EmailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
-| MSGraphMail.EmailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
-| MSGraphMail.EmailAssessment.CreatedUserID | String | User id. | 
-| MSGraphMail.EmailAssessment.CreatedUsername | String | Username. | 
-| MSGraphMail.EmailAssessment.ResultType | String | Result of the request. | 
-| MSGraphMail.EmailAssessment.ResultMessage | String | Message of the result. | 
+| MSGraphMail.EmailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. |
+| MSGraphMail.EmailAssessment.ContentType | String | The content type of threat assessment. |
+| MSGraphMail.EmailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. |
+| MSGraphMail.EmailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. |
+| MSGraphMail.EmailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. |
+| MSGraphMail.EmailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. |
+| MSGraphMail.EmailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. |
+| MSGraphMail.EmailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. |
+| MSGraphMail.EmailAssessment.CreatedUserID | String | User id. |
+| MSGraphMail.EmailAssessment.CreatedUsername | String | Username. |
+| MSGraphMail.EmailAssessment.ResultType | String | Result of the request. |
+| MSGraphMail.EmailAssessment.ResultMessage | String | Message of the result. |
 
 #### Command example
 
@@ -1888,12 +1887,11 @@ Note: File has to contain X-MS-Exchange-Organization-Network-Message-Id header i
 
 #### Human Readable Output
 
->### Mail assessment request:
+>### Mail assessment request
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 76598306-b25b-4605-ff0d-03kgmtfcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| phishing| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
-
 
 ### msg-create-file-assessment-request
 
@@ -1908,10 +1906,10 @@ Create and retrieve a file threat assessment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_name | The file name. | Required | 
-| expected_assessment | the expected assessment: blocked or unblocked | Required | 
-| category | The category of the threat: phishing, malware or spam. | Required | 
-| content_data | content of an email file. | Optional | 
+| file_name | The file name. | Required |
+| expected_assessment | the expected assessment: blocked or unblocked | Required |
+| category | The category of the threat: phishing, malware or spam. | Required |
+| content_data | content of an email file. | Optional |
 | entry_id | entry id of file uploaded in the war room. | Optional |
 
 #### Context Output
@@ -1919,17 +1917,17 @@ Create and retrieve a file threat assessment.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGraphMail.FileAssessment.ID | String | Request id. |
-| MSGraphMail.FileAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
-| MSGraphMail.FileAssessment.ContentType | String | The content type of threat assessment. | 
-| MSGraphMail.FileAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
-| MSGraphMail.FileAssessment.Category | String | The threat category. Possible values are: phishing, malware. | 
-| MSGraphMail.FileAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
-| MSGraphMail.FileAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
-| MSGraphMail.FileAssessment.FileName | String | The file name. | 
-| MSGraphMail.FileAssessment.CreatedUserID | String | User id. | 
-| MSGraphMail.FileAssessment.CreatedUsername | String | Username. | 
-| MSGraphMail.FileAssessment.ResultType | String | Result of the request. | 
-| MSGraphMail.FileAssessment.ResultMessage | String | Message of the result. | 
+| MSGraphMail.FileAssessment.CreatedDateTime | Date | Created data of the threat assessment request. |
+| MSGraphMail.FileAssessment.ContentType | String | The content type of threat assessment. |
+| MSGraphMail.FileAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. |
+| MSGraphMail.FileAssessment.Category | String | The threat category. Possible values are: phishing, malware. |
+| MSGraphMail.FileAssessment.Status | String | The assessment process status. Possible values are: pending, completed. |
+| MSGraphMail.FileAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. |
+| MSGraphMail.FileAssessment.FileName | String | The file name. |
+| MSGraphMail.FileAssessment.CreatedUserID | String | User id. |
+| MSGraphMail.FileAssessment.CreatedUsername | String | Username. |
+| MSGraphMail.FileAssessment.ResultType | String | Result of the request. |
+| MSGraphMail.FileAssessment.ResultMessage | String | Message of the result. |
 
 #### Command example
 
@@ -1967,7 +1965,7 @@ Create and retrieve a file threat assessment.
 
 #### Human Readable Output
 
->### Mail assessment request:
+>### Mail assessment request
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|File Name|Created User ID|Created Username|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -1986,9 +1984,9 @@ Create and retrieve url threat assessment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL. | Required | 
-| expected_assessment | the expected assessment: blocked or unblocked | Required | 
-| category | The category of the threat: phishing, malware or spam. | Required | 
+| url | The URL. | Required |
+| expected_assessment | the expected assessment: blocked or unblocked | Required |
+| category | The category of the threat: phishing, malware or spam. | Required |
 
 #### Context Output
 
@@ -2008,7 +2006,6 @@ Create and retrieve url threat assessment.
 | MSGraphMail.UrlAssessment.ResultMessage | String | Message of the result. |
 | MSGraphMail.UrlAssessment.RecipientEmail | String | Recipient Email. |
 | MSGraphMail.UrlAssessment.DestinationRoutingReason | String | Destination Routing Reason. |
-
 
 #### Command example
 
@@ -2046,12 +2043,11 @@ Create and retrieve url threat assessment.
 
 #### Human Readable Output
 
->### Mail assessment request:
+>### Mail assessment request
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|URL|Created User ID|Created Username|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0796306-b456-4605-ff0d-03okmtgcf876 | "2019-11-27T05:45:14.0962061Z"| url | block| malware| completed | administrator | httpp://support.clean-mx.de/clean-mx/viruses.php |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|
-
 
 ### msg-list-threat-assessment-requests
 
@@ -2066,9 +2062,9 @@ Retrieve all threat assessment requests.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| request_id | The request id. | Optional | 
-| filter | Available fields for filter  are:expectedAssessment,ContentType,status,requestSource. Example:category eq 'malware’| Optional | 
-| order_by | Drop -down: id, createdDateTime, ContentType, expectedAssessment, category, status, requestSource, category | Optional | 
+| request_id | The request id. | Optional |
+| filter | Available fields for filter  are:expectedAssessment,ContentType,status,requestSource. Example:category eq 'malware’| Optional |
+| order_by | Drop -down: id, createdDateTime, ContentType, expectedAssessment, category, status, requestSource, category | Optional |
 | sort_order | desc or asc. | Optional |
 | limit | Default is 50. | Optional |
 | next_token | the retrieved token from first run when there's more data to retrieve. | Optional |
@@ -2078,20 +2074,20 @@ Retrieve all threat assessment requests.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGraphMail.AssessmentRequest.ID | String | Request id. |
-| MSGraphMail.AssessmentRequest.CreatedDateTime | Date | Created data of the threat assessment request. | 
-| MSGraphMail.AssessmentRequest.ContentType | String | The content type of threat assessment. | 
-| MSGraphMail.AssessmentRequest.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
-| MSGraphMail.AssessmentRequest.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
-| MSGraphMail.AssessmentRequest.Status | String | The assessment process status. Possible values are: pending, completed. | 
-| MSGraphMail.AssessmentRequest.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.AssessmentRequest.CreatedDateTime | Date | Created data of the threat assessment request. |
+| MSGraphMail.AssessmentRequest.ContentType | String | The content type of threat assessment. |
+| MSGraphMail.AssessmentRequest.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. |
+| MSGraphMail.AssessmentRequest.Category | String | The threat category. Possible values are: spam, phishing, malware. |
+| MSGraphMail.AssessmentRequest.Status | String | The assessment process status. Possible values are: pending, completed. |
+| MSGraphMail.AssessmentRequest.RequestSource | String | The source of threat assessment request. Possible values are: administrator. |
 | MSGraphMail.AssessmentRequest.DestinationRoutingReason | String | The destination Routing Reason. |
 | MSGraphMail.AssessmentRequest.RecipientEmail | String | The recipient email. |
 | MSGraphMail.AssessmentRequest.URL | String | The url. |
 | MSGraphMail.AssessmentRequest.FileName | String | The file name. |
-| MSGraphMail.AssessmentRequest.CreatedUserID | String | User id. | 
-| MSGraphMail.AssessmentRequest.CreatedUsername | String | Username. | 
-| MSGraphMail.AssessmentRequest.ResultType | String | Result of the request. | 
-| MSGraphMail.AssessmentRequest.ResultMessage | String | Message of the result. | 
+| MSGraphMail.AssessmentRequest.CreatedUserID | String | User id. |
+| MSGraphMail.AssessmentRequest.CreatedUsername | String | Username. |
+| MSGraphMail.AssessmentRequest.ResultType | String | Result of the request. |
+| MSGraphMail.AssessmentRequest.ResultMessage | String | Message of the result. |
 | MsGraph.AssessmentRequestNextToken.next_token |String |the next token from the previous run.|
 
 #### Command example
@@ -2148,14 +2144,15 @@ Retrieve all threat assessment requests.
 ```
 
 #### Human Readable Output
+>
 >###Next Token is: eyJQYWdlQ29va2llIjoiPHJvdyBpZF9JZGVudGl
->### Mail assessment request:
+>
+>### Mail assessment request
 
 >|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Created User ID|Created Username|destinationRoutingReason|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 49c5ef5b-1f65-444a-e6b9-08d772ea2059 | "2019-11-27T03:30:18.6890937Z"| mail | block| spam| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|spam attempt.|notJunk|
 >| ab2ad9b3-2213-4091-ae0c-08d76ddbcacf | 2019-11-20T17:05:06.4088076Z| mail | block| malware| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|notJunk|
-
 
 ### msg-generate-login-url
 
@@ -2176,7 +2173,9 @@ Generate the login URL used for the authorization code flow.
 There is no context output for this command.
 
 #### Human Readable Output
+>
 >### Authorization instructions
+>
 >1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -2197,22 +2196,25 @@ To save result in context to 'Microsoft365Defender' as well, you can check the '
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Advanced hunting query. | Required | 
-| limit | Number of entries. Enter -1 for unlimited query, In case a limit also appears in the query, priority will be given to the query. | Optional | 
-| timeout | The time limit in seconds for the http request to run | Optional | 
+| query | Advanced hunting query. | Required |
+| limit | Number of entries. Enter -1 for unlimited query, In case a limit also appears in the query, priority will be given to the query. | Optional |
+| timeout | The time limit in seconds for the http request to run | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Hunt.query | String | The query used, also acted as a key. | 
-| MsGraph.Hunt.results | Unknown | The results of the query. | 
-| Microsoft365Defender.Hunt.query | String | The query used, also acted as a key. | 
-| Microsoft365Defender.Hunt.results | Unknown | The results of the query. | 
+| MsGraph.Hunt.query | String | The query used, also acted as a key. |
+| MsGraph.Hunt.results | Unknown | The results of the query. |
+| Microsoft365Defender.Hunt.query | String | The query used, also acted as a key. |
+| Microsoft365Defender.Hunt.results | Unknown | The results of the query. |
 
 #### Command example
+
 ```!msg-advanced-hunting query=AlertInfo limit=1```
+
 #### Context Example
+
 ```json
 {
     "Microsoft365Defender": {
@@ -2269,40 +2271,43 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Incident's ID. | Optional | 
-| limit | Number of incidents in the list. Maximum is 50. Default is 50. | Optional | 
-| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
-| status | The status of the incident. Possible values are: active, redirected, resolved, inProgress, unknownFutureValue, awaitingAction. | Optional | 
-| assigned_to | Owner of the incident. | Optional | 
-| severity | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional | 
-| classification | The specification for the incident. | Optional | 
-| odata | Filter incidents using 'odata' query. | Optional | 
+| incident_id | Incident's ID. | Optional |
+| limit | Number of incidents in the list. Maximum is 50. Default is 50. | Optional |
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional |
+| status | The status of the incident. Possible values are: active, redirected, resolved, inProgress, unknownFutureValue, awaitingAction. | Optional |
+| assigned_to | Owner of the incident. | Optional |
+| severity | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional |
+| classification | The specification for the incident. | Optional |
+| odata | Filter incidents using 'odata' query. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Incident.assignedTo | string | Owner of the incident, or null if no owner is assigned. Free editable text. | 
-| MsGraph.Incident.classification | string | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
-| MsGraph.Incident.comments | string | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
-| MsGraph.Incident.createdDateTime | date | Time when the incident was first created. | 
-| MsGraph.Incident.customTags | string | Array of custom tags associated with an incident. | 
-| MsGraph.Incident.description | string | Description of the incident. | 
-| MsGraph.Incident.determination | string | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
-| MsGraph.Incident.displayName | string | The incident name. | 
-| MsGraph.Incident.id | number | Unique identifier to represent the incident. | 
-| MsGraph.Incident.incidentWebUrl | string | The URL for the incident page in the Microsoft 365 Defender portal. | 
-| MsGraph.Incident.lastModifiedBy | string | The identity that last modified the incident. | 
-| MsGraph.Incident.lastUpdateDateTime | string | Time when the incident was last updated. | 
-| MsGraph.Incident.redirectIncidentId | string | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
-| MsGraph.Incident.severity | string | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
-| MsGraph.Incident.status | string | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
-| MsGraph.Incident.tenantId | string | The Microsoft Entra tenant in which the alert was created. | 
-| MsGraph.Incident.systemTags | string | The system tags associated with the incident. | 
+| MsGraph.Incident.assignedTo | string | Owner of the incident, or null if no owner is assigned. Free editable text. |
+| MsGraph.Incident.classification | string | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. |
+| MsGraph.Incident.comments | string | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. |
+| MsGraph.Incident.createdDateTime | date | Time when the incident was first created. |
+| MsGraph.Incident.customTags | string | Array of custom tags associated with an incident. |
+| MsGraph.Incident.description | string | Description of the incident. |
+| MsGraph.Incident.determination | string | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. |
+| MsGraph.Incident.displayName | string | The incident name. |
+| MsGraph.Incident.id | number | Unique identifier to represent the incident. |
+| MsGraph.Incident.incidentWebUrl | string | The URL for the incident page in the Microsoft 365 Defender portal. |
+| MsGraph.Incident.lastModifiedBy | string | The identity that last modified the incident. |
+| MsGraph.Incident.lastUpdateDateTime | string | Time when the incident was last updated. |
+| MsGraph.Incident.redirectIncidentId | string | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. |
+| MsGraph.Incident.severity | string | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. |
+| MsGraph.Incident.status | string | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. |
+| MsGraph.Incident.tenantId | string | The Microsoft Entra tenant in which the alert was created. |
+| MsGraph.Incident.systemTags | string | The system tags associated with the incident. |
 
 #### Command example
+
 ```!msg-list-security-incident limit=1```
+
 #### Context Example
+
 ```json
 {
     "MsGraph": {
@@ -2330,11 +2335,11 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 
 #### Human Readable Output
 
->### Incidents:
+>### Incidents
+>
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 12345 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
-
 
 ### msg-update-security-incident
 
@@ -2349,39 +2354,42 @@ Update the incident with the given ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Incident's ID. | Required | 
-| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: active, resolved, redirected, unknownFutureValue. | Optional | 
-| assigned_to | Owner of the incident. | Optional | 
-| determination | Determination of the incident. Possible values are: unknown, apt, malware, securityPersonnel, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, notMalicious. | Optional | 
-| classification | The specification for the incident. Possible values are: unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | Optional | 
-| custom_tags | Array of custom tags associated with an incident. | Optional | 
-| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+| incident_id | Incident's ID. | Required |
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: active, resolved, redirected, unknownFutureValue. | Optional |
+| assigned_to | Owner of the incident. | Optional |
+| determination | Determination of the incident. Possible values are: unknown, apt, malware, securityPersonnel, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, notMalicious. | Optional |
+| classification | The specification for the incident. Possible values are: unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | Optional |
+| custom_tags | Array of custom tags associated with an incident. | Optional |
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Incident.assignedTo | String | Owner of the incident, or null if no owner is assigned. Free editable text. | 
-| MsGraph.Incident.classification | String | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
-| MsGraph.Incident.comments | String | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
-| MsGraph.Incident.createdDateTime | Date | Time when the incident was first created. | 
-| MsGraph.Incident.customTags | String | Array of custom tags associated with an incident. | 
-| MsGraph.Incident.description | String | Description of the incident. | 
-| MsGraph.Incident.determination | String | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
-| MsGraph.Incident.displayName | String | The incident name. | 
-| MsGraph.Incident.id | String | Unique identifier to represent the incident. | 
-| MsGraph.Incident.incidentWebUrl | String | The URL for the incident page in the Microsoft 365 Defender portal. | 
-| MsGraph.Incident.lastModifiedBy | String | The identity that last modified the incident. | 
-| MsGraph.Incident.lastUpdateDateTime | Date | Time when the incident was last updated. | 
-| MsGraph.Incident.redirectIncidentId | String | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
-| MsGraph.Incident.severity | String | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
-| MsGraph.Incident.status | String | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
-| MsGraph.Incident.tenantId | String | The Microsoft Entra tenant in which the alert was created. | 
-| MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
+| MsGraph.Incident.assignedTo | String | Owner of the incident, or null if no owner is assigned. Free editable text. |
+| MsGraph.Incident.classification | String | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. |
+| MsGraph.Incident.comments | String | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. |
+| MsGraph.Incident.createdDateTime | Date | Time when the incident was first created. |
+| MsGraph.Incident.customTags | String | Array of custom tags associated with an incident. |
+| MsGraph.Incident.description | String | Description of the incident. |
+| MsGraph.Incident.determination | String | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. |
+| MsGraph.Incident.displayName | String | The incident name. |
+| MsGraph.Incident.id | String | Unique identifier to represent the incident. |
+| MsGraph.Incident.incidentWebUrl | String | The URL for the incident page in the Microsoft 365 Defender portal. |
+| MsGraph.Incident.lastModifiedBy | String | The identity that last modified the incident. |
+| MsGraph.Incident.lastUpdateDateTime | Date | Time when the incident was last updated. |
+| MsGraph.Incident.redirectIncidentId | String | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. |
+| MsGraph.Incident.severity | String | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. |
+| MsGraph.Incident.status | String | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. |
+| MsGraph.Incident.tenantId | String | The Microsoft Entra tenant in which the alert was created. |
+| MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. |
 
 #### Command example
+
 ```!msg-update-security-incident incident_id=12345```
+
 #### Context Example
+
 ```json
 {
     "MsGraph": {
@@ -2410,7 +2418,8 @@ Update the incident with the given ID.
 
 #### Human Readable Output
 
->### Updated incident No. 12345:
+>### Updated incident No. 12345
+>
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |
