@@ -155,19 +155,21 @@ sendMultipart = function (uri, entryID, body) {
 };
 
 var sendRequest = function(method, uri, body, raw) {
-    try {
-        const playbookMetadataObject = JSON.parse(playbookTaskInfo);
-        body[PLAYBOOK_METADATA] = {
-            'playbook_id' : playbookMetadataObject.playbookID,
-            'playbook_name' :playbookMetadataObject.playbookName,
-            'task_id' : playbookMetadataObject.taskID,
-            'task_name' : playbookMetadataObject.taskName,
-            'integration_name' : INTEGRATION_NAME,
-            'command_name' : command,
-        }        
-        logDebug("Added playbook-metadata to request body " + body[PLAYBOOK_METADATA])
-    } catch(error) {
-        logError("Error parsing as a JSON object playbookTaskInfo: " + error)
+    if (method == 'POST'){
+        try {
+            const playbookMetadataObject = JSON.parse(playbookTaskInfo);
+            body[PLAYBOOK_METADATA] = {
+                'playbook_id' : playbookMetadataObject.playbookID,
+                'playbook_name' :playbookMetadataObject.playbookName,
+                'task_id' : playbookMetadataObject.taskID,
+                'task_name' : playbookMetadataObject.taskName,
+                'integration_name' : INTEGRATION_NAME,
+                'command_name' : command,
+            }        
+            logDebug("Added playbook-metadata to request body " + body[PLAYBOOK_METADATA]);
+        } catch(error) {
+            logError("Error parsing as a JSON object playbookTaskInfo: " + error);
+        }
     }
 
     var requestUrl = getRequestURL(uri);

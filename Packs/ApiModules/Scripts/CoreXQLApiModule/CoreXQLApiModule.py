@@ -103,6 +103,7 @@ class CoreClient(BaseClient):
                 f" {SERVER_VERSION}-{BUILD_VERSION}."
             )
         if not IS_CORE_AVAILABLE:
+            demisto.error(f'DANF from IS_CORE_AVAILABLE: {json_data}')
             return BaseClient._http_request(
                 self,  # we use the standard base_client http_request without overriding it
                 method=method,
@@ -122,6 +123,7 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        demisto.error(f"DANF in demisto._apiCall flow json_data: {json_data}")
         response = demisto._apiCall(
             method=method, path=address, data=data, headers=headers, timeout=timeout, response_data_type=response_data_type
         )
@@ -434,14 +436,15 @@ def add_playbook_metadata(data:dict, command: str):
     playbook_name = entry_task.get('playbookName', 'missing_playbook_name') if entry_task else ''
     task_name = entry_task.get('taskName', 'missing_task_name') if entry_task else ''
     task_id = entry_task.get('taskId', 'missing_task_id') if entry_task else ''
-    data['playbook_metadata'] = {
+    playbook_metadata = {
         'playbook_name': playbook_name,
         'playbook_id': playbook_id,
         'task_name': task_name,
         'task_id': task_id,
         'integration_name': 'Cortex XDR - XQL Query Engine',
         'command_name': command}
-
+    data['request_data']['playbook_metadata'] = playbook_metadata
+    demisto.error(f"DANF: data['request_data']['playbook_metadata']: {data['request_data']['playbook_metadata']}")
 
 def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     """Execute an XQL query.
@@ -475,7 +478,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     if tenant_ids:
         data["request_data"]["tenants"] = tenant_ids
     # call the client function and get the raw response
-    demisto.error(f'DANF from start_xql_query client: {client._headers}')
+    demisto.error(f'DANF from start_xql_query client data: {data}')
     execution_id = client.start_xql_query(data)
     return execution_id
 
