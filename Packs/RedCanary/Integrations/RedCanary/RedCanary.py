@@ -205,7 +205,7 @@ def process_timeline(detection_id):
     ips = []
     processes = []
     for activity in res:
-        if activity.get('type') not in ["activity_timelines.LatestIndicationSeen", "activity_timelines.EventActivityOccurred"]:
+        if activity.get("type") not in ["activity_timelines.LatestIndicationSeen", "activity_timelines.EventActivityOccurred"]:
             continue
         activity_time = get_time_str(get_time_obj(activity["attributes"]["occurred_at"]))
         notes = activity["attributes"]["analyst_notes"]
@@ -287,7 +287,9 @@ def process_timeline(detection_id):
         activities.append(
             {
                 "Time": activity_time,
-                "Type": activity.get("attributes", {}).get("type") and activity["attributes"].get("type").replace("_", " ") or None,
+                "Type": activity.get("attributes", {}).get("type")
+                and activity["attributes"].get("type").replace("_", " ")
+                or None,
                 "Notes": notes,
                 "Activity Details": createContext(additional_data, removeNull=True),
             }
