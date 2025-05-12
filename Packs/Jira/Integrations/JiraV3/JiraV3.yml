@@ -1582,6 +1582,15 @@ script:
       name: lastUpdate
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
+  - arguments:
+      - description: The remote incident ID.
+        name: id
+        required: true
+      - defaultValue: '0'
+        description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+        name: lastUpdate
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data-preview
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
     arguments: []
