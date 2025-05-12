@@ -1,8 +1,9 @@
+import json
+import os
+
+import pytest
 import SEKOIAIntelligenceCenter
 from CommonServerPython import *
-import pytest
-import os
-import json
 from stix2patterns.exceptions import ParseException
 
 MOCK_URL = "https://api.sekoia.io"
@@ -164,8 +165,9 @@ def test_get_indicator_unknown(client, requests_mock, indicator_value, indicator
     args = {"value": indicator_value, "type": indicator_type}
 
     result = SEKOIAIntelligenceCenter.get_indicator_command(client=client, args=args)
-    assert result.outputs['indicator'] == {'type': 'email-addr', 'value': 'does-not-exist@sekoia.io'}
+    assert result.outputs["indicator"] == {"type": "email-addr", "value": "does-not-exist@sekoia.io"}
     assert result.outputs_prefix == "SEKOIAIntelligenceCenter.Analysis"
+
 
 # This test only runs if SEKOIA.IO API_KEY is provided
 
@@ -446,11 +448,14 @@ def test_reputation_command_unknown_indicator(
     # The first (command_results[0]) is the one containing the reputation output
     assert command_results[0].indicator.dbot_score.score == Common.DBotScore.NONE
     assert command_results[0].indicator.dbot_score.indicator_type == expected_dbot_type
-    assert command_results[0].readable_output == f"""### SEKOIAIntelligenceCenter:
+    assert (
+        command_results[0].readable_output
+        == f"""### SEKOIAIntelligenceCenter:
 |{expected_stix_type}|Result|
 |---|---|
 | {input_indicator} | Not found |
 """
+    )
 
     # The second (command_results[1]) is the one containing the command output
     assert command_results[1].outputs_prefix == "SEKOIAIntelligenceCenter.IndicatorContext"
@@ -470,4 +475,4 @@ def test_reputation_command_wrong_type(client):
 def test_reputation_wrong_value(client):
     indicator = ["abc", "123", "", None]
     with pytest.raises(ValueError):
-        SEKOIAIntelligenceCenter.reputation_command(client=client, args={"ip": indicator}, indicator_type='ip')
+        SEKOIAIntelligenceCenter.reputation_command(client=client, args={"ip": indicator}, indicator_type="ip")

@@ -1,6 +1,11 @@
-name: Microsoft Graph Security Parsing Rules
-id: Microsoft_Graph_Security_ParsingRule
 fromversion: 8.2.0
-tags: []
+id: Microsoft_Graph_Security_ParsingRule
+name: Microsoft Graph Security Parsing Rules
 rules: ''
 samples: ''
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+tags: []

@@ -109,9 +109,13 @@ class Client(BaseClient):
 
     def execute_get_events_request(self, params: dict[str, int | str], config_ids: str, prefix_msg: str = ""):
         demisto.info(f"{prefix_msg}Init session and sending request.")
+        url_suffix = f"/{config_ids}"
+        if "offset" in params:
+            url_suffix = f"{url_suffix}?offset={params['offset']}"
+            del params["offset"]
         raw_response: str = self._http_request(
             method="GET",
-            url_suffix=f"/{config_ids}",
+            url_suffix=url_suffix,
             params=params,
             resp_type="text",
         )

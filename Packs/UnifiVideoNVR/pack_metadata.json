@@ -2,7 +2,7 @@
     "name": "UnifiVideo NVR",
     "description": "This integration connects to UnifiVideo by Ubiquity Networks, which fetches motion events as incidents, allowing you to take video recordings and snapshots",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Maciej Drobniuch",
     "url": "drobniuch.pl",
     "email": "maciej@drobniuch.pl",

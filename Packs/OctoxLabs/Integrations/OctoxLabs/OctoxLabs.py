@@ -21,9 +21,7 @@ def convert_to_json(obj: object, keys: list[str]) -> dict[str, Any]:
     return {k: getattr(obj, k, None) for k in keys}
 
 
-def run_command(
-    octox: OctoxLabs, command_name: str, args: dict[str, Any]
-) -> CommandResults:
+def run_command(octox: OctoxLabs, command_name: str, args: dict[str, Any]) -> CommandResults:
     commands: dict[str, Callable] = {
         "test-module": test_module,
         "octoxlabs-get-adapters": get_adapters,
@@ -196,9 +194,7 @@ def search_devices(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
 
 
 def get_device(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
-    device = octox.get_device_detail(
-        hostname=args.get("hostname"), discovery_id=args.get("discovery_id", None)
-    )
+    device = octox.get_device_detail(hostname=args.get("hostname"), discovery_id=args.get("discovery_id", None))
     return CommandResults(outputs_prefix="OctoxLabs.Device", outputs=device)
 
 
@@ -582,9 +578,7 @@ def search_avm(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
 
 
 def get_user_inventory_detail(octox: OctoxLabs, args: dict[str, Any]) -> CommandResults:
-    user = octox.get_user_inventory_detail(
-        username=args.get("username"), discovery_id=args.get("discovery_id", None)
-    )
+    user = octox.get_user_inventory_detail(username=args.get("username"), discovery_id=args.get("discovery_id", None))
     return CommandResults(outputs_prefix="OctoxLabs.UserInv", outputs=user)
 
 
@@ -700,17 +694,11 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
         octox = OctoxLabs(ip=ip, token=token, https_proxy=https_proxy, no_verify=no_verify)
-        return_results(
-            run_command(
-                octox=octox, command_name=demisto.command(), args=demisto.args()
-            )
-        )
+        return_results(run_command(octox=octox, command_name=demisto.command(), args=demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)} \nArgs:\n{demisto.args()}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s} \nArgs:\n{demisto.args()}")
 
 
 """ ENTRY POINT """

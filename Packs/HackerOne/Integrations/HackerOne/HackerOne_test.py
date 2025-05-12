@@ -1,32 +1,37 @@
-import io
-import os
-
-import pytest
 import json
-
-from CommonServerPython import DemistoException
-from test_data import input_data
+import os
 from unittest import mock
 
-BASE_URL = 'https://mocked_url/v1/'
+import pytest
+from CommonServerPython import DemistoException
+from test_data import input_data
 
-URL_SUFFIX = {
-    "REPORTS": "reports",
-    "PROGRAMS": "me/programs"
-}
+BASE_URL = "https://mocked_url/v1/"
+
+URL_SUFFIX = {"REPORTS": "reports", "PROGRAMS": "me/programs"}
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 @pytest.fixture()
 def client():
     from HackerOne import Client
-    return Client("https://mocked_url/v1", False, False, auth=("user", "user123"), max_fetch=1,
-                  first_fetch="2020-09-07T04:59:51Z",
-                  program_handle=["checker_program_h1b"], severity="", state="", filters="")
+
+    return Client(
+        "https://mocked_url/v1",
+        False,
+        False,
+        auth=("user", "user123"),
+        max_fetch=1,
+        first_fetch="2020-09-07T04:59:51Z",
+        program_handle=["checker_program_h1b"],
+        severity="",
+        state="",
+        filters="",
+    )
 
 
 def test_test_module_when_valid_response_is_returned(client, requests_mock):
@@ -43,7 +48,7 @@ def test_test_module_when_valid_response_is_returned(client, requests_mock):
 
     requests_mock.get(BASE_URL + URL_SUFFIX["PROGRAMS"], status_code=200, json="{}")
 
-    assert test_module(client) == 'ok'
+    assert test_module(client) == "ok"
 
 
 def test_test_module_when_isfetch_is_true(requests_mock, client):
@@ -61,20 +66,21 @@ def test_test_module_when_isfetch_is_true(requests_mock, client):
     requests_mock.get(BASE_URL + URL_SUFFIX["PROGRAMS"], json={"page_size": 1}, status_code=200)
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json={"filter[program][]": ["abc"]}, status_code=200)
 
-    assert test_module(client) == 'ok'
+    assert test_module(client) == "ok"
 
 
 def test_test_module_when_authentication_error_is_returned(requests_mock, client):
     """
-     Test test_module function for failure cases.
-     Given
-        - an error status code
-     When
-        - the user can't be authenticated
-     Then
-        - raise DemistoException
+    Test test_module function for failure cases.
+    Given
+       - an error status code
+    When
+       - the user can't be authenticated
+    Then
+       - raise DemistoException
     """
     from HackerOne import test_module
+
     requests_mock.get(BASE_URL + URL_SUFFIX["PROGRAMS"], status_code=400, json={})
     with pytest.raises(DemistoException):
         test_module(client)
@@ -95,7 +101,7 @@ def test_exception_handler_json(status_code, error_msg, expected_error_message, 
     mocked_response = mock.Mock()
     mocked_response.status_code = status_code
     mocked_response.json.return_value = error_msg
-    mocked_response.headers = {'Content-Type': "application/json"}
+    mocked_response.headers = {"Content-Type": "application/json"}
     with pytest.raises(DemistoException) as err:
         client.exception_handler(mocked_response)
     assert str(err.value) == expected_error_message
@@ -113,14 +119,16 @@ def test_exception_handler_not_json(client):
     """
 
     status_code = 423
-    error_msg = "<html>\n<head><title>423 Invalid</title></head>\n<body>\n<center><h1>423 Invalid</h1></center>" \
-                "\n<hr><center>nginx</center>\n</body>\n</html>"
+    error_msg = (
+        "<html>\n<head><title>423 Invalid</title></head>\n<body>\n<center><h1>423 Invalid</h1></center>"
+        "\n<hr><center>nginx</center>\n</body>\n</html>"
+    )
 
     expected_error_message = "Unable to retrieve the data based on arguments."
     mocked_response = mock.Mock()
     mocked_response.status_code = status_code
     mocked_response.json.return_value = error_msg
-    mocked_response.headers = {'Content-Type': "text/html"}
+    mocked_response.headers = {"Content-Type": "text/html"}
     with pytest.raises(DemistoException) as err:
         client.exception_handler(mocked_response)
     assert str(err.value) == expected_error_message
@@ -138,22 +146,20 @@ def test_hackerone_program_list_command_when_valid_response_is_returned(client, 
     """
     from HackerOne import hackerone_program_list_command
 
-    response = util_load_json(
-        os.path.join("test_data", "program/program_command_response.json"))
+    response = util_load_json(os.path.join("test_data", "program/program_command_response.json"))
 
     requests_mock.get(BASE_URL + URL_SUFFIX["PROGRAMS"], json=response, status_code=200)
 
-    context_output = util_load_json(
-        os.path.join("test_data", "program/program_command_context.json"))
+    context_output = util_load_json(os.path.join("test_data", "program/program_command_context.json"))
 
-    with open(os.path.join("test_data", "program/program_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "program/program_command_readable_output.md")) as f:
         readable_output = f.read()
 
     # Execute
     command_response = hackerone_program_list_command(client, {})
 
     # Assert
-    assert command_response.outputs_prefix == 'HackerOne.Program'
+    assert command_response.outputs_prefix == "HackerOne.Program"
     assert command_response.outputs_key_field == "id"
     assert command_response.outputs == context_output
     assert command_response.readable_output == readable_output
@@ -170,6 +176,7 @@ def test_hackerone_program_list_command_when_empty_response_is_returned(client, 
         - Returns no records for the given input arguments
     """
     from HackerOne import hackerone_program_list_command
+
     expected_response = {"data": [], "links": []}
     requests_mock.get(BASE_URL + URL_SUFFIX["PROGRAMS"], status_code=200, json=expected_response)
     readable_output = "No programs were found for the given argument(s)."
@@ -227,6 +234,7 @@ def test_hackerone_report_list_command_when_empty_response_is_returned(client, r
         - Returns no records for the given input arguments
     """
     from HackerOne import hackerone_report_list_command
+
     expected_response = {"data": [], "links": []}
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=expected_response, status_code=200)
     readable_output = "No reports were found for the given argument(s)."
@@ -250,22 +258,20 @@ def test_hackerone_report_list_command_when_valid_response_is_returned(client, r
     """
     from HackerOne import hackerone_report_list_command
 
-    response = util_load_json(
-        os.path.join("test_data", "report/report_command_response.json"))
+    response = util_load_json(os.path.join("test_data", "report/report_command_response.json"))
 
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=response, status_code=200)
 
-    context_output = util_load_json(
-        os.path.join("test_data", "report/report_command_context.json"))
+    context_output = util_load_json(os.path.join("test_data", "report/report_command_context.json"))
 
-    with open(os.path.join("test_data", "report/report_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "report/report_command_readable_output.md")) as f:
         readable_output = f.read()
 
     # Execute
     command_response = hackerone_report_list_command(client, {"program_handle": "abc"})
 
     # Assert
-    assert command_response.outputs_prefix == 'HackerOne.Report'
+    assert command_response.outputs_prefix == "HackerOne.Report"
     assert command_response.outputs_key_field == "id"
     assert command_response.outputs == context_output
     assert command_response.readable_output == readable_output
@@ -301,12 +307,13 @@ def test_fetch_incident_when_empty_result_is_returned(client, requests_mock):
         -  Returns empty response for first time
     """
     from HackerOne import fetch_incidents
-    last_run = {'current_created_at': '2020-09-07T04:59:51', 'next_page': 2}
+
+    last_run = {"current_created_at": "2020-09-07T04:59:51", "next_page": 2}
     expected_response = {"data": [], "links": []}
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=expected_response, status_code=200)
     fetched_incidents = fetch_incidents(client, last_run)
 
-    expected_next_run = {'current_created_at': '2020-09-07T04:59:51', 'next_page': 2}
+    expected_next_run = {"current_created_at": "2020-09-07T04:59:51", "next_page": 2}
 
     assert fetched_incidents == (expected_next_run, [])
 
@@ -325,20 +332,18 @@ def test_fetch_incident_when_valid_result_is_returned(client, requests_mock):
     from HackerOne import fetch_incidents
 
     last_run = {}
-    incident_data = util_load_json(
-        os.path.join("test_data", "incident/raw_response.json"))
+    incident_data = util_load_json(os.path.join("test_data", "incident/raw_response.json"))
 
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=incident_data, status_code=200)
     fetched_incidents = fetch_incidents(client, last_run)
 
-    next_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
-                'report_ids': ['1295856']}
+    next_run = {"next_created_at": "2021-08-09T13:41:38.039Z", "report_ids": ["1295856"]}
 
     incidents = [
         {
             "name": incident_data.get("data")[0].get("attributes").get("title"),
             "occurred": incident_data.get("data")[0].get("attributes").get("created_at"),
-            "rawJSON": json.dumps(incident_data.get("data")[0])
+            "rawJSON": json.dumps(incident_data.get("data")[0]),
         }
     ]
 
@@ -358,17 +363,14 @@ def test_fetch_incident_when_getting_already_fetched_report(client, requests_moc
 
     from HackerOne import fetch_incidents
 
-    incident_data = util_load_json(
-        os.path.join("test_data", "incident/raw_response.json"))
+    incident_data = util_load_json(os.path.join("test_data", "incident/raw_response.json"))
 
-    last_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
-                'report_ids': ['1295856']}
+    last_run = {"next_created_at": "2021-08-09T13:41:38.039Z", "report_ids": ["1295856"]}
 
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=incident_data, status_code=200)
 
     fetched_incidents = fetch_incidents(client, last_run)
-    next_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
-                'report_ids': ['1295856']}
+    next_run = {"next_created_at": "2021-08-09T13:41:38.039Z", "report_ids": ["1295856"]}
     assert fetched_incidents == (next_run, [])
 
 
@@ -385,35 +387,34 @@ def test_fetch_incident_when_report_ids_should_be_replaced(client, requests_mock
 
     from HackerOne import fetch_incidents
 
-    incident_data = util_load_json(
-        os.path.join("test_data", "incident/raw_response.json"))
+    incident_data = util_load_json(os.path.join("test_data", "incident/raw_response.json"))
 
-    last_run = {'next_created_at': '2020-09-07T04:59:51Z',
-                'report_ids': ['1295852']}
+    last_run = {"next_created_at": "2020-09-07T04:59:51Z", "report_ids": ["1295852"]}
 
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=incident_data, status_code=200)
 
     fetched_incidents = fetch_incidents(client, last_run)
 
-    next_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
-                'report_ids': ['1295856']}
+    next_run = {"next_created_at": "2021-08-09T13:41:38.039Z", "report_ids": ["1295856"]}
 
     incidents = [
         {
             "name": incident_data.get("data")[0].get("attributes").get("title"),
             "occurred": incident_data.get("data")[0].get("attributes").get("created_at"),
-            "rawJSON": json.dumps(incident_data.get("data")[0])
+            "rawJSON": json.dumps(incident_data.get("data")[0]),
         }
     ]
 
     assert fetched_incidents == (next_run, incidents)
 
 
-@pytest.mark.parametrize("max_fetch, first_fetch, program_handle, severity, state, filters, page, expected_params",
-                         input_data.valid_params_for_fetch_incidents)
-def test_fetch_incident_when_valid_params_are_provided(max_fetch, first_fetch, program_handle, severity, state, filters,
-                                                       page,
-                                                       expected_params):
+@pytest.mark.parametrize(
+    "max_fetch, first_fetch, program_handle, severity, state, filters, page, expected_params",
+    input_data.valid_params_for_fetch_incidents,
+)
+def test_fetch_incident_when_valid_params_are_provided(
+    max_fetch, first_fetch, program_handle, severity, state, filters, page, expected_params
+):
     """
     test case scenario when valid parameters are provided for fetching the incidents.
     Given:
@@ -425,14 +426,14 @@ def test_fetch_incident_when_valid_params_are_provided(max_fetch, first_fetch, p
     """
     from HackerOne import prepare_fetch_incidents_parameters
 
-    assert prepare_fetch_incidents_parameters(max_fetch, first_fetch, program_handle, severity, state,
-                                              filters, page) == expected_params
+    assert (
+        prepare_fetch_incidents_parameters(max_fetch, first_fetch, program_handle, severity, state, filters, page)
+        == expected_params
+    )
 
 
-@pytest.mark.parametrize("max_fetch, program_handle,filters, expected_error_msg",
-                         input_data.invalid_params_for_fetch_incidents)
-def test_fetch_incident_when_invalid_params_are_provided(max_fetch, program_handle, filters,
-                                                         expected_error_msg):
+@pytest.mark.parametrize("max_fetch, program_handle,filters, expected_error_msg", input_data.invalid_params_for_fetch_incidents)
+def test_fetch_incident_when_invalid_params_are_provided(max_fetch, program_handle, filters, expected_error_msg):
     """
     test case scenario when invalid parameters are provided for fetching the incidents.
     Given:

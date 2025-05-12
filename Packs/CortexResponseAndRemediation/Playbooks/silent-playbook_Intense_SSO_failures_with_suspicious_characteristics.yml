@@ -356,7 +356,7 @@ tasks:
       - "14"
     scriptarguments:
       updated_after:
-        simple: 90 days
+        simple: 1 days
     separatecontext: false
     continueonerrortype: ""
     view: |-

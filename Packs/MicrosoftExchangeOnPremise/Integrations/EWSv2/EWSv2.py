@@ -6,6 +6,8 @@ from multiprocessing import Process
 
 import dateparser  # type: ignore
 import exchangelib
+from CommonServerPython import *
+from EWSApiModule import *
 from exchangelib import (
     BASIC,
     DELEGATE,
@@ -22,6 +24,7 @@ from exchangelib import (
     Version,
 )
 from exchangelib.errors import (
+    ErrorCannotOpenFileAttachment,
     ErrorFolderNotFound,
     ErrorInvalidPropertyRequest,
     ErrorIrresolvableConflict,
@@ -31,7 +34,6 @@ from exchangelib.errors import (
     ErrorNameResolutionNoResults,
     RateLimitError,
     TransportError,
-    ErrorCannotOpenFileAttachment,
 )
 from exchangelib.items import Contact, Item, Message
 from exchangelib.services import EWSService
@@ -48,9 +50,6 @@ from exchangelib.version import (
 from exchangelib.version import VERSIONS as EXC_VERSIONS
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
-
-from CommonServerPython import *
-from EWSApiModule import *
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
@@ -75,18 +74,18 @@ MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
 
 # consts
 VERSIONS = {
-    '2007': EXCHANGE_2007,
-    '2010': EXCHANGE_2010,
-    '2010_SP2': EXCHANGE_2010_SP2,
-    '2013': EXCHANGE_2013,
-    '2013_SP1': EXCHANGE_2013_SP1,
-    '2016': EXCHANGE_2016,
-    '2019': EXCHANGE_2019
+    "2007": EXCHANGE_2007,
+    "2010": EXCHANGE_2010,
+    "2010_SP2": EXCHANGE_2010_SP2,
+    "2013": EXCHANGE_2013,
+    "2013_SP1": EXCHANGE_2013_SP1,
+    "2016": EXCHANGE_2016,
+    "2019": EXCHANGE_2019,
 }
 
 APP_NAME = "EWSv2"
-ATTACHMENT_ORIGINAL_ITEM_ID = 'originalItemId'
-NEW_ITEM_ID = 'newItemId'
+ATTACHMENT_ORIGINAL_ITEM_ID = "originalItemId"
+NEW_ITEM_ID = "newItemId"
 MESSAGE_ID = "messageId"
 ITEM_ID = "itemId"
 MAILBOX = "mailbox"
@@ -96,11 +95,11 @@ FOLDER_ID = "id"
 MOVED_TO_MAILBOX = "movedToMailbox"
 MOVED_TO_FOLDER = "movedToFolder"
 
-FILE_ATTACHMENT_TYPE = 'FileAttachment'
-ITEM_ATTACHMENT_TYPE = 'ItemAttachment'
-ATTACHMENT_TYPE = 'attachmentType'
+FILE_ATTACHMENT_TYPE = "FileAttachment"
+ITEM_ATTACHMENT_TYPE = "ItemAttachment"
+ATTACHMENT_TYPE = "attachmentType"
 
-TOIS_PATH = '/root/Top of Information Store/'
+TOIS_PATH = "/root/Top of Information Store/"
 
 ENTRY_CONTEXT = "EntryContext"
 CONTEXT_UPDATE_EWS_ITEM = (
@@ -115,8 +114,16 @@ LAST_RUN_IDS = "ids"
 LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
-ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
-                         'toRecipients', 'textBody', ]
+ITEMS_RESULTS_HEADERS = [
+    "sender",
+    "subject",
+    "hasAttachments",
+    "datetimeReceived",
+    "receivedBy",
+    "author",
+    "toRecipients",
+    "textBody",
+]
 
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
@@ -135,13 +142,13 @@ def exchangelib_cleanup():  # pragma: no cover
 # Prep Functions
 def parse_auth_type(auth_type):  # pragma: no cover
     auth_type = auth_type.lower()
-    if auth_type == 'ntlm':
+    if auth_type == "ntlm":
         return NTLM
-    elif auth_type == 'basic':
+    elif auth_type == "basic":
         return BASIC
-    elif auth_type == 'digest':
+    elif auth_type == "digest":
         return DIGEST
-    raise Exception("{} auth method is not supported. Choose one of {}".format(auth_type, 'ntlm\\basic\\digest'))
+    raise Exception("{} auth method is not supported. Choose one of {}".format(auth_type, "ntlm\\basic\\digest"))
 
 
 # LOGGING
@@ -167,31 +174,41 @@ def fix_2010(client: EWSClient):  # pragma: no cover
     version = client.server_build if client.server_build else get_on_prem_build(client.version)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
-                exchangelib.items.DistributionList,
-                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+            Item,
+            Message,
+            exchangelib.items.CalendarItem,
+            exchangelib.items.Contact,
+            exchangelib.items.DistributionList,
+            exchangelib.items.PostItem,
+            exchangelib.items.Task,
+            exchangelib.items.MeetingRequest,
+            exchangelib.items.MeetingResponse,
+            exchangelib.items.MeetingCancellation,
+        ):
             for i, f in enumerate(m.FIELDS):
-                if f.name == 'text_body':
+                if f.name == "text_body":
                     m.FIELDS.pop(i)
                     break
         for m in (exchangelib.Folder, exchangelib.folders.Inbox):
             for i, f in enumerate(m.FIELDS):
-                if f.name == 'unread_count':
+                if f.name == "unread_count":
                     m.FIELDS.pop(i)
                     break
 
         def repr1(self):
-            return self.__class__.__name__ + repr((self.root, self.name, self.total_count, self.child_folder_count,
-                                                   self.folder_class, self.id, self.changekey))
+            return self.__class__.__name__ + repr(
+                (self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.id, self.changekey)
+            )
 
         def repr2(self):
             return self.__class__.__name__ + repr(
-                (self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
+                (self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey)
+            )
 
         def repr3(self):
-            return self.__class__.__name__ + repr((self.account, '[self]', self.name, self.total_count,
-                                                   self.child_folder_count, self.folder_class, self.changekey))
+            return self.__class__.__name__ + repr(
+                (self.account, "[self]", self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey)
+            )
 
         exchangelib.Folder.__repr__ = repr1
         exchangelib.folders.Inbox.__repr__ = exchangelib.folders.JunkEmail.__repr__ = repr2
@@ -216,34 +233,45 @@ def get_time_zone() -> EWSTimeZone | None:
         returns an ``EWSTimeZone`` if TZ available or ``None`` if not
     :rtype: ``Optional[EWSTimeZone]``
     """
-    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
+    time_zone = demisto.callingContext.get("context", {}).get("User", {}).get("timeZone", None)
     if time_zone:
         time_zone = EWSTimeZone(time_zone)
     return time_zone
 
 
 def get_attachment_name(attachment_name, content_id="", is_inline=False, attachment_subject=""):  # pragma: no cover
-    demisto.debug(f"get_attachment_name called with attachment_name='{attachment_name}', content_id='{content_id}', "
-                  f"is_inline={is_inline}, attachment_subject='{attachment_subject}'")
+    demisto.debug(
+        f"get_attachment_name called with attachment_name='{attachment_name}', content_id='{content_id}', "
+        f"is_inline={is_inline}, attachment_subject='{attachment_subject}'"
+    )
 
-    legacy_name = argToBoolean(demisto.params().get('legacy_name', False))
+    legacy_name = argToBoolean(demisto.params().get("legacy_name", False))
 
     if is_inline and content_id and content_id != "None" and not legacy_name:
         if attachment_name is None or attachment_name == "":
-            return f'{content_id}-attachmentName-demisto_untitled_attachment'
-        return f'{content_id}-attachmentName-{attachment_name}'
+            return f"{content_id}-attachmentName-demisto_untitled_attachment"
+        return f"{content_id}-attachmentName-{attachment_name}"
     if not attachment_name and attachment_subject:
         return attachment_subject
     if not attachment_name and not attachment_subject:
-        return 'demisto_untitled_attachment'
+        return "demisto_untitled_attachment"
     return attachment_name
 
 
 def send_email_to_mailbox(  # pragma: no cover
-    account, to, subject, body, body_type,
-    bcc, cc, reply_to, handle_inline_image: bool = True,
-    html_body=None, attachments=None,
-    raw_message=None, from_address=None
+    account,
+    to,
+    subject,
+    body,
+    body_type,
+    bcc,
+    cc,
+    reply_to,
+    handle_inline_image: bool = True,
+    html_body=None,
+    attachments=None,
+    raw_message=None,
+    from_address=None,
 ):
     """
     Send an email to a mailbox.
@@ -269,7 +297,7 @@ def send_email_to_mailbox(  # pragma: no cover
     attachments += inline_attachments
     m = Message(
         account=account,
-        mime_content=raw_message.encode('UTF-8') if raw_message else None,
+        mime_content=raw_message.encode("UTF-8") if raw_message else None,
         folder=account.sent,
         cc_recipients=cc,
         bcc_recipients=bcc,
@@ -277,7 +305,7 @@ def send_email_to_mailbox(  # pragma: no cover
         body=message_body,
         to_recipients=to,
         reply_to=reply_to,
-        author=from_address
+        author=from_address,
     )
     if account.protocol.version.build <= EXCHANGE_2010_SP2:
         m.save()
@@ -313,48 +341,48 @@ def get_message_for_body_type(body, body_type, html_body, handle_inline_image: b
     if body_type is None:  # When called from a data collection task.
         return (HTMLBody(html_body) if html_body else Body(body)), attachments
 
-    if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
+    if body_type.lower() == "html" and html_body:  # When called from 'send-mail' command.
         return HTMLBody(html_body), attachments
 
     return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
 class SearchMailboxes(EWSService):
-
     def __init__(self, protocol, limit):
         self.limit = limit
         super().__init__(protocol)
 
-    SERVICE_NAME = 'SearchMailboxes'
-    element_container_name = f'{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items'
+    SERVICE_NAME = "SearchMailboxes"
+    element_container_name = f"{{{MNS}}}SearchMailboxesResult/{{{TNS}}}Items"
 
     @staticmethod
     def parse_element(element):  # pragma: no cover
-        to_recipients = element.find(f'{{{TNS}}}ToRecipients')
+        to_recipients = element.find(f"{{{TNS}}}ToRecipients")
         if to_recipients:
             to_recipients = [x.text if x is not None else None for x in to_recipients]
 
         result = {
-            ITEM_ID: element.find(f'{{{TNS}}}Id').attrib['Id'] if element.find(f'{{{TNS}}}Id') is not None else None,
-            MAILBOX: element.find(f'{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress').text if element.find(
-                f'{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress') is not None else None,
-            'subject': element.find(f"{{{TNS}}}Subject").text if element.find(
-                f"{{{TNS}}}Subject") is not None else None,
-            'toRecipients': to_recipients,
-            'sender': element.find(f"{{{TNS}}}Sender").text if element.find(f"{{{TNS}}}Sender") is not None else None,
-            'hasAttachments': element.find(f"{{{TNS}}}HasAttachment").text if element.find(
-                f"{{{TNS}}}HasAttachment") is not None else None,
-            'datetimeSent': element.find(f"{{{TNS}}}SentTime").text if element.find(
-                f"{{{TNS}}}SentTime") is not None else None,
-            'datetimeReceived': element.find(f"{{{TNS}}}ReceivedTime").text if element.find(
-                f"{{{TNS}}}ReceivedTime") is not None else None
+            ITEM_ID: element.find(f"{{{TNS}}}Id").attrib["Id"] if element.find(f"{{{TNS}}}Id") is not None else None,
+            MAILBOX: element.find(f"{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress").text
+            if element.find(f"{{{TNS}}}Mailbox/{{{TNS}}}PrimarySmtpAddress") is not None
+            else None,
+            "subject": element.find(f"{{{TNS}}}Subject").text if element.find(f"{{{TNS}}}Subject") is not None else None,
+            "toRecipients": to_recipients,
+            "sender": element.find(f"{{{TNS}}}Sender").text if element.find(f"{{{TNS}}}Sender") is not None else None,
+            "hasAttachments": element.find(f"{{{TNS}}}HasAttachment").text
+            if element.find(f"{{{TNS}}}HasAttachment") is not None
+            else None,
+            "datetimeSent": element.find(f"{{{TNS}}}SentTime").text if element.find(f"{{{TNS}}}SentTime") is not None else None,
+            "datetimeReceived": element.find(f"{{{TNS}}}ReceivedTime").text
+            if element.find(f"{{{TNS}}}ReceivedTime") is not None
+            else None,
         }
 
         return result
 
     def call(self, query, mailboxes):  # pragma: no cover
         if self.protocol.version.build < EXCHANGE_2013:
-            raise NotImplementedError(f'{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later')
+            raise NotImplementedError(f"{self.SERVICE_NAME} is only supported for Exchange 2013 servers and later")
         elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
         return [self.parse_element(x) for x in elements]
 
@@ -372,7 +400,7 @@ class SearchMailboxes(EWSService):
             mailboxes_scopes.append(get_mailbox_search_scope(mailbox))
         add_xml_child(mailbox_query_element, "t:MailboxSearchScopes", mailboxes_scopes)
 
-        element = create_element(f'm:{self.SERVICE_NAME}')
+        element = create_element(f"m:{self.SERVICE_NAME}")
         add_xml_child(element, "m:SearchQueries", mailbox_query_element)
         add_xml_child(element, "m:ResultType", "PreviewOnly")
         add_xml_child(element, "m:PageSize", str(self.limit))
@@ -427,19 +455,13 @@ def search_mailboxes(client: EWSClient, filter, limit=100, mailbox_search_scope=
         else:
             raise e
 
-    return get_entry_for_object("Search mailboxes results",
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                search_results)
+    return get_entry_for_object("Search mailboxes results", CONTEXT_UPDATE_EWS_ITEM, search_results)
 
 
 def get_last_run(client: EWSClient):
     last_run = demisto.getLastRun()
     if not last_run or last_run.get(LAST_RUN_FOLDER) != client.folder_name:
-        last_run = {
-            LAST_RUN_TIME: None,
-            LAST_RUN_FOLDER: client.folder_name,
-            LAST_RUN_IDS: []
-        }
+        last_run = {LAST_RUN_TIME: None, LAST_RUN_FOLDER: client.folder_name, LAST_RUN_IDS: []}
     if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] is not None:
         last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
 
@@ -450,44 +472,50 @@ def get_last_run(client: EWSClient):
     return last_run
 
 
-def fetch_last_emails(client: EWSClient, folder_name='Inbox', since_datetime=None, exclude_ids=None, fetch_all_history=False,
-                      fetch_time='10 minutes'):
+def fetch_last_emails(
+    client: EWSClient,
+    folder_name="Inbox",
+    since_datetime=None,
+    exclude_ids=None,
+    fetch_all_history=False,
+    fetch_time="10 minutes",
+):
     account = client.get_account(client.account_email)
     qs = client.get_folder_by_path(folder_name, account, is_public=client.is_public_folder)
-    demisto.debug(f'since_datetime: {since_datetime}')
+    demisto.debug(f"since_datetime: {since_datetime}")
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         if not fetch_all_history:
-            tz = EWSTimeZone('UTC')
+            tz = EWSTimeZone("UTC")
             first_fetch_datetime = dateparser.parse(fetch_time)
             if not first_fetch_datetime:
-                raise DemistoException('Failed to parse first last run time')
+                raise DemistoException("Failed to parse first last run time")
             first_fetch_ews_datetime = first_fetch_datetime.astimezone(tz)
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
-    qs = qs.filter().order_by('datetime_received')
+    qs = qs.filter().order_by("datetime_received")
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
-    demisto.debug(f'Exclude ID list: {exclude_ids}')
+    demisto.debug(f"Exclude ID list: {exclude_ids}")
 
     for item in qs:
         try:
             demisto.debug(
-                f'Looking on subject={item.subject}, '
-                f'message_id={item.message_id}, '
-                f'created={item.datetime_created}, '
-                f'received={item.datetime_received}'
+                f"Looking on subject={item.subject}, "
+                f"message_id={item.message_id}, "
+                f"created={item.datetime_created}, "
+                f"received={item.datetime_received}"
             )
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
-                demisto.debug(f'Appending {item.subject}, {item.message_id}.')
+                demisto.debug(f"Appending {item.subject}, {item.message_id}.")
                 if len(result) >= client.max_fetch:
                     break
         except ValueError as exc:
-            future_utils.raise_from(ValueError(
-                'Got an error when pulling incidents. You might be using the wrong exchange version.'
-            ), exc)
+            future_utils.raise_from(
+                ValueError("Got an error when pulling incidents. You might be using the wrong exchange version."), exc
+            )
             raise exc
         except ErrorMimeContentConversionFailed as exc:
             demisto.debug(f"Encountered an ErrorMimeContentConversionFailed error object while iterating: {exc}.\
@@ -497,7 +525,7 @@ def fetch_last_emails(client: EWSClient, folder_name='Inbox', since_datetime=Non
             demisto.debug(f"Encountered an Attribute error object while iterating: {exc}.\
                  Continuing to next item.")
 
-    demisto.debug(f'EWS V2 - Got total of {len(result)} from ews query. ')
+    demisto.debug(f"EWS V2 - Got total of {len(result)} from ews query. ")
     return result
 
 
@@ -506,7 +534,7 @@ def keys_to_camel_case(value):
         # Add condition as Email object arrived in list and raised error
         if not isinstance(snake_str, str):
             return snake_str
-        components = snake_str.split('_')
+        components = snake_str.split("_")
         return components[0] + "".join(x.title() for x in components[1:])
 
     if value is None:
@@ -514,22 +542,23 @@ def keys_to_camel_case(value):
     if isinstance(value, list | set):
         return [keys_to_camel_case(v) for v in value]
     if isinstance(value, dict):
-        return {keys_to_camel_case(k): keys_to_camel_case(v) if isinstance(v, list | dict) else v
-                for (k, v) in list(value.items())}
+        return {
+            keys_to_camel_case(k): keys_to_camel_case(v) if isinstance(v, list | dict) else v for (k, v) in list(value.items())
+        }
 
     return str_to_camel_case(value)
 
 
 def email_ec(item):  # pragma: no cover
     return {
-        'CC': None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
-        'BCC': None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
-        'To': None if not item.to_recipients else [mailbox.email_address for mailbox in item.to_recipients],
-        'From': item.author.email_address,
-        'Subject': item.subject,
-        'Text': item.text_body,
-        'HTML': item.body,
-        'HeadersMap': {} if not item.headers else {header.name: header.value for header in item.headers},
+        "CC": None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
+        "BCC": None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
+        "To": None if not item.to_recipients else [mailbox.email_address for mailbox in item.to_recipients],
+        "From": item.author.email_address,
+        "Subject": item.subject,
+        "Text": item.text_body,
+        "HTML": item.body,
+        "HeadersMap": {} if not item.headers else {header.name: header.value for header in item.headers},
     }
 
 
@@ -543,7 +572,7 @@ def parse_object_as_dict_with_serialized_items(object):
                     json.dumps(v)
                     raw_dict[field.name] = v
             except (TypeError, OverflowError):
-                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field value is \n{v}\n')
+                demisto.debug(f"Data in field {field.name} is not serilizable, skipped field value is \n{v}\n")
                 continue
     return raw_dict
 
@@ -563,25 +592,34 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
 
     def parse_folder_as_json(folder):  # pragma: no cover
         raw_dict = parse_object_as_dict(folder)
-        if 'parent_folder_id' in raw_dict:
-            raw_dict['parent_folder_id'] = parse_folder_as_json(raw_dict['parent_folder_id'])
-        if 'effective_rights' in raw_dict:
-            raw_dict['effective_rights'] = parse_object_as_dict(raw_dict['effective_rights'])
+        if "parent_folder_id" in raw_dict:
+            raw_dict["parent_folder_id"] = parse_folder_as_json(raw_dict["parent_folder_id"])
+        if "effective_rights" in raw_dict:
+            raw_dict["effective_rights"] = parse_object_as_dict(raw_dict["effective_rights"])
         return raw_dict
 
     raw_dict = parse_object_as_dict_with_serialized_items(item)
 
-    if getattr(item, 'attachments', None):
-        raw_dict['attachments'] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
+    if getattr(item, "attachments", None):
+        raw_dict["attachments"] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
 
-    for time_field in ['datetime_sent', 'datetime_created', 'datetime_received', 'last_modified_time',
-                       'reminder_due_by']:
+    for time_field in ["datetime_sent", "datetime_created", "datetime_received", "last_modified_time", "reminder_due_by"]:
         value = getattr(item, time_field, None)
         if value:
             raw_dict[time_field] = value.ewsformat()
 
-    for dict_field in ['effective_rights', 'parent_folder_id', 'conversation_id', 'author',
-                       'extern_id', 'received_by', 'received_representing', 'reply_to', 'sender', 'folder']:
+    for dict_field in [
+        "effective_rights",
+        "parent_folder_id",
+        "conversation_id",
+        "author",
+        "extern_id",
+        "received_by",
+        "received_representing",
+        "reply_to",
+        "sender",
+        "folder",
+    ]:
         value = getattr(item, dict_field, None)
         if value:
             if type(value) is list:
@@ -589,7 +627,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
             else:
                 raw_dict[dict_field] = parse_object_as_dict(value)
 
-    for list_dict_field in ['headers', 'cc_recipients', 'to_recipients']:
+    for list_dict_field in ["headers", "cc_recipients", "to_recipients"]:
         value = getattr(item, list_dict_field, None)
         if value:
             raw_dict[list_dict_field] = [parse_object_as_dict(x) for x in value]
@@ -599,40 +637,56 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if value:
             raw_dict[list_str_field] = value
 
-    if getattr(item, 'folder', None):
-        raw_dict['folder'] = parse_folder_as_json(item.folder)
-        folder_path = item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(
-            TOIS_PATH) else item.folder.absolute
-        raw_dict['folder_path'] = folder_path
+    if getattr(item, "folder", None):
+        raw_dict["folder"] = parse_folder_as_json(item.folder)
+        folder_path = (
+            item.folder.absolute[len(TOIS_PATH) :] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
+        )
+        raw_dict["folder_path"] = folder_path
 
-    raw_dict['item_id'] = getattr(item, 'id', None)
-    raw_dict['id'] = getattr(item, 'id', None)
+    raw_dict["item_id"] = getattr(item, "id", None)
+    raw_dict["id"] = getattr(item, "id", None)
 
     if compact_fields:
         new_dict = {}
-        fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
-                       'has_attachments', 'importance', 'message_id', 'last_modified_time',
-                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read', 'categories']
+        fields_list = [
+            "datetime_created",
+            "datetime_received",
+            "datetime_sent",
+            "sender",
+            "has_attachments",
+            "importance",
+            "message_id",
+            "last_modified_time",
+            "size",
+            "subject",
+            "text_body",
+            "headers",
+            "body",
+            "folder_path",
+            "is_read",
+            "categories",
+        ]
 
-        fields_list.append('item_id')
+        fields_list.append("item_id")
 
         for field in fields_list:
             if field in raw_dict:
                 new_dict[field] = raw_dict.get(field)
-        for field in ['received_by', 'author', 'sender']:
+        for field in ["received_by", "author", "sender"]:
             if field in raw_dict:
-                new_dict[field] = raw_dict.get(field, {}).get('email_address')
-        for field in ['to_recipients']:
+                new_dict[field] = raw_dict.get(field, {}).get("email_address")
+        for field in ["to_recipients"]:
             if field in raw_dict:
-                new_dict[field] = [x.get('email_address') for x in raw_dict[field]]
-        attachments = raw_dict.get('attachments')
+                new_dict[field] = [x.get("email_address") for x in raw_dict[field]]
+        attachments = raw_dict.get("attachments")
         if attachments and len(attachments) > 0:
             file_attachments = [x for x in attachments if x[ATTACHMENT_TYPE] == FILE_ATTACHMENT_TYPE]
             if len(file_attachments) > 0:
-                new_dict['FileAttachments'] = file_attachments
+                new_dict["FileAttachments"] = file_attachments
             item_attachments = [x for x in attachments if x[ATTACHMENT_TYPE] == ITEM_ATTACHMENT_TYPE]
             if len(item_attachments) > 0:
-                new_dict['ItemAttachments'] = item_attachments
+                new_dict["ItemAttachments"] = item_attachments
         raw_dict = new_dict
 
     if camel_case:
@@ -658,43 +712,43 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
 
     try:
         try:
-            incident['details'] = item.text_body or item.body
+            incident["details"] = item.text_body or item.body
         except AttributeError:
-            incident['details'] = item.body
+            incident["details"] = item.body
 
-        incident['name'] = item.subject
-        labels.append({'type': 'Email/subject', 'value': item.subject})
-        incident['occurred'] = item.datetime_created.ewsformat()
+        incident["name"] = item.subject
+        labels.append({"type": "Email/subject", "value": item.subject})
+        incident["occurred"] = item.datetime_created.ewsformat()
 
         # handle recipients
         if item.to_recipients:
             for recipient in item.to_recipients:
-                labels.append({'type': 'Email', 'value': recipient.email_address})
+                labels.append({"type": "Email", "value": recipient.email_address})
 
         # handle cc
         if item.cc_recipients:
             for recipient in item.cc_recipients:
-                labels.append({'type': 'Email/cc', 'value': recipient.email_address})
+                labels.append({"type": "Email/cc", "value": recipient.email_address})
         # handle email from
         if item.sender:
-            labels.append({'type': 'Email/from', 'value': item.sender.email_address})
+            labels.append({"type": "Email/from", "value": item.sender.email_address})
 
         # email format
-        email_format = ''
+        email_format = ""
         try:
             if item.text_body:
-                labels.append({'type': 'Email/text', 'value': item.text_body})
-                email_format = 'text'
+                labels.append({"type": "Email/text", "value": item.text_body})
+                email_format = "text"
         except AttributeError:
             pass
         if item.body:
-            labels.append({'type': 'Email/html', 'value': item.body})
-            email_format = 'HTML'
-        labels.append({'type': 'Email/format', 'value': email_format})
+            labels.append({"type": "Email/html", "value": item.body})
+            email_format = "HTML"
+        labels.append({"type": "Email/format", "value": email_format})
 
         # handle attachments
         if item.attachments:
-            incident['attachment'] = []
+            incident["attachment"] = []
             for attachment in item.attachments:
                 if attachment is not None:
                     attachment.parent_item = item
@@ -705,28 +759,34 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                         try:
                             if attachment.content:
                                 # file attachment
-                                label_attachment_type = 'attachments'
-                                label_attachment_id_type = 'attachmentId'
+                                label_attachment_type = "attachments"
+                                label_attachment_id_type = "attachmentId"
 
                                 # save the attachment
-                                file_name = get_attachment_name(attachment_name=attachment.name,
-                                                                content_id=attachment.content_id,
-                                                                is_inline=attachment.is_inline)
+                                file_name = get_attachment_name(
+                                    attachment_name=attachment.name,
+                                    content_id=attachment.content_id,
+                                    is_inline=attachment.is_inline,
+                                )
                                 file_result = fileResult(file_name, attachment.content)
 
                                 # check for error
-                                if file_result['Type'] == entryTypes['error']:
-                                    demisto.error(file_result['Contents'])
-                                    raise Exception(file_result['Contents'])
+                                if file_result["Type"] == entryTypes["error"]:
+                                    demisto.error(file_result["Contents"])
+                                    raise Exception(file_result["Contents"])
 
                                 # save attachment to incident
-                                incident['attachment'].append({
-                                    'path': file_result['FileID'],
-                                    'name': get_attachment_name(attachment_name=attachment.name,
-                                                                content_id=attachment.content_id,
-                                                                is_inline=attachment.is_inline),
-                                    "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
-                                })
+                                incident["attachment"].append(
+                                    {
+                                        "path": file_result["FileID"],
+                                        "name": get_attachment_name(
+                                            attachment_name=attachment.name,
+                                            content_id=attachment.content_id,
+                                            is_inline=attachment.is_inline,
+                                        ),
+                                        "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
+                                    }
+                                )
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
                                 raise
@@ -738,11 +798,11 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                             continue
                     else:
                         # other item attachment
-                        label_attachment_type = 'attachmentItems'
-                        label_attachment_id_type = 'attachmentItemsId'
+                        label_attachment_type = "attachmentItems"
+                        label_attachment_id_type = "attachmentItemsId"
                         formatted_message: str | bytes
                         # save the attachment
-                        if hasattr(attachment, 'item') and attachment.item.mime_content:
+                        if hasattr(attachment, "item") and attachment.item.mime_content:
                             # Some items arrive with bytes attachemnt
                             attached_email = cast_mime_item_to_message(attachment.item)
                             if attachment.item.headers:
@@ -755,12 +815,14 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                                             demisto.debug(f'cannot parse the header "{h}"')
                                             continue
 
-                                    v = ' '.join(map(str.strip, v.split('\r\n')))
+                                    v = " ".join(map(str.strip, v.split("\r\n")))
                                     attached_email_headers.append((h.lower(), v))
 
                                 for header in attachment.item.headers:
-                                    if (header.name.lower(), header.value) not in attached_email_headers \
-                                            and header.name.lower() != 'content-type':
+                                    if (
+                                        header.name.lower(),
+                                        header.value,
+                                    ) not in attached_email_headers and header.name.lower() != "content-type":
                                         try:
                                             attached_email.add_header(header.name, header.value)
                                         except ValueError as err:
@@ -770,63 +832,85 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                                 formatted_message = attached_email.as_string()
                             except UnicodeEncodeError:
                                 formatted_message = attached_email.as_bytes()
-                            file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
-                                                                         content_id=attachment.content_id,
-                                                                         is_inline=attachment.is_inline,
-                                                                         attachment_subject=attachment.item.subject) + ".eml",
-                                                     formatted_message)
+                            file_result = fileResult(
+                                get_attachment_name(
+                                    attachment_name=attachment.name,
+                                    content_id=attachment.content_id,
+                                    is_inline=attachment.is_inline,
+                                    attachment_subject=attachment.item.subject,
+                                )
+                                + ".eml",
+                                formatted_message,
+                            )
 
                         if file_result:
                             # check for error
-                            if file_result['Type'] == entryTypes['error']:
-                                demisto.error(file_result['Contents'])
-                                raise Exception(file_result['Contents'])
+                            if file_result["Type"] == entryTypes["error"]:
+                                demisto.error(file_result["Contents"])
+                                raise Exception(file_result["Contents"])
 
                             # save attachment to incident
-                            incident['attachment'].append({
-                                'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment_name=attachment.name,
-                                                            content_id=attachment.content_id,
-                                                            is_inline=attachment.is_inline,
-                                                            attachment_subject=attachment.item.subject) + ".eml",
-                            })
+                            incident["attachment"].append(
+                                {
+                                    "path": file_result["FileID"],
+                                    "name": get_attachment_name(
+                                        attachment_name=attachment.name,
+                                        content_id=attachment.content_id,
+                                        is_inline=attachment.is_inline,
+                                        attachment_subject=attachment.item.subject,
+                                    )
+                                    + ".eml",
+                                }
+                            )
 
                         else:
-                            incident['attachment'].append({
-                                'name': get_attachment_name(attachment_name=attachment.name,
-                                                            content_id=attachment.content_id,
-                                                            is_inline=attachment.is_inline,
-                                                            attachment_subject=attachment.item.subject) + ".eml",
-                            })
+                            incident["attachment"].append(
+                                {
+                                    "name": get_attachment_name(
+                                        attachment_name=attachment.name,
+                                        content_id=attachment.content_id,
+                                        is_inline=attachment.is_inline,
+                                        attachment_subject=attachment.item.subject,
+                                    )
+                                    + ".eml",
+                                }
+                            )
 
-                    labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment_name=attachment.name,
-                                                                                               content_id=attachment.content_id,
-                                                                                               is_inline=attachment.is_inline,
-                                   attachment_subject="" if isinstance(attachment, FileAttachment) else attachment.item.subject)})
+                    labels.append(
+                        {
+                            "type": label_attachment_type,
+                            "value": get_attachment_name(
+                                attachment_name=attachment.name,
+                                content_id=attachment.content_id,
+                                is_inline=attachment.is_inline,
+                                attachment_subject="" if isinstance(attachment, FileAttachment) else attachment.item.subject,
+                            ),
+                        }
+                    )
 
-                    labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
+                    labels.append({"type": label_attachment_id_type, "value": attachment.attachment_id.id})
 
         # handle headers
         if item.headers:
             headers = []
             for header in item.headers:
-                labels.append({'type': f'Email/Header/{header.name}', 'value': str(header.value)})
+                labels.append({"type": f"Email/Header/{header.name}", "value": str(header.value)})
                 headers.append(f"{header.name}: {header.value}")
-            labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
+            labels.append({"type": "Email/headers", "value": "\r\n".join(headers)})
 
         # handle item id
         if item.message_id:
-            labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
+            labels.append({"type": "Email/MessageId", "value": str(item.message_id)})
             # fetch history
-            incident['dbotMirrorId'] = str(item.message_id)
+            incident["dbotMirrorId"] = str(item.message_id)
 
         if item.id:
-            labels.append({'type': 'Email/ID', 'value': item.id})
-            labels.append({'type': 'Email/itemId', 'value': item.id})
+            labels.append({"type": "Email/ID", "value": item.id})
+            labels.append({"type": "Email/itemId", "value": item.id})
 
         # handle conversion id
         if item.conversation_id:
-            labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
+            labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
 
         if mark_as_read and is_fetch:
             item.is_read = True
@@ -837,21 +921,21 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                 item.save()
             except ValueError as e:
                 if item.subject and len(item.subject) > 255:
-                    demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
-                                  "cutting the subject.")
-                    sub_subject = "Length of subject greater than 255 characters. " \
-                                  f"Partial subject: {item.subject[:180]}"
+                    demisto.debug(
+                        "Length of message subject is greater than 255, item.save could not handle it, cutting the subject."
+                    )
+                    sub_subject = f"Length of subject greater than 255 characters. Partial subject: {item.subject[:180]}"
                     item.subject = sub_subject
                     item.save()
                 else:
                     raise e
 
-        incident['labels'] = labels
-        incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
+        incident["labels"] = labels
+        incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
 
     except Exception as e:
-        if 'Message is not decoded yet' in str(e):
-            demisto.debug('EWS v2 - Skipped a protected message')
+        if "Message is not decoded yet" in str(e):
+            demisto.debug("EWS v2 - Skipped a protected message")
             return None
         else:
             raise e
@@ -859,14 +943,16 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
     return incident
 
 
-def fetch_emails_as_incidents(client: EWSClient, skip_unparsable_emails: bool = False,
-                              fetch_all_history=False, fetch_time='10 minutes') -> list[dict]:
+def fetch_emails_as_incidents(
+    client: EWSClient, skip_unparsable_emails: bool = False, fetch_all_history=False, fetch_time="10 minutes"
+) -> list[dict]:
     last_run = get_last_run(client)
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
 
     try:
-        last_emails = fetch_last_emails(client, client.folder_name, last_run.get(
-            LAST_RUN_TIME), excluded_ids, fetch_all_history, fetch_time)
+        last_emails = fetch_last_emails(
+            client, client.folder_name, last_run.get(LAST_RUN_TIME), excluded_ids, fetch_all_history, fetch_time
+        )
 
         incidents = []
         incident = {}  # type: Dict[Any, Any]
@@ -895,10 +981,10 @@ def fetch_emails_as_incidents(client: EWSClient, skip_unparsable_emails: bool = 
                     "Encountered email parsing issue while fetching. "
                     f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
                 )
-                demisto.debug(f"{error_msg}, Error: {str(e)} {traceback.format_exc()}")
+                demisto.debug(f"{error_msg}, Error: {e!s} {traceback.format_exc()}")
                 demisto.updateModuleHealth(error_msg, is_error=False)
 
-        demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
+        demisto.debug(f"EWS V2 - ending fetch - got {len(incidents)} incidents.")
         last_fetch_time = last_run.get(LAST_RUN_TIME)
         last_incident_run_time = last_incident_run_time if last_incident_run_time else last_fetch_time
 
@@ -909,9 +995,10 @@ def fetch_emails_as_incidents(client: EWSClient, skip_unparsable_emails: bool = 
         if isinstance(last_fetch_time, EWSDateTime):
             last_fetch_time = last_fetch_time.ewsformat()
 
-        debug_msg = '#### last_incident_time: {}({}). last_fetch_time: {}({}) ####'
-        demisto.debug(debug_msg.format(last_incident_run_time, type(last_incident_run_time),
-                                       last_fetch_time, type(last_fetch_time)))
+        debug_msg = "#### last_incident_time: {}({}). last_fetch_time: {}({}) ####"
+        demisto.debug(
+            debug_msg.format(last_incident_run_time, type(last_incident_run_time), last_fetch_time, type(last_fetch_time))
+        )
 
         # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
         # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
@@ -942,13 +1029,11 @@ def fetch_emails_as_incidents(client: EWSClient, skip_unparsable_emails: bool = 
 
 
 def get_entry_for_file_attachment(item_id, attachment):  # pragma: no cover
-    entry = fileResult(get_attachment_name(attachment_name=attachment.name,
-                                           content_id=attachment.content_id,
-                                           is_inline=attachment.is_inline), attachment.content)
-    ec = {
-        CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
-                                                                                                          attachment)
-    }
+    entry = fileResult(
+        get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline),
+        attachment.content,
+    )
+    ec = {CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)}
     entry[ENTRY_CONTEXT] = filter_dict_null(ec)
     return entry
 
@@ -956,27 +1041,26 @@ def get_entry_for_file_attachment(item_id, attachment):  # pragma: no cover
 def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
     try:
         # if this is a file attachment or a non-empty email attachment
-        if isinstance(attachment, FileAttachment) or hasattr(attachment, 'item'):
-            attachment_content = attachment.content if isinstance(attachment, FileAttachment) \
-                else attachment.item.mime_content
+        if isinstance(attachment, FileAttachment) or hasattr(attachment, "item"):
+            attachment_content = attachment.content if isinstance(attachment, FileAttachment) else attachment.item.mime_content
 
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': get_attachment_name(attachment_name=attachment.name,
-                                                      content_id=attachment.content_id,
-                                                      is_inline=attachment.is_inline,
-                                                      attachment_subject="" if isinstance(attachment, FileAttachment)
-                                                      else attachment.item.subject),
-                'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
-                'attachmentContentType': attachment.content_type,
-                'attachmentContentId': attachment.content_id,
-                'attachmentContentLocation': attachment.content_location,
-                'attachmentSize': attachment.size,
-                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-                'attachmentIsInline': attachment.is_inline,
-                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment)
-                else ITEM_ATTACHMENT_TYPE
+                "attachmentName": get_attachment_name(
+                    attachment_name=attachment.name,
+                    content_id=attachment.content_id,
+                    is_inline=attachment.is_inline,
+                    attachment_subject="" if isinstance(attachment, FileAttachment) else attachment.item.subject,
+                ),
+                "attachmentSHA256": hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
+                "attachmentContentType": attachment.content_type,
+                "attachmentContentId": attachment.content_id,
+                "attachmentContentLocation": attachment.content_location,
+                "attachmentSize": attachment.size,
+                "attachmentLastModifiedTime": attachment.last_modified_time.ewsformat(),
+                "attachmentIsInline": attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE,
             }
 
         # If this is an empty email attachment
@@ -984,38 +1068,39 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': get_attachment_name(attachment_name=attachment.name,
-                                                      content_id=attachment.content_id,
-                                                      is_inline=attachment.is_inline,
-                                                      attachment_subject="" if isinstance(attachment, FileAttachment)
-                                                      else attachment.item.subject),
-                'attachmentSize': attachment.size,
-                'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-                'attachmentIsInline': attachment.is_inline,
-                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment)
-                else ITEM_ATTACHMENT_TYPE
+                "attachmentName": get_attachment_name(
+                    attachment_name=attachment.name,
+                    content_id=attachment.content_id,
+                    is_inline=attachment.is_inline,
+                    attachment_subject="" if isinstance(attachment, FileAttachment) else attachment.item.subject,
+                ),
+                "attachmentSize": attachment.size,
+                "attachmentLastModifiedTime": attachment.last_modified_time.ewsformat(),
+                "attachmentIsInline": attachment.is_inline,
+                ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE,
             }
 
     except (TypeError, ErrorCannotOpenFileAttachment) as e:
         if str(e) not in ("must be string or buffer, not None", "The attachment could not be opened."):
             raise
-        demisto.debug(f"Add attachment info to context, without the content. Error: {str(e)}")
+        demisto.debug(f"Add attachment info to context, without the content. Error: {e!s}")
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': get_attachment_name(attachment_name=attachment.name,
-                                                  content_id=attachment.content_id,
-                                                  is_inline=attachment.is_inline,
-                                                  attachment_subject="" if isinstance(attachment, FileAttachment)
-                                                  else attachment.item.subject),
-            'attachmentSHA256': None,
-            'attachmentContentType': attachment.content_type,
-            'attachmentContentId': attachment.content_id,
-            'attachmentContentLocation': attachment.content_location,
-            'attachmentSize': attachment.size,
-            'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
-            'attachmentIsInline': attachment.is_inline,
-            ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE
+            "attachmentName": get_attachment_name(
+                attachment_name=attachment.name,
+                content_id=attachment.content_id,
+                is_inline=attachment.is_inline,
+                attachment_subject="" if isinstance(attachment, FileAttachment) else attachment.item.subject,
+            ),
+            "attachmentSHA256": None,
+            "attachmentContentType": attachment.content_type,
+            "attachmentContentId": attachment.content_id,
+            "attachmentContentLocation": attachment.content_location,
+            "attachmentSize": attachment.size,
+            "attachmentLastModifiedTime": attachment.last_modified_time.ewsformat(),
+            "attachmentIsInline": attachment.is_inline,
+            ATTACHMENT_TYPE: FILE_ATTACHMENT_TYPE if isinstance(attachment, FileAttachment) else ITEM_ATTACHMENT_TYPE,
         }
 
 
@@ -1023,15 +1108,14 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     item = attachment.item
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
-    title = (f'EWS get attachment got item for "{target_email}", '
-             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline, attachment_subject=attachment.item.subject)}"')   # noqa: E501
+    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline, attachment_subject=attachment.item.subject)}"'  # noqa: E501
 
-    return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
-                                dict_result)
+    return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT, dict_result)
 
 
-def fetch_attachments_for_message(client: EWSClient, item_id: str, target_mailbox: Optional[str] = None,
-                                  attachment_ids=[], identifiers_filter='') -> list:  # pragma: no cover
+def fetch_attachments_for_message(
+    client: EWSClient, item_id: str, target_mailbox: Optional[str] = None, attachment_ids=[], identifiers_filter=""
+) -> list:  # pragma: no cover
     identifiers_filter = argToList(identifiers_filter)
     account = client.get_account(target_mailbox or client.account_email)
     attachment_ids = argToList(attachment_ids)
@@ -1050,19 +1134,26 @@ def fetch_attachments_for_message(client: EWSClient, item_id: str, target_mailbo
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
             if attachment.item.mime_content:
                 attached_email = cast_mime_item_to_message(attachment.item)
-                entries.append(fileResult(get_attachment_name(attachment.name,
-                                                              content_id=attachment.content_id,
-                                                              is_inline=attachment.is_inline,
-                                                              attachment_subject=attachment.item.subject) + ".eml",
-                                          attached_email.as_string()))
+                entries.append(
+                    fileResult(
+                        get_attachment_name(
+                            attachment.name,
+                            content_id=attachment.content_id,
+                            is_inline=attachment.is_inline,
+                            attachment_subject=attachment.item.subject,
+                        )
+                        + ".eml",
+                        attached_email.as_string(),
+                    )
+                )
 
     return entries
 
 
 def prepare_args(d):  # pragma: no cover
     d = {k.replace("-", "_"): v for k, v in list(d.items())}
-    if 'is_public' in d:
-        d['is_public'] = d['is_public'] == 'True'
+    if "is_public" in d:
+        d["is_public"] = d["is_public"] == "True"
     return d
 
 
@@ -1078,15 +1169,24 @@ def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
     return results
 
 
-def search_items_in_mailbox(client: EWSClient, query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
-                            is_public=None, selected_fields='all', surround_id_with_angle_brackets=True):  # pragma: no cover
+def search_items_in_mailbox(
+    client: EWSClient,
+    query=None,
+    message_id=None,
+    folder_path="",
+    limit=100,
+    target_mailbox=None,
+    is_public=None,
+    selected_fields="all",
+    surround_id_with_angle_brackets=True,
+):  # pragma: no cover
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
-    if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != '<' and message_id[-1] != '>':
-        message_id = f'<{message_id}>'
+    if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != "<" and message_id[-1] != ">":
+        message_id = f"<{message_id}>"
     account = client.get_account(target_mailbox or client.account_email)
     limit = int(limit)
-    if folder_path.lower() == 'inbox':
+    if folder_path.lower() == "inbox":
         folders = [account.inbox]
     elif folder_path:
         is_public = client.is_default_folder(folder_path, is_public)
@@ -1094,12 +1194,12 @@ def search_items_in_mailbox(client: EWSClient, query=None, message_id=None, fold
     else:
         folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()  # pylint: disable=E1101
     items = []  # type: ignore
-    selected_all_fields = (selected_fields == 'all')
+    selected_all_fields = selected_fields == "all"
     if selected_all_fields:
         restricted_fields = {x.name for x in Message.FIELDS}  # type: ignore
     else:
         restricted_fields = set(argToList(selected_fields))  # type: ignore
-        restricted_fields.update(['id', 'message_id'])  # type: ignore
+        restricted_fields.update(["id", "message_id"])  # type: ignore
 
     for folder in folders:
         if Message not in folder.supported_item_models:
@@ -1112,34 +1212,35 @@ def search_items_in_mailbox(client: EWSClient, query=None, message_id=None, fold
         if len(items) >= limit:
             break
     items = items[:limit]
-    searched_items_result = [parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
-                                                compact_fields=selected_all_fields) for item in items]
+    searched_items_result = [
+        parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=selected_all_fields)
+        for item in items
+    ]
     if not selected_all_fields:
         # we show id as 'itemId' for BC
-        restricted_fields.remove('id')
-        restricted_fields.add('itemId')
+        restricted_fields.remove("id")
+        restricted_fields.add("itemId")
         searched_items_result = [
-            {k: v for (k, v) in i.items()
-             if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
-    return get_entry_for_object('Searched items',
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                searched_items_result,
-                                headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None)
+            {k: v for (k, v) in i.items() if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result
+        ]
+    return get_entry_for_object(
+        "Searched items",
+        CONTEXT_UPDATE_EWS_ITEM,
+        searched_items_result,
+        headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None,
+    )
 
 
 def parse_physical_address(address):
     result = {}
-    for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
+    for attr in ["city", "country", "label", "state", "street", "zipcode"]:
         result[attr] = getattr(address, attr, None)
     return result
 
 
 def parse_phone_number(phone_number):
-    result = {
-        attr: getattr(phone_number, attr, None)
-        for attr in ['label', 'phone_number']
-    }
-    return result if result.get('phone_number') else {}
+    result = {attr: getattr(phone_number, attr, None) for attr in ["label", "phone_number"]}
+    return result if result.get("phone_number") else {}
 
 
 def is_jsonable(x):
@@ -1157,13 +1258,13 @@ def parse_contact(contact):
         if isinstance(v, EWSDateTime):
             contact_dict[k] = v.ewsformat()  # pylint: disable=E4702
 
-    contact_dict['id'] = contact.id
+    contact_dict["id"] = contact.id
     if isinstance(contact, Contact) and contact.physical_addresses:
-        contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
+        contact_dict["physical_addresses"] = list(map(parse_physical_address, contact.physical_addresses))
     if isinstance(contact, Contact) and contact.phone_numbers:
-        contact_dict['phone_numbers'] = [elt for elt in map(parse_phone_number, contact.phone_numbers) if elt]
+        contact_dict["phone_numbers"] = [elt for elt in map(parse_phone_number, contact.phone_numbers) if elt]
     if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
-        contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
+        contact_dict["emailAddresses"] = [x.email for x in contact.email_addresses]
     contact_dict = keys_to_camel_case(contact_dict)
     contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
     return contact_dict
@@ -1173,13 +1274,15 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):  # pragma: no c
     account = client.get_account(target_mailbox or client.account_email)
     contacts = []
 
-    for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
+    for contact in account.contacts.all()[: int(limit)]:  # pylint: disable=E1101
         contact = parse_contact(contact)
-        contact['originMailbox'] = target_mailbox
+        contact["originMailbox"] = target_mailbox
         contacts.append(contact)
-    return get_entry_for_object(f'Email contacts for {target_mailbox or client.account_email}',
-                                'Account.Email(val.Address == obj.originMailbox).EwsContacts',
-                                contacts)
+    return get_entry_for_object(
+        f"Email contacts for {target_mailbox or client.account_email}",
+        "Account.Email(val.Address == obj.originMailbox).EwsContacts",
+        contacts,
+    )
 
 
 def find_folders(client: EWSClient, target_mailbox=None, is_public=None):  # pragma: no cover
@@ -1194,49 +1297,43 @@ def find_folders(client: EWSClient, target_mailbox=None, is_public=None):  # pra
     readable_output = root.tree()  # pylint: disable=E1101
 
     return {
-        'Type': entryTypes['note'],
-        'Contents': folders,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': readable_output,
-        ENTRY_CONTEXT: {
-            'EWS.Folders(val.id == obj.id)': folders
-        }
+        "Type": entryTypes["note"],
+        "Contents": folders,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": readable_output,
+        ENTRY_CONTEXT: {"EWS.Folders(val.id == obj.id)": folders},
     }
 
 
-def get_items_from_folder(client: EWSClient, folder_path, limit=100, target_mailbox=None, is_public=None,
-                          get_internal_item='no'):  # pragma: no cover
+def get_items_from_folder(
+    client: EWSClient, folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item="no"
+):  # pragma: no cover
     account = client.get_account(target_mailbox or client.account_email)
     limit = int(limit)
-    get_internal_item = (get_internal_item == 'yes')
+    get_internal_item = get_internal_item == "yes"
     is_public = client.is_default_folder(folder_path, is_public)
     folder = client.get_folder_by_path(folder_path, account, is_public)
-    qs = folder.filter().order_by('-datetime_created')[:limit]
+    qs = folder.filter().order_by("-datetime_created")[:limit]
     items = get_limited_number_of_messages_from_qs(qs, limit)
     items_result = []
 
     for item in items:
-        item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
-                                             compact_fields=True)
+        item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True)
 
         for attachment in item.attachments:
             if attachment is not None:
                 attachment.parent_item = item
-                if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item,
-                                                                                               Message):
+                if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item, Message):
                     # if found item attachment - switch item to the attchment
-                    item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
-                                                         compact_fields=True)
+                    item_attachment = parse_item_as_dict(
+                        attachment.item, account.primary_smtp_address, camel_case=True, compact_fields=True
+                    )
                     break
 
         items_result.append(item_attachment)
-    hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
-                  'receivedBy', 'author', 'toRecipients', 'itemId']
-    return get_entry_for_object('Items in folder ' + folder_path,
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                items_result,
-                                headers=hm_headers)
+    hm_headers = ["sender", "subject", "hasAttachments", "datetimeReceived", "receivedBy", "author", "toRecipients", "itemId"]
+    return get_entry_for_object("Items in folder " + folder_path, CONTEXT_UPDATE_EWS_ITEM, items_result, headers=hm_headers)
 
 
 def get_items(client: EWSClient, item_ids, target_mailbox=None):  # pragma: no cover
@@ -1249,26 +1346,26 @@ def get_items(client: EWSClient, item_ids, target_mailbox=None):  # pragma: no c
     items_to_context = [parse_item_as_dict(x, account.primary_smtp_address, True, True) for x in items]
 
     return {
-        'Type': entryTypes['note'],
-        'Contents': items_as_incidents,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Get items', items_to_context, ITEMS_RESULTS_HEADERS),
+        "Type": entryTypes["note"],
+        "Contents": items_as_incidents,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown("Get items", items_to_context, ITEMS_RESULTS_HEADERS),
         ENTRY_CONTEXT: {
             CONTEXT_UPDATE_EWS_ITEM: items_to_context,
-            'Email': [email_ec(item) for item in items],
-        }
+            "Email": [email_ec(item) for item in items],
+        },
     }
 
 
 def get_autodiscovery_config():  # pragma: no cover
     config_dict = demisto.getIntegrationContext()
     return {
-        'Type': entryTypes['note'],
-        'Contents': config_dict,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Auto-Discovery Exchange Configuration', config_dict)
+        "Type": entryTypes["note"],
+        "Contents": config_dict,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown("Auto-Discovery Exchange Configuration", config_dict),
     }
 
 
@@ -1277,34 +1374,36 @@ def format_identifier(identifier):
     Exchangelib has a default smtp routing type. If there's no given routingtype, add explicitly so that
     exchangelib can be searched by secondary email addresses without making cusomter add it manually
     """
-    return f'smtp:{identifier}' if '@' in identifier and ':' not in identifier else identifier
+    return f"smtp:{identifier}" if "@" in identifier and ":" not in identifier else identifier
 
 
 def resolve_name_command(client: EWSClient, args):  # pragma: no cover
     protocol = client.get_protocol()
-    unresolved_entry = format_identifier(args['identifier'])
-    full_contact_data = argToBoolean(args.get('full_contact_data', True))
-    resolved_names = protocol.resolve_names([unresolved_entry], return_full_contact_data=full_contact_data, search_scope='')
-    demisto.debug(f'{len(resolved_names)=}')
+    unresolved_entry = format_identifier(args["identifier"])
+    full_contact_data = argToBoolean(args.get("full_contact_data", True))
+    resolved_names = protocol.resolve_names([unresolved_entry], return_full_contact_data=full_contact_data, search_scope="")
+    demisto.debug(f"{len(resolved_names)=}")
 
     output = []
     for rn in resolved_names:
         if isinstance(rn, ErrorNameResolutionNoResults):
-            demisto.info(f'got ErrorNameResolutionNoResults error, {str(rn)}')
-            return 'No results were found.'
+            demisto.info(f"got ErrorNameResolutionNoResults error, {rn!s}")
+            return "No results were found."
         elif isinstance(rn, tuple):
             mail, contact = rn
         else:
             mail, contact = rn, None
         mail_context = parse_item_as_dict(mail)
         if contact:
-            mail_context['FullContactInfo'] = parse_contact(contact)
+            mail_context["FullContactInfo"] = parse_contact(contact)
         output.append(mail_context)
-    return get_entry_for_object('Resolved Names',
-                                'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
-                                remove_empty_elements(output),  # noqa: F405
-                                headers=['primary_email_address', 'name', 'mailbox_type', 'routing_type'],
-                                hr_header_changes={'email_address': 'primary_email_address'})
+    return get_entry_for_object(
+        "Resolved Names",
+        "EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)",
+        remove_empty_elements(output),  # noqa: F405
+        headers=["primary_email_address", "name", "mailbox_type", "routing_type"],
+        hr_header_changes={"email_address": "primary_email_address"},
+    )
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
@@ -1323,16 +1422,16 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
                     except:  # noqa: E722
                         demisto.debug(f'cannot parse the header "{h}"')
 
-                v = ' '.join(map(str.strip, v.split('\r\n')))
+                v = " ".join(map(str.strip, v.split("\r\n")))
                 attached_email_headers.append((h.lower(), v))
             for header in item.headers:
-                if (header.name.lower(), header.value) not in attached_email_headers and header.name.lower() != 'content-type':
+                if (header.name.lower(), header.value) not in attached_email_headers and header.name.lower() != "content-type":
                     try:
                         email_content.add_header(header.name, header.value)
                     except ValueError as err:
                         if "There may be at most" not in str(err):
                             raise err
-        eml_name = item.subject if item.subject else 'demisto_untitled_eml'
+        eml_name = item.subject if item.subject else "demisto_untitled_eml"
         file_result = fileResult(eml_name + ".eml", email_content.as_string())
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
@@ -1343,11 +1442,11 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
 def collect_manual_attachments(manual_attach_obj):  # pragma: no cover
     attachments = []
     for attachment in manual_attach_obj:
-        res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+        res = demisto.getFilePath(os.path.basename(attachment["RealFileName"]))
 
         file_path = res["path"]
-        with open(file_path, 'rb') as f:
-            attachments.append(FileAttachment(content=f.read(), name=attachment['FileName']))
+        with open(file_path, "rb") as f:
+            attachments.append(FileAttachment(content=f.read(), name=attachment["FileName"]))
 
     return attachments
 
@@ -1364,7 +1463,7 @@ def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_a
             attachments_names = attach_names if isinstance(attach_names, list) else attach_names.split(",")
         else:
             for att_id in file_entries_for_attachments:
-                att_name = demisto.getFilePath(att_id)['name']
+                att_name = demisto.getFilePath(att_id)["name"]
                 if isinstance(att_name, list):
                     att_name = att_name[0]
                 attachments_names.append(att_name)
@@ -1382,19 +1481,20 @@ def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_a
                 demisto.info(f"EWS error from getFilePath: {ex}")
                 raise Exception(f"entry {att_id_inline} does not contain a file")
             att_name_inline = file_info["name"]
-            with open(file_info["path"], 'rb') as f:
-                attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
-                                                  content_id=att_name_inline))
+            with open(file_info["path"], "rb") as f:
+                attachments.append(
+                    FileAttachment(content=f.read(), name=att_name_inline, is_inline=True, content_id=att_name_inline)
+                )
 
-    for i in range(0, len(file_entries_for_attachments)):
+    for i in range(len(file_entries_for_attachments)):
         entry_id = file_entries_for_attachments[i]
         attachment_name = attachments_names[i]
         try:
             res = demisto.getFilePath(entry_id)
         except Exception as ex:
-            raise Exception(f"entry {entry_id} does not contain a file: {str(ex)}")
+            raise Exception(f"entry {entry_id} does not contain a file: {ex!s}")
         file_path = res["path"]
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             attachments.append(FileAttachment(content=f.read(), name=attachment_name))
     return attachments, attachments_names
 
@@ -1406,74 +1506,94 @@ def get_none_empty_addresses(addresses_ls):
 def send_email(client: EWSClient, args):
     time_zone = get_time_zone()
     account = client.get_account(target_mailbox=client.account_email, time_zone=time_zone)
-    bcc = get_none_empty_addresses(argToList(args.get('bcc')))
-    cc = get_none_empty_addresses(argToList(args.get('cc')))
-    to = get_none_empty_addresses(argToList(args.get('to')))
-    replyTo = get_none_empty_addresses(argToList(args.get('replyTo')))
-    render_body = argToBoolean(args.get('renderBody') or False)
-    handle_inline_image: bool = argToBoolean(args.get('handle_inline_image', True))
-    subject = args.get('subject')
-    subject = subject[:252] + '...' if len(subject) > 255 else subject
+    bcc = get_none_empty_addresses(argToList(args.get("bcc")))
+    cc = get_none_empty_addresses(argToList(args.get("cc")))
+    to = get_none_empty_addresses(argToList(args.get("to")))
+    replyTo = get_none_empty_addresses(argToList(args.get("replyTo")))
+    render_body = argToBoolean(args.get("renderBody") or False)
+    handle_inline_image: bool = argToBoolean(args.get("handle_inline_image", True))
+    subject = args.get("subject")
+    subject = subject[:252] + "..." if len(subject) > 255 else subject
 
-    attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
-                                                         args.get('attachNames', ''), args.get('manualAttachObj') or [])
+    attachments, attachments_names = process_attachments(
+        args.get("attachCIDs", ""), args.get("attachIDs", ""), args.get("attachNames", ""), args.get("manualAttachObj") or []
+    )
 
-    body_type = args.get('bodyType', args.get('body_type'))
+    body_type = args.get("bodyType", args.get("body_type"))
     send_email_to_mailbox(
-        account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
-        handle_inline_image=handle_inline_image, html_body=args.get('htmlBody'), attachments=attachments,
-        raw_message=args.get('raw_message'), from_address=args.get('from')
+        account=account,
+        to=to,
+        subject=subject,
+        body=args.get("body"),
+        body_type=body_type,
+        bcc=bcc,
+        cc=cc,
+        reply_to=replyTo,
+        handle_inline_image=handle_inline_image,
+        html_body=args.get("htmlBody"),
+        attachments=attachments,
+        raw_message=args.get("raw_message"),
+        from_address=args.get("from"),
     )
     result_object = {
-        'from': args.get('from') or account.primary_smtp_address,
-        'to': to,
-        'subject': subject,
-        'attachments': attachments_names
+        "from": args.get("from") or account.primary_smtp_address,
+        "to": to,
+        "subject": subject,
+        "attachments": attachments_names,
     }
 
-    results = [{
-        'Type': entryTypes['note'],
-        'Contents': result_object,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sent email', result_object),
-    }]
+    results = [
+        {
+            "Type": entryTypes["note"],
+            "Contents": result_object,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": tableToMarkdown("Sent email", result_object),
+        }
+    ]
     if render_body:
-        results.append({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['html'],
-            'Contents': args.get('htmlBody')
-        })
+        results.append({"Type": entryTypes["note"], "ContentsFormat": formats["html"], "Contents": args.get("htmlBody")})
     return results
 
 
 def reply_email(client: EWSClient, args):  # pragma: no cover
     time_zone = get_time_zone()
     account = client.get_account(target_mailbox=client.account_email, time_zone=time_zone)
-    bcc = argToList(args.get('bcc'))
-    cc = argToList(args.get('cc'))
-    to = argToList(args.get('to'))
-    subject = args.get('subject')
-    subject = subject[:252] + '...' if subject and len(subject) > 255 else subject
+    bcc = argToList(args.get("bcc"))
+    cc = argToList(args.get("cc"))
+    to = argToList(args.get("to"))
+    subject = args.get("subject")
+    subject = subject[:252] + "..." if subject and len(subject) > 255 else subject
 
-    attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
-                                                         args.get('attachNames', ''), args.get('manualAttachObj') or [])
+    attachments, attachments_names = process_attachments(
+        args.get("attachCIDs", ""), args.get("attachIDs", ""), args.get("attachNames", ""), args.get("manualAttachObj") or []
+    )
 
-    client.reply_email(args.get('inReplyTo', ''), to, args.get('body', ''), subject, bcc, cc, args.get('htmlBody'),
-                       attachments, args.get('from'), account)
+    client.reply_email(
+        args.get("inReplyTo", ""),
+        to,
+        args.get("body", ""),
+        subject,
+        bcc,
+        cc,
+        args.get("htmlBody"),
+        attachments,
+        args.get("from"),
+        account,
+    )
     result_object = {
-        'from': args.get('from') or account.primary_smtp_address,
-        'to': to,
-        'subject': subject,
-        'attachments': attachments_names
+        "from": args.get("from") or account.primary_smtp_address,
+        "to": to,
+        "subject": subject,
+        "attachments": attachments_names,
     }
 
     return {
-        'Type': entryTypes['note'],
-        'Contents': result_object,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sent email', result_object),
+        "Type": entryTypes["note"],
+        "Contents": result_object,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown("Sent email", result_object),
     }
 
 
@@ -1482,18 +1602,21 @@ def test_module(client: EWSClient):  # pragma: no cover
         account = client.get_account(client.account_email)
         folder = client.get_folder_by_path(client.folder_name, account, client.is_public_folder)
         if not folder.effective_rights.read:  # pylint: disable=E1101
-            raise Exception("Success to authenticate, but user has no permissions to read from the mailbox. "
-                            "Need to delegate the user permissions to the mailbox - "
-                            "please read integration documentation and follow the instructions")
+            raise Exception(
+                "Success to authenticate, but user has no permissions to read from the mailbox. "
+                "Need to delegate the user permissions to the mailbox - "
+                "please read integration documentation and follow the instructions"
+            )
         folder.test_access()
     except ErrorFolderNotFound as e:
         if "Top of Information Store" in str(e):
             raise Exception(
                 "Success to authenticate, but user probably has no permissions to read from the specific folder."
                 "Check user permissions. You can try !ews-find-folders command to "
-                "get all the folders structure that the user has permissions to")
+                "get all the folders structure that the user has permissions to"
+            )
 
-    demisto.results('ok')
+    demisto.results("ok")
 
 
 def get_client_from_params(params: dict):
@@ -1504,22 +1627,22 @@ def get_client_from_params(params: dict):
 
     :return: An EWSClient instance for interacting with the Exchange server.
     """
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
-    access_type = IMPERSONATION if params.get('impersonation', False) else DELEGATE
-    account_email = params.get('defaultTargetMailbox', '')
-    max_fetch = min(50, int(params.get('maxFetch', 50)))
-    ews_server = params.get('ewsServer', '')
-    auth_type = params.get('authType', '')
+    username = params.get("credentials", {}).get("identifier")
+    password = params.get("credentials", {}).get("password")
+    access_type = IMPERSONATION if params.get("impersonation", False) else DELEGATE
+    account_email = params.get("defaultTargetMailbox", "")
+    max_fetch = min(50, int(params.get("maxFetch", 50)))
+    ews_server = params.get("ewsServer", "")
+    auth_type = params.get("authType", "")
     if auth_type:
         auth_type = parse_auth_type(auth_type)
-    version = params.get('defaultServerVersion', '')
-    folder = params.get('folder', 'Inbox')
-    is_public_folder = params.get('isPublicFolder', False)
-    request_timeout = int(params.get('requestTimeout', 120))
-    mark_as_read = params.get('markAsRead', False)
-    manual_username = params.get('domainAndUserman', '')
-    insecure = params.get('insecure', True)
+    version = params.get("defaultServerVersion", "")
+    folder = params.get("folder", "Inbox")
+    is_public_folder = params.get("isPublicFolder", False)
+    request_timeout = int(params.get("requestTimeout", 120))
+    mark_as_read = params.get("markAsRead", False)
+    manual_username = params.get("domainAndUserman", "")
+    insecure = params.get("insecure", True)
 
     if ews_server and manual_username:
         username = manual_username
@@ -1549,66 +1672,66 @@ def sub_main():  # pragma: no cover
     args = prepare_args(demisto.args())
     client = get_client_from_params(params)
     skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
-    fetch_all_history = argToBoolean(demisto.params().get('fetchAllHistory', False))
-    fetch_time = demisto.params().get('fetch_time') or '10 minutes'
+    fetch_all_history = argToBoolean(demisto.params().get("fetchAllHistory", False))
+    fetch_time = demisto.params().get("fetch_time") or "10 minutes"
     is_test_module = False
 
     fix_2010(client)
 
     try:
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             is_test_module = True
             test_module(client)
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             incidents = fetch_emails_as_incidents(client, skip_unparsable_emails, fetch_all_history, fetch_time)
             demisto.incidents(incidents)
-        elif demisto.command() == 'ews-get-attachment':
+        elif demisto.command() == "ews-get-attachment":
             return_results(fetch_attachments_for_message(client, **args))
-        elif demisto.command() == 'ews-delete-attachment':
+        elif demisto.command() == "ews-delete-attachment":
             return_results(delete_attachments_for_message(client, **args))
-        elif demisto.command() == 'ews-get-searchable-mailboxes':
+        elif demisto.command() == "ews-get-searchable-mailboxes":
             return_results(get_searchable_mailboxes(client))
-        elif demisto.command() == 'ews-search-mailboxes':
+        elif demisto.command() == "ews-search-mailboxes":
             return_results(search_mailboxes(client, **args))
-        elif demisto.command() == 'ews-move-item-between-mailboxes':
+        elif demisto.command() == "ews-move-item-between-mailboxes":
             return_results(move_item_between_mailboxes(client, **args))
-        elif demisto.command() == 'ews-move-item':
+        elif demisto.command() == "ews-move-item":
             return_results(move_item(client, **args))
-        elif demisto.command() == 'ews-delete-items':
+        elif demisto.command() == "ews-delete-items":
             return_results(delete_items(client, **args))
-        elif demisto.command() == 'ews-search-mailbox':
+        elif demisto.command() == "ews-search-mailbox":
             return_results(search_items_in_mailbox(client, **args))
-        elif demisto.command() == 'ews-get-contacts':
+        elif demisto.command() == "ews-get-contacts":
             return_results(get_contacts(client, **args))
-        elif demisto.command() == 'ews-get-out-of-office':
+        elif demisto.command() == "ews-get-out-of-office":
             return_results(get_out_of_office_state(client, **args))
-        elif demisto.command() == 'ews-recover-messages':
+        elif demisto.command() == "ews-recover-messages":
             return_results(recover_soft_delete_item(client, **args))
-        elif demisto.command() == 'ews-create-folder':
+        elif demisto.command() == "ews-create-folder":
             return_results(create_folder(client, **args))
-        elif demisto.command() == 'ews-mark-item-as-junk':
+        elif demisto.command() == "ews-mark-item-as-junk":
             return_results(mark_item_as_junk(client, **args))
-        elif demisto.command() == 'ews-find-folders':
+        elif demisto.command() == "ews-find-folders":
             return_results(find_folders(client, **args))
-        elif demisto.command() == 'ews-get-items-from-folder':
+        elif demisto.command() == "ews-get-items-from-folder":
             return_results(get_items_from_folder(client, **args))
-        elif demisto.command() == 'ews-get-items':
+        elif demisto.command() == "ews-get-items":
             return_results(get_items(client, **args))
-        elif demisto.command() == 'ews-get-folder':
+        elif demisto.command() == "ews-get-folder":
             return_results(get_folder(client, **args))
-        elif demisto.command() == 'ews-get-autodiscovery-config':
+        elif demisto.command() == "ews-get-autodiscovery-config":
             return_results(get_autodiscovery_config())
-        elif demisto.command() == 'ews-expand-group':
+        elif demisto.command() == "ews-expand-group":
             return_results(get_expanded_group(client, **args))
-        elif demisto.command() == 'ews-mark-items-as-read':
+        elif demisto.command() == "ews-mark-items-as-read":
             return_results(mark_item_as_read(client, **args))
-        elif demisto.command() == 'ews-resolve-name':
+        elif demisto.command() == "ews-resolve-name":
             return_results(resolve_name_command(client, args))
-        elif demisto.command() == 'ews-get-items-as-eml':
+        elif demisto.command() == "ews-get-items-as-eml":
             return_results(get_item_as_eml(client, **args))
-        elif demisto.command() == 'send-mail':
+        elif demisto.command() == "send-mail":
             return_results(send_email(client, args))
-        elif demisto.command() == 'reply-mail':
+        elif demisto.command() == "reply-mail":
             return_results(reply_email(client, args))
         else:
             return_error(f'Command: "{demisto.command()}" was not recognized by this integration')
@@ -1623,11 +1746,14 @@ def sub_main():  # pragma: no cover
         error_message = ""
 
         # Office365 regular maintenance case
-        if (isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)
-                and urlparse(client.ews_server.lower()).hostname == 'outlook.office365.com'):
-            log_message = "Office365 is undergoing load balancing operations. " \
-                          "As a result, the service is temporarily unavailable."
-            if demisto.command() == 'fetch-incidents':
+        if (
+            isinstance(e, ErrorMailboxMoveInProgress | ErrorMailboxStoreUnavailable)
+            and urlparse(client.ews_server.lower()).hostname == "outlook.office365.com"
+        ):
+            log_message = (
+                "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
+            )
+            if demisto.command() == "fetch-incidents":
                 demisto.info(log_message)
                 demisto.incidents([])
                 sys.exit(0)
@@ -1637,37 +1763,48 @@ def sub_main():  # pragma: no cover
             error_message_simple = log_message + " Please retry your request."
 
         if isinstance(e, ConnectionError):
-            error_message_simple = "Could not connect to the server.\n" \
-                                   "Verify that the Hostname or IP address is correct.\n\n" \
-                                   f"Additional information: {str(e)}"
+            error_message_simple = (
+                "Could not connect to the server.\n"
+                "Verify that the Hostname or IP address is correct.\n\n"
+                f"Additional information: {e!s}"
+            )
         if isinstance(e, ErrorInvalidPropertyRequest):
             error_message_simple = "Verify that the Exchange version is correct."
         else:
             from exchangelib.errors import MalformedResponseError
 
             if is_test_module and isinstance(e, MalformedResponseError):
-                error_message_simple = "Got invalid response from the server.\n" \
-                                       "Verify that the Hostname or IP address is is correct."
+                error_message_simple = (
+                    "Got invalid response from the server.\nVerify that the Hostname or IP address is is correct."
+                )
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
-            error_message_simple = "Got unauthorized from the server. " \
-                                   "Check credentials are correct and authentication method are supported. "
+            error_message_simple = (
+                "Got unauthorized from the server. Check credentials are correct and authentication method are supported. "
+            )
 
-            error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
-                if client.auth_type.lower() == 'ntlm' else ''
+            error_message_simple += (
+                "You can try using 'domain\\username' as username for authentication. "
+                if client.auth_type.lower() == "ntlm"
+                else ""
+            )
 
         if "SSL: CERTIFICATE_VERIFY_FAILED" in debug_log:
             # same status code (503) but different error.
-            error_message_simple = "Certificate verification failed - This error may happen if the server " \
-                                   "certificate cannot be validated or as a result of a proxy that is doing SSL/TLS " \
-                                   "termination. It is possible to bypass certificate validation by checking " \
-                                   "'Trust any certificate' in the instance settings."
+            error_message_simple = (
+                "Certificate verification failed - This error may happen if the server "
+                "certificate cannot be validated or as a result of a proxy that is doing SSL/TLS "
+                "termination. It is possible to bypass certificate validation by checking "
+                "'Trust any certificate' in the instance settings."
+            )
 
         elif "Status code: 503" in debug_log:
-            error_message_simple = "Got timeout from the server. " \
-                                   "Probably the server is not reachable with the current settings. " \
-                                   "Check proxy parameter. If you are using server URL - change to server IP address. "
+            error_message_simple = (
+                "Got timeout from the server. "
+                "Probably the server is not reachable with the current settings. "
+                "Check proxy parameter. If you are using server URL - change to server IP address. "
+            )
 
         if not error_message_simple:
             error_message = error_message_simple = str(e)
@@ -1681,15 +1818,14 @@ def sub_main():  # pragma: no cover
         if debug_log:
             error_message += "\nFull debug log:\n" + debug_log
 
-        if demisto.command() == 'fetch-incidents':
+        if demisto.command() == "fetch-incidents":
             raise Exception(str(e) + traceback.format_exc())
-        if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
+        if demisto.command() == "ews-search-mailbox" and isinstance(e, ValueError):
             return_error(message="Selected invalid field, please specify valid field name.", error=e)
         if is_test_module:
             demisto.results(error_message_simple)
         else:
-            demisto.results(
-                {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
+            demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error(f"{e.__class__.__name__}: {error_message}")
     finally:
         exchangelib_cleanup()
@@ -1725,8 +1861,7 @@ def main():  # pragma: no cover
         else:
             sub_main()
     except Exception as exc:
-        return_error(f"Found error in EWSv2: {exc}",
-                     error=f'Error: {exc}\nTraceback: {traceback.format_exc()}')
+        return_error(f"Found error in EWSv2: {exc}", error=f"Error: {exc}\nTraceback: {traceback.format_exc()}")
 
 
 # python2 uses __builtin__ python3 uses builtins

@@ -1,0 +1,56 @@
+{
+  "execution_id": "xxxxxxxxx",
+  "number_of_results": 8,
+  "query_name": "",
+  "results": [
+    {
+      "alert_count": 3,
+      "endpoint_name": "endpoint-b",
+      "severity": "MEDIUM",
+      "total_alerts": 4
+    },
+    {
+      "alert_count": 1,
+      "endpoint_name": "endpoint-a",
+      "severity": "LOW",
+      "total_alerts": 5
+    },
+    {
+      "alert_count": 1,
+      "endpoint_name": "endpoint-a",
+      "severity": "HIGH",
+      "total_alerts": 5
+    },
+    {
+      "alert_count": 1,
+      "endpoint_name": "endpoint-b",
+      "severity": "HIGH",
+      "total_alerts": 4
+    },
+    {
+      "alert_count": 3,
+      "endpoint_name": "endpoint-c",
+      "severity": "LOW",
+      "total_alerts": 3
+    },
+    {
+      "alert_count": 6,
+      "endpoint_name": "endpoint-d",
+      "severity": "LOW",
+      "total_alerts": 6
+    },
+    {
+      "alert_count": 3,
+      "endpoint_name": "endpoint-a",
+      "severity": "MEDIUM",
+      "total_alerts": 5
+    },
+    {
+      "alert_count": 1,
+      "endpoint_name": "endpoint-b",
+      "severity": "LOW",
+      "total_alerts": 4
+    }
+  ],
+  "status": "SUCCESS"
+}
