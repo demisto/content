@@ -313,7 +313,7 @@ def get_page_as_pdf_command():
     page_id = demisto.args().get("page_id")
     pdf = get_pdf(page_id)
 
-    demisto.results(fileResult(f"PDF for {pageid}", pdf))
+    demisto.results(fileResult(f"Confluence_page_{page_id}.pdf", pdf))
 
 
 def search_content(cql, cql_context, expand, start, limit):
