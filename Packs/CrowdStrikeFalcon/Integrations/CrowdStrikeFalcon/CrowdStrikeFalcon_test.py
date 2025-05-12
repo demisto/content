@@ -7674,9 +7674,9 @@ def test_fetch_events_reads_last_run_indexes_correctly(mocker):
     indicating correct index usage within the function.
     """
     from CrowdStrikeFalcon import fetch_events
-    
+
     last_run_identifiers = ["Detection", "Incident", "IDP", "Mobile", "ODS", "OFP"]
-        
+
     mocker.patch("CrowdStrikeFalcon.demisto.getLastRun", return_value=last_run_identifiers)
     mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
 

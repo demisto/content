@@ -756,11 +756,11 @@ def add_mirroring_fields(incident: dict):
 def add_response_to_dataset(resp: dict, raw: dict) -> None:
     """
     Adds response data info to specific dataset raw.
-    
+
     This function processes response keys and adds them to the raw ad new column.
     The "name" column is typically used for displaying "(fetched type) ID: (id)" format,
     The function renames the "name" key to "_name" column to avoid conflicts.
-    
+
     Args:
         resp (dict): Response dictionary to process (events/incident)
         raw (dict): Target dataset raw to update
@@ -771,8 +771,8 @@ def add_response_to_dataset(resp: dict, raw: dict) -> None:
         if not isinstance(val, str):
             val = json.dumps(val)
         raw[key] = val
-    
-    
+
+
 def detection_to_incident(detection, is_fetch_events: bool = False):
     """
     Creates an incident of a detection.
@@ -885,7 +885,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
-    
+
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
         add_response_to_dataset(resp=detection, raw=incident_context)
@@ -2945,9 +2945,9 @@ def fetch_incidents():
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     current_fetch_ofp_detection: dict = {} if len(last_run) < 8 else last_run[7]
     params = demisto.params()
-    
+
     fetch_incidents_or_detections = params.get("fetch_incidents_or_detections", "")
-        
+
     look_back = int(params.get("look_back") or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
@@ -2957,7 +2957,7 @@ def fetch_incidents():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(
             last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
         )
-        
+
         fetch_limit = current_fetch_info_detections.get("limit") or INCIDENTS_PER_FETCH
 
         incident_type = "detection"
@@ -3021,7 +3021,7 @@ def fetch_incidents():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(
             last_run=current_fetch_info_incidents, first_fetch=FETCH_TIME, look_back=look_back, date_format=DATE_FORMAT
         )
-        
+
         fetch_limit = current_fetch_info_incidents.get("limit") or INCIDENTS_PER_FETCH
         incident_type = "incident"
 
@@ -3240,7 +3240,8 @@ def fetch_incidents():
         + mobile_detections
         + on_demand_detections
         + ofp_detections
-        )
+    )
+
 
 def fetch_events():
     incidents: list = []
@@ -3261,9 +3262,9 @@ def fetch_events():
     current_fetch_on_demand_detections: dict = {} if len(last_run) < 5 else last_run[4]
     current_fetch_ofp_detection: dict = {} if len(last_run) < 6 else last_run[5]
     params = demisto.params()
-    
+
     fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
-        
+
     look_back = int(params.get("look_back_xsiam") or 2)
     fetch_limit = INCIDENTS_PER_FETCH
 
@@ -3273,7 +3274,7 @@ def fetch_events():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(
             last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
         )
-        
+
         fetch_limit = current_fetch_info_detections.get("limit") or MAX_FETCH_DETECTION_PER_API_CALL
 
         incident_type = "detection"
@@ -3459,12 +3460,12 @@ def fetch_events():
         current_fetch_on_demand_detections,
         current_fetch_ofp_detection,
     ]
-    
+
     events = incidents + detections + idp_detections + mobile_detections + on_demand_detections + ofp_detections
 
     return last_run, events
 
-    
+
 def fetch_detections_by_product_type(
     current_fetch_info: dict,
     look_back: int,
@@ -3525,7 +3526,7 @@ def fetch_detections_by_product_type(
             for detection in full_detections:
                 detection["incident_type"] = detections_type
                 detection_to_context = detection_to_incident_context(
-                    detection,  detection_name_prefix, start_time_key, is_fetch_events=is_fetch_events
+                    detection, detection_name_prefix, start_time_key, is_fetch_events=is_fetch_events
                 )
                 detections.append(detection_to_context)
         detections = (
@@ -7558,6 +7559,7 @@ def get_ioarules_command(args: dict) -> CommandResults:
         ),
         raw_response=ioarules_response_data,
     )
+
 
 def main():  # pragma: no cover
     command = demisto.command()
