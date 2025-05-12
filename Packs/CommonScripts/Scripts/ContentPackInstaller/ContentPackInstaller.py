@@ -332,6 +332,9 @@ def main():
         installer = ContentPackInstaller(instance_name)
         packs_to_install = format_packs_data_for_installation(args)
         install_dependencies = argToBoolean(args.get("install_dependencies", "true"))
+        if is_xsiam_or_xsoar_saas():
+            # When downloading a pack through the tenant marketplace, we must install all dependencies
+            install_dependencies = True
 
         for pack in packs_to_install:
             installer.install_pack_and_its_dependencies(pack, install_dependencies)
