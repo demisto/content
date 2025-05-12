@@ -156,3 +156,26 @@ def test_get_packs_data_for_installation(mocker):
     )
     packs = installer.get_packs_data_for_installation([{"id": "SomePack", "version": "1.2.3"}])
     assert packs == [{"id": "SomePack", "version": "1.2.4"}]
+
+
+def test_install_packs_if_needed(mocker):
+    """
+    Given: XSIAM or XSOAR SaaS environment and a request to install a pack.
+    When: calling install_packs_if_needed
+    Then: it should call the API with the correct arguments and return the success result.
+    """
+    installer = get_content_pack_installer(mocker)
+
+    packs_to_install = [{"id": "Pack1", "version": "1.2.4"}]
+    mocker.patch('ContentPackInstaller.is_xsiam_or_xsoar_saas', return_value=True)
+    mock_call_execute = mocker.patch('ContentPackInstaller.ContentPackInstaller._call_execute_command',
+                                     return_value=("ok", {"status": "success"}))
+
+    installer.install_packs(packs_to_install)
+
+    expected_args = {
+        'uri': '/contentpacks/marketplace/install',
+        'body': {'packs': [{"id": "Pack1", "version": "1.2.4"}], 'ignoreWarnings': True}
+    }
+
+    mock_call_execute.assert_called_once_with('core-api-post', expected_args)
