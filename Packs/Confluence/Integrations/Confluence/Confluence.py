@@ -311,7 +311,7 @@ def get_page_as_pdf_command():
     Confluence Get Page as PDF command method
     """
     page_id = demisto.args().get("page_id")
-    pdf = get_pdf(pageid)
+    pdf = get_pdf(page_id)
 
     demisto.results(fileResult(f"PDF for {pageid}", pdf))
 
