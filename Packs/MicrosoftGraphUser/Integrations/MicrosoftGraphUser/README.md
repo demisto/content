@@ -707,7 +707,8 @@ There is no context output for this command.
 ### msgraph-user-tap-policy-delete
 
 ***
-Deletes a specific TAP policy. Permission:UserAuthenticationMethod.ReadWrite.All
+Deletes a specific TAP policy. 
+Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
 
 #### Base Command
 
@@ -733,7 +734,7 @@ There is no context output for this command.
 Create a new TAP policy for a user.
 During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
 A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
-Permission:UserAuthenticationMethod.ReadWrite.All
+Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
 
 #### Base Command
 
@@ -769,7 +770,7 @@ Permission:UserAuthenticationMethod.ReadWrite.All
 ***
 Lists all TAP policies for a user.
 This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
-Permission:UserAuthenticationMethod.Read.All
+Permissions: - UserAuthenticationMethod.Read.All (Delegated) - UserAuthenticationMethod.Read.All (Application).
 
 #### Base Command
 

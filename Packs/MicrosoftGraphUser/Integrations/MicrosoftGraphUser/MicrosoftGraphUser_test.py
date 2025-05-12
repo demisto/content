@@ -535,9 +535,9 @@ def test_create_zip_with_password():
     Validates that the correct TAP password is stored in the ZIP file, and cleans up any files created during the test.
 
     Given:
-        A generated TAP password, a password for protected-zip file, file names.
+        - A generated TAP password, a password for protected-zip file, file names.
     When:
-        - Running the generate_password_protected_zip command.
+        - Running the generate_password_protected_zip function.
     Then:
         1. Generates a password protected zip file, that will include the password of the new TAP.
         2. Verifies that the returned 'File' field matches the expected ZIP file name - TAPPolicyInfo.zip.
