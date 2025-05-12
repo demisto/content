@@ -346,8 +346,12 @@ script:
       - Logging
       - Metrics
       - None
-    - description: Specifies the default action of allow or deny when no other rules match.
+    - auto: PREDEFINED
+      description: Specifies the default action of allow or deny when no other rules match.
       name: network_ruleset_default_action
+      predefined:
+      - Allow
+      - Deny
     - description: Sets the IP ACL rules.
       name: network_ruleset_ipRules
     - description: Sets the virtual network rules.
@@ -359,7 +363,7 @@ script:
       - 'true'
       - 'false'
     description: Updates a specific account storage.
-    name: azure-storage-account-create-update
+    name: azure-storage-account-update
     outputs:
     - ContextPath: Azure.StorageAccount.id
       description: Fully qualified resource ID for the resource.
@@ -495,7 +499,6 @@ script:
       type: String
     - ContextPath: Azure.StorageAccount.tags
       description: Resource tags.
-      type: Unknown
     - ContextPath: Azure.StorageAccount.type
       description: The type of the resource.
       type: String
@@ -571,9 +574,9 @@ script:
     - name: name
       required: true
       description: Name of the policy assignment.
-    - name: subscription_id
+    - name: scope
       type: string
-      description: The subscription ID.
+      description: The scope of the policy assignment.
     - name: policy_definition_id
       required: false
       type: string
@@ -669,7 +672,7 @@ script:
       description: Value of the configuration.
     name: azure-postgres-config-set
     description: Updates a configuration of a server.
-    outputs: []
+    outputs: [] # have no outputs for these command by response
   - arguments:
     - name: resource_group_name
       type: string
@@ -711,7 +714,94 @@ script:
       - 1.3
     name: azure-webapp-config-set
     description: Updates the configuration settings of an existing Azure Web App.
-    outputs: []
+    outputs:
+    - contextPath: Azure.WebAppConfig.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.WebAppConfig.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.WebAppConfig.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.WebAppConfig.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.WebAppConfig.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.ftpsState
+      description: State of FTP / FTPS service.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.allowedOrigins
+      description: CORS allowed origins.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.supportCredentials
+      description: Indicates whether CORS supports credentials.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
   - arguments:
     - name: resource_group_name
       type: string
@@ -735,7 +825,103 @@ script:
       - 'false'
     name: azure-webapp-auth-update
     description: Updates the authentication and authorization settings of an existing Azure Web App.
-    outputs: []
+    outputs: 
+    - contextPath: Azure.WebAppAuth.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.WebAppAuth.name
+      description: Resource Name.
+      type: String
+    - contextPath: Azure.WebAppAuth.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.enabled
+      description: Indicates whether Authentication/Authorization is enabled for the app.
+      type: Boolean
+    - contextPath: Azure.WebAppAuth.properties.runtimeVersion
+      description: The RuntimeVersion of the Authentication/Authorization feature.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.unauthenticatedClientAction
+      description: The action to take when an unauthenticated client attempts to access the app.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.tokenStoreEnabled
+      description: Indicates whether the Azure App Service Authentication platform’s token store is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppAuth.properties.allowedExternalRedirectUrls
+      description: External URLs that are allowed to be redirected to as part of logging in or logging out of the app.
+      type: Unknown
+    - contextPath: Azure.WebAppAuth.properties.defaultProvider
+      description: The default authentication provider to use when multiple providers are configured.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.clientId
+      description: The Client ID of the app used for AAD login.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.clientSecret
+      description: The client secret associated with the AAD app.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.clientSecretSettingName
+      description: The app setting that contains the client secret.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.issuer
+      description: The OpenID Connect Issuer URI that represents the entity that issues access tokens.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.allowedAudiences
+      description: The list of audiences that can receive the authentication tokens.
+      type: Unknown
+    - contextPath: Azure.WebAppAuth.properties.additionalLoginParams
+      description: Additional parameters to send to the authentication provider.
+      type: Unknown
+    - contextPath: Azure.WebAppAuth.properties.isAadAutoProvisioned
+      description: True if AAD is auto-provisioned; otherwise false.
+      type: Boolean
+    - contextPath: Azure.WebAppAuth.properties.googleClientId
+      description: The Client ID of the app used for Google login.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.googleClientSecret
+      description: The client secret associated with the Google app.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.googleClientSecretSettingName
+      description: The app setting that contains the client secret.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.facebookAppId
+      description: The App ID of the Facebook app used for login.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.facebookAppSecret
+      description: The app secret associated with the Facebook app.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.facebookAppSecretSettingName
+      description: The app setting that contains the Facebook app secret.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.twitterConsumerKey
+      description: The OAuth 1.0a consumer key of the Twitter application used for login.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.twitterConsumerSecret
+      description: The consumer secret associated with the Twitter application.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.twitterConsumerSecretSettingName
+      description: The app setting that contains the Twitter consumer secret.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.microsoftAccountClientId
+      description: The OAuth 2.0 client ID for the Microsoft account provider.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.microsoftAccountClientSecret
+      description: The client secret for the Microsoft account provider.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.microsoftAccountClientSecretSettingName
+      description: The app setting that contains the Microsoft account client secret.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.appleClientId
+      description: The client ID for the Apple provider.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.appleClientSecret
+      description: The client secret for the Apple provider.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.appleClientSecretSettingName
+      description: The app setting that contains the Apple provider client secret.
+      type: String
+    - contextPath: Azure.WebAppAuth.properties.authFilePath
+      description: The path to the authentication configuration file.
+      type: String
   - arguments:
     - name: resource_id
       type: string
@@ -785,7 +971,7 @@ script:
       description: Value of the configuration.
     name: azure-mysql-flexible-server-param-set
     description: Updates a configuration of a server.
-    outputs: []
+    outputs: [] # No outputs are returned in response
   - arguments:
     - name: log_profile_name
       description: The name of the log profile to update.
@@ -847,109 +1033,109 @@ script:
       predefined:
         - AzureActiveDirectory
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
-    name: azure-compute-disk-update
+    name: azure-disk-update
     description: Updates a disk.
     outputs: 
-    - contextPath: Azure.Compute.Disk.id
+    - contextPath: Azure.Disk.id
       description: Resource ID of the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.name
+    - contextPath: Azure.Disk.name
       description: Name of the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.type
+    - contextPath: Azure.Disk.type
       description: Type of the resource.
       type: String
-    - contextPath: Azure.Compute.Disk.location
+    - contextPath: Azure.Disk.location
       description: Location of the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.tags
+    - contextPath: Azure.Disk.tags
       description: Resource tags.
-    - contextPath: Azure.Compute.Disk.managedBy
+    - contextPath: Azure.Disk.managedBy
       description: ARM ID of the resource that manages the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.sku
+    - contextPath: Azure.Disk.sku
       description: The disk SKU name.
-    - contextPath: Azure.Compute.Disk.zones
+    - contextPath: Azure.Disk.zones
       description: A list of availability zones.
-    - contextPath: Azure.Compute.Disk.properties.timeCreated
+    - contextPath: Azure.Disk.properties.timeCreated
       description: The time when the disk was created.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.diskSizeGB
+    - contextPath: Azure.Disk.properties.diskSizeGB
       description: Size of the disk in GB.
       type: Number
-    - contextPath: Azure.Compute.Disk.properties.diskIopsReadWrite
+    - contextPath: Azure.Disk.properties.diskIopsReadWrite
       description: The number of IOPS allowed for this disk.
       type: Number
-    - contextPath: Azure.Compute.Disk.properties.diskMBpsReadWrite
+    - contextPath: Azure.Disk.properties.diskMBpsReadWrite
       description: The bandwidth allowed for this disk in MBps.
       type: Number
-    - contextPath: Azure.Compute.Disk.properties.diskIOPSReadOnly
+    - contextPath: Azure.Disk.properties.diskIOPSReadOnly
       description: The number of read-only IOPS for this disk.
       type: Number
-    - contextPath: Azure.Compute.Disk.properties.diskMBpsReadOnly
+    - contextPath: Azure.Disk.properties.diskMBpsReadOnly
       description: The read-only bandwidth for this disk in MBps.
       type: Number
-    - contextPath: Azure.Compute.Disk.properties.diskSizeBytes
+    - contextPath: Azure.Disk.properties.diskSizeBytes
       description: The size of the disk in bytes.
       type: Number
-    - contextPath: Azure.Compute.Disk.properties.networkAccessPolicy
+    - contextPath: Azure.Disk.properties.networkAccessPolicy
       description: Policy for accessing the disk via network.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.publicNetworkAccess
+    - contextPath: Azure.Disk.properties.publicNetworkAccess
       description: Policy for export on the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.burstingEnabled
+    - contextPath: Azure.Disk.properties.burstingEnabled
       description: Whether bursting is enabled on the disk.
       type: Boolean
-    - contextPath: Azure.Compute.Disk.properties.optimization
+    - contextPath: Azure.Disk.properties.optimization
       description: The disk optimization setting.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.diskState
+    - contextPath: Azure.Disk.properties.diskState
       description: The current state of the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.supportedCapabilities
+    - contextPath: Azure.Disk.properties.supportedCapabilities
       description: Supported capabilities of the disk.
-    - contextPath: Azure.Compute.Disk.properties.supportedPerformanceTiers
+    - contextPath: Azure.Disk.properties.supportedPerformanceTiers
       description: Supported performance tiers of the disk.
-    - contextPath: Azure.Compute.Disk.properties.supportedDiskTypes
+    - contextPath: Azure.Disk.properties.supportedDiskTypes
       description: Supported disk types for the disk.
-    - contextPath: Azure.Compute.Disk.properties.provisioningState
+    - contextPath: Azure.Disk.properties.provisioningState
       description: The provisioning state of the disk.
-    - contextPath: Azure.Compute.Disk.properties.timeModified
+    - contextPath: Azure.Disk.properties.timeModified
       description: The time when the disk was last modified.
-    - contextPath: Azure.Compute.Disk.properties.diskAccessId
+    - contextPath: Azure.Disk.properties.diskAccessId
       description: ARM id of the DiskAccess resource.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.networkProfile
+    - contextPath: Azure.Disk.properties.networkProfile
       description: The network profile of the disk.
-    - contextPath: Azure.Compute.Disk.properties.creationData
+    - contextPath: Azure.Disk.properties.creationData
       description: Disk creation data.
-    - contextPath: Azure.Compute.Disk.properties.encryption
+    - contextPath: Azure.Disk.properties.encryption
       description: Encryption settings for the disk.
-    - contextPath: Azure.Compute.Disk.properties.encryptionSettingsCollection
+    - contextPath: Azure.Disk.properties.encryptionSettingsCollection
       description: A collection of encryption settings.
-    - contextPath: Azure.Compute.Disk.properties.encryptionType
+    - contextPath: Azure.Disk.properties.encryptionType
       description: The type of key used to encrypt the data on the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.securityProfile
+    - contextPath: Azure.Disk.properties.securityProfile
       description: Security profile for the disk.
-    - contextPath: Azure.Compute.Disk.properties.tieringProfile
+    - contextPath: Azure.Disk.properties.tieringProfile
       description: Tiering profile for the disk.
-    - contextPath: Azure.Compute.Disk.properties.supportedTierList
+    - contextPath: Azure.Disk.properties.supportedTierList
       description: List of supported tiers for the disk.
-    - contextPath: Azure.Compute.Disk.properties.availabilityZone
+    - contextPath: Azure.Disk.properties.availabilityZone
       description: Availability zone of the disk.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.dataAccessAuthMode
+    - contextPath: Azure.Disk.properties.dataAccessAuthMode
       description: Additional authentication requirements when exporting or uploading to a disk.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.osType
+    - contextPath: Azure.Disk.properties.osType
       description: The operating system type.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.hyperVGeneration
+    - contextPath: Azure.Disk.properties.hyperVGeneration
       description: The HyperVGenerationType of the virtual machine.
       type: String
-    - contextPath: Azure.Compute.Disk.properties.lastOwnershipUpdateTime
+    - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
   - arguments:
@@ -987,7 +1173,208 @@ script:
       - 'false'
     name: azure-webapp-update
     description: Updates an Azure Web App.
-    outputs: []
+    outputs:
+    - contextPath: Azure.WebApp.id
+      description: Fully qualified resource ID for the web app.
+      type: String
+    - contextPath: Azure.WebApp.name
+      description: The name of the web app.
+      type: String
+    - contextPath: Azure.WebApp.type
+      description: The resource type, e.g., Microsoft.Web/sites.
+      type: String
+    - contextPath: Azure.WebApp.location
+      description: Geographic location of the web app.
+      type: String
+    - contextPath: Azure.WebApp.kind
+      description: The kind of the app, e.g., app, functionapp, etc.
+      type: String
+    - contextPath: Azure.WebApp.tags
+      description: Resource tags as key-value pairs.
+    - contextPath: Azure.WebApp.identity.type
+      description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+      type: String
+    - contextPath: Azure.WebApp.identity.principalId
+      description: The principal ID of the system-assigned identity.
+      type: String
+    - contextPath: Azure.WebApp.identity.tenantId
+      description: The tenant ID of the system-assigned identity.
+      type: String
+    - contextPath: Azure.WebApp.identity.userAssignedIdentities
+      description: The list of user-assigned identities associated with the web app.
+    - contextPath: Azure.WebApp.properties.state
+      description: Current state of the web app (Running, Stopped, etc.).
+      type: String
+    - contextPath: Azure.WebApp.properties.enabled
+      description: Whether the web app is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.defaultHostName
+      description: Default host name of the web app.
+      type: String
+    - contextPath: Azure.WebApp.properties.hostNames
+      description: List of host names associated with the web app.
+    - contextPath: Azure.WebApp.properties.repositorySiteName
+      description: Name of the repository site.
+      type: String
+    - contextPath: Azure.WebApp.properties.clientAffinityEnabled
+      description: Whether client affinity is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.clientCertEnabled
+      description: Whether client certificates are enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.clientCertExclusionPaths
+      description: Paths to exclude from client certificate authentication.
+      type: String
+    - contextPath: Azure.WebApp.properties.hostingEnvironment
+      description: App Service Environment to use for the web app.
+      type: String
+    - contextPath: Azure.WebApp.properties.serverFarmId
+      description: Resource ID of the associated App Service plan.
+      type: String
+    - contextPath: Azure.WebApp.properties.reserved
+      description: Whether the web app is on a Linux plan.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.isXenon
+      description: Whether the web app is hosted in Xenon.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.hyperV
+      description: Whether Hyper-V is enabled for the web app.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.appSettings
+      description: List of app settings.
+    - contextPath: Azure.WebApp.properties.siteConfig.metadata
+      description: List of metadata settings.
+    - contextPath: Azure.WebApp.properties.siteConfig.connectionStrings
+      description: List of connection strings.
+    - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
+      description: Whether local MySQL is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.alwaysOn
+      description: Whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.http20Enabled
+      description: Whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.ftpsState
+      description: FTPS state (Disabled, AllAllowed, etc.).
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.linuxFxVersion
+      description: Runtime stack for Linux apps.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.windowsFxVersion
+      description: Runtime stack for Windows apps.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.numberOfWorkers
+      description: Number of workers allocated.
+      type: Number
+    - contextPath: Azure.WebApp.properties.siteConfig.webSocketsEnabled
+      description: Whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.preWarmedInstanceCount
+      description: Number of pre-warmed instances.
+      type: Number
+    - contextPath: Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds
+      description: Whether ACR uses managed identity credentials.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID
+      description: User-assigned identity ID for ACR.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.scmType
+      description: Source control management type.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.use32BitWorkerProcess
+      description: Whether to use 32-bit worker process.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
+      description: Whether auto-heal is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
+      description: Auto-heal rules configuration.
+    - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
+      description: Tracing options.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+      description: Whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+      description: Whether detailed error logging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
+      description: Whether HTTP logging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
+      description: Whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.requestTracingExpirationTime
+      description: Request tracing expiration time.
+      type: DateTime
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+      description: Whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.defaultDocuments
+      description: List of default documents.
+    - contextPath: Azure.WebApp.properties.siteConfig.virtualApplications
+      description: List of virtual applications.
+    - contextPath: Azure.WebApp.properties.siteConfig.loadBalancing
+      description: Load balancing settings.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.experiments
+      description: Experiments configuration.
+    - contextPath: Azure.WebApp.properties.siteConfig.limits
+      description: Site limits configuration.
+    - contextPath: Azure.WebApp.properties.siteConfig.autoSwapSlotName
+      description: Auto-swap slot name.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.localMySqlEnabled
+      description: Whether local MySQL is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.ipSecurityRestrictions
+      description: IP security restrictions.
+    - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions
+      description: SCM IP security restrictions.
+    - contextPath: Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain
+      description: Whether SCM IP restrictions use main settings.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.cors
+      description: CORS settings.
+    - contextPath: Azure.WebApp.properties.siteConfig.push
+      description: Push settings.
+    - contextPath: Azure.WebApp.properties.siteConfig.apiDefinition
+      description: API definition settings.
+    - contextPath: Azure.WebApp.properties.siteConfig.apiManagementConfig
+      description: API management configuration.
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealEnabled
+      description: Whether auto-heal is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.autoHealRules
+      description: Auto-heal rules configuration.
+    - contextPath: Azure.WebApp.properties.siteConfig.tracingOptions
+      description: Tracing options.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled
+      description: Whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled
+      description: Whether detailed error logging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.httpLoggingEnabled
+      description: Whether HTTP logging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
+      description: Whether request tracing is enabled.
+      type: Boolean
   - arguments:
     - name: resource_group_name
       type: String
@@ -1002,18 +1389,21 @@ script:
     - name: allow_exports
       type: Boolean
       description: Whether artifacts can be exported.
+      auto: PREDEFINED
       predefined:
         - 'true'
         - 'false'
     - name: public_network_access
       type: String
       description: Whether public network access is allowed for the container registry.
+      auto: PREDEFINED
       predefined:
         - Disabled
         - Enabled
     - name: anonymous_pull_enabled
       type: Boolean
       description: Enables registry-wide pull from unauthenticated clients.
+      auto: PREDEFINED
       predefined:
         - 'true'
         - 'false'
@@ -1047,7 +1437,7 @@ script:
         - Enabled
     name: azure-postgres-server-update
     description: Updates an existing server.
-    outputs: []
+    outputs: [] # No outputs are returned in the response.
   - arguments:
     - description: Key Vault name.
       name: vault_name
@@ -1073,57 +1463,83 @@ script:
     description: Updates a key vault in the specified subscription. 
     name: azure-key-vault-update
     outputs:
-    - contextPath: AzureKeyVault.KeyVault.id
+    - contextPath: Azure.KeyVault.id
       description: Resource ID.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.name
+    - contextPath: Azure.KeyVault.name
       description: Key Vault name.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.type
+    - contextPath: Azure.KeyVault.type
       description: Resource type in Azure.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.location
+    - contextPath: Azure.KeyVault.location
       description: Key Vault location.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.properties.sku.family
+    - contextPath: Azure.KeyVault.tags
+      description: Resource tags.
+    - contextPath: Azure.KeyVault.properties.sku.family
       description: SKU family name.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.properties.sku.name
+    - contextPath: Azure.KeyVault.properties.sku.name
       description: SKU name to specify whether the key vault is a standard vault or a premium vault.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.properties.tenantId
+    - contextPath: Azure.KeyVault.properties.tenantId
       description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.tenantId
+    - contextPath: Azure.KeyVault.properties.accessPolicies
+      description: An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
+    - contextPath: Azure.KeyVault.properties.accessPolicies.tenantId
       description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.objectId
+    - contextPath: Azure.KeyVault.properties.accessPolicies.objectId
       description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys
+    - contextPath: Azure.KeyVault.properties.accessPolicies.permissions.keys
       description: Permissions to keys.
-      type: Unknown
-    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets
+    - contextPath: Azure.KeyVault.properties.accessPolicies.permissions.secrets
       description: Permissions to secrets.
-      type: Unknown
-    - contextPath: AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates
+    - contextPath: Azure.KeyVault.properties.accessPolicies.permissions.certificates
       description: Permissions to certificates.
-      type: Unknown
-    - contextPath: AzureKeyVault.KeyVault.properties.enabledForDeployment
+    - contextPath: Azure.KeyVault.properties.accessPolicies.permissions.storage
+      description: Permissions to storage accounts.
+    - contextPath: Azure.KeyVault.properties.enabledForDeployment
       description: Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault.
       type: Boolean
-    - contextPath: AzureKeyVault.KeyVault.properties.enabledForDiskEncryption
+    - contextPath: Azure.KeyVault.properties.enabledForDiskEncryption
       description: Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.
       type: Boolean
-    - contextPath: AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment
+    - contextPath: Azure.KeyVault.properties.enabledForTemplateDeployment
       description: Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault.
       type: Boolean
-    - contextPath: AzureKeyVault.KeyVault.properties.vaultUri
+    - contextPath: Azure.KeyVault.properties.enableSoftDelete
+      description: Property to specify whether the 'soft delete' functionality is enabled for this key vault.
+      type: Boolean
+    - contextPath: Azure.KeyVault.properties.enablePurgeProtection
+      description: Property to specify whether the 'purge protection' functionality is enabled for this key vault.
+      type: Boolean
+    - contextPath: Azure.KeyVault.properties.enableRbacAuthorization
+      description: Property to specify whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions.
+      type: Boolean
+    - contextPath: Azure.KeyVault.properties.vaultUri
       description: The URI of the vault for performing operations on keys and secrets.
       type: String
-    - contextPath: AzureKeyVault.KeyVault.properties.provisioningState
+    - contextPath: Azure.KeyVault.properties.provisioningState
       description: The current provisioning state.
       type: String
+    - contextPath: Azure.KeyVault.properties.privateEndpointConnections
+      description: List of private endpoint connections associated with the key vault.
+    - contextPath: Azure.KeyVault.properties.networkAcls
+      description: Rules governing the accessibility of the key vault from specific network locations.
+    - contextPath: Azure.KeyVault.properties.networkAcls.bypass
+      description: Tells what traffic can bypass network rules.
+      type: String
+    - contextPath: Azure.KeyVault.properties.networkAcls.defaultAction
+      description: The default action when no rules match from ipRules and virtualNetworkRules.
+      type: String
+    - contextPath: Azure.KeyVault.properties.networkAcls.ipRules
+      description: The list of IP address rules.
+    - contextPath: Azure.KeyVault.properties.networkAcls.virtualNetworkRules
+      description: The list of virtual network rules.
   - arguments:
     - description: Server name.
       name: server_name
@@ -1186,7 +1602,6 @@ script:
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.useServerDefault
       description: Whether to use the default server policy.
-      type: Unknown
     - contextPath: Azure.SQL.DBThreatPolicy.databaseName
       description: The name of the database that the threat policy is related to.
       type: String

@@ -6,7 +6,6 @@ import subprocess
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
-import time
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -135,20 +134,10 @@ and resource group "{resource_group_name}" was not found.')
             raise
         
         
-    def get_current_storage_account(self, subscription_id: str, resource_group_name: str, name: str) -> dict:
-        try:
-            full_url=(
-                f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
-                f"/providers/Microsoft.Storage/storageAccounts/{name}"
-            )
-            params = {"api-version": API_VERSION}
-            return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
-        except Exception:
-            return {}
             
             
     @logger
-    def storage_account_create_update_request(self, subscription_id: str, resource_group_name: str, args: dict) -> dict:
+    def storage_account_update_request(self, subscription_id: str, resource_group_name: str, args: dict) -> dict:
         """
             Send the user arguments for the create/update account in the request body to the API.
         Args:
@@ -199,6 +188,7 @@ and resource group "{resource_group_name}" was not found.')
             }
         })
         
+        
         json_data_args = remove_empty_elements(json_data_args)
         
         return self.ms_client.http_request(
@@ -219,8 +209,8 @@ and resource group "{resource_group_name}" was not found.')
         self, subscription_id: str,
         resource_group_name: str,
         account_name: str,
-        delete_rentention_policy_enabled: str,
-        delete_rentention_policy_days: str
+        delete_rentention_policy_enabled: str | None,
+        delete_rentention_policy_days: str | None
     ) -> dict:
         """
         Updates the delete retention policy settings for the Blob service of a given Azure Storage account.
@@ -250,11 +240,12 @@ and resource group "{resource_group_name}" was not found.')
         data = remove_empty_elements(data)
         return self.ms_client.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
 
-    def create_policy_assignment(self, name, policy_definition_id, display_name, parameters, description, subscription_id):
+    def create_policy_assignment(self, name, policy_definition_id, display_name, parameters, description, scope):
         full_url=(
-                f"{PREFIX_URL}{subscription_id}"
+                f"{PREFIX_URL}{scope}"
                 f"/providers/Microsoft.Authorization/policyAssignments/{name}"
             )
+        print(full_url)
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
     
         data = {
@@ -267,8 +258,9 @@ and resource group "{resource_group_name}" was not found.')
             }
         }
         ### for getting policyDefinitionId run the line below
-        # print(self.ms_client.http_request(method="GET", url_suffix="/providers/Microsoft.Authorization/policyDefinitions", params=params))
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        print(self.ms_client.http_request(method="GET", url_suffix=f"/providers/Microsoft.Authorization/policyAssignments/{name}", params=params))
+        # print(self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params))
+        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
     
     def set_postgres_config(self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str,
                             source: str, value: str):
@@ -295,13 +287,23 @@ and resource group "{resource_group_name}" was not found.')
         params = {"api-version": WEBAPP_API_VERSION}
         data = {
             "properties":
-            {
-                "http20Enabled": http20_enabled,
-                "remoteDebuggingEnabled": remote_debugging_enabled,
-                "minTlsVersion":min_tls_version
-            }
+                {
+                    "http20Enabled": http20_enabled,
+                    "remoteDebuggingEnabled": remote_debugging_enabled,
+                    "minTlsVersion":min_tls_version
+                }
         }
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+    
+    
+    def get_webapp_auth(self, name, subscription_id, resource_group_name):
+        full_url=(
+            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
+        )
+        params = {"api-version": WEBAPP_API_VERSION}
+        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+    
     
     def update_webapp_auth(self, name, subscription_id, resource_group_name, enabled):
         full_url=(
@@ -315,8 +317,10 @@ and resource group "{resource_group_name}" was not found.')
                 "enabled": enabled
             }
         }
+        data = remove_empty_elements(data)
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
+
     def resource_update(self, resource_id, allow_blob_public_access, location, account_type):
         #### should check it
         full_url=(
@@ -368,28 +372,14 @@ and resource group "{resource_group_name}" was not found.')
             f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         )
         params = {"api-version": MONITOR_API_VERSION}
-        # data = {
-        #     "location": "",
-        #     "properties":
-        #     {
-        #         "retentionPolicy": {
-        #             "days": retention_policy_days,
-        #             "enabled": retention_policy_enabled
-        #         },
-        #         "locations": [
-        #             "global"
-        #         ],
-        #         "categories": [
-        #             "Write",
-        #             "Delete",
-        #             "Action"
-        #         ]
-        #     }
-        # }
         data = {
             "location": "",
-            "tags": {},
-            "properties": {
+            "properties":
+            {
+                "retentionPolicy": {
+                    "days": retention_policy_days,
+                    "enabled": retention_policy_enabled
+                },
                 "locations": [
                     "global"
                 ],
@@ -397,15 +387,29 @@ and resource group "{resource_group_name}" was not found.')
                     "Write",
                     "Delete",
                     "Action"
-                ],
-                "retentionPolicy": {
-                    "enabled": True,
-                    "days": 3
-                },
-                "storageAccountId": "/subscriptions/df602c9c-7aa0-407d-a6fb-eb20c8bd1192/resourceGroups/JohnKemTest/providers/Microsoft.Storage/storageAccounts/johnkemtest8162",
-                "serviceBusRuleId": ""
+                ]
             }
         }
+        # data = {
+        #     "location": "",
+        #     "tags": {},
+        #     "properties": {
+        #         "locations": [
+        #             "global"
+        #         ],
+        #         "categories": [
+        #             "Write",
+        #             "Delete",
+        #             "Action"
+        #         ],
+        #         "retentionPolicy": {
+        #             "enabled": True,
+        #             "days": 3
+        #         },
+        #         "storageAccountId": "/subscriptions/df602c9c-7aa0-407d-a6fb-eb20c8bd1192/resourceGroups/JohnKemTest/providers/Microsoft.Storage/storageAccounts/johnkemtest8162",
+        #         "serviceBusRuleId": ""
+        #     }
+        # }
         data = remove_empty_elements(data)
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
@@ -449,7 +453,7 @@ and resource group "{resource_group_name}" was not found.')
             },
             "properties": {
                 "clientCertEnabled": client_cert_enabled,
-                "httpsOnly": https_only
+                "httpsOnly": https_only,
             }
         }
         data = remove_empty_elements(data)
@@ -705,7 +709,7 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
 
 
 
-def storage_account_create_update_command(client: AzureClient, params: dict, args: dict) -> Union[CommandResults, str]:
+def storage_account_update_command(client: AzureClient, params: dict, args: dict) -> Union[CommandResults, str]:
     """
         Creates or updates a given storage account.
     Args:
@@ -716,13 +720,11 @@ def storage_account_create_update_command(client: AzureClient, params: dict, arg
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
-    # if both are passed as arguments, the command arguments will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    
-    # current_storage_account = client.get_current_storage_account(subscription_id, resource_group_name, args.get("account_name", ""))
-    response = client.storage_account_create_update_request(
+    # subscription_id = args.get("subscription_id")
+    # resource_group_name = args.get("resource_group_name")
+    response = client.storage_account_update_request(
         subscription_id=subscription_id, resource_group_name=resource_group_name, args=args
     )
     if not response.text:
@@ -768,8 +770,10 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    delete_rentention_policy_enabled = args.get("delete_rentention_policy_enabled", "")
-    delete_rentention_policy_days = args.get("delete_rentention_policy_days", "")
+    # subscription_id = args.get("subscription_id")
+    # resource_group_name = args.get("resource_group_name")
+    delete_rentention_policy_enabled = args.get("delete_rentention_policy_enabled")
+    delete_rentention_policy_days = args.get("delete_rentention_policy_days")
     account_name = args.get("account_name", "")
    
     response = client.storage_blob_service_properties_set_request(
@@ -808,12 +812,12 @@ def create_policy_assignment_command(client: AzureClient, params: dict, args: di
         CommandResults: The command results in MD table and context data.
     """
     name = args.get("name")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    scope = args.get("scope")
     policy_definition_id : str = args.get("policy_definition_id", "")
     display_name = args.get("display_name", "")
     parameters = json.loads(args.get("parameters", "{}"))
     description = args.get("description", "")
-    response = client.create_policy_assignment(name, policy_definition_id, display_name, parameters, description, subscription_id)
+    response = client.create_policy_assignment(name, policy_definition_id, display_name, parameters, description, scope)
     outputs = [
         {
             "Name": response.get("name"),
@@ -856,12 +860,21 @@ def set_postgres_config_command(client: AzureClient, params: dict, args: dict):
     source = args.get("source", "")
     value = args.get("value", "")
     client.set_postgres_config(server_name, subscription_id, resource_group_name, configuration_name, source, value)
-
     return CommandResults(
         readable_output=f"Updated the configuration {configuration_name} of the server {server_name}."
     )
 
 def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
+    """
+        Sets WebApp configurations.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     name = args.get("name")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
@@ -869,13 +882,12 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
     remote_debugging_enabled = args.get("remote_debugging_enabled", "")
     min_tls_version = args.get("min_tls_version", "")
     response = client.set_webapp_config(name, subscription_id, resource_group_name, http20_enabled, remote_debugging_enabled, min_tls_version)
-    print(response)
     outputs = [
         {
             "Name": response.get("name"),
-            "Http20 Enabled": response.get("properties", {}).get("http20Enabled", ""),
-            "Remote Debugging Enabled": response.get("properties", {}).get("remoteDebuggingEnabled", ""),
-            "Min Tls Version": response.get("properties", {}).get("minTlsVersion", ""),
+            "Http20 Enabled": response.get("properties", {}).get("http20Enabled", "") if http20_enabled else None,
+            "Remote Debugging Enabled": response.get("properties", {}).get("remoteDebuggingEnabled", "") if remote_debugging_enabled else None,
+            "Min Tls Version": response.get("properties", {}).get("minTlsVersion", "") if min_tls_version else None,
             "ID": response.get("id"),
         }
     ]
@@ -886,7 +898,7 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.WebApp.Configuration",
+        outputs_prefix="Azure.WebAppConfig",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -898,12 +910,13 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     enabled = args.get("enabled", "")
+    current = client.get_webapp_auth(name, subscription_id, resource_group_name)
+    current["properties"]["enabled"] = enabled if enabled else current.get("properties", {}).get("enabled")
     response = client.update_webapp_auth(name, subscription_id, resource_group_name, enabled)
-    print(response)
     outputs = [
         {
             "Name": response.get("name"),
-            "Enabled": response.get("properties", {}).get("enabled", ""),
+            "Enabled": response.get("properties", {}).get("enabled", "") if enabled else None,
             "ID": response.get("id")
         }
     ]
@@ -914,7 +927,7 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.WebApp.Auth",
+        outputs_prefix="Azure.WebAppAuth",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -950,15 +963,27 @@ def resource_update_command(client: AzureClient, params: dict, args: dict):
     )
     
     
-def flexible_server_param_set_command(client: AzureClient, params: dict, args: dict):
+def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, args: dict):
+    """
+        Updates a configuration of MySQL server.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     configuration_name = args.get("configuration_name")
     server_name = args.get("server_name", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     source = args.get("source", "")
     value = args.get("value", "")
-    response = client.flexible_server_param_set(server_name, configuration_name, subscription_id, resource_group_name, source, value)
-    print(response)
+    client.flexible_server_param_set(server_name, configuration_name, subscription_id, resource_group_name, source, value)
+    return CommandResults(
+        readable_output=f"Updated the configuration {configuration_name} of the server {server_name}."
+    )
     
     
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
@@ -997,7 +1022,7 @@ def disk_update_command(client: AzureClient, params: dict, args: dict):
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="Azure.Compute.Disk",
+        outputs_prefix="Azure.Disk",
         outputs_key_field="id",
         outputs=response,
         readable_output=md,
@@ -1016,15 +1041,15 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         {
             "Name": response.get("name"),
             "ID": response.get("id"),
-            "Identity": response.get("identity", {}),
+            "Identity": response.get("identity", {}) if identity_type else None,
             "Https Only": response.get("properties", {}).get("httpsOnly") if https_only else None,
-            "Client Cert Enabled": response.get("properties", {}).get("clientCertEnabled") if client_cert_enabled else None
+            "Client Cert Enabled": response.get("properties", {}).get("clientCertEnabled") if client_cert_enabled else None,
         }
     ]
     md = tableToMarkdown(
         f"Updated the Web App {name}.",
         outputs,
-        ["Name", "ID", "Identity", "Https Only","Client Cert Enabled"],
+        ["Name", "ID", "Identity", "Https Only", "Client Cert Enabled"],
         removeNull=True,
     )
     return CommandResults(
@@ -1073,6 +1098,29 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
     response = client.acr_update(subscription_id, resource_group_name, registry_name, allow_exports, public_network_access, 
                                  anonymous_pull_enabled, authentication_as_arm_policy)
     print(response)
+    outputs = [
+        {
+            # "Name": response.get("name"),
+            "ID": response.get("id"),
+            "Allow Exports": response.get("identity", {}) if allow_exports else None,
+            "Public Network Access": response.get("properties", {}).get("publicNetworkAccess") if public_network_access else None,
+            "Client Cert Enabled": response.get("properties", {}).get("anonymousPullEnabled") if anonymous_pull_enabled else None,
+            "Authentication As Arm Policy": response.get("properties", {}).get("policies", {}).get("azureADAuthenticationAsArmPolicy", {}).get("status") if authentication_as_arm_policy else None,
+        }
+    ]
+    md = tableToMarkdown(
+        f"Updated the container registry {registry_name}.",
+        outputs,
+        ["Name", "ID", "Allow Exports", "Public Network Access", "Client Cert Enabled", "Authentication As Arm Policy"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.ACR",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=md,
+        raw_response=outputs,
+    )
     
 def postgres_server_update_command(client: AzureClient, params: dict, args: dict):
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
@@ -1083,12 +1131,21 @@ def postgres_server_update_command(client: AzureClient, params: dict, args: dict
     
     
 def update_key_vault_command(client: AzureClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """
+        updates a key vault.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    vault_name = args.get("vault_name")
+    vault_name = args.get("vault_name", "")
     enable_soft_delete = args.get("enable_soft_delete")
     enable_purge_protection = args.get("enable_purge_protection")
-    
     response = client.update_key_vault_request(
         subscription_id,
         resource_group_name,
@@ -1272,16 +1329,16 @@ def main():
     
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,
-            "azure-storage-account-create-update": storage_account_create_update_command,
+            "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-webapp-config-set": set_webapp_config_command,
             "azure-webapp-auth-update": update_webapp_auth_command,
             # "azure-resource-update": resource_update_command, ### maybe we use storage_account_create_update for this
-            "azure-mysql-flexible-server-param-set": flexible_server_param_set_command,
+            "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
-            "azure-compute-disk-update": disk_update_command,
+            "azure-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
             "azure-postgres-server-update": postgres_server_update_command,
