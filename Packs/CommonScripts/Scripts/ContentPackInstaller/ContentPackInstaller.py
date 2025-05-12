@@ -173,7 +173,6 @@ class ContentPackInstaller:
                 data = {'packs': packs_to_install, 'ignoreWarnings': True}
                 args = {'uri': '/contentpacks/marketplace/install', 'body': data}
                 status, res = self._call_execute_command("core-api-post", args)
-                demisto.debug(f'Got the next responses {status=} {res=}')
 
             else:  # install packs for XSOAR 6.X
                 args = {"packs_to_install": str(pack_payload)}
@@ -185,7 +184,6 @@ class ContentPackInstaller:
             else:
                 self.installed_packs[pack_id] = packs_names_versions[pack_id]
                 self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore
-
 
     def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:  # pragma: no cover
         """Retrieves the packs' dependencies from the marketplace data.
