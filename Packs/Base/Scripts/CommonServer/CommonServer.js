@@ -1951,7 +1951,6 @@ function getDemistoVersion() {
         throw 'Failed retriving server version - ' + ex;
     }
 }
-
 /**
  * Compare between two versions.
  * @param {string} a - version.
