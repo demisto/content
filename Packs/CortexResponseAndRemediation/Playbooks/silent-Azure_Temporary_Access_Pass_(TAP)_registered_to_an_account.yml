@@ -489,7 +489,7 @@ tasks:
     task:
       id: 5d9b1ad7-50d0-4aff-87b1-779670549092
       version: -1
-      name: Check if any unhandled detection matches TAP granter
+      name: Check related detections for TAP granter
       description: Checks if there are any unhandled risks for the user in Azure.
       type: condition
       iscommand: false
