@@ -5,6 +5,7 @@ from http import HTTPStatus
 from datetime import date
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoBaseClient
+
 DEFAULT_MAX_RETRIES: int = 5
 
 # =================== #
@@ -16,11 +17,12 @@ class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
         if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
+            return obj.strftime("%Y-%m-%dT%H:%M:%S")
         elif isinstance(obj, date):
-            return obj.strftime('%Y-%m-%d')
+            return obj.strftime("%Y-%m-%d")
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
+
 
 # TODO - Shall we put it in AWSApiModule? ***
 
@@ -115,35 +117,51 @@ def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_
         raise ValueError(
             "Please provide exactly one of the following arguments: resources_vpc_config, logging or authentication_mode."
         )
+
+
 # ***
 
 
 def get_client(params, command_args):
-    aws_role_name = params.get('role_name')
-    account_id = command_args.get('account_id')
-    aws_role_arn = f'arn:aws:iam::{account_id}:role/{aws_role_name}'
+    aws_role_name = params.get("role_name")
+    account_id = command_args.get("account_id")
+    aws_role_arn = f"arn:aws:iam::{account_id}:role/{aws_role_name}"
+    demisto.debug(f"Using AWS Role ARN: {aws_role_arn}")
 
-    aws_role_session_name = params.get('role_session_name') or 'cortex-session'
-    aws_role_session_duration = params.get('session_duration')
+    aws_role_session_name = params.get("role_session_name") or "cortex-session"
+    aws_role_session_duration = params.get("session_duration")
 
-    verify_certificate = not argToBoolean(params.get('insecure', 'True'))
-    timeout = params.get('timeout')
-    retries = params.get('retries') or DEFAULT_MAX_RETRIES
+    verify_certificate = not argToBoolean(params.get("insecure", "True"))
+    timeout = params.get("timeout")
+    retries = params.get("retries") or DEFAULT_MAX_RETRIES
 
-    sts_endpoint_url = params.get('sts_endpoint_url')
-    endpoint_url = params.get('endpoint_url')
+    sts_endpoint_url = params.get("sts_endpoint_url")
+    endpoint_url = params.get("endpoint_url")
 
     aws_default_region = aws_role_policy = aws_access_key_id = aws_secret_access_key = aws_session_token = None
 
-    return AWSClient(
-        aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-        aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-        retries, aws_session_token, sts_endpoint_url, endpoint_url
+    client = AWSClient(
+        aws_default_region,
+        aws_role_arn,
+        aws_role_session_name,
+        aws_role_session_duration,
+        aws_role_policy,
+        aws_access_key_id,
+        aws_secret_access_key,
+        verify_certificate,
+        timeout,
+        retries,
+        aws_session_token,
+        sts_endpoint_url,
+        endpoint_url,
     )
+    print(client.__dict__)
+    print(f"####################### ")
+    return client
 
 
 def get_client_session(aws_client: AWSClient, service: str, args: Dict[str, Any]) -> BotoBaseClient:
-    return aws_client.aws_session(service=service, region=args.get('region'))
+    return aws_client.aws_session(service=service, region=args.get("region"))
 
 
 class S3:
@@ -152,48 +170,48 @@ class S3:
     """
 
     def __init__(self, aws_client: AWSClient, args: Dict[str, Any]):
-        self.client_session: BotoBaseClient = get_client_session(aws_client, 's3', args)
+        self.client_session: BotoBaseClient = get_client_session(aws_client, "s3", args)
 
     def put_public_access_block_command(self, args: Dict[str, Any]) -> CommandResults:
         try:
-            response = self.client_session.get_public_access_block(Bucket=args.get('bucket'))
-            public_access_block_configuration = response.get('PublicAccessBlockConfiguration')
+            response = self.client_session.get_public_access_block(Bucket=args.get("bucket"))
+            public_access_block_configuration = response.get("PublicAccessBlockConfiguration")
             kwargs = {
-                'BlockPublicAcls': public_access_block_configuration.get('BlockPublicAcls'),
-                'IgnorePublicAcls': public_access_block_configuration.get('IgnorePublicAcls'),
-                'BlockPublicPolicy': public_access_block_configuration.get('BlockPublicPolicy'),
-                'RestrictPublicBuckets': public_access_block_configuration.get('RestrictPublicBuckets')
+                "BlockPublicAcls": public_access_block_configuration.get("BlockPublicAcls"),
+                "IgnorePublicAcls": public_access_block_configuration.get("IgnorePublicAcls"),
+                "BlockPublicPolicy": public_access_block_configuration.get("BlockPublicPolicy"),
+                "RestrictPublicBuckets": public_access_block_configuration.get("RestrictPublicBuckets"),
             }
         except Exception:
-            return CommandResults(readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket")
+            return CommandResults(
+                readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket"
+            )
 
         command_args: dict[str, Union[bool, None]] = {
-            'BlockPublicAcls':
-                argToBoolean(args.get('block_public_acls')) if 'block_public_acls' in args else None,
-            'IgnorePublicAcls':
-                argToBoolean(args.get('ignore_public_acls')) if 'ignore_public_acls' in args else None,
-            'BlockPublicPolicy':
-                argToBoolean(args.get('block_public_policy')) if 'block_public_policy' in args else None,
-            'RestrictPublicBuckets':
-                argToBoolean(args.get('restrict_public_buckets')) if 'restrict_public_buckets' in args else None
+            "BlockPublicAcls": argToBoolean(args.get("block_public_acls")) if "block_public_acls" in args else None,
+            "IgnorePublicAcls": argToBoolean(args.get("ignore_public_acls")) if "ignore_public_acls" in args else None,
+            "BlockPublicPolicy": argToBoolean(args.get("block_public_policy")) if "block_public_policy" in args else None,
+            "RestrictPublicBuckets": argToBoolean(args.get("restrict_public_buckets"))
+            if "restrict_public_buckets" in args
+            else None,
         }
 
         remove_nulls_from_dictionary(command_args)
         for arg_key, arg_value in command_args.items():
             kwargs[arg_key] = arg_value
 
-        response = self.client_session.put_public_access_block(Bucket=args.get('bucket'),
-                                                               PublicAccessBlockConfiguration=kwargs)
+        response = self.client_session.put_public_access_block(Bucket=args.get("bucket"), PublicAccessBlockConfiguration=kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-            return CommandResults(
-                readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
-        return CommandResults(readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}")
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            return CommandResults(readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
+        return CommandResults(
+            readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+        )
 
     def put_bucket_acl_command(self, args: Dict[str, Any]) -> CommandResults:
-        acl, bucket = args.get('acl'), args.get('bucket')
+        acl, bucket = args.get("acl"), args.get("bucket")
         response = self.client_session.put_bucket_acl(Bucket=bucket, ACL=acl)
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(f"Successfully updated ACL for bucket {bucket} to '{acl}'")
         return CommandResults(
             f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
@@ -213,50 +231,38 @@ class S3:
         Returns:
             CommandResults: Results of the command execution
         """
-        bucket = args.get('bucket')
+        bucket = args.get("bucket")
 
         try:
             # Handle both options: full JSON configuration or individual parameters
-            if args.get('bucket-logging-status'):
+            if args.get("bucket-logging-status"):
                 try:
-                    bucket_logging_status = json.loads(args.get('bucket-logging-status'))
+                    bucket_logging_status = json.loads(args.get("bucket-logging-status"))
                 except json.JSONDecodeError:
                     return CommandResults(readable_output="Error: 'bucket-logging-status' must be a valid JSON string")
-            elif args.get('target-bucket'):
+            elif args.get("target-bucket"):
                 # Build configuration from individual parameters
                 bucket_logging_status = {
-                    "LoggingEnabled": {
-                        "TargetBucket": args.get('target-bucket'),
-                        "TargetPrefix": args.get('target_prefix', '')
-                    }
+                    "LoggingEnabled": {"TargetBucket": args.get("target-bucket"), "TargetPrefix": args.get("target_prefix", "")}
                 }
             else:
                 # If neither full config nor target bucket provided, disable logging
                 bucket_logging_status = {}
 
-            response = self.client_session.put_bucket_logging(
-                Bucket=bucket,
-                BucketLoggingStatus=bucket_logging_status
-            )
+            response = self.client_session.put_bucket_logging(Bucket=bucket, BucketLoggingStatus=bucket_logging_status)
 
-            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-                if bucket_logging_status.get('LoggingEnabled'):
-                    return CommandResults(
-                        readable_output=f"Successfully enabled logging for bucket {bucket}"
-                    )
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                if bucket_logging_status.get("LoggingEnabled"):
+                    return CommandResults(readable_output=f"Successfully enabled logging for bucket {bucket}")
                 else:
-                    return CommandResults(
-                        readable_output=f"Successfully disabled logging for bucket {bucket}"
-                    )
+                    return CommandResults(readable_output=f"Successfully disabled logging for bucket {bucket}")
 
             return CommandResults(
                 readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
             )
 
         except Exception as e:
-            return CommandResults(
-                readable_output=f"Failed to configure logging for bucket {bucket}. Error: {str(e)}"
-            )
+            return CommandResults(readable_output=f"Failed to configure logging for bucket {bucket}. Error: {str(e)}")
 
     def put_bucket_versioning_command(self, args: Dict[str, Any]) -> CommandResults:
         """
@@ -271,25 +277,17 @@ class S3:
         Returns:
             CommandResults: Results of the command execution
         """
-        bucket = args.get('bucket')
-        status = args.get('status')
-        mfa_delete = args.get('mfa_delete')
+        bucket = args.get("bucket")
+        status = args.get("status")
+        mfa_delete = args.get("mfa_delete")
 
-        versioning_configuration = {
-            'Status': status,
-            'MFADelete': mfa_delete
-        }
-
+        versioning_configuration = {"Status": status, "MFADelete": mfa_delete}
+        remove_nulls_from_dictionary(versioning_configuration)
         try:
-            response = self.client_session.put_bucket_versioning(
-                Bucket=bucket,
-                VersioningConfiguration=versioning_configuration
-            )
+            response = self.client_session.put_bucket_versioning(Bucket=bucket, VersioningConfiguration=versioning_configuration)
 
-            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-                return CommandResults(
-                    readable_output=f"Successfully updated versioning configuration for bucket {bucket}"
-                )
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                return CommandResults(readable_output=f"Successfully updated versioning configuration for bucket {bucket}")
             return CommandResults(
                 readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
             )
@@ -315,41 +313,41 @@ class IAM:
     """
 
     def __init__(self, aws_client: AWSClient, args: Dict[str, Any]):
-        self.client_session: BotoBaseClient = get_client_session(aws_client, 'iam', args)
+        self.client_session: BotoBaseClient = get_client_session(aws_client, "iam", args)
 
     def get_account_password_policy_command(self, args: Dict[str, Any]) -> CommandResults:
         response = self.client_session.get_account_password_policy()
-        data = json.loads(json.dumps(response['PasswordPolicy'], cls=DatetimeEncoder))
+        data = json.loads(json.dumps(response["PasswordPolicy"], cls=DatetimeEncoder))
 
-        human_readable = tableToMarkdown('AWS IAM Account Password Policy', data)
+        human_readable = tableToMarkdown("AWS IAM Account Password Policy", data)
 
-        return CommandResults(outputs=data, readable_output=human_readable, outputs_prefix='AWS.IAM.PasswordPolicy',
-                              outputs_key_field='AccountId')
+        return CommandResults(
+            outputs=data, readable_output=human_readable, outputs_prefix="AWS.IAM.PasswordPolicy", outputs_key_field="AccountId"
+        )
 
     def update_account_password_policy_command(self, args: Dict[str, Any]) -> CommandResults:
-
         try:
             response = self.client_session.get_account_password_policy()
-            kwargs = response['PasswordPolicy']
+            kwargs = response["PasswordPolicy"]
         except Exception:
             return CommandResults(
                 readable_output=f"Couldn't check current account password policy for account: {args.get('account_id')}"
             )
 
         # ExpirePasswords is part of the response but cannot be included in the request
-        if 'ExpirePasswords' in kwargs:
-            kwargs.pop('ExpirePasswords')
+        if "ExpirePasswords" in kwargs:
+            kwargs.pop("ExpirePasswords")
 
         command_args: Dict[str, tuple[str, Callable[[Any], Any]]] = {
-            'minimum_password_length': ('MinimumPasswordLength', arg_to_number),
-            'require_symbols': ('RequireSymbols', argToBoolean),
-            'require_numbers': ('RequireNumbers', argToBoolean),
-            'require_uppercase_characters': ('RequireUppercaseCharacters', argToBoolean),
-            'require_lowercase_characters': ('RequireLowercaseCharacters', argToBoolean),
-            'allow_users_to_change_password': ('AllowUsersToChangePassword', argToBoolean),
-            'max_password_age': ('MaxPasswordAge', arg_to_number),
-            'password_reuse_prevention': ('PasswordReusePrevention', arg_to_number),
-            'hard_expiry': ('HardExpiry', argToBoolean),
+            "minimum_password_length": ("MinimumPasswordLength", arg_to_number),
+            "require_symbols": ("RequireSymbols", argToBoolean),
+            "require_numbers": ("RequireNumbers", argToBoolean),
+            "require_uppercase_characters": ("RequireUppercaseCharacters", argToBoolean),
+            "require_lowercase_characters": ("RequireLowercaseCharacters", argToBoolean),
+            "allow_users_to_change_password": ("AllowUsersToChangePassword", argToBoolean),
+            "max_password_age": ("MaxPasswordAge", arg_to_number),
+            "password_reuse_prevention": ("PasswordReusePrevention", arg_to_number),
+            "hard_expiry": ("HardExpiry", argToBoolean),
         }
 
         remove_nulls_from_dictionary(args)
@@ -359,34 +357,35 @@ class IAM:
 
         response = self.client_session.update_account_password_policy(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(
                 readable_output=f"Successfully updated account password policy for account: {args.get('account_id')}"
             )
         else:
-            return CommandResults(readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}")
+            return CommandResults(
+                readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}"
+            )
 
 
 class EC2:
-    """ 
+    """
     Elastic Compute Cloud
     """
 
     def __init__(self, aws_client: AWSClient, args: Dict[str, Any]):
-        self.client_session: BotoBaseClient = get_client_session(aws_client, 'ec2', args)
+        self.client_session: BotoBaseClient = get_client_session(aws_client, "ec2", args)
 
     def instance_metadata_options_modify_command(self, args: Dict[str, Any]) -> CommandResults:
-
         kwargs = {
-            'InstanceId': args.get('instance_id'),
-            'HttpTokens': args.get('http_tokens'),
-            'HttpEndpoint': args.get('http_endpoint')
+            "InstanceId": args.get("instance_id"),
+            "HttpTokens": args.get("http_tokens"),
+            "HttpEndpoint": args.get("http_endpoint"),
         }
         remove_nulls_from_dictionary(kwargs)
 
         response = self.client_session.modify_instance_metadata_options(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully updated EC2 instance metadata for {args.get('instance_id')}")
         else:
             return CommandResults(readable_output=f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}")
@@ -545,7 +544,7 @@ class RDS:
     """
 
     def __init__(self, aws_client: AWSClient, args: Dict[str, Any]):
-        self.client_session: BotoBaseClient = get_client_session(aws_client, 'rds', args)
+        self.client_session: BotoBaseClient = get_client_session(aws_client, "rds", args)
 
     def modify_db_cluster_command(self, args: Dict[str, Any]) -> CommandResults:
         """
@@ -562,13 +561,13 @@ class RDS:
         """
         try:
             kwargs = {
-                'DBClusterIdentifier': args.get('db-cluster-identifier'),
+                "DBClusterIdentifier": args.get("db-cluster-identifier"),
             }
 
             # Optional parameters
             optional_params = {
-                'DeletionProtection': 'deletion-protection',
-                'EnableIAMDatabaseAuthentication': 'enable-iam-database-authentication'
+                "DeletionProtection": "deletion-protection",
+                "EnableIAMDatabaseAuthentication": "enable-iam-database-authentication",
             }
 
             for param, arg_name in optional_params.items():
@@ -577,8 +576,8 @@ class RDS:
 
             response = self.client_session.modify_db_cluster(**kwargs)
 
-            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-                db_cluster = response.get('DBCluster', {})
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                db_cluster = response.get("DBCluster", {})
                 readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
 
                 if db_cluster:
@@ -587,9 +586,9 @@ class RDS:
 
                 return CommandResults(
                     readable_output=readable_output,
-                    outputs_prefix='AWS.RDS.DBCluster',
+                    outputs_prefix="AWS.RDS.DBCluster",
                     outputs=db_cluster,
-                    outputs_key_field='DBClusterIdentifier'
+                    outputs_key_field="DBClusterIdentifier",
                 )
             else:
                 return CommandResults(
@@ -597,9 +596,7 @@ class RDS:
                 )
 
         except Exception as e:
-            return CommandResults(
-                readable_output=f"Error modifying DB cluster: {str(e)}"
-            )
+            return CommandResults(readable_output=f"Error modifying DB cluster: {str(e)}")
 
     def modify_db_cluster_snapshot_attribute_command(self, args: Dict[str, Any]) -> CommandResults:
         """
@@ -619,25 +616,27 @@ class RDS:
         """
         try:
             kwargs = {
-                'DBClusterSnapshotIdentifier': args.get('db-cluster-snapshot-identifier'),
-                'AttributeName': args.get('attribute-name'),
+                "DBClusterSnapshotIdentifier": args.get("db-cluster-snapshot-identifier"),
+                "AttributeName": args.get("attribute-name"),
             }
 
             # Optional parameters
-            if 'values-to-add' in args:
-                kwargs['ValuesToAdd'] = argToList(args.get('values-to-add'))
+            if "values-to-add" in args:
+                kwargs["ValuesToAdd"] = argToList(args.get("values-to-add"))
 
-            if 'values-to-remove' in args:
-                kwargs['ValuesToRemove'] = argToList(args.get('values-to-remove'))
+            if "values-to-remove" in args:
+                kwargs["ValuesToRemove"] = argToList(args.get("values-to-remove"))
 
             remove_nulls_from_dictionary(kwargs)
 
             response = self.client_session.modify_db_cluster_snapshot_attribute(**kwargs)
 
-            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-                attributes = response.get('DBClusterSnapshotAttributesResult', {})
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                attributes = response.get("DBClusterSnapshotAttributesResult", {})
 
-                readable_output = f"Successfully modified DB cluster snapshot attribute for {args.get('db-cluster-snapshot-identifier')}"
+                readable_output = (
+                    f"Successfully modified DB cluster snapshot attribute for {args.get('db-cluster-snapshot-identifier')}"
+                )
 
                 if attributes:
                     readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:"
@@ -645,9 +644,9 @@ class RDS:
 
                 return CommandResults(
                     readable_output=readable_output,
-                    outputs_prefix='AWS.RDS.DBClusterSnapshotAttributes',
+                    outputs_prefix="AWS.RDS.DBClusterSnapshotAttributes",
                     outputs=attributes,
-                    outputs_key_field='DBClusterSnapshotIdentifier'
+                    outputs_key_field="DBClusterSnapshotIdentifier",
                 )
             else:
                 return CommandResults(
@@ -655,26 +654,24 @@ class RDS:
                 )
 
         except Exception as e:
-            return CommandResults(
-                readable_output=f"Error modifying DB cluster snapshot attribute: {str(e)}"
-            )
+            return CommandResults(readable_output=f"Error modifying DB cluster snapshot attribute: {str(e)}")
 
     def modify_db_instance_command(self, args: Dict[str, Any]) -> CommandResults:
         try:
             kwargs = {
-                'DBInstanceIdentifier': args.get('db-instance-identifier'),
+                "DBInstanceIdentifier": args.get("db-instance-identifier"),
             }
 
             # Optional parameters
             optional_params = {
-                'PubliclyAccessible': 'publicly-accessible',
-                'CopyTagsToSnapshot': 'copy-tags-to-snapshot',
-                'BackupRetentionPeriod': 'backup-retention-period',
-                'EnableIAMDatabaseAuthentication': 'enable-iam-database-authentication',
-                'DeletionProtection': 'deletion-protection',
-                'AutoMinorVersionUpgrade': 'auto-minor-version-upgrade',
-                'MultiAZ': 'multi-az',
-                'ApplyImmediately': 'apply-immediately'
+                "PubliclyAccessible": "publicly-accessible",
+                "CopyTagsToSnapshot": "copy-tags-to-snapshot",
+                "BackupRetentionPeriod": "backup-retention-period",
+                "EnableIAMDatabaseAuthentication": "enable-iam-database-authentication",
+                "DeletionProtection": "deletion-protection",
+                "AutoMinorVersionUpgrade": "auto-minor-version-upgrade",
+                "MultiAZ": "multi-az",
+                "ApplyImmediately": "apply-immediately",
             }
 
             for param, arg_name in optional_params.items():
@@ -683,8 +680,8 @@ class RDS:
 
             response = self.client_session.modify_db_instance(**kwargs)
 
-            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-                db_instance = response.get('DBInstance', {})
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                db_instance = response.get("DBInstance", {})
                 readable_output = f"Successfully modified DB instance {args.get('db-instance-identifier')}"
 
                 if db_instance:
@@ -693,9 +690,9 @@ class RDS:
 
                 return CommandResults(
                     readable_output=readable_output,
-                    outputs_prefix='AWS.RDS.DBInstance',
+                    outputs_prefix="AWS.RDS.DBInstance",
                     outputs=db_instance,
-                    outputs_key_field='DBInstanceIdentifier'
+                    outputs_key_field="DBInstanceIdentifier",
                 )
             else:
                 return CommandResults(
@@ -703,22 +700,20 @@ class RDS:
                 )
 
         except Exception as e:
-            return CommandResults(
-                readable_output=f"Error modifying DB instance: {str(e)}"
-            )
+            return CommandResults(readable_output=f"Error modifying DB instance: {str(e)}")
 
     def modify_db_snapshot_attribute_command(self, args: Dict[str, Any]) -> CommandResults:
         kwargs = {
-            'DBSnapshotIdentifier': args.get('db_snapshot_identifier'),
-            'AttributeName': args.get('attribute_name'),
-            'ValuesToAdd': argToList(args.get('values_to_add')) if 'values_to_add' in args else None,
-            'ValuesToRemove': argToList(args.get('values_to_remove')) if 'values_to_remove' in args else None
+            "DBSnapshotIdentifier": args.get("db_snapshot_identifier"),
+            "AttributeName": args.get("attribute_name"),
+            "ValuesToAdd": argToList(args.get("values_to_add")) if "values_to_add" in args else None,
+            "ValuesToRemove": argToList(args.get("values_to_remove")) if "values_to_remove" in args else None,
         }
         remove_nulls_from_dictionary(kwargs)
 
         response = self.client_session.modify_db_snapshot_attribute(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             # Return the changed fields in the command results:
             return CommandResults(
                 readable_output=f"Successfully modified DB snapshot attribute for {args.get('db_snapshot_identifier')}:\n{tableToMarkdown('Modified', kwargs)}"
@@ -736,7 +731,7 @@ class EKS:
     """
 
     def __init__(self, aws_client: AWSClient, args: Dict[str, Any]):
-        self.client_session: BotoBaseClient = get_client_session(aws_client, 'eks', args)
+        self.client_session: BotoBaseClient = get_client_session(aws_client, "eks", args)
 
     def update_cluster_config_command(self, args: Dict[str, Any]) -> CommandResults:
         """
@@ -796,13 +791,13 @@ class EKS:
 
 
 def test_module(params, command_args) -> str:
-    if test_account_id := params.get('test_account_id'):
-        command_args['account_id'] = test_account_id
+    if test_account_id := params.get("test_account_id"):
+        command_args["account_id"] = test_account_id
     else:
         return "Please provide Test AWS Account ID for the Integration instance to run test"
 
     aws_client = get_client(params, command_args)
-    client_session = aws_client.aws_session(service='sts')
+    client_session = aws_client.aws_session(service="sts")
     if client_session:
         return "ok"
     else:
@@ -811,50 +806,42 @@ def test_module(params, command_args) -> str:
 
 COMMANDS: dict[str, Callable] = {
     # S3
-    "aws-s3-public-access-block-put":
-        lambda aws_client, args: S3(aws_client, args).put_public_access_block_command(args),
-    "aws-s3-bucket-acl-put":
-        lambda aws_client, args: S3(aws_client, args).put_bucket_acl_command(args),
-    "aws-s3-bucket-logging-put":
-        lambda aws_client, args: S3(aws_client, args).put_bucket_logging_command(args),
-    "aws-s3-bucket-versioning-put":
-        lambda aws_client, args: S3(aws_client, args).put_bucket_versioning_command(args),
-    "aws-s3-bucket-policy-put":
-        lambda aws_client, args: S3(aws_client, args).put_bucket_policy_command(args),
-
+    "aws-s3-public-access-block-put": lambda aws_client, args: S3(aws_client, args).put_public_access_block_command(args),
+    "aws-s3-bucket-acl-put": lambda aws_client, args: S3(aws_client, args).put_bucket_acl_command(args),
+    "aws-s3-bucket-logging-put": lambda aws_client, args: S3(aws_client, args).put_bucket_logging_command(args),
+    "aws-s3-bucket-versioning-put": lambda aws_client, args: S3(aws_client, args).put_bucket_versioning_command(args),
+    "aws-s3-bucket-policy-put": lambda aws_client, args: S3(aws_client, args).put_bucket_policy_command(args),
     # IAM
-    "aws-iam-account-password-policy-get":
-        lambda aws_client, args: IAM(aws_client, args).get_account_password_policy_command(args),
-    "aws-iam-account-password-policy-update":
-        lambda aws_client, args: IAM(aws_client, args).update_account_password_policy_command(args),
-
+    "aws-iam-account-password-policy-get": lambda aws_client, args: IAM(aws_client, args).get_account_password_policy_command(
+        args
+    ),
+    "aws-iam-account-password-policy-update": lambda aws_client, args: IAM(
+        aws_client, args
+    ).update_account_password_policy_command(args),
     # EC2
-    "aws-ec2-instance-metadata-options-modify":
-        lambda aws_client, args: EC2(aws_client, args).instance_metadata_options_modify_command(args),
-    "aws-ec2-security-group-ingress-revoke":
-        lambda aws_client, args: EC2(aws_client, args).revoke_security_group_ingress_command(args),
-    "aws-ec2-security-group-egress-revoke":
-        lambda aws_client, args: EC2(aws_client, args).revoke_security_group_egress_command(args),
-    "aws-ec2-snapshot-permission-modify":
-        lambda aws_client, args: EC2(aws_client, args).modify_snapshot_permission_command(args),
-    "aws-ec2-instance-attribute-modify":
-        lambda aws_client, args: EC2(aws_client, args).modify_instance_attribute_command(args),
-    "aws-ec2-image-attribute-modify":
-        lambda aws_client, args: EC2(aws_client, args).modify_image_attribute_command(args),
-
+    "aws-ec2-instance-metadata-options-modify": lambda aws_client, args: EC2(
+        aws_client, args
+    ).instance_metadata_options_modify_command(args),
+    "aws-ec2-security-group-ingress-revoke": lambda aws_client, args: EC2(aws_client, args).revoke_security_group_ingress_command(
+        args
+    ),
+    "aws-ec2-security-group-egress-revoke": lambda aws_client, args: EC2(aws_client, args).revoke_security_group_egress_command(
+        args
+    ),
+    "aws-ec2-snapshot-permission-modify": lambda aws_client, args: EC2(aws_client, args).modify_snapshot_permission_command(args),
+    "aws-ec2-instance-attribute-modify": lambda aws_client, args: EC2(aws_client, args).modify_instance_attribute_command(args),
+    "aws-ec2-image-attribute-modify": lambda aws_client, args: EC2(aws_client, args).modify_image_attribute_command(args),
     # RDS
-    "aws-rds-db-cluster-modify":
-        lambda aws_client, args: RDS(aws_client, args).modify_db_cluster_command(args),
-    "aws-rds-db-cluster-snapshot-attribute-modify":
-        lambda aws_client, args: RDS(aws_client, args).modify_db_cluster_snapshot_attribute_command(args),
-    "aws-rds-db-instance-modify":
-        lambda aws_client, args: RDS(aws_client, args).modify_db_instance_command(args),
-    "aws-rds-db-snapshot-attribute-modify":
-        lambda aws_client, args: RDS(aws_client, args).modify_db_snapshot_attribute_command(args),
-
+    "aws-rds-db-cluster-modify": lambda aws_client, args: RDS(aws_client, args).modify_db_cluster_command(args),
+    "aws-rds-db-cluster-snapshot-attribute-modify": lambda aws_client, args: RDS(
+        aws_client, args
+    ).modify_db_cluster_snapshot_attribute_command(args),
+    "aws-rds-db-instance-modify": lambda aws_client, args: RDS(aws_client, args).modify_db_instance_command(args),
+    "aws-rds-db-snapshot-attribute-modify": lambda aws_client, args: RDS(aws_client, args).modify_db_snapshot_attribute_command(
+        args
+    ),
     # EKS
-    "aws-eks-cluster-config-update":
-        lambda aws_client, args: EKS(aws_client, args).update_cluster_config_command(args)
+    "aws-eks-cluster-config-update": lambda aws_client, args: EKS(aws_client, args).update_cluster_config_command(args),
 }
 
 # =================== #
@@ -863,7 +850,6 @@ COMMANDS: dict[str, Callable] = {
 
 
 def main():
-
     params = demisto.params()
     command = demisto.command()
     command_args = demisto.args()
