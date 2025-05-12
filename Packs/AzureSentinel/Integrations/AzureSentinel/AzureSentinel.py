@@ -65,7 +65,8 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = (
     "\nNotice that in the current Azure Sentinel API version, the retention period for GetEntityByID is 30 days."
 )
 
-DEFAULT_LIMIT = 20
+DEFAULT_LIMIT = 50
+FETCH_MAX_LIMIT = 20
 
 DEFAULT_SOURCE = "Microsoft Sentinel"
 
@@ -911,7 +912,7 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         A CommandResult object with the array of incidents as output.
     """
     filter_expression = args.get("filter")
-    limit = min(DEFAULT_LIMIT, int(args.get("limit")))
+    limit = min(DEFAULT_LIMIT, int(args.get("limit"))) if is_fetch_incidents else min(200, int(args.get("limit")))
     next_link = args.get("next_link", "")
 
     if next_link:
@@ -1368,7 +1369,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
     """
     # Get the last fetch details, if exist
-    limit = demisto.params().get("limit", DEFAULT_LIMIT)
+    limit = demisto.params().get("limit", FETCH_MAX_LIMIT)
     last_fetch_time = last_run.get("last_fetch_time")
     last_fetch_ids = last_run.get("last_fetch_ids", [])
     last_incident_number = last_run.get("last_incident_number")
