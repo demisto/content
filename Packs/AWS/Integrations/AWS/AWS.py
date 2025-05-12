@@ -7,7 +7,7 @@ from collections.abc import Callable
 from botocore.client import BaseClient as BotoBaseClient
 
 DEFAULT_MAX_RETRIES: int = 5
-
+DEFAULT_SESSION_NAME = "cortex-session"
 # =================== #
 # Helpers
 # =================== #
@@ -123,22 +123,58 @@ def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_
 
 
 def get_client(params, command_args):
-    aws_role_name = params.get("role_name")
+    """
+    Creates an AWS client with the provided authentication parameters.
+    
+    Args:
+        params (dict): Integration parameters containing AWS credentials and configuration.
+        command_args (dict): Command arguments which may include account_id for role assumption.
+        
+    Returns:
+        AWSClient: Configured AWS client object.
+        
+    Raises:
+        DemistoException: If required parameters for authentication are missing.
+    """
+    
+    # Role assumption parameters
     account_id = command_args.get("account_id")
-    aws_role_arn = f"arn:aws:iam::{account_id}:role/{aws_role_name}"
-    demisto.debug(f"Using AWS Role ARN: {aws_role_arn}")
+    aws_role_name = params.get("role_name")
+    aws_role_arn = None
+    
+    if account_id and aws_role_name:
+        aws_role_arn = f"arn:aws:iam::{account_id}:role/{aws_role_name}"
+        demisto.debug(f"Using AWS Role ARN: {aws_role_arn}")
+    elif None in [aws_role_name, account_id]:
+        demisto.debug(f"account_id not provided, role assumption may not work correctly")
+    
+    # Credentials
+    aws_access_key_id = params.get('access_key_id')
+    aws_secret_access_key = params.get('secret_access_key')
+    
+    # TODO - Remove
+    if aws_access_key_id and aws_secret_access_key:
+        aws_role_arn = None
+        
+    aws_default_region = command_args.get('region') or params.get('region')
 
-    aws_role_session_name = params.get("role_session_name") or "cortex-session"
+    # Session configuration
+    aws_role_session_name = params.get("role_session_name") or DEFAULT_SESSION_NAME
     aws_role_session_duration = params.get("session_duration")
-
+    aws_role_policy = None
+    aws_session_token = None
+    
+    # Connection parameters
     verify_certificate = not argToBoolean(params.get("insecure", "True"))
-    timeout = params.get("timeout")
-    retries = params.get("retries") or DEFAULT_MAX_RETRIES
-
+    timeout =  params.get("timeout")
+    retries = int(params.get("retries", DEFAULT_MAX_RETRIES))
+    
+    # Endpoint configuration
     sts_endpoint_url = params.get("sts_endpoint_url")
     endpoint_url = params.get("endpoint_url")
-
-    aws_default_region = aws_role_policy = aws_access_key_id = aws_secret_access_key = aws_session_token = None
+    
+    demisto.debug(f"Creating AWS client with region: {aws_default_region}, " 
+                 f"endpoint: {endpoint_url}, retries: {retries}")
 
     client = AWSClient(
         aws_default_region,
@@ -155,13 +191,13 @@ def get_client(params, command_args):
         sts_endpoint_url,
         endpoint_url,
     )
-    print(client.__dict__)
-    print(f"####################### ")
     return client
 
-
 def get_client_session(aws_client: AWSClient, service: str, args: Dict[str, Any]) -> BotoBaseClient:
-    return aws_client.aws_session(service=service, region=args.get("region"))
+    print("RRRRRR")
+    session = aws_client.aws_session(service=service, region=args.get("region"))
+    print("TALALAL")
+    return session
 
 
 class S3:
@@ -863,6 +899,7 @@ def main():
         if command == "test-module":
             return_results(test_module(params, command_args))
         elif command_function := COMMANDS.get(command):
+            
             return_results(command_function(aws_client, command_args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

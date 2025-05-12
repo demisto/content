@@ -31,44 +31,64 @@ configuration:
   advanced: true
   required: false
   additionalinfo: Max role session duration
+- display: Default AWS Access Key ID
+  name: access_key_id
+  additionalinfo: "* TODO * - Requires 'Default AWS Secret Access Key' to be provided."
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Default AWS Secret Access Key
+  name: secret_access_key
+  additionalinfo: "* TODO * -  Requires 'Default AWS Access Key' to be provided."
+  type: 9
+  section: Connect
+  advanced: true
+  required: false
+- display: Default AWS region.
+  name: region
+  required: false
+  additionalinfo: "* TODO *"
 - display: Timeout
   name: timeout
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
 - display: Retries
-  name: retries
-  defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  name: retries
   type: 0
   section: Connect
   advanced: true
   required: false
+  defaultvalue: 5
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
   section: Connect
   advanced: true
   required: false
+  additionalinfo: "* TODO *"
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
   type: 0
   section: Connect
   advanced: true
   required: false
+  additionalinfo: "* TODO *"
 - display: AWS STS Regional Endpoints
-  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
-  options:
-  - legacy
-  - regional
   type: 15
   section: Connect
   advanced: true
   required: false
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  options:
+  - legacy
+  - regional
 - display: Role name for cross-organization account access
   name: access_role_name
   type: 0
@@ -76,21 +96,23 @@ configuration:
   advanced: true
   required: false
   additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided.
+
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
   required: false
+
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
   required: false
+
 script:
   commands:
-
   - name: aws-s3-public-access-block-put
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     arguments:
@@ -161,12 +183,11 @@ script:
       predefined:
       - 'true'
       - 'false'
-
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs.
     arguments:
-    - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+    - description: 'Will be taken from the "account" field on the asset/issue.'
+      name: account_id
       required: true
     - name: region
       description: 'Will be taken from the "region" field on the asset/issue.'
@@ -221,11 +242,11 @@ script:
   - name: aws-s3-bucket-logging-put
     description: Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
     arguments:
-    - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+    - description: 'Will be taken from the "account" field on the asset/issue.'
+      name: account_id
       required: true
-    - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+    - description: 'Will be taken from the "region" field on the asset/issue.'
+      name: region
       required: true
       auto: PREDEFINED
       predefined:
@@ -261,25 +282,25 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - name: bucket
-      description: 'The name of the bucket for which to set the logging parameters.'
+    - description: 'The name of the bucket for which to set the logging parameters.'
+      name: bucket
       required: true
-    - name: bucket-logging-status
-      description: 'Container for logging status information (Target bucket and prefix)  ⚠️ Perhaps set those as command arguments  e.g. {     "LoggingEnabled": {         "TargetBucket": "my-log-storage",         "TargetPrefix": "logs/"     } }.'
+    - description: 'Container for logging status information (Target bucket and prefix)  ⚠️ Perhaps set those as command arguments  e.g. {     "LoggingEnabled": {         "TargetBucket": "my-log-storage",         "TargetPrefix": "logs/"     } }.'
+      name: bucket-logging-status
       required: true
-    - name: target-bucket
-      description: 'TODO.'
+    - description: 'TODO.'
+      name: target-bucket
     - name: target_prefix
       description: 'TODO.'
 
   - name: aws-s3-bucket-versioning-put
-    description: Sets the versioning state of an existing bucket. 
+    description: Sets the versioning state of an existing bucket.
     arguments:
-    - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+    - description: 'Will be taken from the "account" field on the asset/issue.'
+      name: account_id
       required: true
-    - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+    - description: 'Will be taken from the "region" field on the asset/issue.'
+      name: region
       required: true
       auto: PREDEFINED
       predefined:
@@ -315,20 +336,19 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - name: bucket
-      description: The name of the bucket for which to set the logging parameters.
+    - description: The name of the bucket for which to set the logging parameters.
+      name: bucket
       required: true
-    - name: mfa_delete
-      description: Specifies whether MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
+    - description: Specifies whether MFA delete is enabled in the bucket versioning configuration. This element is only returned if the bucket has been configured with MFA delete. If the bucket has never been so configured, this element is not returned.
+      name: mfa_delete
       required: false
-    - name: status
+    - auto: PREDEFINED
       description: The versioning state of the bucket.
-      required: true
-      auto: PREDEFINED
+      name: status
       predefined:
-      - Enabled
-      - Suspended
-
+      - 'Enabled'
+      - 'Suspended'
+      required: true
   - name: aws-rds-db-cluster-modify
     description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
     arguments:
@@ -843,7 +863,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.3265837
+  dockerimage: demisto/boto3py3:1.0.0.3273145
 fromversion: 8.10.0
 tests:
 - No tests (auto formatted)
+supportsquickactions: true
+isCloudProviderIntegration: true
