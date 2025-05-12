@@ -26,7 +26,7 @@ VERIFY_CERTIFICATE = not demisto.params().get("unsecure", False)
 # Support Credentials
 USERNAME = demisto.params()["credentials"]["identifier"]
 PASSWORD = demisto.params()["credentials"]["password"]
-PAT = demisto.params().get("pat")
+PERSONAL_ACCESS_TOKEN = demisto.params().get("pat")
 HEADERS = {
     "Content-Type": "application/json",
     "Accept": "application/json",
@@ -62,7 +62,11 @@ def http_request(
             return res
 
         return_error(
-            f"Failed to execute command.\nURL: {full_url}, Status Code: {res.status_code}\nResponse: {res.text}"
+            f"Failed to execute command.\n"
+            f"URL: {res.url}\n"
+            f"Params: {params}\n"
+            f"Status Code: {res.status_code}\n"
+            f"Response: {res.text}"
         )
 
     if is_test:
@@ -255,7 +259,7 @@ def get_pdf(page_id):
     params = {"pageId": page_id}
 
     full_url = SERVER + "/spaces/flyingpdf/pdfpageexport.action"
-    res = http_request("GET", full_url, None, params, resp_type="content")
+    res = http_request("GET", full_url, None, params=params, resp_type="content")
 
     return res
 
@@ -300,7 +304,7 @@ def get_page_as_pdf_command():
     """
     Confluence Get Page as PDF command method
     """
-    page_id = demisto.args().get("page_id")
+    page_id = demisto.args().get("pageid")
     pdf = get_pdf(page_id)
 
     demisto.results(fileResult(f"Confluence_page_{page_id}.pdf", pdf))
