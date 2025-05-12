@@ -1,5 +1,6 @@
 
 ## Configure Cymulate on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -11,32 +12,39 @@
     * __Incident type__
     * __Show only 'penatrated' incidents__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. cymulate_get_incident_info
+
 ### 1. cymulate_get_incident_info
+
 ---
 This commands return full cymulate's incidents information
+
 ##### Base Command
 
 `cymulate_get_incident_info`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | attack_id | The attack unique identifier | Required |
 | incident_id | The incident unique identifier | Required |
 | module_type | The Cymulate module_type | Required |
 
-
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Cymulate.Incident.Payload | String | The Cymulatepayload that generated this incident |
 | Cymulate.Incident.Name | String | The name of the incident |
@@ -53,9 +61,11 @@ This commands return full cymulate's incidents information
 | Cymulate.Incident.Sha256 | String | The incident ID |
 
 ##### Command Example
+
 ```!cymulate_get_incident_info attack_id="5e71e8cc7df91d6b4d460943" incident_id="9bc6591182ca40f3a3bfb3b46e3be025" module_type="IMMEDIATE_THREATS"```
 
 ##### Context Example
+
 ```
 {
     "data": [
@@ -136,7 +146,9 @@ This commands return full cymulate's incidents information
 ```
 
 ##### Human Readable Output
+
 ### Cymulate Resutls
+
 |ID|Name|Status|Attack Type|Attack Vector|Timestamp|
 |---|---|---|---|---|---|
 | cd61447e5fc76ebd2a35de651f211ff9 | Chinese Hackers Use New Malware to Backdoor Microsoft SQL Servers | Penetrated | Antivirus | Endpoint Security | 25/12/2019 15:03:15 |
@@ -155,23 +167,23 @@ This commands return full cymulate's incidents information
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| attack_id | The attack unique identifier. | Required | 
-| module_type | The Cymulate module_type. | Required | 
-| incident_id | The incident unique identifier. | Optional | 
+| attack_id | The attack unique identifier. | Required |
+| module_type | The Cymulate module_type. | Required |
+| incident_id | The incident unique identifier. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Cymulate.Incident.Payload | String | The Cymulate payload that generated this incident | 
-| Cymulate.Incident.Name | String | The name of the incident | 
-| Cymulate.Incident.Status | String | The attack status \(Enum Values- Penetrated, Blocked, Dead\) | 
-| Cymulate.Incident.ID | String | The incident ID | 
-| Cymulate.Incident.Md5 | String | The Md5 | 
-| Cymulate.Incident.Attack_Vector | String | The Attack Vector | 
-| Cymulate.Incident.Sha256 | String | The Sha256  | 
-| Cymulate.Incident.Sha1 | String | The Sha1 | 
-| Cymulate.Incident.Cymulate_ID | String | The cymulate's ID of the incident | 
-| Cymulate.Incident.Attack_ID | String | The cymulate's Attack ID of the incident | 
+| Cymulate.Incident.Payload | String | The Cymulate payload that generated this incident |
+| Cymulate.Incident.Name | String | The name of the incident |
+| Cymulate.Incident.Status | String | The attack status \(Enum Values- Penetrated, Blocked, Dead\) |
+| Cymulate.Incident.ID | String | The incident ID |
+| Cymulate.Incident.Md5 | String | The Md5 |
+| Cymulate.Incident.Attack_Vector | String | The Attack Vector |
+| Cymulate.Incident.Sha256 | String | The Sha256  |
+| Cymulate.Incident.Sha1 | String | The Sha1 |
+| Cymulate.Incident.Cymulate_ID | String | The cymulate's ID of the incident |
+| Cymulate.Incident.Attack_ID | String | The cymulate's Attack ID of the incident |

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 20230215 of Lumu
 
 ## Configure Lumu in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Maximum number of incidents to fetch every time |  | False |
@@ -22,39 +21,44 @@ This integration was integrated and tested with version 20230215 of Lumu
 | Mirror tags | Comment and files that will be marked with this tag will be pushed into Lumu. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### lumu-retrieve-labels
+
 ***
 Get a paginated list of all the labels created for the company and its details such as id, name and business relevance. The items are sorted by the label id in ascending order.
-
 
 #### Base Command
 
 `lumu-retrieve-labels`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page requested. | Optional | 
-| limit | items limit requested. Default is 10. | Optional | 
-
+| page | page requested. | Optional |
+| limit | items limit requested. Default is 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveLabels.labels.id | Number | label id | 
-| Lumu.RetrieveLabels.labels.name | String | label name | 
-| Lumu.RetrieveLabels.labels.relevance | Number | label relevance | 
-| Lumu.RetrieveLabels.paginationInfo.page | Number | current page | 
-| Lumu.RetrieveLabels.paginationInfo.items | Number | current items | 
-| Lumu.RetrieveLabels.paginationInfo.next | Number | next page | 
-| Lumu.RetrieveLabels.paginationInfo.prev | Number | previous page | 
+| Lumu.RetrieveLabels.labels.id | Number | label id |
+| Lumu.RetrieveLabels.labels.name | String | label name |
+| Lumu.RetrieveLabels.labels.relevance | Number | label relevance |
+| Lumu.RetrieveLabels.paginationInfo.page | Number | current page |
+| Lumu.RetrieveLabels.paginationInfo.items | Number | current items |
+| Lumu.RetrieveLabels.paginationInfo.next | Number | next page |
+| Lumu.RetrieveLabels.paginationInfo.prev | Number | previous page |
 
 #### Command example
+
 ```!lumu-retrieve-labels```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -124,6 +128,7 @@ Get a paginated list of all the labels created for the company and its details s
 #### Human Readable Output
 
 >### Labels
+>
 >|Id|Name|Relevance|
 >|---|---|---|
 >| 51 | Mi Ofi | 1 |
@@ -138,40 +143,43 @@ Get a paginated list of all the labels created for the company and its details s
 >| 331 | VA 3.1.3 | 1 |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 ### lumu-retrieve-a-specific-label
+
 ***
 Get details such as id, name and business relevance from a specific label.
 
 | `{label-id}` | ID of the specific label |
 |---|---|
 
-
 #### Base Command
 
 `lumu-retrieve-a-specific-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| label_id | label id requested. | Required | 
-
+| label_id | label id requested. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveASpecificLabel.id | Number | label id | 
-| Lumu.RetrieveASpecificLabel.name | String | label name | 
-| Lumu.RetrieveASpecificLabel.relevance | Number | label relevance | 
+| Lumu.RetrieveASpecificLabel.id | Number | label id |
+| Lumu.RetrieveASpecificLabel.name | String | label name |
+| Lumu.RetrieveASpecificLabel.relevance | Number | label relevance |
 
 #### Command example
+
 ```!lumu-retrieve-a-specific-label label_id=51```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -187,53 +195,56 @@ Get details such as id, name and business relevance from a specific label.
 #### Human Readable Output
 
 >### Label
+>
 >|Id|Name|Relevance|
 >|---|---|---|
 >| 51 | Mi Ofi | 1 |
 
-
 ### lumu-retrieve-incidents
+
 ***
 Get a paginated list of incidents for the company. The items are listed by the most recent.
-
 
 #### Base Command
 
 `lumu-retrieve-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page requested. | Optional | 
-| limit | items limit requested. Default is 10. | Optional | 
-| fromdate | from date in ISO string format <br/> e.g. 2023 january 1st, 14:40:14 - 2023-01-01T14:40:14.000Z <br/> e.g. 2023 july 4th, 05:10 - 2023-07-04T05:10:00.000Z. | Optional | 
-| todate | from date in ISO string format <br/> e.g. 2023 january 1st, 14:40:14 - 2023-01-01T14:40:14.000Z <br/> e.g. 2023 july 4th, 05:10 - 2023-07-04T05:10:00.000Z. | Optional | 
-| status | choose status: open,muted,closed. Possible values are: open, muted, closed. | Optional | 
-| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional | 
-| labels | choose labels. | Optional | 
-
+| page | page requested. | Optional |
+| limit | items limit requested. Default is 10. | Optional |
+| fromdate | from date in ISO string format <br/> e.g. 2023 january 1st, 14:40:14 - 2023-01-01T14:40:14.000Z <br/> e.g. 2023 july 4th, 05:10 - 2023-07-04T05:10:00.000Z. | Optional |
+| todate | from date in ISO string format <br/> e.g. 2023 january 1st, 14:40:14 - 2023-01-01T14:40:14.000Z <br/> e.g. 2023 july 4th, 05:10 - 2023-07-04T05:10:00.000Z. | Optional |
+| status | choose status: open,muted,closed. Possible values are: open, muted, closed. | Optional |
+| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional |
+| labels | choose labels. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveIncidents.items.id | String | Lumu incident id | 
-| Lumu.RetrieveIncidents.items.timestamp | Date | Lumu timestamp | 
-| Lumu.RetrieveIncidents.items.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.RetrieveIncidents.items.status | String | Lumu status | 
-| Lumu.RetrieveIncidents.items.contacts | Number | Lumu contacts | 
-| Lumu.RetrieveIncidents.items.adversaries | String | umu adversaries | 
-| Lumu.RetrieveIncidents.items.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.RetrieveIncidents.items.labelDistribution | Number | Lumu incident labels  | 
-| Lumu.RetrieveIncidents.items.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.RetrieveIncidents.items.lastContact | Date | Lumu lastContact | 
-| Lumu.RetrieveIncidents.items.unread | Boolean | Lumu unread | 
-| Lumu.RetrieveIncidents.paginationInfo.page | Number | current page | 
-| Lumu.RetrieveIncidents.paginationInfo.items | Number | current items | 
+| Lumu.RetrieveIncidents.items.id | String | Lumu incident id |
+| Lumu.RetrieveIncidents.items.timestamp | Date | Lumu timestamp |
+| Lumu.RetrieveIncidents.items.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.RetrieveIncidents.items.status | String | Lumu status |
+| Lumu.RetrieveIncidents.items.contacts | Number | Lumu contacts |
+| Lumu.RetrieveIncidents.items.adversaries | String | umu adversaries |
+| Lumu.RetrieveIncidents.items.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.RetrieveIncidents.items.labelDistribution | Number | Lumu incident labels  |
+| Lumu.RetrieveIncidents.items.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.RetrieveIncidents.items.lastContact | Date | Lumu lastContact |
+| Lumu.RetrieveIncidents.items.unread | Boolean | Lumu unread |
+| Lumu.RetrieveIncidents.paginationInfo.page | Number | current page |
+| Lumu.RetrieveIncidents.paginationInfo.items | Number | current items |
 
 #### Command example
+
 ```!lumu-retrieve-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -478,6 +489,7 @@ Get a paginated list of incidents for the company. The items are listed by the m
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
@@ -492,121 +504,127 @@ Get a paginated list of incidents for the company. The items are listed by the m
 >| portaconexao8.top | portaconexao8.top | Malware | 2 | Malware hash: 55e57c52cd5e1dcfad4e9bcf0eb2f3a5 | 2023-02-11T18:40:09.087Z | false | 89658e80-aa3b-11ed-9fd0-e5fb50c818f6 | 147: 2 | 2023-02-11T18:40:09.087Z | closed | 2023-02-15T13:26:02.357Z | 2023-02-11T18:40:20.328Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 #### Command example
+
 ```!lumu-retrieve-incidents page=2 status=open adversary-types=Malware labels=1580```
+
 #### Human Readable Output
 
 >### Incidents
+>
 >**No entries.**
 >
 >### paginationInfo
+>
 >|Items|Page|Prev|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 ### lumu-retrieve-a-specific-incident-details
+
 ***
 Get details of a specific Incident.
 
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
-
 #### Base Command
 
 `lumu-retrieve-a-specific-incident-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu id requested. | Required | 
-
+| lumu_incident_id | Lumu id requested. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveASpecificIncidentDetails.id | String | Lumu id | 
-| Lumu.RetrieveASpecificIncidentDetails.timestamp | Date | Lumu timestamp | 
-| Lumu.RetrieveASpecificIncidentDetails.isUnread | Boolean | Lumu isUnread | 
-| Lumu.RetrieveASpecificIncidentDetails.contacts | Number | Lumu contacts | 
-| Lumu.RetrieveASpecificIncidentDetails.adversaryId | String | Lumu adversaryId | 
-| Lumu.RetrieveASpecificIncidentDetails.adversaries | String | Lumu adversaries | 
-| Lumu.RetrieveASpecificIncidentDetails.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.RetrieveASpecificIncidentDetails.description | String | Lumu description | 
-| Lumu.RetrieveASpecificIncidentDetails.labelDistribution | Number | Lumu incident label | 
-| Lumu.RetrieveASpecificIncidentDetails.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContact | Date | Lumu lastContact | 
-| Lumu.RetrieveASpecificIncidentDetails.actions.datetime | Date | Lumu actions.datetime | 
-| Lumu.RetrieveASpecificIncidentDetails.actions.userId | Number | Lumu actions.userId | 
-| Lumu.RetrieveASpecificIncidentDetails.actions.action | String | Lumu actions.action | 
-| Lumu.RetrieveASpecificIncidentDetails.actions.comment | String | Lumu comment | 
-| Lumu.RetrieveASpecificIncidentDetails.status | String | Lumu status | 
-| Lumu.RetrieveASpecificIncidentDetails.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.uuid | String | Lumu firstContactDetails.uuid | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.datetime | Date | Lumu firstContactDetails.datetime | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.host | String | Lumu firstContactDetails.host | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.types | String | Lumu firstContactDetails.types | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.details | String | Lumu firstContactDetails.details | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.endpointIp | String | Lumu firstContactDetails.endpointIp | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.endpointName | String | Lumu firstContactDetails.endpointName | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.label | Number | Lumu firstContactDetails.label | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceType | String | Lumu firstContactDetails.sourceType | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceId | String | Lumu firstContactDetails.sourceId | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.type | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.question.type | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.name | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.question.name | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.class | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.question.class | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.responseCode | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.responseCode | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.name | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.name | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.type | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.type | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.class | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.class | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl | Number | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.data | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.data | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.opCode | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.opCode | 
-| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.isPlayback | Boolean | Lumu firstContactDetails.isPlayback | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.uuid | String | Lumu lastContactDetails.uuid | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.datetime | Date | Lumu lastContactDetails.datetime | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.host | String | Lumu lastContactDetails.host | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.types | String | Lumu lastContactDetails.types | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.details | String | Lumu lastContactDetails.details | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.endpointIp | String | Lumu lastContactDetails.endpointIp | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.endpointName | String | Lumu lastContactDetails.endpointName | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.label | Number | Lumu lastContactDetails.label | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceType | String | Lumu lastContactDetails.sourceType | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceId | String | Lumu lastContactDetails.sourceId | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.type | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.question.type | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.name | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.question.name | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.class | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.question.class | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.responseCode | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.responseCode | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.name | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.name | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.type | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.type | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.class | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.class | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl | Number | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.data | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.data | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.opCode | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.opCode | 
-| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.isPlayback | Boolean | Lumu lastContactDetails.isPlayback | 
+| Lumu.RetrieveASpecificIncidentDetails.id | String | Lumu id |
+| Lumu.RetrieveASpecificIncidentDetails.timestamp | Date | Lumu timestamp |
+| Lumu.RetrieveASpecificIncidentDetails.isUnread | Boolean | Lumu isUnread |
+| Lumu.RetrieveASpecificIncidentDetails.contacts | Number | Lumu contacts |
+| Lumu.RetrieveASpecificIncidentDetails.adversaryId | String | Lumu adversaryId |
+| Lumu.RetrieveASpecificIncidentDetails.adversaries | String | Lumu adversaries |
+| Lumu.RetrieveASpecificIncidentDetails.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.RetrieveASpecificIncidentDetails.description | String | Lumu description |
+| Lumu.RetrieveASpecificIncidentDetails.labelDistribution | Number | Lumu incident label |
+| Lumu.RetrieveASpecificIncidentDetails.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.RetrieveASpecificIncidentDetails.lastContact | Date | Lumu lastContact |
+| Lumu.RetrieveASpecificIncidentDetails.actions.datetime | Date | Lumu actions.datetime |
+| Lumu.RetrieveASpecificIncidentDetails.actions.userId | Number | Lumu actions.userId |
+| Lumu.RetrieveASpecificIncidentDetails.actions.action | String | Lumu actions.action |
+| Lumu.RetrieveASpecificIncidentDetails.actions.comment | String | Lumu comment |
+| Lumu.RetrieveASpecificIncidentDetails.status | String | Lumu status |
+| Lumu.RetrieveASpecificIncidentDetails.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.uuid | String | Lumu firstContactDetails.uuid |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.datetime | Date | Lumu firstContactDetails.datetime |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.host | String | Lumu firstContactDetails.host |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.types | String | Lumu firstContactDetails.types |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.details | String | Lumu firstContactDetails.details |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.endpointIp | String | Lumu firstContactDetails.endpointIp |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.endpointName | String | Lumu firstContactDetails.endpointName |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.label | Number | Lumu firstContactDetails.label |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceType | String | Lumu firstContactDetails.sourceType |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceId | String | Lumu firstContactDetails.sourceId |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.type | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.question.type |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.name | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.question.name |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.class | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.question.class |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.responseCode | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.responseCode |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data | Boolean | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.name | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.name |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.type | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.type |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.class | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.class |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl | Number | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.data | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.answers.data |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.opCode | String | Lumu firstContactDetails.sourceData.DNSPacketExtraInfo.opCode |
+| Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.isPlayback | Boolean | Lumu firstContactDetails.isPlayback |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.uuid | String | Lumu lastContactDetails.uuid |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.datetime | Date | Lumu lastContactDetails.datetime |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.host | String | Lumu lastContactDetails.host |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.types | String | Lumu lastContactDetails.types |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.details | String | Lumu lastContactDetails.details |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.endpointIp | String | Lumu lastContactDetails.endpointIp |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.endpointName | String | Lumu lastContactDetails.endpointName |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.label | Number | Lumu lastContactDetails.label |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceType | String | Lumu lastContactDetails.sourceType |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceId | String | Lumu lastContactDetails.sourceId |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.type | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.question.type |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.name | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.question.name |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.class | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.question.class |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.responseCode | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.responseCode |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data | Boolean | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.name | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.name |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.type | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.type |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.class | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.class |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl | Number | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.data | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.answers.data |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.opCode | String | Lumu lastContactDetails.sourceData.DNSPacketExtraInfo.opCode |
+| Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.isPlayback | Boolean | Lumu lastContactDetails.isPlayback |
 
 #### Command example
+
 ```!lumu-retrieve-a-specific-incident-details lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -709,11 +727,13 @@ Get details of a specific Incident.
 #### Human Readable Output
 
 >### Incident
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact Details|Has Playback Contacts|Id|Is Unread|Label Distribution|Last Contact|Last Contact Details|Status|Status Timestamp|Timestamp|Total Endpoints|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| activity.lumu.io | activity.lumu.io | Spam | 8 | Activity Test Query | uuid: 737f12d0-a7cf-11ed-972b-0f9b6b3c6ffd<br/>datetime: 2023-02-08T16:41:35.613Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 186.29.109.138<br/>endpointName: cd-ho<br/>label: 147<br/>sourceType: PublicResolver<br/>sourceId: 587ec9d348053ca03a58aeddeccb1b93<br/>sourceData: null<br/>isPlayback: false | false | 7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 | false | 147: 1<br/>2254: 1<br/>1885: 2<br/>989: 2<br/>0: 2 | 2023-02-15T16:59:47.142Z | uuid: 26fd6e60-ad52-11ed-8d57-0f9b6b8d54f0<br/>datetime: 2023-02-15T16:59:47.142Z<br/>host: activity.lumu.io<br/>types: Spam<br/>details: Activity Test Query<br/>endpointIp: 192.168.1.100<br/>endpointName: LUMU-100<br/>label: 0<br/>sourceType: custom_collector<br/>sourceId: 6d942a7a-d287-415e-9c09-3d6632a6a976<br/>sourceData: {"DNSQueryExtraInfo": {"queryType": "A"}}<br/>isPlayback: false | open | 2023-02-15T12:01:03.667Z | 2023-02-08T16:41:50.304Z | 6 |
 >
 >### Actions
+>
 >|Action|Comment|Datetime|User Id|
 >|---|---|---|---|
 >| comment | test comment | 2023-02-15T12:18:53.523Z | 6252 |
@@ -721,47 +741,49 @@ Get details of a specific Incident.
 >| unmute | from XSOAR Cortex 20230215_120059 , hmacsha256:7e909a46d09f7e2fe9f81b8dbb4e56f39f1ed760744ff9b6ca0d17ca31c5a4c4 | 2023-02-15T12:01:03.667Z | 0 |
 >| mute | from XSOAR Cortex 20230209_165814 at 1158, hmacsha256:ad2f2ce9951184230647f2feed5856d41fa75500ded13aed5bf78176d825e40b | 2023-02-09T16:58:14.536Z | 0 |
 
-
 ### lumu-retrieve-a-specific-incident-context
+
 ***
 Get details of a specific Incident.
 
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
-
 #### Base Command
 
 `lumu-retrieve-a-specific-incident-context`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu id requested. | Required | 
-| hash | Lumu hash type. | Optional | 
-
+| lumu_incident_id | Lumu id requested. | Required |
+| hash | Lumu hash type. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveASpecificIncidentContext.adversary_id | String | Lumu adversary_id | 
-| Lumu.RetrieveASpecificIncidentContext.currently_active | Boolean | Lumu currently_active | 
-| Lumu.RetrieveASpecificIncidentContext.deactivated_on | Date | Lumu deactivated_on | 
-| Lumu.RetrieveASpecificIncidentContext.mitre.details.tactic | String | Lumu mitre.details.tactic | 
-| Lumu.RetrieveASpecificIncidentContext.mitre.details.techniques | String | Lumu mitre.details.techniques | 
-| Lumu.RetrieveASpecificIncidentContext.mitre.matrix | String | Lumu mitre.matrix | 
-| Lumu.RetrieveASpecificIncidentContext.mitre.version | String | Lumu mitre.version | 
-| Lumu.RetrieveASpecificIncidentContext.related_files | String | Lumu related_files | 
-| Lumu.RetrieveASpecificIncidentContext.threat_details | String | Lumu threat_details | 
-| Lumu.RetrieveASpecificIncidentContext.threat_triggers | String | Lumu threat_triggers | 
-| Lumu.RetrieveASpecificIncidentContext.playbooks | String | Lumu playbooks | 
-| Lumu.RetrieveASpecificIncidentContext.external_resources | String | Lumu external_resources | 
-| Lumu.RetrieveASpecificIncidentContext.timestamp | Date | Lumu timestamp | 
+| Lumu.RetrieveASpecificIncidentContext.adversary_id | String | Lumu adversary_id |
+| Lumu.RetrieveASpecificIncidentContext.currently_active | Boolean | Lumu currently_active |
+| Lumu.RetrieveASpecificIncidentContext.deactivated_on | Date | Lumu deactivated_on |
+| Lumu.RetrieveASpecificIncidentContext.mitre.details.tactic | String | Lumu mitre.details.tactic |
+| Lumu.RetrieveASpecificIncidentContext.mitre.details.techniques | String | Lumu mitre.details.techniques |
+| Lumu.RetrieveASpecificIncidentContext.mitre.matrix | String | Lumu mitre.matrix |
+| Lumu.RetrieveASpecificIncidentContext.mitre.version | String | Lumu mitre.version |
+| Lumu.RetrieveASpecificIncidentContext.related_files | String | Lumu related_files |
+| Lumu.RetrieveASpecificIncidentContext.threat_details | String | Lumu threat_details |
+| Lumu.RetrieveASpecificIncidentContext.threat_triggers | String | Lumu threat_triggers |
+| Lumu.RetrieveASpecificIncidentContext.playbooks | String | Lumu playbooks |
+| Lumu.RetrieveASpecificIncidentContext.external_resources | String | Lumu external_resources |
+| Lumu.RetrieveASpecificIncidentContext.timestamp | Date | Lumu timestamp |
 
 #### Command example
+
 ```!lumu-retrieve-a-specific-incident-context lumu_incident_id=6eddaf40-938c-11ed-b0f8-a7e340234a4e hash=SHA256```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -829,36 +851,39 @@ Get details of a specific Incident.
 #### Human Readable Output
 
 >### Incident
+>
 >|Adversary _ Id|Currently _ Active|External _ Resources|Mitre|Playbooks|Threat _ Details|Threat _ Triggers|Timestamp|
 >|---|---|---|---|---|---|---|---|
 >| jits.ac.in | true | https:<span>//</span>blog.quosec.net/posts/grap_qakbot_navigation/,<br/>https:<span>//</span>unit42.paloaltonetworks.com/wireshark-tutorial-emotet-infection/,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-1/,<br/>https:<span>//</span>raw.githubusercontent.com/fboldewin/When-ransomware-hits-an-ATM-giant---The-Diebold-Nixdorf-case-dissected/main/When%20ransomware%20hits%20an%20ATM%20giant%20-%20The%20Diebold%20Nixdorf%20case%20dissected%20-%20Group-IB%20CyberCrimeCon2020.pdf,<br/>https:<span>//</span>malpedia.caad.fkie.fraunhofer.de/details/win.qakbot,<br/>https:<span>//</span>media.scmagazine.com/documents/225/bae_qbot_report_56053.pdf,<br/>https:<span>//</span>malwareandstuff.com/an-old-enemy-diving-into-qbot-part-3/,<br/>https:<span>//</span>www.cert.ssi.gouv.fr/uploads/CERTFR-2020-CTI-010.pdf,<br/>https:<span>//</span>urlhaus.abuse.ch/host/jits.ac.in/,<br/>https:<span>//</span>elis531989.medium.com/funtastic-packers-and-where-to-find-them-41429a7ef9a7,<br/>https:<span>//</span>research.checkpoint.com/2020/exploring-qbots-latest-attack-methods/,<br/>https:<span>//</span>www.vkremez.com/2018/07/lets-learn-in-depth-reversing-of-qakbot.html,<br/>https:<span>//</span>twitter.com/redcanary/status/1334224861628039169,<br/>https:<span>//</span>web.archive.org/web/20201207094648/https:<span>//</span>go.group-ib.com/rs/689-LRE-818/images/Group-IB_Egregor_Ransomware.pdf,<br/>https:<span>//</span>www.hornetsecurity.com/en/security-information/qakbot-malspam-leading-to-prolock/,<br/>https:<span>//</span>blog.morphisec.com/qakbot-qbot-maldoc-two-new-techniques,<br/>https:<span>//</span>www.virustotal.com/gui/domain/jits.ac.in/relations | details: {'tactic': 'command-and-control', 'techniques': ['T1071']}<br/>matrix: enterprise<br/>version: 8.2 | https:<span>//</span>docs.lumu.io/portal/en/kb/articles/malware-incident-response-playbook | qbot,<br/>Gafgyt,<br/>Qakbot,<br/>Quakbot,<br/>Qbot,<br/>lizkebab,<br/>torlus,<br/>PinkSlipBot,<br/>Bashlite,<br/>Akbot,<br/>Pinkslipbot,<br/>Qbot ,<br/>gayfgt | https:<span>//</span>jits.ac.in/TS.php | 2023-02-15T21:59:16.261Z |
 
-
 ### lumu-comment-a-specific-incident
+
 ***
 Get a paginated list of open incidents for the company. The items are listed by the most recent.
-
 
 #### Base Command
 
 `lumu-comment-a-specific-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu incident id requested. | Required | 
-| comment | Lumu comment requested. | Optional | 
-
+| lumu_incident_id | Lumu incident id requested. | Required |
+| comment | Lumu comment requested. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.CommentASpecificIncident.statusCode | number | Lumu statusCode | 
+| Lumu.CommentASpecificIncident.statusCode | number | Lumu statusCode |
 
 #### Command example
+
 ```!lumu-comment-a-specific-incident comment="from cortex, palo alto" lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -875,46 +900,49 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >Comment added to the incident successfully.
 
 ### lumu-retrieve-open-incidents
+
 ***
 Get a paginated list of open incidents for the company. The items are listed by the most recent.
-
 
 #### Base Command
 
 `lumu-retrieve-open-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page requested . | Optional | 
-| limit | item limit requested . Default is 10. | Optional | 
-| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional | 
-| labels | Lumu labels requested. | Optional | 
-
+| page | page requested . | Optional |
+| limit | item limit requested . Default is 10. | Optional |
+| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional |
+| labels | Lumu labels requested. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveOpenIncidents.items.id | String | Lumu incident id | 
-| Lumu.RetrieveOpenIncidents.items.timestamp | Date | Lumu timestamp | 
-| Lumu.RetrieveOpenIncidents.items.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.RetrieveOpenIncidents.items.status | String | Lumu status | 
-| Lumu.RetrieveOpenIncidents.items.contacts | Number | Lumu contacts | 
-| Lumu.RetrieveOpenIncidents.items.adversaries | String | Lumu adversaries | 
-| Lumu.RetrieveOpenIncidents.items.adversaryId | String | Lumu adversaryId | 
-| Lumu.RetrieveOpenIncidents.items.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.RetrieveOpenIncidents.items.description | String | Lumu description | 
-| Lumu.RetrieveOpenIncidents.items.labelDistribution | Number | Lumu labelDistribution | 
-| Lumu.RetrieveOpenIncidents.items.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.RetrieveOpenIncidents.items.lastContact | Date | Lumu lastContact | 
-| Lumu.RetrieveOpenIncidents.items.unread | Boolean | Lumu unread | 
-| Lumu.RetrieveOpenIncidents.paginationInfo.page | Number | current page  | 
-| Lumu.RetrieveOpenIncidents.paginationInfo.items | Number | current items  | 
+| Lumu.RetrieveOpenIncidents.items.id | String | Lumu incident id |
+| Lumu.RetrieveOpenIncidents.items.timestamp | Date | Lumu timestamp |
+| Lumu.RetrieveOpenIncidents.items.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.RetrieveOpenIncidents.items.status | String | Lumu status |
+| Lumu.RetrieveOpenIncidents.items.contacts | Number | Lumu contacts |
+| Lumu.RetrieveOpenIncidents.items.adversaries | String | Lumu adversaries |
+| Lumu.RetrieveOpenIncidents.items.adversaryId | String | Lumu adversaryId |
+| Lumu.RetrieveOpenIncidents.items.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.RetrieveOpenIncidents.items.description | String | Lumu description |
+| Lumu.RetrieveOpenIncidents.items.labelDistribution | Number | Lumu labelDistribution |
+| Lumu.RetrieveOpenIncidents.items.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.RetrieveOpenIncidents.items.lastContact | Date | Lumu lastContact |
+| Lumu.RetrieveOpenIncidents.items.unread | Boolean | Lumu unread |
+| Lumu.RetrieveOpenIncidents.paginationInfo.page | Number | current page  |
+| Lumu.RetrieveOpenIncidents.paginationInfo.items | Number | current items  |
 
 #### Command example
+
 ```!lumu-retrieve-open-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1164,6 +1192,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| activity.lumu.io | activity.lumu.io | Spam | 8 | Activity Test Query | 2023-02-08T16:41:35.613Z | false | 7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 | 147: 1<br/>2254: 1<br/>1885: 2<br/>989: 2<br/>0: 2 | 2023-02-15T16:59:47.142Z | open | 2023-02-15T12:01:03.667Z | 2023-02-08T16:41:50.304Z | 6 | false |
@@ -1178,14 +1207,17 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >| dimar.cl | dimar.cl | Malware | 2 | Malicious domain | 2023-02-07T08:10:51.125Z | false | cf26cf90-a7e5-11ed-9fd0-e5fb50c818f6 | 51: 2 | 2023-02-07T08:10:51.125Z | open | 2023-02-08T19:21:38.313Z | 2023-02-08T19:21:38.313Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 #### Command example
+
 ```!lumu-retrieve-open-incidents adversary-types=Spam labels=1791```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1443,6 +1475,7 @@ Get a paginated list of open incidents for the company. The items are listed by 
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| jits.ac.in | jits.ac.in | Malware | 5 | QakBot | 2023-01-13T21:51:12.190Z | false | 6eddaf40-938c-11ed-b0f8-a7e340234a4e | 1791: 1<br/>548: 3<br/>4301: 1 | 2023-01-27T21:23:34.329Z | open | 2023-02-08T00:29:50.824Z | 2023-01-13T21:51:28.308Z | 3 | false |
@@ -1457,52 +1490,55 @@ Get a paginated list of open incidents for the company. The items are listed by 
 >| businessbackend.com | businessbackend.com | Spam | 2 | Disposable email host | 2023-01-13T21:46:06.886Z | false | ba390670-938b-11ed-b0f8-a7e340234a4e | 1791: 1<br/>4301: 1 | 2023-01-27T21:03:35.699Z | open | 2023-01-13T21:46:25.239Z | 2023-01-13T21:46:25.239Z | 2 | true |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 ### lumu-retrieve-muted-incidents
+
 ***
 Get a paginated list of muted incidents for the company. The items are listed by the most recent.
-
 
 #### Base Command
 
 `lumu-retrieve-muted-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page requested . | Optional | 
-| limit | items limit requested . Default is 10. | Optional | 
-| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional | 
-| labels | Lumu labels requested . | Optional | 
-
+| page | page requested . | Optional |
+| limit | items limit requested . Default is 10. | Optional |
+| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional |
+| labels | Lumu labels requested . | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveMutedIncidents.items.id | String | Lumu incident id | 
-| Lumu.RetrieveMutedIncidents.items.timestamp | Date | Lumu timestamp | 
-| Lumu.RetrieveMutedIncidents.items.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.RetrieveMutedIncidents.items.status | String | Lumu status | 
-| Lumu.RetrieveMutedIncidents.items.contacts | Number | Lumu contacts | 
-| Lumu.RetrieveMutedIncidents.items.adversaries | String | Lumu adversaries | 
-| Lumu.RetrieveMutedIncidents.items.adversaryId | String | Lumu adversaryId | 
-| Lumu.RetrieveMutedIncidents.items.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.RetrieveMutedIncidents.items.description | String | Lumu description | 
-| Lumu.RetrieveMutedIncidents.items.labelDistribution | Number | Lumu labelDistribution | 
-| Lumu.RetrieveMutedIncidents.items.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.RetrieveMutedIncidents.items.lastContact | Date | Lumu lastContact | 
-| Lumu.RetrieveMutedIncidents.items.unread | Boolean | Lumu unread | 
-| Lumu.RetrieveMutedIncidents.paginationInfo.page | Number | current page  | 
-| Lumu.RetrieveMutedIncidents.paginationInfo.items | Number | current items  | 
+| Lumu.RetrieveMutedIncidents.items.id | String | Lumu incident id |
+| Lumu.RetrieveMutedIncidents.items.timestamp | Date | Lumu timestamp |
+| Lumu.RetrieveMutedIncidents.items.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.RetrieveMutedIncidents.items.status | String | Lumu status |
+| Lumu.RetrieveMutedIncidents.items.contacts | Number | Lumu contacts |
+| Lumu.RetrieveMutedIncidents.items.adversaries | String | Lumu adversaries |
+| Lumu.RetrieveMutedIncidents.items.adversaryId | String | Lumu adversaryId |
+| Lumu.RetrieveMutedIncidents.items.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.RetrieveMutedIncidents.items.description | String | Lumu description |
+| Lumu.RetrieveMutedIncidents.items.labelDistribution | Number | Lumu labelDistribution |
+| Lumu.RetrieveMutedIncidents.items.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.RetrieveMutedIncidents.items.lastContact | Date | Lumu lastContact |
+| Lumu.RetrieveMutedIncidents.items.unread | Boolean | Lumu unread |
+| Lumu.RetrieveMutedIncidents.paginationInfo.page | Number | current page  |
+| Lumu.RetrieveMutedIncidents.paginationInfo.items | Number | current items  |
 
 #### Command example
+
 ```!lumu-retrieve-muted-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1751,6 +1787,7 @@ Get a paginated list of muted incidents for the company. The items are listed by
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 12finance.com | 12finance.com | Mining | 11 | CryptoMining domain | 2022-12-23T14:46:54Z | false | 721ed640-82d2-11ed-a600-d53ba4d2bb70 | 2148: 1<br/>2254: 10 | 2022-12-23T22:30:10.448Z | muted | 2022-12-27T02:39:14.360Z | 2022-12-23T14:59:48.772Z | 4 | false |
@@ -1765,14 +1802,17 @@ Get a paginated list of muted incidents for the company. The items are listed by
 >| nexttime.ovh | nexttime.ovh | Malware,<br/>Mining | 5 | Malicious domain | 2022-10-25T21:13:43.551Z | false | ef8ee900-54a9-11ed-9df2-6538d9561738 | 3635: 5 | 2022-10-26T22:45:31.230Z | muted | 2022-10-25T21:16:15.909Z | 2022-10-25T21:13:56.368Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 #### Command example
+
 ```!lumu-retrieve-muted-incidents labels=1651 adversary-types=Malware```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -1881,6 +1921,7 @@ Get a paginated list of muted incidents for the company. The items are listed by
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| jameshallybone.co.uk | jameshallybone.co.uk | Malware | 8 | Malicious domain | 2022-11-21T21:46:01.425Z | false | f06a50c0-69e5-11ed-89c2-6136df938368 | 989: 6<br/>1651: 1<br/>3811: 1 | 2022-12-05T16:03:05.322Z | muted | 2022-12-13T20:48:09.825Z | 2022-11-21T21:46:22.028Z | 3 | false |
@@ -1889,53 +1930,56 @@ Get a paginated list of muted incidents for the company. The items are listed by
 >| asapcallcenter.net | asapcallcenter.net | C2C | 5 | Malware family KINS |  | false | 2720e2a0-a0c9-11ec-af58-8da2705ed08a | 864: 1<br/>1651: 3<br/>548: 1 | 2022-07-09T15:53:55.423Z | muted | 2022-03-10T23:59:14.933Z | 2022-03-10T23:23:54.698Z | 3 | false |
 >
 >### paginationInfo
+>
 >|Items|Page|
 >|---|---|
 >| 10 | 1 |
 
-
 ### lumu-retrieve-closed-incidents
+
 ***
 Get a paginated list of closed incidents for the company. The items are listed by the most recent.
-
 
 #### Base Command
 
 `lumu-retrieve-closed-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page requested . | Optional | 
-| limit | items limit requested . Default is 10. | Optional | 
-| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional | 
-| labels | Lumu labels requested. | Optional | 
-
+| page | page requested . | Optional |
+| limit | items limit requested . Default is 10. | Optional |
+| adversary_types | choose types: C2C,Malware,DGA,Mining,Spam,Phishing. Possible values are: C2C, Malware, DGA, Mining, Spam, Phishing. | Optional |
+| labels | Lumu labels requested. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveClosedIncidents.items.id | String | Lumu incident id | 
-| Lumu.RetrieveClosedIncidents.items.timestamp | Date | Lumu timestamp | 
-| Lumu.RetrieveClosedIncidents.items.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.RetrieveClosedIncidents.items.status | String | Lumu status | 
-| Lumu.RetrieveClosedIncidents.items.contacts | Number | Lumu contacts | 
-| Lumu.RetrieveClosedIncidents.items.adversaries | String | Lumu adversaries | 
-| Lumu.RetrieveClosedIncidents.items.adversaryId | String | Lumu adversaryId | 
-| Lumu.RetrieveClosedIncidents.items.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.RetrieveClosedIncidents.items.description | String | Lumu description | 
-| Lumu.RetrieveClosedIncidents.items.labelDistribution | Number | Lumu labelDistribution | 
-| Lumu.RetrieveClosedIncidents.items.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.RetrieveClosedIncidents.items.lastContact | Date | Lumu lastContact | 
-| Lumu.RetrieveClosedIncidents.items.unread | Boolean | Lumu unread | 
-| Lumu.RetrieveClosedIncidents.paginationInfo.page | Number | current page  | 
-| Lumu.RetrieveClosedIncidents.paginationInfo.items | Number | current items  | 
-| Lumu.RetrieveClosedIncidents.paginationInfo.next | Number | next page  | 
+| Lumu.RetrieveClosedIncidents.items.id | String | Lumu incident id |
+| Lumu.RetrieveClosedIncidents.items.timestamp | Date | Lumu timestamp |
+| Lumu.RetrieveClosedIncidents.items.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.RetrieveClosedIncidents.items.status | String | Lumu status |
+| Lumu.RetrieveClosedIncidents.items.contacts | Number | Lumu contacts |
+| Lumu.RetrieveClosedIncidents.items.adversaries | String | Lumu adversaries |
+| Lumu.RetrieveClosedIncidents.items.adversaryId | String | Lumu adversaryId |
+| Lumu.RetrieveClosedIncidents.items.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.RetrieveClosedIncidents.items.description | String | Lumu description |
+| Lumu.RetrieveClosedIncidents.items.labelDistribution | Number | Lumu labelDistribution |
+| Lumu.RetrieveClosedIncidents.items.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.RetrieveClosedIncidents.items.lastContact | Date | Lumu lastContact |
+| Lumu.RetrieveClosedIncidents.items.unread | Boolean | Lumu unread |
+| Lumu.RetrieveClosedIncidents.paginationInfo.page | Number | current page  |
+| Lumu.RetrieveClosedIncidents.paginationInfo.items | Number | current items  |
+| Lumu.RetrieveClosedIncidents.paginationInfo.next | Number | next page  |
 
 #### Command example
+
 ```!lumu-retrieve-closed-incidents```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2182,6 +2226,7 @@ Get a paginated list of closed incidents for the company. The items are listed b
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
@@ -2196,14 +2241,17 @@ Get a paginated list of closed incidents for the company. The items are listed b
 >| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-10T21:41:27.961Z | false | b9e93490-a98b-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-10T21:41:27.961Z | closed | 2023-02-10T21:56:37.507Z | 2023-02-10T21:41:50.297Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 #### Command example
+
 ```!lumu-retrieve-closed-incidents labels=0 adversary-types=Mining,Spam```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2448,6 +2496,7 @@ Get a paginated list of closed incidents for the company. The items are listed b
 #### Human Readable Output
 
 >### Incidents
+>
 >|Adversaries|Adversary Id|Adversary Types|Contacts|Description|First Contact|Has Playback Contacts|Id|Label Distribution|Last Contact|Status|Status Timestamp|Timestamp|Total Endpoints|Unread|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| www.chg.com.br | www.chg.com.br | Malware | 1 | Malware family Win32.Remoteadmin.C.Winvnc.Based | 2023-02-15T13:28:25.537Z | false | ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6 | 0: 1 | 2023-02-15T13:28:25.537Z | closed | 2023-02-15T21:53:41.468Z | 2023-02-15T13:28:47.356Z | 1 | false |
@@ -2462,46 +2511,49 @@ Get a paginated list of closed incidents for the company. The items are listed b
 >| activity.lumu.io | activity.lumu.io | Spam | 3 | Activity Test Query | 2022-12-20T14:37:02.228Z | false | eb611160-a638-11ed-a0c7-dd6f8e69d343 | 0: 3 | 2022-12-20T14:37:02.228Z | closed | 2023-02-06T16:19:52.211Z | 2023-02-06T16:11:31.574Z | 1 | false |
 >
 >### paginationInfo
+>
 >|Items|Next|Page|
 >|---|---|---|
 >| 10 | 2 | 1 |
 
-
 ### lumu-retrieve-endpoints-by-incident
+
 ***
 Get a paginated summary of the endpoints affected by a specified incident.
 
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
-
 #### Base Command
 
 `lumu-retrieve-endpoints-by-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu incident id requested. | Required | 
-| page | page requested . | Optional | 
-| limit | items limit requested . Default is 10. | Optional | 
-
+| lumu_incident_id | Lumu incident id requested. | Required |
+| page | page requested . | Optional |
+| limit | items limit requested . Default is 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.RetrieveEndpointsByIncident.items.label | Number | Lumu label | 
-| Lumu.RetrieveEndpointsByIncident.items.endpoint | String | Lumu endpoint | 
-| Lumu.RetrieveEndpointsByIncident.items.total | Number | Lumu total | 
-| Lumu.RetrieveEndpointsByIncident.items.first | Date | Lumu first | 
-| Lumu.RetrieveEndpointsByIncident.items.last | Date | Lumu last | 
-| Lumu.RetrieveEndpointsByIncident.paginationInfo.page | Number | current page  | 
-| Lumu.RetrieveEndpointsByIncident.paginationInfo.items | Number | current items  | 
+| Lumu.RetrieveEndpointsByIncident.items.label | Number | Lumu label |
+| Lumu.RetrieveEndpointsByIncident.items.endpoint | String | Lumu endpoint |
+| Lumu.RetrieveEndpointsByIncident.items.total | Number | Lumu total |
+| Lumu.RetrieveEndpointsByIncident.items.first | Date | Lumu first |
+| Lumu.RetrieveEndpointsByIncident.items.last | Date | Lumu last |
+| Lumu.RetrieveEndpointsByIncident.paginationInfo.page | Number | current page  |
+| Lumu.RetrieveEndpointsByIncident.paginationInfo.items | Number | current items  |
 
 #### Command example
+
 ```!lumu-retrieve-endpoints-by-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2568,6 +2620,7 @@ Get a paginated summary of the endpoints affected by a specified incident.
 #### Human Readable Output
 
 >### Incident endpoints
+>
 >|Endpoint|First|Label|Last|Last Source Id|Last Source Type|Total|
 >|---|---|---|---|---|---|---|
 >| LUMU-100 | 2023-02-15T16:59:47.142Z | 0 | 2023-02-15T16:59:47.142Z | 6d942a7a-d287-415e-9c09-3d6632a6a976 | custom_collector | 1 |
@@ -2578,12 +2631,13 @@ Get a paginated summary of the endpoints affected by a specified incident.
 >| DESKTOP-LUMU | 2023-02-09T15:22:01.450Z | 989 | 2023-02-09T15:22:30.732Z | c5ae44a0-8c53-11ed-8008-11cbedd55f0c | windows_agent | 2 |
 >
 >### paginationInfo
+>
 >|Items|Page|
 >|---|---|
 >| 10 | 1 |
 
-
 ### lumu-mark-incident-as-read
+
 ***
 This transaction does not require any additional body parameters.
 
@@ -2592,26 +2646,28 @@ This transaction does not require any additional body parameters.
 
 >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
 
-
 #### Base Command
 
 `lumu-mark-incident-as-read`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu incident id. | Required | 
-
+| lumu_incident_id | Lumu incident id. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.MarkIncidentAsRead.statusCode | unknown | Lumu statusCode | 
+| Lumu.MarkIncidentAsRead.statusCode | unknown | Lumu statusCode |
 
 #### Command example
-```!lumu-mark-incident-as-read lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 ```
+
+```!lumu-mark-incident-as-read lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2625,33 +2681,37 @@ This transaction does not require any additional body parameters.
 >Marked as read the incident successfully.
 
 ### lumu-mute-incident
+
 ***
+
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
 >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
 
-
 #### Base Command
 
 `lumu-mute-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu incident id requested. | Required | 
-| comment | Lumu comment requested. | Optional | 
-
+| lumu_incident_id | Lumu incident id requested. | Required |
+| comment | Lumu comment requested. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.MuteIncident.statusCode | unknown | Lumu statusCode | 
+| Lumu.MuteIncident.statusCode | unknown | Lumu statusCode |
 
 #### Command example
+
 ```!lumu-mute-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="mute from cortex"```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2668,33 +2728,37 @@ This transaction does not require any additional body parameters.
 >Muted the incident successfully.
 
 ### lumu-unmute-incident
+
 ***
+
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
 >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
 
-
 #### Base Command
 
 `lumu-unmute-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu incident id requested. | Required | 
-| comment | Lumu comment requested. | Optional | 
-
+| lumu_incident_id | Lumu incident id requested. | Required |
+| comment | Lumu comment requested. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.UnmuteIncident.statusCode | unknown | Lumu statusCode | 
+| Lumu.UnmuteIncident.statusCode | unknown | Lumu statusCode |
 
 #### Command example
+
 ```!lumu-unmute-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="unmute from cortex"```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -2711,6 +2775,7 @@ This transaction does not require any additional body parameters.
 >Unmute the incident successfully.
 
 ### lumu-consult-incidents-updates-through-rest
+
 ***
 Lumu provides an endpoint to consult real-time updates on incident operations through REST when Websocket is not available.
 
@@ -2719,99 +2784,101 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 | `{company-key}` | Your company's unique API key available at the [Lumu Portal](#access-and-authentication) |
 | --- | --- |
 
-
 #### Base Command
 
 `lumu-consult-incidents-updates-through-rest`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| offset | Lumu offset requested. | Optional | 
-| limit | items limit requested . Default is 10. | Optional | 
-| time | time requested . | Optional | 
-
+| offset | Lumu offset requested. | Optional |
+| limit | items limit requested . Default is 10. | Optional |
+| time | time requested . | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.companyId | String | Lumu companyId | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.id | String | Lumu incident id | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.timestamp | Date | Lumu timestamp | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.status | String | Lumu status | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.contacts | Number | Lumu contacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaries | String | Lumu adversaries | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaryId | String | Lumu adversaryId | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.description | String | Lumu description | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.labelDistribution | Number | Lumu labelDistribution | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.lastContact | Date | Lumu lastContact | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.unread | Boolean | Lumu unread | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.hasPlaybackContacts | Boolean | Lumu hasPlaybackContacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.firstContact | Date | Lumu firstContact | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.comment | String | Lumu comment | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.companyId | String | Lumu companyId | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.openIncidents | Number | Lumu openIncidents | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.totalContacts | Number | Lumu totalContacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.DGA | Number | Lumu DGA | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.C2C | Number | Lumu C2C | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Network Scan | Number | Lumu Network Scan | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Mining | Number | Lumu Mining | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Phishing | Number | Lumu Phishing | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Spam | Number | Lumu Spam | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Malware | Number | Lumu Malware | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.companyId | String | Lumu companyId | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.id | String | Lumu id | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.timestamp | Date | Lumu timestamp | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.status | String | Lumu status | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.contacts | Number | Lumu contacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaries | String | Lumu adversaries | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaryId | String | Lumu adversaryId | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.description | String | Lumu description | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.labelDistribution | Number | Lumu labelDistribution | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.lastContact | Date | Lumu lastContact | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.unread | Boolean | Lumu unread | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.hasPlaybackContacts | Boolean | Lumu hasPlaybackContacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.firstContact | Date | Lumu firstContact | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.comment | String | Lumu comment | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.companyId | String | Lumu companyId | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.id | String | Lumu id | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.timestamp | Date | Lumu timestamp | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.statusTimestamp | Date | Lumu statusTimestamp | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.status | String | Lumu status | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.contacts | Number | Lumu contacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaries | String | Lumu adversaries | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaryId | String | Lumu adversaryId | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaryTypes | String | Lumu adversaryTypes | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.description | String | Lumu description | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.labelDistribution | Number | Lumu labelDistribution | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.lastContact | Date | Lumu lastContact | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.unread | Boolean | Lumu unread | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.hasPlaybackContacts | Boolean | Lumu hasPlaybackContacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.firstContact | Date | Lumu firstContact | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.openIncidents | Number | Lumu openIncidents | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.totalContacts | Number | Lumu totalContacts | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.DGA | Number | Lumu DGA | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.C2C | Number | Lumu C2C | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Network Scan | Number | Lumu Network Scan | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Mining | Number | Lumu Mining | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Phishing | Number | Lumu Phishing | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Spam | Number | Lumu Spam | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Malware | Number | Lumu Malware | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.totalEndpoints | Number | Lumu totalEndpoints | 
-| Lumu.ConsultIncidentsUpdatesThroughRest.offset | Number | Lumu next offset | 
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.companyId | String | Lumu companyId |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.id | String | Lumu incident id |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.timestamp | Date | Lumu timestamp |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.status | String | Lumu status |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.contacts | Number | Lumu contacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaries | String | Lumu adversaries |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaryId | String | Lumu adversaryId |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.description | String | Lumu description |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.labelDistribution | Number | Lumu labelDistribution |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.lastContact | Date | Lumu lastContact |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.unread | Boolean | Lumu unread |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.hasPlaybackContacts | Boolean | Lumu hasPlaybackContacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.firstContact | Date | Lumu firstContact |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.comment | String | Lumu comment |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.companyId | String | Lumu companyId |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.openIncidents | Number | Lumu openIncidents |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.totalContacts | Number | Lumu totalContacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.DGA | Number | Lumu DGA |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.C2C | Number | Lumu C2C |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Network Scan | Number | Lumu Network Scan |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Mining | Number | Lumu Mining |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Phishing | Number | Lumu Phishing |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Spam | Number | Lumu Spam |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Malware | Number | Lumu Malware |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.companyId | String | Lumu companyId |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.id | String | Lumu id |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.timestamp | Date | Lumu timestamp |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.status | String | Lumu status |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.contacts | Number | Lumu contacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaries | String | Lumu adversaries |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaryId | String | Lumu adversaryId |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.description | String | Lumu description |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.labelDistribution | Number | Lumu labelDistribution |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.lastContact | Date | Lumu lastContact |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.unread | Boolean | Lumu unread |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.hasPlaybackContacts | Boolean | Lumu hasPlaybackContacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.firstContact | Date | Lumu firstContact |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.comment | String | Lumu comment |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.companyId | String | Lumu companyId |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.id | String | Lumu id |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.timestamp | Date | Lumu timestamp |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.statusTimestamp | Date | Lumu statusTimestamp |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.status | String | Lumu status |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.contacts | Number | Lumu contacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaries | String | Lumu adversaries |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaryId | String | Lumu adversaryId |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaryTypes | String | Lumu adversaryTypes |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.description | String | Lumu description |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.labelDistribution | Number | Lumu labelDistribution |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.lastContact | Date | Lumu lastContact |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.unread | Boolean | Lumu unread |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.hasPlaybackContacts | Boolean | Lumu hasPlaybackContacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.firstContact | Date | Lumu firstContact |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.openIncidents | Number | Lumu openIncidents |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.totalContacts | Number | Lumu totalContacts |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.DGA | Number | Lumu DGA |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.C2C | Number | Lumu C2C |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Network Scan | Number | Lumu Network Scan |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Mining | Number | Lumu Mining |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Phishing | Number | Lumu Phishing |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Spam | Number | Lumu Spam |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Malware | Number | Lumu Malware |
+| Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.totalEndpoints | Number | Lumu totalEndpoints |
+| Lumu.ConsultIncidentsUpdatesThroughRest.offset | Number | Lumu next offset |
 
 #### Command example
+
 ```!lumu-consult-incidents-updates-through-rest items=4 offset=1096305 time=4```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3411,39 +3478,43 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 #### Human Readable Output
 
 >### Results
+>
 >|offset|updates|
 >|---|---|
 >| 1096578 | {'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 15, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 2}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10311, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-b5ad-23f20297b7bb', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 16, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 3}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10312, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-ab18-23f2022bdf77', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 17, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 4}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10313, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-a675-23f2020a8d4c', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 18, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 5}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10314, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-ba29-23f202e1cb1a', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 19, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 6}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10315, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-8392-23f20218d429', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentUpdated': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-02-01T15:14:17.061Z', 'statusTimestamp': '2023-02-01T15:14:17.061Z', 'status': 'open', 'contacts': 20, 'adversaries': ['activity.lumu.io'], 'adversaryId': 'activity.lumu.io', 'adversaryTypes': ['Spam'], 'description': 'Activity Test Query', 'labelDistribution': {'1792': 1, '989': 12, '0': 7}, 'totalEndpoints': 5, 'lastContact': '2023-02-03T16:44:00.395Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-02-01T15:13:41.904Z'}, 'openIncidentsStats': {'openIncidents': 1124, 'totalContacts': 10316, 'typeDistribution': {'DGA': 10, 'C2C': 106, 'Network Scan': 6, 'Mining': 274, 'Inappropriate content': 1, 'Phishing': 31, 'Spam': 265, 'Malware': 666}, 'labelDistribution': {'1792': 2, '147': 27, '3771': 1, '2254': 89, '4061': 10, '3774': 1, '3077': 30, '2280': 28, '3182': 4, '1885': 3, '2267': 11, '805': 9, '1791': 81, '2148': 247, '548': 25, '3635': 2, '989': 72, '3179': 1, '3005': 1, '4055': 134, '4301': 393, '1179': 2, '864': 3, '2144': 29, '1580': 147, '3811': 7, '4232': 2, '0': 35, '2974': 20, '3628': 1, '218': 4, '2692': 1, '1651': 14, '2821': 1}, 'totalEndpoints': 209}, 'contactSummary': {'uuid': 'c45b8540-8073-11ed-abb1-23f202b7a63d', 'timestamp': '2022-12-20T14:37:02.228Z', 'adversaryHost': 'activity.lumu.io', 'endpointIp': '192.168.0.13', 'endpointName': 'Loacal-nesfpdm', 'fromPlayback': False}}},<br/>{'IncidentCommentAdded': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incidentId': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'comment': 'from XSOAR Cortex 20230206_135000 test comment, hmacsha256:efa407ced8d7cdedef4ed94e3730e3242996bd7ebf394c1e694d0b9a3f1087c6'}},<br/>{'IncidentCommentAdded': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incidentId': '182f3950-a243-11ed-a0c7-dd6f8e69d343', 'comment': 'comment 854'}},<br/>{'IncidentMarkedAsRead': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incidentId': '790f0700-9ec4-11ed-a0c7-dd6f8e69d343'}},<br/>{'IncidentMuted': {'companyId': '10228d9c-ff18-4251-ac19-514185e00f17', 'incident': {'id': '790f0700-9ec4-11ed-a0c7-dd6f8e69d343', 'timestamp': '2023-01-28T04:30:20.016Z', 'statusTimestamp': '2023-02-06T15:01:54.199Z', 'status': 'muted', 'contacts': 1, 'adversaries': ['obobbo.com'], 'adversaryId': 'obobbo.com', 'adversaryTypes': ['Spam'], 'description': 'Disposable email host', 'labelDistribution': {'4301': 1}, 'totalEndpoints': 1, 'lastContact': '2023-01-28T04:29:57.692Z', 'unread': False, 'hasPlaybackContacts': False, 'firstContact': '2023-01-28T04:29:57.692Z'}, 'comment': 'test', 'reason': 'irrelevant'}} |
 
-
 ### lumu-close-incident
+
 ***
+
 | `{incident-uuid}` | uuid of the specific incident |
 |---|---|
 
 >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
 
-
 #### Base Command
 
 `lumu-close-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lumu_incident_id | Lumu incident id. | Required | 
-| comment | Lumu comment requested. | Optional | 
-
+| lumu_incident_id | Lumu incident id. | Required |
+| comment | Lumu comment requested. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.CloseIncident.statusCode | unknown | Lumu statusCode | 
+| Lumu.CloseIncident.statusCode | unknown | Lumu statusCode |
 
 #### Command example
+
 ```!lumu-close-incident lumu_incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="closed from Cortex"```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3460,82 +3531,88 @@ Note: the date format in the updates received from the endpoint is in the UTC ti
 >Closed the incident successfully.
 
 ### get-modified-remote-data
-***
-mirror process 
 
+***
+mirror process
 
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | lastUpdate . | Optional | 
-
+| lastUpdate | lastUpdate . | Optional |
 
 #### Context Output
 
 There is no context output for this command.
-### get-remote-data
-***
-mirror process 
 
+### get-remote-data
+
+***
+mirror process
 
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | lastUpdate . | Required | 
-| id | id . | Required | 
-
+| lastUpdate | lastUpdate . | Required |
+| id | id . | Required |
 
 #### Context Output
 
 There is no context output for this command.
-### get-mapping-fields
-***
-mirror process 
 
+### get-mapping-fields
+
+***
+mirror process
 
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
 There is no context output for this command.
-### lumu-clear-cache
-***
-Lumu clear cache, only trigger if it mandatory 
 
+### lumu-clear-cache
+
+***
+Lumu clear cache, only trigger if it mandatory
 
 #### Base Command
 
 `lumu-clear-cache`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.ClearCache | string | Lumu clear cache | 
+| Lumu.ClearCache | string | Lumu clear cache |
 
 #### Command example
+
 ```!lumu-clear-cache```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3549,50 +3626,54 @@ Lumu clear cache, only trigger if it mandatory
 >cache cleared get_integration_context()={'cache': [], 'lumu_incidentsId': []}
 
 ### update-remote-system
-***
-mirror process 
 
+***
+mirror process
 
 #### Base Command
 
 `update-remote-system`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| data | data . | Required | 
-| entries | entries . | Optional | 
-| incident_changed | incident_changed . | Optional | 
-| remote_incident_id | remote_incident_id . | Optional | 
-
+| data | data . | Required |
+| entries | entries . | Optional |
+| incident_changed | incident_changed . | Optional |
+| remote_incident_id | remote_incident_id . | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### lumu-get-cache
+
 ***
 Lumu get cache
-
 
 #### Base Command
 
 `lumu-get-cache`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Lumu.GetCache.cache | string | Lumu cache | 
-| Lumu.GetCache.lumu_incidentsId | string | Lumu incident ids processed | 
+| Lumu.GetCache.cache | string | Lumu cache |
+| Lumu.GetCache.lumu_incidentsId | string | Lumu incident ids processed |
 
 #### Command example
+
 ```!lumu-get-cache```
+
 #### Context Example
+
 ```json
 {
     "Lumu": {
@@ -3635,15 +3716,16 @@ Lumu get cache
 #### Human Readable Output
 
 >### Cache
+>
 >|Lumu _ Incidents Id|
 >|---|
 >| e65b3f60-a99e-11ed-9fd0-e5fb50c818f6,<br/>8c5efc90-aca5-11ed-9fd0-e5fb50c818f6,<br/>903c5580-abef-11ed-9fd0-e5fb50c818f6,<br/>ad2b63c0-ad34-11ed-9fd0-e5fb50c818f6,<br/>229d4030-9eba-11ed-a0c7-dd6f8e69d343,<br/>50240240-9ec0-11ed-a0c7-dd6f8e69d343,<br/>02355f90-9ecd-11ed-a0c7-dd6f8e69d343,<br/>099a9e80-2ec0-11ed-9b90-a51546bb08b5,<br/>0fe32870-9ec3-11ed-a0c7-dd6f8e69d343,<br/>73661810-9ec5-11ed-a0c7-dd6f8e69d343,<br/>3e5f6480-9ebd-11ed-a0c7-dd6f8e69d343,<br/>89658e80-aa3b-11ed-9fd0-e5fb50c818f6,<br/>f2571f00-aa43-11ed-9fd0-e5fb50c818f6,<br/>853e3020-aca5-11ed-9fd0-e5fb50c818f6,<br/>6522d180-9ec5-11ed-a0c7-dd6f8e69d343,<br/>fd6788c0-561b-11ed-987a-cd6f8ff058b8,<br/>e6a0cc30-a893-11ed-9fd0-e5fb50c818f6,<br/>38183850-8bbb-11ed-b0f8-a7e340234a4e,<br/>a82e5550-9ec8-11ed-a0c7-dd6f8e69d343,<br/>0d207a50-ac8a-11ed-9fd0-e5fb50c818f6,<br/>7c40be00-a7cf-11ed-9fd0-e5fb50c818f6,<br/>99b7bf10-ac84-11ed-9fd0-e5fb50c818f6,<br/>91aaaf20-ac8a-11ed-9fd0-e5fb50c818f6,<br/>726849c0-7a6b-11ed-a600-d53ba4d2bb70,<br/>e0b39da0-ac8c-11ed-9fd0-e5fb50c818f6,<br/>ec869190-85aa-11ed-a600-d53ba4d2bb70,<br/>672a8c90-9ebe-11ed-a0c7-dd6f8e69d343 |
-
 
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Lumu corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -3653,7 +3735,6 @@ To set up the mirroring:
     | Incoming | Any changes in Lumu events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Lumu events (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Lumu events will be reflected in both directions. |
-
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Lumu.
