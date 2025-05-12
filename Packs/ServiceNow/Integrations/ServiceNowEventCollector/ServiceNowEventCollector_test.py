@@ -980,5 +980,3 @@ def test_module_of_testing_success_and_failure(mocker):
         return_value=([], {})
     )
     assert module_of_testing(client, [AUDIT]) == "ok"
-
-    
