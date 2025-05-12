@@ -753,7 +753,7 @@ def add_mirroring_fields(incident: dict):
     incident["mirror_instance"] = INTEGRATION_INSTANCE
 
 
-def add_response_to_dataset(resp: dict, raw: dict) -> None:
+def extract_response_to_dataset_raw(resp: dict, raw: dict) -> None:
     """
     Adds response data info to specific dataset raw.
 
@@ -766,11 +766,9 @@ def add_response_to_dataset(resp: dict, raw: dict) -> None:
         raw (dict): Target dataset raw to update
     """
     for key, val in resp.items():
-        if key == "name":
-            key = "_name"
-        if not isinstance(val, str):
-            val = json.dumps(val)
-        raw[key] = val
+        column_name = "_name" if key == "name" else key
+        value = val if isinstance(val, str) else json.dumps(val)
+        raw[column_name] = value
 
 
 def detection_to_incident(detection, is_fetch_events: bool = False):
