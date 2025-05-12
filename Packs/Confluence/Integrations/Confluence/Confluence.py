@@ -80,10 +80,13 @@ def http_request(
 
     if is_test:
         return res
-    if is_download:
-        return res.content
     try:
-        return res.json()
+        if resp_type == "json":
+            return res.json()
+        elif resp_type == "content":
+            return res.content
+        else:
+            return res
 
     except ValueError as err:
         return_error(
