@@ -1,7 +1,5 @@
 
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
-const PLAYBOOK_METADATA = 'playbook_metadata';
-const INTEGRATION_NAME = 'CoreRESTAPI';
 
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
@@ -155,23 +153,6 @@ sendMultipart = function (uri, entryID, body) {
 };
 
 var sendRequest = function(method, uri, body, raw) {
-    if (method == 'POST'){
-        try {
-            const playbookMetadataObject = JSON.parse(playbookTaskInfo);
-            body[PLAYBOOK_METADATA] = {
-                'playbook_id' : playbookMetadataObject.playbookID,
-                'playbook_name' :playbookMetadataObject.playbookName,
-                'task_id' : playbookMetadataObject.taskID,
-                'task_name' : playbookMetadataObject.taskName,
-                'integration_name' : INTEGRATION_NAME,
-                'command_name' : command,
-            }        
-            logDebug("Added playbook-metadata to request body " + body[PLAYBOOK_METADATA]);
-        } catch(error) {
-            logError("Error parsing as a JSON object playbookTaskInfo: " + error);
-        }
-    }
-
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
@@ -570,6 +551,7 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
     deleteAttachmentRequest(incident_id, attachment_path, field_name);
     return `Attachment ${attachment_path} deleted `;
 };
+
 
 
 switch (command) {
