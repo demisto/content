@@ -1483,6 +1483,8 @@ class Client(BaseClient):
                 hunting_rules = 1
             if enable_probable_corporate_access:
                 enable_probable_corporate_access = 1  # type: ignore
+            else:
+                enable_probable_corporate_access = 0
             return (
                 self.poller.create_update_generator(
                     collection_name=collection_name,
@@ -1948,7 +1950,7 @@ class IncidentBuilder:
 
     def check_combolist(self) -> bool:
         if self.collection_name == "compromised/account_group":
-            incident_source_type = self.incident.get("source_type", None)
+            incident_source_type = self.incident.get("source_type", "")
             demisto.debug(f"check_combolist {incident_source_type} {self.incident['id']} {self.exclude_combolist}")
             if self.exclude_combolist and (incident_source_type == "Combolist" or "Combolist" in incident_source_type):
                 return False
@@ -2378,7 +2380,7 @@ def main():
         requests_count = int(params.get("max_fetch", 3))
 
         exclude_combolist = params.get("exclude_combolist", False)
-        enable_probable_corporate_access = params.get("enable_probable_corporate_access", 0)
+        enable_probable_corporate_access = params.get("enable_probable_corporate_access", False)
 
         args = demisto.args()
         command = demisto.command()
