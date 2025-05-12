@@ -9,6 +9,7 @@ from urllib import parse
 WIZ_VERSION = '1.0.0'
 WIZ_DEFEND = 'wiz_defend'
 WIZ_DEFEND_INCIDENT_TYPE = 'WizDefend Detection'
+USER_AGENT_NAME = 'xsoar_defend'
 WIZ_DOMAIN_URL = ''
 INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
 
@@ -335,7 +336,7 @@ class DetectionOrigin:
 
 
 def get_integration_user_agent():
-    integration_user_agent = f'{INTEGRATION_GUID}/xsoar_defend/{WIZ_VERSION}'
+    integration_user_agent = f'{INTEGRATION_GUID}/{USER_AGENT_NAME}/{WIZ_VERSION}'
     return integration_user_agent
 
 
@@ -384,15 +385,6 @@ query Detections($filterBy: DetectionFilters, $first: Int, $after: String, $orde
           id
           name
           sourceType
-          securitySubCategories {
-            title
-            category {
-              name
-              framework {
-                name
-              }
-            }
-          }
         }
       }
       description
@@ -593,10 +585,10 @@ def get_entries(query, variables):
         response_json = response.json()
 
         demisto.info(f"Response status code is {response.status_code}")
-        demisto.info(f"The response is {response_json}")
+        demisto.debug(f"The response is {response_json}")
 
         if response.status_code != requests.codes.ok:
-            raise Exception('Error authenticating to Wiz [{}] - {}'.format(response.status_code, response.text))
+            raise Exception('Got an error querying Wiz API [{}] - {}'.format(response.status_code, response.text))
 
         if WizApiResponse.ERRORS in response_json:
             demisto.error(f"Wiz error content: {response_json[WizApiResponse.ERRORS]}")
