@@ -27,10 +27,9 @@ configuration:
     required: false
     defaultvalue: "false"
     type: 8
-    additionalinfo: >-
-      Does this API call require authentication (Basic, API key, etc.)?
+    additionalinfo: Does this API call require authentication (Basic, API key, etc.)?
   - name: apikey_in_header
-    display: "API Key supplied in header"
+    display: API Key supplied in header
     required: false
     defaultvalue: "false"
     type: 8
@@ -49,9 +48,9 @@ configuration:
       value.
 
       e.g., X-PAN-KEY: API_KEY_HERE (X-PAN-KEY is the value specified in this field) 
-      
+
       - For a parameterized call, this would be appended to the URL as &X-PAN-KEY=KEY_HERE - 
-      
+
       - For a header-based call, this would appear in the header as 'X-PAN-KEY': KEY_HERE
   - name: proxy
     display: Use system proxy settings
@@ -65,12 +64,9 @@ configuration:
     defaultvalue: "false"
     type: 8
     additionalinfo: null
-description: >-
-  Integration version of the httpv2 automation used to send HTTP request with
-  advanced capabilities.
-
-
-  Used for generic API calls to non-integration specific endpoints
+description: Integration version of the httpv2 automation used to send HTTP
+  requests for API calls to endpoints not associated with an existing XSOAR
+  integration.
 display: GenericAPICall
 name: GenericAPICall
 script:
@@ -101,7 +97,7 @@ script:
           description: Specify the type of data expected in the API response
           required: true
           isArray: false
-          defaultValue: ''
+          defaultValue: ""
           auto: PREDEFINED
           predefined:
             - json
@@ -114,15 +110,12 @@ script:
           isArray: false
           defaultValue: ""
           additionalinfo: >-
-            Example JSON request body sent to the API endpoint:
-            {
+            Example JSON request body sent to the API endpoint: {
               "name": "xsoar",
               "title": "XSOAR Ninja"
             }
 
-            When supplying this parameter via the CLI and not a playbook task, make sure
-            to enclose the JSON body in back ticks (`{JSON_BODY_HERE}`) to avoid escaping
-            issues that may arise with special characters.
+            When supplying this parameter via the CLI and not a playbook task, make sure to enclose the JSON body in back ticks (`{JSON_BODY_HERE}`) to avoid escaping issues that may arise with special characters.
         - name: request_content_type
           description: "Specify the Content-Type header for the request.Shorthands are
             provided for the following common content types:json
@@ -225,7 +218,8 @@ script:
           description: The URL of the API call
           type: String
         - contextPath: APICall.ParsedBody
-          description: The parsed response, formatted according to `parse_response_as` argument
+          description: The parsed response, formatted according to `parse_response_as`
+            argument
           type: String
         - contextPath: APICall.Headers
           description: The response headers
