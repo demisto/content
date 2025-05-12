@@ -81,22 +81,6 @@ GENERIC_QUERY_COMMANDS = {
     "xdr-xql-get-quota": get_xql_quota_command,
 }
 
-def add_playbook_metadata_headers(headers:dict, command: str):
-    ctx_output: dict = demisto.callingContext or {}
-    entry_task: dict = ctx_output.get('context', {}).get('ParentEntry', {}).get('entryTask',{})
-    incidents: list = ctx_output.get('context', {}).get('Incidents', [])
-    playbook_id = incidents[0].get('playbookId', 'missing_playbookId') if incidents else ''
-    playbook_name = entry_task.get('playbookName', 'missing_playbook_name') if entry_task else ''
-    task_name = entry_task.get('taskName', 'missing_task_name') if entry_task else ''
-    task_id = entry_task.get('taskId', 'missing_task_id') if entry_task else ''
-    headers['playbook_metadata'] = {
-        'playbook_name': playbook_name,
-        'playbook_id': playbook_id,
-        'task_name': task_name,
-        'task_id': task_id,
-        'integration_name': 'Cortex XDR - XQL Query Engine',
-        'command_name': command}
-
 
 def main() -> None:
     """main function, parses params and runs command functions"""
@@ -123,23 +107,14 @@ def main() -> None:
         auth_key = f"{apikey}{nonce}{timestamp}".encode()
         # convert to bytes object and calculate sha256
         api_key_hash = hashlib.sha256(auth_key).hexdigest()  # lgtm [py/weak-sensitive-data-hashing]
-        ctx_output: dict = demisto.callingContext or {}
-        entry_task: dict = ctx_output.get('context', {}).get('ParentEntry', {}).get('entryTask',{})
-        incidents: list = ctx_output.get('context', {}).get('Incidents', [])
-        playbook_id = incidents[0].get('playbookId', 'missing_playbookId') if incidents else ''
-        playbook_name = entry_task.get('playbookName', 'missing_playbook_name') if entry_task else ''
-        task_name = entry_task.get('taskName', 'missing_task_name') if entry_task else ''
-        task_id = entry_task.get('taskId', 'missing_task_id') if entry_task else ''
+
         # generate HTTP call headers
         headers = {
             "x-xdr-timestamp": timestamp,
             "x-xdr-nonce": nonce,
             "x-xdr-auth-id": apikey_id,
             "Authorization": api_key_hash,
-            "playbook_metadata": f"{{'playbook_name': {playbook_name},'playbook_id': {playbook_id},'task_name': {task_name},'task_id': {task_id},'integration_name': 'Cortex XDR - XQL Query Engine','command_name': {command}}}"
         }
-        # add_playbook_metadata_headers(headers, command)
-        print(f"DANF: headers: {headers}")
 
         client = Client(base_url=base_url, verify=verify_cert, headers=headers, proxy=proxy, is_core=False)
         if command in GENERIC_QUERY_COMMANDS:
