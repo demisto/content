@@ -174,8 +174,8 @@ def test_install_packs_if_needed(mocker):
     installer.install_packs(packs_to_install)
 
     expected_args = {
-        'uri': '/contentpacks/marketplace/install',
-        'body': {'packs': [{"id": "Pack1", "version": "1.2.4"}], 'ignoreWarnings': True}
+        "uri": "/contentpacks/marketplace/install",
+        "body": {"packs": [{"id": "Pack1", "version": "1.2.4"}], "ignoreWarnings": True}
     }
 
     mock_call_execute.assert_called_once_with('core-api-post', expected_args)

@@ -169,8 +169,8 @@ class ContentPackInstaller:
             pack_payload = json.dumps([{pack_id: pack["version"]}])
 
             if is_xsiam_or_xsoar_saas():  # install packs for XSOAR 8.X or XSIAM
-                data = {'packs': packs_to_install, 'ignoreWarnings': True}
-                args = {'uri': '/contentpacks/marketplace/install', 'body': data}
+                data = {"packs": packs_to_install, "ignoreWarnings": True}
+                args = {"uri": '/contentpacks/marketplace/install', "body": data}
                 status, res = self._call_execute_command("core-api-post", args)
 
             else:  # install packs for XSOAR 6.X
