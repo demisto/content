@@ -2582,13 +2582,12 @@ def filter_invalid_teams(teams: list[dict], team_name: str) -> list[dict]:
         valid_team_aad_ids = [team.get("id", "") for team in response_teams]
         demisto.debug(f"aad_ids of discovered valid teams: {valid_team_aad_ids}")
 
-        # Keep only teams with different team names, or ones with ids found in the query
         invalid_teams = [team for team in teams if (team.get("team_name") == team_name and
                                                     team.get("team_aad_id") not in valid_team_aad_ids)]
         if invalid_teams:
+            teams = [team for team in teams if team not in invalid_teams]
             filtered_ids = [team.get("team_aad_id", "") for team in invalid_teams]
             demisto.debug(f"Invalid team aad_ids filtered: {filtered_ids}")
-            teams = [team for team in teams if team not in invalid_teams]
 
         return teams
 
