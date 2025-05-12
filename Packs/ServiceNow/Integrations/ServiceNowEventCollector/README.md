@@ -89,7 +89,7 @@ There is no context output for this command.
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 
 
-### service-now-reset-auth
+### service-now-oauth-login
 
 ***
 Resets the integration context, including stored OAuth refresh token. Use this command when using OAuth 2.0 and encounter access_denied with access token related errors.
