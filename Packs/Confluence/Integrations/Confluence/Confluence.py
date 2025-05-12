@@ -261,7 +261,7 @@ def get_content(key, title):
     return res
 
 
-def get_pdf(pageid):
+def get_pdf(page_id):
     params = {"pageId": pageid}
 
     full_url = SERVER + "/spaces/flyingpdf/pdfpageexport.action"
