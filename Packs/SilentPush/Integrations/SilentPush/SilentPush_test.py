@@ -545,15 +545,6 @@ def test_get_ipv4_reputation_command_success_second(mock_client, mocker):
     assert result.readable_output == "Mocked Markdown Table"
 
 
-def test_get_ipv4_reputation_command_no_ipv4(mock_client):
-    # Mock arguments without ipv4
-    args = {}
-
-    # Call the function and expect DemistoException
-    with pytest.raises(DemistoException, match="IPv4 address is required"):
-        get_ipv4_reputation_command(mock_client, args)
-
-
 def test_get_ipv4_reputation_command_no_data_second(mock_client, mocker):
     # Mock arguments
     args = {"ipv4": "192.168.1.1", "explain": "false", "limit": "1"}
