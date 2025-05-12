@@ -32,7 +32,7 @@ HEADERS = {
     "Accept": "application/json",
     "X-Atlassian-Token": "no-check",
 }
-if PAT:
+if PERSONAL_ACCESS_TOKEN:
     HEADERS["Authorization"] = f"Bearer {PASSWORD}"
 
 """
