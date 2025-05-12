@@ -2,6 +2,9 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Blocklist_de Feed
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
