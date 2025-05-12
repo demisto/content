@@ -41,7 +41,7 @@ Helper Functions
 
 
 def http_request(
-    method, full_url, data=None, params=None, is_test=False, is_download=False
+    method, full_url, data=None, params=None, is_test=False, resp_type: str = "json",
 ):  # pragma: no cover
     if PAT:
         try:
