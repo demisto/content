@@ -97,7 +97,7 @@ tasks:
       minTextLength:
         simple: "0"
       modelName:
-        simple: test_phishing_model
+        simple: fine_tune
       modelStoreType:
         simple: mlModel
       extend-context:
@@ -428,7 +428,7 @@ tasks:
       minTextLength:
         simple: "0"
       modelName:
-        simple: test_phishing_model
+        simple: fine_tune
       modelStoreType:
         simple: mlModel
       extend-context:
@@ -478,7 +478,7 @@ tasks:
       minTextLength:
         simple: "0"
       modelName:
-        simple: test_phishing_model
+        simple: fine_tune
       modelStoreType:
         simple: mlModel
       extend-context:
