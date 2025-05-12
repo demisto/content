@@ -7673,6 +7673,7 @@ def test_fetch_events_reads_last_run_indexes_correctly(mocker):
     The test verifies that these identifiers appear in the same order in the last_run output,
     indicating correct index usage within the function.
     """
+    from CrowdStrikeFalcon import fetch_events
     
     last_run_identifiers = [
         "Detection",
@@ -7686,7 +7687,6 @@ def test_fetch_events_reads_last_run_indexes_correctly(mocker):
     mocker.patch("CrowdStrikeFalcon.demisto.getLastRun", return_value=last_run_identifiers)
     mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
 
-    from CrowdStrikeFalcon import fetch_events
     last_run_identifiers_result, _ = fetch_events()
 
     # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
