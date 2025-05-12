@@ -1,0 +1,18 @@
+JSON - https://api.apis.guru
+
+!generic-api-call urlpath=/v2/metrics.json request_content_type=application/json response_content_type=application/json method=GET parse_response_as=json using="API - JSON"
+
+XML - https://boardgamegeek.com
+
+!generic-api-call urlpath=/xmlapi/search?search=civilizations method=GET request_content_type=application/xml response_content_type=application/xml parse_response_as=xml using="API - XML"
+
+JSON Request Body - https://reqres.in
+
+!generic-api-call response_content_type=application/json method=POST urlpath=/api/users parse_response_as=json body=`{"name": "xsoar", "job": "XSOAR Ninja"}` request_content_type=application/json using="API - JSON Request Body"
+
+
+!generic-api-call method=POST parse_response_as=json request_content_type=application/json response_content_type=application/json urlpath=/kibana_sample_data_flights/_update/FiByho4B7Hcu3c5vPx-N body=`{
+ "doc": {
+   "tag": "for_xsoar"
+ }
+}`
