@@ -8,9 +8,15 @@
     "email": "support@cofense.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Security",
+        "Alerts",
+        "Incident Response"
+    ],
     "useCases": [
         "Phishing"
     ],
