@@ -3,8 +3,6 @@ This integration was integrated and tested with version 7.70 of nmap. The nmap b
 
 ## Configure nmap in Cortex
 
-
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -23,31 +21,30 @@ Scan targets with the given parameters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| targets | The targets to scan. Accepts comma-separated list. | Required | 
-| options | The nmap options to use as documented by nmap. | Required | 
+| targets | The targets to scan. Accepts comma-separated list. | Required |
+| options | The nmap options to use as documented by nmap. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NMAP.Scan.Summary | unknown | Scan summary. | 
-| NMAP.Scan.Version | unknown | nmap version. | 
-| NMAP.Scan.Started | unknown | Start time epoch. | 
-| NMAP.Scan.Ended | unknown | End time epoch. | 
-| NMAP.Scan.CommandLine | unknown | The command line being used. | 
-| NMAP.Scan.ScanType | unknown | The type of discovery scan. | 
-| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned host. | 
-| NMAP.Scan.Hosts.Address | unknown | Scanned host address. | 
-| NMAP.Scan.Hosts.Status | unknown | Is the host up or down. | 
-| NMAP.Scan.Hosts.Services.Port | unknown | The port of the service. | 
-| NMAP.Scan.Hosts.Services.Protocol | unknown | The protocol of the service. | 
-| NMAP.Scan.Hosts.Services.State | unknown | The state of the service. | 
-| NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service. | 
-| NMAP.Scan.Hosts.Services.Service | unknown | The service name. | 
-| NMAP.Scan.Hosts.ScriptResults.ID | unknown | The name of the script used. | 
-| NMAP.Scan.Hosts.ScriptResults.Output | unknown | The raw results of the script execution. | 
-| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | Additional parseable fields from the script output. | 
-
+| NMAP.Scan.Summary | unknown | Scan summary. |
+| NMAP.Scan.Version | unknown | nmap version. |
+| NMAP.Scan.Started | unknown | Start time epoch. |
+| NMAP.Scan.Ended | unknown | End time epoch. |
+| NMAP.Scan.CommandLine | unknown | The command line being used. |
+| NMAP.Scan.ScanType | unknown | The type of discovery scan. |
+| NMAP.Scan.Hosts.Hostname | unknown | DNS hostname of scanned host. |
+| NMAP.Scan.Hosts.Address | unknown | Scanned host address. |
+| NMAP.Scan.Hosts.Status | unknown | Is the host up or down. |
+| NMAP.Scan.Hosts.Services.Port | unknown | The port of the service. |
+| NMAP.Scan.Hosts.Services.Protocol | unknown | The protocol of the service. |
+| NMAP.Scan.Hosts.Services.State | unknown | The state of the service. |
+| NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service. |
+| NMAP.Scan.Hosts.Services.Service | unknown | The service name. |
+| NMAP.Scan.Hosts.ScriptResults.ID | unknown | The name of the script used. |
+| NMAP.Scan.Hosts.ScriptResults.Output | unknown | The raw results of the script execution. |
+| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | Additional parseable fields from the script output. |
 
 #### Command Example
 
@@ -131,9 +128,13 @@ Scan targets with the given parameters.
 #### Human Readable Output
 
 >## Nmap done at Fri May  1 13:41:05 2020; 1 IP address (1 host up) scanned in 183.98 seconds
+>
 >### Nmap scan report for scanme.nmap.org (45.33.32.156)
->#### Host is up.
+>
+>#### Host is up
+>
 >### Services
+>
 >|Port|Protocol|State|Service|Banner|
 >|---|---|---|---|---|
 >| 21 | tcp | open | tcpwrapped |  |
