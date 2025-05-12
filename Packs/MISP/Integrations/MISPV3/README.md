@@ -5,7 +5,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 ## Configure MISP V3 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | MISP server URL (e.g., <https://192.168.0.1>) |  | True |
@@ -23,7 +22,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage. | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -34,7 +32,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Search for events in MISP. This search command will return only information about the matched events. To get information about attributes, use the misp-search-attributes command.
 
-
 #### Base Command
 
 `misp-search-events`
@@ -43,73 +40,72 @@ Search for events in MISP. This search command will return only information abou
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | Search for events that include the specified attribute type. Use any valid MISP attribute type. For example: "md5", "sha1", "email", "url". | Optional | 
-| value | Search for events that include the specified attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Optional | 
-| category | Search for events that include the specified attribute category. Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type". | Optional | 
-| org | Search by creator organization by supplying the organization ID. | Optional | 
-| tags | A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". For example, "AND:tag1,tag2;OR:tag3". | Optional | 
-| from | Event search start date in the format yyyy-mm-dd. For example, 2015-02-15. This date refers to the event creation date. | Optional | 
-| to | Event search end date in the format yyyy-mm-dd. For example, 2015-02-15. This date refers to the event creation date. | Optional | 
-| last | Events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event. | Optional | 
-| event_id | A comma-separated list of event IDs to be returned by the search. | Optional | 
-| uuid | The event UUID to be returned by the search. For example, 59523300-4be8-4fa6-8867-0037ac110002. | Optional | 
-| page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1. | Optional | 
-| limit | Limit the number of events returned. Default is 50. | Optional | 
-| include_feed_correlations | Whether to return the event related feeds. Possible values are: true, false. Note: Only if this argument set to "true" the response will include attributes' feed hits values.| Optional | 
-
+| type | Search for events that include the specified attribute type. Use any valid MISP attribute type. For example: "md5", "sha1", "email", "url". | Optional |
+| value | Search for events that include the specified attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Optional |
+| category | Search for events that include the specified attribute category. Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type". | Optional |
+| org | Search by creator organization by supplying the organization ID. | Optional |
+| tags | A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". For example, "AND:tag1,tag2;OR:tag3". | Optional |
+| from | Event search start date in the format yyyy-mm-dd. For example, 2015-02-15. This date refers to the event creation date. | Optional |
+| to | Event search end date in the format yyyy-mm-dd. For example, 2015-02-15. This date refers to the event creation date. | Optional |
+| last | Events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event. | Optional |
+| event_id | A comma-separated list of event IDs to be returned by the search. | Optional |
+| uuid | The event UUID to be returned by the search. For example, 59523300-4be8-4fa6-8867-0037ac110002. | Optional |
+| page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1. | Optional |
+| limit | Limit the number of events returned. Default is 50. | Optional |
+| include_feed_correlations | Whether to return the event related feeds. Possible values are: true, false. Note: Only if this argument set to "true" the response will include attributes' feed hits values.| Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | string | MISP event ID. | 
-| MISP.Event.Distribution | string | MISP event distribution. | 
-| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). | 
-| MISP.Event.EventCreatorEmail | string | Email address of the event creator. | 
-| MISP.Event.Info | string | Event name. | 
-| MISP.Event.AttributeCount | string | Number of attributes of the event. | 
-| MISP.Event.OrganizationID | string | Event organization ID. | 
-| MISP.Event.CreationDate | date | Event creation date. | 
-| MISP.Event.Locked | boolean | Is the event locked. | 
-| MISP.Event.Organization.ID | number | Organization ID. | 
-| MISP.Event.Organization.Name | string | Organization name. | 
-| MISP.Event.Organization.UUID | string | Organization UUID. | 
-| MISP.Event.Organization.local | boolean | Is the organization local. | 
-| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. | 
-| MISP.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. | 
-| MISP.Event.ProposalEmailLock | boolean | Is email lock proposed. | 
-| MISP.Event.LastChanged | date | Last change event timestamp. | 
-| MISP.Event.Galaxy.Description | string | Event's galaxy description. | 
-| MISP.Event.Galaxy.Name | string | Galaxy name. | 
-| MISP.Event.Galaxy.Type | string | Galaxy type. | 
-| MISP.Event.Published | boolean | Is the event published. | 
-| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. | 
-| MISP.Event.UUID | string | Event UUID. | 
-| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Event.Tag.Name | string | All tag names in the event. | 
-| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-| MISP.Event.Feed.ID | String | Feed id. | 
-| MISP.Event.Feed.Name | String | Feed name. | 
-| MISP.Event.Feed.Provider | String | Feed provider. | 
-| MISP.Event.Feed.SourceFormat | String | Feed source format \(MISP for example\). | 
-| MISP.Event.Feed.URL | String | Feed url. | 
-| MISP.Event.Feed.EventUUIDS | Unknown | List of event uuids include the feed. | 
-| MISP.Event.Attribute.Feed.ID | String | Attribute feed id. | 
-| MISP.Event.Attribute.Feed.Name | String | Attribute feed name. | 
-| MISP.Event.Attribute.Feed.Provider | String | Attribute feed provider. | 
-| MISP.Event.Attribute.Feed.SourceFormat | String | Attribute feed source format \(MISP for example\). | 
-| MISP.Event.Attribute.Feed.URL | String | Attribute feed url. | 
-| MISP.Event.Attribute.Feed.EventUUIDS | Unknown | List of event uuids include the attribute feed. | 
-| MISP.Event.Attribute.ID | String | MISP attribute ID. | 
-| MISP.Event.Attribute.Value | String | MISP attribute value. | 
+| MISP.Event.ID | string | MISP event ID. |
+| MISP.Event.Distribution | string | MISP event distribution. |
+| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). |
+| MISP.Event.EventCreatorEmail | string | Email address of the event creator. |
+| MISP.Event.Info | string | Event name. |
+| MISP.Event.AttributeCount | string | Number of attributes of the event. |
+| MISP.Event.OrganizationID | string | Event organization ID. |
+| MISP.Event.CreationDate | date | Event creation date. |
+| MISP.Event.Locked | boolean | Is the event locked. |
+| MISP.Event.Organization.ID | number | Organization ID. |
+| MISP.Event.Organization.Name | string | Organization name. |
+| MISP.Event.Organization.UUID | string | Organization UUID. |
+| MISP.Event.Organization.local | boolean | Is the organization local. |
+| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. |
+| MISP.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. |
+| MISP.Event.ProposalEmailLock | boolean | Is email lock proposed. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
+| MISP.Event.Galaxy.Description | string | Event's galaxy description. |
+| MISP.Event.Galaxy.Name | string | Galaxy name. |
+| MISP.Event.Galaxy.Type | string | Galaxy type. |
+| MISP.Event.Published | boolean | Is the event published. |
+| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. |
+| MISP.Event.UUID | string | Event UUID. |
+| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Event.Tag.Name | string | All tag names in the event. |
+| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.Description | String | Description of the object. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
+| MISP.Event.Feed.ID | String | Feed id. |
+| MISP.Event.Feed.Name | String | Feed name. |
+| MISP.Event.Feed.Provider | String | Feed provider. |
+| MISP.Event.Feed.SourceFormat | String | Feed source format \(MISP for example\). |
+| MISP.Event.Feed.URL | String | Feed url. |
+| MISP.Event.Feed.EventUUIDS | Unknown | List of event uuids include the feed. |
+| MISP.Event.Attribute.Feed.ID | String | Attribute feed id. |
+| MISP.Event.Attribute.Feed.Name | String | Attribute feed name. |
+| MISP.Event.Attribute.Feed.Provider | String | Attribute feed provider. |
+| MISP.Event.Attribute.Feed.SourceFormat | String | Attribute feed source format \(MISP for example\). |
+| MISP.Event.Attribute.Feed.URL | String | Attribute feed url. |
+| MISP.Event.Attribute.Feed.EventUUIDS | Unknown | List of event uuids include the attribute feed. |
+| MISP.Event.Attribute.ID | String | MISP attribute ID. |
+| MISP.Event.Attribute.Value | String | MISP attribute value. |
 
 #### Command Example
 
@@ -299,16 +295,16 @@ Search for events in MISP. This search command will return only information abou
 
 #### Human Readable Output
 
->### MISP search-events returned 3 events.
+>### MISP search-events returned 3 events
 
 > Current page size: 3
 >Showing page 1 out others that may exist
+>
 >|Event Distribution|Event ID|Event Info|Event Objects|Event Org ID|Event Orgc ID|Event Tags|Event UUID|Publish Timestamp|
 >|---|---|---|---|---|---|---|---|---|
 >| 1 | 238 | New Targets Enterprise Wireless Presentation & Display Systems | 16142,<br/>16341,<br/>16348,<br/>16374,<br/>16381,<br/>16403 | 1 | 7 | tlp:white | 5c93d7f7-7de4-4548-ae4c-403ec0a8ab16 | 2021-06-23T13:50:21Z |
 >| 1 | 239 | New RedLine Stealer Distributed Using Coronavirus-themed Email Campaign | 16141 | 1 | 7 | tlp:white | 5e8b8ba5-df0c-4e7b-bfb4-b27ec0a8ab16 | 2021-06-23T13:50:22Z |
 >| 1 | 241 | Detecting and Preventing Malicious Domains Proactively with DNS Security | 11131 | 1 | 7 | tlp:white | e74cba52-0314-43c2-9958-43a55619fcf5 | 2021-06-23T13:50:23Z |
-
 
 ### domain
 
@@ -316,7 +312,6 @@ Search for events in MISP. This search command will return only information abou
 Checks the reputation of the given domain.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -326,57 +321,55 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to search. | Required | 
-
+| domain | Domain to search. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The domain of the indicator. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.ObjectID | string | Attribute object ID. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. | 
-| MISP.Attribute.Event.Published | boolean | Is the event published. | 
-| MISP.Attribute.Event.CreationDate | date | Event creation date. | 
-| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Attribute.Event.Tag.Name | string | Event tag name. | 
-| MISP.Attribute.Event.Tag.ID | string | Event tag ID. | 
-| MISP.Attribute.Tag.Name | string | Attribute tag name. | 
-| MISP.Attribute.Tag.ID | string | Attribute tag ID. | 
-| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. | 
-
+| Domain.Name | String | The domain of the indicator. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.ObjectID | string | Attribute object ID. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. |
+| MISP.Attribute.Event.Published | boolean | Is the event published. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
+| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
+| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Attribute.Event.Tag.Name | string | Event tag name. |
+| MISP.Attribute.Event.Tag.ID | string | Event tag ID. |
+| MISP.Attribute.Tag.Name | string | Attribute tag name. |
+| MISP.Attribute.Tag.ID | string | Attribute tag ID. |
+| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. |
 
 #### Command Example
 
@@ -492,12 +485,10 @@ Notice: Submitting indicators using this command might make the indicator data p
 >|---|---|---|
 >| 1208 | OSINT Expansion on Rotten Tomato campaign | 2 |
 
-
 ### email
 
 ***
 Checks the reputation of the given email address.
-
 
 #### Base Command
 
@@ -507,57 +498,55 @@ Checks the reputation of the given email address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | Email address to search. | Required | 
-
+| email | Email address to search. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Email.Address | String | The email address of the indicator. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.ObjectID | string | Attribute object ID. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. | 
-| MISP.Attribute.Event.Published | boolean | Is the event published. | 
-| MISP.Attribute.Event.CreationDate | date | Event creation date. | 
-| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Attribute.Event.Tag.Name | string | Event tag name. | 
-| MISP.Attribute.Event.Tag.ID | string | Event tag ID. | 
-| MISP.Attribute.Tag.Name | string | Attribute tag name. | 
-| MISP.Attribute.Tag.ID | string | Attribute tag ID. | 
-| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. | 
-
+| Email.Address | String | The email address of the indicator. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.ObjectID | string | Attribute object ID. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. |
+| MISP.Attribute.Event.Published | boolean | Is the event published. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
+| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
+| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Attribute.Event.Tag.Name | string | Event tag name. |
+| MISP.Attribute.Event.Tag.ID | string | Event tag ID. |
+| MISP.Attribute.Tag.Name | string | Attribute tag name. |
+| MISP.Attribute.Tag.ID | string | Attribute tag ID. |
+| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. |
 
 #### Command Example
 
@@ -656,12 +645,10 @@ Checks the reputation of the given email address.
 >|---|---|---|
 >| 1655 | TestEvent | 1 |
 
-
 ### file
 
 ***
 Checks the file reputation of the given hash.
-
 
 #### Base Command
 
@@ -671,59 +658,57 @@ Checks the file reputation of the given hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | Hash of the file to query. Supports MD5, SHA-1, and SHA-256. | Required | 
-
+| file | Hash of the file to query. Supports MD5, SHA-1, and SHA-256. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.ObjectID | string | Attribute object ID. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. | 
-| MISP.Attribute.Event.Published | boolean | Is the event published. | 
-| MISP.Attribute.Event.CreationDate | date | Event creation date. | 
-| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Attribute.Event.Tag.Name | string | Event tag name. | 
-| MISP.Attribute.Event.Tag.ID | string | Event tag ID. | 
-| MISP.Attribute.Tag.Name | string | Attribute tag name. | 
-| MISP.Attribute.Tag.ID | string | Attribute tag ID. | 
-| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. | 
-
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.MD5 | String | The MD5 hash of the file. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.ObjectID | string | Attribute object ID. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. |
+| MISP.Attribute.Event.Published | boolean | Is the event published. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
+| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
+| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Attribute.Event.Tag.Name | string | Event tag name. |
+| MISP.Attribute.Event.Tag.ID | string | Event tag ID. |
+| MISP.Attribute.Tag.Name | string | Attribute tag name. |
+| MISP.Attribute.Tag.ID | string | Attribute tag ID. |
+| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. |
 
 #### Command Example
 
@@ -1037,14 +1022,12 @@ Checks the file reputation of the given hash.
 >| 145 | DDOS.TF | 2 |
 >| 144 | Snake: Coming soon in Mac OS X flavour | 3 |
 
-
 ### url
 
 ***
 Checks the reputation of the given URL.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -1054,57 +1037,55 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to check. | Required | 
-
+| url | URL to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | String | The URL of the indicator. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.ObjectID | string | Attribute object ID. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. | 
-| MISP.Attribute.Event.Published | boolean | Is the event published. | 
-| MISP.Attribute.Event.CreationDate | date | Event creation date. | 
-| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Attribute.Event.Tag.Name | string | Event tag name. | 
-| MISP.Attribute.Event.Tag.ID | string | Event tag ID. | 
-| MISP.Attribute.Tag.Name | string | Attribute tag name. | 
-| MISP.Attribute.Tag.ID | string | Attribute tag ID. | 
-| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. | 
-
+| URL.Data | String | The URL of the indicator. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.ObjectID | string | Attribute object ID. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. |
+| MISP.Attribute.Event.Published | boolean | Is the event published. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
+| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
+| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Attribute.Event.Tag.Name | string | Event tag name. |
+| MISP.Attribute.Event.Tag.ID | string | Event tag ID. |
+| MISP.Attribute.Tag.Name | string | Attribute tag name. |
+| MISP.Attribute.Tag.ID | string | Attribute tag ID. |
+| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. |
 
 #### Command Example
 
@@ -1604,12 +1585,10 @@ Notice: Submitting indicators using this command might make the indicator data p
 >|---|---|---|
 >| 238 | New Targets Enterprise Wireless Presentation & Display Systems | 3 |
 
-
 ### ip
 
 ***
 Checks the reputation of an IP address.
-
 
 #### Base Command
 
@@ -1619,57 +1598,55 @@ Checks the reputation of an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to check. | Required | 
-
+| ip | IP address to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | The IP address. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.ObjectID | string | Attribute object ID. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. | 
-| MISP.Attribute.Event.Published | boolean | Is the event published. | 
-| MISP.Attribute.Event.CreationDate | date | Event creation date. | 
-| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Attribute.Event.Tag.Name | string | Event tag name. | 
-| MISP.Attribute.Event.Tag.ID | string | Event tag ID. | 
-| MISP.Attribute.Tag.Name | string | Attribute tag name. | 
-| MISP.Attribute.Tag.ID | string | Attribute tag ID. | 
-| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. | 
-
+| IP.Address | String | The IP address. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.ObjectID | string | Attribute object ID. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.LastChanged | string | Last change event timestamp. |
+| MISP.Attribute.Event.Published | boolean | Is the event published. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
+| MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Owner organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Attribute.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Attribute.Event.OwnerOrganization.local | boolean | Is owner organization local. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
+| MISP.Attribute.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Attribute.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Attribute.Event.Tag.Name | string | Event tag name. |
+| MISP.Attribute.Event.Tag.ID | string | Event tag ID. |
+| MISP.Attribute.Tag.Name | string | Attribute tag name. |
+| MISP.Attribute.Tag.ID | string | Attribute tag ID. |
+| MISP.Attribute.Sighting.Type | string | Attribute's sighting type. |
 
 #### Command Example
 
@@ -2212,12 +2189,10 @@ Checks the reputation of an IP address.
 >|---|---|---|
 >| 488 | final create test | 3 |
 
-
 ### misp-create-event
 
 ***
 Creates a new MISP event.
-
 
 #### Base Command
 
@@ -2227,59 +2202,57 @@ Creates a new MISP event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | Attribute type to be created as part of the new event. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
-| category | Attribute category to be created as part of the new event. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
-| to_ids | Whether to create the event's attribute with the Intrusion Detection System flag. Possible values are: true, false. Default is true. | Optional | 
-| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", "Sharing_group" and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Your_organization_only. | Optional | 
-| comment | Attribute comment to be created as part of the new event. | Optional | 
-| value | Attribute value to be created as part of the new event. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
-| info | Event name. | Required | 
-| published | Whether to publish the event. Possible values: "false" and "true". Possible values are: false, true. Default is false. | Optional | 
-| threat_level_id | MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown". Possible values are: High, Medium, Low, Unknown. Default is High. | Optional | 
-| analysis | The analysis event level. Possible values: "initial", "ongoing", and "completed". Possible values are: initial, ongoing, completed. Default is initial. | Optional | 
-| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
-| creation_date | Set the creation date for the event in the format YYYY-MM-DD. | Optional | 
-
+| type | Attribute type to be created as part of the new event. For example: "md5", "sha1", "email", "url". Default is other. | Optional |
+| category | Attribute category to be created as part of the new event. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional |
+| to_ids | Whether to create the event's attribute with the Intrusion Detection System flag. Possible values are: true, false. Default is true. | Optional |
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", "Sharing_group" and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Your_organization_only. | Optional |
+| comment | Attribute comment to be created as part of the new event. | Optional |
+| value | Attribute value to be created as part of the new event. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required |
+| info | Event name. | Required |
+| published | Whether to publish the event. Possible values: "false" and "true". Possible values are: false, true. Default is false. | Optional |
+| threat_level_id | MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown". Possible values are: High, Medium, Low, Unknown. Default is High. | Optional |
+| analysis | The analysis event level. Possible values: "initial", "ongoing", and "completed". Possible values are: initial, ongoing, completed. Default is initial. | Optional |
+| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional |
+| creation_date | Set the creation date for the event in the format YYYY-MM-DD. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | string | MISP event ID. | 
-| MISP.Event.Distribution | string | MISP event distribution. | 
-| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). | 
-| MISP.Event.EventCreatorEmail | string | Email address of the event creator. | 
-| MISP.Event.Info | string | Event name. | 
-| MISP.Event.AttributeCount | string | Number of attributes of the event. | 
-| MISP.Event.OrganizationID | string | Event organization ID. | 
-| MISP.Event.CreationDate | date | Event creation date. | 
-| MISP.Event.Locked | boolean | Is the event locked. | 
-| MISP.Event.Organization.ID | number | Organization ID. | 
-| MISP.Event.Organization.Name | string | Organization name. | 
-| MISP.Event.Organization.UUID | string | Organization UUID. | 
-| MISP.Event.Organization.local | boolean | Is the organization local. | 
-| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. | 
-| MISP.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. | 
-| MISP.Event.ProposalEmailLock | boolean | If email lock is proposed. | 
-| MISP.Event.LastChanged | date | Last change event timestamp. | 
-| MISP.Event.Galaxy.Description | string | Event's galaxy description. | 
-| MISP.Event.Galaxy.Name | string | Galaxy name. | 
-| MISP.Event.Galaxy.Type | string | Galaxy type. | 
-| MISP.Event.Published | boolean | Is the event published. | 
-| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. | 
-| MISP.Event.UUID | string | Event UUID. | 
-| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Event.Tag.Name | string | All tag names in the event. | 
-| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-
+| MISP.Event.ID | string | MISP event ID. |
+| MISP.Event.Distribution | string | MISP event distribution. |
+| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). |
+| MISP.Event.EventCreatorEmail | string | Email address of the event creator. |
+| MISP.Event.Info | string | Event name. |
+| MISP.Event.AttributeCount | string | Number of attributes of the event. |
+| MISP.Event.OrganizationID | string | Event organization ID. |
+| MISP.Event.CreationDate | date | Event creation date. |
+| MISP.Event.Locked | boolean | Is the event locked. |
+| MISP.Event.Organization.ID | number | Organization ID. |
+| MISP.Event.Organization.Name | string | Organization name. |
+| MISP.Event.Organization.UUID | string | Organization UUID. |
+| MISP.Event.Organization.local | boolean | Is the organization local. |
+| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. |
+| MISP.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. |
+| MISP.Event.ProposalEmailLock | boolean | If email lock is proposed. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
+| MISP.Event.Galaxy.Description | string | Event's galaxy description. |
+| MISP.Event.Galaxy.Name | string | Galaxy name. |
+| MISP.Event.Galaxy.Type | string | Galaxy type. |
+| MISP.Event.Published | boolean | Is the event published. |
+| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. |
+| MISP.Event.UUID | string | Event UUID. |
+| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Event.Tag.Name | string | All tag names in the event. |
+| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.Description | String | Description of the object. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
 
 #### Command Example
 
@@ -2335,12 +2308,10 @@ Creates a new MISP event.
 
 >New event with ID: 1656 has been successfully created.
 
-
 ### misp-add-attribute
 
 ***
 Adds an attribute to an existing MISP event.
-
 
 #### Base Command
 
@@ -2350,42 +2321,40 @@ Adds an attribute to an existing MISP event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | MISP event ID. | Required | 
-| type | Attribute type. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
-| category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
-| to_ids | Whether to create the attribute with the Intrusion Detection System flag. Possible values are: true, false. Default is true. | Optional | 
-| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "Sharing_group", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Inherit_event. | Optional | 
-| comment | Comment for the attribute. | Optional | 
-| value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
-| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
-
+| event_id | MISP event ID. | Required |
+| type | Attribute type. For example: "md5", "sha1", "email", "url". Default is other. | Optional |
+| category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional |
+| to_ids | Whether to create the attribute with the Intrusion Detection System flag. Possible values are: true, false. Default is true. | Optional |
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "Sharing_group", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Inherit_event. | Optional |
+| comment | Comment for the attribute. | Optional |
+| value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required |
+| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Event owner organization ID. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Event owner organization ID. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
 
 #### Command Example
 
@@ -2433,12 +2402,10 @@ Adds an attribute to an existing MISP event.
 
 >New attribute: 1.1.1.2 was added to event id 1655.
 
-
 ### misp-delete-event
 
 ***
 Deletes an event according to the given event ID.
-
 
 #### Base Command
 
@@ -2448,8 +2415,7 @@ Deletes an event according to the given event ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | Event ID to delete. | Required | 
-
+| event_id | Event ID to delete. | Required |
 
 #### Context Output
 
@@ -2468,7 +2434,6 @@ There is no context output for this command.
 ***
 Removes a tag from the given UUID event .
 
-
 #### Base Command
 
 `misp-remove-tag-from-event`
@@ -2477,49 +2442,47 @@ Removes a tag from the given UUID event .
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
-| tag | Tag to remove from the event. | Required | 
-
+| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required |
+| tag | Tag to remove from the event. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | string | MISP event ID. | 
-| MISP.Event.Distribution | string | MISP event distribution. | 
-| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). | 
-| MISP.Event.EventCreatorEmail | string | Email address of the event creator. | 
-| MISP.Event.Info | string | Event name. | 
-| MISP.Event.AttributeCount | string | Number of attributes of the event. | 
-| MISP.Event.OrganizationID | string | Event organization ID. | 
-| MISP.Event.CreationDate | date | Event creation date. | 
-| MISP.Event.Locked | boolean | Is the event locked. | 
-| MISP.Event.Organization.ID | number | Organization ID. | 
-| MISP.Event.Organization.Name | string | Organization name. | 
-| MISP.Event.Organization.UUID | string | Organization UUID. | 
-| MISP.Event.Organization.local | boolean | Is the organization local. | 
-| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. | 
-| MISP.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. | 
-| MISP.Event.ProposalEmailLock | boolean | If email lock proposed. | 
-| MISP.Event.LastChanged | date | Last change event timestamp. | 
-| MISP.Event.Galaxy.Description | string | Event's galaxy description. | 
-| MISP.Event.Galaxy.Name | string | Galaxy name. | 
-| MISP.Event.Galaxy.Type | string | Galaxy type. | 
-| MISP.Event.Published | boolean | Is the event published. | 
-| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. | 
-| MISP.Event.UUID | string | Event UUID. | 
-| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Event.Tag.Name | string | All tag names in the event. | 
-| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-
+| MISP.Event.ID | string | MISP event ID. |
+| MISP.Event.Distribution | string | MISP event distribution. |
+| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). |
+| MISP.Event.EventCreatorEmail | string | Email address of the event creator. |
+| MISP.Event.Info | string | Event name. |
+| MISP.Event.AttributeCount | string | Number of attributes of the event. |
+| MISP.Event.OrganizationID | string | Event organization ID. |
+| MISP.Event.CreationDate | date | Event creation date. |
+| MISP.Event.Locked | boolean | Is the event locked. |
+| MISP.Event.Organization.ID | number | Organization ID. |
+| MISP.Event.Organization.Name | string | Organization name. |
+| MISP.Event.Organization.UUID | string | Organization UUID. |
+| MISP.Event.Organization.local | boolean | Is the organization local. |
+| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. |
+| MISP.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. |
+| MISP.Event.ProposalEmailLock | boolean | If email lock proposed. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
+| MISP.Event.Galaxy.Description | string | Event's galaxy description. |
+| MISP.Event.Galaxy.Name | string | Galaxy name. |
+| MISP.Event.Galaxy.Type | string | Galaxy type. |
+| MISP.Event.Published | boolean | Is the event published. |
+| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. |
+| MISP.Event.UUID | string | Event UUID. |
+| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Event.Tag.Name | string | All tag names in the event. |
+| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.Description | String | Description of the object. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
 
 #### Command Example
 
@@ -2578,7 +2541,6 @@ Removes a tag from the given UUID event .
 ***
 Adds a tag to the given UUID event .
 
-
 #### Base Command
 
 `misp-add-tag-to-event`
@@ -2587,50 +2549,48 @@ Adds a tag to the given UUID event .
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- |--------------|
-| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required     | 
-| tag | Tag to add to the event. | Required     | 
-| is_local | Whether to add the tag as a local tag. | Optional     | 
-
+| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required     |
+| tag | Tag to add to the event. | Required     |
+| is_local | Whether to add the tag as a local tag. | Optional     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | string | MISP event ID. | 
-| MISP.Event.Distribution | string | MISP event distribution. | 
-| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). | 
-| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). | 
-| MISP.Event.EventCreatorEmail | string | Email address of the event creator. | 
-| MISP.Event.Info | string | Event name. | 
-| MISP.Event.AttributeCount | string | Number of attributes of the event. | 
-| MISP.Event.OrganizationID | string | Event organization ID. | 
-| MISP.Event.CreationDate | date | Event creation date. | 
-| MISP.Event.Locked | boolean | Is the event locked. | 
-| MISP.Event.Organization.ID | number | Organization ID. | 
-| MISP.Event.Organization.Name | string | Organization name. | 
-| MISP.Event.Organization.UUID | string | Organization UUID. | 
-| MISP.Event.Organization.local | boolean | Is the organization local. | 
-| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. | 
-| MISP.Event.OwnerOrganization.Name | string | Owner organization name. | 
-| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. | 
-| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. | 
-| MISP.Event.ProposalEmailLock | boolean | If email lock proposed. | 
-| MISP.Event.LastChanged | date | Last change event timestamp. | 
-| MISP.Event.Galaxy.Description | string | Event's galaxy description. | 
-| MISP.Event.Galaxy.Name | string | Galaxy name. | 
-| MISP.Event.Galaxy.Type | string | Galaxy type. | 
-| MISP.Event.Published | boolean | Is the event published. | 
-| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. | 
-| MISP.Event.UUID | string | Event UUID. | 
-| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). | 
-| MISP.Event.SharingGroupID | string | Event sharing group ID. | 
-| MISP.Event.Tag.Name | string | All tag names in the event. | 
-| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-
+| MISP.Event.ID | string | MISP event ID. |
+| MISP.Event.Distribution | string | MISP event distribution. |
+| MISP.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
+| MISP.Event.PublishTimestamp | number | Timestamp of the publish time \(if published\). |
+| MISP.Event.EventCreatorEmail | string | Email address of the event creator. |
+| MISP.Event.Info | string | Event name. |
+| MISP.Event.AttributeCount | string | Number of attributes of the event. |
+| MISP.Event.OrganizationID | string | Event organization ID. |
+| MISP.Event.CreationDate | date | Event creation date. |
+| MISP.Event.Locked | boolean | Is the event locked. |
+| MISP.Event.Organization.ID | number | Organization ID. |
+| MISP.Event.Organization.Name | string | Organization name. |
+| MISP.Event.Organization.UUID | string | Organization UUID. |
+| MISP.Event.Organization.local | boolean | Is the organization local. |
+| MISP.Event.OwnerOrganization.ID | number | Owner organization ID. |
+| MISP.Event.OwnerOrganization.Name | string | Owner organization name. |
+| MISP.Event.OwnerOrganization.UUID | string | Owner organization UUID. |
+| MISP.Event.OwnerOrganization.local | boolean | Is the owner organization local. |
+| MISP.Event.ProposalEmailLock | boolean | If email lock proposed. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
+| MISP.Event.Galaxy.Description | string | Event's galaxy description. |
+| MISP.Event.Galaxy.Name | string | Galaxy name. |
+| MISP.Event.Galaxy.Type | string | Galaxy type. |
+| MISP.Event.Published | boolean | Is the event published. |
+| MISP.Event.DisableCorrelation | boolean | Is correlation disabled. |
+| MISP.Event.UUID | string | Event UUID. |
+| MISP.Event.Analysis | string | Event analysis \(0 Initial, 1 Ongoing, 2 Completed\). |
+| MISP.Event.SharingGroupID | string | Event sharing group ID. |
+| MISP.Event.Tag.Name | string | All tag names in the event. |
+| MISP.Event.Tag.is_galaxy | boolean | Is the tag galaxy. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.Description | String | Description of the object. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
 
 #### Command Example
 
@@ -2695,7 +2655,6 @@ Adds a tag to the given UUID event .
 ***
 Adds a tag to the given UUID attribute.
 
-
 #### Base Command
 
 `misp-add-tag-to-attribute`
@@ -2704,40 +2663,38 @@ Adds a tag to the given UUID attribute.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the attribute. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
-| tag | Tag to add to the attribute. | Required | 
-| is_local | Whether to add the tag as a local tag. | Optional     | 
-
+| uuid | UUID of the attribute. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required |
+| tag | Tag to add to the attribute. | Required |
+| is_local | Whether to add the tag as a local tag. | Optional     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.ObjectID | string | Attribute object ID. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Event owner organization ID. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-| MISP.Attribute.Tag.Name | string | Attribute tag name. | 
-| MISP.Attribute.Tag.is_galaxy | string | Is the tag galaxy. | 
-
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.ObjectID | string | Attribute object ID. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Event owner organization ID. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
+| MISP.Attribute.Tag.Name | string | Attribute tag name. |
+| MISP.Attribute.Tag.is_galaxy | string | Is the tag galaxy. |
 
 #### Command Example
 
@@ -2794,7 +2751,6 @@ Adds a tag to the given UUID attribute.
 ***
 Removes a tag from the given UUID attribute.
 
-
 #### Base Command
 
 `misp-remove-tag-from-attribute`
@@ -2803,39 +2759,37 @@ Removes a tag from the given UUID attribute.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the attribute. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
-| tag | Tag to remove from the attribute. | Required | 
-
+| uuid | UUID of the attribute. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required |
+| tag | Tag to remove from the attribute. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.ObjectID | string | Attribute object ID. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Event owner organization ID. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
-| MISP.Attribute.Tag.Name | string | Attribute tag name. | 
-| MISP.Attribute.Tag.is_galaxy | string | Is the tag galaxy. | 
-
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.ObjectID | string | Attribute object ID. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | Event owner organization ID. |
+| MISP.Attribute.Event.UUID | string | MISP event UUID. |
+| MISP.Attribute.Tag.Name | string | Attribute tag name. |
+| MISP.Attribute.Tag.is_galaxy | string | Is the tag galaxy. |
 
 #### Command Example
 
@@ -2886,7 +2840,6 @@ Removes a tag from the given UUID attribute.
 ***
 Add sighting to an attribute.
 
-
 #### Base Command
 
 `misp-add-sighting`
@@ -2895,10 +2848,9 @@ Add sighting to an attribute.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | Type of sighting to add. Possible values: "sighting", "false_positive", and "expiration". Possible values are: sighting, false_positive, expiration. | Required | 
-| id | ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retrieved from the misp-search commands. | Optional | 
-| uuid | UUID of the attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from the misp-search commands. | Optional | 
-
+| type | Type of sighting to add. Possible values: "sighting", "false_positive", and "expiration". Possible values are: sighting, false_positive, expiration. | Required |
+| id | ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retrieved from the misp-search commands. | Optional |
+| uuid | UUID of the attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from the misp-search commands. | Optional |
 
 #### Context Output
 
@@ -2917,7 +2869,6 @@ There is no context output for this command.
 ***
 Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.json).
 
-
 #### Base Command
 
 `misp-add-events-from-feed`
@@ -2929,13 +2880,11 @@ Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.j
 | feed | URL of the feed to add. Possible values are: CIRCL, Botvrij.eu. | Required |
 | limit | Maximum number of files to add. Default is 2. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MISP.Event.ID | string | IDs of newly created events. |
-
 
 #### Command Example
 
@@ -2943,17 +2892,14 @@ Adds an OSINT feed. Only feeds from format misp are allowed (i.e have manifest.j
 
 #### Human Readable Output
 
->### Total of 0 events was added to MISP.
+>### Total of 0 events was added to MISP
 
 >**No entries.**
-
-
 
 ### misp-add-file-object
 
 ***
 Adds an file object to the specified event ID.
-
 
 #### Base Command
 
@@ -2965,7 +2911,6 @@ Adds an file object to the specified event ID.
 | --- | --- | --- |
 | entry_id | Entry ID of the file. | Required |
 | event_id | Event ID to which add object to. | Required |
-
 
 #### Context Output
 
@@ -2998,7 +2943,6 @@ Adds an file object to the specified event ID.
 | MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. |
 | MISP.Event.Object.Description | String | Description of the object. |
 
-
 #### Command Example
 
 ``` !misp-add-file-object entry_id=${File.EntryID} event_id=1655 ```
@@ -3007,12 +2951,10 @@ Adds an file object to the specified event ID.
 
 >Object has been added to MISP event ID 1655
 
-
 ### misp-add-domain-object
 
 ***
 Adds a domain object to MISP.
-
 
 #### Base Command
 
@@ -3022,43 +2964,41 @@ Adds a domain object to MISP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | ID of an MISP event. | Required | 
-| name | The domain name. For example, "google.com". | Required | 
-| ip | A comma-separated list of IP addresses resolved by DNS. | Required | 
-| text | A description of the domain. | Optional | 
-
+| event_id | ID of an MISP event. | Required |
+| name | The domain name. For example, "google.com". | Required |
+| ip | A comma-separated list of IP addresses resolved by DNS. | Required |
+| text | A description of the domain. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | number | MISP event ID. | 
-| MISP.Event.Object.MetaCategory | String | Object meta category. | 
-| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
-| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
-| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
-| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
-| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
-| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
-| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. | 
-| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
-| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
-| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
-| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
-| MISP.Event.Object.Attribute.Type | String | Object type. | 
-| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
-| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
-| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
-| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
-| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-
+| MISP.Event.ID | number | MISP event ID. |
+| MISP.Event.Object.MetaCategory | String | Object meta category. |
+| MISP.Event.Object.Distribution | Number | Distribution of the object. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. |
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. |
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. |
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. |
+| MISP.Event.Object.Attribute.Type | String | Object type. |
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. |
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. |
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. |
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. |
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. |
+| MISP.Event.Object.Description | String | Description of the object. |
 
 #### Command Example
 
@@ -3167,7 +3107,6 @@ Adds a domain object to MISP.
 ***
 Adds an email object to MISP.
 
-
 #### Base Command
 
 `misp-add-email-object`
@@ -3176,41 +3115,39 @@ Adds an email object to MISP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | ID of an MISP event. | Required | 
+| event_id | ID of an MISP event. | Required |
 | entry_id | Entry ID of the email (only supports .eml files). | Required |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | number | MISP event ID. | 
-| MISP.Event.Object.MetaCategory | String | Object meta category. | 
-| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
-| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
-| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
-| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
-| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
-| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
-| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed date. | 
-| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
-| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
-| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
-| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
-| MISP.Event.Object.Attribute.Type | String | Object type. | 
-| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
-| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
-| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
-| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
-| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-
+| MISP.Event.ID | number | MISP event ID. |
+| MISP.Event.Object.MetaCategory | String | Object meta category. |
+| MISP.Event.Object.Distribution | Number | Distribution of the object. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. |
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed date. |
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. |
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. |
+| MISP.Event.Object.Attribute.Type | String | Object type. |
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. |
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. |
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. |
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. |
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. |
+| MISP.Event.Object.Description | String | Description of the object. |
 
 #### Command Example
 
@@ -3368,7 +3305,6 @@ Adds an email object to MISP.
 ***
 Adds a URL object to an MISP event.
 
-
 #### Base Command
 
 `misp-add-url-object`
@@ -3377,44 +3313,42 @@ Adds a URL object to an MISP event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Full URL to add to the event. | Required | 
-| first_seen | Date that this URL was first seen. For example, `2019-02-03`. | Optional | 
-| text | Description of the URL. | Optional | 
-| last_seen | Date that this URL was last seen. For example, `2019-02-03`. | Optional | 
-| event_id | ID of a MISP event. | Required | 
-
+| url | Full URL to add to the event. | Required |
+| first_seen | Date that this URL was first seen. For example, `2019-02-03`. | Optional |
+| text | Description of the URL. | Optional |
+| last_seen | Date that this URL was last seen. For example, `2019-02-03`. | Optional |
+| event_id | ID of a MISP event. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | number | MISP event ID. | 
-| MISP.Event.Object.MetaCategory | String | Object meta category. | 
-| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
-| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
-| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
-| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
-| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
-| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
-| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. | 
-| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
-| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
-| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
-| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
-| MISP.Event.Object.Attribute.Type | String | Object type. | 
-| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
-| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
-| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
-| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
-| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-
+| MISP.Event.ID | number | MISP event ID. |
+| MISP.Event.Object.MetaCategory | String | Object meta category. |
+| MISP.Event.Object.Distribution | Number | Distribution of the object. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. |
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. |
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. |
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. |
+| MISP.Event.Object.Attribute.Type | String | Object type. |
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. |
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. |
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. |
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. |
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. |
+| MISP.Event.Object.Description | String | Description of the object. |
 
 #### Command Example
 
@@ -3502,7 +3436,6 @@ Adds a URL object to an MISP event.
 ***
 Adds any other object to MISP.
 
-
 #### Base Command
 
 `misp-add-object`
@@ -3511,42 +3444,40 @@ Adds any other object to MISP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | ID of the event to add the object to. | Required | 
-| template | Template name. (Can be found at <https://www.misp-project.org/objects.html>). For example, 'vehicle'. | Required | 
-| attributes | Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}. | Required | 
-
+| event_id | ID of the event to add the object to. | Required |
+| template | Template name. (Can be found at <https://www.misp-project.org/objects.html>). For example, 'vehicle'. | Required |
+| attributes | Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | number | MISP event ID. | 
-| MISP.Event.Object.MetaCategory | String | Object meta category. | 
-| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
-| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
-| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
-| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
-| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
-| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
-| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. | 
-| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted? | 
-| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
-| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
-| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
-| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
-| MISP.Event.Object.Attribute.Type | String | Object type. | 
-| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
-| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
-| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
-| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
-| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-
+| MISP.Event.ID | number | MISP event ID. |
+| MISP.Event.Object.MetaCategory | String | Object meta category. |
+| MISP.Event.Object.Distribution | Number | Distribution of the object. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. |
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. |
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted? |
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. |
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. |
+| MISP.Event.Object.Attribute.Type | String | Object type. |
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. |
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. |
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. |
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. |
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. |
+| MISP.Event.Object.Description | String | Description of the object. |
 
 #### Command Example
 
@@ -3663,40 +3594,40 @@ Adds custom objects to MISP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | ID of the event to add the object to. | Required | 
-| template | Custom Template name. | Required | 
-| attributes | Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}. | Required | 
+| event_id | ID of the event to add the object to. | Required |
+| template | Custom Template name. | Required |
+| attributes | Attributes. For example, {"description": "Manager Ferrari", "make": "Ferrari", "model": "308 GTS"}. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | number | MISP event ID. | 
-| MISP.Event.Object.MetaCategory | String | Object meta category. | 
-| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
-| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
-| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
-| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
-| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
-| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
-| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. | 
-| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted?. | 
-| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
-| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
-| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
-| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
-| MISP.Event.Object.Attribute.Type | String | Object type. | 
-| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
-| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
-| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
-| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
-| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
+| MISP.Event.ID | number | MISP event ID. |
+| MISP.Event.Object.MetaCategory | String | Object meta category. |
+| MISP.Event.Object.Distribution | Number | Distribution of the object. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. |
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. |
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted?. |
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. |
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. |
+| MISP.Event.Object.Attribute.Type | String | Object type. |
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. |
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. |
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. |
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. |
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. |
+| MISP.Event.Object.Description | String | Description of the object. |
 
 #### Command Example
 
@@ -3707,7 +3638,6 @@ Adds custom objects to MISP.
 ***
 Adds an IP object to the MISP event. The following arguments are optional, but at least one must be supplied for the command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".
 
-
 #### Base Command
 
 `misp-add-ip-object`
@@ -3716,50 +3646,48 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | ID of a MISP event. | Required | 
-| ip | A comma-separated list of IP addresses. | Optional | 
-| dst_port | Destination port number. | Optional | 
-| src_port | Source port number. | Optional | 
-| domain | Domain name. | Optional | 
-| hostname | Hostname. For example, 'mail123.example.com'. | Optional | 
-| ip_src | IP source address. | Optional | 
-| ip_dst | IP destination address. | Optional | 
-| first_seen | Date when the IP address was first seen. For example, `2019-02-03`. | Optional | 
-| last_seen | Date when the IP address was last seen. For example, `2019-02-03`. | Optional | 
-| comment | Description of the object to be set as a text attribute. | Optional | 
-
+| event_id | ID of a MISP event. | Required |
+| ip | A comma-separated list of IP addresses. | Optional |
+| dst_port | Destination port number. | Optional |
+| src_port | Source port number. | Optional |
+| domain | Domain name. | Optional |
+| hostname | Hostname. For example, 'mail123.example.com'. | Optional |
+| ip_src | IP source address. | Optional |
+| ip_dst | IP destination address. | Optional |
+| first_seen | Date when the IP address was first seen. For example, `2019-02-03`. | Optional |
+| last_seen | Date when the IP address was last seen. For example, `2019-02-03`. | Optional |
+| comment | Description of the object to be set as a text attribute. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Event.ID | number | MISP event ID. | 
-| MISP.Event.Object.MetaCategory | String | Object meta category. | 
-| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
-| MISP.Event.Object.Name | String | Name of the object. | 
-| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
-| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
-| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
-| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
-| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.ID | Number | ID of the object. | 
-| MISP.Event.Object.UUID | String | UUID of the object. | 
-| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
-| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
-| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. | 
-| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. | 
-| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
-| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
-| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
-| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
-| MISP.Event.Object.Attribute.Type | String | Object type. | 
-| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
-| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
-| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
-| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
-| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
-| MISP.Event.Object.Description | String | Description of the object. | 
-
+| MISP.Event.ID | number | MISP event ID. |
+| MISP.Event.Object.MetaCategory | String | Object meta category. |
+| MISP.Event.Object.Distribution | Number | Distribution of the object. |
+| MISP.Event.Object.Name | String | Name of the object. |
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. |
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.ID | Number | ID of the object. |
+| MISP.Event.Object.UUID | String | UUID of the object. |
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed timestamp. |
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. |
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. |
+| MISP.Event.Object.Attribute.Type | String | Object type. |
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. |
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. |
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. |
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. |
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. |
+| MISP.Event.Object.Description | String | Description of the object. |
 
 #### Command Example
 
@@ -3918,53 +3846,53 @@ Add a new user to MISP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The email address of the new user to be added. | Required | 
-| org_id | ID number indicating which organization the new user will be added to. In order to get the org_id, use the command misp-get-organization-info. | Required | 
-| role_id | Role of the new user to be added. In order to get the role_id, use the command misp-get-role-info. | Required | 
-| password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, and at least one lower-case character. | Required | 
+| email | The email address of the new user to be added. | Required |
+| org_id | ID number indicating which organization the new user will be added to. In order to get the org_id, use the command misp-get-organization-info. | Required |
+| role_id | Role of the new user to be added. In order to get the role_id, use the command misp-get-role-info. | Required |
+| password | A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, and at least one lower-case character. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.User.id | string | MISP user ID. | 
-| MISP.User.password | string | MISP user password. | 
-| MISP.User.org_id | string | MISP user organisation ID. | 
-| MISP.User.server_id | string | MISP user server ID. | 
-| MISP.User.email | string | MISP user email. | 
-| MISP.User.autoalert | boolean | MISP user auto alert. | 
-| MISP.User.authkey | string | MISP User auth key. | 
-| MISP.User.invited_by | string | MISP user invited by. | 
-| MISP.User.gpgkey | string | MISP user GPG key. | 
-| MISP.User.certif_public | string | MISP User public certificate. | 
-| MISP.User.nids_sid | string | MISP user Network Intrusion Detection System \(NIDS\) Signature ID \(SID\). | 
-| MISP.User.termsaccepted | boolean | Whether MISP user terms were accepted. | 
-| MISP.User.newsread | string | MISP user news read. | 
-| MISP.User.role_id | string | MISP user role ID. | 
-| MISP.User.change_pw | boolean | Whether the MISP user password was changed. | 
-| MISP.User.contactalert | boolean | MISP user contact alert. | 
-| MISP.User.disabled | boolean | Whether the MISP user was disabled. | 
-| MISP.User.expiration | string | MISP user expiration. | 
-| MISP.User.current_login | string | MISP user current login. | 
-| MISP.User.last_login | string | MISP user last login. | 
-| MISP.User.force_logout | boolean | MISP user force logout. | 
-| MISP.User.date_created | string | MISP user created date. | 
-| MISP.User.date_modified | string | MISP user modified date. | 
+| MISP.User.id | string | MISP user ID. |
+| MISP.User.password | string | MISP user password. |
+| MISP.User.org_id | string | MISP user organisation ID. |
+| MISP.User.server_id | string | MISP user server ID. |
+| MISP.User.email | string | MISP user email. |
+| MISP.User.autoalert | boolean | MISP user auto alert. |
+| MISP.User.authkey | string | MISP User auth key. |
+| MISP.User.invited_by | string | MISP user invited by. |
+| MISP.User.gpgkey | string | MISP user GPG key. |
+| MISP.User.certif_public | string | MISP User public certificate. |
+| MISP.User.nids_sid | string | MISP user Network Intrusion Detection System \(NIDS\) Signature ID \(SID\). |
+| MISP.User.termsaccepted | boolean | Whether MISP user terms were accepted. |
+| MISP.User.newsread | string | MISP user news read. |
+| MISP.User.role_id | string | MISP user role ID. |
+| MISP.User.change_pw | boolean | Whether the MISP user password was changed. |
+| MISP.User.contactalert | boolean | MISP user contact alert. |
+| MISP.User.disabled | boolean | Whether the MISP user was disabled. |
+| MISP.User.expiration | string | MISP user expiration. |
+| MISP.User.current_login | string | MISP user current login. |
+| MISP.User.last_login | string | MISP user last login. |
+| MISP.User.force_logout | boolean | MISP user force logout. |
+| MISP.User.date_created | string | MISP user created date. |
+| MISP.User.date_modified | string | MISP user modified date. |
 
 ### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The email address of the new user to be added | Required | 
-| org_id | ID number indicating which organization the new user will be added to. | Required | 
-| role_id | Role of the new user to be added. | Required | 
+| email | The email address of the new user to be added | Required |
+| org_id | ID number indicating which organization the new user will be added to. | Required |
+| role_id | Role of the new user to be added. | Required |
 | password | A password for the new user | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.User.email | string | MISP User Email. | 
+| MISP.User.email | string | MISP User Email. |
 
 #### Command Example
 
@@ -3979,7 +3907,6 @@ Add a new user to MISP.
 ***
 Search for attributes in MISP.
 
-
 #### Base Command
 
 `misp-search-attributes`
@@ -3988,23 +3915,23 @@ Search for attributes in MISP.
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                     | **Required** |
 | --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| type | The attribute type. Use any valid MISP attribute type. For example: "md5", "sha1", "email", "url".                                                                                                                                  | Optional | 
-| value | Search for the specified value in the attribute's value field. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).                                               | Optional | 
-| category | The attribute category. Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type".                                                                                                       | Optional | 
-| uuid | Return attributes with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. For example, 59523300-4be8-4fa6-8867-0037ac110002.                                                         | Optional | 
-| to_ids | Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes with and with out to_ids flag. Possible values are: true, false.                                                  | Optional | 
-| last | Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event.                   | Optional | 
-| include_decay_score | Whether to return the decay score at the attribute level. Possible values are: true, false.                                                                                                                                         | Optional | 
-| org | Search by the creator organization by supplying the organization identifier.                                                                                                                                                        | Optional | 
-| tags | A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". For example, "AND:tag1,tag2;OR:tag3". | Optional | 
-| from | Events with the date set to a date after the one specified. This filter will use the date of the event.                                                                                                                             | Optional | 
-| to | Events with the date set to a date before the one specified. This filter will use the date of the event.                                                                                                                            | Optional | 
-| event_id | A comma-separated list of event IDs. Returns the attributes that are part of the given event IDs.                                                                                                                                   | Optional | 
-| include_sightings | Whether to include the the sightings of the matching attributes. Default is false. Possible values are: true, false.                                                                                                                | Optional | 
-| include_correlations | Whether to include the full correlations of the matching attributes. Possible values are: true, false. Default is false.                                                                       | Optional | 
-| page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1.                                                                                                      | Optional | 
-| limit | Limit the number of attributes returned. Default is 50. Default is 50.                                                                                                                                                              | Optional | 
-| enforceWarninglist | Whether to return only the values that are not on the warninglists. Possible values are: true, false.                                                                                                                               | Optional | 
+| type | The attribute type. Use any valid MISP attribute type. For example: "md5", "sha1", "email", "url".                                                                                                                                  | Optional |
+| value | Search for the specified value in the attribute's value field. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).                                               | Optional |
+| category | The attribute category. Use any valid MISP attribute category. For example: "Other", "Person", "Attribution", "Payload type".                                                                                                       | Optional |
+| uuid | Return attributes with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. For example, 59523300-4be8-4fa6-8867-0037ac110002.                                                         | Optional |
+| to_ids | Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes with and with out to_ids flag. Possible values are: true, false.                                                  | Optional |
+| last | Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event.                   | Optional |
+| include_decay_score | Whether to return the decay score at the attribute level. Possible values are: true, false.                                                                                                                                         | Optional |
+| org | Search by the creator organization by supplying the organization identifier.                                                                                                                                                        | Optional |
+| tags | A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". For example, "AND:tag1,tag2;OR:tag3". | Optional |
+| from | Events with the date set to a date after the one specified. This filter will use the date of the event.                                                                                                                             | Optional |
+| to | Events with the date set to a date before the one specified. This filter will use the date of the event.                                                                                                                            | Optional |
+| event_id | A comma-separated list of event IDs. Returns the attributes that are part of the given event IDs.                                                                                                                                   | Optional |
+| include_sightings | Whether to include the the sightings of the matching attributes. Default is false. Possible values are: true, false.                                                                                                                | Optional |
+| include_correlations | Whether to include the full correlations of the matching attributes. Possible values are: true, false. Default is false.                                                                       | Optional |
+| page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1.                                                                                                      | Optional |
+| limit | Limit the number of attributes returned. Default is 50. Default is 50.                                                                                                                                                              | Optional |
+| enforceWarninglist | Whether to return only the values that are not on the warninglists. Possible values are: true, false.                                                                                                                               | Optional |
 | compact | Whether to return only the attribute's values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values are: true, false. Default is false.                        | Optional |
 | with_attachments | Whether to download attachments from MISP. Possible values are: true, false. Default "false".                                                                                                                                    | Optional |
 
@@ -4012,37 +3939,36 @@ Search for attributes in MISP.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ObjectID | string | Attribute's object ID. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ObjectRelation | string | Attribute's object relation. | 
-| MISP.Attribute.ShadowAttribute | Unknown | Attribute shadow attribute. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | number | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | MISP event owner organization ID. | 
-| MISP.Attribute.Event.UUID | string | Event UUID. | 
-| MISP.Attribute.Object.Distribution | Number | Distribution of object. | 
-| MISP.Attribute.Object.ID | Number | ID of the object. | 
-| MISP.Attribute.Object.SharingGroupID | String | Object sharing group ID. | 
-| MISP.Attribute.Tag.Name | string | All tag names in the attribute. | 
-| MISP.Attribute.Tag.is_galaxy | Boolean | Is the tag is a galaxy. | 
-| MISP.Attribute.Sighting.Type | String | Sighting type. | 
-
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ObjectID | string | Attribute's object ID. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ObjectRelation | string | Attribute's object relation. |
+| MISP.Attribute.ShadowAttribute | Unknown | Attribute shadow attribute. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | number | Attribute sharing group ID. |
+| MISP.Attribute.Comment | string | Attribute comment. |
+| MISP.Attribute.Event.ID | string | MISP event ID. |
+| MISP.Attribute.Event.Distribution | string | MISP event distribution. |
+| MISP.Attribute.Event.Info | string | MISP event name. |
+| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. |
+| MISP.Attribute.Event.OwnerOrganization.ID | string | MISP event owner organization ID. |
+| MISP.Attribute.Event.UUID | string | Event UUID. |
+| MISP.Attribute.Object.Distribution | Number | Distribution of object. |
+| MISP.Attribute.Object.ID | Number | ID of the object. |
+| MISP.Attribute.Object.SharingGroupID | String | Object sharing group ID. |
+| MISP.Attribute.Tag.Name | string | All tag names in the attribute. |
+| MISP.Attribute.Tag.is_galaxy | Boolean | Is the tag is a galaxy. |
+| MISP.Attribute.Sighting.Type | String | Sighting type. |
 
 #### Command Example
 
@@ -4139,11 +4065,11 @@ Search for attributes in MISP.
 
 > Current page size: 50
 >Showing page 1
+>
 >|Attribute Category|Attribute ID|Attribute Tags|Attribute Type|Attribute Value|Event Distribution|Event ID|Event Info|Event Organization ID|Event UUID|To IDs|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Payload delivery | 71703 | COVID-19,<br/>misp-galaxy:financial-fraud="Cash Recovery Scam" | sha256 | c8466c386261facf38ce62e75a8c6414affbfaed439e91fa00e515e079702fe0 | 3 | 149 | Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide | 1 | 5e6b322a-9f80-4e2f-9f2a-3cab0a3b4631 | true |
 >| Network activity | 71740 | COVID-19,<br/>misp-galaxy:financial-fraud="Compromised Personally Identifiable Information (PII)" | ip-dst | 1.2.4.4 | 1 | 143 | Recent Qakbot (Qbot) activity | 1 | 5fd0c599-ab6c-4ba1-a69a-df9ec0a8ab16 | true |
-
 
 ## Breaking changes from the previous version of this integration - MISP v3
 
@@ -4154,7 +4080,7 @@ Please see the new commands (ip, file, url...) context output for details.
 
 ### Commands
 
-#### The following commands were removed in this version:
+#### The following commands were removed in this version
 
 * ***misp-add-tag*** - replaced by both *misp-add-tag-to-event* and *misp-add-tag-to-attribute*.
 * ***misp-download-sample*** - removed as download sample is not supported by the new PYMISP version.
@@ -4162,21 +4088,19 @@ Please see the new commands (ip, file, url...) context output for details.
 
 ### Arguments
 
-#### The following arguments were removed in this version:
+#### The following arguments were removed in this version
 
 * In the ***misp-create-event*** command, the *id* argument was replaced by *event_id*.
 
 * In the ***misp-add-domain-object*** command, the *dns* argument was replaced by *ip*.
 
-#### The behavior of the following arguments was changed:
+#### The behavior of the following arguments was changed
 
 * In the *misp-add-events-from-feed* command:
   * *feed* - is now required.
   * *limit* - the default value was changed from '0' to '2'.
 
 * In the *misp-create-event* command, the default value of the *to_ids* argument was changed from 'false' to 'true'.
-
-
 
 ## Additional Considerations for this version
 
@@ -4192,7 +4116,7 @@ is calculated by the event's threat level ID.
 * Threat level ID with a value of 1, 2, or 3 will be scored 3 (i.e., malicious).
 * Threat level ID with a value of 4 will be scored 0 (i.e., unknown).
 
-When configuring an instance, you should set: 
+When configuring an instance, you should set:
 
 * Malicious tag IDs with tag IDs that would be calculated as malicious.
 * Suspicious tag IDs with tag IDs that would be calculated as suspicious.
@@ -4203,7 +4127,6 @@ When configuring an instance, you should set:
 ***
 Update an attribute of an existing MISP event.
 
-
 #### Base Command
 
 `misp-update-attribute`
@@ -4212,36 +4135,34 @@ Update an attribute of an existing MISP event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attribute_uuid | UUID of the attribute to be updated. | Required | 
-| type | Attribute type. For example: "md5", "sha1", "email", "url". | Optional | 
-| category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". | Optional | 
-| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. | Optional | 
-| comment | Comment for the attribute. | Optional | 
-| value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Optional | 
-| first_seen | Updated date when the attribute was first seen. For example, `2019-02-03`. | Optional | 
-| last_seen | Updated date when the attribute was last seen. For example, `2019-02-03`. | Optional | 
-
+| attribute_uuid | UUID of the attribute to be updated. | Required |
+| type | Attribute type. For example: "md5", "sha1", "email", "url". | Optional |
+| category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". | Optional |
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. | Optional |
+| comment | Comment for the attribute. | Optional |
+| value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Optional |
+| first_seen | Updated date when the attribute was first seen. For example, `2019-02-03`. | Optional |
+| last_seen | Updated date when the attribute was last seen. For example, `2019-02-03`. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Attribute.Distribution | string | Attribute distribution. | 
-| MISP.Attribute.Value | string | Attribute value. | 
-| MISP.Attribute.EventID | string | Attribute event ID. | 
-| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
-| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
-| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
-| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
-| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
-| MISP.Attribute.Type | string | Attribute type. | 
-| MISP.Attribute.ID | string | Attribute ID. | 
-| MISP.Attribute.UUID | string | Attribute UUID. | 
-| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
-| MISP.Attribute.Category | string | Attribute category. | 
-| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
+| MISP.Attribute.Distribution | string | Attribute distribution. |
+| MISP.Attribute.Value | string | Attribute value. |
+| MISP.Attribute.EventID | string | Attribute event ID. |
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. |
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
+| MISP.Attribute.Type | string | Attribute type. |
+| MISP.Attribute.ID | string | Attribute ID. |
+| MISP.Attribute.UUID | string | Attribute UUID. |
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
+| MISP.Attribute.Category | string | Attribute category. |
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. |
 | MISP.Attribute.Comment | string | Attribute comment. |
-
 
 #### Command Example
 
@@ -4266,8 +4187,7 @@ Delete an attribute according to the given attribute ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attribute_id | Attribute ID to delete. | Required | 
-
+| attribute_id | Attribute ID to delete. | Required |
 
 #### Context Output
 
@@ -4280,14 +4200,12 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Attribute 3f5917b3-100c-4e21-91c3-48b265337232 has been deleted
-> 
-
+>
 
 ### misp-publish-event
 
 ***
 Publish an event.
-
 
 #### Base Command
 
@@ -4297,9 +4215,8 @@ Publish an event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | Event ID to be published. | Required | 
-| alert | Whether to send an email. The default is to not send a mail. Possible values are: true, false. | Optional | 
-
+| event_id | Event ID to be published. | Required |
+| alert | Whether to send an email. The default is to not send a mail. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -4313,12 +4230,10 @@ There is no context output for this command.
 
 >Event 20536 has been published
 
-
 ### misp-set-event-attributes
 
 ***
 Set event attributes according to the given attributes data.
-
 
 #### Base Command
 
@@ -4328,9 +4243,8 @@ Set event attributes according to the given attributes data.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | Event ID to set attributes for. | Required | 
-| attribute_data | Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]. | Required | 
-
+| event_id | Event ID to set attributes for. | Required |
+| attribute_data | Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]. | Required |
 
 #### Context Output
 
@@ -4341,7 +4255,6 @@ There is no context output for this command.
 ***
 Check a list of indicator values against the MISP warninglist.
 
-
 #### Base Command
 
 `misp-check-warninglist`
@@ -4350,16 +4263,15 @@ Check a list of indicator values against the MISP warninglist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | Indicator values to check against the MISP warninglist. | Required | 
-
+| value | Indicator values to check against the MISP warninglist. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Warninglist.Count | number | Count on how many warninglists the value was found. | 
-| MISP.Warninglist.Value | string | Value checked. | 
-| MISP.Warninglist.Lists | string | Name of warninglists where the value was found. | 
+| MISP.Warninglist.Count | number | Count on how many warninglists the value was found. |
+| MISP.Warninglist.Value | string | Value checked. |
+| MISP.Warninglist.Lists | string | Name of warninglists where the value was found. |
 
 ### misp-get-organization-info
 
@@ -4379,8 +4291,8 @@ Display the organization IDs and names.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Organization.org_id | string | MISP organization ID. | 
-| MISP.Organization.org_name | string | MISP organization name. | 
+| MISP.Organization.org_id | string | MISP organization ID. |
+| MISP.Organization.org_name | string | MISP organization name. |
 
 ### misp-get-role-info
 
@@ -4400,8 +4312,8 @@ Display role names and role ids.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Role.role_id | string | MISP role ID. | 
-| MISP.Role.role_name | string | MISP role name. | 
+| MISP.Role.role_id | string | MISP role ID. |
+| MISP.Role.role_name | string | MISP role name. |
 
 #### Command Example
 
@@ -4410,6 +4322,7 @@ Display role names and role ids.
 #### Human Readable Output
 
 >### MISP Roles
+>
 >|id|name|
 >|---|---|
 >| 1 | rolename |
