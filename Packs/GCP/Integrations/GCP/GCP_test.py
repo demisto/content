@@ -281,13 +281,13 @@ def test_compute_subnet_update_private_access(mocker):
     )
 
 
-def test_compute_project_metadata_add_new_item(mocker):
+def test_compute_instance_metadata_add_new_item(mocker):
     """
     Given: Project metadata needs to be updated with a new key-value pair
-    When: compute_project_metadata_add is called with new metadata
+    When: compute_instance_metadata_add is called with new metadata
     Then: The function should add the new item to existing metadata and call setMetadata with the updated list
     """
-    from GCP import compute_project_metadata_add
+    from GCP import compute_instance_metadata_add
 
     # Mock arguments
     args = {
@@ -315,7 +315,7 @@ def test_compute_project_metadata_add_new_item(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
 
     # Execute the function
-    result = compute_project_metadata_add(mock_creds, args)
+    result = compute_instance_metadata_add(mock_creds, args)
 
     # Check call to setMetadata with correct body
     called_args, called_kwargs = mock_compute.instances().setMetadata.call_args
@@ -338,13 +338,13 @@ def test_compute_project_metadata_add_new_item(mocker):
     assert result.outputs == mock_response
 
 
-def test_compute_project_metadata_add_update_existing(mocker):
+def test_compute_instance_metadata_add_update_existing(mocker):
     """
     Given: Project metadata needs to be updated where a key already exists
-    When: compute_project_metadata_add is called with metadata containing an existing key
+    When: compute_instance_metadata_add is called with metadata containing an existing key
     Then: The function should update the value of the existing key and preserve other metadata
     """
-    from GCP import compute_project_metadata_add
+    from GCP import compute_instance_metadata_add
 
     # Mock arguments
     args = {
@@ -375,7 +375,7 @@ def test_compute_project_metadata_add_update_existing(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
 
     # Execute the function
-    result = compute_project_metadata_add(mock_creds, args)
+    result = compute_instance_metadata_add(mock_creds, args)
 
     # Check body has expected items
     called_args, called_kwargs = mock_compute.instances().setMetadata.call_args

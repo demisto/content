@@ -1,6 +1,6 @@
 !gcp-compute-firewall-patch project_id="test-project" resource_name="fw-rule" disabled=true
 !gcp-storage-bucket-policy-delete project_id="test-project" resource_name=test-bucket entity=user:test@mail.com
 !gcp-compute-subnet-update project_id="test-project" region=us-east1 resource_name=test-subnet enable_flow_logs=true
-!gcp-compute-project-metadata-add project_id="test-project" resource_name=gke-test-cluster--default-pool-8e3a2e6c-xl51 zone=us-central1-c metadata=key=enable-oslogin,value=true
+!gcp-compute-instance-metadata-add project_id="test-project" resource_name=gke-test-cluster--default-pool-8e3a2e6c-xl51 zone=us-central1-c metadata=key=enable-oslogin,value=true
 !gcp-container-cluster-security-update project_id="test-project" region=us-central1-c resource_name=test-cluster-1 enable_intra_node_visibility=true
 !gcp-storage-bucket-metadata-update project_id="test-project" resource_name=test-bucket enable_versioning=true enable_uniform_access=false

@@ -128,14 +128,14 @@ Enables flow logs or Private Google Access on a subnet.
 | GCP.Compute.Operations.secondaryIpRanges | Unknown | List of secondary IP ranges for the subnet. | 
 | GCP.Compute.Operations.description | String | The description of the subnet. | 
 
-### gcp-compute-project-metadata-add
+### gcp-compute-instance-metadata-add
 
 ***
 Sets metadata for the specified instance to the data included in the request.
 
 #### Base Command
 
-`gcp-compute-project-metadata-add`
+`gcp-compute-instance-metadata-add`
 
 #### Input
 

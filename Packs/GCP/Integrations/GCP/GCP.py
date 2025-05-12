@@ -28,7 +28,7 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
         "compute.subnetworks.get",
         "compute.subnetworks.list",
     ],
-    "gcp-compute-project-metadata-add": ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list"],
+    "gcp-compute-instance-metadata-add": ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list"],
     "gcp-storage-bucket-policy-delete": ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
     "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
     "gcp-storage-bucket-metadata-update": ["storage.buckets.update"],
@@ -283,7 +283,7 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=[response_patch, response_set])
 
 
-def compute_project_metadata_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def compute_instance_metadata_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Adds metadata key-value pairs to a GCE instance.
 
@@ -475,7 +475,7 @@ def main():
             "gcp-compute-firewall-patch": compute_firewall_patch,
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-compute-subnet-update": compute_subnet_update,
-            "gcp-compute-project-metadata-add": compute_project_metadata_add,
+            "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
             "gcp-container-cluster-security-update": container_cluster_security_update,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
         }

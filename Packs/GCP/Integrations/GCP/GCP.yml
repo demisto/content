@@ -222,7 +222,7 @@ script:
           description: The description of the subnet.
           type: String
 
-    - name: gcp-compute-project-metadata-add
+    - name: gcp-compute-instance-metadata-add
       description: Sets metadata for the specified instance to the data included in the request.
       arguments:
         - name: project_id
