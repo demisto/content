@@ -1,6 +1,7 @@
 Add, remove, or modify logos for the URL Phishing model to compare to suspicious websites.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Add, remove, or modify logos for the URL Phishing model to compare to suspicious
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,5 +22,6 @@ Add, remove, or modify logos for the URL Phishing model to compare to suspicious
 | action | Action to execute on the model. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
