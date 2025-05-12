@@ -903,8 +903,7 @@
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout": 60000,
             "fromversion": "6.1.0",
-            "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "instance_names": "ml_dummy_prod"
         },
         {
             "integrations": "ZeroFox",
