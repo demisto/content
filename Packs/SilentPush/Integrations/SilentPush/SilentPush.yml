@@ -4,8 +4,8 @@ commonfields:
   id: SilentPush
   version: -1
 sectionOrder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 name: SilentPush
 display: SilentPush
 configuration:
@@ -75,13 +75,13 @@ script:
     arguments:
     - name: qtype
       isArray: false
-      description: DNS record type
+      description: DNS record type.
       required: true
       secret: false
       default: false
     - name: qname
       isArray: false
-      description: The DNS record name to lookup
+      description: The DNS record name to lookup.
       required: true
       secret: false
       default: false
@@ -392,7 +392,7 @@ script:
       description: Queried domain.
       type: String
     - contextPath: SilentPush.Certificate.metadata
-      description: Metadata of the response
+      description: Metadata of the response.
       type: String
     - contextPath: SilentPush.Certificate.certificates.cert_index
       description: Index of the certificate.
@@ -493,7 +493,7 @@ script:
       default: false
     outputs:
     - contextPath: SilentPush.Enrichment.value
-      description: Queried value
+      description: Queried value.
       type: String
     - contextPath: SilentPush.Enrichment.domain_string_frequency_probability.avg_probability
       description: Average probability score of the domain string.
@@ -532,7 +532,7 @@ script:
       description: Number of results found for the domain.
       type: Number
     - contextPath: SilentPush.Enrichment.domain_urls.results_summary.url_shortner_score
-      description: Score of the shortned URL
+      description: Score of the shortned URL.
       type: Number
     - contextPath: SilentPush.Enrichment.domaininfo.domain
       description: Domain name analyzed.
@@ -607,13 +607,13 @@ script:
       description: Provided nameserver.
       type: String
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domain_density
-      description: Number of domains sharing this NS
+      description: Number of domains sharing this NS.
       type: Number
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domains_listed
       description: Number of listed domains using this NS.
       type: Number
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_reputation
-      description: Reputation score for this NS
+      description: Reputation score for this NS.
       type: Number
     - contextPath: SilentPush.Enrichment.scan_data.certificates.domain
       description: Domain for which the SSL certificate was issued.
@@ -661,7 +661,7 @@ script:
       description: The date when the headers were scanned.
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.headers.headers.cache-control
-      description: HTTP cache-control
+      description: HTTP cache-control.
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.headers.headers.content-length"
       description: Content lenght of the HTTP response.
@@ -679,7 +679,7 @@ script:
       description: HTTP response code for the domain scan.
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.html.html_body_murmur3
-      description: hash of the page content
+      description: hash of the page content.
       type: String
     - contextPath: SilentPush.Enrichment.scan_data.html.html_body_ssdeep
       description: SSDEEP hash (used for fuzzy matching similar HTML content).
@@ -790,7 +790,7 @@ script:
       description: This field is usually used to indicate a known organization or individual associated with the IP.
       type: String
     - contextPath: SilentPush.Enrichment.ip2asn.benign_info.known_benign
-      description: Indicates whether this IP/ASN is explicitly known to be safe (e.g., a reputable cloud provider or public service)
+      description: Indicates whether this IP/ASN is explicitly known to be safe (e.g., a reputable cloud provider or public service).
       type: Boolean
     - contextPath: SilentPush.Enrichment.ip2asn.benign_info.tags
       description: Contains descriptive tags if the IP/ASN has a known role (e.g., "Google Bot", "Cloudflare Proxy").
@@ -1256,19 +1256,19 @@ script:
     arguments:
     - name: ipv4
       isArray: false
-      description: IPv4 address for which information needs to be retrieved
+      description: IPv4 address for which information needs to be retrieved.
       required: true
       secret: false
       default: false
     - name: explain
       isArray: false
-      description: Show the information used to calculate the reputation score
+      description: Show the information used to calculate the reputation score.
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The maximum number of reputation history to retrieve
+      description: The maximum number of reputation history to retrieve.
       required: false
       secret: false
       default: false
@@ -1338,19 +1338,19 @@ script:
     arguments:
     - name: nameserver
       isArray: false
-      description: Nameserver name for which information needs to be retrieved
+      description: Nameserver name for which information needs to be retrieved.
       required: true
       secret: false
       default: false
     - name: explain
       isArray: false
-      description: Show the information used to calculate the reputation score
+      description: Show the information used to calculate the reputation score.
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The maximum number of reputation history to retrieve
+      description: The maximum number of reputation history to retrieve.
       required: false
       secret: false
       default: false
@@ -1508,7 +1508,7 @@ script:
       defaultValue: self
     - name: as_of
       isArray: false
-      description: 'Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago'
+      description: 'Build infratags from padns data where the as_of timestamp equivalent is between the first_seen and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - relative time <sec> seconds ago.'
       required: false
       secret: false
       default: false
@@ -2537,12 +2537,12 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: false
   isfetch: false
   runonce: false
   longRunning: false
   longRunningPort: false
-fromversion: 5.0.0
+fromversion: 6.10.0
 tests:
 - No tests
