@@ -364,7 +364,7 @@ def main():
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, last_run, fetch_events_types)
             if len(events):
-                demisto.debug(f"Sending {len(events)} events.")
+                demisto.debug(f"Sending {len(events)} events to XSIAM AdminByRequest, before server call.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f"Successfully saved last_run= {demisto.getLastRun()}")
