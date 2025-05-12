@@ -262,7 +262,7 @@ def get_content(key, title):
 
 
 def get_pdf(page_id):
-    params = {"pageId": pageid}
+    params = {"pageId": page_id}
 
     full_url = SERVER + "/spaces/flyingpdf/pdfpageexport.action"
     res = http_request("GET", full_url, None, params, is_download=True)
