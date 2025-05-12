@@ -7663,7 +7663,7 @@ def test_enrich_groups_no_resources(mocker):
     mocker.patch.object(CrowdStrikeFalcon, "http_request", return_value={"resources": None})
 
     assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}
-    
+
 
 def test_fetch_events_reads_last_run_indexes_correctly(mocker):
     """
@@ -7675,14 +7675,7 @@ def test_fetch_events_reads_last_run_indexes_correctly(mocker):
     """
     from CrowdStrikeFalcon import fetch_events
     
-    last_run_identifiers = [
-        "Detection",
-        "Incident",
-        "IDP",
-        "Mobile",
-        "ODS",
-        "OFP"
-        ]
+    last_run_identifiers = ["Detection", "Incident", "IDP", "Mobile", "ODS", "OFP"]
         
     mocker.patch("CrowdStrikeFalcon.demisto.getLastRun", return_value=last_run_identifiers)
     mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})

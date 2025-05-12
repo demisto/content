@@ -40,7 +40,7 @@ SERVER = PARAMS["url"].removesuffix("/")
 # Should we use SSL
 USE_SSL = not PARAMS.get("insecure", False)
 # How many time before the first fetch to retrieve incidents
-FETCH_TIME = 'now' if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
+FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
 MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000
 MAX_FETCH_INCIDENT_PER_API_CALL = 500
@@ -368,6 +368,7 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 """ HELPER FUNCTIONS """
+
 
 def disable_for_xsiam():
     """Validates if command is not running on an unsupported Cortex platform.
@@ -751,6 +752,7 @@ def add_mirroring_fields(incident: dict):
     incident["mirror_direction"] = MIRROR_DIRECTION
     incident["mirror_instance"] = INTEGRATION_INSTANCE
 
+
 def add_response_to_dataset(resp: dict, raw: dict) -> None:
     """
     Adds response data info to specific dataset raw.
@@ -770,6 +772,7 @@ def add_response_to_dataset(resp: dict, raw: dict) -> None:
             val = json.dumps(val)
         raw[key] = val
     
+    
 def detection_to_incident(detection, is_fetch_events: bool = False):
     """
     Creates an incident of a detection.
@@ -788,7 +791,7 @@ def detection_to_incident(detection, is_fetch_events: bool = False):
         "name": "Detection ID: " + str(detection_id),
         "occurred": str(detection.get("created_timestamp")),
         "severity": severity_string_to_int(severity),
-        "rawJSON": json.dumps(detection)
+        "rawJSON": json.dumps(detection),
     }
     if is_fetch_events:
         incident["_source_log_type"] = detection.get("incident_type")
@@ -796,11 +799,11 @@ def detection_to_incident(detection, is_fetch_events: bool = False):
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident["_time"] = detection.get("timestamp")
-            incident['_entry_status'] = "new"
+            incident["_entry_status"] = "new"
         # updated detection
         else:
             incident["_time"] = detection.get("updated_timestamp")
-            incident['_entry_status'] = "updated"
+            incident["_entry_status"] = "updated"
     return incident
 
 
@@ -822,7 +825,7 @@ def incident_to_incident_context(incident, is_fetch_events: bool = False):
     incident_context = {
         "name": f"Incident ID: {incident_id}",
         "occurred": str(incident.get("start")),
-        "rawJSON": json.dumps(incident)
+        "rawJSON": json.dumps(incident),
     }
     if is_fetch_events:
         incident_context["_source_log_type"] = incident.get("incident_type")
@@ -830,11 +833,11 @@ def incident_to_incident_context(incident, is_fetch_events: bool = False):
         # new incident
         if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created")):
             incident_context["_time"] = incident.get("created_timestamp")
-            incident_context['_entry_status'] = "new"
+            incident_context["_entry_status"] = "new"
         # updated detection
         else:
             incident_context["_time"] = incident.get("modified_timestamp")
-            incident_context['_entry_status'] = "updated"
+            incident_context["_entry_status"] = "updated"
     return incident_context
 
 
@@ -889,11 +892,11 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident_context["_time"] = detection.get("timestamp")
-            incident_context['_entry_status'] = "new"
+            incident_context["_entry_status"] = "new"
         # updated detection
         else:
             incident_context["_time"] = detection.get("updated_timestamp")
-            incident_context['_entry_status'] = "updated"
+            incident_context["_entry_status"] = "updated"
     return incident_context
 
 
@@ -2890,7 +2893,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 """ COMMANDS FUNCTIONS """
 
 
-def migrate_last_run(last_run: dict[str, str] | list[dict],  is_fetch_events: bool = False) -> list[dict]:
+def migrate_last_run(last_run: dict[str, str] | list[dict], is_fetch_events: bool = False) -> list[dict]:
     """This function migrated from old last run object to new last run object
 
     Args:
@@ -3228,14 +3231,16 @@ def fetch_incidents():
             current_fetch_ofp_detection,
         ]
     )
-    return (incidents
+    return (
+        incidents
         + detections
         + idp_detections
         + iom_incidents
         + ioa_incidents
         + mobile_detections
         + on_demand_detections
-        + ofp_detections)
+        + ofp_detections
+        )
 
 def fetch_events():
     incidents: list = []
@@ -3294,7 +3299,6 @@ def fetch_events():
         if raw_res is not None and "resources" in raw_res:
             full_detections = demisto.get(raw_res, "resources")
             for detection in full_detections:
-                
                 detection["incident_type"] = incident_type
                 # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
                 detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
@@ -3333,7 +3337,7 @@ def fetch_events():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(
             last_run=current_fetch_info_incidents, first_fetch=FETCH_TIME, look_back=look_back, date_format=DATE_FORMAT
         )
-        
+
         fetch_limit = current_fetch_info_incidents.get("limit") or MAX_FETCH_INCIDENT_PER_API_CALL
         incident_type = "incident"
 
@@ -3398,7 +3402,7 @@ def fetch_events():
             product_type="idp",
             detection_name_prefix=IDP_DETECTION_FETCH_TYPE,
             start_time_key="created_timestamp",
-            is_fetch_events=True
+            is_fetch_events=True,
         )
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3410,7 +3414,7 @@ def fetch_events():
             product_type="mobile",
             detection_name_prefix=MOBILE_DETECTION_FETCH_TYPE,
             start_time_key="timestamp",
-            is_fetch_events=True
+            is_fetch_events=True,
         )
 
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
@@ -3427,7 +3431,7 @@ def fetch_events():
             product_type="ods",
             detection_name_prefix=ON_DEMAND_SCANS_DETECTION_TYPE,
             start_time_key="created_timestamp",
-            is_fetch_events=True
+            is_fetch_events=True,
         )
 
     if OFP_DETECTION_TYPE in fetch_incidents_or_detections:
@@ -3444,29 +3448,23 @@ def fetch_events():
             product_type="ofp",
             detection_name_prefix=OFP_DETECTION_TYPE,
             start_time_key="created_timestamp",
-            is_fetch_events=True
+            is_fetch_events=True,
         )
 
     last_run = [
-            current_fetch_info_detections,
-            current_fetch_info_incidents,
-            current_fetch_info_idp_detections,
-            current_fetch_info_mobile_detections,
-            current_fetch_on_demand_detections,
-            current_fetch_ofp_detection,
-        ]
+        current_fetch_info_detections,
+        current_fetch_info_incidents,
+        current_fetch_info_idp_detections,
+        current_fetch_info_mobile_detections,
+        current_fetch_on_demand_detections,
+        current_fetch_ofp_detection,
+    ]
     
-    events = (
-        incidents
-        + detections
-        + idp_detections
-        + mobile_detections
-        + on_demand_detections
-        + ofp_detections
-        )
+    events = incidents + detections + idp_detections + mobile_detections + on_demand_detections + ofp_detections
 
     return last_run, events
-        
+
+    
 def fetch_detections_by_product_type(
     current_fetch_info: dict,
     look_back: int,
@@ -3475,7 +3473,7 @@ def fetch_detections_by_product_type(
     detections_type: str,
     detection_name_prefix: str,
     start_time_key: str,
-    is_fetch_events: bool = False
+    is_fetch_events: bool = False,
 ) -> tuple[List, dict]:
     """The fetch logic for idp, ods and mobile detections.
 
@@ -3500,7 +3498,7 @@ def fetch_detections_by_product_type(
         fetch_limit = current_fetch_info.get("limit") or MAX_FETCH_DETECTION_PER_API_CALL
     else:
         fetch_limit = current_fetch_info.get("limit") or INCIDENTS_PER_FETCH
-        
+
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
     if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
         filter = filter.replace("product:", "type:")
@@ -3526,10 +3524,9 @@ def fetch_detections_by_product_type(
             full_detections = demisto.get(raw_res, "resources")
             for detection in full_detections:
                 detection["incident_type"] = detections_type
-                detection_to_context = detection_to_incident_context(detection,
-                                                                     detection_name_prefix,
-                                                                     start_time_key,
-                                                                     is_fetch_events=is_fetch_events)
+                detection_to_context = detection_to_incident_context(
+                    detection,  detection_name_prefix, start_time_key, is_fetch_events=is_fetch_events
+                )
                 detections.append(detection_to_context)
         detections = (
             truncate_long_time_str(detections, "occurred")
@@ -7562,8 +7559,7 @@ def get_ioarules_command(args: dict) -> CommandResults:
         raw_response=ioarules_response_data,
     )
 
-
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
