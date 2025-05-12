@@ -56,15 +56,12 @@ class Client:
             "sysparm_offset": offset,
             "sysparm_query": f"sys_created_on>{from_time}",
         }
-        try:
-            res = self.sn_client.http_request(
-                method="GET",
-                full_url=f"{self.api_server_url}{URL[log_type]}",
-                url_suffix=None,
-                params=remove_empty_elements(params),
-            )
-        except Exception:
-            return_error("--------------------------")
+        res = self.sn_client.http_request(
+            method="GET",
+            full_url=f"{self.api_server_url}{URL[log_type]}",
+            url_suffix=None,
+            params=remove_empty_elements(params),
+        )
             
         return res.get("result")
 

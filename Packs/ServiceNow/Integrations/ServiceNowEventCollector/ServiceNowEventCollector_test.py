@@ -20,7 +20,8 @@ from ServiceNowEventCollector import (
     initialize_from_date,
     process_and_filter_events,
     update_last_run,
-    reset_auth
+    reset_auth,
+    module_of_testing
 )
 
 
@@ -959,4 +960,25 @@ def test_reset_auth_context_cleared(mocker):
     assert 'Reset integration-context' in debug_mock.call_args[0][0]
 
     assert "Authorization was reset successfully" in result.readable_output
+
+def test_module_of_testing_success_and_failure(mocker):
+    client = Client(
+        use_oauth=True,
+        credentials={"username": "test", "password": "test"},
+        client_id="id",
+        client_secret="secret",
+        url="https://example.com",
+        verify=False,
+        proxy=False,
+        api_server_url="https://example.com/api/now",
+        fetch_limit_audit=10,
+        fetch_limit_syslog=10,
+    )
+
+    mocker.patch(
+        "ServiceNowEventCollector.fetch_events_command",
+        return_value=([], {})
+    )
+    assert module_of_testing(client, [AUDIT]) == "ok"
+
     
