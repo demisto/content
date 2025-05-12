@@ -173,7 +173,6 @@ class ContentPackInstaller:
                 data = {'packs': packs_to_install, 'ignoreWarnings': True}
                 args = {'uri': '/contentpacks/marketplace/install', 'body': data}
                 status, res = self._call_execute_command("core-api-post", args)
-                demisto.debug(f'Got the next responses {status=} {res=}')
 
             else:  # install packs for XSOAR 6.X
                 args = {"packs_to_install": str(pack_payload)}
