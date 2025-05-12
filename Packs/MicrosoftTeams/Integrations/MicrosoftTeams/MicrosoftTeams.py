@@ -2568,13 +2568,16 @@ def channel_mirror_loop():
             time.sleep(5)
 
 
-def filter_invalid_teams(teams: list[dict], team_name: str) -> list[dict]:
+def filter_invalid_teams(teams: list[dict], team_name: str, current_team_aad_id: str = "") -> list[dict]:
     """
     Requests an updated list of teams with the given team name
     and filters any missing teams of the same name from the given teams list.
 
     :param teams: List of teams currently cached in the integration context.
     :param team_name: Team name to test for.
+    :param current_team_aad_id: ID of the team that is currently being handled.
+    The Graph API can take longer to update than it takes for event messages to arrive, thus not reflecting the current change.
+
     :returns: Updated list of teams with bad team entries removed.
     """
     demisto.debug(f"Checking for invalid teams in cache for name '{team_name}'")
@@ -2587,6 +2590,9 @@ def filter_invalid_teams(teams: list[dict], team_name: str) -> list[dict]:
         response_teams = response.get("value", [])
         demisto.debug(f"Found {len(response_teams)} valid teams with the name {team_name}")
         valid_team_aad_ids = [team.get("id", "") for team in response_teams]
+        if current_team_aad_id and current_team_aad_id not in valid_team_aad_ids:
+            demisto.debug("Current team aad_id was not listed, adding it manually")
+            valid_team_aad_ids.append(current_team_aad_id)
         demisto.debug(f"aad_ids of discovered valid teams: {valid_team_aad_ids}")
 
         invalid_teams = [
@@ -2688,15 +2694,15 @@ def team_renamed_handler(integration_context: dict, channel_data: dict):
     found_duplicate_name: bool = False
     for team in context_teams:
         if team.get("team_aad_id", "") == renamed_team_aad_id:
+            demisto.info(f"Team {team['team_name']} has been renamed to {team_new_name}")
             team["team_name"] = team_new_name
             found_team = True
-            demisto.info(f"Team {team['team_name']} has been renamed to {team_new_name}")
 
         elif team.get("team_name", "") == team_new_name:  # Found cached team with same name but different id
             found_duplicate_name = True
 
     if found_duplicate_name:
-        context_teams = filter_invalid_teams(context_teams, team_new_name)
+        context_teams = filter_invalid_teams(context_teams, team_new_name, renamed_team_aad_id)
 
     if not found_team and service_url:
         demisto.debug("Did not find the team in context, creating a new cache entry")
