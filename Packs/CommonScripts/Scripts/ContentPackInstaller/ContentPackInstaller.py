@@ -185,7 +185,6 @@ class ContentPackInstaller:
                 self.installed_packs[pack_id] = packs_names_versions[pack_id]
                 self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore
 
-
     def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:  # pragma: no cover
         """Retrieves the packs' dependencies from the marketplace data.
 
