@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import requests
 import json
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -250,7 +251,7 @@ def main():
     try:
         params = demisto.params()
         results = ""
-        auth = ""
+        auth: Optional[tuple[str, str]] = None
         base_url = params.get("base_url", "")
         is_auth = params.get("is_auth", True)
         creds = params.get("credentials", "")
@@ -268,7 +269,7 @@ def main():
                 elif "credentials" not in creds:
                     auth = (creds["identifier"], creds["password"])
             else:
-                auth = ()
+                auth = None
 
             client = Client(base_url, auth=auth, verify=verify, proxy=proxy)
 
