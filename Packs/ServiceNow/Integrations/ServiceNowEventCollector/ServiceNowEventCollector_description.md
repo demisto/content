@@ -17,4 +17,4 @@ To use OAuth 2.0 authorization:
 3. Copy the `Client Id` and `Client Secret` into the `ClientID` and `Client Secret` fields of the instance configuration. The `Client Id` and `Client Secret` were automatically generated when you created the endpoint.
 4. Select the `Use OAuth Login` checkbox and click `Done`.
 
-Note: If you're using OAuth 2.0 and encounter access_denied with access token related errors, you can use the !service-now-oauth-login command to manually clear the expired refresh token from the integration context. Then the integration will generate new refresh token through the API automatically. 
+Note: If you get access_denied or access token errors while using OAuth 2.0, run the !service-now-oauth-login command to clear the expired refresh token. The integration then automatically generates a new refresh token via the API.
