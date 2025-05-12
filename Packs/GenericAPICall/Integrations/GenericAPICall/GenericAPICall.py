@@ -73,9 +73,7 @@ class Client(BaseClient):
             raise DemistoException(f"Unauthorized. Status code: {status_code}. Origin response from server: {res.text}")
 
         if status_code == 403:
-            raise DemistoException(
-                f"Invalid permissions. Status code: {status_code}. Origin response from server: {res.text}"
-            )
+            raise DemistoException(f"Invalid permissions. Status code: {status_code}. Origin response from server: {res.text}")
 
         if status_code == 404:
             raise DemistoException(
@@ -83,9 +81,7 @@ class Client(BaseClient):
                 f" {status_code}. Origin response from server: {res.text}"
             )
         if status_code == 500:
-            raise DemistoException(
-                f"Internal server error. Status code: {status_code}. Origin response from server: {res.text}"
-            )
+            raise DemistoException(f"Internal server error. Status code: {status_code}. Origin response from server: {res.text}")
 
         if status_code == 502:
             raise DemistoException(f"Bad gateway. Status code: {status_code}. Origin response from server: {res.text}")
