@@ -43,31 +43,18 @@ Helper Functions
 def http_request(
     method, full_url, data=None, params=None, is_test=False, resp_type: str = "json",
 ):  # pragma: no cover
-    if PAT:
-        try:
-            res = requests.request(
-                method,
-                full_url,
-                verify=VERIFY_CERTIFICATE,
-                data=data,
-                headers=HEADERS,
-                params=params,
-            )
-        except requests.exceptions.RequestException:  # This is the correct syntax
-            return_error(f"Failed to connect to - {full_url} - Please check the URL")
-    else:
-        try:
-            res = requests.request(
-                method,
-                full_url,
-                verify=VERIFY_CERTIFICATE,
-                auth=(USERNAME, PASSWORD),
-                data=data,
-                headers=HEADERS,
-                params=params,
-            )
-        except requests.exceptions.RequestException:  # This is the correct syntax
-            return_error(f"Failed to connect to - {full_url} - Please check the URL")
+    try:
+        res = requests.request(
+            method,
+            full_url,
+            verify=VERIFY_CERTIFICATE,
+            auth=(USERNAME, PASSWORD) if not PERSONAL_ACCESS_TOKEN else None,
+            data=data,
+            headers=HEADERS,
+            params=params,
+        )
+    except requests.exceptions.RequestException:  # This is the correct syntax
+        return_error(f"Failed to connect to - {full_url} - Please check the URL")
 
     # Handle error responses gracefully
     if res.status_code < 200 or res.status_code >= 400:
