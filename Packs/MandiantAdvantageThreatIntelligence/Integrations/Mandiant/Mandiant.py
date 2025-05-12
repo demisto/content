@@ -21,10 +21,7 @@ class MandiantClient(BaseClient):
         self.api_key = conf.get("api_key")
         self.secret_key = conf.get("secret_key")
 
-        self.headers = {
-            "X-App-Name": "content.xsoar.cortex.mandiant.enrichment.v1.1",
-            "Accept": "application/json"
-        }
+        self.headers = {"X-App-Name": "content.xsoar.cortex.mandiant.enrichment.v1.1", "Accept": "application/json"}
         self.timeout = int(conf.get("timeout", DEFAULT_TIMEOUT))
         if is_time_sensitive():
             # For reputation commands which run during an enrichment we limit the timeout
