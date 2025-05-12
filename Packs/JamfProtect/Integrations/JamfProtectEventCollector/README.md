@@ -1,6 +1,6 @@
 Use this integration to fetch audit logs events, alerts events and computers assets from Jamf Protect to Cortex XSIAM.
-## Configure Jamf Protect Event Collector in Cortex
 
+## Configure Jamf Protect Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -12,8 +12,6 @@ Use this integration to fetch audit logs events, alerts events and computers ass
 | Max alert events per fetch | Maximum number of alert events to fetch at a time. Default is 1000| False |
 | Max audit events per fetch | Maximum number of audit events to fetch at a time. Default is 20,000| False |
 | Fetch Computer Assets Interval | The fetch interval. It is recommended to set it to 12 hours. The minimum interval is 1 hour. | False |
-
-
 
 ## Commands
 
@@ -33,10 +31,10 @@ Gets events from Jamf Protect.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of events to return. Default is 10. | Optional | 
-| start_date | The start date from which to filter events. | Optional | 
-| end_date | The end date to which to filter events. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+| limit | The number of events to return. Default is 10. | Optional |
+| start_date | The start date from which to filter events. | Optional |
+| end_date | The end date to which to filter events. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -55,7 +53,7 @@ Gets computer assets from Jamf Protect.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of computer assets to return. Default is 10. | Optional | 
+| limit | The number of computer assets to return. Default is 10. | Optional |
 
 #### Context Output
 
