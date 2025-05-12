@@ -36,7 +36,7 @@ from Packs.Wiz.Integrations.WizDefend.WizDefend import (
     # Integration functions
     set_authentication_endpoint, set_api_endpoint, get_filtered_detections,
     get_last_run_time, get_fetch_timestamp, extract_params_from_integration_settings,
-    check_advanced_params, test_module, fetch_incidents, main, WIZ_DEFEND,
+    check_advanced_params, test_module, fetch_incidents, main, WIZ_DEFEND, update_wiz_domain_url,
 )
 
 
@@ -85,6 +85,19 @@ def global_mocks(mocker):
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'error')
+
+@pytest.fixture(scope="function")
+def reset_domain():
+    """Reset WIZ_DOMAIN_URL before and after each test"""
+    from Packs.Wiz.Integrations.WizDefend import WizDefend
+    # Save current value
+    original_value = WizDefend.WIZ_DOMAIN_URL
+    # Reset for test
+    WizDefend.WIZ_DOMAIN_URL = ''
+    # Run test
+    yield
+    # Restore after test
+    WizDefend.WIZ_DOMAIN_URL = original_value
 
 
 def patch_wiz_api(api_response=None):
@@ -1369,19 +1382,56 @@ def test_get_error_output():
     assert result == no_error_response
 
 
-def test_get_detection_url(sample_detection):
-    """Test get_detection_url function"""
-    # Test with app environment (default)
-    url = get_detection_url(sample_detection)
-    assert "app.wiz.io" in url
-    assert sample_detection["id"] in url
+@pytest.mark.parametrize('auth_endpoint, expected_domain', [
+    ('https://auth.test.wiz.io/oauth/token', 'test.wiz.io'),
+    ('https://auth.app.wiz.io/oauth/token', 'app.wiz.io'),
+    ('https://auth.gov.wiz.io/oauth/token', 'gov.wiz.io'),
+    ('https://auth.staging-env.wiz.io/oauth/token', 'staging-env.wiz.io'),
+    ('invalid-url', 'app.wiz.io')
+])
+def test_update_wiz_domain_url(mocker, auth_endpoint, expected_domain, reset_domain):
+    """Test update_wiz_domain_url function correctly extracts the domain from auth endpoint"""
+    # Mock demisto.params() to return our test auth_endpoint
+    mocker.patch.object(
+        demisto, 'params',
+        return_value={'auth_endpoint': auth_endpoint}
+    )
 
-    # Test with test environment
-    test_detection = copy.deepcopy(sample_detection)
-    test_detection["issue"]["url"] = "https://test.wiz.io/issues/123"
-    url = get_detection_url(test_detection)
-    assert "test.wiz.io" in url
-    assert test_detection["id"] in url
+    # Import here to ensure we get the reset value
+    from Packs.Wiz.Integrations.WizDefend import WizDefend
+
+    # Call the function
+    update_wiz_domain_url()
+
+    # Verify domain was correctly extracted
+    assert WizDefend.WIZ_DOMAIN_URL == expected_domain, \
+        f"Failed for auth_endpoint={auth_endpoint}: " \
+        f"expected {expected_domain}, got {WizDefend.WIZ_DOMAIN_URL}"
+
+
+@pytest.mark.parametrize('domain', [
+    'app.wiz.io',
+    'test.wiz.io',
+    'staging-env.wiz.io',
+    'customer-subdomain.wiz.io'
+])
+def test_get_detection_url(mocker, sample_detection, domain):
+    """Test get_detection_url constructs the correct URL for detections with different domains"""
+    # Import here to set the domain
+    from Packs.Wiz.Integrations.WizDefend import WizDefend
+
+    # Set the domain directly
+    WizDefend.WIZ_DOMAIN_URL = domain
+
+    # Call the function
+    url = get_detection_url(sample_detection)
+
+    # Expected URL pattern
+    expected_pattern = f"https://{domain}.wiz.io/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{sample_detection['id']}~streamCols~(~'event~'principal~'principalIp~'resource))"
+
+    # Verify URL was correctly constructed
+    assert url == expected_pattern, \
+        f"Failed for domain={domain}: expected {expected_pattern}, got {url}"
 
 
 def test_get_integration_user_agent():

@@ -9,6 +9,7 @@ from urllib import parse
 WIZ_VERSION = '1.0.0'
 WIZ_DEFEND = 'wiz_defend'
 WIZ_DEFEND_INCIDENT_TYPE = 'WizDefend Detection'
+WIZ_DOMAIN_URL = ''
 INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -857,18 +858,27 @@ def get_fetch_timestamp(first_fetch_param):
     return valid_date.isoformat()[:-3] + 'Z'
 
 
+def update_wiz_domain_url():
+    """
+    Get the Wiz domain URL based on the integration settings
+    """
+    global WIZ_DOMAIN_URL
+    demisto_params = demisto.params()
+    auth_endpoint = demisto_params.get(DemistoParams.AUTH_ENDPOINT)
+    match = re.search(r"https://auth\.([\w\-]+\.\wiz\.\w+)/oauth/token", auth_endpoint)
+    if match:
+        WIZ_DOMAIN_URL = match.group(1)
+    else:
+        demisto.debug("Could not find the domain in the auth endpoint. "
+                      "Using default domain: app.wiz.io")
+        WIZ_DOMAIN_URL = 'app.wiz.io'
+
+
 def get_detection_url(detection):
-    # Determine if this is a test environment
-    is_test_env = False
+    if not WIZ_DOMAIN_URL:
+        update_wiz_domain_url()
 
-    # Check if the issue URL contains test.wiz.io
-    if detection.get('issue', {}) and detection.get('issue', {}).get('url') and 'test.wiz.io' in detection.get('issue', {}).get(
-        'url'):
-        is_test_env = True
-
-    # Build the detection URL with the appropriate domain
-    domain = "test" if is_test_env else "app"
-    detection_url = f"https://{domain}.wiz.io/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}~streamCols~(~'event~'principal~'principalIp~'resource))"
+    detection_url = f"https://{WIZ_DOMAIN_URL}.wiz.io/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}~streamCols~(~'event~'principal~'principalIp~'resource))"
     return detection_url
 
 
