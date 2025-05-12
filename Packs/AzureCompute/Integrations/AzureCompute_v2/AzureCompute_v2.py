@@ -340,10 +340,23 @@ class MsGraphClient:
         url = self.server + "/subscriptions"
         return self.ms_client.http_request(method="GET", full_url=url, params=parameters, url_suffix="")
 
-    def list_vms(self, resource_group):
+    def list_vms(self, resource_group, limit):
+        responses = []
+        vm_objects_list = []
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines"
-
-        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=self.default_params)
+        self.default_params["top"]=limit
+        response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=self.default_params)
+        vm_objects_list.extend(response.get("value", []))
+        responses.append(response)
+        # next_page = response.get("nextLink", "")
+        
+        # while len(vm_objects_list) < limit and next_page:
+        #     response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=self.default_params)
+        #     vm_objects_list.extend(response.get("value", []))
+        #     responses.append(response)
+        #     next_page = response.get("nextLink", "")
+        
+        return responses, vm_objects_list[:limit]
 
     def get_vm(self, resource_group, vm_name, expand="instanceView"):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
@@ -562,9 +575,8 @@ def list_vms_command(client: MsGraphClient, args: dict, params: dict):
         Virtual Machine Objects
     """
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
-    response = client.list_vms(resource_group)
-
-    vm_objects_list = response.get("value")
+    limit = int(args.get("limit", 50))
+    response, vm_objects_list = client.list_vms(resource_group, limit)
 
     vms = []
     for vm_object in vm_objects_list:

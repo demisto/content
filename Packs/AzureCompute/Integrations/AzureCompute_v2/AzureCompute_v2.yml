@@ -105,6 +105,9 @@ script:
   - arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
+    - description: The maximum number of instances to return.
+      name: limit
+      defaultValue: '50'
     - description: |
         The resource group of the virtual machines.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.

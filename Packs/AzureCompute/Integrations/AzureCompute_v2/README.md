@@ -58,6 +58,7 @@ Lists the virtual machine instances in the given resource group.
 | --- | --- | --- |
 | subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
 | resource_group | The resource group of the virtual machines.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>Note: This argument will override the instance parameter ‘Default Resource Group Name'.<br/>. | Optional | 
+| limit | The maximum number of instances to return. | Optional |
 
 #### Context Output
 
