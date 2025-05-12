@@ -793,7 +793,7 @@ def detection_to_incident(detection, is_fetch_events: bool = False):
     }
     if is_fetch_events:
         incident["_source_log_type"] = detection.get("incident_type")
-        add_response_to_dataset(resp=detection, raw=incident)
+        extract_response_to_dataset_raw(resp=detection, raw=incident)
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident["_time"] = detection.get("timestamp")
@@ -827,7 +827,7 @@ def incident_to_incident_context(incident, is_fetch_events: bool = False):
     }
     if is_fetch_events:
         incident_context["_source_log_type"] = incident.get("incident_type")
-        add_response_to_dataset(resp=incident, raw=incident_context)
+        extract_response_to_dataset_raw(resp=incident, raw=incident_context)
         # new incident
         if not incident.get("modified_timestamp") or (incident.get("modified_timestamp") == incident.get("created")):
             incident_context["_time"] = incident.get("created_timestamp")
@@ -886,7 +886,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
 
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
-        add_response_to_dataset(resp=detection, raw=incident_context)
+        extract_response_to_dataset_raw(resp=detection, raw=incident_context)
         # new detection
         if not detection.get("updated_timestamp") or (detection.get("updated_timestamp") == detection.get("timestamp")):
             incident_context["_time"] = detection.get("timestamp")
