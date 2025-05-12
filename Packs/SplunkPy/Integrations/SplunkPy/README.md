@@ -678,9 +678,9 @@ Returns the status of a job.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Splunk.JobStatus.CID | Unknown | The ID of the job. |
+| **Path**                | **Type** | **Description** |
+|-------------------------| --- | --- |
+| Splunk.JobStatus.SID    | Unknown | The ID of the job. |
 | Splunk.JobStatus.Status | Unknown | The status of the job. |
 
 ##### Command Example
