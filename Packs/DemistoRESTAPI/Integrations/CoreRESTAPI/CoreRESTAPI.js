@@ -1,5 +1,7 @@
 
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
+const PLAYBOOK_METADATA = 'playbook_metadata';
+const INTEGRATION_NAME = 'CoreRESTAPI';
 
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
@@ -153,13 +155,20 @@ sendMultipart = function (uri, entryID, body) {
 };
 
 var sendRequest = function(method, uri, body, raw) {
-    
-    logDebug("DANF get getIntegrationContext" + getIntegrationContext())
-    logDebug("DANF type of  getIntegrationContext" + typeof getIntegrationContext())
-    logDebug("DANF keys of  getIntegrationContext" + Object.keys(getIntegrationContext()))
-    logDebug("DANF invContext" + invContext)
-    logDebug("DANF type of  invContext" + typeof invContext)
-    logDebug("DANF keys of  invContext" + Object.keys(invContext))
+    try {
+        const playbookMetadataObject = JSON.parse(playbookTaskInfo);
+        body[PLAYBOOK_METADATA] = {
+            'playbook_id' : playbookMetadataObject.playbookID,
+            'playbook_name' :playbookMetadataObject.playbookName,
+            'task_id' : playbookMetadataObject.taskID,
+            'task_name' : playbookMetadataObject.taskName,
+            'integration_name' : INTEGRATION_NAME,
+            'command_name' : command,
+        }        
+        logDebug("Added playbook-metadata to request body " + body[PLAYBOOK_METADATA])
+    } catch(error) {
+        logError("Error parsing as a JSON object playbookTaskInfo: " + error)
+    }
 
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
