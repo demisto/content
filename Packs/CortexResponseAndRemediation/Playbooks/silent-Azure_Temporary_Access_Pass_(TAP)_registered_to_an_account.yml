@@ -1094,7 +1094,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
