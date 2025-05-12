@@ -127,7 +127,7 @@ script:
       required: false
       isArray: false
       defaultValue: ""
-  - name: service-now-reset-auth
+  - name: service-now-oauth-login
     description: Resets the integration context, including stored OAuth refresh token. Use this command when using OAuth 2.0 and encounter access_denied with access token related errors.
     outputs: []
   dockerimage: demisto/python3:3.12.8.3296088

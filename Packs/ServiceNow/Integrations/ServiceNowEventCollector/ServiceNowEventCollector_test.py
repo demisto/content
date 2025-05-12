@@ -959,3 +959,4 @@ def test_reset_auth_context_cleared(mocker):
     assert 'Reset integration-context' in debug_mock.call_args[0][0]
 
     assert "Authorization was reset successfully" in result.readable_output
+    

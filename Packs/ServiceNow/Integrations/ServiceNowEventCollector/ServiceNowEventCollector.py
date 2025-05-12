@@ -56,12 +56,16 @@ class Client:
             "sysparm_offset": offset,
             "sysparm_query": f"sys_created_on>{from_time}",
         }
-        res = self.sn_client.http_request(
-            method="GET",
-            full_url=f"{self.api_server_url}{URL[log_type]}",
-            url_suffix=None,
-            params=remove_empty_elements(params),
-        )
+        try:
+            res = self.sn_client.http_request(
+                method="GET",
+                full_url=f"{self.api_server_url}{URL[log_type]}",
+                url_suffix=None,
+                params=remove_empty_elements(params),
+            )
+        except Exception:
+            return_error("--------------------------")
+            
         return res.get("result")
 
 
@@ -377,7 +381,7 @@ def main() -> None:  # pragma: no cover
                     # saves next_run for the time fetch-events is invoked
                     demisto.debug(f"Setting new last_run to {next_run}")
                     demisto.setLastRun(next_run)
-        elif command == "service-now-reset-auth":
+        elif command == "service-now-oauth-login":
             return_results(reset_auth())
             
         else:
