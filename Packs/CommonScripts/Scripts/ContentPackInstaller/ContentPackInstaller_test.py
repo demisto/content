@@ -167,15 +167,16 @@ def test_install_packs_if_needed(mocker):
     installer = get_content_pack_installer(mocker)
 
     packs_to_install = [{"id": "Pack1", "version": "1.2.4"}]
-    mocker.patch('ContentPackInstaller.is_xsiam_or_xsoar_saas', return_value=True)
-    mock_call_execute = mocker.patch('ContentPackInstaller.ContentPackInstaller._call_execute_command',
-                                     return_value=("ok", {"status": "success"}))
+    mocker.patch("ContentPackInstaller.is_xsiam_or_xsoar_saas", return_value=True)
+    mock_call_execute = mocker.patch(
+        "ContentPackInstaller.ContentPackInstaller._call_execute_command", return_value=("ok", {"status": "success"})
+    )
 
     installer.install_packs(packs_to_install)
 
     expected_args = {
         "uri": "/contentpacks/marketplace/install",
-        "body": {"packs": [{"id": "Pack1", "version": "1.2.4"}], "ignoreWarnings": True}
+        "body": {"packs": [{"id": "Pack1", "version": "1.2.4"}], "ignoreWarnings": True},
     }
 
-    mock_call_execute.assert_called_once_with('core-api-post', expected_args)
+    mock_call_execute.assert_called_once_with("core-api-post", expected_args)
