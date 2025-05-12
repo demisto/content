@@ -40,13 +40,11 @@ configuration:
   name: event_types_to_fetch
   type: 16
   required: false
-  additionalinfo: Event types to fetch. Defaults to all if no type is specified.
-  defaultvalue:
-  - Audit
-  - File
+  additionalinfo: Event types to fetch. Defaults to all types.
+  defaultvalue: File,Audit
   options:
-  - Audit
   - File
+  - Audit
 description: 'Code42 Insider Risk software solutions provide the right balance of transparency, technology and training to detect and appropriately respond to data risk. Use the Code42EventCollector integration to fetch file events and audit logs.'
 display: Code42 Event Collector
 name: Code42 Event Collector

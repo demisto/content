@@ -341,7 +341,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
-        demisto.debug(f'Fetched {len(file_events)} {EventType.FILE} events')
+        demisto.updateModuleHealth({f'{EventType.FILE} events sent': len(file_events)})
     if "Audit" in event_types_to_fetch:
         audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run,
                                                            max_fetch_audit_events=max_fetch_audit_events)
@@ -352,7 +352,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         futures = send_events_to_xsiam(audit_logs, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
-        demisto.debug(f'Fetched {len(audit_logs)} {EventType.AUDIT} events')
+        demisto.updateModuleHealth({f'{EventType.AUDIT} events sent': len(audit_logs)})
     demisto.setLastRun(last_run)
 
 
