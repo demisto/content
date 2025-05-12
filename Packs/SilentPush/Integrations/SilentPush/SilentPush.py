@@ -16,6 +16,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+# pragma: no cover
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -47,7 +48,7 @@ SCREENSHOT_URL = "explore/tools/screenshotondemand"
 
 """ COMMANDS INPUTS """
 
-JOB_STATUS_INPUTS = [
+JOB_STATUS_INPUTS = [  # pragma: no cover
     InputArgument(
         name="job_id",  # option 1
         description="ID of the job returned by Silent Push actions.",
@@ -1620,6 +1621,7 @@ metadata_collector = YMLMetadataCollector(
         ConfKey(name="proxy", display="Use system proxy settings", required=False, key_type=ParameterTypes.BOOLEAN),
     ],
 )
+# end pragma: no cover
 
 """ CLIENT CLASS """
 
