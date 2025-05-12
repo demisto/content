@@ -859,7 +859,8 @@ def incident_to_incident_context(incident, is_fetch_events: bool = False):
     incident_id = str(incident.get("incident_id"))
     incident_context = {
         "name": f"Incident ID: {incident_id}",
-        "occurred": str(incident.get("start"))
+        "occurred": str(incident.get("start")),
+        "rawJSON": json.dumps(incident),
     }
     if is_fetch_events:
         incident_context["_source_log_type"] = incident.get("incident_type")
@@ -912,7 +913,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
 
-    incident_context = {"occurred": detection.get(start_time_key)}
+    incident_context = {"occurred": detection.get(start_time_key), "rawJSON": json.dumps(detection)}
     if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE, OFP_DETECTION_TYPE):
         incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context["last_updated"] = detection.get("updated_timestamp")
@@ -3441,7 +3442,8 @@ def fetch_items(command="fetch-incidents"):
     return last_run, items
 
     return last_run, events
-        
+
+
 def fetch_detections_by_product_type(
     current_fetch_info: dict,
     look_back: int,
