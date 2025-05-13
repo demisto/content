@@ -1059,7 +1059,7 @@ def test_add_playbook_metadata_complete_data(mocker):
     command = "test-command"
 
     # Call function
-    CoreXQLApiModule.add_playbook_metadata(data, command)
+    CoreXQLApiModule.add_playbook_metadata(data, command, "Cortex XDR - XQL Query Engine")
 
     # Assert
     expected_metadata = {
@@ -1091,15 +1091,15 @@ def test_add_playbook_metadata_missing_context(mocker):
     data = {"request_data": {}}
     command = "test-command"
 
-    CoreXQLApiModule.add_playbook_metadata(data, command)
+    CoreXQLApiModule.add_playbook_metadata(data, command, "Cortex XDR - XQL Query Engine")
 
     expected_metadata = {
         "command_name": "test-command",
         "integration_name": "Cortex XDR - XQL Query Engine",
         "playbook_id": "",
-        "playbook_name": "",
-        "task_id": "",
-        "task_name": "",
+        "playbook_name": "missing_playbook_name",
+        "task_id": "missing_task_id",
+        "task_name": "missing_task_name",
     }
     assert data["request_data"]["playbook_metadata"] == expected_metadata
     demisto.debug.assert_called_once()
