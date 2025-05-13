@@ -1,6 +1,7 @@
 This content pack was created to allow KELA's customers an integration with RaDark.
 
 #### What does this pack do?
+
 * Fetches incidents from RaDark into your Cortex XSOAR.
 * Supports enrichment for existing data from RaDark.
 * Manages incidents in RaDark from your Cortex XSOAR.
