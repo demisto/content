@@ -5,7 +5,7 @@ Proofpoint Threat Response is a security solution that helps organizations detec
 
 ## This pack includes:
 - Rest API integration for security incidents
-- Modeling Rules
+- Modeling rules
 
 ## Configure Proofpoint Threat Response Event Collector in Cortex XSIAM
 
@@ -39,13 +39,13 @@ Retrieves all incident metadata from Threat Response by specifying filter criter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Default is false. | Required | 
 | state | The state of the incidents to retrieve. Possible values are: new, open, assigned, closed, ignored. | Optional | 
 | created_after | Retrieve incidents that were created after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z.  | Optional | 
 | created_before | Retrieve incidents that were created before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional | 
 | closed_after | Retrieve incidents that were closed after this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional | 
 | closed_before | Retrieve incidents that were closed before this date, in ISO 8601 format (UTC). Example: 2020-02-22 or 2020-02-22T00:00:00Z. | Optional | 
-| expand_events | If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with a large number of alerts. Possible values are: true, false. | Optional | 
+| expand_events |If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with a large number of alerts. Possible values are: true, false. | Optional | 
 | limit | The maximum number of incidents to return. Default is 100. | Required | 
 
 
