@@ -10,11 +10,12 @@ The Generic Webhook integration is a long-running integration. For more informat
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.                           | True |
+| Listen Port<br><br>Note: this field will not appear in Cortex XSOAR 8 and Cortex XSIAM unless using an custom engine | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.                           | True - unless using a custom engine (in Cortex XSOAR 8 and Cortex XSIAM only). |
 | username | Username (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
 | password | Password (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
 | certificate | For use with HTTPS - the certificate that the service should use. <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support custom certificates.  | False |
 | Private Key | For use with HTTPS - the private key that the service should use.  <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support private keys.  | False |
+| Result | Automatically generated webhook trigger link (based on user configuration). | Auto-populated. Only available in updated FE versions. |
 | incidentType | Incident type | False |
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
@@ -31,6 +32,7 @@ For Cortex XSOAR On-prem (6.x or 8) or when running on an engine, you can set up
 You can use header authentication only when using an engine.
 
 ## Trigger the Webhook URL 
+The webhook can be triggered using the link generated in the Results section. Alternatively, you can manually create a webhook URL following these steps:
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
 For example, `ext-xsoar.mycompany.com`.
