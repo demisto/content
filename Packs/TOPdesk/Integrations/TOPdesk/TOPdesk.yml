@@ -2141,6 +2141,13 @@ script:
       defaultValue: 50
     - description: Supports a set of OData filters which can be combined with 'and' and 'or' operators. Filter expressions can also be grouped by parentheses. https://developers.topdesk.com/explorer/?page=assets#/Assets/getAssets.
       name: filter
+    - description: Search assets by name.
+      name: search_term
+    - description: List only Archived or only Active devices. Leave empty for all.
+      name: archived
+      predefined:
+        - "true"
+        - "false"
     - name: fields
       description: Additional fields to include in the response.
       defaultValue: ''
@@ -2201,6 +2208,15 @@ script:
       - contextPath: TOPdesk.Asset.Unid
         description: Asset Unique ID
         type: string
+  - arguments:
+    - description: The Unique ID of the Asset
+      name: asset_id
+      required: true
+    - description: "A json with the fields that you want to configure: {'asset_name':'testasset'}"
+      name: data
+      required: true
+    description: Update Asset Fields
+    name: topdesk-asset-update
   - arguments:
     - description: The caller ID for this incident. For an unregistered caller provide a name. For a list of registered persons or operator IDs run !topdesk-persons-list or !topdesk-operators-list.
       name: caller

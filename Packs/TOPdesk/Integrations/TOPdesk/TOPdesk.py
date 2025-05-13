@@ -156,6 +156,8 @@ class Client(BaseClient):
         page_size: int | None = None,
         query: str | None = None,
         fields: str | None = None,
+        search_term: str | None = None,
+        archived: bool | None = None,
     ) -> list[dict[str, Any]]:
         """Get list of objects that support start, page_size and query arguments.
 
@@ -165,6 +167,8 @@ class Client(BaseClient):
             page_size: The amount of incidents to be returned per request, default is 10.
             query: Filter the Assets by this odata filter.
             fields: Option to select fields for persons, branches and incidents.
+            search_term: Optional Search Term to find assets
+            archived: Optional Boolean to filter assets based on whether they are archived or not. Default is None.
 
         Return List of requested objects.
         """
@@ -179,6 +183,7 @@ class Client(BaseClient):
             url_suffix = f"assetmgmt/{list_type}"
 
         request_params: dict[str, Any] = {}
+        request_params["archived"] = archived
         if start:
             request_params["pageStart"] = start
 
@@ -186,15 +191,19 @@ class Client(BaseClient):
             request_params["pageSize"] = page_size
 
         if fields:
-            request_params["qfield"] = fields
+            request_params["fields"] = fields
 
         if query:
             request_params["$filter"] = query
+        if search_term:
+            request_params["searchTerm"] = search_term
 
         try:
             result = self._http_request(
                 method="GET", url_suffix=url_suffix, params=request_params
             )
+            #raise ValueError(result.raw)
+
         except Exception:
             demisto.debug("No items found")
             result = []
@@ -234,6 +243,29 @@ class Client(BaseClient):
         request_params = prepare_touch_request_params(args)
 
         return self._http_request(method="POST", url_suffix="/incidents/", json_data=request_params)
+
+    def update_asset(self, args: dict[str, Any] = {}) -> dict[str, Any]:
+        """Update an Asset in Topdesk.
+
+        Args:
+            args: The args for Updating. Must contain an asset_id and data to be updated.
+
+        Return success or the API error otherwise on failure.
+        """
+
+        asset_id = args.get("asset_id", None)
+        data = args.get("data", None)
+        params = {"excludeActions": "false"}
+
+        if isinstance(data, str):
+            data = json.loads(data)
+
+        if asset_id and data:
+            return self._http_request(
+                method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params
+            )
+        else:
+            return "Invalid arguments provided."
 
     def update_incident(self, args: dict[str, Any]) -> dict[str, Any]:
         """Update incident in TOPdesk.
@@ -797,6 +829,8 @@ def get_assets_list(
     page_size = args.get("page_size", None)
     start = args.get("start", None)
     query = args.get("filter", None)
+    search_term = args.get("search_term", None)
+    archived = args.get("archived", None)
     # If the page size is 0, we will fetch all data
     if str(page_size) == "0":
         pagination = True
@@ -814,6 +848,8 @@ def get_assets_list(
             start=start,
             page_size=page_size,
             query=query,
+            search_term=search_term,
+            archived=archived,
             fields=args.get("fields", default_fields),
         )
         if len(assets["dataSet"]) < 1:
@@ -1263,7 +1299,9 @@ def get_incidents_list_command(client: Client, args: dict[str, Any]) -> CommandR
             raise e
 
 
-def get_assets_list_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
+def get_assets_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | str:
     """Parse arguments and return asset list as CommandResults.
 
     Args:
@@ -1274,8 +1312,38 @@ def get_assets_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     """
 
     try:
-        command_results = assets_to_command_results(client, get_assets_list(client=client, args=args))
+        command_results = assets_to_command_results(
+            client, get_assets_list(client=client, args=args)
+        )
         return command_results
+    except Exception as e:
+        if "Error parsing query" in str(e):
+            return "Error parsing query: make sure you are using the right query type."
+        else:
+            raise e
+
+
+def update_asset_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
+    """Parse arguments and Update Asset.
+
+    Args:
+        client: The client to preform command on.
+        args: The arguments of the asset_list command.
+
+    Return CommandResults of list of assets.
+    """
+
+
+    try:
+        response = client.update_asset(args)
+        return CommandResults(
+            readable_output=response,
+            #outputs_prefix=f"{INTEGRATION_NAME}.Asset",
+            #outputs_key_field="",
+            #outputs=capitalize_for_outputs(assets),
+            #raw_response=assets,
+        )
+        # return command_results
     except Exception as e:
         if "Error parsing query" in str(e):
             return "Error parsing query: make sure you are using the right query type."
@@ -1773,6 +1841,8 @@ def main() -> None:
             return_results(get_incidents_list_command(client, demisto.args()))
         elif demisto.command() == "topdesk-assets-list":
             return_results(get_assets_list_command(client, demisto.args()))
+        elif demisto.command() == "topdesk-asset-update":
+            return_results(update_asset_command(client, demisto.args()))
         elif demisto.command() == "topdesk-incident-attachments-list":
             return_results(list_attachments_command(client, demisto.args()))
 
