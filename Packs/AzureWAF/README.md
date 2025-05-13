@@ -72,7 +72,7 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 - Make sure that you have at least a Security Administrator role.
 - For Azure WAF Front Door event logs you will need to [Create an Azure Front Door profile](https://learn.microsoft.com/en-us/azure/frontdoor/create-front-door-portal?tabs=quick)
 
-### Stream logs to an event hub
+### Stream Logs Flow
 
 1. Sign in to the **Microsoft Entra admin center**.
 2. Navigate to **Identity** &rarr; **Monitoring & health** &rarr; **Diagnostic settings**.
