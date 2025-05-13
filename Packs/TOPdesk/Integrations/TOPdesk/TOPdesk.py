@@ -91,9 +91,7 @@ class Client(BaseClient):
         """
 
         allowed_list_type = ["persons", "operators", "branches", "incidents"]
-        if list_type == "assets":
-            url_suffix = f"assetmgmt/{list_type}"
-        elif list_type not in allowed_list_type:
+        if list_type not in allowed_list_type:
             raise ValueError(f"Cannot get list of type {list_type}.\n Only {allowed_list_type} are allowed.")
         else:
             url_suffix = f"/{list_type}"
@@ -174,40 +172,29 @@ class Client(BaseClient):
         allowed_list_type = ["assets"]
 
         if list_type not in allowed_list_type:
-            raise ValueError(f"Cannot get list of type {list_type}.\n Only {allowed_list_type} are allowed.")
+            raise ValueError(
+                f"Cannot get list of type {list_type}.\n Only {allowed_list_type} are allowed."
+            )
         else:
             url_suffix = f"assetmgmt/{list_type}"
-        inline_parameters = False
+
         request_params: dict[str, Any] = {}
         if start:
-            url_suffix = f"{url_suffix}?pageStart={start}"
-            inline_parameters = True
+            request_params["pageStart"] = start
 
         if page_size:
-            if inline_parameters:
-                url_suffix = f"{url_suffix}&pageSize={page_size}"
-            else:
-                url_suffix = f"{url_suffix}?pageSize={page_size}"
-                inline_parameters = True
+            request_params["pageSize"] = page_size
 
         if fields:
-            qfield = "fields"
-            if inline_parameters:
-                url_suffix = f"{url_suffix}&{qfield}={fields}"
-            else:
-                url_suffix = f"{url_suffix}?{qfield}={fields}"
-                inline_parameters = True
-
+            request_params["qfield"] = fields
 
         if query:
-            query = f"$filter=${query}"
-            if inline_parameters:
-                url_suffix = f"{url_suffix}&{query}"
-            else:
-                url_suffix = f"{url_suffix}?{query}"
+            request_params["$filter"] = query
 
         try:
-            result = self._http_request(method="GET", url_suffix=url_suffix, json_data=request_params)
+            result = self._http_request(
+                method="GET", url_suffix=url_suffix, params=request_params
+            )
         except Exception:
             demisto.debug("No items found")
             result = []
