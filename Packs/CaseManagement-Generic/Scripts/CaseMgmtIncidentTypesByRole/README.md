@@ -1,4 +1,4 @@
-Restricts the Incident Types a user can create manually, based on their assigned XSOAR Role(s). 
+Restricts the Incident Types a user can create manually, based on their assigned XSOAR Role(s).
 
 Requirements - Create an XSOAR List called IncidentTypeRBAC with the following structure, the names must match exactly to the names in the Incident Types under Settings!
 

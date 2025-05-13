@@ -1,6 +1,6 @@
 # Barracuda Email Protection
 
-### The world′s most comprehensive email protection, made radically easy.
+### The world′s most comprehensive email protection, made radically easy
 
 See <https://www.barracuda.com/products/email-protection> for more information on this prouct.
 
@@ -27,7 +27,7 @@ To create or configure the Broker VM, use the information described [here](https
 
 You can configure the specific vendor and product for this instance.
 
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
+1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 1. Right-click, and select **Syslog Collector** > **Configure**.
 1. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - barracuda
