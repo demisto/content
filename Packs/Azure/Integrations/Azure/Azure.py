@@ -468,15 +468,15 @@ and resource group "{resource_group_name}" was not found.')
         params = {"api-version": ACR_API_VERSION}
         data = {
             "properties": {
-                "exportPolicy": {
-                    "allowExport": allow_exports
-                },
                 "publicNetworkAccess": public_network_access,
                 "anonymousPullEnabled": anonymous_pull_enabled,
                 "policies": {
                     "azureADAuthenticationAsArmPolicy": {
                         "status": authentication_as_arm_policy
-                    }
+                    },
+                    "exportPolicy": {
+                        "status": allow_exports
+                    },
                 }
             },
         }
@@ -563,6 +563,7 @@ and resource group "{resource_group_name}" was not found.')
                 "disableKeyBasedMetadataWriteAccess": disable_key_based_metadata_write_access
             }
         }
+        print(data)
         data = remove_empty_elements(data)
         params = {"api-version": COSMOS_DB_API_VERSION}
         full_url=(
@@ -989,13 +990,13 @@ def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, a
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
     log_profile_name = args.get("log_profile_name")
     location = args.get("location")
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    scope = args.get("scope")
     retention_policy_days = arg_to_number(args.get("retention_policy_days"))
     retention_policy_enabled = args.get("retention_policy_enabled", "")
-    current_log_profile = client.get_monitor_log_profile(subscription_id, log_profile_name)
-    print(current_log_profile)
-    response = client.monitor_log_profile_update(subscription_id, log_profile_name, location, retention_policy_days, retention_policy_enabled)
-    print(response)
+    current_log_profile = client.get_monitor_log_profile(scope, log_profile_name)
+    # print(current_log_profile)
+    # response = client.monitor_log_profile_update(subscription_id, resource_group_name, log_profile_name, location, retention_policy_days, retention_policy_enabled)
+    # print(response)
     
     
 def disk_update_command(client: AzureClient, params: dict, args: dict):
@@ -1097,21 +1098,20 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
     authentication_as_arm_policy = args.get("authentication_as_arm_policy")
     response = client.acr_update(subscription_id, resource_group_name, registry_name, allow_exports, public_network_access, 
                                  anonymous_pull_enabled, authentication_as_arm_policy)
-    print(response)
     outputs = [
         {
-            # "Name": response.get("name"),
+            "Name": response.get("name"),
             "ID": response.get("id"),
-            "Allow Exports": response.get("identity", {}) if allow_exports else None,
             "Public Network Access": response.get("properties", {}).get("publicNetworkAccess") if public_network_access else None,
-            "Client Cert Enabled": response.get("properties", {}).get("anonymousPullEnabled") if anonymous_pull_enabled else None,
+            "Anonymous Pull Enabled": response.get("properties", {}).get("anonymousPullEnabled") if anonymous_pull_enabled else None,
+            "Allow Exports": response.get("properties", {}).get("policies", {}).get("exportPolicy", {}).get("status") if allow_exports else None,
             "Authentication As Arm Policy": response.get("properties", {}).get("policies", {}).get("azureADAuthenticationAsArmPolicy", {}).get("status") if authentication_as_arm_policy else None,
         }
     ]
     md = tableToMarkdown(
         f"Updated the container registry {registry_name}.",
         outputs,
-        ["Name", "ID", "Allow Exports", "Public Network Access", "Client Cert Enabled", "Authentication As Arm Policy"],
+        ["Name", "ID", "Public Network Access", "Anonymous Pull Enabled", "Allow Exports", "Authentication As Arm Policy"],
         removeNull=True,
     )
     return CommandResults(
@@ -1184,7 +1184,7 @@ def sql_db_threat_policy_update_command(
 ) -> CommandResults:
     server_name = args.get("server_name")
     db_name = args.get("db_name")
-    email_account_admins = args.get("email_account_admins", "")
+    email_account_admins = args.get("email_account_admins_enabled", "")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     
@@ -1225,7 +1225,7 @@ def sql_db_threat_policy_update_command(
     
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.SQL.DBThreatPolicy",
+        outputs_prefix="Azure.SqlDBThreatPolicy",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -1239,14 +1239,16 @@ def sql_db_tde_set_command(
     state = args.get("state")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    response = client.sql_db_tde_set(
+    client.sql_db_tde_set(
         server_name=server_name,
         db_name=db_name,
         subscription_id=subscription_id,
         state=state,
         resource_group_name=resource_group_name
     )
-    print(response)
+    return CommandResults(
+        readable_output=f"Updated SQL database {db_name} of the server {server_name}.", # doesn't contain a table because it takes time for the resource to be updated.
+    )
     
 def cosmosdb_update_command(
     client: AzureClient, args: Dict[str, Any], params: dict[str, Any]
@@ -1268,7 +1270,7 @@ def cosmosdb_update_command(
     response = client.cosmos_db_update(subscription_id, resource_group_name, account_name, disable_key_based_metadata_write_access)
     
     return CommandResults(
-        readable_output=f"Updated Cosmos DB {account_name}.", # doesn't contain a table because it takes time for the resource to be updated.
+        readable_output=f"Updated Cosmos DB {account_name}.",
         outputs_prefix="Azure.CosmosDB",
         outputs_key_field="id",
         outputs=response,

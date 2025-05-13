@@ -977,9 +977,9 @@ script:
       description: The name of the log profile to update.
       required: true
       type: String
-    - name: subscription_id
-      description: Subscription ID.
-      type: String
+    - name: scope
+      type: string
+      description: The scope of the resource.
     - name: location
       description: Resource location.
       required: true
@@ -1387,35 +1387,103 @@ script:
       required: true
       description: The name of the container registry.
     - name: allow_exports
-      type: Boolean
       description: Whether artifacts can be exported.
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - disabled
+      - enabled
     - name: public_network_access
       type: String
       description: Whether public network access is allowed for the container registry.
       auto: PREDEFINED
       predefined:
-        - Disabled
-        - Enabled
+      - disabled
+      - enabled
     - name: anonymous_pull_enabled
       type: Boolean
       description: Enables registry-wide pull from unauthenticated clients.
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: authentication_as_arm_policy
       auto: PREDEFINED
       predefined:
-      - Disabled
-      - Enabled
+      - disabled
+      - enabled
       description: Whether the policy is enabled or not.
     name: azure-acr-update
     description: Updates a container registry.
-    outputs: []
+    outputs:
+    - contextPath: Azure.ACR.id
+      description: The resource ID.
+      type: String
+    - contextPath: Azure.ACR.identity
+      description: The identity of the container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.location
+      description: The location of the resource.
+      type: String
+    - contextPath: Azure.ACR.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.ACR.properties.adminUserEnabled
+      description: The value that indicates whether the admin user is enabled.
+      type: Boolean
+    - contextPath: Azure.ACR.properties.anonymousPullEnabled
+      description: Enables registry-wide pull from unauthenticated clients.
+      type: Boolean
+    - contextPath: Azure.ACR.properties.creationDate
+      description: The creation date of the container registry in ISO8601 format.
+      type: String
+    - contextPath: Azure.ACR.properties.dataEndpointEnabled
+      description: Enable a single data endpoint per region for serving data.
+      type: Boolean
+    - contextPath: Azure.ACR.properties.dataEndpointHostNames
+      description: List of host names that will serve data when dataEndpointEnabled is true.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.encryption
+      description: The encryption settings of container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.loginServer
+      description: The URL that can be used to log into the container registry.
+      type: String
+    - contextPath: Azure.ACR.properties.networkRuleBypassOptions
+      description: Whether to allow trusted Azure services to access a network restricted registry.
+      type: String
+    - contextPath: Azure.ACR.properties.networkRuleSet
+      description: The network rule set for a container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.policies
+      description: The policies for a container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.privateEndpointConnections
+      description: List of private endpoint connections for a container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.provisioningState
+      description: The provisioning state of the container registry at the time the operation was called.
+      type: String
+    - contextPath: Azure.ACR.properties.publicNetworkAccess
+      description: Whether or not public network access is allowed for the container registry.
+      type: String
+    - contextPath: Azure.ACR.properties.status
+      description: The status of the container registry at the time the operation was called.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.zoneRedundancy
+      description: Whether or not zone redundancy is enabled for this container registry.
+      type: String
+    - contextPath: Azure.ACR.sku
+      description: The SKU of the container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.systemData
+      description: Metadata pertaining to creation and last modification of the resource.
+      type: Unknown
+    - contextPath: Azure.ACR.tags
+      description: The tags of the resource.
+      type: Unknown
+    - contextPath: Azure.ACR.type
+      description: The type of the resource.
+      type: String
   - arguments:
     - name: resource_group_name
       type: String
@@ -1549,7 +1617,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: 'Whether the alert is sent to the account administrators. Possible values: "true" and "false".'
-      name: email_account_admins
+      name: email_account_admins_enabled
       predefined:
       - 'true'
       - 'false'
@@ -1561,51 +1629,51 @@ script:
     description: Updates the database's threat detection policy.
     name: azure-sql-db-threat-policy-update
     outputs:
-    - contextPath: Azure.SQL.DBThreatPolicy.kind
+    - contextPath: Azure.SqlDBThreatPolicy.kind
       description: Kind of threat policy.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.location
+    - contextPath: Azure.SqlDBThreatPolicy.location
       description: Threat policy location.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.id
+    - contextPath: Azure.SqlDBThreatPolicy.id
       description: Threat policy ID.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.name
+    - contextPath: Azure.SqlDBThreatPolicy.name
       description: Threat policy name.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.type
+    - contextPath: Azure.SqlDBThreatPolicy.type
       description: Threat policy type.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.state
+    - contextPath: Azure.SqlDBThreatPolicy.state
       description: Threat policy state.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.creationTime
+    - contextPath: Azure.SqlDBThreatPolicy.creationTime
       description: Threat policy creation time.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.retentionDays
+    - contextPath: Azure.SqlDBThreatPolicy.retentionDays
       description: Number of days to keep in the Threat Detection audit logs.
       type: Number
-    - contextPath: Azure.SQL.DBThreatPolicy.storageAccountAccessKey
+    - contextPath: Azure.SqlDBThreatPolicy.storageAccountAccessKey
       description: The identifier key of the Threat Detection audit storage account.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.storageEndpoint
+    - contextPath: Azure.SqlDBThreatPolicy.storageEndpoint
       description: Threat Detection audit storage account.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.emailAccountAdmins
+    - contextPath: Azure.SqlDBThreatPolicy.emailAccountAdmins
       description: Email accounts administrators who the alert is sent to.
       type: Boolean
-    - contextPath: Azure.SQL.DBThreatPolicy.emailAddresses
+    - contextPath: Azure.SqlDBThreatPolicy.emailAddresses
       description: List of email addresses to which the alert is sent.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.disabledAlerts
+    - contextPath: Azure.SqlDBThreatPolicy.disabledAlerts
       description: List of alerts that are disabled, or an empty string if no alerts are disabled.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.useServerDefault
+    - contextPath: Azure.SqlDBThreatPolicy.useServerDefault
       description: Whether to use the default server policy.
-    - contextPath: Azure.SQL.DBThreatPolicy.databaseName
+    - contextPath: Azure.SqlDBThreatPolicy.databaseName
       description: The name of the database that the threat policy is related to.
       type: String
-    - contextPath: Azure.SQL.DBThreatPolicy.serverName
+    - contextPath: Azure.SqlDBThreatPolicy.serverName
       description: The name of server that the threat policy is related to.
       type: String
   - arguments:
@@ -1628,7 +1696,7 @@ script:
       name: resource_group_name
     description: Updates a logical database's transparent data encryption configuration.
     name: azure-sql-db-transparent-data-encryption-set
-    outputs: []
+    outputs: [] # has no outputs for this command from response
   - arguments:
     - description: Cosmos DB database account name.
       name: account_name
