@@ -79,33 +79,33 @@ name: AdminByRequestEventCollector
 supportlevelheader: xsoar
 script:
   commands:
-    - name: adminbyrequest-get-events
-      description: Retrieves a list of entry log events from the AdminByRequest instance.
-      arguments:
-        - auto: PREDEFINED
-          defaultValue: 'false'
-          description: Set this argument to true to create events, otherwise it only displays them.
-          name: should_push_events
-          predefined:
-            - 'true'
-            - 'false'
-          required: true
-        - auto: PREDEFINED
-          defaultValue: 'Auditlog'
-          description: The type of event to fetch.
-          name: event_type
-          predefined:
-            - 'Auditlog'
-            - 'Events'
-            - 'Requests'
-          required: false
-        - description: Returns no more than the specified number of events (for entries of type 'Requests' the default value is 5000).
-          name: limit
-          required: false
-        - description: "The UTC date or relative timestamp from when to start fetching events. Notice that for event type 'Requests' there is the option to set a start date.
-                          Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd."
-          name: first_fetch
-          required: false
+  - name: adminbyrequest-get-events
+    description: Retrieves a list of entry log events from the AdminByRequest instance.
+    arguments:
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: Set this argument to true to create events, otherwise it only displays them.
+        name: should_push_events
+        predefined:
+          - 'true'
+          - 'false'
+        required: true
+      - auto: PREDEFINED
+        defaultValue: 'Auditlog'
+        description: The type of event to fetch.
+        name: event_type
+        predefined:
+          - 'Auditlog'
+          - 'Events'
+          - 'Requests'
+        required: false
+      - description: Returns no more than the specified number of events (for entries of type 'Requests' the default value is 5000).
+        name: limit
+        required: false
+      - description: "The UTC date or relative timestamp from when to start fetching events. Notice that for event type 'Requests' there is the option to set a start date.
+                        Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd."
+        name: first_fetch
+        required: false
   isfetch: false
   runonce: false
   script: '-'
