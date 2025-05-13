@@ -1,5 +1,5 @@
 The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data with risk and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push system to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. It also provides functionality to live-scan URLs and take screenshots of them. Additionally, it allows fetching future attack feeds from the Silent Push system.
-This integration was integrated and tested with version xx of SilentPush.
+This integration was integrated and tested with version 4.2 of SilentPush.
 
 ## Configure SilentPush in Cortex
 
