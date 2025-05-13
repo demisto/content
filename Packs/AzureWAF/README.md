@@ -38,7 +38,6 @@ Azure WAF integrates with Azure services like Azure Application Gateway, Azure F
 3. yyyy-MM-ddThh:mm:ssZ
 4. yyyy-MM-ddThh:mm:ss.E7SZ
 
-<sub>_Format #4 can support up to 9 digits after the dot (.)._</sub>
 
 For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. 
 
@@ -82,10 +81,18 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 3. Select **+ Add diagnostic setting** to create a new integration or select **Edit setting** for an existing integration.
 4. Enter a **Diagnostic setting name**. If you're editing an existing integration, you can't change the name.
 5. Select the log categories that you want to stream. Refer to the **Log Normalization** section for the supported log categories for normalization.
-6. Select the **Stream to an event hub** checkbox.
-7. Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.
+6. Select streaming method and storing method
+
+   6.1. If you wish to use Event Hub and storage account to save the diagnostic logs select the **Stream to an event hub** checkbox.
+   
+   6.2. If you wish Log Analytics to store the logs select **Send To Log Analytics** checkbox and choose **Log Analytics Workspace**.
+8. Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.
+
 
 For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
+
+Find more information on how to create [Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal)
+
 
 ### Cortex XSIAM side
 
