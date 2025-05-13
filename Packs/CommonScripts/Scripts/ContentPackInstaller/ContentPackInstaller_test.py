@@ -158,10 +158,10 @@ def test_get_packs_data_for_installation(mocker):
     assert packs == [{"id": "SomePack", "version": "1.2.4"}]
 
 
-def test_install_packs_if_needed(mocker):
+def test_install_packs_saas(mocker):
     """
     Given: XSIAM or XSOAR SaaS environment and a request to install a pack.
-    When: calling install_packs_if_needed
+    When: calling install_packs
     Then: it should call the API with the correct arguments and return the success result.
     """
     installer = get_content_pack_installer(mocker)
