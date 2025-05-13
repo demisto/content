@@ -2,8 +2,9 @@
 config case_sensitive=false
 | filter to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND provider_name not in ("Microsoft-Windows-Sysmon", "AD FS Auditing", "Microsoft-Antimalware-Scan-Interface","Microsoft-Windows-DNSServer", "Microsoft-Windows-DNS-Server-Service")
 | alter
-    tmp_get_time = to_epoch(_time),
-    tmp_get_insert_time = to_epoch(_insert_time),
-    tmp_get_time_created = to_epoch(parse_timestamp("%FT%H:%M:%E*SZ",time_created))
+    tmp_get_time = to_epoch(_time),
+    tmp_get_insert_time = to_epoch(_insert_time),
+    tmp_get_time_created = to_epoch(parse_timestamp("%FT%H:%M:%E*SZ",to_string(time_created)))
 | alter
-    _time = if(subtract(tmp_get_time_created, tmp_get_time) < 0, to_timestamp(tmp_get_time_created), subtract(tmp_get_insert_time, tmp_get_time) < 0, to_timestamp(tmp_get_insert_time), to_timestamp(tmp_get_time));
+    _time = if(subtract(tmp_get_time_created, tmp_get_time) < 0, to_timestamp(tmp_get_time_created), subtract(tmp_get_insert_time, tmp_get_time) < 0, to_timestamp(tmp_get_insert_time), to_timestamp(tmp_get_time))
+| fields -tmp*;
