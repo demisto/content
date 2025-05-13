@@ -1,4 +1,4 @@
-Searches for a specific indicator in the tenant's events and logs data and extract the logs which the indicator appears in.
+Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
 
 ## Script Data
 
@@ -17,11 +17,11 @@ Searches for a specific indicator in the tenant's events and logs data and extra
 | **Argument Name** | **Description** |
 | --- | --- |
 | indicator | The indicator value \(e.g., IP address, domain, hash\) to search for in the selected dataset logs. |
-| time_frame | The time range to search within, specified in days \(e.g., "7 days" means searching the past 7 days of data\). |
-| data_set | The name of the dataset to search in. If not specified, the search defaults to the "xdr_data" dataset. |
-| query_name | A user-defined name. The query results will appear under the query_name in the context data of the current war room. |
-| interval_in_seconds | The interval, in seconds, between checking the status of the query while waiting for the query to complete. |
-| timeout_in_seconds | The maximum time, in seconds, to wait for the query to finish before the command is forced to fail. |
+| time_frame | The search timeframe in days \(e.g., "7 days" means searching the past 7 days of data\). |
+| data_set | The dataset for the search. By default, this is "xdr_data". |
+| query_name | The name to use for the query results. Find the query results under this name in the War Room context. |
+| interval_in_seconds | The interval in seconds for checking query completion. |
+| timeout_in_seconds | The maximum time to wait for the query to finish \(in seconds\). The command fails if the query takes longer. |
 
 ## Outputs
 
@@ -29,4 +29,4 @@ Searches for a specific indicator in the tenant's events and logs data and extra
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL | A list of event records \(constructed as dictionaries\) where the specified indicator was found during the search. | List |
+| PaloAltoNetworksXQL | A list of event records \(constructed as dictionaries\) where the specified indicator was found. | List |

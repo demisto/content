@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
   - Utilities
-comment: Searches for a specific indicator in the tenant's events and logs data and extract the logs which the indicator appears in.
+comment: Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
 enabled: true
 args:
   - name: indicator
@@ -15,25 +15,25 @@ args:
   - name: time_frame
     required: true
     defaultValue: 7 days
-    description: The time range to search within, specified in days (e.g., "7 days" means searching the past 7 days of data).
+    description: The search timeframe in days (e.g., "7 days" means searching the past 7 days of data).
   - name: data_set
     defaultValue: xdr_data
-    description: The name of the dataset to search in. If not specified, the search defaults to the "xdr_data" dataset.
+    description: The dataset for the search. By default, this is "xdr_data".
   - name: query_name
     required: true
-    description: A user-defined name. The query results will appear under the query_name in the context data of the current war room.
+    description: The name to use for the query results. Find the query results under this name in the War Room context.
   - name: query_id
     hidden: true
-    description: Internal Id of the query, hidden from inserting manually.
+    description: The internal ID for the query. It cannot be set manually.
   - name: interval_in_seconds
     defaultValue: '30'
-    description: The interval, in seconds, between checking the status of the query while waiting for the query to complete.
+    description: The interval in seconds for checking query completion.
   - name: timeout_in_seconds
     defaultValue: '600'
-    description: The maximum time, in seconds, to wait for the query to finish before the command is forced to fail.
+    description: The maximum time to wait for the query to finish (in seconds). The command fails if the query takes longer.
 outputs:
   - contextPath: PaloAltoNetworksXQL
-    description: A list of event records (constructed as dictionaries) where the specified indicator was found during the search.
+    description: A list of event records (constructed as dictionaries) where the specified indicator was found.
     type: List
 scripttarget: 0
 subtype: python3
