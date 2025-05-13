@@ -1,61 +1,130 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
-  id: AnomaliThreatStreamFeed
+  id: Anomali ThreatStream Feed
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
+- display: Fetch indicators
+  defaultvalue: 'true'
+  name: feed
+  type: 8
+  required: false
+  section: Collect
+- display: Fetch by
+  name: fetchBy
+  type: 15
+  defaultvalue: modified
+  required: true
+  options:
+  - "created"
+  - "modified"
+  section: Collect
+- display: Server URL (e.g., https://www.test.com)
+  defaultvalue: https://api.threatstream.com
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for the connection
-  name: apikey
+  section: Connect
+- display: Username
+  name: credentials
   required: true
-  type: 4
+  type: 9
+  displaypassword: API Key
+  section: Connect
+- display: Feed Fetch Interval
+  defaultvalue: '240'
+  name: feedFetchInterval
+  type: 19
+  required: false
+  section: Collect
+- display: Confidence Threshold
+  name: confidenceThreshold
+  required: false
+  advanced: true
+  defaultvalue: '65'
+  section: Collect
+  type: 0
+  additionalinfo: Will only return indicators above the confidence threshold.
+- display: Source Reliability
+  defaultvalue: C - Fairly reliable
+  name: sourceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  advanced: true
+  type: 15
+  section: Collect
+- display: Traffic Light Protocol Color 
+  defaultvalue: WHITE
+  additionalinfo: Indicator's TLP will override default value.
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  advanced: true
+  required: false
+  section: Collect
+- display: Indicator Reputation
+  defaultvalue: Unknown
+  name: feedReputation
+  options:
+  - Unknown
+  - Benign
+  - Suspicious
+  - Malicious
+  type: 15
+  advanced: true
+  required: false
+  section: Collect
+- display: Indicator Expiration Method 
+  defaultvalue: Indicator Type
+  name: indicatorExpirationMethod 
+  options:
+  - Indicator Type
+  - Time Interval
+  - Never Expired
+  - When removed from the Feed  
+  type: 15
+  advanced: true
+  required: false
+  section: Collect
+- display: Create relationships 
+  defaultvalue: true
+  name: createRelationships
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - display: Trust any certificate (not secure)
+  defaultvalue: 'false'
   name: insecure
-  required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
+  section: Connect
+  advanced: true
   required: false
-  type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: AnomaliThreatStreamFeed
-name: AnomaliThreatStreamFeed
+defaultclassifier: 'null'
+description: Anomali ThreatStream Feed Integration.
+display: Anomali ThreatStream Feed
+name: Anomali ThreatStream Feed
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy2
-      required: false
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
-  isfetch: false
+  - description: test
+    name: threatstream-feed-get-indicators
+  dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
-fromversion: 6.1.0
-marketplaces:
-- xsoar
-- marketplacev2
+  type: python
 tests:
-- No tests (auto formatted)
+- ThreatStream-Test # TODO fix
+fromversion: 6.0.0

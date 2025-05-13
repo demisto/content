@@ -26,22 +26,36 @@ DEFAULT_SUSPICIOUS_THRESHOLD = 25
 THREAT_STREAM = "ThreatStream"
 RETRY_COUNT = 2
 
+RELATIONSHIPS_MAPPING = {
+    "ip": [
+        {"name": EntityRelationship.Relationships.RESOLVES_TO, "raw_field": "rdns", "entity_b_type": FeedIndicatorType.Domain},
+        {"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"},
+    ],
+    "domain": [
+        {"name": EntityRelationship.Relationships.RESOLVED_FROM, "raw_field": "ip", "entity_b_type": FeedIndicatorType.IP},
+        {"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"},
+    ],
+    "url": [
+        {"name": EntityRelationship.Relationships.RESOLVED_FROM, "raw_field": "ip", "entity_b_type": FeedIndicatorType.IP},
+        {"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"},
+    ],
+    "file": [{"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"}],
+    "email": [{"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"}],
+}
+
 """ CLIENT CLASS """
-
-
 class Client(BaseClient):
     """
     Client to use in the Anomali ThreatStream Feed integration. Overrides BaseClient
     """
 
-    def __init__(self, base_url, user_name, api_key, verify, proxy, reliability, should_create_relationships, remote_api):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=(200, 201, 202))
+    def __init__(self, base_url, user_name, api_key, verify, reliability, should_create_relationships):
+        super().__init__(base_url=base_url, verify=verify, ok_codes=(200, 201, 202))
         self.reliability = reliability
         self.should_create_relationships = should_create_relationships
         self.credentials = {
             "Authorization": f"apikey {user_name}:{api_key}",
         }
-        self.remote_api = remote_api
 
     def http_request(
         self,
@@ -84,7 +98,7 @@ class Client(BaseClient):
             raise DemistoException(f"{THREAT_STREAM} - Got unauthorized from the server. Check the credentials.")
         elif res.status_code == 204:
             return
-        elif res.status_code in {404}:
+        elif res.status_code == 404:
             raise DemistoException(f"{THREAT_STREAM} - The resource was not found.")
         raise DemistoException(f"{THREAT_STREAM} - Error in API call {res.status_code} - {res.text}")
 
@@ -102,6 +116,13 @@ class DBotScoreCalculator:
             DBotScoreType.DOMAIN: arg_to_number(params.get("domain_threshold")),
             DBotScoreType.EMAIL: arg_to_number(params.get("email_threshold")),
         }
+        fetch_by = params.get("fetchBy", "modified")
+        feed_fetch_interval = arg_to_number(params.get("feedFetchInterval", "240"))
+        confidence_threshold = arg_to_number(params.get('confidenceThreshold', -1))
+        reliability = params.get("sourceReliability", "C - Fairly reliable")
+        tlp_color = params.get("tlp_color", "WHITE")
+        reputation = params.get("feedReputation", "Unknown")
+        ExpirationMethod = params.get("indicatorExpirationMethod", "Indicator Type")
 
         indicator_default_score = params.get("indicator_default_score")
         if indicator_default_score and indicator_default_score == "Unknown":
@@ -186,7 +207,6 @@ def main():
     api_key = params.get("credentials", {}).get("password")
     server_url = params.get("url", "").strip("/")
     reliability = params.get("integrationReliability", DBotScoreReliability.B)
-
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
@@ -203,10 +223,8 @@ def main():
             user_name=user_name,
             api_key=api_key,
             verify=not params.get("insecure", False),
-            proxy=params.get("proxy", False),
             reliability=reliability,
-            should_create_relationships=params.get("create_relationships", True),
-            remote_api=argToBoolean(params.get("remote_api", "false")),
+            should_create_relationships=params.get("createRelationships", True),
         )
 
         if command == "test-module":
