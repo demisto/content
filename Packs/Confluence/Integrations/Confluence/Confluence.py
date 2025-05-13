@@ -26,14 +26,16 @@ VERIFY_CERTIFICATE = not demisto.params().get("unsecure", False)
 # Support Credentials
 USERNAME = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD = demisto.params().get("credentials", {}).get("password")
-PERSONAL_ACCESS_TOKEN = demisto.params().get("pat")
+PERSONAL_ACCESS_TOKEN = demisto.params().get("personal_access_token", {}).get("password")
+if not ((USERNAME and PASSWORD) or PERSONAL_ACCESS_TOKEN):
+    return_error("You must provide either both Username and Password, or a Personal Access Token.")
 HEADERS = {
     "Content-Type": "application/json",
     "Accept": "application/json",
     "X-Atlassian-Token": "no-check",
 }
 if PERSONAL_ACCESS_TOKEN:
-    HEADERS["Authorization"] = f"Bearer {PASSWORD}"
+    HEADERS["Authorization"] = f"Bearer {PERSONAL_ACCESS_TOKEN}"
 
 """
 Helper Functions

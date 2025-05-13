@@ -19,7 +19,7 @@ configuration:
 - display: Personal Access Token
   name: personal_access_token
   type: 9
-  hiddenusername: true  
+  hiddenusername: true
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -145,7 +145,7 @@ script:
     description: Returns Confluence content by space key and title.
   - name: confluence-get-page-as-pdf
     arguments:
-    - name: page_id
+    - name: pageid
       required: true
       description: ID of the Page to download as PDF.
     outputs:
