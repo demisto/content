@@ -94,17 +94,5 @@ The automation can utilize the interactive capabilities of Slack to send a form 
 this requires the external endpoint for interactive responses to be available for connection (See the Slack v2 intergation documentation for more information).
 You can also utilize threads instead, simply by specifying the <code>responseType</code> argument.
 
-How use `SlackAsk` via playbook:
-<ol>
-  <li>Add the `SlackAsk` script to a playbook as a task.</li>
-  <li>In the `message` argument, specify the message to be sent.</li>
-  <li>Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').</li>
-  <li>Either a user or a channel_id or channel_name must be specified.Either a user or a channel_id or channel_name must be specified.</li>
-  <li>In the `SlackAsk` task, pass a tag value to the `task` argument.</li>
-</ol> 
-All other inputs are optional.
-At some point at the playbook, after running `SlackAsk`, add a manual conditional task, which holds up the playbook execution until the response is received from Slack.
-The condition names must match the response options you passed in to `SlackAsk`.
-In order to tie the conditional task back to `SlackAsk`, add the same tag from the fifth step to the conditional task (under the "Details" tab of the task). The conditional task will be marked as completed when a user responds to the `SlackAsk` form.
 </span>
 
