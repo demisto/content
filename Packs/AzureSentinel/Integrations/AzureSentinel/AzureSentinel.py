@@ -967,7 +967,7 @@ def test_module(client: AzureSentinelClient, _: Dict[str, Any]):
 def list_incidents_command(
     client: AzureSentinelClient,
     args,
-    limit=min(arg_to_number(demisto.params().get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT),
+    limit=None,
     is_fetch_incidents=False,
 ):
     """Retrieves incidents from Sentinel.
@@ -980,7 +980,8 @@ def list_incidents_command(
     """
     filter_expression = args.get("filter")
     next_link = args.get("next_link", "")
-
+    if not limit:
+        limit = min(arg_to_number(args.get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT)
     if next_link:
         next_link = next_link.replace("%20", " ")  # Next link syntax can't handle '%' character
         result = client.http_request("GET", full_url=next_link)
