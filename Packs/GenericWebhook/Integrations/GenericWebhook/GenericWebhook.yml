@@ -57,7 +57,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'After adding the Generic Webhook settings, a unique link will be generated below.'
+- display: After adding the Generic Webhook settings, a unique link will be generated below.
   section: Result
   name: resultLink
   type: 22
