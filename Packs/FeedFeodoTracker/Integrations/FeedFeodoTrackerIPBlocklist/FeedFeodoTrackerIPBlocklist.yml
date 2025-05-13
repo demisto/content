@@ -72,7 +72,7 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-  section: Collect
+  section: Connect
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
