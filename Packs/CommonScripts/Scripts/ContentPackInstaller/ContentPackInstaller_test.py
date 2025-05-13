@@ -183,6 +183,11 @@ def test_install_packs_saas(mocker):
 
 
 def test_install_packs_on_prem(mocker):
+    """
+    Given: XSOAR On-Prem environment and a request to install a pack.
+    When: calling install_packs
+    Then: it should call the API with the correct arguments and return the success result.
+    """
     installer = get_content_pack_installer(mocker)
 
     packs_to_install = [{"id": "Pack1", "version": "1.2.4"}]
