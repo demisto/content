@@ -1,0 +1,40 @@
+args:
+- description: List of potential remediation owners.
+  isArray: true
+  name: owners
+- description: System IDs or names associated with the compute instance.
+  isArray: true
+  name: asmsystemids
+- defaultValue: asmremediationowner
+  description: The field of the alert or issue in which the owners should be stored.
+  name: ownerrelatedfield
+- defaultValue: "False"
+  description: False will use !setAlert, True will use !setIssue.
+  name: tenantcommand
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+comment: Recommend most likely remediation owners from those surfaced by Cortex ASM Enrichment.
+commonfields:
+  id: RankRemediationOwners
+  version: -1
+dockerimage: demisto/xpanse-ml-ev2:1.0.0.1858265
+enabled: true
+name: RankRemediationOwners
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+runonce: false
+engineinfo: {}
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
