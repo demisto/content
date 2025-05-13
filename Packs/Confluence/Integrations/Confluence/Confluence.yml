@@ -145,7 +145,7 @@ script:
     description: Returns Confluence content by space key and title.
   - name: confluence-get-page-as-pdf
     arguments:
-    - name: pageid
+    - name: page_id
       required: true
       description: ID of the Page to download as PDF.
     outputs:
