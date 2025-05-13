@@ -7,8 +7,10 @@ CSCDomainManager is a web-based portfolio management platform consolidating doma
 CSC offers innovative, next generation domain management and security solutions coupled with online brand and fraud protection. DomainSec is a comprehensive platform for domain security. Powered by a correlation engine and machine learning technology, it brings together the variety of data sets and blocking networks enabling threat intelligence based on domain security insights.
 
 # What does this pack do?
+
 The actions included in this pack allow the user to manage domains from Cortex XSOAR.
 
 # For more information
+
 - [Visit the CSC website](https://www.cscdbs.com/)
 - [See the api page](https://www.cscglobal.com/cscglobal/docs/dbs/domainmanager/api-v2/#/)
