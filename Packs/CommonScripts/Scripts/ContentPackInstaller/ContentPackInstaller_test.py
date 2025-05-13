@@ -182,7 +182,7 @@ def test_install_packs_saas(mocker):
     mock_call_execute.assert_called_once_with("core-api-post", expected_args)
 
 
-def test_install_packs_on_prem(mocker):
+def test_install_packs_prem(mocker):
     """
     Given: XSOAR On-Prem environment and a request to install a pack.
     When: calling install_packs
