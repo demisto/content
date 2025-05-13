@@ -57,8 +57,8 @@ To use `MicrosoftTeamsAsk` via playbook:
 1. Add the `MicrosoftTeamsAsk` script to a playbook as a task.
 2. In the `message` argument, specify the message to be sent.
 3. Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').
-4. Either a user or a channel_id or channel_name must be specified.
-5. In the `MicrosoftTeamsAsk` task, pass a tag value to the `task` argument.
+4. Either a team_member or a channel must be specified.
+5. In the `MicrosoftTeamsAsk` task, pass a tag value to the `task_id` argument.
 
 All other inputs are optional.
 At some point at the playbook, after running `MicrosoftTeamsAsk`, add a manual conditional task, which holds up the playbook execution until the response is received from Teams.
