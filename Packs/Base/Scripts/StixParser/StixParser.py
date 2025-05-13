@@ -1525,14 +1525,17 @@ def build_observables(file_name):
 
         if action == "end" and element.tag.endswith("STIX_Package"):
             for c in element:
-                content = etree.tostring(c, encoding="unicode")
-                timestamp, observable, indicator, ttp = StixDecode.decode(content)
-                if observable:
-                    observables.extend(observable)
-                if indicator:
-                    indicators.update(indicator)
-                if ttp:
-                    ttps.update(ttp)
+                try:
+                    content = etree.tostring(c, encoding="unicode")
+                    timestamp, observable, indicator, ttp = StixDecode.decode(content)
+                    if observable:
+                        observables.extend(observable)
+                    if indicator:
+                        indicators.update(indicator)
+                    if ttp:
+                        ttps.update(ttp)
+                except Exception as e:
+                    demisto.debug(f'Failed parsing response: {e}')
 
             element.clear()
 
