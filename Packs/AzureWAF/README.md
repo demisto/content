@@ -91,7 +91,7 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 
 For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
 
-Find more information on how to create [Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal)
+Find more information on how to create [Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal).
 
 
 ### Cortex XSIAM side
