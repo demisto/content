@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
+
 # IMPORTS
 
 import json
@@ -59,7 +60,14 @@ INCIDENT_HEADERS = [
     "LastActivityTimeGenerated",
 ]
 
-COMMENT_HEADERS = ["ID", "IncidentID", "Message", "AuthorName", "AuthorEmail", "CreatedTimeUTC"]
+COMMENT_HEADERS = [
+    "ID",
+    "IncidentID",
+    "Message",
+    "AuthorName",
+    "AuthorEmail",
+    "CreatedTimeUTC",
+]
 
 ENTITIES_RETENTION_PERIOD_MESSAGE = (
     "\nNotice that in the current Azure Sentinel API version, the retention period for GetEntityByID is 30 days."
@@ -67,14 +75,29 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = (
 
 DEFAULT_LIMIT = 50
 FETCH_MAX_LIMIT = 20
+COMMAND_MAX_LIMIT = 200
+MAX_INCIDENT_COMMENT_LIMIT = 50
 
 DEFAULT_SOURCE = "Microsoft Sentinel"
 
-THREAT_INDICATORS_HEADERS = ["Name", "DisplayName", "Values", "Types", "Source", "Confidence", "Tags"]
+THREAT_INDICATORS_HEADERS = [
+    "Name",
+    "DisplayName",
+    "Values",
+    "Types",
+    "Source",
+    "Confidence",
+    "Tags",
+]
 
 # =========== Mirroring Mechanism Globals ===========
 
-MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+MIRROR_DIRECTION_DICT = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
 
 MIRROR_STATUS_DICT = {
     "Undetermined": "Other",
@@ -130,8 +153,18 @@ OUTGOING_MIRRORED_FIELDS = {
 }
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
-LEVEL_TO_SEVERITY = {0: "Informational", 0.5: "Informational", 1: "Low", 2: "Medium", 3: "High", 4: "High"}
-CLASSIFICATION_REASON = {"TruePositive": "SuspiciousActivity", "BenignPositive": "SuspiciousButExpected"}
+LEVEL_TO_SEVERITY = {
+    0: "Informational",
+    0.5: "Informational",
+    1: "Low",
+    2: "Medium",
+    3: "High",
+    4: "High",
+}
+CLASSIFICATION_REASON = {
+    "TruePositive": "SuspiciousActivity",
+    "BenignPositive": "SuspiciousButExpected",
+}
 
 
 class AzureSentinelClient:
@@ -264,7 +297,12 @@ def error_handler(response: requests.Response):
         try:
             error_json = response.json()
         except json.JSONDecodeError:
-            error_json = {"error": {"code": get_error_kind(code=response.status_code), "message": response.text}}
+            error_json = {
+                "error": {
+                    "code": get_error_kind(code=response.status_code),
+                    "message": response.text,
+                }
+            }
         error_kind = error_json.get("error", {}).get("code", "BadRequest")
         error_msg = error_json.get("error", {}).get("message", error_json)
         raise ValueError(f"[{error_kind} {response.status_code}] {error_msg}")
@@ -543,7 +581,14 @@ def severity_filter(min_severity):
     return severity_filter
 
 
-def generic_list_incident_items(client, incident_id, items_kind, key_in_raw_result, outputs_prefix, xsoar_transformer):
+def generic_list_incident_items(
+    client,
+    incident_id,
+    items_kind,
+    key_in_raw_result,
+    outputs_prefix,
+    xsoar_transformer,
+):
     """
     Get a list of incident's items
 
@@ -682,7 +727,13 @@ def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, cl
 
 def reopen_in_xsoar(entries: List, remote_incident_id: str):
     demisto.debug(f"Incident is opened (or reopened): {remote_incident_id}")
-    entries.append({"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON})
+    entries.append(
+        {
+            "Type": EntryType.NOTE,
+            "Contents": {"dbotIncidentReopen": True},
+            "ContentsFormat": EntryFormat.JSON,
+        }
+    )
 
 
 def get_remote_data_command(client: AzureSentinelClient, args: Dict[str, Any]) -> GetRemoteDataResponse:
@@ -763,7 +814,11 @@ def extract_classification_reason(delta: Dict[str, str], data: Dict[str, str]):
 
 
 def update_incident_request(
-    client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any], close_ticket: bool = False
+    client: AzureSentinelClient,
+    incident_id: str,
+    data: Dict[str, Any],
+    delta: Dict[str, Any],
+    close_ticket: bool = False,
 ) -> Dict[str, Any]:
     """
     Args:
@@ -793,7 +848,7 @@ def update_incident_request(
     properties = {
         "title": data.get("title"),
         "description": delta.get("description"),
-        "severity": severity if severity in LEVEL_TO_SEVERITY.values() else LEVEL_TO_SEVERITY[severity],
+        "severity": (severity if severity in LEVEL_TO_SEVERITY.values() else LEVEL_TO_SEVERITY[severity]),
         "status": status,
         "firstActivityTimeUtc": delta.get("firstActivityTimeUtc"),
         "lastActivityTimeUtc": delta.get("lastActivityTimeUtc"),
@@ -811,14 +866,21 @@ def update_incident_request(
             "classificationReason": extract_classification_reason(delta, data),
         }
     remove_nulls_from_dictionary(properties)
-    data = {"etag": fetched_incident_data.get("etag") or delta.get("etag") or data.get("etag"), "properties": properties}
+    data = {
+        "etag": fetched_incident_data.get("etag") or delta.get("etag") or data.get("etag"),
+        "properties": properties,
+    }
     demisto.debug(f"Updating incident with remote ID {incident_id} with data: {data}")
     response = client.http_request("PUT", f"incidents/{incident_id}", data=data)
     return response
 
 
 def update_remote_incident(
-    client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any], incident_status: IncidentStatus, incident_id: str
+    client: AzureSentinelClient,
+    data: Dict[str, Any],
+    delta: Dict[str, Any],
+    incident_status: IncidentStatus,
+    incident_id: str,
 ) -> str:
     # we will run the mirror-out update only if there is relevant changes
     # (or closingUserId was changed meaning the incident wa reopened) or need to close the remote ticket
@@ -902,17 +964,21 @@ def test_module(client: AzureSentinelClient, _: Dict[str, Any]):
     return "ok"
 
 
-def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False):
+def list_incidents_command(
+    client: AzureSentinelClient,
+    args,
+    limit=min(arg_to_number(demisto.params().get("limit")) or 5, COMMAND_MAX_LIMIT),
+    is_fetch_incidents=False,
+):
     """Retrieves incidents from Sentinel.
     Args:
         client: An AzureSentinelClient client.
         args: Demisto args.
-        is_fetch_incidents: Is it part of a fetch incidents command.
+        limit: The limit of the incidents to retrieve
     Returns:
         A CommandResult object with the array of incidents as output.
     """
     filter_expression = args.get("filter")
-    limit = min(DEFAULT_LIMIT, int(args.get("limit"))) if is_fetch_incidents else min(200, int(args.get("limit")))
     next_link = args.get("next_link", "")
 
     if next_link:
@@ -920,7 +986,11 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         result = client.http_request("GET", full_url=next_link)
     else:
         url_suffix = "incidents"
-        params = {"$top": limit, "$filter": filter_expression, "$orderby": args.get("orderby", "properties/createdTimeUtc asc")}
+        params = {
+            "$top": limit,
+            "$filter": filter_expression,
+            "$orderby": args.get("orderby", "properties/createdTimeUtc asc"),
+        }
         remove_nulls_from_dictionary(params)
 
         result = client.http_request("GET", url_suffix, params=params)
@@ -955,7 +1025,11 @@ def list_watchlists_command(client, args):
     iterable_watchlists = [result] if specific_watchlists_alias else result.get("value")
     watchlists = [watchlist_data_to_xsoar_format(watchlist) for watchlist in iterable_watchlists]
     readable_output = tableToMarkdown(
-        "Watchlists results", watchlists, headers=["Name", "ID", "Description"], headerTransform=pascalToSpace, removeNull=True
+        "Watchlists results",
+        watchlists,
+        headers=["Name", "ID", "Description"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1054,7 +1128,11 @@ def create_update_watchlist_item_command(client, args):
     # prepare result
     item = {"WatchlistAlias": alias, **watchlist_item_data_to_xsoar_format(raw_item)}
     readable_output = tableToMarkdown(
-        "Create watchlist item results", item, headers=["ID", "ItemsKeyValue"], headerTransform=pascalToSpace, removeNull=True
+        "Create watchlist item results",
+        item,
+        headers=["ID", "ItemsKeyValue"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1087,7 +1165,11 @@ def list_watchlist_items_command(client, args):
     raw_items = [result] if item_id else result.get("value")
     items = [{"WatchlistAlias": alias, **watchlist_item_data_to_xsoar_format(item)} for item in raw_items]
     readable_output = tableToMarkdown(
-        "Watchlist items results", items, headers=["ID", "ItemsKeyValue"], headerTransform=pascalToSpace, removeNull=True
+        "Watchlist items results",
+        items,
+        headers=["ID", "ItemsKeyValue"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
     return CommandResults(
@@ -1107,7 +1189,11 @@ def update_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
     result = client.http_request("PUT", url_suffix, data=inc_data)
     incident = incident_data_to_xsoar_format(result)
     readable_output = tableToMarkdown(
-        f"Updated incidents {inc_id} details", incident, headers=INCIDENT_HEADERS, headerTransform=pascalToSpace, removeNull=True
+        f"Updated incidents {inc_id} details",
+        incident,
+        headers=INCIDENT_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -1169,7 +1255,7 @@ def delete_incident_command(client, args):
 
 def list_incident_comments_command(client, args):
     inc_id = args.get("incident_id")
-    limit = min(DEFAULT_LIMIT, int(args.get("limit")))
+    limit = min(MAX_INCIDENT_COMMENT_LIMIT, int(args.get("limit")))
     next_link = args.get("next_link", "")
 
     if next_link:
@@ -1247,7 +1333,11 @@ def list_incident_entities_command(client, args):
     """
 
     def xsoar_transformer(entity):
-        return {"ID": entity.get("name"), "Kind": entity.get("kind"), "Properties": entity.get("properties")}
+        return {
+            "ID": entity.get("name"),
+            "Kind": entity.get("kind"),
+            "Properties": entity.get("properties"),
+        }
 
     return generic_list_incident_items(
         client=client,
@@ -1306,7 +1396,10 @@ def list_incident_relations_command(client, args):
     update_next_link_in_context(result, outputs)
 
     readable_output = tableToMarkdown(
-        f"Incident {inc_id} Relations ({len(relations)} results)", relations, headerTransform=pascalToSpace, removeNull=True
+        f"Incident {inc_id} Relations ({len(relations)} results)",
+        relations,
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
     return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
@@ -1355,7 +1448,12 @@ def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List
             incident[info_type] = client.http_request(method, f"incidents/{incident_id}/{info_type}").get(results_key)
 
 
-def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: str) -> tuple:
+def fetch_incidents(
+    client: AzureSentinelClient,
+    last_run: dict,
+    first_fetch_time: str,
+    min_severity: str,
+) -> tuple:
     """Fetching incidents.
     Args:
         first_fetch_time: The first fetch time.
@@ -1407,7 +1505,9 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         }
         demisto.debug(f"Filter query used:{command_args['filter']}")
 
-    raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+    raw_incidents = list_incidents_command(
+        client, command_args, min(int(limit), FETCH_MAX_LIMIT), is_fetch_incidents=True
+    ).outputs
     if isinstance(raw_incidents, dict):
         raw_incidents = [raw_incidents]
     demisto.debug(f"raw incidents id before dedup: {[incident['ID'] for incident in raw_incidents]}")
@@ -1427,7 +1527,10 @@ def fetch_incidents_command(client, params):
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
     next_run, incidents = fetch_incidents(
-        client=client, last_run=last_run, first_fetch_time=first_fetch_time, min_severity=min_severity
+        client=client,
+        last_run=last_run,
+        first_fetch_time=first_fetch_time,
+        min_severity=min_severity,
     )
     demisto.debug(f"New last run is {last_run}")
     demisto.setLastRun(next_run)
@@ -1510,18 +1613,23 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         "Description": properties.get("description", ""),
         "Types": properties.get("threatTypes", ""),
         "KillChainPhases": [
-            {"KillChainName": phase.get("killChainName"), "PhaseName": phase.get("phaseName")}
+            {
+                "KillChainName": phase.get("killChainName"),
+                "PhaseName": phase.get("phaseName"),
+            }
             for phase in properties.get("KillChainPhases", [])
         ],
-        "ParsedPattern": {
-            "PatternTypeKey": pattern.get("patternTypeKey"),
-            "PatternTypeValues": {
-                "Value": dict_safe_get(pattern, ["patternTypeValues", 0, "value"]),
-                "ValueType": dict_safe_get(pattern, ["patternTypeValues", 0, "valueType"]),
-            },
-        }
-        if pattern
-        else None,
+        "ParsedPattern": (
+            {
+                "PatternTypeKey": pattern.get("patternTypeKey"),
+                "PatternTypeValues": {
+                    "Value": dict_safe_get(pattern, ["patternTypeValues", 0, "value"]),
+                    "ValueType": dict_safe_get(pattern, ["patternTypeValues", 0, "valueType"]),
+                },
+            }
+            if pattern
+            else None
+        ),
         "Pattern": properties.get("pattern", ""),
         "PatternType": properties.get("patternType", ""),
         "ValidFrom": format_date(properties.get("validFrom", "")),
@@ -1674,7 +1782,12 @@ def list_threat_indicator_command(client, args):
         removeNull=True,
     )
 
-    return CommandResults(readable_output=readable_output, outputs=outputs, outputs_key_field="ID", raw_response=result)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        outputs_key_field="ID",
+        raw_response=result,
+    )
 
 
 def query_threat_indicators_command(client, args):
@@ -1706,13 +1819,21 @@ def query_threat_indicators_command(client, args):
         removeNull=True,
     )
 
-    return CommandResults(readable_output=readable_output, outputs=outputs, outputs_key_field="ID", raw_response=result)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        outputs_key_field="ID",
+        raw_response=result,
+    )
 
 
 def create_threat_indicator_command(client, args):
     url_suffix = "threatIntelligence/main/createIndicator"
 
-    data = {"kind": "indicator", "properties": build_threat_indicator_data(args, source=DEFAULT_SOURCE)}
+    data = {
+        "kind": "indicator",
+        "properties": build_threat_indicator_data(args, source=DEFAULT_SOURCE),
+    }
 
     result = client.http_request("POST", url_suffix, data=data)
 
@@ -1927,8 +2048,13 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
     return CommandResults(readable_output=f"Alert rule {rule_id} was deleted successfully.")
 
 
-def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:  # pragma: no cover
-    full_url = urljoin(client.azure_cloud.endpoints.resource_manager, "subscriptions?api-version=2020-01-01")
+def list_subscriptions_command(
+    client: AzureSentinelClient,
+) -> CommandResults:  # pragma: no cover
+    full_url = urljoin(
+        client.azure_cloud.endpoints.resource_manager,
+        "subscriptions?api-version=2020-01-01",
+    )
 
     response = client.http_request("GET", full_url=full_url)
     data_from_response = response.get("value", [])
@@ -1989,7 +2115,12 @@ def list_resource_groups_command(
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
     required_args_by_kind = {
         "fusion": ["rule_name", "template_name", "enabled"],
-        "microsoft_security_incident_creation": ["rule_name", "displayName", "enabled", "product_filter"],
+        "microsoft_security_incident_creation": [
+            "rule_name",
+            "displayName",
+            "enabled",
+            "product_filter",
+        ],
         "scheduled": [
             "rule_name",
             "displayName",
@@ -2030,7 +2161,7 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
         "queryPeriod": args.get("query_period"),
         "severity": pascalToSpace(args.get("severity")),
         "suppressionDuration": args.get("suppression_duration"),
-        "suppressionEnabled": argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None,
+        "suppressionEnabled": (argToBoolean(args.get("suppression_enabled")) if args.get("suppression_enabled") else None),
         "triggerOperator": underscoreToCamelCase(args.get("trigger_operator")),
         "triggerThreshold": args.get("trigger_threshold"),
         "tactics": argToList(args.get("tactics")),
@@ -2038,7 +2169,11 @@ def create_data_for_alert_rule(args: Dict[str, Any]) -> Dict[str, Any]:
     }
     remove_nulls_from_dictionary(properties)
 
-    return {"kind": underscoreToCamelCase(args.get("kind")), "etag": args.get("etag"), "properties": properties}
+    return {
+        "kind": underscoreToCamelCase(args.get("kind")),
+        "etag": args.get("etag"),
+        "properties": properties,
+    }
 
 
 def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
@@ -2059,7 +2194,10 @@ def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict
         "Etag": response.get("etag"),
     }
     readable_output = tableToMarkdown(
-        "Azure Sentinel Alert Rule successfully created/updated", readable_result, removeNull=True, sort_headers=False
+        "Azure Sentinel Alert Rule successfully created/updated",
+        readable_result,
+        removeNull=True,
+        sort_headers=False,
     )
 
     return CommandResults(

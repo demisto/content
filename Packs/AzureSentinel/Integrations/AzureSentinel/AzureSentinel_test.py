@@ -2249,6 +2249,7 @@ def test_max_limit_argument_in_fetch_and_list_incident_commands(mocker):
     """
     # prepare
     args = {"limit": "201"}
+    mocker.patch("AzureSentinel.demisto.params", return_value={"limit": "201"})
     last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
     client = mock_client()
     mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
@@ -2281,6 +2282,7 @@ def test_default_limit_argument_in_fetch_and_list_incident_commands(mocker):
     """
     # prepare
     args = {"limit": "50"}
+    mocker.patch("AzureSentinel.demisto.params", return_value={"limit": "50"})
     last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
     client = mock_client()
     mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
@@ -2312,6 +2314,7 @@ def test_lower_then_default_limit_argument_in_fetch_and_list_incident_commands(m
         - Ensure the the limit argument and the limit parameter were set correctly.
     """
     # prepare
+    mocker.patch("AzureSentinel.demisto.params", return_value={"limit": "20"})
     args = {"limit": "20"}
     last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
     client = mock_client()
