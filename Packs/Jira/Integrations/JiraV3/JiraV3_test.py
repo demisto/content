@@ -879,7 +879,7 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
-        expected_mo_outputs = {'ticket_id': '1234', 'ticket_url': "dummy_link"}
+        expected_mo_outputs = {'ticket_id': 'dummy_key-1234', 'ticket_url': "dummy_link"}
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
         command_results = create_issue_command(client=client, args={"summary": "test"})

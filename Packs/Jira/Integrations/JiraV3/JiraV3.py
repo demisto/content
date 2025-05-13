@@ -2314,10 +2314,12 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[C
 
     ticket_url = res.get("self")
     ticket_id = res.get("id") or res.get("ticket_id")
-    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_id)
+    ticket_key = res.get("key", "")
+    formatted_ticket_id = f"{ticket_key}-{ticket_id}"
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=formatted_ticket_id)
 
-    outputs = {"Id": res.get("id", ""), "Key": res.get("key", "")}
-    markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": res.get("key", "").split("-")[0]}
+    outputs = {"Id": res.get("id", ""), "Key": ticket_key}
+    markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": ticket_key.split("-")[0]}
     ticket_results = CommandResults(
         outputs_prefix="Ticket",
         outputs=outputs,
