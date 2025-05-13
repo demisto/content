@@ -46,4 +46,6 @@ There is no context output for this command.
 
 ### API Limitations 
 
+Please DO NOT consistently use a high “limit” number or flood the api.  The account will be automatically throttled.
 Daily quota: 100,000 API calls (approximately 60 calls per minute max).
+
