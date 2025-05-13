@@ -156,8 +156,9 @@ sendMultipart = function (uri, entryID, body) {
 
 var addPlaybookMetadataToRequest = function(body, command) {
     try {
+        var requestBodyObject = JSON.parse(body);
         var playbookTaskInfoJson = JSON.parse(playbookTaskInfo);
-        playbook_metadata_obj = {
+        requestBodyObject.request_data.playbook_metadata = {
             'playbook_id': playbookTaskInfoJson.playbookID,
             'playbook_name': playbookTaskInfoJson.playbookName,
             'task_id': playbookTaskInfoJson.taskID,
@@ -165,10 +166,11 @@ var addPlaybookMetadataToRequest = function(body, command) {
             'integration_name': INTEGRATION_NAME,
             'command_name': command,
         }
-        body['request_data'][PLAYBOOK_METADATA] = playbook_metadata_obj;
-        logDebug("Added playbook-metadata to request body " + body['request_data'][PLAYBOOK_METADATA]);
+        logDebug("Added playbook-metadata to request body " + requestBodyObject.request_data.playbook_metadata);
     } catch(error) {
         logError("Error parsing as a JSON object playbookTaskInfo: " + error);
+    } finally {
+        body = JSON.stringify(requestBodyObject);
     }
     return body;
 };
