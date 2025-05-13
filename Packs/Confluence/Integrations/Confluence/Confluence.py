@@ -24,8 +24,8 @@ BASE_URL = SERVER + "/rest/api"
 VERIFY_CERTIFICATE = not demisto.params().get("unsecure", False)
 
 # Support Credentials
-USERNAME = demisto.params()["credentials"]["identifier"]
-PASSWORD = demisto.params()["credentials"]["password"]
+USERNAME = demisto.params().get("credentials", {}).get("identifier")
+PASSWORD = demisto.params().get("credentials", {}).get("password")
 PERSONAL_ACCESS_TOKEN = demisto.params().get("pat")
 HEADERS = {
     "Content-Type": "application/json",
