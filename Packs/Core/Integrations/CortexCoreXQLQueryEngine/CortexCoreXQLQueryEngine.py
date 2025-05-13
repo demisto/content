@@ -92,7 +92,7 @@ def main() -> None:
         client = Client(base_url=base_url, proxy=proxy, verify=verify_certificate, headers={}, is_core=True)
 
         if command in GENERIC_QUERY_COMMANDS:
-            args['brand'] = 'XQL Query Engine'
+            args["brand"] = "XQL Query Engine"
             return_results(GENERIC_QUERY_COMMANDS[command](client, args))
         elif command in BUILT_IN_QUERY_COMMANDS:
             return_results(get_built_in_query_results_polling_command(client, args))

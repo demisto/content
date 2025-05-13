@@ -470,7 +470,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
         }
     }
 
-    add_playbook_metadata(data, "start_xql_query", args.get('brand', 'XQL Query Engine'))
+    add_playbook_metadata(data, "start_xql_query", args.get("brand", "XQL Query Engine"))
 
     time_frame = args.get("time_frame")
     if time_frame:
