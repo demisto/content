@@ -8,7 +8,7 @@ LIMIT_EXCEEDED = "Limit Exceeded"
 def main():
     incident_query = demisto.args().get("query")
     incident_fetch_back_days = int(demisto.args().get("fetchdays"))
-
+    demisto.debug(f"[test] {incident_query=}, {incident_fetch_back_days=}")
     if demisto.args().get("columns"):
         incident_columns = [x.strip() for x in demisto.args().get("columns").split(",")]
     else:
@@ -38,13 +38,14 @@ def main():
         "columns": incident_columns,
     }
 
-    demisto.debug(f"{incident_query=}, {incident_fetch_back_days=}")
     # generate the file
     export_to_csv_result = demisto.executeCommand("core-api-post", {"uri": "/incident/batch/exportToCsv", "body": incident_body})
+    demisto.debug(f"[test] {export_to_csv_result=}")
     if not export_to_csv_result:
         raise ValueError(f"Error when trying to export incident(s) with query {incident_query} to CSV")
 
     if is_error(export_to_csv_result):
+        demisto.debug(f"[test] error occurred while trying to execute command")
         export_to_csv_result_content = export_to_csv_result[0].get("Contents", {})
         if NO_INCIDENTS_FOUND in export_to_csv_result_content:
             return_results(NO_INCIDENTS_FOUND)
@@ -54,17 +55,21 @@ def main():
             raise ValueError(f"Couldn't export incidents to CSV. {export_to_csv_result=}")
         return
 
-    demisto.debug(f"{export_to_csv_result=}")
+    demisto.debug("[test] No error occurred, proceeding to run")
     export_to_csv_result_content = export_to_csv_result[0].get("Contents", {})
     csv_file_name = export_to_csv_result_content.get("response")
-
+    demisto.debug(f"[test] {csv_file_name=}")
     # download the file and return to the war room
     incident_csv_result = demisto.executeCommand("core-api-get", {"uri": f"/incident/csv/{csv_file_name}"})
+    demisto.debug(f"[test] {incident_csv_result=}")
     if is_error(incident_csv_result):
+        demisto.debug(f"[test] error occurred while trying to execute command for second time")
         raise ValueError(f"Error {get_error(incident_csv_result)} when trying to retrieve the CSV")
 
-    demisto.debug(f"{incident_csv_result=}")
+    demisto.debug("[test] No error occurred, proceeding to run (2)")
+    demisto.debug(f"[test] {incident_csv_result=}")
     file = incident_csv_result[0].get("Contents", {}).get("response", "")
+    demisto.debug(f"[test] {file=}")
     demisto.results(fileResult(csv_file_name, file))
 
 
