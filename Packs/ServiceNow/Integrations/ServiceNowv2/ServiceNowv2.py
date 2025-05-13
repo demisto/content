@@ -1498,7 +1498,7 @@ def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
         additional_fields_keys = list(args.keys())
 
     instance_url = demisto.params().get("url", "").rstrip('/')
-    ticket_type = ticket.get("type")
+    ticket_type = ticket.get("sys_class_name")
     ticket_sys_id = ticket.get("sys_id")
 
     ticket_url = f"{instance_url}/nav_to.do?uri={ticket_type}.do?sys_id={ticket_sys_id}"
