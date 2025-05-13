@@ -81,17 +81,17 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 3. Select **+ Add diagnostic setting** to create a new integration or select **Edit setting** for an existing integration.
 4. Enter a **Diagnostic setting name**. If you're editing an existing integration, you can't change the name.
 5. Select the log categories that you want to stream. Refer to the **Log Normalization** section for the supported log categories for normalization.
-6. Select streaming method and storing method
+6. Select the streaming and storing method.
 
-   6.1. If you wish to use Event Hub and storage account to save the diagnostic logs select the **Stream to an event hub** checkbox.
+   6.1. Select the Stream to an event hub checkbox to use the Event Hub and storage account to save the diagnostic logs.
    
-   6.2. If you wish Log Analytics to store the logs select **Send To Log Analytics** checkbox and choose **Log Analytics Workspace**.
+   6.2. Select the Send To Log Analytics checkbox and choose Log Analytics Workspace to use a Log Analytics workspace to store the logs.
 8. Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.
 
 
 For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
 
-Find more information on how to create [Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal).
+For more information on creating a Log Analytics workspace, see [Create a Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal).
 
 
 ### Cortex XSIAM side
