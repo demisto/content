@@ -59,9 +59,9 @@ configuration:
   required: false
 - display: 'After adding the Generic Webhook settings, a unique link will be generated below.'
   section: Result
-  name: resultLink  # Where will this 'name' be used? And where will the 'GeneratedLink' from Figma appear?
+  name: resultLink
   type: 22
-  additionalinfo: #TODO add a message here regarding the version
+  additionalinfo: This field is populated only in updated FE versions.
 description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
