@@ -967,7 +967,7 @@ def test_module(client: AzureSentinelClient, _: Dict[str, Any]):
 def list_incidents_command(
     client: AzureSentinelClient,
     args,
-    limit=min(arg_to_number(demisto.params().get("limit")) or 5, COMMAND_MAX_LIMIT),
+    limit=min(arg_to_number(demisto.params().get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT),
     is_fetch_incidents=False,
 ):
     """Retrieves incidents from Sentinel.
