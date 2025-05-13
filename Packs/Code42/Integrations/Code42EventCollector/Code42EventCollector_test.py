@@ -27,6 +27,17 @@ def create_file_events(start_id: int, start_date: str, num_of_file_events: int) 
     ]
 
 
+def create_file_events_from_date_times(datetimes: list[str]) -> list[dict[str, Any]]:
+    return [
+        {
+            "event": {
+                "id": f'{i}',
+                "inserted": dt
+            }
+        } for i, dt in enumerate(datetimes)
+    ]
+
+
 def create_audit_logs(start_id: int, start_date: str, num_of_audit_logs: int) -> List[Dict[str, Any]]:
     return [
         {"id": f"{i}", "timestamp": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)}
@@ -417,47 +428,81 @@ def test_fetch_events_look_back(mocker):
        and all incidents later than the next-fetch should be kept in the last-run.
      - The last-run should stay the same.
     """
-    import Code42EventCollector
+    from CortexXDRIR import fetch_incidents
 
-    send_events_mocker: MagicMock = mocker.patch.object(Code42EventCollector, "send_events_to_xsiam")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            "max_file_events_per_fetch": 500,
-            "max_audit_events_per_fetch": 500,
-            'event_types_to_fetch': 'File,Audit'
-        },
+    last_run = {"time": 0}
+    
+    {"fileEvents": file_events, "totalCount": self.num_of_file_events}
+
+    class MockClient:
+        _incidents = load_test_data("./test_data/get_incidents_list_dedup.json")
+
+        def save_modified_incidents_to_integration_context(self): ...
+
+        def get_multiple_incidents_extra_data(self, gte_creation_time_milliseconds=0, limit=100, **_):
+            return [inc for inc in self._incidents if inc["creation_time"] >= gte_creation_time_milliseconds][:limit]
+
+    mock_client = MockClient()
+
+    last_run, result_1 = fetch_incidents(
+        client=mock_client,
+        first_fetch_time="3 days",
+        integration_instance={},
+        exclude_artifacts=True,
+        last_run=last_run,
+        max_fetch=2,
     )
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "command", return_value="fetch-events")
-    mocker.patch.object(
-        requests_toolbelt.sessions.BaseUrlSession,
-        "request",
-        side_effect=HttpRequestsMocker(num_of_file_events=0, num_of_audit_logs=100).valid_http_request_side_effect,
+
+    assert len(result_1) == 2
+    assert "XDR Incident 1" in result_1[0]["name"]
+    assert "XDR Incident 2" in result_1[1]["name"]
+    assert last_run["time"] == 100000001
+    assert last_run["dedup_incidents"] == ["2"]
+
+    last_run, result_2 = fetch_incidents(
+        client=mock_client,
+        first_fetch_time="3 days",
+        integration_instance={},
+        exclude_artifacts=True,
+        last_run=last_run,
+        max_fetch=2,
     )
 
-    Code42EventCollector.main()
-    file_events = send_events_mocker.call_args_list[0][0][0]
-    assert len(file_events) == 0
+    assert len(result_2) == 2
+    assert "XDR Incident 3" in result_2[0]["name"]
+    assert "XDR Incident 4" in result_2[1]["name"]
+    assert last_run["time"] == 100000001
+    assert last_run["dedup_incidents"] == ["2", "3", "4"]
 
-    audit_logs = send_events_mocker.call_args_list[1][0][0]
-    assert len(audit_logs) == 100
-    for audit_log in audit_logs:
-        assert audit_log["eventType"] == Code42EventCollector.EventType.AUDIT
+    last_run, result_3 = fetch_incidents(
+        client=mock_client,
+        first_fetch_time="3 days",
+        integration_instance={},
+        exclude_artifacts=True,
+        last_run=last_run,
+        max_fetch=2,
+    )
 
-    last_run_expected_keys = {
-        Code42EventCollector.AuditLogLastRun.FETCHED_IDS,
-        Code42EventCollector.AuditLogLastRun.TIME,
-    }
+    assert len(result_3) == 2
+    assert "XDR Incident 5" in result_3[0]["name"]
+    assert "XDR Incident 6" in result_3[1]["name"]
+    assert last_run["time"] == 100000002
+    assert last_run["dedup_incidents"] == ["6"]
 
-    assert last_run_expected_keys == set(set_last_run_mocker.call_args_list[0][0][0].keys())
+    # run empty test and assert last_run stays the same
+    old_last_run = last_run.copy()
+
+    last_run, empty_result = fetch_incidents(
+        client=mock_client,
+        first_fetch_time="3 days",
+        integration_instance={},
+        exclude_artifacts=True,
+        last_run=last_run,
+        max_fetch=2,
+    )
+
+    assert empty_result == []
+    assert last_run == old_last_run
 
 
 def test_get_events_command(mocker):
