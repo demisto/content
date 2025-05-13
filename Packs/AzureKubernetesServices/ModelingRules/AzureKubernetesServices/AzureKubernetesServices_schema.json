@@ -1,5 +1,9 @@
 {
     "msft_azure_aks_raw": {
+        "Type": {
+            "type": "string",
+            "is_array": false
+        },
         "properties": {
             "type": "string",
             "is_array": false
