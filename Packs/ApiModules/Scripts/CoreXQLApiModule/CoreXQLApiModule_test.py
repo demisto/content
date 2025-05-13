@@ -1050,7 +1050,7 @@ def test_add_playbook_metadata_complete_data(mocker):
     - Ensure the playbook metadata is correctly added to the request data
     """
     # Mock demisto context
-    mock_context = util_load_json('test_data/ctx_output.json')
+    mock_context = util_load_json("test_data/ctx_output.json")
     mocker.patch.object(demisto, "callingContext", mock_context)
     mocker.patch.object(demisto, "debug")
 
@@ -1093,11 +1093,13 @@ def test_add_playbook_metadata_missing_context(mocker):
 
     CoreXQLApiModule.add_playbook_metadata(data, command)
 
-    expected_metadata = {'command_name': 'test-command',
-                                   'integration_name': 'Cortex XDR - XQL Query Engine',
-                                   'playbook_id': '',
-                                   'playbook_name': '',
-                                   'task_id': '', 'task_name': ''
-                                   }
+    expected_metadata = {
+        "command_name": "test-command",
+        "integration_name": "Cortex XDR - XQL Query Engine",
+        "playbook_id": "",
+        "playbook_name": "",
+        "task_id": "",
+        "task_name": "",
+    }
     assert data["request_data"]["playbook_metadata"] == expected_metadata
     demisto.debug.assert_called_once()
