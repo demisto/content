@@ -59,7 +59,7 @@ comment: |-
 commonfields:
   id: ContextSetup
   version: -1
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: ContextSetup
 runas: DBotWeakRole
