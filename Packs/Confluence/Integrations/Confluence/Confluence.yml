@@ -15,7 +15,7 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
-  required: true
+  required: false
 - display: Personal Access Token
   name: personal_access_token
   type: 9
