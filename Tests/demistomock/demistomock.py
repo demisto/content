@@ -1315,7 +1315,7 @@ def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=
 
     Args:
         name: name of the api (currently only wfReportIncorrectVerdict is supported)
-        params: url query args to pass. Use a dictionary such as: `{"key":"value"}`
+        params: url query args to pass. Use a dictionary such as: `{"key":"value"}
         data: POST data as a string. Make sure to json.dumps.
         headers: headers to pass. Use a dictionary such as: `{"key":"value"}`
         method: HTTP method to use.

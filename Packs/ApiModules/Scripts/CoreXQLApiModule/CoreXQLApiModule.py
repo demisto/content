@@ -426,23 +426,27 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         )
 
 
-def add_playbook_metadata(data:dict, command: str):
+def add_playbook_metadata(data: dict, command: str):
     ctx_output: dict = demisto.callingContext or {}
-    entry_task: dict = ctx_output.get('context', {}).get('ParentEntry', {}).get('entryTask',{})
-    incidents: list = ctx_output.get('context', {}).get('Incidents', [])
-    playbook_id = incidents[0].get('playbookId', 'missing_playbookId') if incidents else ''
-    playbook_name = entry_task.get('playbookName', 'missing_playbook_name') if entry_task else ''
-    task_name = entry_task.get('taskName', 'missing_task_name') if entry_task else ''
-    task_id = entry_task.get('taskId', 'missing_task_id') if entry_task else ''
+    entry_task: dict = ctx_output.get("context", {}).get("ParentEntry", {}).get("entryTask", {})
+    incidents: list = ctx_output.get("context", {}).get("Incidents", [])
+    playbook_id = incidents[0].get("playbookId", "missing_playbookId") if incidents else ""
+    playbook_name = entry_task.get("playbookName", "missing_playbook_name") if entry_task else ""
+    task_name = entry_task.get("taskName", "missing_task_name") if entry_task else ""
+    task_id = entry_task.get("taskId", "missing_task_id") if entry_task else ""
     playbook_metadata = {
-        'playbook_name': playbook_name,
-        'playbook_id': playbook_id,
-        'task_name': task_name,
-        'task_id': task_id,
-        'integration_name': 'Cortex XDR - XQL Query Engine',
-        'command_name': command}
-    data['request_data']['playbook_metadata'] = playbook_metadata
-    demisto.debug(f"Added playbook metadata data['request_data']['playbook_metadata']: {data['request_data']['playbook_metadata']}")
+        "playbook_name": playbook_name,
+        "playbook_id": playbook_id,
+        "task_name": task_name,
+        "task_id": task_id,
+        "integration_name": "Cortex XDR - XQL Query Engine",
+        "command_name": command,
+    }
+    data["request_data"]["playbook_metadata"] = playbook_metadata
+    demisto.debug(
+        f"Added playbook metadata data['request_data']['playbook_metadata']: {data['request_data']['playbook_metadata']}"
+    )
+
 
 def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     """Execute an XQL query.
@@ -465,9 +469,9 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
             "query": query,
         }
     }
-    
-    add_playbook_metadata(data, 'start_xql_query')
-    
+
+    add_playbook_metadata(data, "start_xql_query")
+
     time_frame = args.get("time_frame")
     if time_frame:
         data["request_data"]["timeframe"] = convert_timeframe_string_to_json(time_frame)
