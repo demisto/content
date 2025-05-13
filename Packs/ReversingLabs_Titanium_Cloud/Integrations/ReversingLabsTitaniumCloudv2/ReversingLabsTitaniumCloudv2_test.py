@@ -420,7 +420,6 @@ DEFAULT_PARAMS = {
 }
 
 
-
 @pytest.fixture
 def mock_demisto(mocker):
     mocker.patch.object(demisto, 'getArg', return_value='8.8.8.8')
