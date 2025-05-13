@@ -2,7 +2,6 @@ FTP integration to download or upload files to a remote FTP server. Please note 
 
 ## Configure FTP in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Host | True |
@@ -10,7 +9,6 @@ FTP integration to download or upload files to a remote FTP server. Please note 
 | Username | False |
 | Password | False |
 | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -30,11 +28,12 @@ List all the files under the current folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | The path to list. | Optional | 
+| path | The path to list. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### ftp-put
 
 ***
@@ -48,12 +47,13 @@ Upload file to FTP server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The Entry ID of the file to upload. | Required | 
-| target | The target FTP server to upload the file to. | Required | 
+| entry_id | The Entry ID of the file to upload. | Required |
+| target | The target FTP server to upload the file to. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### ftp-get
 
 ***
@@ -67,8 +67,8 @@ Download file from FTP server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_path | The path to the file to download from the FTP server. | Required | 
-| file_name | The file name to download from the FTP server. | Required | 
+| file_path | The path to the file to download from the FTP server. | Required |
+| file_name | The file name to download from the FTP server. | Required |
 
 #### Context Output
 

@@ -92,10 +92,10 @@ Unblock a user.
 
 
 #### Command example
-```!msgraph-user-unblock user=1875cf87-ebf9-4a29-b5e2-74e36591296e```
+```!msgraph-user-unblock user=123456-abcd-7890-erty-987qwe987```
 #### Human Readable Output
 
->"1875cf87-ebf9-4a29-b5e2-74e36591296e" unblocked. It might take several minutes for the changes to take affect across all applications. 
+>"123456-abcd-7890-erty-987qwe987" unblocked. It might take several minutes for the changes to take affect across all applications. 
 
 ### msgraph-user-update
 ***
@@ -132,7 +132,7 @@ Permissions: - User.ReadWrite (Delegated & Application)
 | MSGraphUser.UserPrincipalName | String | User's principal name. | 
 
 #### Command example
-```!msgraph-user-update user=1875cf87-ebf9-4a29-b5e2-74e36591296e updated_fields="MobilePhone=050123456"```
+```!msgraph-user-update user=123456-abcd-7890-erty-987qwe987 updated_fields="MobilePhone=050123456"```
 #### Context Example
 ```json
 {
@@ -141,7 +141,7 @@ Permissions: - User.ReadWrite (Delegated & Application)
         "Email": {
             "Address": null
         },
-        "ID": "1875cf87-ebf9-4a29-b5e2-74e36591296e",
+        "ID": "123456-abcd-7890-erty-987qwe987",
         "JobTitle": null,
         "Office": null,
         "TelephoneNumber": "050123456",
@@ -152,7 +152,7 @@ Permissions: - User.ReadWrite (Delegated & Application)
         "BusinessPhones": [],
         "DisplayName": "Test 1",
         "GivenName": "Test",
-        "ID": "1875cf87-ebf9-4a29-b5e2-74e36591296e",
+        "ID": "123456-abcd-7890-erty-987qwe987",
         "JobTitle": null,
         "Mail": null,
         "MobilePhone": "050123456",
@@ -166,10 +166,10 @@ Permissions: - User.ReadWrite (Delegated & Application)
 
 #### Human Readable Output
 
->### 1875cf87-ebf9-4a29-b5e2-74e36591296e data
+>### 123456-abcd-7890-erty-987qwe987 data
 >| Display Name |Given Name|ID|Mobile Phone|Surname|User Principal Name|
 --------------|---|---|---|---|---|---|
->| Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | test1@demistodev.onmicrosoft.com |
+>| Test 1 | Test | 123456-abcd-7890-erty-987qwe987 | 050123456 | Test | test1@demistodev.onmicrosoft.com |
 
 
 ### msgraph-user-delete
@@ -276,7 +276,7 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application)
 | Account.Type | String | The account entity type. | 
 
 #### Command example
-```!msgraph-user-get user=1875cf87-ebf9-4a29-b5e2-74e36591296e```
+```!msgraph-user-get user=123456-abcd-7890-erty-987qwe987```
 #### Context Example
 ```json
 {
@@ -285,7 +285,7 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application)
         "Email": {
             "Address": null
         },
-        "ID": "1875cf87-ebf9-4a29-b5e2-74e36591296e",
+        "ID": "123456-abcd-7890-erty-987qwe987",
         "JobTitle": null,
         "Office": null,
         "TelephoneNumber": "050123456",
@@ -296,7 +296,7 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application)
         "BusinessPhones": [],
         "DisplayName": "Test 1",
         "GivenName": "Test",
-        "ID": "1875cf87-ebf9-4a29-b5e2-74e36591296e",
+        "ID": "123456-abcd-7890-erty-987qwe987",
         "JobTitle": null,
         "Mail": null,
         "MobilePhone": "050123456",
@@ -310,10 +310,10 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application)
 
 #### Human Readable Output
 
->### 1875cf87-ebf9-4a29-b5e2-74e36591296e data
+>### 123456-abcd-7890-erty-987qwe987 data
 >| Display Name |Given Name|ID|Mobile Phone|Surname|User Principal Name|
 --------------|---|---|---|---|---|---|
->| Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | test1@demistodev.onmicrosoft.com |
+>| Test 1 | Test | 123456-abcd-7890-erty-987qwe987 | 050123456 | Test | test1@demistodev.onmicrosoft.com |
 
 
 ### msgraph-user-list
@@ -370,7 +370,7 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
             "Email": {
                 "Address": "test1@demistodev.onmicrosoft.com"
             },
-            "ID": "023096d0-595e-47b5-80dd-ea5886ab9294",
+            "ID": "123456-abcd-7890-erty-987qwe988",
             "JobTitle": null,
             "Office": null,
             "TelephoneNumber": "050505050",
@@ -382,7 +382,7 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
             "Email": {
                 "Address": "test2@demistodev.onmicrosoft.com"
             },
-            "ID": "0628c545-94f6-4d07-8bc6-e6718ba1bc95",
+            "ID": "123456-abcd-7890-erty-987qwe989",
             "JobTitle": null,
             "Office": null,
             "TelephoneNumber": null,
@@ -394,7 +394,7 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
             "Email": {
                 "Address": null
             },
-            "ID": "082b3bc9-bb2d-4d12-8b1a-d84a53229696",
+            "ID": "123456-abcd-7890-erty-987qwe990",
             "JobTitle": null,
             "Office": null,
             "TelephoneNumber": null,
@@ -408,21 +408,21 @@ Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
         },
         {
             "DisplayName": "Test 1",
-            "ID": "023096d0-595e-47b5-80dd-ea5886ab9294",
+            "ID": "123456-abcd-7890-erty-987qwe991",
             "JobTitle": null,
             "Mail": "test1@demistodev.onmicrosoft.com",
             "MobilePhone": "050505050"
         },
         {
             "DisplayName": "Test 2",
-            "ID": "0628c545-94f6-4d07-8bc6-e6718ba1bc95",
+            "ID": "123456-abcd-7890-erty-987qwe992",
             "JobTitle": null,
             "Mail": "test2@demistodev.onmicrosoft.com",
             "MobilePhone": null
         },
         {
             "DisplayName": "Test 3",
-            "ID": "082b3bc9-bb2d-4d12-8b1a-d84a53229696",
+            "ID": "123456-abcd-7890-erty-987qwe993",
             "JobTitle": null,
             "Mail": null,
             "MobilePhone": null
@@ -476,19 +476,19 @@ Retrieves the direct reports for a user. Direct reports are the people who have 
 | MSGraphUserDirectReports.Reports.UserPrincipalName | String | The user principal name \(UPN\) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization. | 
 
 #### Command example
-```!msgraph-direct-reports user=259d2a3c-167b-411c-b2ee-88646ce6e054```
+```!msgraph-direct-reports user=123456-abcd-7890-erty-987qwe987```
 #### Context Example
 ```json
 {
     "MSGraphUserDirectReports": {
-        "Manager": "259d2a3c-167b-411c-b2ee-88646ce6e054",
+        "Manager": "123456-abcd-7890-erty-987qwe987",
         "Reports": [
             {
                 "@Odata.Type": "#microsoft.graph.user",
                 "BusinessPhones": [],
                 "DisplayName": "Test 1",
                 "GivenName": "Test",
-                "ID": "1875cf87-ebf9-4a29-b5e2-74e36591296e",
+                "ID": "123456-abcd-7890-erty-987qwe987",
                 "JobTitle": null,
                 "Mail": null,
                 "MobilePhone": "050123456",
@@ -507,7 +507,7 @@ Retrieves the direct reports for a user. Direct reports are the people who have 
 >### 259d2a3c-167b-411c-b2ee-88646ce6e054 - direct reports
 >|@Odata.Type| Display Name | Given Name |ID|Mobile Phone| Surname | User Principal Name|
 >|--------|------------|---|---|---------|--------------------------------|---|
->| #microsoft.graph.user | Test 1 | Test | 1875cf87-ebf9-4a29-b5e2-74e36591296e | 050123456 | Test | test1@demistodev.onmicrosoft.com |
+>| #microsoft.graph.user | Test 1 | Test | 123456-abcd-7890-erty-987qwe987 | 050123456 | Test | test1@demistodev.onmicrosoft.com |
 
 
 ### msgraph-user-get-manager
@@ -543,7 +543,7 @@ Retrieves the properties from the manager of a user.
 | MSGraphUserManager.Manager.UserPrincipalName | String | User's principal name. | 
 
 #### Command example
-```!msgraph-user-get-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e```
+```!msgraph-user-get-manager user=123456-abcd-7890-erty-987qwe987```
 #### Context Example
 ```json
 {
@@ -561,14 +561,14 @@ Retrieves the properties from the manager of a user.
             "Surname": "Test",
             "UserPrincipalName": "test2@demistodev.onmicrosoft.com"
         },
-        "User": "1875cf87-ebf9-4a29-b5e2-74e36591296e"
+        "User": "123456-abcd-7890-erty-987qwe987"
     }
 }
 ```
 
 #### Human Readable Output
 
->### 1875cf87-ebf9-4a29-b5e2-74e36591296e - manager
+>### 123456-abcd-7890-erty-987qwe987 - manager
 >| Display Name |Given Name|ID|Mobile Phone|Surname|User Principal Name|
 --------------|---|---|---|---|---|---|
 >| Test 2 | Test | 259d2a3c-167b-411c-b2ee-88646ce6e054 | 050505050 | Test | test2@demistodev.onmicrosoft.com |
@@ -595,10 +595,10 @@ Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
 
 There is no context output for this command.
 #### Command example
-```!msgraph-user-assign-manager user=1875cf87-ebf9-4a29-b5e2-74e36591296e manager=259d2a3c-167b-411c-b2ee-88646ce6e054```
+```!msgraph-user-assign-manager user=123456-abcd-7890-erty-987qwe987 manager=9627hp-sq12-b65m-4256h6h```
 #### Human Readable Output
 
->A manager was assigned to user "1875cf87-ebf9-4a29-b5e2-74e36591296e". It might take several minutes for the changes to take effect across all applications.
+>A manager was assigned to user "123456-abcd-7890-erty-987qwe987". It might take several minutes for the changes to take effect across all applications.
 
 ### msgraph-user-change-password
 ***
@@ -683,7 +683,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
->1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+>1. Click on the login URL to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
@@ -703,3 +703,96 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-user-tap-policy-delete
+
+***
+Deletes a specific TAP policy. 
+Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
+
+#### Base Command
+
+`msgraph-user-tap-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The Azure AD user ID. | Required | 
+| policy_id | Policy ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!msgraph-user-tap-policy-delete policy_id=r4y67u4-69nh-h671-a4bj8922 user_id=123456-abcd-7890-erty-987qwe987"```
+
+### msgraph-user-tap-policy-create
+
+***
+Create a new TAP policy for a user.
+During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
+A user can only have one Temporary Access Pass that's usable within its specified lifetime. 
+Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
+
+#### Base Command
+
+`msgraph-user-tap-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The Azure AD user ID. | Required | 
+| zip_password | A password for the password-protected zip file that will include the password of the new TAP. | Required | 
+| lifetime_in_minutes | The duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days). Default is 60. | Optional | 
+| is_usable_once | Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. <br/>A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   . Possible values are: true, false. | Optional | 
+| start_time | The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",<br/>for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days". Default is now. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. | 
+| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
+| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
+| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
+| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
+| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
+| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 
+
+#### Command example
+```!msgraph-user-tap-policy-create user_id=123456-abcd-7890-erty-987qwe987 zip_password=123```
+
+### msgraph-user-tap-policy-list
+
+***
+Lists all TAP policies for a user.
+This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
+Permissions: - UserAuthenticationMethod.Read.All (Delegated) - UserAuthenticationMethod.Read.All (Application).
+
+#### Base Command
+
+`msgraph-user-tap-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The Azure AD user ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphUser.TAPPolicy.ID | String | TAP policy's ID. | 
+| MSGraphUser.TAPPolicy.IsUsable | Bool | TAP policy's usability. | 
+| MSGraphUser.TAPPolicy.IsUsableOnce | Bool | TAP policy's once - usability. | 
+| MSGraphUser.TAPPolicy.CreatedDateTime | String | TAP policy's creation date and time. | 
+| MSGraphUser.TAPPolicy.MethodUsabilityReason | String | TAP policy's method usability reason. | 
+| MSGraphUser.TAPPolicy.LifetimeInMinutes | Int | TAP policy's lifetime in minutes. | 
+| MSGraphUser.TAPPolicy.StartDateTime | String | TAP policy's start date and time. | 
+
+#### Command example
+```!msgraph-user-tap-policy-list user_id=123456-abcd-7890-erty-987qwe987```
