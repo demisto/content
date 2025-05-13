@@ -26,11 +26,8 @@ FASTTEXT_TRAINING_ALGO = "fasttext"
 AUTO_TRAINING_ALGO = "auto"
 
 # the following mapping need to correspond to predict_phishing_words func at DBotPredictPhishingWords
-ALGO_TO_MODEL_TYPE = {
-    FASTTEXT_TRAINING_ALGO: 'fasttext_phishing',
-    FINETUNE_TRAINING_ALGO: 'torch_phishing'
-}
-FINETUNE_LABELS = ['Malicious', 'Non-Malicious']
+ALGO_TO_MODEL_TYPE = {FASTTEXT_TRAINING_ALGO: "fasttext_phishing", FINETUNE_TRAINING_ALGO: "torch_phishing"}
+FINETUNE_LABELS = ["Malicious", "Non-Malicious"]
 
 
 def get_phishing_map_labels(comma_values):
@@ -373,12 +370,14 @@ def validate_labels_and_decide_algorithm(y, algorithm):
     labels_counter = Counter(y)  # type: Dict[str, int]
     illegal_labels_for_fine_tune = [label for label in labels_counter if label not in FINETUNE_LABELS]
     if algorithm == FINETUNE_TRAINING_ALGO and len(illegal_labels_for_fine_tune) > 0:
-        error = ['When trainingAlgorithm is set to {}, all labels must be mapped to {}.\n'.format(algorithm,
-                                                                                                 ', '.join(
-                                                                                                     FINETUNE_LABELS))]
-        error += ['The following labels/verdicts need to be mapped to one of those values: ']
-        error += [', '.join(illegal_labels_for_fine_tune) + '.']
-        return_error('\n'.join(error))
+        error = [
+            "When trainingAlgorithm is set to {}, all labels must be mapped to {}.\n".format(
+                algorithm, ", ".join(FINETUNE_LABELS)
+            )
+        ]
+        error += ["The following labels/verdicts need to be mapped to one of those values: "]
+        error += [", ".join(illegal_labels_for_fine_tune) + "."]
+        return_error("\n".join(error))
         return None
     elif algorithm == AUTO_TRAINING_ALGO:
         return FASTTEXT_TRAINING_ALGO

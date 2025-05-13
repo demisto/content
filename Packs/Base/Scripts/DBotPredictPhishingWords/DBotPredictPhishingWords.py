@@ -9,10 +9,10 @@ from CommonServerPython import *
 # Suppress logging for a specific library
 logging.getLogger("transformers").setLevel(logging.ERROR)
 
-FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
-UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-TORCH_TYPE = 'torch_phishing'
-FASTTEXT_TYPE = 'fasttext_phishing'
+FASTTEXT_MODEL_TYPE = "FASTTEXT_MODEL_TYPE"
+UNKNOWN_MODEL_TYPE = "UNKNOWN_MODEL_TYPE"
+TORCH_TYPE = "torch_phishing"
+FASTTEXT_TYPE = "fasttext_phishing"
 
 
 def OrderedSet(iterable):
@@ -21,15 +21,15 @@ def OrderedSet(iterable):
 
 def update_model_in_server(model_data, model_type, model_name):
     res = demisto.executeCommand(
-        'createMLModel',
+        "createMLModel",
         {
-            'modelData': model_data,
-            'modelName': model_name,
-            'modelType': model_type,
-        }
+            "modelData": model_data,
+            "modelName": model_name,
+            "modelType": model_type,
+        },
     )
     if is_error(res):
-        raise DemistoException(f'Unable to update model: {res}')
+        raise DemistoException(f"Unable to update model: {res}")
 
 
 def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[str, str]:
@@ -135,12 +135,12 @@ def predict_phishing_words(
 ):
     model_data, model_type = get_model_data(model_name, model_store_type, is_return_error)
 
-    if model_type in ('Phishing', 'torch'):
+    if model_type in ("Phishing", "torch"):
         model_data, model_type = demisto_ml.renew_model(model_data.encode(), model_type)
         update_model_in_server(model_data, model_type, model_name)
-    
+
     model_type = {
-        '': FASTTEXT_MODEL_TYPE,
+        "": FASTTEXT_MODEL_TYPE,
         FASTTEXT_TYPE: FASTTEXT_MODEL_TYPE,
         FASTTEXT_MODEL_TYPE: FASTTEXT_MODEL_TYPE,
         TORCH_TYPE: TORCH_TYPE,
@@ -239,12 +239,12 @@ def predict_single_incident_full_output(
     explain_result["TextTokensHighlighted"] = highlighted_text_markdown
     predicted_label = explain_result["Label"]
     explain_result_hr = {}
-    explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
-    explain_result_hr['Label'] = predicted_label
-    explain_result_hr['Probability'] = f"{predicted_prob:.2f}"
-    explain_result_hr['Confidence'] = f"{predicted_prob:.2f}"
-    explain_result_hr['PositiveWords'] = ", ".join([w.lower() for w in positive_words])
-    explain_result_hr['NegativeWords'] = ", ".join([w.lower() for w in negative_words])
+    explain_result_hr["TextTokensHighlighted"] = highlighted_text_markdown
+    explain_result_hr["Label"] = predicted_label
+    explain_result_hr["Probability"] = f"{predicted_prob:.2f}"
+    explain_result_hr["Confidence"] = f"{predicted_prob:.2f}"
+    explain_result_hr["PositiveWords"] = ", ".join([w.lower() for w in positive_words])
+    explain_result_hr["NegativeWords"] = ", ".join([w.lower() for w in negative_words])
     incident_context = demisto.incidents()[0]
     if not incident_context["isPlayground"] and set_incidents_fields:
         demisto.executeCommand(
@@ -290,23 +290,24 @@ def main():
     confidence_threshold = 0
     confidence_threshold = float(demisto.args().get("labelProbabilityThreshold", confidence_threshold))
     confidence_threshold = float(demisto.args().get("confidenceThreshold", confidence_threshold))
-    email_subject = demisto.args().get('emailSubject', '')
-    email_body = demisto.args().get('emailBody', '') or demisto.args().get('emailBodyHTML', '')
-    if email_subject == '':
-        email_subject = try_get_incident_field(field='emailsubject')
-    if email_body == '':
-        email_body = try_get_incident_field(field='emailbody')
-    result = predict_phishing_words(demisto.args()['modelName'],
-                                    demisto.args()['modelStoreType'],
-                                    email_subject,
-                                    email_body,
-                                    int(demisto.args()['minTextLength']),
-                                    confidence_threshold,
-                                    float(demisto.args().get('wordThreshold', 0)),
-                                    int(demisto.args()['topWordsLimit']),
-                                    demisto.args()['returnError'] == 'true',
-                                    demisto.args().get('setIncidentFields', 'false') == 'true'
-                                    )
+    email_subject = demisto.args().get("emailSubject", "")
+    email_body = demisto.args().get("emailBody", "") or demisto.args().get("emailBodyHTML", "")
+    if email_subject == "":
+        email_subject = try_get_incident_field(field="emailsubject")
+    if email_body == "":
+        email_body = try_get_incident_field(field="emailbody")
+    result = predict_phishing_words(
+        demisto.args()["modelName"],
+        demisto.args()["modelStoreType"],
+        email_subject,
+        email_body,
+        int(demisto.args()["minTextLength"]),
+        confidence_threshold,
+        float(demisto.args().get("wordThreshold", 0)),
+        int(demisto.args()["topWordsLimit"]),
+        demisto.args()["returnError"] == "true",
+        demisto.args().get("setIncidentFields", "false") == "true",
+    )
     return result
 
 

@@ -26,15 +26,17 @@ def load_oob_model():
         encoded_model = demisto_ml.load_oob(OUT_OF_THE_BOX_MODEL_PATH)
     except Exception:
         return_error(traceback.format_exc())
-    res = demisto.executeCommand('createMLModel', {'modelData': encoded_model,
-                                                   'modelName': OUT_OF_THE_BOX_MODEL_NAME,
-                                                   'modelLabels': ['Malicious', 'Non-Malicious'],
-                                                   'modelOverride': 'true',
-                                                   'modelType': demisto_ml.ModelType.Torch.value,
-                                                   'modelExtraInfo': {'threshold': THRESHOLD,
-                                                                      OOB_VERSION_INFO_KEY: SCRIPT_MODEL_VERSION
-                                                                      }
-                                                   })
+    res = demisto.executeCommand(
+        "createMLModel",
+        {
+            "modelData": encoded_model,
+            "modelName": OUT_OF_THE_BOX_MODEL_NAME,
+            "modelLabels": ["Malicious", "Non-Malicious"],
+            "modelOverride": "true",
+            "modelType": demisto_ml.ModelType.Torch.value,
+            "modelExtraInfo": {"threshold": THRESHOLD, OOB_VERSION_INFO_KEY: SCRIPT_MODEL_VERSION},
+        },
+    )
     if is_error(res):
         return_error(get_error(res))
 
