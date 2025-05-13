@@ -182,7 +182,7 @@ def test_install_packs_saas(mocker):
     mock_call_execute.assert_called_once_with("core-api-post", expected_args)
 
 
-def test_install_packs_prem(mocker):
+def test_install_packs_on_prem(mocker):
     installer = get_content_pack_installer(mocker)
 
     packs_to_install = [{"id": "Pack1", "version": "1.2.4"}]
