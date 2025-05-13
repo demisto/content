@@ -1056,7 +1056,7 @@ def set_user_password_command():
     result = set_user_password(user_key, password)
     return result
 
-
+# test
 def set_user_password(user_key, password):
     command_args = {
         "userKey": user_key if user_key != "me" else ADMIN_EMAIL,
