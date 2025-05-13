@@ -15,11 +15,13 @@
         "Cado Security"
     ],
     "devEmail": [
-        "jthompson@cadosecurity.com",
-        "ahillel@cadosecurity.com"
+        "joshua.thompson-lindley@darktrace.com",
+        "callum.roberts@darktrace.com",
+        "chris.doman@darktrace.com",
+        "matt.bovbjerg@darktrace.com",
     ],
     "githubUser": [
-        "cado-joshua"
+        "joshuathompsonlindley"
     ],
     "marketplaces": [
         "xsoar",
