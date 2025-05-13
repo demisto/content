@@ -17,9 +17,9 @@ configuration:
   type: 9
   required: true
 - display: Personal Access Token
-  name: pat
-  defaultvalue: "false"
-  type: 8
+  name: personal_access_token
+  type: 9
+  hiddenusername: true  
   required: false
 - display: Use system proxy settings
   name: proxy
