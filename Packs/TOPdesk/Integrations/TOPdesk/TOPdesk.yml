@@ -2131,6 +2131,77 @@ script:
       description: TOPdesk incident's external links date.
       type: Date
   - arguments:
+    - description: The offset at which to start listing the operators at. Must be greater or equal to 0. Default is 0.
+      name: start
+      required: true
+      defaultValue: 0
+    - description: The amount of operators to be returned per request. Must be between 1 and 100. Default is 10.
+      name: page_size
+      required: true
+      defaultValue: 50
+    - description: Supports a set of OData filters which can be combined with 'and' and 'or' operators. Filter expressions can also be grouped by parentheses. https://developers.topdesk.com/explorer/?page=assets#/Assets/getAssets.
+      name: filter
+    - name: fields
+      description: Additional fields to include in the response.
+      defaultValue: ''
+      # TODO: Make sure the predefined are correct
+      predefined:
+      - 'type,@status,archived,name,host-name,@assignments,mac-address,ip-address,host-group,technical-owner,discovery-host-name,mem-device-name'
+    description: Get list of assets.
+    name: topdesk-assets-list
+    outputs:
+      - contextPath: TOPdesk.Asset.Summary
+        description: Asset Summary
+        type: string
+      - contextPath: TOPdesk.Asset.Assignments
+        description: Asset assignments
+        type: unknown
+      - contextPath: TOPdesk.Asset.Etag
+        description: Asset etag
+        type: string
+      - contextPath: TOPdesk.Asset.Status
+        description: Asset status
+        type: string
+      - contextPath: TOPdesk.Asset.StatusLocked
+        description: Asset statusLocked
+        type: string
+      - contextPath: TOPdesk.Asset.Archived
+        description: Asset archived
+        type: boolean
+      - contextPath: TOPdesk.Asset.Discovery-host-name
+        description: Asset discovery-host-name
+        type: string
+      - contextPath: TOPdesk.Asset.Host-group
+        description: Asset host-group
+        type: string
+      - contextPath: TOPdesk.Asset.Host-name
+        description: Asset host-name
+        type: string
+      - contextPath: TOPdesk.Asset.Ip-address
+        description: Asset ip-address
+        type: string
+      - contextPath: TOPdesk.Asset.Mac-address
+        description: Asset mac-address
+        type: string
+      - contextPath: TOPdesk.Asset.Mem-device-name
+        description: Asset mem-device-name
+        type: string
+      - contextPath: TOPdesk.Asset.ModificationDate
+        description: Asset modificationDate
+        type: string
+      - contextPath: TOPdesk.Asset.Name
+        description: Asset name
+        type: string
+      - contextPath: TOPdesk.Asset.Technical-owner
+        description: Asset technical-owner
+        type: string
+      - contextPath: TOPdesk.Asset.Type_id
+        description: Asset type_id
+        type: string
+      - contextPath: TOPdesk.Asset.Unid
+        description: Asset Unique ID
+        type: string
+  - arguments:
     - description: The caller ID for this incident. For an unregistered caller provide a name. For a list of registered persons or operator IDs run !topdesk-persons-list or !topdesk-operators-list.
       name: caller
       required: false
