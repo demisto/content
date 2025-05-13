@@ -12,7 +12,7 @@ Proofpoint Threat Response is a security solution that helps organizations detec
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://192.168.0.1) |  | True |
+| Server URL  | (e.g., https://192.168.0.1) | True |
 | API Key for the authentication. |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
