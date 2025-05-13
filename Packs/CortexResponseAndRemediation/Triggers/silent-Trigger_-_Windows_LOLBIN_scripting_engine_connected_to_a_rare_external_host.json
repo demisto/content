@@ -1,9 +1,9 @@
 {
-    "trigger_id": "d620c440b77940e88489fa9518d06120",
-    "playbook_id": "Windows LOLBIN scripting engine connected to a rare external host",
+    "trigger_id": "c79599f4d7c7f33030a8d2408901cf4c",
+    "playbook_id": "silent-Windows LOLBIN scripting engine connected to a rare external host",
     "suggestion_reason": "Recommended for 'Windows LOLBIN scripting engine connected to a rare external host' alert",
     "description": "This trigger is responsible for handling the 'Windows LOLBIN scripting engine connected to a rare external host' alert",
-    "trigger_name": "Trigger - Windows LOLBIN scripting engine connected to a rare external host",
+    "trigger_name": "silent-Windows LOLBIN scripting engine connected to a rare external host",
     "alerts_filter": {
         "filter": {
             "AND": [
@@ -20,6 +20,6 @@
             ]
         }
     },
-    "issilent": false,
+    "issilent": true,
     "fromVersion": "8.9.0"
 }

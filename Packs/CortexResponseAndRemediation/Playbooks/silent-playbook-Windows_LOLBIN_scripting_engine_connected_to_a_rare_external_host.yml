@@ -1,6 +1,6 @@
-id: Windows LOLBIN scripting engine connected to a rare external host
+id: silent-Windows LOLBIN scripting engine connected to a rare external host
 version: -1
-name: Windows LOLBIN scripting engine connected to a rare external host
+name: silent-Windows LOLBIN scripting engine connected to a rare external host
 description: |-
   This playbook handles "Windows LOLBIN scripting engine connected to a rare external host" alerts.
 
@@ -162,6 +162,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Check if there are any URLs found in the investigation that need to be blocked.
     nexttasks:
       '#default#':
       - "125"
@@ -340,6 +341,7 @@ tasks:
       id: d9e5b3d2-766d-40e2-bd64-a6217537a8c4
       version: -1
       name: Check known related BTP alerts, bad URLs, or suspicious commands found
+      description: This task checks for known related Behavioral Threat Protection alerts, bad URLs, or suspicious commands found in incidents. It evaluates multiple conditions including WildFire Malware, Powershell Activity, Script Activity, Suspicious .NET Behavior, command line analysis scores, and malicious URL detections.
       type: condition
       iscommand: false
       brand: ""
@@ -515,6 +517,7 @@ tasks:
       id: 36903aec-5044-483f-8a12-d9baaeed1074
       version: -1
       name: Check if any URLS were found in the command line
+      description: Checks if any URLs were identified in the analyzed command line and routes the playbook flow accordingly.
       type: condition
       iscommand: false
       brand: ""
