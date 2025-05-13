@@ -1,0 +1,2861 @@
+id: silent-Identity assigned an Azure AD Administrator Role
+version: -1
+name: silent-Identity assigned an Azure AD Administrator Role
+description: "### This playbook addresses the following alert:\n- Identity assigned an Azure AD Administrator Role\n- Suspicious Azure AD Administrator Role assignment\n- Identity assigned an Azure AD Administrator Role by an Application\n\n### Playbook Stages:\n\n#### Triage:\n- Gather additional information about the **assignor and assignee identities** involved in the admin role assignment, as well as **any anomalies** related to the alert.\n\n#### Investigation:\n- Assignor/Assignee Identities Analysis:\n  - Assess the **risk level** of the user in Cortex. \n  - Search for medium/high risk level **Azure Risk Detections and Defender Alerts** from the past day.\n  - Mark if the user is **new**.\n- Analyze the reputation of the assigning **IP address**.\n- Check for anomalies in **User Agent, ASN, and country**.\n\n#### Verdict:\n- If **either** the assignor and assignee identities are identical *OR* an application assigned the admin role for the first time from a rare IP, **AND** at least two evidence items were found.\n- If at least three evidence items include a mix of *global evidence with assignor-related evidence*, **OR** a mix of *global evidence with assignee-related evidence*.\n\n#### Remediation:\n- *Immediately* revoke the assignor's user sessions.\n- Remove the admin role assignment (*approval needed*).\n- Disable the assignor user and/or the assignee user (*approval needed*).\n\n### Requirements:\n- *For Investigation Steps:*\n  - `Azure Risky Users` or `MSGraph Identity and Access` for retrieving **Azure Risk Detections**.\n  - `Microsoft 365 Defender` for retrieving **Defender Alerts**.\n  - `Microsoft Graph User` for retrieving user properties.\n- *For Remediation Steps:*\n  - `MSGraph Identity and Access` for removing the admin role assignment.\n  - `Microsoft Graph User` with for disabling users."
+tags:
+- T1098 - Account Manipulation
+- TA0003 - Persistence
+fromversion: 8.9.0
+issilent: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 880751b0-3f61-4132-8f42-09fd53d42cda
+    type: start
+    task:
+      id: 880751b0-3f61-4132-8f42-09fd53d42cda
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 12bb7b90-e940-40b3-b938-d17bb882f47d
+    type: title
+    task:
+      id: 12bb7b90-e940-40b3-b938-d17bb882f47d
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 987d0709-7e38-4c8c-b576-86ea099e9376
+    type: regular
+    task:
+      id: 987d0709-7e38-4c8c-b576-86ea099e9376
+      version: -1
+      name: Get IP, Identities & Anomaly Data
+      description: Provides additional information about the alert, such as **IP address, assignor and assignee identities, and UA/ASN/country anomalies**
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 369
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7283c1cd-74f0-4aac-aa6a-545d06a90c84
+    type: title
+    task:
+      id: 7283c1cd-74f0-4aac-aa6a-545d06a90c84
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "10"
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1d262cc2-8d04-4afc-bea7-de224cc227f5
+    type: title
+    task:
+      id: 1d262cc2-8d04-4afc-bea7-de224cc227f5
+      version: -1
+      name: IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0ac72842-8ef3-41f5-a851-7be68d9ef7b1
+    type: condition
+    task:
+      id: 0ac72842-8ef3-41f5-a851-7be68d9ef7b1
+      version: -1
+      name: Has the IP returned?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.caller_ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a02f6a18-b893-438a-b555-1baa29f43a37
+    type: regular
+    task:
+      id: a02f6a18-b893-438a-b555-1baa29f43a37
+      version: -1
+      name: Enrich IP
+      description: Checks the reputation of an IP address
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ip:
+        simple: ${Core.OriginalAlert.event.caller_ip}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1883
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 15c78411-8d7b-4755-96d4-21776a90f34b
+    type: regular
+    task:
+      id: 15c78411-8d7b-4755-96d4-21776a90f34b
+      version: -1
+      name: Save if Malicious IP
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: Evidence.Global.MaliciousIP
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.caller_ip
+                iscontext: true
+              ignorecase: true
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2053
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 66afc366-e7d2-47a9-aa19-2f2206baaf00
+    type: title
+    task:
+      id: 66afc366-e7d2-47a9-aa19-2f2206baaf00
+      version: -1
+      name: Core User Risk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 539,
+          "y": 1378
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7d90e231-b68e-4a89-9fee-e10ee9d89df9
+    type: title
+    task:
+      id: 7d90e231-b68e-4a89-9fee-e10ee9d89df9
+      version: -1
+      name: Identities
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1493,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 040383c3-b99d-45cd-8d2b-3766c74015ef
+    type: regular
+    task:
+      id: 040383c3-b99d-45cd-8d2b-3766c74015ef
+      version: -1
+      name: Get User Risky Data
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      user_id:
+        complex:
+          root: InvestigationUsers.Assignee
+          accessor: DomainUsername
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: InvestigationUsers.Assignor.DomainUsername
+                iscontext: true
+              raw: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 539,
+          "y": 1543
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 20669ea5-a807-4c54-b2f1-8567216f310b
+    type: condition
+    task:
+      id: 20669ea5-a807-4c54-b2f1-8567216f310b
+      version: -1
+      name: Check Assignor Type
+      description: If the **assignor's identity** is a *USER*, we can check all investigation steps for them. However, for *APPLICATION*, we are currently unable to retrieve their ID, so for *APPLICATION and other types*, we only check the **assignee's identity** (which is always a *USER*)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      - "33"
+      - "15"
+      - "9"
+      USER:
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: USER
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.identity_type
+            iscontext: true
+          right:
+            value:
+              simple: USER
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1493,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6f5f1d34-2049-4762-87c7-e94ea01f0d8d
+    type: title
+    task:
+      id: 6f5f1d34-2049-4762-87c7-e94ea01f0d8d
+      version: -1
+      name: Azure Risk Detections
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260.5,
+          "y": 1378
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c784cafc-185c-4c85-a777-b4b7d97f846b
+    type: regular
+    task:
+      id: c784cafc-185c-4c85-a777-b4b7d97f846b
+      version: -1
+      name: Get Azure Risk Detections
+      description: Returns a list of the **Risk Detection** objects and their properties from the **past day**
+      script: '|||azure-risky-users-risk-detections-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      detected_date_time_after:
+        simple: ${.=new Date(Date.now()-(1000*60*60*24)).toISOString()}
+      limit:
+        simple: "100"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 1713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2b46833e-c0b1-427e-aa50-a0a182819a01
+    type: regular
+    task:
+      id: 2b46833e-c0b1-427e-aa50-a0a182819a01
+      version: -1
+      name: Save Assignee-Triggered Detections
+      description: where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      key:
+        simple: Evidence.AssigneeUser.AzureRiskDetections
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignee.UPN
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: atRisk
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: confirmedCompromised
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: medium
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: high
+              ignorecase: true
+          accessor: riskEventType
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 1883
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 8f316f65-f850-49c4-8269-11748dd4fbda
+    type: regular
+    task:
+      id: 8f316f65-f850-49c4-8269-11748dd4fbda
+      version: -1
+      name: Get Azure Risk Detections
+      description: This filter dynamically targets **users involved in an investigation** (by their UPNs), and retrieves **Risk Detections** from the **past day** where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
+      script: '|||msgraph-identity-protection-risks-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      odata_query:
+        simple: $filter=(userPrincipalName eq '${.=Object.values(val.InvestigationUsers).map(item => item.UPN).join("' or userPrincipalName eq '")}') and (riskState eq 'atRisk' or riskState eq 'confirmedCompromised') and (riskLevel eq 'medium' or riskLevel eq 'high') and (detectedDateTime ge ${.=new Date(Date.now()-(1000*60*60*24)).toISOString()})
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1501,
+          "y": 1713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: eae78a74-5ed4-410b-bbee-42d91c436631
+    type: regular
+    task:
+      id: eae78a74-5ed4-410b-bbee-42d91c436631
+      version: -1
+      name: Save Assignee-Triggered Detections
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      key:
+        simple: Evidence.AssigneeUser.AzureRiskDetections
+      value:
+        complex:
+          root: MSGraph.identityProtection.risks.riskDetections
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MSGraph.identityProtection.risks.riskDetections.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignee.UPN
+                iscontext: true
+              ignorecase: true
+          accessor: riskEventType
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1501,
+          "y": 1883
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: c2843ef8-6f54-491a-bbd2-45f84f9ef012
+    type: condition
+    task:
+      id: c2843ef8-6f54-491a-bbd2-45f84f9ef012
+      version: -1
+      name: What Integration is Available?
+      description: Integration with *MSGraph Identity and Access* or with *Azure Risky Users* is required to retrieve **Azure Risk Detections**
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      Azure Risky Users:
+      - "22"
+      MSGraph Identity and Access:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: MSGraph Identity and Access
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftGraphIdentityandAccess
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    - label: Azure Risky Users
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AzureRiskyUsers
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260.5,
+          "y": 1543
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 44ad0c33-3917-4051-866d-7a8d5e96f0fa
+    type: regular
+    task:
+      id: 44ad0c33-3917-4051-866d-7a8d5e96f0fa
+      version: -1
+      name: Get Defender Alerts
+      description: |
+        The query retrieves alerts from **the past day** for **Investigation Users**, excluding those with **Info** severity
+      script: '|||microsoft-365-defender-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      query:
+        simple: AlertEvidence | where Timestamp >= ago(1d) | where AccountUpn in ("${.=Object.values(val.InvestigationUsers).map(item => item.UPN).join('", "')}") | where Severity != "Informational"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1982,
+          "y": 1713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 65ed530d-9e5d-431f-85e1-e42c56e1d6d0
+    type: regular
+    task:
+      id: 65ed530d-9e5d-431f-85e1-e42c56e1d6d0
+      version: -1
+      name: Save Assignee-Triggered Alerts
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      key:
+        simple: Evidence.AssigneeUser.DefenderAlerts
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt.results
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Microsoft365Defender.Hunt.results.AccountUpn
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignee.UPN
+                iscontext: true
+              ignorecase: true
+          accessor: Title
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1982,
+          "y": 1883
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ac941532-45a0-4c9f-b82e-0498ed33c9ad
+    type: title
+    task:
+      id: ac941532-45a0-4c9f-b82e-0498ed33c9ad
+      version: -1
+      name: Defender Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1982,
+          "y": 1378
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b40c3ef7-402e-4d35-9a2e-cd0e03ba5752
+    type: condition
+    task:
+      id: b40c3ef7-402e-4d35-9a2e-cd0e03ba5752
+      version: -1
+      name: Is His Integration Available?
+      description: Integration with *Microsoft 365 Defender* is required to retrieve **Defender Alerts**
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "29"
+    scriptarguments:
+      brandname:
+        simple: Microsoft 365 Defender
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1982,
+          "y": 1543
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: d8d8e25a-1dcb-4697-a683-c014fd8a8f5b
+    type: title
+    task:
+      id: d8d8e25a-1dcb-4697-a683-c014fd8a8f5b
+      version: -1
+      name: User Creation Date
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2463,
+          "y": 1378
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 033a7e89-0472-400a-9e25-7d89cc6deb70
+    type: condition
+    task:
+      id: 033a7e89-0472-400a-9e25-7d89cc6deb70
+      version: -1
+      name: Is His Integration Available?
+      description: Integration with *Microsoft Graph User* is required to retrieve a **user's properties**
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "60"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2463,
+          "y": 1543
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 175dc5eb-1642-4c70-9f87-80d56a823569
+    type: regular
+    task:
+      id: 175dc5eb-1642-4c70-9f87-80d56a823569
+      version: -1
+      name: Save Assignee Creation Age if <= 7D
+      description: Set **Days Before Creation** as **Evidence** if the user was created within **the last week**
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      key:
+        simple: Evidence.AssigneeUser.DaysBeforeCreation
+      value:
+        complex:
+          root: MSGraphUser
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: MSGraphUser.UserPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignee.UPN
+                iscontext: true
+              ignorecase: true
+          accessor: CreatedDateTime
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=Math.floor((new Date() - new Date(val))/(1000*60*60*24))
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=val<=7 ? val : ""'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2463,
+          "y": 1883
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 6f35b496-8679-4d16-a8df-03dd73b8d116
+    type: title
+    task:
+      id: 6f35b496-8679-4d16-a8df-03dd73b8d116
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 2244
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 374ee39d-6a3a-4f1d-b309-431dc9e258ca
+    type: condition
+    task:
+      id: 374ee39d-6a3a-4f1d-b309-431dc9e258ca
+      version: -1
+      name: Check Evidence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#1':
+      - "43"
+      '#2':
+      - "67"
+      '#default#':
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: '#1'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.variation_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: 74c5e63a-e636-4906-a986-5ccf06e81ec6
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: InvestigationUsers.Assignor.UPN
+            iscontext: true
+          right:
+            value:
+              simple: InvestigationUsers.Assignee.UPN
+            iscontext: true
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: DT
+                  args:
+                    dt:
+                      value:
+                        simple: .=Object.keys(val.AssignorUser||{}).length+Object.keys(val.AssigneeUser||{}).length+Object.keys(val.Global||{}).length
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    - label: '#2'
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: DT
+                  args:
+                    dt:
+                      value:
+                        simple: .=Object.keys(val.AssigneeUser||{}).length+Object.keys(val.Global||{}).length
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: DT
+                  args:
+                    dt:
+                      value:
+                        simple: .=Object.keys(val.AssignorUser||{}).length+Object.keys(val.Global||{}).length
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 2361
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 02427508-f3df-498f-9ff7-92b5d0c46a55
+    type: title
+    task:
+      id: 02427508-f3df-498f-9ff7-92b5d0c46a55
+      version: -1
+      name: UA | ASN | Country
+      description: |+
+        Check for anomalies in **User Agent, ASN, and country**. If two of these indicators are identified as new, they will be marked as **Evidence**
+        Note that **ASN and country** are more common indicators, while **User Agent** is relatively rare
+
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -459,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: c5f2e65d-f109-4747-820e-0afcdda7e05e
+    type: title
+    task:
+      id: c5f2e65d-f109-4747-820e-0afcdda7e05e
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: c9dd27c7-8311-4cab-acd9-35da22e5a3cd
+    type: regular
+    task:
+      id: c9dd27c7-8311-4cab-acd9-35da22e5a3cd
+      version: -1
+      name: Revoke Assignor User Sessions
+      description: Invalidates all the refresh tokens issued to applications for a user
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      user:
+        simple: ${InvestigationUsers.Assignor.UPN}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 813,
+          "y": 2787
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: fa2bfeaf-01f7-4202-9565-f612411b758e
+    type: title
+    task:
+      id: fa2bfeaf-01f7-4202-9565-f612411b758e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 589,
+          "y": 3786
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: c634d83e-303d-4fc6-96b7-2782813ee1fb
+    type: condition
+    task:
+      id: c634d83e-303d-4fc6-96b7-2782813ee1fb
+      version: -1
+      name: IF Remove the Admin Role Assignment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      - "49"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.0"
+            iscontext: true
+          right:
+            value:
+              simple: Remove the Admin Role Assignment
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.1"
+            iscontext: true
+          right:
+            value:
+              simple: Remove the Admin Role Assignment
+        - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.2"
+            iscontext: true
+          right:
+            value:
+              simple: Remove the Admin Role Assignment
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 3059
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: ec57442b-622a-4075-ae16-be28be48d93c
+    type: condition
+    task:
+      id: ec57442b-622a-4075-ae16-be28be48d93c
+      version: -1
+      name: IF Disable Assignor User
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.0"
+            iscontext: true
+          right:
+            value:
+              simple: Disable Assignor User
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.1"
+            iscontext: true
+          right:
+            value:
+              simple: Disable Assignor User
+        - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.2"
+            iscontext: true
+          right:
+            value:
+              simple: Disable Assignor User
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 813,
+          "y": 3338
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 3a10921e-5d67-4798-b5c4-a9efcd18e7bf
+    type: condition
+    task:
+      id: 3a10921e-5d67-4798-b5c4-a9efcd18e7bf
+      version: -1
+      name: IF Disable Assignee User
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.0"
+            iscontext: true
+          right:
+            value:
+              simple: Disable Assignee User
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.1"
+            iscontext: true
+          right:
+            value:
+              simple: Disable Assignee User
+        - operator: isEqualString
+          left:
+            value:
+              simple: "🔍 Analyst Action Required 🔍.Answers.2"
+            iscontext: true
+          right:
+            value:
+              simple: Disable Assignee User
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1233.5,
+          "y": 3338
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 9439d3c2-5c96-47b8-a1f9-3a8216b1fb3a
+    type: regular
+    task:
+      id: 9439d3c2-5c96-47b8-a1f9-3a8216b1fb3a
+      version: -1
+      name: Remove the Admin Role Assignment
+      description: Removes **assignee** user from the admin role
+      script: '|||msgraph-identity-directory-role-member-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+      - "50"
+    scriptarguments:
+      role_id:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: azure_ad_modified_properties_array
+          transformers:
+          - operator: ParseJSON
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Role.ObjectID
+              field:
+                value:
+                  simple: displayName
+              getField:
+                value:
+                  simple: newValue
+              stringify: {}
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '"'
+      user_id:
+        simple: ${Core.OriginalAlert.event.referenced_resource}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 3209
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: cf9ddabe-87bc-456c-b5c3-ee5fecfab27d
+    type: regular
+    task:
+      id: cf9ddabe-87bc-456c-b5c3-ee5fecfab27d
+      version: -1
+      name: Disable Assignor User
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      user:
+        simple: ${InvestigationUsers.Assignor.UPN}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 813,
+          "y": 3497
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: dbf096dd-1e92-4b0b-aa04-d2fba8c0e136
+    type: regular
+    task:
+      id: dbf096dd-1e92-4b0b-aa04-d2fba8c0e136
+      version: -1
+      name: Disable Assignee User
+      description: Will **retry on error** to handle cases where removing the user's only admin role takes a few seconds
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "15"
+      user:
+        simple: ${InvestigationUsers.Assignee.UPN}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1233.5,
+          "y": 3497
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 1467ad66-962e-4300-adb9-fe4c9b82f23b
+    type: regular
+    task:
+      id: 1467ad66-962e-4300-adb9-fe4c9b82f23b
+      version: -1
+      name: Close Alert as True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      closeNotes:
+        simple: Handled by the playbook "Identity assigned an Azure AD Administrator Role"
+      closeReason:
+        simple: Resolved - True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022,
+          "y": 3647
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 4547adef-a52c-4d5a-afc7-29d537657d3c
+    type: regular
+    task:
+      id: 4547adef-a52c-4d5a-afc7-29d537657d3c
+      version: -1
+      name: Set Assignee User Details
+      description: Set the UPN and Domain\Username details of the **assignee user** (the user who **received** the admin role) for the upcoming investigation steps
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: InvestigationUsers.Assignee
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: referenced_resource_name
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .={"UPN":val,"DomainUsername":val.split('@')[1].split('.')[0]+'\\'+val.split('@')[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1493,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: a17d7600-0add-42e6-a06c-f87cb02cc216
+    type: regular
+    task:
+      id: a17d7600-0add-42e6-a06c-f87cb02cc216
+      version: -1
+      name: Set Assignor User Details
+      description: Set the UPN and Domain\Username details of the **assignor user** (the user who **assigned** the admin role) for the upcoming investigation steps
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "15"
+      - "31"
+      - "33"
+    scriptarguments:
+      key:
+        simple: InvestigationUsers.Assignor
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: cloud_best_identity_match
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .={"UPN":val,"DomainUsername":val.split('@')[1].split('.')[0]+'\\'+val.split('@')[0]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1825,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: b7acb7bf-6d12-4381-b2fb-5790d1163227
+    type: regular
+    task:
+      id: b7acb7bf-6d12-4381-b2fb-5790d1163227
+      version: -1
+      name: Save Assignor User if High-Risk
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: Evidence.AssignorUser.CoreRiskyUser
+      value:
+        complex:
+          root: Core.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.id
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignor.DomainUsername
+                iscontext: true
+              ignorecase: true
+          accessor: risk_level
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 539,
+          "y": 1883
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: f3a39d9f-9e6d-4582-a585-01b20a5c1c69
+    type: regular
+    task:
+      id: f3a39d9f-9e6d-4582-a585-01b20a5c1c69
+      version: -1
+      name: Save Assignee User if High-Risk
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      key:
+        simple: Evidence.AssigneeUser.CoreRiskyUser
+      value:
+        complex:
+          root: Core.RiskyUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.risk_level
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.RiskyUser.id
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignee.DomainUsername
+                iscontext: true
+              ignorecase: true
+          accessor: risk_level
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 539,
+          "y": 1713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: ee106c18-6a1c-455f-8596-4392ade6b918
+    type: regular
+    task:
+      id: ee106c18-6a1c-455f-8596-4392ade6b918
+      version: -1
+      name: Get User Creation Date
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      properties:
+        simple: ID,UserPrincipalName,CreatedDateTime
+      user:
+        complex:
+          root: InvestigationUsers.Assignee
+          accessor: UPN
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: InvestigationUsers.Assignor.UPN
+                iscontext: true
+              raw: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2463,
+          "y": 1713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 76d18a9e-8e9c-4542-9572-3adf04cdd02c
+    type: regular
+    task:
+      id: 76d18a9e-8e9c-4542-9572-3adf04cdd02c
+      version: -1
+      name: Save Assignor Creation Age if <= 7D
+      description: Set **Days Before Creation** as **Evidence** if the user was created within **the last week**
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: Evidence.AssignorUser.DaysBeforeCreation
+      value:
+        complex:
+          root: MSGraphUser
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: MSGraphUser.UserPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignor.UPN
+                iscontext: true
+              ignorecase: true
+          accessor: CreatedDateTime
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=Math.floor((new Date() - new Date(val))/(1000*60*60*24))
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=val<=7 ? val : ""'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2463,
+          "y": 2053
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 1c496707-5df2-4108-b4ba-9201706f2f45
+    type: regular
+    task:
+      id: 1c496707-5df2-4108-b4ba-9201706f2f45
+      version: -1
+      name: Save Assignor-Triggered Alerts
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: Evidence.AssignorUser.DefenderAlerts
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt.results
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Microsoft365Defender.Hunt.results.AccountUpn
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignor.UPN
+                iscontext: true
+              ignorecase: true
+          accessor: Title
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1982,
+          "y": 2053
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 6076f260-beee-439e-b564-8c2be5621e5e
+    type: regular
+    task:
+      id: 6076f260-beee-439e-b564-8c2be5621e5e
+      version: -1
+      name: Save Assignor-Triggered Detections
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: Evidence.AssignorUser.AzureRiskDetections
+      value:
+        complex:
+          root: MSGraph.identityProtection.risks.riskDetections
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MSGraph.identityProtection.risks.riskDetections.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignor.UPN
+                iscontext: true
+              ignorecase: true
+          accessor: riskEventType
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1501,
+          "y": 2053
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 6acab5cf-776d-44d1-8d6c-e7c2cd299f11
+    type: regular
+    task:
+      id: 6acab5cf-776d-44d1-8d6c-e7c2cd299f11
+      version: -1
+      name: Save Assignor-Triggered Detections
+      description: where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: Evidence.AssignorUser.AzureRiskDetections
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: InvestigationUsers.Assignor.UPN
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: atRisk
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: confirmedCompromised
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: medium
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: high
+              ignorecase: true
+          accessor: riskEventType
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012,
+          "y": 2053
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 109e0fc7-f839-41d7-ad45-45c91aab1b28
+    type: regular
+    task:
+      id: 109e0fc7-f839-41d7-ad45-45c91aab1b28
+      version: -1
+      name: Save if Anomalies >=2
+      description: Save **User Agent, ASN, and country** if two of these are identified **as new**
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: Evidence.Global.NewUA-ASN-Country
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.features_sum
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '[caller_ip_geolocation, caller_ip_asn, user_agent]'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' | '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -459,
+          "y": 2053
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: dc921e6a-5e62-4e0d-ade2-6c0ac251beee
+    type: collection
+    task:
+      id: dc921e6a-5e62-4e0d-ade2-6c0ac251beee
+      version: -1
+      name: Manual Task - Analyst Action Decision
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 813,
+          "y": 2916
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "---\n\n### **💻 Admin Role Assignment Info 💻**\n\n- Assignor Identity: `${.=val.InvestigationUsers.Assignor ? val.InvestigationUsers.Assignor.UPN : val.Core.OriginalAlert.event.cloud_best_identity_match}`\n- Assignee Identity: `${InvestigationUsers.Assignee.UPN}`\n- Role Name: `${Core.OriginalAlert.event.azure_ad_role_display_name_new_value}`\n\n---\n\n### **🚥 Evidence 🚥**\n\n${InvestigationUsers=val.Assignor.UPN == val.Assignee.UPN ? \"- **Identical identities for both the assignor and the assignee**\" : null}\n${Core.OriginalAlert=val.variation_rule_id == \"74c5e63a-e636-4906-a986-5ccf06e81ec6\" ? \"- **Application assigned the admin role for the first time from a rare IP**\" : null}\n\n**Global:**\n${Evidence=Object.keys(val.Global||{}).length > 0 ? Object.entries(val.Global).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignor Identity:**\n${Evidence=Object.keys(val.AssignorUser||{}).length > 0 ? Object.entries(val.AssignorUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignee Identity:**\n${Evidence=Object.keys(val.AssigneeUser||{}).length > 0 ? Object.entries(val.AssigneeUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n---\n\nIf a **malicious IP** is detected, consider blocking access from this IP to Azure."
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Confirm
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: MicrosoftGraphIdentityandAccess
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "You may also **remove the assignee user from the admin role** by selecting `Remove the Admin Role Assignment` below."
+                      }, {
+                        "default": "If necessary, **manually disable the assignor/assignee user** in the Azure portal. We recommend setting up the `Microsoft Graph Identity and Access` integration for future use."
+                      }]
+                flags: {}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: MicrosoftGraphIdentityandAccess
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "Remove the Admin Role Assignment"
+                      }, {
+                        "default": "Confirm"
+                      }]
+                flags: {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Microsoft Graph User
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "If necessary, disable the **assignee user** by selecting `Disable Assignee User` below. Note: Users with **admin roles** can be auto-disabled only if the integration has the required permissions; otherwise, disable manually."
+                      }, {
+                        "default": "If necessary, **manually disable the assignee user** in the Azure portal. We recommend setting up the `Microsoft Graph User` integration for future use."
+                      }]
+                flags: {}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Microsoft Graph User
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "Disable Assignor User"
+                      }, {
+                        "default": "Confirm"
+                      }]
+                flags: {}
+        - complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Microsoft Graph User
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "Disable Assignee User"
+                      }, {
+                        "default": "Confirm"
+                      }]
+                flags: {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: "🔍 Analyst Action Required 🔍"
+      description: |-
+        It is recommended to review the information displayed in this task.
+        **Review and take action if needed:**
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 80026f48-de41-4066-a2de-95c0182df4ad
+    type: condition
+    task:
+      id: 80026f48-de41-4066-a2de-95c0182df4ad
+      version: -1
+      name: Check Assignor Type
+      description: If the **assignor's identity** is a *USER*, we can revoke their session and disable the user if necessary. However, for an *APPLICATION* identity, we cannot currently perform dedicated remediation steps
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "68"
+      USER:
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: USER
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.identity_type
+            iscontext: true
+          right:
+            value:
+              simple: USER
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 2651
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 7ce46e1a-fbee-417b-a865-5cad48d6964e
+    type: collection
+    task:
+      id: 7ce46e1a-fbee-417b-a865-5cad48d6964e
+      version: -1
+      name: Manual Task - Analyst Action Decision
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237,
+          "y": 2916
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "---\n\n### **💻 Admin Role Assignment Info 💻**\n\n- Assignor Identity: `${.=val.InvestigationUsers.Assignor ? val.InvestigationUsers.Assignor.UPN : val.Core.OriginalAlert.event.cloud_best_identity_match}`\n- Assignee Identity: `${InvestigationUsers.Assignee.UPN}`\n- Role Name: `${Core.OriginalAlert.event.azure_ad_role_display_name_new_value}`\n\n---\n\n### **🚥 Evidence 🚥**\n\n${InvestigationUsers=val.Assignor.UPN == val.Assignee.UPN ? \"- **Identical identities for both the assignor and the assignee**\" : null}\n${Core.OriginalAlert=val.variation_rule_id == \"74c5e63a-e636-4906-a986-5ccf06e81ec6\" ? \"- **Application assigned the admin role for the first time from a rare IP**\" : null}\n\n**Global:**\n${Evidence=Object.keys(val.Global||{}).length > 0 ? Object.entries(val.Global).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignor Identity:**\n${Evidence=Object.keys(val.AssignorUser||{}).length > 0 ? Object.entries(val.AssignorUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignee Identity:**\n${Evidence=Object.keys(val.AssigneeUser||{}).length > 0 ? Object.entries(val.AssigneeUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n---\n\nIf a **malicious IP** is detected, consider blocking access from this IP to Azure."
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Confirm
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: MicrosoftGraphIdentityandAccess
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "You may also **remove the assignee user from the admin role** by selecting `Remove the Admin Role Assignment` below."
+                      }, {
+                        "default": "If necessary, **manually disable the assignor/assignee user** in the Azure portal. We recommend setting up the `Microsoft Graph Identity and Access` integration for future use."
+                      }]
+                flags: {}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: MicrosoftGraphIdentityandAccess
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "Remove the Admin Role Assignment"
+                      }, {
+                        "default": "Confirm"
+                      }]
+                flags: {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Microsoft Graph User
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "If necessary, disable the **assignee user** by selecting `Disable Assignee User` below. Note: Users with **admin roles** can be auto-disabled only if the integration has the required permissions; otherwise, disable manually."
+                      }, {
+                        "default": "If necessary, **manually disable the assignee user** in the Azure portal. We recommend setting up the `Microsoft Graph User` integration for future use."
+                      }]
+                flags: {}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: modules
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: Microsoft Graph User
+                ignorecase: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.state
+                  iscontext: true
+                right:
+                  value:
+                    simple: active
+                ignorecase: true
+            transformers:
+            - operator: count
+            - operator: If-Elif
+              args:
+                conditions:
+                  value:
+                    simple: |-
+                      [{
+                        "condition": "#{.} > 0",
+                        "return": "Disable Assignee User"
+                      }, {
+                        "default": "Confirm"
+                      }]
+                flags: {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: "🔍 Analyst Action Required 🔍"
+      description: |-
+        It is recommended to review the information displayed in this task.
+        **Review and take action if needed:**
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_15_#default#": 0.48,
+      "12_31_#default#": 0.29,
+      "12_33_#default#": 0.16,
+      "12_9_#default#": 0.16,
+      "5_6_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3796,
+        "width": 3303,
+        "x": -459,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
