@@ -913,7 +913,7 @@ def add_reply_request(ticket_id, encoded):
 
 def add_reply():
     ticket_id = demisto.args().get("ticket-id")
-    content = "Action: comment\n"
+    content = "Action: correspond\n"
     if text := demisto.args().get("text"):
         content += f"\nText: {text}"
     if cc := demisto.args().get("cc"):
