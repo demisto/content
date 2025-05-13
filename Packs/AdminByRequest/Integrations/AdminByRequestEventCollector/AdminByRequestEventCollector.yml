@@ -1,78 +1,78 @@
 category: Analytics & SIEM
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: AdminByRequestEventCollector
   version: -1
 configuration:
-  - defaultvalue: https://dc2api.adminbyrequest.com/
-    display: Server URL
-    name: url
-    required: true
-    type: 0
-    section: Connect
-  - displaypassword: API Key
-    additionalinfo: The API Key allows you to programmatically integrate with the Armis ecosystem.
-    name: credentials
-    required: true
-    hiddenusername: true
-    type: 9
-    section: Connect
-  - display: Trust any certificate (not secure)
-    name: insecure
-    type: 8
-    section: Connect
-    advanced: true
-    required: false
-  - display: Use system proxy settings
-    name: proxy
-    type: 8
-    section: Connect
-    advanced: true
-    required: false
-  - display: Fetch events
-    name: isFetchEvents
-    type: 8
-    section: Collect
-    required: false
-    hidden:
-      - xsoar
-    defaultvalue: "true"
-  - display: Event types to fetch
-    name: event_types_to_fetch
-    section: Collect
-    required: true
-    type: 16
-    defaultvalue: Auditlog,Events,Requests
-    options:
-      - Auditlog
-      - Events
-      - Requests
-  - additionalinfo: 'Maximum number of audit log entries to retrieve per fetch cycle. Applies only if the "Auditlog" event type is enabled for fetching.'
-    defaultvalue: "50000"
-    display: Maximum number of Auditlog per fetch
-    name: max_auditlog_per_fetch
-    required: false
-    type: 0
-    section: Collect
-    advanced: true
-  - additionalinfo: 'Maximum number of events entries to retrieve per fetch cycle. Applies only if the "Events" event type is enabled for fetching.'
-    defaultvalue: "50000"
-    display: Maximum number of Events per fetch
-    name: max_events_per_fetch
-    required: false
-    type: 0
-    section: Collect
-    advanced: true
-  - additionalinfo: 'Maximum number of request entries to retrieve per fetch cycle. Applies only if the "Requests" event type is enabled for fetching.'
-    defaultvalue: "5000"
-    display: Maximum number of Requests per fetch
-    name: max_requests_per_fetch
-    required: false
-    type: 0
-    section: Collect
-    advanced: true
+- defaultvalue: https://dc2api.adminbyrequest.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API Key allows you to programmatically integrate with the Armis ecosystem.
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  defaultvalue: "true"
+- display: Event types to fetch
+  name: event_types_to_fetch
+  section: Collect
+  required: true
+  type: 16
+  defaultvalue: Auditlog,Events,Requests
+  options:
+  - Auditlog
+  - Events
+  - Requests
+- additionalinfo: 'Maximum number of audit log entries to retrieve per fetch cycle. Applies only if the "Auditlog" event type is enabled for fetching.'
+  defaultvalue: "50000"
+  display: Maximum number of Auditlog per fetch
+  name: max_auditlog_per_fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- additionalinfo: 'Maximum number of event entries to retrieve per fetch cycle. Applies only if the "Events" event type is enabled for fetching.'
+  defaultvalue: "50000"
+  display: Maximum number of Events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- additionalinfo: 'Maximum number of request entries to retrieve per fetch cycle. Applies only if the "Requests" event type is enabled for fetching.'
+  defaultvalue: "5000"
+  display: Maximum number of Requests per fetch
+  name: max_requests_per_fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
 description: 'AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.'
 display: Admin By Request
 name: AdminByRequestEventCollector
@@ -115,6 +115,6 @@ script:
   dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.1.0
 marketplaces:
-  - marketplacev2
+- marketplacev2
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
