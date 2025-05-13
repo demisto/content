@@ -858,6 +858,7 @@ Notes:
 - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
 - This command will fail if the consent user is not a member of the destination chat.
 - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
+- This command can only send messages from type 'message'
 
 ##### Base Command
 
@@ -884,7 +885,6 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 | chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. |  Required     |
 | content           | The content of the chat message.                                                 | Required     |
 | content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     |
-| message_type      | The type of chat message. Default is message.                                    | Optional     |
 
 #### Context Output
 
@@ -1364,6 +1364,7 @@ Message was sent successfully.
 ## Running commands from Microsoft Teams
 
 You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
+For Microsoft Teams integration commands to be sent to Cortex XSIAM, you need to have role/access to Cortex XSIAM and your Teams email needs to match the email/user in Cortex XSIAM. External users can create incidents if the flag is set in the integration, but the rest of the commands require a valid Cortex XSIAM user and role.
 
 ## Direct messages commands
 

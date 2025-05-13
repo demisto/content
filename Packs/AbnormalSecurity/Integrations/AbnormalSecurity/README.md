@@ -17,7 +17,7 @@ This integration was integrated and tested with version 1.3.0 of Abnormal Securi
 | First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
 | Incident type |  | False |
 | Incidents Fetch Interval |  | False |
-| Polling Lag Time (in minutes) | Time in minutes to subtract from polling time window for data consistency | False |
+| Polling Lag Time (in minutes) | Time in minutes to subtract from polling time window for data consistency (Default : 2 mins) | False |
 | Maximum incidents pages to fetch | Maximum number of pages to fetch for incidents | False |
 
 ## Commands
