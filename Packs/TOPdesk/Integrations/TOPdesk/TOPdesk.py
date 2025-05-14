@@ -838,9 +838,6 @@ def get_assets_list(
         page_size = 1000
     else:
         pagination = False
-    # TODO: Sanity check on default fields
-    # TODO: There is a possibility that some of the default fields I included are company specific
-    default_fields = "type,@status,archived,name,host-name,@assignments,mac-address,ip-address,host-group,technical-owner,discovery-host-name,mem-device-name"
     assets_list = []
     while True:
         assets = client.get_asset_list_with_query(
@@ -850,7 +847,7 @@ def get_assets_list(
             query=query,
             search_term=search_term,
             archived=archived,
-            fields=args.get("fields", default_fields),
+            fields=args.get("fields", None),
         )
         if len(assets["dataSet"]) < 1:
             break

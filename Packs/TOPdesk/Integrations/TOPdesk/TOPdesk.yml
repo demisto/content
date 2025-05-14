@@ -2151,9 +2151,8 @@ script:
     - name: fields
       description: Additional fields to include in the response.
       defaultValue: ''
-      # TODO: Make sure the predefined are correct
       predefined:
-      - 'type,@status,archived,name,host-name,@assignments,mac-address,ip-address,host-group,technical-owner,discovery-host-name,mem-device-name'
+      - 'archived,etag,id,text'
     description: Get list of assets.
     name: topdesk-assets-list
     outputs:
