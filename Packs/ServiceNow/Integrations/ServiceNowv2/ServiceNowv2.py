@@ -211,6 +211,7 @@ class QuickActionPreview:
     TODO: We will need this class in common server python,
     but due to known performance issues, we are keeping it here for now.
     """
+
     id: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None
@@ -2932,15 +2933,12 @@ def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> Com
         "status": ticket_data.get("state"),
         "assignee": ticket_data.get("assigned_to"),
         "creation_date": ticket_data.get("sys_created_on"),
-        "severity": ticket_data.get("priority")
+        "severity": ticket_data.get("priority"),
     }
     qa_preview = QuickActionPreview(**qa_preview_data)
 
     return CommandResults(
-        outputs_prefix="QuickActionPreview",
-        outputs=qa_preview.to_context(),
-        outputs_key_field="id",
-        raw_response=result
+        outputs_prefix="QuickActionPreview", outputs=qa_preview.to_context(), outputs_key_field="id", raw_response=result
     )
 
 
@@ -3157,9 +3155,10 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta {parsed_args.delta}')
-        demisto.debug('The following keys appears in data but not in delta '
-                      f'{set(parsed_args.data.keys())-set(parsed_args.delta.keys())}')
+        demisto.debug(f"Got the following delta {parsed_args.delta}")
+        demisto.debug(
+            f"The following keys appear in data but not in delta {set(parsed_args.data.keys()) - set(parsed_args.delta.keys())}"
+        )
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
