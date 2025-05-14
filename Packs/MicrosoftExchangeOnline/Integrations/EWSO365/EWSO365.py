@@ -242,7 +242,7 @@ def prepare_args(args: dict[str, str]) -> dict:
     """
     args = {k.replace("-", "_"): v for k, v in list(args.items())}
     if "is_public" in args:
-        args["is_public"] = args["is_public"] == "True"
+        args["is_public"] = args["is_public"] == "True"  # type: ignore[assignment]
     if "from" in args:
         args["from_address"] = args.pop("from")
     return args
