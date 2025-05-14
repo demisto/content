@@ -259,17 +259,6 @@ script:
     - name: base-dn
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     description: Disables an Active Directory user account.
-  - name: ad-disable-account-quick-action
-    quickaction: true
-    hidden: true
-    prettyname: 
-    arguments:
-    - name: username
-      required: true
-      description: "The username of the account to disable (sAMAccountName)."
-    - name: base-dn
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
-    description: Disables an Active Directory user account.
   - name: ad-enable-account
     arguments:
     - name: username
@@ -813,6 +802,5 @@ script:
   isremotesyncout: true
   runonce: false
 fromversion: 5.0.0
-supportsquickactions: true
 tests:
 - Active Directory Test

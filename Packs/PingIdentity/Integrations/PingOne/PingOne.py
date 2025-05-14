@@ -460,14 +460,12 @@ def main():
         "pingone-deactivate-user": deactivate_user_command,
         "pingone-activate-user": activate_user_command,
         "pingone-set-password": set_password_command,
-        "pingone-set-password-quick-action": set_password_command,
         "pingone-add-to-group": add_user_to_group_command,
         "pingone-remove-from-group": remove_from_group_command,
         "pingone-get-groups": get_groups_for_user_command,
         "pingone-get-user": get_user_command,
         "pingone-create-user": create_user_command,
         "pingone-update-user": update_user_command,
-        "pingone-update-user-quick-action": update_user_command,
         "pingone-delete-user": delete_user_command,
     }
 

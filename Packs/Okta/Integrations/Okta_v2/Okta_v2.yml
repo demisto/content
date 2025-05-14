@@ -94,14 +94,6 @@ script:
     description: Deactivates a single user.
     name: okta-deactivate-user
   - arguments:
-    - description: Username to deactivate.
-      name: username
-      required: true
-    description: Deactivates a single user.
-    name: okta-deactivate-user-quick-action
-    quickaction: true
-    hidden: true
-  - arguments:
     - default: true
       description: Username to activate.
       name: username

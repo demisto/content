@@ -2079,7 +2079,6 @@ def main() -> None:
         "gsuite-datatransfer-request-create": datatransfer_request_create_command,
         "gsuite-user-delete": user_delete_command,
         "gsuite-user-update": user_update_command,
-        "gsuite-user-update-quick-action": user_update_command,
         "gsuite-mobiledevice-list": gsuite_mobile_device_list_command,
         "gsuite-chromeosdevice-action": gsuite_chromeos_device_action_command,
         "gsuite-chromeosdevice-list": gsuite_chromeos_device_list_command,
