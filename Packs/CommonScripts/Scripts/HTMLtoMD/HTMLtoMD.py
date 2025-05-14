@@ -13,7 +13,8 @@ def html_to_md_command(args):
     :return: Tuple of Demisto response parts.
     """
     html = str(args.get("html", ""))
-    markdown = md(html)
+    escape_misc = argToBoolean(args.get("escape_misc", True))
+    markdown = md(html, escape_misc=escape_misc)
     result = {"Original": html, "Result": str(markdown)}
     outputs = {"HTMLtoMD(val.Original == obj.Original)": result}
     return result, markdown, outputs
