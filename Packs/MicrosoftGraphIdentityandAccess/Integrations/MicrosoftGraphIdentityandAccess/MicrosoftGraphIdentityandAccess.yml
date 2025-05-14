@@ -101,8 +101,8 @@ configuration:
   type: 0
   required: false
 - section: Collect
-  display: Alerts Fetch Interval
-  name: alertFetchInterval
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
