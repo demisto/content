@@ -1055,6 +1055,7 @@ def main():
             "test-module": module_test,
             "okta-unlock-user": unlock_user_command,
             "okta-deactivate-user": deactivate_user_command,
+            "okta-deactivate-user-quick-action": deactivate_user_command,
             "okta-activate-user": activate_user_command,
             "okta-suspend-user": suspend_user_command,
             "okta-unsuspend-user": unsuspend_user_command,
