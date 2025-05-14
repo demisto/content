@@ -2,7 +2,6 @@ Use the Microsoft Intune Feed integration to get indicators from the feed.
 
 ## Configure Microsoft Intune Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -19,22 +18,24 @@ Use the Microsoft Intune Feed integration to get indicators from the feed.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### intune-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `intune-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 10. Default is 0. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 10. Default is 0. | Optional |
 
 #### Context Output
 

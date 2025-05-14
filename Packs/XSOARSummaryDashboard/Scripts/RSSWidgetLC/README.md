@@ -1,6 +1,7 @@
 Script Widget - RSS Feed.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Script Widget - RSS Feed.
 | Tags | widget |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,5 +18,6 @@ Script Widget - RSS Feed.
 | limit | Maximum number of entries to return. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
