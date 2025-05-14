@@ -400,7 +400,7 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+    - description: User ID or principal ID of the mailbox owner (usually an email address) from which the message should be deleted.
       name: user_id
       required: true
     - description: The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '<message-id>'.
@@ -413,6 +413,24 @@ script:
       name: ran_once_flag
     description: Deletes an email.
     name: msgraph-mail-delete-email
+    polling: true
+  - arguments:
+    - description: User ID or principal ID of the mailbox owner (usually an email address) from which the message should be deleted.
+      name: user_id
+      required: true
+    - description: The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
+      name: folder_id
+    - deprecated: true
+      description: flag for rate limit retry.
+      name: ran_once_flag
+    name: msgraph-mail-delete-email-quick-action
+    quickaction: true
+    # hidden: true
+    prettyname: Delete Email – Office 365
+    description: Deletes an email.
     polling: true
   - arguments:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
@@ -900,6 +918,108 @@ script:
       description: flag for rate limit retry.
       name: ran_once_flag
     description: Sends an email using Microsoft Graph.
+    name: send-mail-quick-action
+    quickaction: true
+    # hidden: true
+    prettyname: Send Email to Recipients – Office 365
+    outputs:
+    - contextPath: MicrosoftGraph.Email.internetMessageHeaders
+      description: The email headers.
+      type: String
+    - contextPath: MicrosoftGraph.Email.body
+      description: The body of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.bodyPreview
+      description: The body preview of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.subject
+      description: The subject of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.flag
+      description: The flag status of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.importance
+      description: The importance status of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.toRecipients
+      description: The 'to' recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.ccRecipients
+      description: The CC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.bccRecipients
+      description: The BCC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.replyTo
+      description: The replyTo recipients of the email.
+      type: String
+    polling: true
+  - arguments:
+    - description: A comma-separated list of email addresses for the 'to' field.
+      isArray: true
+      name: to
+    - description: A comma-separated list of email addresses for the 'cc' field.
+      isArray: true
+      name: cc
+    - description: A comma-separated list of email addresses for the 'bcc' field.
+      isArray: true
+      name: bcc
+    - description: The subject of the email.
+      name: subject
+      required: true
+    - description: The contents (body) of the email.
+      name: body
+    - auto: PREDEFINED
+      description: 'The body type of the email. Can be: "text", or "HTML".'
+      name: bodyType
+      predefined:
+      - text
+      - HTML
+    - auto: PREDEFINED
+      defaultValue: notFlagged
+      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
+      name: flag
+      predefined:
+      - notFlagged
+      - complete
+      - flagged
+    - auto: PREDEFINED
+      defaultValue: Low
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Low.'
+      name: importance
+      predefined:
+      - Low
+      - Normal
+      - High
+    - description: 'A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".'
+      isArray: true
+      name: headers
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attachIDs
+    - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
+      isArray: true
+      name: attachNames
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
+      isArray: true
+      name: attachCIDs
+    - description: The email address from which to send the email.
+      name: from
+    - description: The content (body) of the email (in HTML format).
+      name: htmlBody
+    - description: Indicates whether to render the email body.
+      name: renderBody
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
+      isArray: true
+      name: replyTo
+    - deprecated: true
+      description: flag for rate limit retry.
+      name: ran_once_flag
+    description: Sends an email using Microsoft Graph.
     name: send-mail
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
@@ -1150,12 +1270,13 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.3174650
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+supportsquickactions: true
 tests:
 - MicrosoftGraphMail-Test_dev_no_oproxy
 - MicrosoftGraphMail-Test_dev
