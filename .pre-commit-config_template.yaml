@@ -47,6 +47,7 @@ repos:
     min_py_version: '3.7'
     args:
     - --fix
+    - --show-fixes
     args:nightly:
     - --config=nightly_ruff.toml
     args:ci:
