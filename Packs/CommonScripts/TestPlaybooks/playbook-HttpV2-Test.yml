@@ -60,7 +60,7 @@ tasks:
       response_content_type:
         simple: json
       url:
-        simple: https://reqres.in/api/users/2
+        simple: https://jsonplaceholder.typicode.com/users/1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -107,7 +107,7 @@ tasks:
       save_as_file:
         simple: "yes"
       url:
-        simple: https://reqres.in/api/users/2
+        simple: https://jsonplaceholder.typicode.com/users/1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -509,14 +509,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: ${File.Size}
             iscontext: true
           right:
             value:
-              simple: "338"   # Note: If this value is changed, it is recommended to set it to greater than 250 or something similar, rather than hardcoding it.
+              simple: "250"
     continueonerrortype: ""
     view: |-
       {

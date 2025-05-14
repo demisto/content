@@ -128,17 +128,17 @@ class Client(BaseClient):
 
         demisto.debug(f"{private_key_type=}")
         if private_key_type == "PKCS#8":
-            prefix = "-----BEGIN PRIVATE KEY-----\n"
-            postfix = "\n-----END PRIVATE KEY-----"
+            prefix = "-----BEGIN PRIVATE KEY-----"
+            postfix = "-----END PRIVATE KEY-----"
         else:
-            prefix = "-----BEGIN RSA PRIVATE KEY-----\n"
-            postfix = "\n-----END RSA PRIVATE KEY-----"
+            prefix = "-----BEGIN RSA PRIVATE KEY-----"
+            postfix = "-----END RSA PRIVATE KEY-----"
 
         private_key = private_key.replace(prefix, "").replace(postfix, "")
 
         private_key_sections = private_key.strip().split(" ")
         striped_private_key = "".join(private_key_sections)
-        return prefix + striped_private_key + postfix
+        return prefix + "\n" + striped_private_key + "\n" + postfix
 
 
 """ Event related functions """
