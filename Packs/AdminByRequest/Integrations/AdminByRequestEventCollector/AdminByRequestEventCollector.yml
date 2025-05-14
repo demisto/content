@@ -13,7 +13,7 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: API Key
-  additionalinfo: The API Key allows you to programmatically integrate with the Armis ecosystem.
+  additionalinfo: The API Key allows you to interacts with the AdminByRequest API service.
   name: credentials
   required: true
   hiddenusername: true

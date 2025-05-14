@@ -12,6 +12,15 @@ from CommonServerUserPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+""" CONSTANTS """
+
+VENDOR = "Admin"
+PRODUCT = "By_Request"
+MAX_FETCH_AUDIT_LIMIT = 50000
+MAX_FETCH_EVENT_LIMIT = 50000
+MAX_FETCH_REQUEST_LIMIT = 5000
+DATE_FORMAT_CALLS = "%Y-%m-%d"
+
 
 class EventType:
     """
@@ -35,15 +44,6 @@ class EventType:
         self.max_fetch = 1
         self.default_params = default_params
 
-
-""" CONSTANTS """
-
-VENDOR = "Admin"
-PRODUCT = "By_Request"
-MAX_FETCH_AUDIT_LIMIT = 50000
-MAX_FETCH_EVENT_LIMIT = 50000
-MAX_FETCH_REQUEST_LIMIT = 5000
-DATE_FORMAT_CALLS = "%Y-%m-%d"
 
 EVENT_TYPES: dict[str, EventType] = {
     "Auditlog": EventType(
@@ -109,27 +109,29 @@ def validate_fetch_events_params(last_run: dict, event_type: EventType, use_last
         event_type (EventType): Event Type to fetch from API
         use_last_run_as_params (boolean): Flag that sign do we use the last-run as params for the API call
     Returns:
-        tuple[dict, str, str]: Correct params needed for the api call, call suffix, key to update in the last run.
+        Tuple[dict, str, str]: A tuple containing:
+            - API call parameters.
+            - URL suffix for the API endpoint.
+            - Key used to update the `last_run` dictionary.
     """
 
     suffix = event_type.suffix
-    take = event_type.take
     key = event_type.last_run_key
 
     if use_last_run_as_params:
         params = last_run
     elif key in last_run:
-        # Phase 2: Use last run's tracking ID as startid
+        # Not First fetch: Use last run's tracking ID as startid.
         params = {**event_type.default_params, "startid": last_run[key]}
     else:
-        # Phase 1: First Run params -  Use today's date for time-based fetch (unless it's requests)
+        # First-time fetch: use today's date for time-based fetch (except for 'requests')
         today = get_current_time().strftime(DATE_FORMAT_CALLS)
         date_params = {} if suffix == "requests" else {"startdate": today, "enddate": today}
 
         params = {**event_type.default_params, **date_params}
 
-    take = min(take, event_type.max_fetch)
-    params["take"] = take
+    # Limit the number of records per fetch
+    params["take"] = min(event_type.take, event_type.max_fetch)
 
     return params, suffix, key
 

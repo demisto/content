@@ -310,7 +310,8 @@ class TestFetchEvents:
         events_types = [self.event_audit, self.event_events, self.event_requests]
 
         mocker.patch(
-            "AdminByRequestEventCollector.Client.get_events_request", side_effect=[first_response, second_response, third_response]
+            "AdminByRequestEventCollector.Client.get_events_request",
+            side_effect=[first_response, second_response, third_response],
         )
 
         output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types, use_last_run_as_params=False)
@@ -339,7 +340,8 @@ class TestFetchEvents:
         events_types = [self.event_audit, self.event_events, self.event_requests]
 
         mocker.patch(
-            "AdminByRequestEventCollector.Client.get_events_request", side_effect=[first_response, second_response, third_response]
+            "AdminByRequestEventCollector.Client.get_events_request",
+            side_effect=[first_response, second_response, third_response],
         )
 
         output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types, use_last_run_as_params=False)
