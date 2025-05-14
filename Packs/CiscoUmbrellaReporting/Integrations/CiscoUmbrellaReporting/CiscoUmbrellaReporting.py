@@ -48,7 +48,7 @@ ACTIVITY_TRAFFIC_TYPE_DICT = {
         "page",
         "page_size",
         "categories",
-        "identityids"
+        "identityids",
     ],
     "proxy": [
         "traffic_type",
@@ -69,9 +69,9 @@ ACTIVITY_TRAFFIC_TYPE_DICT = {
         "page",
         "page_size",
         "categories",
-        "identityids"
+        "identityids",
     ],
-    "firewall": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "verdict", "page", "page_size","identityids"],
+    "firewall": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "verdict", "page", "page_size", "identityids"],
     "intrusion": [
         "traffic_type",
         "limit",
@@ -84,7 +84,7 @@ ACTIVITY_TRAFFIC_TYPE_DICT = {
         "intrusion_action",
         "page",
         "page_size",
-        "identityids"
+        "identityids",
     ],
     "ip": [
         "traffic_type",
@@ -99,7 +99,7 @@ ACTIVITY_TRAFFIC_TYPE_DICT = {
         "page",
         "page_size",
         "categories",
-        "identityids"
+        "identityids",
     ],
     "amp": ["traffic_type", "limit", "from", "to", "offset", "amp_disposition", "sha256", "page", "page_size"],
 }
@@ -124,7 +124,7 @@ SUMMARY_TYPE_DICT = {
         "page_size",
         "ports",
         "categories",
-        "identityids"
+        "identityids",
     ],
     "category": [
         "summary_type",
@@ -144,7 +144,7 @@ SUMMARY_TYPE_DICT = {
         "page",
         "page_size",
         "categories",
-        "identityids"
+        "identityids",
     ],
     "destination": [
         "summary_type",
@@ -164,7 +164,7 @@ SUMMARY_TYPE_DICT = {
         "page",
         "page_size",
         "categories",
-        "identityids"
+        "identityids",
     ],
     "intrusion_rule": [
         "summary_type",
@@ -179,7 +179,7 @@ SUMMARY_TYPE_DICT = {
         "ports",
         "page",
         "page_size",
-        "identityids"
+        "identityids",
     ],
 }
 """ CLIENT CLASS """
@@ -343,9 +343,9 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     if indicator_type == CATEGORIES_PARAM:
         categories = argToList(indicator_value)
         for category in categories:
-            if not category.lstrip('-').isdigit():
+            if not category.lstrip("-").isdigit():
                 raise ValueError(f"Invalid input Error: Categories argument is not a valid list of integers: {indicator_value}")
-            
+
     if indicator_type == IDENTITYIDS_PARAM:
         identityids = argToList(indicator_value)
         for identityid in identityids:

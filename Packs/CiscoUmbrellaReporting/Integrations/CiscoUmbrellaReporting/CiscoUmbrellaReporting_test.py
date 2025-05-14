@@ -957,7 +957,7 @@ def test_create_cisco_umbrella_args():
         "signatures": None,
         "sha256": None,
         "categories": [],
-        "identityids": []
+        "identityids": [],
     }
     result = create_cisco_umbrella_args(50, 1, args)
     assert result == expected_output
