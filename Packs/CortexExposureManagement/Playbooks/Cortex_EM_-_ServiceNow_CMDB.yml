@@ -31,7 +31,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-name: Cortex VM - ServiceNow CMDB
+name: Cortex EM - ServiceNow CMDB
 outputSections:
 - description: Generic group for outputs
   name: General (Outputs group)
