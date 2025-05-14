@@ -1,10 +1,10 @@
 import json
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
-from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient
+from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient, get_remote_data_preview_command, QuickActionPreview
 from pytest_mock import MockerFixture
 
 
@@ -2352,47 +2352,6 @@ class TestJiraGetRemoteData:
         assert remote_data_response.entries == expected_parsed_entries
 
 
-    def test_get_remote_data_preview_is_returned(self, mocker):
-        """
-        Given:
-            - A Jira client
-        When
-            - When the mirror in mechanism is called, which calls the get-remote-data command
-        Then
-            - Validate that correct entries are indeed returned
-        """
-        from JiraV3 import get_remote_data_command
-
-        client = jira_base_client_mock()
-        issue_response = {"id": "1234", "fields": {"summary": "dummy summary", "updated": "2023-01-01"}}
-        mocker.patch.object(client, "get_issue", return_value=issue_response)
-        mocker.patch("JiraV3.get_cached_user_timezone", return_value="Asia/Jerusalem")
-        close_reason = 'Issue was marked as "Resolved", or status was changed to "Done"'
-        expected_parsed_entries = [
-            {
-                "Type": 1,
-                "Contents": "Comment 3\nJira Author: None",
-                "ContentsFormat": "text",
-                "Tags": ["comment from jira"],
-                "Note": True,
-            },
-            {"File": "dummy_file_name", "FileID": "id1", "Tags": ["attachment from jira"]},
-            {"Type": 1, "Contents": {"dbotIncidentClose": True, "closeReason": close_reason}, "ContentsFormat": "json"},
-        ]
-        mocker.patch("JiraV3.get_updated_remote_data", return_value=expected_parsed_entries)
-        remote_data_response = get_remote_data_command(
-            client=client,
-            args={"id": "1234", "lastUpdate": "2023-01-01"},
-            attachment_tag_from_jira="",
-            comment_tag_from_jira="",
-            mirror_resolved_issue=True,
-            fetch_comments=True,
-            fetch_attachments=True,
-            get_preview=True
-        )
-        assert remote_data_response.to_context() == expected_parsed_entries
-
-
 class TestJiraFetchIncidents:
     FETCH_INCIDENTS_QUERY_CASES = [
         (
@@ -3464,3 +3423,36 @@ class TestJiraCreateMetadataField:
         else:
             with pytest.raises(ValueError):
                 get_create_metadata_field_command(client=client, args=args)
+
+
+def test_get_remote_data_preview_command():
+    # Given: Prepare the mock objects and inputs
+    mock_client = Mock()
+    args = {"issue_id": "JIRA-123"}
+
+    # Mock Jira issue object returned by client
+    mock_issue = util_load_json("test_data/get_remote_data_preview/raw_response.json")
+
+    mock_client.get_issue.return_value = mock_issue
+
+    # When: Execute the command under test
+    result = get_remote_data_preview_command(mock_client, args)
+
+    # Then: Validate the outputs
+    assert result.outputs_prefix == "QuickActionPreview"
+    assert result.outputs_key_field == "id"
+
+    expected_preview = QuickActionPreview(
+        id="21487",
+        title="XSOAR description test",
+        description="Testing summary XSOAR mirroring",
+        status="Backlog",
+        assignee="Example User(admin@test.com)",
+        creation_date="2023-03-01T11:34:49.730+0200",
+        severity="Low"
+    ).to_context()
+
+    assert result.outputs == expected_preview
+
+    # Validate interactions
+    mock_client.get_issue.assert_called_once_with(issue_id_or_key="JIRA-123")

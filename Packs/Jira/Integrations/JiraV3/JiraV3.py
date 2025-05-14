@@ -10,7 +10,6 @@ from dataclasses import asdict, dataclass
 import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
-from Packs.Jira.Integrations.JiraV3.CommonServerPython import CommandResults, GetRemoteDataResponse
 
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
@@ -2151,6 +2150,44 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     return command_results
 
 
+def get_remote_data_preview_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the data of a specific issue and formatting it specifically for an issue preview
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", ""))
+    issue = client.get_issue(issue_id_or_key=issue_id_or_key)
+    context_methods = {
+        "id": JiraIssueFieldsParser.get_id_context,
+        "title": JiraIssueFieldsParser.get_description_context,
+        "description": JiraIssueFieldsParser.get_summary_context,
+        "status": JiraIssueFieldsParser.get_status_context,
+        "assignee": JiraIssueFieldsParser.get_assignee_context,
+        "creation_date": JiraIssueFieldsParser.get_created_date_context,
+        "severity": JiraIssueFieldsParser.get_priority_context,
+    }
+
+    qa_preview_data = {
+        attr: JiraIssueFieldsParser.get_value_from_context(method, issue)
+        for attr, method in context_methods.items()
+    }
+
+    qa_preview = QuickActionPreview(**qa_preview_data)
+    return CommandResults(
+        outputs_prefix="QuickActionPreview",
+        outputs=qa_preview.to_context(),
+        outputs_key_field="id"
+    )
+
+
 def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     """This command is in charge of returning the metadata of a specific project.
 
@@ -4147,8 +4184,7 @@ def get_remote_data_command(
     mirror_resolved_issue: bool,
     fetch_attachments: bool,
     fetch_comments: bool,
-    get_preview: bool = False
-) -> CommandResults | GetRemoteDataResponse:
+) -> GetRemoteDataResponse:
     """Mirror-in data to incident from Jira into XSOAR 'JiraV3 Incident' incident.
 
     NOTE: Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
@@ -4160,7 +4196,6 @@ def get_remote_data_command(
         fetch_attachments (bool): Whether to fetch the attachments or not.
         fetch_comments (bool): Whether to fetch the comments or not.
         mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
-        get_preview (bool): Indicates if the command should return a preview object used in QuickActionData
         args:
             id: Remote incident id.
             lastUpdate: Server last sync time with remote server.
@@ -4208,30 +4243,7 @@ def get_remote_data_command(
         else:
             demisto.debug("No new entries to update.")
 
-        if get_preview:
-            context_methods = {
-                "id": JiraIssueFieldsParser.get_id_context,
-                "title": JiraIssueFieldsParser.get_description_context,
-                "description": JiraIssueFieldsParser.get_summary_context,
-                "status": JiraIssueFieldsParser.get_status_context,
-                "assignee": JiraIssueFieldsParser.get_assignee_context,
-                "creation_date": JiraIssueFieldsParser.get_created_date_context,
-                "severity": JiraIssueFieldsParser.get_priority_context,
-            }
-
-            qa_preview_data = {
-                attr: JiraIssueFieldsParser.get_value_from_context(method, issue)
-                for attr, method in context_methods.items()
-            }
-
-            qa_preview = QuickActionPreview(**qa_preview_data)
-            return CommandResults(
-                outputs_prefix="QuickActionPreview",
-                outputs=qa_preview.to_context(),
-                outputs_key_field="id"
-            )
-        else:
-            return GetRemoteDataResponse(updated_incident, parsed_entries)
+        return GetRemoteDataResponse(updated_incident, parsed_entries)
 
     except Exception as e:
         demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id}Error message: {e!s}")
@@ -4725,6 +4737,7 @@ def main():  # pragma: no cover
         "jira-get-user-info": get_user_info_command,
         "jira-create-metadata-field-list": get_create_metadata_field_command,
         "jira-create-metadata-issue-types-list": get_create_metadata_issue_types_command,
+        "get-remote-data-preview": get_remote_data_preview_command,
     }
     try:
         client: JiraBaseClient
@@ -4780,8 +4793,7 @@ def main():  # pragma: no cover
                 ),
             )
 
-        elif command in ["get-remote-data", "get-remote-data-preview"]:
-            get_preview = True if command == "get-remote-data-preview" else False
+        elif command == "get-remote-data":
             return_results(
                 get_remote_data_command(
                     client=client,
@@ -4791,7 +4803,6 @@ def main():  # pragma: no cover
                     mirror_resolved_issue=mirror_resolved_issue,
                     fetch_attachments=fetch_attachments,
                     fetch_comments=fetch_comments,
-                    get_preview=get_preview
                 )
             )
         elif command == "get-modified-remote-data":

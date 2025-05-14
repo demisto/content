@@ -1586,9 +1586,6 @@ script:
       - description: The remote incident ID.
         name: id
         required: true
-      - defaultValue: '0'
-        description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
-        name: lastUpdate
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data-preview
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
@@ -1815,7 +1812,7 @@ script:
         type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.2129515
+  dockerimage: demisto/btfl-soup:1.0.1.3150379
   isfetch: true
   ismappable: true
   isremotesyncin: true
