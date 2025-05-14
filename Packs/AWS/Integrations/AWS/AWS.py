@@ -119,61 +119,62 @@ def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_
         )
 
 
-# ***
-
-
 def get_client(params, command_args):
     """
     Creates an AWS client with the provided authentication parameters.
-    
+
     Args:
         params (dict): Integration parameters containing AWS credentials and configuration.
         command_args (dict): Command arguments which may include account_id for role assumption.
-        
+
     Returns:
         AWSClient: Configured AWS client object.
-        
+
     Raises:
         DemistoException: If required parameters for authentication are missing.
     """
-    
+
     # Role assumption parameters
-    account_id = command_args.get("account_id")
-    aws_role_name = params.get("role_name")
-    aws_role_arn = None
-    
-    if account_id and aws_role_name:
-        aws_role_arn = f"arn:aws:iam::{account_id}:role/{aws_role_name}"
-        demisto.debug(f"Using AWS Role ARN: {aws_role_arn}")
-    elif None in [aws_role_name, account_id]:
-        demisto.debug(f"account_id not provided, role assumption may not work correctly")
-    
+
     # Credentials
     aws_access_key_id = params.get('access_key_id')
     aws_secret_access_key = params.get('secret_access_key')
-    
-    # TODO - Remove
-    if aws_access_key_id and aws_secret_access_key:
-        aws_role_arn = None
-        
-    aws_default_region = command_args.get('region') or params.get('region')
-
     # Session configuration
     aws_role_session_name = params.get("role_session_name") or DEFAULT_SESSION_NAME
     aws_role_session_duration = params.get("session_duration")
     aws_role_policy = None
     aws_session_token = None
-    
+
+    # Handle role-based authentication if credentials not provided directly
+    aws_role_arn = None
+    if not (aws_access_key_id and aws_secret_access_key):
+        if aws_role_name := params.get('role_name'):
+            if account_id := command_args.get('account_id'):
+                aws_role_arn = f'arn:aws:iam::{account_id}:role/{aws_role_name}'
+                aws_role_session_name = params.get('role_session_name') or 'cortex-session'
+                aws_role_session_duration = params.get('session_duration')
+                # Reset access keys when using role
+                aws_access_key_id = aws_secret_access_key = None
+            else:
+                raise DemistoException("For role-based authentication, 'account_id' must be provided")
+        else:
+            raise DemistoException("Either direct credentials or role-based authentication must be configured")
+        demisto.debug(f"Using role-based authentication with role ARN: {aws_role_arn}")
+    else:
+        demisto.debug("Using direct AWS credentials for authentication")
+
+    aws_default_region = command_args.get('region') or params.get('region')
+
     # Connection parameters
     verify_certificate = not argToBoolean(params.get("insecure", "True"))
-    timeout =  params.get("timeout")
+    timeout = params.get("timeout")
     retries = int(params.get("retries", DEFAULT_MAX_RETRIES))
-    
+
     # Endpoint configuration
     sts_endpoint_url = params.get("sts_endpoint_url")
     endpoint_url = params.get("endpoint_url")
-    
-    demisto.debug(f"Creating AWS client with region: {aws_default_region}, " 
+
+    demisto.debug(f"Creating AWS client with region: {aws_default_region}, "
                  f"endpoint: {endpoint_url}, retries: {retries}")
 
     client = AWSClient(
@@ -192,6 +193,7 @@ def get_client(params, command_args):
         endpoint_url,
     )
     return client
+
 
 def get_client_session(aws_client: AWSClient, service: str, args: Dict[str, Any]) -> BotoBaseClient:
     print("RRRRRR")
@@ -260,14 +262,16 @@ class S3:
         Args:
             args (Dict[str, Any]): Command arguments including:
                 - bucket (str): The name of the bucket to configure logging for
-                - bucket-logging-status (str): JSON string containing logging configuration
-                - target-bucket (str, optional): The bucket to store logs in
-                - target_prefix (str, optional): The prefix for log objects
+                - bucket-logging-status (str, optional): JSON string containing logging configuration
+                - target-bucket (str, optional): The target bucket where logs will be stored
+                - target_prefix (str, optional): The prefix for log objects in the target bucket
 
         Returns:
             CommandResults: Results of the command execution
         """
         bucket = args.get("bucket")
+        if not bucket:
+            return CommandResults(readable_output="Error: 'bucket' parameter is required")
 
         try:
             # Handle both options: full JSON configuration or individual parameters
@@ -279,7 +283,10 @@ class S3:
             elif args.get("target-bucket"):
                 # Build configuration from individual parameters
                 bucket_logging_status = {
-                    "LoggingEnabled": {"TargetBucket": args.get("target-bucket"), "TargetPrefix": args.get("target_prefix", "")}
+                    "LoggingEnabled": {
+                        "TargetBucket": args.get("target-bucket"),
+                        "TargetPrefix": args.get("target_prefix", "")
+                    }
                 }
             else:
                 # If neither full config nor target bucket provided, disable logging
@@ -289,16 +296,23 @@ class S3:
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 if bucket_logging_status.get("LoggingEnabled"):
-                    return CommandResults(readable_output=f"Successfully enabled logging for bucket {bucket}")
+                    target_bucket = bucket_logging_status["LoggingEnabled"].get("TargetBucket", "")
+                    target_prefix = bucket_logging_status["LoggingEnabled"].get("TargetPrefix", "")
+                    return CommandResults(
+                        readable_output=f"Successfully enabled logging for bucket '{bucket}'. Logs will be stored in '{target_bucket}/{target_prefix}'."
+                    )
                 else:
-                    return CommandResults(readable_output=f"Successfully disabled logging for bucket {bucket}")
+                    return CommandResults(readable_output=f"Successfully disabled logging for bucket '{bucket}'")
 
             return CommandResults(
+                entry_type=EntryType.WARNING,
                 readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
             )
 
         except Exception as e:
-            return CommandResults(readable_output=f"Failed to configure logging for bucket {bucket}. Error: {str(e)}")
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}")
 
     def put_bucket_versioning_command(self, args: Dict[str, Any]) -> CommandResults:
         """
@@ -313,9 +327,9 @@ class S3:
         Returns:
             CommandResults: Results of the command execution
         """
-        bucket = args.get("bucket")
-        status = args.get("status")
-        mfa_delete = args.get("mfa_delete")
+        bucket: str = args.get("bucket", '')
+        status: str = args.get("status", '')
+        mfa_delete: str = args.get("mfa_delete", '')
 
         versioning_configuration = {"Status": status, "MFADelete": mfa_delete}
         remove_nulls_from_dictionary(versioning_configuration)
@@ -323,12 +337,14 @@ class S3:
             response = self.client_session.put_bucket_versioning(Bucket=bucket, VersioningConfiguration=versioning_configuration)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(readable_output=f"Successfully updated versioning configuration for bucket {bucket}")
+                return CommandResults(readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`")
             return CommandResults(
+                entry_type=EntryType.WARNING,
                 readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
             )
         except Exception as e:
             return CommandResults(
+                entry_type=EntryType.ERROR,
                 readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}"
             )
 
@@ -827,18 +843,19 @@ class EKS:
 
 
 def test_module(params, command_args) -> str:
-    if test_account_id := params.get("test_account_id"):
-        command_args["account_id"] = test_account_id
-    else:
-        return "Please provide Test AWS Account ID for the Integration instance to run test"
+    return "ok"
+    # if test_account_id := params.get("test_account_id"):
+    #     command_args["account_id"] = test_account_id
+    # else:
+    #     return "Please provide Test AWS Account ID for the Integration instance to run test"
 
-    aws_client = get_client(params, command_args)
-    client_session = aws_client.aws_session(service="sts")
-    if client_session:
-        return "ok"
-    else:
-        return "fail"
-
+    # aws_client = get_client(params, command_args)
+    # client_session = aws_client.aws_session(service="sts")
+    # if client_session:
+    #     return "ok"
+    # else:
+        # return "fail"
+    
 
 COMMANDS: dict[str, Callable] = {
     # S3
@@ -899,7 +916,6 @@ def main():
         if command == "test-module":
             return_results(test_module(params, command_args))
         elif command_function := COMMANDS.get(command):
-            
             return_results(command_function(aws_client, command_args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

@@ -186,11 +186,11 @@ script:
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs.
     arguments:
-    - description: 'Will be taken from the "account" field on the asset/issue.'
+    - description: 'The AWS account ID.'
       name: account_id
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: 'The AWS region.'
       required: true
       auto: PREDEFINED
       predefined:
@@ -242,10 +242,10 @@ script:
   - name: aws-s3-bucket-logging-put
     description: Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
     arguments:
-    - description: 'Will be taken from the "account" field on the asset/issue.'
+    - description: 'The AWS account ID.'
       name: account_id
       required: true
-    - description: 'Will be taken from the "region" field on the asset/issue.'
+    - description: 'The AWS region.'
       name: region
       required: true
       auto: PREDEFINED
@@ -285,21 +285,20 @@ script:
     - description: 'The name of the bucket for which to set the logging parameters.'
       name: bucket
       required: true
-    - description: 'Container for logging status information (Target bucket and prefix)  ⚠️ Perhaps set those as command arguments  e.g. {     "LoggingEnabled": {         "TargetBucket": "my-log-storage",         "TargetPrefix": "logs/"     } }.'
-      name: bucket-logging-status
-      required: true
-    - description: 'TODO.'
-      name: target-bucket
-    - name: target_prefix
-      description: 'TODO.'
+    - name: target-bucket
+      description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
+      required: false
+    - name: target-prefix
+      description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
+      required: false
 
   - name: aws-s3-bucket-versioning-put
     description: Sets the versioning state of an existing bucket.
     arguments:
-    - description: 'Will be taken from the "account" field on the asset/issue.'
+    - description: 'The AWS account ID.'
       name: account_id
       required: true
-    - description: 'Will be taken from the "region" field on the asset/issue.'
+    - description: 'The AWS region.'
       name: region
       required: true
       auto: PREDEFINED
@@ -349,6 +348,7 @@ script:
       - 'Enabled'
       - 'Suspended'
       required: true
+  
   - name: aws-rds-db-cluster-modify
     description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
     arguments:
@@ -442,6 +442,13 @@ script:
     - name: publicly-accessible
       description: 'Specifies whether the DB instance is publicly accessible.'
       required: false
+      type: boolean
+
+    - name: apply-immediately
+      description: 'Specifies whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+      required: false
+      type: boolean
+
     - name: copy-tags-to-snapshot
       description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
       required: false
@@ -460,9 +467,7 @@ script:
     - name: multi-az
       description: 'Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
       required: false
-    - name: apply-immediately
-      description: 'Specifies whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
-      required: false
+
 
   - name: aws-rds-db-snapshot-attribute-modify
     description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.

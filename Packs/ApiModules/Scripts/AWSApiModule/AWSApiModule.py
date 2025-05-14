@@ -126,6 +126,7 @@ class AWSClient:
         self.sts_endpoint_url = self.sts_endpoint_url or STS_ENDPOINTS.get(region) or STS_ENDPOINTS.get(self.aws_default_region)
 
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
+            print("# login with Role ARN")
             if not self.aws_access_key_id:
                 sts_client = boto3.client(
                     "sts",
@@ -146,6 +147,7 @@ class AWSClient:
                     endpoint_url=self.endpoint_url,
                 )
         elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
+            print("# login with Access Key ID and Role ARN")
             sts_client = boto3.client(
                 service_name="sts",
                 region_name=region if region else self.aws_default_region,
@@ -173,6 +175,7 @@ class AWSClient:
                 endpoint_url=self.endpoint_url,
             )
         elif self.aws_session_token and not self.aws_role_arn:  # login with session token
+            print("# login with session token")
             client = boto3.client(
                 service_name=service,
                 region_name=region if region else self.aws_default_region,
@@ -184,6 +187,7 @@ class AWSClient:
                 endpoint_url=self.endpoint_url,
             )
         elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
+            print("# login with access key id")
             client = boto3.client(
                 service_name=service,
                 region_name=region if region else self.aws_default_region,
