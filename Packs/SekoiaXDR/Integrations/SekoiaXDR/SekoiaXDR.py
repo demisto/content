@@ -496,7 +496,7 @@ def fetch_alerts_with_pagination(
 
     # Fetch alerts in a loop until all alerts are retrieved
     # Using offset to paginate through the results
-    while total_alerts is None or offset < total_alerts:
+    while True:
         response = client.list_alerts(
             alerts_created_at=alerts_created_at,
             alerts_updated_at=alerts_updated_at,
