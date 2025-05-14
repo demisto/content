@@ -2,61 +2,75 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: MISP V3
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: MISP server URL (e.g., https://192.168.0.1)
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   name: credentials
   type: 9
   hiddenusername: true
   display: ""
   required: false
+  section: Connect
 - display: Client Certificate
   displaypassword: Private Key
   name: certificate
   type: 9
   required: false
+  section: Connect
 - display: Use IDS flag
   name: check_to_ids
   defaultvalue: "true"
   type: 8
   required: false
   additionalinfo: This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not.
+  section: Collect
 - display: ORG names to use for reputation checks
   name: allowed_orgs
   type: 12
   required: false
   additionalinfo: Comma-separated list of allowed TI providers (orgc in MISP events). When pulling data from MISP you may have data coming from a reliable source. However, some of the orgs are including things like 8.8.8.8 in their feeds. This parameter is used to filter such orgs out by specifying the exact list of orgs to trust.
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags.
   display: Malicious tag IDs
   name: malicious_tag_ids
   type: 12
   required: false
+  section: Collect
 - additionalinfo: Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags.
   display: Suspicious tag IDs
   name: suspicious_tag_ids
   type: 12
   required: false
+  section: Collect
 - additionalinfo: Comma-separated list of event's or attribute's benign tag IDs. Malicious and suspicious tags are stronger than benign tags.
   display: Benign tag IDs
   name: benign_tag_ids
   type: 12
   required: false
+  section: Collect
 - display: Should the warninglists be considered when searching for an attribute
   name: search_warninglists
   defaultvalue: "false"
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -71,12 +85,14 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: This field limits the number of attributes that will be written to the context for every reputation command. Raising the number of attributes may result in high memory and disk usage.
   defaultvalue: '20'
   display: Maximum attributes to be returned
   name: attributes_limit
   type: 0
   required: false
+  section: Collect
 description: Malware information sharing platform and threat sharing.
 display: MISP v3
 name: MISP V3
@@ -2717,7 +2733,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:2.5.4.1858064
+  dockerimage: demisto/pymisp2:2.5.10.3055654
   runonce: false
   script: ''
   subtype: python3

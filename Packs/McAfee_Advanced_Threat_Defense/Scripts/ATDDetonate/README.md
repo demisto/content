@@ -1,6 +1,7 @@
 Detonates a file or URL through McAfee ATD.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,15 +9,17 @@ Detonates a file or URL through McAfee ATD.
 | Script Type | python |
 | Tags | file, enhancement, atd |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * atd-get-report
 * atd-check-status
 * atd-file-upload
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -37,6 +40,7 @@ This script uses the following commands and scripts.
 | interval | The interval to poll for results. The default is 10 seconds. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
