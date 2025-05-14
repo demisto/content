@@ -15,7 +15,7 @@ description: |-
   Investigation:
 
   - Analyze the reputation of the caller IP address
-  - Examine alerts from Microsoft Defender 365 related to the TAP granter
+  - Examine alerts from Microsoft Defender 365 related to the TAP assigner
   - Check Azure AD risky user status and risk detections
   - Review Cortex Core risk level for the user
   - Verify creation date of the user account in Azure AD to identify recently created accounts
@@ -489,7 +489,7 @@ tasks:
     task:
       id: 5d9b1ad7-50d0-4aff-87b1-779670549092
       version: -1
-      name: Check related detections for TAP granter
+      name: Check related detections for TAP assigner
       description: Checks if there are any unhandled risks for the user in Azure.
       type: condition
       iscommand: false
@@ -602,7 +602,7 @@ tasks:
     task:
       id: 68a74c93-f09e-47cc-bd77-43823893dc78
       version: -1
-      name: Get Defender 365 alerts for TAP granter
+      name: Get Defender 365 alerts for TAP assigner
       description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
       script: '|||microsoft-365-defender-advanced-hunting'
       type: regular
@@ -638,7 +638,7 @@ tasks:
     task:
       id: 4966fa4c-bb3a-4928-a86a-5636eebfdf3e
       version: -1
-      name: Check if any unhandled detection matches TAP granter
+      name: Check if any unhandled detection matches TAP assigner
       description: Returns a comma-separated list of the Risk Detection objects and their properties.
       type: condition
       iscommand: false
@@ -727,8 +727,8 @@ tasks:
     task:
       id: 2b826c5b-4a0e-4cf7-b22e-3285561d4d2e
       version: -1
-      name: Check if the TAP granter is risky
-      description: Checks if the TAP granter user is risky in Azure.
+      name: Check if the TAP assigner is risky
+      description: Checks if the TAP assigner user is risky in Azure.
       type: condition
       iscommand: false
       brand: ""
@@ -959,8 +959,8 @@ tasks:
     task:
       id: 13d37a68-8193-406f-a033-723972018331
       version: -1
-      name: Check if the TAP granter is risky
-      description: Checks if the TAP granter user is risky.
+      name: Check if the TAP assigner is risky
+      description: Checks if the TAP assigner user is risky.
       type: condition
       iscommand: false
       brand: ""
@@ -1027,7 +1027,7 @@ tasks:
       id: 8f7f55c7-2400-4605-a5c7-06ed6bd486a1
       version: -1
       name: Save Core risky user result
-      description: Saves a key indicating the TAP granter is risky.
+      description: Saves a key indicating the TAP assigner is risky.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1426,7 +1426,7 @@ tasks:
       id: cb3cb3bd-1c5e-4edf-b88a-abd866ea40c7
       version: -1
       name: Manual - get remediation approval
-      description: "The investigation found several suspicious indicators related to the user who granted the TAP or the IP from which this TAP was granted. \n\nAs a response, the user's current session was revoked.\nReview the findings and decide on remediation actions.\n\n#### Temporary Access Pass (TAP) Information\nGranted by: `${Core.OriginalAlert.event.cloud_best_identity_match}`\n\nGranted to: `${Core.OriginalAlert.raw_abioc.event.referenced_resource_name}`\n\nTAP type: `${Core.OriginalAlert.event.tap_usage}`\n\nStart Time: `${Core.OriginalAlert.event.tap_start}`\n\nEnd Time: `${Core.OriginalAlert.event.tap_end}`\n\nTAP ID: `${Core.OriginalAlert.event.tap_id}`\n\n\n---\n\n\n#### TAP Granter Information\nInformation regarding the user who granted the TAP access.\n\nUser creation date analysis: `${.=val.Evidence && val.Evidence.UserCreatedRecently ? \"User created recently\" : \"User is not new\"}`\n\nRelated alerts in Defender 365: `${.=val.Evidence && val.Evidence.Defender365Alerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\nUser risk analysis (Core IR): `${.=val.Evidence && val.Evidence.CoreRiskyUser ? \"Risky\" : \"Not risky\"}`\n\nUser risk analysis (Azure AD): `${.=val.Evidence && val.Evidence.AzureRiskDetections ? \"Risky\" : \"Not risky\"}`\n\nNumber of TAPs granted (last 30 days): `${Core.OriginalAlert.event.provider_project_best_identity_operation_count_distinct_referenced_resource_name_azure_ad_audit_successful}`\n\n\n---\n\n\n### Caller IP Information\nIP reputation: `${.=val.Evidence && val.Evidence.MaliciousIP ? \"Malicious\" : \"Benign\"}`\n\nIP geolocation: `${Core.OriginalAlert.event.caller_ip_geolocation}`\n\n\n---\n\n\n### Suggested Analyst Response\nAfter reviewing the evidence, depending on the analyst verdict, we recommend the following response actions:\n- Manually delete the Temporary Access Pass (TAP) granted to the user in Microsoft Entra Admin Center\n- Disable the user in Azure AD"
+      description: "The investigation found several suspicious indicators related to the user who granted the TAP or the IP from which this TAP was granted. \n\nAs a response, the user's current session was revoked.\nReview the findings and decide on remediation actions.\n\n#### Temporary Access Pass (TAP) Information\nGranted by: `${Core.OriginalAlert.event.cloud_best_identity_match}`\n\nGranted to: `${Core.OriginalAlert.raw_abioc.event.referenced_resource_name}`\n\nTAP type: `${Core.OriginalAlert.event.tap_usage}`\n\nStart Time: `${Core.OriginalAlert.event.tap_start}`\n\nEnd Time: `${Core.OriginalAlert.event.tap_end}`\n\nTAP ID: `${Core.OriginalAlert.event.tap_id}`\n\n\n---\n\n\n#### TAP assigner Information\nInformation regarding the user who granted the TAP access.\n\nUser creation date analysis: `${.=val.Evidence && val.Evidence.UserCreatedRecently ? \"User created recently\" : \"User is not new\"}`\n\nRelated alerts in Defender 365: `${.=val.Evidence && val.Evidence.Defender365Alerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\nUser risk analysis (Core IR): `${.=val.Evidence && val.Evidence.CoreRiskyUser ? \"Risky\" : \"Not risky\"}`\n\nUser risk analysis (Azure AD): `${.=val.Evidence && val.Evidence.AzureRiskDetections ? \"Risky\" : \"Not risky\"}`\n\nNumber of TAPs granted (last 30 days): `${Core.OriginalAlert.event.provider_project_best_identity_operation_count_distinct_referenced_resource_name_azure_ad_audit_successful}`\n\n\n---\n\n\n### Caller IP Information\nIP reputation: `${.=val.Evidence && val.Evidence.MaliciousIP ? \"Malicious\" : \"Benign\"}`\n\nIP geolocation: `${Core.OriginalAlert.event.caller_ip_geolocation}`\n\n\n---\n\n\n### Suggested Analyst Response\nAfter reviewing the evidence, depending on the analyst verdict, we recommend the following response actions:\n- Manually delete the Temporary Access Pass (TAP) granted to the user in Microsoft Entra Admin Center\n- Disable the user in Azure AD"
       type: condition
       iscommand: false
       brand: ""
@@ -1515,7 +1515,7 @@ tasks:
       id: 64741e8e-adce-4967-a44b-8bdf9cb64f19
       version: -1
       name: Disable user
-      description: Disables the TAP granter user account.
+      description: Disables the TAP assigner user account.
       script: '|||msgraph-user-account-disable'
       type: regular
       iscommand: true
