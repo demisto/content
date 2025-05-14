@@ -16,7 +16,8 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: Personal Access Token
+- display: ""
+   displaypassword: Personal Access Token
   name: personal_access_token
   type: 9
   hiddenusername: true
