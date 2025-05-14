@@ -70,7 +70,8 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 
 - Create an **Azure event hub**. For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 - Make sure that you have at least a Security Administrator role.
-- For Azure WAF Front Door event logs you will need to [Create an Azure Front Door profile](https://learn.microsoft.com/en-us/azure/frontdoor/create-front-door-portal?tabs=quick)
+- For Azure WAF Front Door event logs you will need to [Create an Azure Front Door profile](https://learn.microsoft.com/en-us/azure/frontdoor/create-front-door-portal?tabs=quick).
+- Configure Azure [Front Door Logs](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-logs).
 
 ### Stream Logs Flow
 
@@ -78,15 +79,24 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 2. Navigate to **Identity** &rarr; **Monitoring & health** &rarr; **Diagnostic settings**.
     - To stream Front Door logs, select the relevant Front Door profile 
     - Within the profile, navigate to **Monitoring**, and select **Diagnostic Setting**.
+    - Select the log options for FrontDoorAccessLog and FrontDoorWebApplicationFirewallLog.
 3. Select **+ Add diagnostic setting** to create a new integration or select **Edit setting** for an existing integration.
 4. Enter a **Diagnostic setting name**. If you're editing an existing integration, you can't change the name.
 5. Select the log categories that you want to stream. Refer to the **Log Normalization** section for the supported log categories for normalization.
 6. Select the streaming and storing method.
 
-   6.1. Select the **Stream to an event hub** checkbox to use the Event Hub and storage account to save the diagnostic logs.
+   6.1. For event hub: 
+   - Click the **Stream to an event hub** checkbox.
+   - (Optional) Click **Archive to a storage account** to save the diagnostic logs.
+   - Under **Subscription** choose the relevant Azure subscription.
+   - Under **Event Hub Namespace** select the event hub namespace.
+   - (Optional) Select event hub name.
    
-   6.2. Select the **Send To Log Analytics** checkbox and choose Log Analytics Workspace to use a Log Analytics workspace to store the logs.
-8. Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.
+   6.2. For Log Analytics:
+   - Click the **Send To Log Analytics** checkbox. 
+   - (Optional) Click **Archive to a storage account** to save the diagnostic logs.
+   - Under **Subscription** choose the relevant Azure subscription.
+   - Under **Log Analytics Workspace** select the Log Analytics workspace to store the logs.
 
 
 For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
