@@ -55,6 +55,8 @@ PRODUCT = "platform"
 
 LATEST_TIME = "latest_time"
 LATEST_FETCHED_IDS = "latest_fetched_ids"
+
+
 class Client(BaseClient):
     def __init__(
         self,
@@ -63,12 +65,10 @@ class Client(BaseClient):
         client_secret: str,
         verify: bool,
         proxy: bool,
-
         **kwargs,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
-
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
@@ -80,7 +80,7 @@ class Client(BaseClient):
         params: dict[str, Any] | None = None,
         pdf: bool = False,
         csv: bool = False,
-    ) -> dict[str, Any] | Response:
+    ) -> dict[str, Any] | Response | list[dict[str, Any]]:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
@@ -124,16 +124,14 @@ class Client(BaseClient):
             ok_codes=(200, 201, 302, 404),
         )
 
-
-    def get_reports(self, start_date: str, end_date: str, limit:int = DEFAULT_LIMITS[REPORT]) -> List[dict[str, Any]]:
+    def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_LIMITS[REPORT]) -> List[dict[str, Any]]:
         """
         Get manual reports from Cybel Angel Collector.
 
         Note:
             The order of the events returned is random, hence need to sort them out to return the oldest events first.
         """
-        params = {"start-date": start_date,
-                  "end-date": end_date}
+        params = {"start-date": start_date, "end-date": end_date}
 
         reports = self.get_reports_list(params)
         for report in reports:
@@ -150,10 +148,9 @@ class Client(BaseClient):
         )
         return reports[:limit]
 
-    def get_credentials_watchlist(self,
-                                  start_date: str,
-                                  end_date: str,
-                                  limit:int = DEFAULT_LIMITS[CREDENTIALS]) -> List[dict[str, Any]]:
+    def get_credentials_watchlist(
+        self, start_date: str, end_date: str, limit: int = DEFAULT_LIMITS[CREDENTIALS]
+    ) -> List[dict[str, Any]]:
         """
         Fetch credential-watchlist events from CybelAngel and prepare them for XSIAM ingestion.
 
@@ -174,20 +171,18 @@ class Client(BaseClient):
             "start": start_date,
             "end": end_date,
         }
-        credential_watchlist = self.http_request(method="GET",
-                                                 url_suffix=URL[CREDENTIALS],
-                                                 params=params) or []
+        credential_watchlist = self.http_request(method="GET", url_suffix=URL[CREDENTIALS], params=params) or []
+        if not isinstance(credential_watchlist, list):
+            demisto.debug("Type return error in credentials request")
+            return []
 
-        for creds in credential_watchlist:
-            creds["_time"] = creds.get(TIME_FIELDS[CREDENTIALS])
-            creds["SOURCE_LOG_TYPE"] = CREDENTIALS
+        for credential in credential_watchlist:
+            credential["_time"] = credential.get(TIME_FIELDS[CREDENTIALS])
+            credential["SOURCE_LOG_TYPE"] = CREDENTIALS
 
         return credential_watchlist
 
-    def get_domain_watchlist(self,
-                             start_date: str,
-                             end_date: str,
-                             limit:int = DEFAULT_LIMITS[DOMAIN]) -> List[dict[str, Any]]:
+    def get_domain_watchlist(self, start_date: str, end_date: str, limit: int = DEFAULT_LIMITS[DOMAIN]) -> List[dict[str, Any]]:
         """
         Fetch domain-watchlist events from CybelAngel in descending order.
 
@@ -206,10 +201,12 @@ class Client(BaseClient):
             "max-date": end_date,
             "limit": limit,
         }
-        domain_watchlist = self.http_request(method="GET",
-                                             url_suffix=URL[DOMAIN],
-                                             params=params).get("results",) or []
-        
+        domain_watchlist = self.http_request(method="GET", url_suffix=URL[DOMAIN], params=params) or {}
+        if not isinstance(domain_watchlist, dict):
+            demisto.debug("Type error domain request")
+            return []
+
+        domain_watchlist = domain_watchlist.get("results", [])
         for domain_result in domain_watchlist:
             domain_result["_time"] = domain_result.get(TIME_FIELDS[DOMAIN])
             domain_result["SOURCE_LOG_TYPE"] = DOMAIN
@@ -272,11 +269,9 @@ class Client(BaseClient):
         Returns:
             List: List of reports, or an empty list if no reports are found.
         """
-        return self.http_request(method="GET",
-                                 url_suffix=URL[REPORT],
-                                 params=params).get("reports") or []  # type: ignore
+        return self.http_request(method="GET", url_suffix=URL[REPORT], params=params).get("reports") or []  # type: ignore
 
-    def get_report_by_id(self, id: str, pdf: bool) -> dict[str, Any] | Response:
+    def get_report_by_id(self, id: str, pdf: bool) -> dict[str, Any] | Response | list[dict[str, Any]]:
         """
         Retrieves a report by its ID.
 
@@ -291,7 +286,7 @@ class Client(BaseClient):
         endpoint += "/pdf" if pdf else ""
         return self.http_request("GET", endpoint, pdf=pdf)
 
-    def get_mirror_report(self, id: str, csv: bool) -> dict[str, Any] | Response:
+    def get_mirror_report(self, id: str, csv: bool) -> dict[str, Any] | Response | list[dict[str, Any]]:
         """
         Retrieves a mirrored report by its ID.
 
@@ -306,7 +301,7 @@ class Client(BaseClient):
         endpoint += "/csv" if csv else ""
         return self.http_request("GET", endpoint, csv=True)
 
-    def get_archive_report(self, id: str) -> dict[str, Any] | Response:
+    def get_archive_report(self, id: str) -> dict[str, Any] | Response | list[dict[str, Any]]:
         """
         Retrieves an archived mirrored report by its ID.
 
@@ -333,7 +328,7 @@ class Client(BaseClient):
         data = {"ids": reports_ids, "status": status}
         return self.http_request("POST", "/api/v1/reports/status", data=data)
 
-    def get_report_comment(self, id: str, data: dict = {}) -> dict[str, Any] | Response:
+    def get_report_comment(self, id: str, data: dict = {}) -> dict[str, Any] | Response | list[dict[str, Any]]:
         """
         Retrieves or creates a comment for a report.
 
@@ -348,7 +343,7 @@ class Client(BaseClient):
         method = "POST" if data else "GET"
         return self.http_request(method, f"/api/v1/reports/{id}/comments", data=data)
 
-    def get_report_attachment(self, report_id: str, attachment_id: str) -> dict[str, Any] | Response:
+    def get_report_attachment(self, report_id: str, attachment_id: str) -> dict[str, Any] | Response | list[dict[str, Any]]:
         """
         Retrieves an attachment from a report.
 
@@ -361,7 +356,7 @@ class Client(BaseClient):
         """
         return self.http_request("GET", f"/api/v1/reports/{report_id}/attachments/{attachment_id}", pdf=True)
 
-    def post_report_remediation_request(self, data: dict) -> dict[str, Any] | Response:
+    def post_report_remediation_request(self, data: dict) -> dict[str, Any] | Response | list[dict[str, Any]]:
         """
         Submits a remediation request for a report.
 
@@ -373,7 +368,7 @@ class Client(BaseClient):
         """
         return self.http_request("POST", "/api/v1/reports/remediation-request", data=data)
 
-   
+
 def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str], event_type: str) -> List[dict]:
     """
     Deduplicate fetch results by filtering out events that have already been processed.
@@ -417,7 +412,7 @@ def get_latest_event_time_and_ids(events: List[Dict[str, Any]], event_type: str)
             - The second element is a list of event IDs for all events whose `_time` matches that latest timestamp.
     """
     id_key = ID_KEYS[event_type]
-    
+
     latest_time = events[INDEX_OF_MAX[event_type]]["_time"]
     return latest_time, [event[id_key] for event in events if event["_time"] == latest_time]
 
@@ -429,7 +424,7 @@ def test_module(client: Client) -> str:
     client.get_reports(
         start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
         end_date=datetime.now().strftime(DATE_FORMAT),
-        limit = 100
+        limit=100,
     )
     return "ok"
 
@@ -468,22 +463,17 @@ def fetch_events(client: Client, max_fetch: dict, events_type_to_fetch: list[str
         last_ids = last_run.get(event_type, {}).get(LATEST_FETCHED_IDS, [])
         fetch_func = event_fetch_function.get(event_type)
         if fetch_func:
-            events = fetch_func(start_date=last_time,
-                                end_date=now.strftime(DATE_FORMAT),
-                                limit=max_fetch[event_type])
+            events = fetch_func(start_date=last_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch[event_type])
         else:
             demisto.debug("Type not exists")
             continue
         demisto.debug(f"fetched {len(events)} events from {event_type} type")
-        events = dedup_fetched_events(events=events,
-                                          last_run_fetched_event_ids=set(last_ids),
-                                          event_type=event_type)
+        events = dedup_fetched_events(events=events, last_run_fetched_event_ids=set(last_ids), event_type=event_type)
         demisto.debug(f"{len(events)} events left after dedup from {event_type} type")
         if not events:
             demisto.debug(f"No {event_type} fetched when last run is {last_time}")
             last_run[event_type] = {LATEST_TIME: now.strftime(DATE_FORMAT), LATEST_FETCHED_IDS: []}
         else:
-
             latest_time, latest_fetched_ids = get_latest_event_time_and_ids(events, event_type)
             demisto.debug(f"latest-{event_type}-time: {latest_time}")
             demisto.debug(f"latest-fetched-{event_type}-ids {latest_fetched_ids}")
@@ -499,7 +489,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Get events from Cybel Angel, used mainly for debugging purposes
     """
     event_type = args.get("event_type", REPORT)
-    limit = args.get("limit",100)
+    limit = args.get("limit", 100)
     now = datetime.now()
     start_date = args.get("start_date") or now.strftime(DATE_FORMAT)
     end_date = args.get("end_date") or (now - timedelta(minutes=1)).strftime(DATE_FORMAT)
@@ -509,12 +499,10 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CREDENTIALS: client.get_credentials_watchlist,
         REPORT: client.get_reports,
     }
-    
+    events = []
     fetch_func = event_fetch_function.get(event_type)
     if fetch_func:
-        events = fetch_func(start_date=start_date,
-                            end_date=end_date,
-                                limit=limit)
+        events = fetch_func(start_date=start_date, end_date=end_date, limit=limit)
 
     return CommandResults(
         outputs_prefix="CybleAngel.Events",
@@ -523,6 +511,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         raw_response=events,
         readable_output=tableToMarkdown(f"{event_type}", events, headers=["_time", "SOURCE_LOG_TYPE"], removeNull=True),
     )
+
 
 def cybelangel_report_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -841,14 +830,12 @@ def main() -> None:
     base_url: str = params.get("url", "").rstrip("/")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    is_fetch_events = params.get("is_fetch_events",False)
+    is_fetch_events = params.get("is_fetch_events", False)
     events_type_to_fetch = argToList(params.get("events_type_to_fetch", [CREDENTIALS, DOMAIN, REPORT]))
     max_fetch_reports = params.get("max_fetch_reports", DEFAULT_LIMITS[REPORT])
     max_fetch_creds = params.get("max_fetch_creds", DEFAULT_LIMITS[CREDENTIALS])
     max_fetch_domain = params.get("max_fetch_domain", DEFAULT_LIMITS[DOMAIN])
-    max_fetch = {REPORT: max_fetch_reports,
-                 CREDENTIALS: max_fetch_creds,
-                 DOMAIN: max_fetch_domain}
+    max_fetch = {REPORT: max_fetch_reports, CREDENTIALS: max_fetch_creds, DOMAIN: max_fetch_domain}
 
     commands = {
         "cybelangel-report-list": cybelangel_report_list_command,

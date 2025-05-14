@@ -75,7 +75,7 @@ configuration:
   defaultvalue: "500"
   advanced: true
   type: 0
-  required: trfalseue
+  required: false
   section: Collect
   hidden:
   - xsoar
