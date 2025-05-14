@@ -2402,49 +2402,6 @@ script:
       description: The type of action to take when releasing the message.
     description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
     execution: true
-  
-  - name: ews-release-quarantinemessage-quick-action
-    quickaction: true
-    hidden: true
-    arguments:
-    - name: user
-      description: The user associated with the quarantine message.
-    - name: identities
-      description: A comma-separated list of identities of the messages to release.
-      isArray: true
-    - name: identity
-      description: The identity of a single message to release.
-    - name: release_to_all
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to release the message to all recipients.
-    - name: allow_sender
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to allow the sender.
-    - name: entity_type
-      description: The type of entity being released.
-    - name: force
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to force the release.
-    - name: report_false_positive
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Specify whether to report the message as a false positive.
-    - name: action_type
-      description: The type of action to take when releasing the message.
-    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage cmdlet.
-    execution: true
-
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
     - name: entries
