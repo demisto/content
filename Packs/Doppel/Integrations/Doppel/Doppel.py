@@ -12,7 +12,7 @@ and the commands to perform different updates on the alerts
 """
 
 import urllib3
-from typing import Dict, Any, Optional, Callable
+from typing import dict, Any, Callable    # noqa: UP035
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -45,11 +45,9 @@ class Client(BaseClient):
 
     def __init__(self, base_url, api_key):
         super().__init__(base_url)
-        self._headers = dict()
-        self._headers["accept"] = "application/json"
-        self._headers["x-api-key"] = api_key
+        self._headers = {"accept": "application/json", "x-api-key": api_key}
 
-    def get_alert(self, id: str, entity: str) -> Dict[str, str]:
+    def get_alert(self, id: str, entity: str) -> dict[str, str]:
         """Return the alert's details when provided the Alert ID or Entity as input
 
         :type id: ``str``
@@ -78,10 +76,10 @@ class Client(BaseClient):
         self,
         queue_state: str,
         entity_state: str,
-        alert_id: Optional[str] = None,
-        entity: Optional[str] = None,
-        comment: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        alert_id: str | None = None,
+        entity: str | None = None,
+        comment: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates an existing alert using either the alert ID or the entity.
 
@@ -114,7 +112,7 @@ class Client(BaseClient):
         )
         return response_content
 
-    def get_alerts(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def get_alerts(self, params: dict[str, Any]) -> dict[str, Any]:
         """
         Fetches multiple alerts based on query parameters.
 
@@ -136,7 +134,7 @@ class Client(BaseClient):
         )
         return response_content
 
-    def create_alert(self, entity: str) -> Dict[str, Any]:
+    def create_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
         response_content = self._http_request(
@@ -146,7 +144,7 @@ class Client(BaseClient):
         )
         return response_content
 
-    def create_abuse_alert(self, entity: str) -> Dict[str, Any]:
+    def create_abuse_alert(self, entity: str) -> dict[str, Any]:
 
         api_name = "alert/abuse"
         api_url = f"{self._base_url}/{api_name}"
@@ -174,7 +172,7 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
             A string representing the last update timestamp in ISO 8601 format (e.g., "2025-01-19T08:44:52Z").
 
     Returns:
-        Dict[str, Any]:
+        dict[str, Any]:
             A dictionary containing the updated incident details, including entries related to the alert.
     """
 
@@ -289,7 +287,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def doppel_get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_get_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Comand to get a specific alert in the Doppel client using the provided arguments.
 
@@ -321,7 +319,7 @@ def doppel_get_alert_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def doppel_update_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Executes the update alert command.
 
@@ -387,7 +385,7 @@ def format_datetime(timestamp_str):
         return iso_format_truncated
 
 
-def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command to fetch multiple alerts based on query parameters.
 
@@ -432,7 +430,7 @@ def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def doppel_create_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_create_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Comand to create an alert in the Doppel client using the provided arguments.
 
@@ -460,7 +458,7 @@ def doppel_create_alert_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def doppel_create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Comand to create an abuse alert in the Doppel client using the provided arguments.
 
@@ -489,7 +487,7 @@ def doppel_create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
+def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
     """
     Fetch incidents from Doppel alerts, map fields to custom XSOAR fields, and create incidents.
     This function fetches alerts directly from Doppel
@@ -571,16 +569,16 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
 
-def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]):
     demisto.debug('Command get-modified-remote-data is not implemented')
     raise NotImplementedError('The command "get-modified-remote-data" is not implemented, \
         as Doppel does provide the API to fetch updated alerts.')
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
     try:
-        remote_updated_incident_data: Dict[str, Any] = {}
-        mirrored_object: Dict[str, Any] = {}
+        remote_updated_incident_data: dict[str, Any] = {}
+        mirrored_object: dict[str, Any] = {}
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)
         remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(
@@ -602,13 +600,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
         return GetRemoteDataResponse(mirrored_object, entries=[])
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
     :param client: XSOAR client to use
 
-    :type args: ``Dict[str, Any]``
+    :type args: ``dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['data']`` the data to send to the remote system
@@ -659,7 +657,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return new_incident_id
 
 
-def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappingFieldsResponse:
+def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappingFieldsResponse:
     """
     Retrieves the mapping fields for Doppel alerts in XSOAR.
 
@@ -668,7 +666,7 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappi
 
     Args:
         client (Client): The API client used to communicate with Doppel.
-        args (Dict[str, Any]): Command arguments (not used in this function).
+        args (dict[str, Any]): Command arguments (not used in this function).
 
     Returns:
         GetMappingFieldsResponse: The mapping response containing field definitions.
@@ -699,7 +697,7 @@ def main() -> None:
     base_url = urljoin(demisto.params()['url'], '/v1')
 
     # Explicitly define the type for the command function dictionary
-    supported_commands: Dict[str, Callable[[Client, Dict[str, Any]], Any]] = {
+    supported_commands: dict[str, Callable[[Client, dict[str, Any]], Any]] = {
         'fetch-incidents': fetch_incidents_command,
         'get-modified-remote-data': get_modified_remote_data_command,
         'get-remote-data': get_remote_data_command,
@@ -713,7 +711,7 @@ def main() -> None:
     }
 
     # Special case for 'test-module' which does not take args
-    supported_commands_test_module: Dict[str, Callable[[Client], Any]] = {
+    supported_commands_test_module: dict[str, Callable[[Client], Any]] = {
         'test-module': test_module
     }
 

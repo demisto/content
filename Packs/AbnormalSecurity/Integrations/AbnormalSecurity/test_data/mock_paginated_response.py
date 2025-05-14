@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- # noqa: UP009
 
 """
 Utility module for generating paginated mock responses for testing.
@@ -117,7 +117,7 @@ def create_mock_paginator_side_effect(item_type):
 
     # Create a large pool of items to draw from
     all_items = []
-    for i in range(100):  # Create 100 items as a pool
+    for _i in range(100):  # Create 100 items as a pool
         item = copy.deepcopy(template_item)
 
         all_items.append(item)

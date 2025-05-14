@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, AnyStr, Union
+from typing import AnyStr
 import urllib3
 
 # Disable insecure warnings
@@ -27,7 +27,7 @@ INTEGRATION_CONTEXT_NAME = 'AuthenticationIntegration'
 
 
 class Client(BaseClient):
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -35,7 +35,7 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def list_credentials(self) -> Dict:
+    def list_credentials(self) -> dict:
         """Uses to fetch credentials into Demisto
         Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
 
@@ -45,7 +45,7 @@ class Client(BaseClient):
         suffix = 'credential'
         return self._http_request('GET', suffix)
 
-    def list_accounts(self, max_results: int = None) -> Dict:
+    def list_accounts(self, max_results: int = None) -> dict:
         """Lists all accounts.
         Args:
             max_results: maximum results to filter.
@@ -57,7 +57,7 @@ class Client(BaseClient):
         params = assign_params(limit=max_results)
         return self._http_request('GET', suffix, params=params)
 
-    def lock_account(self, account_id: AnyStr) -> Dict:
+    def lock_account(self, account_id: AnyStr) -> dict:
         """Locks an account by the account ID.
 
         Args:
@@ -72,7 +72,7 @@ class Client(BaseClient):
         params = {'account': account_id}
         return self._http_request('POST', suffix, params=params)
 
-    def unlock_account(self, account_id: AnyStr) -> Dict:
+    def unlock_account(self, account_id: AnyStr) -> dict:
         """Returns events by the account ID.
 
         Args:
@@ -104,7 +104,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def unlock_vault(self, vault_to_lock: AnyStr) -> Dict:
+    def unlock_vault(self, vault_to_lock: AnyStr) -> dict:
         """Unlocks a vault by vault ID.
 
         Args:
@@ -117,7 +117,7 @@ class Client(BaseClient):
         params = {'vaultId': vault_to_lock}
         return self._http_request('POST', suffix, params=params)
 
-    def lock_vault(self, vault_to_lock: AnyStr) -> Dict:
+    def lock_vault(self, vault_to_lock: AnyStr) -> dict:
         """Locks vault by vault ID.
 
         Args:
@@ -130,7 +130,7 @@ class Client(BaseClient):
         params = {'vaultId': vault_to_lock}
         return self._http_request('POST', suffix, params=params)
 
-    def list_vaults(self, max_results: int) -> Dict:
+    def list_vaults(self, max_results: int) -> dict:
         """Return all vaults from API.
 
         Args:
@@ -148,7 +148,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def account_response_to_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
+def account_response_to_context(credentials: dict | list) -> dict | list:
     """Formats the API response to Demisto context.
 
     Args:
@@ -170,7 +170,7 @@ def account_response_to_context(credentials: Union[Dict, List]) -> Union[Dict, L
     }
 
 
-def build_credentials_fetch(credentials: Union[Dict, List]) -> Union[Dict, List]:
+def build_credentials_fetch(credentials: dict | list) -> dict | list:
     """Formats the API response to Demisto context.
 
     Args:
@@ -192,7 +192,7 @@ def build_credentials_fetch(credentials: Union[Dict, List]) -> Union[Dict, List]
     }
 
 
-def build_vaults_context(vaults: Union[List, Dict]) -> Union[List[Dict], Dict]:
+def build_vaults_context(vaults: list | dict) -> list[dict] | dict:
     if isinstance(vaults, list):
         return [build_vaults_context(vault_entry) for vault_entry in vaults]
     return {
@@ -210,7 +210,7 @@ def test_module_command(client: Client, *_) -> str:
     results = client.test_module()
     if 'version' in results:
         return 'ok'
-    raise DemistoException('Test module failed, {}'.format(results))
+    raise DemistoException(f'Test module failed, {results}')
 
 
 def fetch_credentials(client: Client) -> list:
@@ -235,7 +235,7 @@ def fetch_credentials(client: Client) -> list:
                                f' response. Check API')
 
 
-def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def lock_account_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Locks an account by account ID.
     Args:
         client: Client object
@@ -266,7 +266,7 @@ def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not lock account `{username}`')
 
 
-def unlock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def unlock_account_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Unlocks an account by account ID.
     Args:
         client: Client object
@@ -296,7 +296,7 @@ def unlock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         raise DemistoException(f'{INTEGRATION_NAME} - Could not unlock account `{username}`')
 
 
-def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def reset_account_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Resets an account by account ID.
     Args:
         client: Client object
@@ -326,7 +326,7 @@ def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not reset account `{username}`')
 
 
-def list_accounts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_accounts_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Returns credentials to user without passwords.
     Args:
         client: Client object
@@ -352,7 +352,7 @@ def list_accounts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any users.', {}, {}
 
 
-def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def lock_vault_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Locks a vault by vault ID.
     Args:
         client: Client object
@@ -375,7 +375,7 @@ def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
 
 
-def unlock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def unlock_vault_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Unlocks a vault by vault ID.
     Args:
         client: Client object
@@ -398,7 +398,7 @@ def unlock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not unlock vault ID: {vault_to_lock}')
 
 
-def list_vaults_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_vaults_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Lists all vaults.
     """
     max_results = int(args.get('max_results', 0))

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import dict
 import hashlib
 import hmac
 import demistomock as demisto  # noqa: F401
@@ -11,7 +11,7 @@ class Client(BaseClient):
         self.integration_key = integration_key
         self.secret_key = secret_key
 
-    def _generate_signature(self, method: str, path: str, params: Dict[str, str]) -> Dict[str, str]:
+    def _generate_signature(self, method: str, path: str, params: dict[str, str]) -> dict[str, str]:
         """
         Generate the signature and headers required for Duo API authentication.
         """
@@ -33,7 +33,7 @@ class Client(BaseClient):
         ).hexdigest()
 
         # 5. Base64 encode the Authorization header
-        auth_header = base64.b64encode(f"{self.integration_key}:{signature}".encode("utf-8")).decode("utf-8")
+        auth_header = base64.b64encode(f"{self.integration_key}:{signature}".encode()).decode("utf-8")
 
         # 6. Return headers
         return {
@@ -41,7 +41,7 @@ class Client(BaseClient):
             "Authorization": f"Basic {auth_header}"
         }
 
-    def call_duo_api(self, method: str, path: str, params: Dict[str, str]) -> Dict:
+    def call_duo_api(self, method: str, path: str, params: dict[str, str]) -> dict:
         """
         Executes a call to the Duo API with proper headers and signature.
         """
@@ -64,7 +64,7 @@ class Client(BaseClient):
             return "ok"
         raise DemistoException(f"Failed to connect to Duo: {response.get('message', 'Unknown error')}")
 
-    def send_push_notification(self, username: str, factor: str, pushinfo: str, type: str) -> Dict:
+    def send_push_notification(self, username: str, factor: str, pushinfo: str, type: str) -> dict:
         """
         Calls the '/auth' endpoint to send a push notification.
         """

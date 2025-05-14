@@ -407,7 +407,7 @@ def ip_range_to_cidr(start_ip: str, end_ip: str) -> list:
     return cidr_list
 
 
-def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
+def get_indicator_fields(line, url, feed_tags: list, tlp_color: str | None, client: Client):
     """
     Extract indicators according to the feed type
     :param line: The current line in the feed

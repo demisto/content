@@ -2,7 +2,7 @@ import sys
 
 
 def readFile(filepath):
-    with open(filepath, 'r') as f:
+    with open(filepath, mode='r') as f: # noqa: UP015
         out = f.read()
         return out
     return []

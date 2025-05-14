@@ -25,11 +25,11 @@ def check_logging(caplog):
     '''
     yield
     messages = [
-        "{}: {}".format(x.levelname, x.message) for x in caplog.get_records('call') if x.levelno >= logging.WARNING
+        f"{x.levelname}: {x.message}" for x in caplog.get_records('call') if x.levelno >= logging.WARNING
     ]
     if messages:
         pytest.fail(
-            "warning messages encountered during testing: {}".format(messages)
+            f"warning messages encountered during testing: {messages}"
         )
 
 
@@ -49,9 +49,9 @@ def check_std_out_err(capfd):
     yield
     (out, err) = capfd.readouterr()
     if out:
-        pytest.fail("Found output in stdout: [{}]".format(out.strip()))
+        pytest.fail(f"Found output in stdout: [{out.strip()}]")
     if err:
-        pytest.fail("Found output in stderr: [{}]".format(err.strip()))
+        pytest.fail(f"Found output in stderr: [{err.strip()}]")
 
 
 def pytest_sessionfinish(session, exitstatus):
@@ -76,7 +76,7 @@ def pytest_configure(config):
         if image:
             config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))
         else:
-            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))
+            config.option.xmlpath = junit_xml.replace(".xml", f"-{str(uuid4())}.xml")
 
 
 def pytest_addoption(parser):

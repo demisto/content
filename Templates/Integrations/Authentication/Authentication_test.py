@@ -1,4 +1,4 @@
-from pytest import raises
+from pytest import raises   # noqa: PT013
 from Authentication import Client
 from CommonServerPython import DemistoException
 import demistomock as demisto

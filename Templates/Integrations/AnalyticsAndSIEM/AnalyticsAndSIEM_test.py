@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-from pytest import raises
+from pytest import raises   # noqa: PT013
 from AnalyticsAndSIEM import Client
 
 CONTEXT_PREFIX = 'AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'
@@ -96,7 +96,7 @@ class TestEvents:
     def test_list_events(self, requests_mock):
         from AnalyticsAndSIEM import list_events_command
         requests_mock.get(BASE_URL + 'event', json=EVENT_LIST_INPUT)
-        _, context, _ = list_events_command(client, dict())
+        _, context, _ = list_events_command(client, {})
         context = context[CONTEXT_PREFIX]
         assert context == EVENT_LIST_OUTPUT['Event']
 
@@ -123,7 +123,8 @@ class TestEvents:
         requests_mock.get(BASE_URL + 'event?eventId=111', json={})
         human_readable, context, _ = get_event_command(client, {'event_id': '111'})
         assert 'not find' in human_readable
-        assert isinstance(context, dict) and not context  # Context is empty
+        assert isinstance(context, dict)
+        assert not context  # Context is empty
 
     def test_close_event(self, requests_mock):
         from AnalyticsAndSIEM import close_event_command

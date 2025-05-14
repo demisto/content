@@ -1,10 +1,9 @@
-from typing import Dict
 
 import pytest
 
 from CommonServerPython import *
 from DataEnrichmentThreatIntelligence import Client
-from pytest import raises
+from pytest import raises   # noqa: PT013
 
 BASE_URL = 'https://example.com/api/v1/'
 FILE_RESULTS = {
@@ -56,7 +55,7 @@ DOMAIN_RESULTS = {
 
 CLIENT = Client(BASE_URL, threshold=50)
 
-EMPTY_RESPONSE: Dict = {'result': []}
+EMPTY_RESPONSE: dict = {'result': []}
 
 
 class TestDeTi:

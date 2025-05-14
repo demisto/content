@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Optional, List, Union
 import urllib3
 
 # Disable insecure warnings
@@ -44,7 +43,7 @@ class Client(BaseClient):
 
     """ HELPER FUNCTIONS """
 
-    def calculate_dbot_score(self, score: int, threshold: Optional[int] = None) -> int:
+    def calculate_dbot_score(self, score: int, threshold: int | None = None) -> int:
         """Transforms `severity` from API to DBot Score and using threshold.
 
         Args:
@@ -67,7 +66,7 @@ class Client(BaseClient):
         # Unknown
         return 0
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic get request to see if the API is reachable and authentication works.
 
         Returns:
@@ -75,7 +74,7 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def get_ip(self, ip: str) -> Dict:
+    def get_ip(self, ip: str) -> dict:
         """Gets an analysis from the API for given IP.
 
         Args:
@@ -89,7 +88,7 @@ class Client(BaseClient):
         params = {'ip': ip}
         return self._http_request('GET', suffix, params=params)
 
-    def get_url(self, url: str) -> Dict:
+    def get_url(self, url: str) -> dict:
         """Gets an analysis from the API for given URL.
 
         Args:
@@ -102,7 +101,7 @@ class Client(BaseClient):
         params = {'url': url}
         return self._http_request('GET', suffix, params=params)
 
-    def search_file(self, file_hash: str) -> Dict:
+    def search_file(self, file_hash: str) -> dict:
         """Building request for file command
 
         Args:
@@ -130,7 +129,7 @@ class Client(BaseClient):
 
 
 @logger
-def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict, List]:
+def build_entry_context(results: dict | list, indicator_type: str) -> dict | list:
     """Formatting results from API to Demisto Context
 
     Args:
@@ -155,7 +154,7 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Unio
 
 
 @logger
-def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_ip_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Gets results for the API.
 
     Args:
@@ -167,7 +166,7 @@ def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     ip = args.get('ip')
     try:
-        threshold: Union[int, None] = int(args.get('threshold'))  # type: ignore
+        threshold: int | None = int(args.get('threshold'))  # type: ignore
     except TypeError:
         threshold = None
     raw_response = client.get_ip(ip)  # type: ignore
@@ -190,7 +189,7 @@ def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_url_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Gets a job from the API. Used mostly for polling playbook.
 
     Args:
@@ -202,7 +201,7 @@ def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     url = args.get('url', '')
     try:
-        threshold: Union[int, None] = int(args.get('threshold', 0))
+        threshold: int | None = int(args.get('threshold', 0))
     except TypeError:
         threshold = None
     raw_response = client.get_url(url)
@@ -225,7 +224,7 @@ def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_file_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Searching for given file hash.
 
     Args:
@@ -237,7 +236,7 @@ def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     file_hash = args.get('file', '')
     try:
-        threshold: Union[int, None] = int(args.get('threshold', 0))
+        threshold: int | None = int(args.get('threshold', 0))
     except TypeError:
         threshold = None
     raw_response = client.search_file(file_hash)
@@ -285,7 +284,7 @@ def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def search_domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_domain_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     """Gets a job from the API. Used mostly for polling playbook.
 
     Args:

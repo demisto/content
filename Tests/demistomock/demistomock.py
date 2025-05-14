@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function   # noqa: UP010
 
 import json
 import logging
@@ -430,7 +430,6 @@ contentSecrets = {
 
 def initialize():
     """Runs some initializations to the demisto object. Should not be used in integration code"""
-    pass
 
 
 def params():
@@ -576,7 +575,7 @@ def setLastRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def info(msg, *args):
@@ -605,7 +604,7 @@ def error(msg, *args):
 
     """
     # print to stdout so pytest fail if not mocked
-    print(msg, *args)
+    print(msg, *args)   # noqa: T201
 
 
 def debug(msg, *args):
@@ -657,7 +656,7 @@ def results(results):
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
-    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
+    log(f"demisto results: {json.dumps(results, indent=4, sort_keys=True)}")
 
 
 def credentials(credentials):
@@ -671,7 +670,7 @@ def credentials(credentials):
       None: No data returned
 
     """
-    log("credentials: {}".format(credentials))
+    log(f"credentials: {credentials}")
 
 
 def getFilePath(id):
@@ -1227,7 +1226,7 @@ def setLastMirrorRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def searchRelationships(args):

@@ -1,6 +1,5 @@
 import sys
 from github import Github
-from blessings import Terminal
 import argparse
 import urllib3
 from github.Repository import Repository

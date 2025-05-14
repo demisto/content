@@ -2,7 +2,6 @@ import datetime
 import json
 from pathlib import Path
 from packaging.version import Version
-from typing import Optional
 from unittest.mock import MagicMock
 import pytest
 from github_workflow_scripts.autobump_release_notes.autobump_rn import (

@@ -1833,7 +1833,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp() * 1000)
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         return arg
     return None
 

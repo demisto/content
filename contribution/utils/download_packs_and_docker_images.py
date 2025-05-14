@@ -44,32 +44,32 @@ def zip_folder(source_path, output_path):
 
 def get_docker_images_with_tag(pack_names: dict, id_set_json: dict) -> set:
     """ Given a pack name returns its docker images with its latest tag"""
-    print('Starting to collect docker images')
+    print('Starting to collect docker images')  # noqa: T201
     integration_names_id_set = create_content_item_id_set(id_set_json['integrations'])
     script_names_id_set = create_content_item_id_set(id_set_json['scripts'])
     docker_images = set()
     for pack_d_name, pack_name in pack_names.items():
         if pack_name not in id_set_json['Packs']:
-            print(f"\tPack {pack_d_name} was not found in id_set.json.")
+            print(f"\tPack {pack_d_name} was not found in id_set.json.")    # noqa: T201
             continue
         content_items = id_set_json['Packs'][pack_name].get('ContentItems', {})
         if not content_items:
-            print(f"\tPack {pack_d_name} has no ContentItems - skipping pack.")
-        integrations = content_items['integrations'] if 'integrations' in content_items else []
-        scripts = content_items['scripts'] if 'scripts' in content_items else []
+            print(f"\tPack {pack_d_name} has no ContentItems - skipping pack.") # noqa: T201
+        integrations = content_items.get("integrations", [])
+        scripts = content_items.get("scripts", [])
         if integrations:
-            print(f"\t{pack_d_name} docker images found for integrations:")
+            print(f"\t{pack_d_name} docker images found for integrations:") # noqa: T201
             for integration in integrations:
                 if 'docker_image' in integration_names_id_set[integration]:
                     docker_image = integration_names_id_set[integration]['docker_image']
-                    print(f"\t\t{docker_image} - used by {integration}")
+                    print(f"\t\t{docker_image} - used by {integration}")    # noqa: T201
                     docker_images.add(docker_image)
         if scripts:
-            print(f"\t{pack_d_name} docker images found for scripts:")
+            print(f"\t{pack_d_name} docker images found for scripts:")  # noqa: T201
             for script in scripts:
                 if 'docker_image' in script_names_id_set[script]:
                     docker_image = script_names_id_set[script]['docker_image']
-                    print(f"\t\t{docker_image} - used by {script}")
+                    print(f"\t\t{docker_image} - used by {script}") # noqa: T201
                     docker_images.add(docker_image)
 
     return docker_images
@@ -90,7 +90,7 @@ def get_pack_names(pack_display_names: list, id_set_json: dict) -> dict:
         return d_names_id_set
     for d_name in pack_display_names:
         if d_name not in d_names_id_set:
-            print(f"Couldn't find pack {d_name}. Skipping pack.")
+            print(f"Couldn't find pack {d_name}. Skipping pack.")   # noqa: T201
             continue
         pack_names[d_name] = d_names_id_set[d_name]
     return pack_names
@@ -120,23 +120,23 @@ def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: st
     if 'Packs' not in id_set_json:
         raise ValueError('Packs missing from id_set.json.')
     id_set_packs = id_set_json['Packs']
-    print("Starting to download packs")
+    print("Starting to download packs") # noqa: T201
     temp_dir = tempfile.TemporaryDirectory()
     try:
         for pack_d_name, pack_name in pack_names.items():
             if pack_name not in id_set_packs:
-                print(f"\tCouldn't find {pack_d_name} in id_set.json. Skipping pack download.")
+                print(f"\tCouldn't find {pack_d_name} in id_set.json. Skipping pack download.") # noqa: T201
                 continue
             # In case no input is given (and only in that case) we automatically get all packs,
             # we want to get only relevant packs.
             if use_defaut_filter and should_filter_out_pack(id_set_packs[pack_name],
                                                             fields={"author": 'Cortex XSOAR'},
                                                             remove_deprecated=True):
-                print(f"\t{pack_d_name} filtered out. Skipping pack download.")
+                print(f"\t{pack_d_name} filtered out. Skipping pack download.") # noqa: T201
                 continue
 
             pack_version = id_set_packs[pack_name]['current_version']
-            print(f"\tDownloading {pack_d_name} Pack")
+            print(f"\tDownloading {pack_d_name} Pack")  # noqa: T201
             r = requests.request(method='GET',
                                  url=f'{BUCKET_PACKS_URL}/{pack_name}/{pack_version}/{pack_name}.zip',
                                  verify=verify_ssl)
@@ -150,12 +150,12 @@ def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: st
 def download_and_save_docker_images(docker_images: set, output_path: str) -> None:
     """ Downloads and saves the docker images into docker.zip in output_path"""
     import docker  # import docker only when required
-    print("Starting to download docker images for given packs")
+    print("Starting to download docker images for given packs") # noqa: T201
     cli = docker.from_env(timeout=120)
     temp_dir = tempfile.TemporaryDirectory()
     try:
         for image in docker_images:
-            print(f"\tDownloading docker image: {image}")
+            print(f"\tDownloading docker image: {image}")   # noqa: T201
             image_pair = image.split(':')
             image_data = cli.images.pull(image_pair[0], image_pair[1])
             image_file_name = os.path.join(temp_dir.name, os.path.basename(f"{image_pair[0]}_{image_pair[1]}.tar"))
@@ -165,7 +165,7 @@ def download_and_save_docker_images(docker_images: set, output_path: str) -> Non
         zip_folder(temp_dir.name, output_path)
     finally:
         temp_dir.cleanup()
-    print("Finished docker images download")
+    print("Finished docker images download")    # noqa: T201
 
 
 def options_handler():
@@ -218,15 +218,15 @@ def main():
                                 verify_ssl,
                                 use_defaut_filter=not bool(packs))
     else:
-        print('Skipping packs.zip creation')
+        print('Skipping packs.zip creation')    # noqa: T201
     if pack_names:
         docker_images = get_docker_images_with_tag(pack_names, id_set_json)
         if not options.skip_docker:
             download_and_save_docker_images(docker_images, os.path.join(output_path, 'docker'))
         else:
-            print('Skipping dockers.zip creation')
+            print('Skipping dockers.zip creation')  # noqa: T201
     else:
-        print('Skipping docker images collection since no packs were found')
+        print('Skipping docker images collection since no packs were found')    # noqa: T201
 
 
 if __name__ == '__main__':

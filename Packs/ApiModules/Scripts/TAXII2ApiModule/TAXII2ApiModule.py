@@ -2708,7 +2708,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         :param limit: max amount of indicators to fetch
         :return: Cortex indicators list
         """
-        if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
+        if not isinstance(self.collection_to_fetch, v20.Collection | v21.Collection):
             raise DemistoException("Could not find a collection to fetch from. Please make sure you provided a collection.")
         if limit is None:
             limit = -1

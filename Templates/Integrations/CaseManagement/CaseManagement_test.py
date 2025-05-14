@@ -3,7 +3,7 @@ import json
 
 import pytest
 from CaseManagement import Client
-from pytest import raises
+from pytest import raises   # noqa: PT013
 
 from CommonServerPython import urljoin, DemistoException
 
@@ -18,7 +18,7 @@ class TestModule:
     def test_module_positive(self, requests_mock):
         from CaseManagement import test_module_command
         requests_mock.get(urljoin(url, self.suffix), json=self.response)
-        assert 'ok' == test_module_command(client)
+        assert test_module_command(client) == 'ok'
 
     def test_module_negative(self, requests_mock):
         from CaseManagement import test_module_command
@@ -199,4 +199,5 @@ class TestFetchIncidents:
         if incidents:
             assert incidents_res[0].get('name') == incidents[0].get('name')
         else:
-            assert not incidents and not incidents_res
+            assert not incidents
+            assert not incidents_res
