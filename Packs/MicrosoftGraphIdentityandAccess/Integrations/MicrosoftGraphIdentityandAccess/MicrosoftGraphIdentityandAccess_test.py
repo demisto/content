@@ -90,6 +90,7 @@ def test_detection_to_incident(incident, expected):
 
     assert MicrosoftGraphIdentityandAccess.detection_to_incident(incident, "2022-06-06") == expected
 
+
 @pytest.mark.parametrize(
     "incident,expected",
     [
@@ -118,8 +119,46 @@ def test_risky_user_to_incident(incident, expected):
     assert MicrosoftGraphIdentityandAccess.risky_user_to_incident(incident, "2025-05-06") == expected
 
 
-#def test_risky_users_to_incidents(incident, expected):
-    #assert MicrosoftGraphIdentityandAccess.risky_users_to_incidents() == expected
+@pytest.mark.parametrize(
+    "incidents,expected",
+    [
+        ([], ([], "2025-05-14T01:00:00.0000000Z")),
+        (
+            [ # incidents input
+                {
+                    "userPrincipalName": "test",
+                    "riskLevel": "medium",
+                    "riskState": "atRisk",
+                    "riskLastUpdatedDateTime": "2025-05-14T02:00:00.0000000Z"
+                }
+            ], # expected output
+                (
+                    [
+                        {
+                            "name": "Azure User at Risk: test - atRisk - medium",
+                            "occurred": "2025-05-14T02:00:00.000000Z",
+                            "rawJSON": '{"userPrincipalName": "test", "riskLevel": "medium", "riskState": "atRisk", "riskLastUpdatedDateTime": "2025-05-14T02:00:00.0000000Z"}' # noqa: E501
+                        }
+
+                    ],
+                    "2025-05-14T02:00:00.0000000Z"
+                )
+        )
+    ]
+)
+def test_risky_users_to_incidents(incidents, expected):
+    """
+    Given:
+    -  A dict with the incident details.
+
+    When:
+    -  Getting the incident.
+
+    Then:
+    - Ensure that the dict is what we expected.
+    """
+    assert MicrosoftGraphIdentityandAccess.risky_users_to_incidents(incidents, "2025-05-14T01:00:00.0000000Z") == expected
+
 
 @pytest.mark.parametrize(
     "last_fetch,parameters,expected",
