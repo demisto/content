@@ -118,6 +118,7 @@ def main() -> None:
 
         client = Client(base_url=base_url, verify=verify_cert, headers=headers, proxy=proxy, is_core=False)
         if command in GENERIC_QUERY_COMMANDS:
+            args["brand"] = "Cortex XDR - XQL Query Engine"
             return_results(GENERIC_QUERY_COMMANDS[command](client, args))
         elif command in BUILT_IN_QUERY_COMMANDS:
             return_results(get_built_in_query_results_polling_command(client, args))
