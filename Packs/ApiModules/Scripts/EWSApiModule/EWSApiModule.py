@@ -762,7 +762,7 @@ class EWSClient:
         if html_body and handle_inline_image:
             demisto.debug("reply_email: Processing HTML body for inline images")
             html_body, html_attachments = handle_html(html_body)
-            demisto.debug(f"reply_email: Found {len(html_attachments)} inline images in HTML body")
+            demisto.debug(f"reply_email: Found {len(html_attachments)} inline images in {html_body=}")
 
         message_body = HTMLBody(html_body) if html_body else body
         reply = item_to_reply_to.create_reply(
