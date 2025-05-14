@@ -12,7 +12,7 @@ This is the default integration for this content pack when configured by the Dat
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch events |  | False |
-| Event types to fetch |  | True |
+| Event types to fetch | Which records the integration should fetch from the AdminByRequest API. Available for Auditlogs, Events, and Requests. | True |
 | Maximum number of Auditlog per fetch | Maximum number of audit log entries to retrieve per fetch cycle. Applies only if the "Auditlog" event type is enabled for fetching. | False |
 | Maximum number of Events per fetch | Maximum number of events entries to retrieve per fetch cycle. Applies only if the "Events" event type is enabled for fetching. | False |
 | Maximum number of Requests per fetch | Maximum number of requests entries to retrieve per fetch cycle. Applies only if the "Requests" event type is enabled for fetching. | False |
@@ -46,6 +46,6 @@ There is no context output for this command.
 
 ### API Limitations 
 
-Please DO NOT consistently use a high "limit" number or flood the API. The account will be automatically throttled.
-Daily quota: 100,000 API calls (approximately 60 calls per minute maximum).
+- Please DO NOT consistently use a high "limit" number or flood the API. The account will be automatically throttled.
+- Daily quota: 100,000 API calls (approximately 60 calls per minute maximum).
 

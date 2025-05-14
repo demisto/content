@@ -230,7 +230,7 @@ class TestFetchEvents:
         """
         self.event_audit.max_fetch = 3
         raw_detections = self.raw_detections_audit
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", return_value=raw_detections)
         last_run = {}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_audit, use_last_run_as_params=False)
@@ -246,7 +246,7 @@ class TestFetchEvents:
         """
         self.event_audit.max_fetch = 3
         raw_detections = self.raw_detections_audit
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", return_value=raw_detections)
         last_run = {"start_id_auditlog": 1, "start_id_events": 1, "start_id_requests": 1}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_audit, use_last_run_as_params=False)
@@ -264,7 +264,7 @@ class TestFetchEvents:
         """
         self.event_events.max_fetch = 2
         raw_detections = self.raw_detections_events
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", return_value=raw_detections)
         last_run = {"start_id_auditlog": 1, "start_id_events": 1, "start_id_requests": 1}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_events, use_last_run_as_params=False)
@@ -283,7 +283,7 @@ class TestFetchEvents:
         first_response = raw_detections
         second_response = []
 
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response])
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", side_effect=[first_response, second_response])
         last_run = {"start_id_auditlog": 1, "start_id_events": 1, "start_id_requests": 1}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_requests, use_last_run_as_params=False)
@@ -310,7 +310,7 @@ class TestFetchEvents:
         events_types = [self.event_audit, self.event_events, self.event_requests]
 
         mocker.patch(
-            "AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response, third_response]
+            "AdminByRequestEventCollector.Client.get_events_request", side_effect=[first_response, second_response, third_response]
         )
 
         output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types, use_last_run_as_params=False)
@@ -339,7 +339,7 @@ class TestFetchEvents:
         events_types = [self.event_audit, self.event_events, self.event_requests]
 
         mocker.patch(
-            "AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response, third_response]
+            "AdminByRequestEventCollector.Client.get_events_request", side_effect=[first_response, second_response, third_response]
         )
 
         output, last_run = fetch_events(client, last_run={}, fetch_events_types=events_types, use_last_run_as_params=False)
@@ -357,7 +357,7 @@ class TestFetchEvents:
         """
         self.event_audit.max_fetch = 3
         raw_detections = self.raw_detections_audit
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", return_value=raw_detections)
         last_run = {}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_audit, use_last_run_as_params=False)
@@ -374,7 +374,7 @@ class TestFetchEvents:
         """
         self.event_events.max_fetch = 3
         raw_detections = self.raw_detections_events
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", return_value=raw_detections)
         last_run = {}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_events, use_last_run_as_params=False)
@@ -391,7 +391,7 @@ class TestFetchEvents:
         """
         self.event_requests.max_fetch = 3
         raw_detections = self.raw_detections_requests
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", return_value=raw_detections)
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", return_value=raw_detections)
         last_run = {}
 
         output = fetch_events_list(client, last_run=last_run, event_type=self.event_requests, use_last_run_as_params=False)
@@ -415,7 +415,7 @@ class TestFetchEvents:
 
         args = {"limit": 2, "event_type": "Events"}
 
-        mocker.patch("AdminByRequestEventCollector.Client.retrieve_from_api", side_effect=[first_response, second_response])
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", side_effect=[first_response, second_response])
 
         output = get_events(client, args=args)
 

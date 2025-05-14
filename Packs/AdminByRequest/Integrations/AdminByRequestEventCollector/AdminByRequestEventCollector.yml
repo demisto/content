@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: AdminByRequestEventCollector
+  id: AdminByRequest
   version: -1
 configuration:
 - defaultvalue: https://dc2api.adminbyrequest.com/
@@ -44,6 +44,7 @@ configuration:
   section: Collect
   required: true
   type: 16
+  additionalinfo: Which records the integration should fetch from the AdminByRequest API. Available for Auditlogs, Events, and Requests.
   defaultvalue: Auditlog,Events,Requests
   options:
   - Auditlog
@@ -113,7 +114,7 @@ script:
   subtype: python3
   isfetchevents: true
   dockerimage: demisto/python3:3.12.8.3296088
-fromversion: 6.1.0
+fromversion: 6.10.0
 marketplaces:
 - marketplacev2
 tests:

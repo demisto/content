@@ -79,7 +79,7 @@ class Client(BaseClient):
         self._api_key = api_key
         self._headers: dict[str, Any] = {"apiKey": self._api_key}
 
-    def retrieve_from_api(self, url_suffix: str, params: dict) -> dict:
+    def get_events_request(self, url_suffix: str, params: dict) -> dict:
         """Retrieve the detections from AdminByRequest  API."""
         return self._http_request("GET", url_suffix=url_suffix, params=params, resp_type="json")
 
@@ -89,7 +89,7 @@ class Client(BaseClient):
 
 def remove_first_run_params(params: dict[str, Any]) -> None:
     """
-    Remove the "First Run" items form the param dictionary.
+    Remove the "First Run" items from the param dictionary.
 
     Args:
         params (Dict[str, Any]): Integration parameters.
@@ -154,15 +154,15 @@ def fetch_events_list(client: Client, last_run: dict, event_type: EventType, use
     while True:
         try:
             # API call
-            events = list(client.retrieve_from_api(url_suffix=suffix, params=params))
+            events = list(client.get_events_request(url_suffix=suffix, params=params))
         except DemistoException as error:
             err_type = getattr(error, "exception", None)
             # If we have a Connection error with the server - return clean error message
             if isinstance(err_type, requests.exceptions.ConnectionError):
                 clean_msg = str(error).split("\nError Type")[0]
-                raise DemistoException(f"AdminByRequestEventCollector: During fetch, exception occurred {clean_msg}")
+                raise DemistoException(f"AdminByRequest: During fetch, exception occurred {clean_msg}")
             else:
-                raise DemistoException(f"AdminByRequestEventCollector: During fetch, exception occurred {str(error)}")
+                raise DemistoException(f"AdminByRequest: During fetch, exception occurred {str(error)}")
 
         if not events:
             break
