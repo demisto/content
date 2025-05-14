@@ -578,6 +578,7 @@ outputs:
   type: String
 tests:
 - No tests
+deprecated: true
 fromversion: 6.5.0
 supportedModules:
 - X1
