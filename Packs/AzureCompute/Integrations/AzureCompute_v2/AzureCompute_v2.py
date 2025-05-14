@@ -340,9 +340,9 @@ class MsGraphClient:
         url = self.server + "/subscriptions"
         return self.ms_client.http_request(method="GET", full_url=url, params=parameters, url_suffix="")
 
-    def list_vms(self, resource_group, limit):
+    def list_vms(self, resource_group):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines"
-        self.default_params["top"]=limit
+
         return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=self.default_params)
 
     def get_vm(self, resource_group, vm_name, expand="instanceView"):
@@ -562,8 +562,8 @@ def list_vms_command(client: MsGraphClient, args: dict, params: dict):
         Virtual Machine Objects
     """
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
-    limit = int(args.get("limit", 50))
-    response = client.list_vms(resource_group, limit)
+    response = client.list_vms(resource_group)
+
     vm_objects_list = response.get("value")
 
     vms = []
