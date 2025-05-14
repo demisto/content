@@ -2,7 +2,7 @@ commonfields:
   id: ArgusManagedDefence
   version: -1
 name: ArgusManagedDefence
-display: mnemonic MDR - Argus Managed Defence
+display: Argus Managed Detection and Response by mnemonic
 category: Data Enrichment & Threat Intelligence
 description: Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
 configuration:
@@ -40,23 +40,24 @@ configuration:
   name: first_fetch
   defaultvalue: 3 days
   type: 0
-  additionalinfo: "How far back should the first run fetch open cases in Argus."
   required: false
+  additionalinfo: "How far back should the first run fetch open cases in Argus."
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "0"
   type: 0
-  additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to system limit (100 000)"
   required: false
+  additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to system limit (100 000)"
 - display: Fetch incidents exclude tag
   name: exclude_tag
   type: 0
-  additionalinfo: 'Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated string.'
   required: false
+  additionalinfo: 'Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated string.'
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: Incoming And Outgoing
   type: 15
+  required: false
   options:
   - None
   - Incoming
@@ -65,41 +66,40 @@ configuration:
   additionalinfo: "Which direction should the integration mirror incidents."
   hidden:
   - marketplacev2
-  required: false
 - display: Mirroring tag
   name: mirror_tag
   type: 0
+  required: false
   defaultvalue: "argus_mirror"
   additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma separated."
   hidden:
   - marketplacev2
-  required: false
 - display: Close Argus Case
   name: close_argus_case
   defaultvalue: "true"
   type: 8
+  required: false
   additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored Argus Case'
   hidden:
   - marketplacev2
-  required: false
 - display: Close XSOAR Incident
   name: close_incident
   defaultvalue: "true"
   type: 8
+  required: false
   additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR Incident'
   hidden:
   - marketplacev2
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  additionalinfo: "Skip HTTPS certification verification."
   required: false
+  additionalinfo: "Skip HTTPS certification verification."
 - display: Use system proxy settings
   name: proxy
   type: 8
-  additionalinfo: "Use system proxy settings."
   required: false
+  additionalinfo: "Use system proxy settings."
 script:
   script: ''
   type: python
@@ -112,6 +112,13 @@ script:
     - name: file_id
       required: true
       description: ID of attachement
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Attachment.responseCode
       description: API response metadata, response code of this request
@@ -215,6 +222,13 @@ script:
     - name: value
       required: true
       description: Value of tag to add to case
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: API response metadata, response code of this request
@@ -310,6 +324,13 @@ script:
       description: Limit the amount of fetched tags. (Default 25)
     - name: offset
       description: Skip a number of results
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: API response metadata, response code of this request
@@ -417,6 +438,13 @@ script:
       description: Define the e-mail address this comment originates from
     - name: associated_attachment_id
       description: ID of case attachement this comment is related to
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Comment.responseCode
       description: API response metadata, response code of this request
@@ -549,6 +577,13 @@ script:
       description: Sort ordering. Default is ascending
     - name: after_comment
       description: Limit to comments after this comment ID (in sort order)
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Comments.responseCode
       description: API response metadata, response code of this request
@@ -790,6 +825,13 @@ script:
     - name: exclude_flags
       description: 'Exclude objects which have excludeFlags set. '
       isArray: true
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Cases.responseCode
       description: API response metadata, response code of this request
@@ -1192,6 +1234,13 @@ script:
       description: Case ID of Argus case
     - name: comment
       description: Attach a closing comment
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -1687,6 +1736,13 @@ script:
       - "false"
       description: Whether to enable default watchers for this case. If set to false, default watchers will not be enabled, and will not be notified upon creation of this case. (default true)
       defaultValue: "true"
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -2087,6 +2143,13 @@ script:
     - name: case_id
       required: true
       description: ID of Argus case to mark as deleted
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -2490,6 +2553,13 @@ script:
     - name: comment_id
       required: true
       description: ID of comment to mark as deleted
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Comment.responseCode
       description: API response metadata, response code of this request
@@ -2611,6 +2681,13 @@ script:
     - name: comment
       required: true
       description: Comment text which will replace the current text
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Comment.responseCode
       description: API response metadata, response code of this request
@@ -2732,6 +2809,13 @@ script:
       - "true"
       - "false"
       description: If true, skip automatic redirect (for merged cases)
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -3136,6 +3220,13 @@ script:
       description: Maximum number of returned results
     - name: offset
       description: Skip a number of results
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Attachments.responseCode
       description: API response metadata, response code of this request
@@ -3236,6 +3327,13 @@ script:
     - name: tag_id
       required: true
       description: ID of tag to remove
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: API response metadata, response code of this request
@@ -3333,6 +3431,13 @@ script:
     - name: value
       required: true
       description: Value of tag to remove
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: API response metadata, response code of this request
@@ -3500,6 +3605,13 @@ script:
       - "false"
       description: If true, add comment as internal. (default false)
       defaultValue: "false"
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -3903,6 +4015,13 @@ script:
     - name: attachment_id
       required: true
       description: ID of attachement
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Attachment.responseCode
       description: API response metadata, response code of this request
@@ -4046,6 +4165,13 @@ script:
       description: Maximum number of returned results (default 25)
     - name: offset
       description: Skip a number of results
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.Events.responseCode
       description: API response metadata, response code of this request
@@ -4316,6 +4442,13 @@ script:
       description: Limit results (default 25).
     - name: offset
       description: Skip a number of results.
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.Events.responseCode
       description: API response metadata, response code of this request
@@ -4664,6 +4797,13 @@ script:
       description: Search objects with these flags set  (as list)
     - name: exclude_flags
       description: Exclude objects with these flags set (as list)
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.Events.responseCode
       description: API response metadata, response code of this request
@@ -4937,6 +5077,13 @@ script:
     - name: event_id
       required: true
       description: ID of related event
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.Payload.responseCode
       description: API response metadata, response code of this request
@@ -5017,6 +5164,13 @@ script:
     - name: event_id
       required: true
       description: ID of event
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.Event.responseCode
       description: API response metadata, response code of this request
@@ -5104,6 +5258,13 @@ script:
       description: 'Limit results (default: 25).'
     - name: offset
       description: Skip a number of results
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.NIDS.responseCode
       description: API response metadata, response code of this request
@@ -5443,6 +5604,13 @@ script:
       description: (as comma-separated list)
     - name: exclude_flags
       description: (as comma-separated list)
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. Otherwise, only print to war room.
+      defaultValue: "true"
     outputs:
     - contextPath: Argus.NIDS.responseCode
       description: API response metadata, response code of this request
@@ -5729,6 +5897,13 @@ script:
       description: Max number of results to be returned, default unset means default limit 25 will be used, 0 means unlimited.
     - name: offset
       description: Number of results to be skipped first (default 0).
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.PDNS.responseCode
       description: API response metadata, response code of this request
@@ -5817,6 +5992,13 @@ script:
     - name: fqdn
       required: true
       description: Domain to fetch observations for
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.ObservationsDomain.responseCode
       description: API response metadata, response code of this request
@@ -5866,6 +6048,13 @@ script:
     - name: ip
       required: true
       description: IP address to fetch observations for
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
     outputs:
     - contextPath: Argus.ObservationsIP.responseCode
       description: API response metadata, response code of this request
@@ -6031,8 +6220,550 @@ script:
       required: true
       description: Case ID
     description: Download all attachments related to Argus Case.
+  - name: argus-get-sample-metadata
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: sha256 hash of sample
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    description: Get sample metadata
+  - name: argus-upload-sample
+    arguments:
+    - name: file-id
+      required: true
+      default: true
+      description: file id of XSOAR file to upload
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    description: Upload file Argus SampleDB
+  - name: argus-download-sample
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: file id of XSOAR file to upload
+    - name: safe
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Download as a zipped file with password 'infected'. Set to false to download raw.
+      defaultValue: "true"
+    description: Download file Argus SampleDB
+  - name: argus-get-asset
+    arguments:
+    - name: id_shortname
+      required: true
+      default: true
+      description: ID or shortname of asset to get
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    description: Get Asset metadata
+  - name: argus-list-assets
+    arguments:
+    - name: customer
+      required: false
+      default: false
+      description: Customer ids or short names
+    - name: asset
+      required: false
+      default: false
+      description: Asset ids or short names
+    - name: parent
+      required: false
+      default: false
+      description: Asset parent group ids or short names
+    - name: keywords
+      required: false
+      default: false
+      description: Limit search by asset field \(short name\, name\, and description\) keywords
+    - name: time_field_strategy
+      required: false
+      default: false
+      description: Which time field\(s\) to filter by timestamp start\/end
+    - name: sort_by
+      required: false
+      default: false
+      description: Field\(s\) to sort by \- refer to the search POST endpoint to see which fields are permitted
+    - name: limit
+      required: false
+      default: false
+      description: Limit results
+    - name: start_timestamp
+      required: false
+      default: false
+      description: Lower bound timestamp filter value
+    - name: end_timestamp
+      required: false
+      default: false
+      description: Upper bound timestamp filter value
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    description: Basic Asset search.If keywords are present, they must all must be present in at least one of the keyword fields.Check the documentation for the KeywordFieldStrategy field for more details.If start/end timestamps are present, the range must be valid for at least one of the requested time stamp fields.Check the documentation for the TimestampFieldStrategy field for more details.Limit and offset added together cannot exceed 10'000.
+  - name: argus-add-asset
+    arguments:
+    - name: customer
+      required: false
+      default: false
+      description: ID or short name of customer\, if not specified then current user's customer will be assigned
+    - name: short_name
+      required: false
+      default: false
+      description: Short name of asset*
+    - name: name
+      required: false
+      default: false
+      description: Name of asset*
+    - name: description
+      required: false
+      default: false
+      description: Description of asset. May use HTML\, which will be sanitized
+    - name: owner
+      required: false
+      default: false
+      description: ID or username of user who owns the asset. When username is specified\, it should exist within current user's domain
+    - name: criticality
+      required: false
+      default: false
+      isArray: true
+      description: Dict. Request to set a Group or Asset's criticality triad
+    - name: asset_definition
+      required: false
+      default: false
+      description: ID or short name of asset definition\, it should exist within current user's domain
+    - name: components
+      required: false
+      default: false
+      isArray: true
+      description: List. Specify components to be added with the asset
+    - name: ttl
+      required: false
+      default: false
+      description: Time to live duration of this asset since last seen\, 0 means won't expire.
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    description: Creates a new Asset
+  - name: argus-delete-asset
+    arguments:
+    - name: id_shortname
+      required: true
+      default: true
+      description: ID or shortname of asset to get
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    description: Delete Asset
+  - name: argus-update-asset
+    arguments:
+    - name: id_shortname
+      required: true
+      default: true
+      description: ID or shortname of asset to get
+    - name: customer
+      required: false
+      default: false
+      description: Customer ID or short name \(default is user's customer\)\, only used when asset short name was provided
+    - name: short_name
+      required: false
+      default: false
+      description: Update short name of asset
+    - name: name
+      required: false
+      default: false
+      description: Update name of asset
+    - name: description
+      required: false
+      default: false
+      description: Update description of asset. Support HTML\, which will be sanitized
+    - name: owner
+      required: false
+      default: false
+      description: Update owner of asset\, specified by user ID or username. When username is specified\, it should exist within current user's domain
+    - name: criticality
+      required: false
+      default: false
+      isArray: true
+      description: Dict. Request to update a Group or Asset's criticality triad
+    - name: add_components
+      required: false
+      default: false
+      isArray: true
+      description: List. Specify components to be added with the asset
+    - name: delete_components
+      required: false
+      default: false
+      isArray: true
+      description: List. Specify IDs of the components to be deleted from the asset
+    - name: ttl
+      required: false
+      default: false
+      description: Time to live duration of this asset since last seen\, 0 means won't expire.
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    description: Update Asset
+  - name: argus-get-vulnerability-by-asset
+    arguments:
+    - name: id_shortname
+      required: true
+      default: true
+      description: Asset ID or shortname
+    - name: customer
+      required: false
+      default: false
+      description: Customer ID or short name \(default is user's customer\)\, only used when asset short name was provided
+    - name: include_deleted
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to include deleted vulnerabilities, not included by default
+      defaultValue: "false"
+    - name: offset
+      required: false
+      default: false
+      description: How many vulnerabilities to skip, defaults to 0
+    - name: limit
+      required: false
+      default: false
+      description: How many vulnerabilities to return, defaults to all of them
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Argus.Vulnerability.data.vulnerabilityID
+      description: Vulnerability ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.severity
+      description: Vulnerability severity
+      type: String
+    - contextPath: Argus.Vulnerability.data.resolution
+      description: Vulnerability resolution status
+      type: String
+    - contextPath: Argus.Vulnerability.data.asset.name
+      description: Asset shortname
+      type: String
+    - contextPath: Argus.Vulnerability.data.lastUpdatedTimestamp
+      description: Timestamp when the vulnerability was last updated
+      type: Number
+    - contextPath: Argus.Vulnerability.data.id
+      description: Vulnerability UUID
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.id
+      description: Vulnerability definition ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.cvss
+      description: Vulnerability CVSS
+      type: Number
+    - contextPath: Argus.Vulnerability.data.observationDescription
+      description: Vulnerability observation description
+      type: String
+    - contextPath: Argus.Vulnerability.data.observationReferences
+      description: Vulnerability observation description references
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.flags
+      description: 'Flags of the vulnerability definition. '
+      type: String
+    description: Get Vulnerabilities belonging to the Asset
+  - name: argus-get-vulnerability-by-id
+    arguments:
+    - name: vulnerability_uuid
+      required: true
+      description: Unique identifier of vulnerability
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Argus.Vulnerability.data.vulnerabilityID
+      description: Vulnerability ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.severity
+      description: Vulnerability severity
+      type: String
+    - contextPath: Argus.Vulnerability.data.resolution
+      description: Vulnerability resolution status
+      type: String
+    - contextPath: Argus.Vulnerability.data.asset.name
+      description: Asset shortname
+      type: String
+    - contextPath: Argus.Vulnerability.data.lastUpdatedTimestamp
+      description: Timestamp when the vulnerability was last updated
+      type: Number
+    - contextPath: Argus.Vulnerability.data.id
+      description: Vulnerability UUID
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.id
+      description: Vulnerability description ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.cvss
+      description: Vulnerability CVSS
+      type: Number
+    - contextPath: Argus.Vulnerability.data.observationDescription
+      description: Vulnerability observation description
+      type: String
+    - contextPath: Argus.Vulnerability.data.observationReferences
+      description: Vulnerability observation description references
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.flags
+      description: 'Flags of the vulnerability definition. '
+      type: String
+    description: Get vulnerability by UUID
+  - name: argus-list-vulnerabilities
+    arguments:
+    - name: customer
+      required: false
+      default: false
+      description: Customer ids or short names
+    - name: asset
+      required: false
+      default: false
+      description: Asset ids or short names
+    - name: vulnerability_id
+      required: false
+      default: false
+      description: Vulnerability external ID
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+        - info
+        - low
+        - medium
+        - high
+        - critical
+      description: Vulnerability severity
+    - name: resolution
+      auto: PREDEFINED
+      predefined:
+      - unresolved
+      - accepted
+      - temporarilyAccepted
+      - falsePositive
+      - serviceNotAvailable
+      - noLongerVulnerable
+      description: Vulnerability resolution
+    - name: time_field_strategy
+      required: false
+      default: false
+      description: which time field(s) to filter by timestamp start/end
+    - name: sort_by
+      required: false
+      default: false
+      description: Fields to sort by - refer to the search POST endpoint to see which fields are permitted
+    - name: limit
+      required: false
+      default: false
+      description: 'Limit results. The sum of limit and offset must be <= 10''000. Default vale: 25'
+    - name: start_timestamp
+      required: false
+      default: false
+      description: Lower bound timestamp filter frame
+    - name: end_timestamp
+      required: false
+      default: false
+      description: Upper bound timestamp filter value
+    - name: offset
+      required: false
+      default: false
+      description: Offset results. The sum of limit and offset must be <= 10'000
+    - name: include_deleted
+      required: false
+      default: false
+      description: include deleted
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to output to context data. By default, only print to war room.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Argus.Vulnerability.data.vulnerabilityID
+      description: Vulnerability ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.severity
+      description: Vulnerability severity
+      type: String
+    - contextPath: Argus.Vulnerability.data.resolution
+      description: Vulnerability resolution status
+      type: String
+    - contextPath: Argus.Vulnerability.data.asset.name
+      description: Asset shortname
+      type: String
+    - contextPath: Argus.Vulnerability.data.lastUpdatedTimestamp
+      description: Timestamp when the vulnerability was last updated
+      type: Number
+    - contextPath: Argus.Vulnerability.data.id
+      description: Vulnerability UUID
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.id
+      description: Vulnerability definition ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.cvss
+      description: Vulnerability CVSS
+      type: Number
+    - contextPath: Argus.Vulnerability.data.observationDescription
+      description: Vulnerability observation description
+      type: String
+    - contextPath: Argus.Vulnerability.data.observationReferences
+      description: Vulnerability observation description references
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.flags
+      description: 'Flags of the vulnerability definition. '
+      type: String
+    description: Basic vulnerability search. Will not return vulnerabilities seen more than 31 days ago. Please use advanced search to return older vulnerabilities. If start/end timestamps are present, the range must be valid for at least one of the time stamps fields. Check the documentation for the TimestampFieldStrategy field for more details.
+  - name: argus-search-vulnerabilities
+    arguments:
+    - name: customer
+      description: Customer ids or short names
+    - name: asset
+      description: Asset ids or short names. Will resolve with the provided customers,
+        or those the current user has access to if none are provided
+    - name: vulnerability_id
+      description: Vulnerability external ID
+    - name: severity
+      description: Vulnerability Severity
+      isArray: true
+    - name: resolution
+      description: Vulnerability Resolution
+    - name: limit
+      description: How many vulnerabilities to return, defaults to 25. The sum of
+        limit and offset must be <= 10'000
+    - name: offset
+      description: How many vulnerabilities to skip, defaults to 0. The sum of limit
+        and offset must be <= 10'000
+    - name: include_deleted
+      description: Whether to include deleted vulnerabilities, not included by default
+    - name: start_timestamp
+      description: Lower bound timestamp filter value
+    - name: end_timestamp
+      description: Upper bound timestamp filter value
+    - name: time_field_strategy
+      description: Which time field(s) to filter by timestamp start/end
+    - name: sort_by
+      description: Field(s) to sort by
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Set to true to output context data. By default, only print to war
+        room
+      defaultValue: "false"
+    outputs:
+    - contextPath: Argus.Vulnerability.data.vulnerabilityID
+      description: Vulnerability ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.severity
+      description: Vulnerability severity
+      type: String
+    - contextPath: Argus.Vulnerability.data.resolution
+      description: Vulnerability resolution status
+      type: String
+    - contextPath: Argus.Vulnerability.data.asset.name
+      description: Asset shortname
+      type: String
+    - contextPath: Argus.Vulnerability.data.lastUpdatedTimestamp
+      description: Timestamp when the vulnerability was last updated
+      type: Number
+    - contextPath: Argus.Vulnerability.data.id
+      description: Vulnerability UUID
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.id
+      description: Vulnerability definition ID
+      type: String
+    - contextPath: Argus.Vulnerability.data.cvss
+      description: Vulnerability CVSS
+      type: Number
+    - contextPath: Argus.Vulnerability.data.observationDescription
+      description: Vulnerability observation description
+      type: String
+    - contextPath: Argus.Vulnerability.data.observationReferences
+      description: Vulnerability observation description references
+      type: String
+    - contextPath: Argus.Vulnerability.data.vulnerabilityDefinition.flags
+      description: 'Flags of the vulnerability definition. '
+      type: String
+    description: Search vulnerabilities
+  - name: argus-get-vulnerability-definition
+    arguments:
+    - name: vulnerability_definition_uuid
+      required: true
+      default: true
+      description: Vulnerability definition ID or identifier of vulnerability
+    - name: context_output
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Set to true to output to context data. By default, only print to
+        war room.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Argus.Vulnerability.Definition.data.id
+      description: Vulnerability definition id
+      type: String
+    - contextPath: Argus.Vulnerability.Definition.data.description
+      description: Description of vulnerability
+      type: String
+    - contextPath: Argus.Vulnerability.Definition.data.solution
+      description: How to fix the vulnerability
+      type: String
+    - contextPath: Argus.Vulnerability.Definition.data.conclusion
+      description: Short summary of vulnerability
+      type: String
+    - contextPath: Argus.Vulnerability.Definition.data.references
+      description: References to vulnerability (e.g. CVE number)
+      type: String
+    - contextPath: Argus.Vulnerability.Definition.data.name
+      description: Name of vulnerability
+      type: String
+    description: Get vulnerability definition metadata
   dockerimage: demisto/argus-toolbelt:3.0.0.2055215
   isfetch: true
+  runonce: false
   subtype: python3
   isremotesyncin: true
   isremotesyncout: true

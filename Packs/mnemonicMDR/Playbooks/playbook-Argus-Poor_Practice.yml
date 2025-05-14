@@ -1,0 +1,82 @@
+description: "Placeholder description."
+id: Argus - Poor Practice
+inputs: []
+name: Argus - Poor Practice
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 29e85e0d-07c4-4346-879b-76e59b117076
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 29e85e0d-07c4-4346-879b-76e59b117076
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a93b481c-7423-41a9-8e55-e75313fd69f4
+      iscommand: false
+      name: Placeholder Argus default playbooks
+      type: title
+      version: -1
+      description: ''
+    taskid: a93b481c-7423-41a9-8e55-e75313fd69f4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 210,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

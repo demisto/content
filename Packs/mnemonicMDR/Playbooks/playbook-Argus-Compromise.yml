@@ -1,0 +1,82 @@
+description: "Placeholder description."
+id: Argus - Compromise
+inputs: []
+name: Argus - Compromise
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 227b5fb3-427e-4c0a-80e6-861e758de235
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 227b5fb3-427e-4c0a-80e6-861e758de235
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 64a8d2c2-63ad-4398-835a-90f95862206e
+      iscommand: false
+      name: Placeholder Argus default playbooks
+      type: title
+      version: -1
+      description: ''
+    taskid: 64a8d2c2-63ad-4398-835a-90f95862206e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 245,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

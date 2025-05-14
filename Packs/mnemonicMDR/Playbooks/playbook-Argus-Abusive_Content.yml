@@ -1,0 +1,82 @@
+id: Argus - Abusive Content
+inputs: []
+name: Argus - Abusive Content
+outputs: []
+quiet: true
+starttaskid: "0"
+description: "Placeholder description."
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 43af7010-0eb8-4903-82f8-43c69716583d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 43af7010-0eb8-4903-82f8-43c69716583d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aa436742-9ce1-4775-8d76-0459f9c4b7db
+      iscommand: false
+      name: Placeholder Argus default playbooks
+      type: title
+      version: -1
+      description: ''
+    taskid: aa436742-9ce1-4775-8d76-0459f9c4b7db
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 210,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

@@ -1,0 +1,43 @@
+{
+    "defaultIncidentType": "Argus Case V2",
+    "description": "",
+    "feed": false,
+    "id": "Argus Case Classifier V2",
+    "keyTypeMap": {
+        "Administrative": "Administrative",
+        "abusive-content": "Abusive content",
+        "adware": "Adware",
+        "anomaly": "Anomaly",
+        "attempted-compromise": "Attempted compromise",
+        "banking-trojans": "Compromise",
+        "change": "Change",
+        "compromise": "Compromise",
+        "data-leakage": "Compromise",
+        "dos": "Denial of service",
+        "exposed-malicious": "Compromise",
+        "forensics": "Compromise",
+        "fraud": "Fraud",
+        "fraud-campaign": "Fraud",
+        "informational": "Informational",
+        "irt-suspected-targeted-attack": "Compromise",
+        "malicious-infection": "Attempted compromise",
+        "malicious-software": "Anomaly",
+        "misconfigured": "Misconfigured",
+        "operationalIncident": "Operational",
+        "phishing": "Fraud",
+        "poor-practice": "Poor practice",
+        "reconnaissance": "Reconnaissance",
+        "suspected-targeted-attack": "Compromise",
+        "vulnerability": "Vulnerability"
+    },
+    "name": "Argus Case Classifier V2",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "category.shortName"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

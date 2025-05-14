@@ -1,0 +1,302 @@
+description: "Placeholder description."
+id: Argus - Generic Case Handling
+inputs: []
+name: Argus - Generic Case Handling
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 915951cb-1a6c-4be9-8285-0478b082a987
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 915951cb-1a6c-4be9-8285-0478b082a987
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 79268137-ef0f-4d59-870e-82d906bf2169
+      iscommand: false
+      name: Enrichment & Deduplication
+      type: title
+      version: -1
+      description: ''
+    taskid: 79268137-ef0f-4d59-870e-82d906bf2169
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 38a2b5e1-d10c-4062-89c7-27d1af163a23
+      iscommand: false
+      name: Severity Triage / Calculation
+      type: title
+      version: -1
+      description: ''
+    taskid: 38a2b5e1-d10c-4062-89c7-27d1af163a23
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 56ec3849-b717-42e3-84f7-44446b79ec39
+      iscommand: false
+      name: Analyst Assignment
+      type: title
+      version: -1
+      description: ''
+    taskid: 56ec3849-b717-42e3-84f7-44446b79ec39
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 580
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3a205c34-a386-4959-8bee-5a700c41e569
+      iscommand: false
+      name: Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 3a205c34-a386-4959-8bee-5a700c41e569
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 760
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19758b26-d7c8-48e2-80a8-2c7909969f27
+      iscommand: false
+      name: Verdict / Qualification
+      type: title
+      version: -1
+      description: ''
+    taskid: 19758b26-d7c8-48e2-80a8-2c7909969f27
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 295,
+          "y": 1120
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ccd602fe-8b33-4a41-846f-e24a20b22c7a
+      iscommand: false
+      name: Closure
+      type: title
+      version: -1
+      description: ''
+    taskid: ccd602fe-8b33-4a41-846f-e24a20b22c7a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 295,
+          "y": 1315
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ecd64823-2ad6-40db-8861-d4494c8a8034
+      iscommand: false
+      name: Mitigations
+      type: title
+      version: -1
+      description: ''
+    taskid: ecd64823-2ad6-40db-8861-d4494c8a8034
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 940
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea9fa1c5-522c-4c40-8938-f6aff9f623c6
+      iscommand: false
+      name: Automated Mitigation
+      type: title
+      version: -1
+      description: ''
+    taskid: ea9fa1c5-522c-4c40-8938-f6aff9f623c6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 485
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1330,
+        "width": 870,
+        "x": -10,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

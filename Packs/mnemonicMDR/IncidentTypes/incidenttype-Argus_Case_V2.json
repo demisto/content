@@ -1,0 +1,30 @@
+{
+    "id": "Argus Case V2",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Argus Case V2",
+    "prevName": "Argus Case V2",
+    "color": "#F27718",
+    "playbookId": "Argus - Generic Case Handling",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Argus Case Management",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.5.0"
+}
