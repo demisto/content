@@ -244,7 +244,7 @@ class Client:  # pragma: no cover
             odata_query += f"$filter={odata_filter}"
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskDetections{odata_query}")["value"]
 
-    def list_risky_users(self, limit: str, odata: str, odata_filter: str) -> list:
+    def list_risky_users(self, limit: str, odata: str, odata_filter: str = None) -> list:
         """Get a list of all risky users
 
         Args:
