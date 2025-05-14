@@ -8,6 +8,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 from typing import Any
+from collections.abc import Iterable
 from enum import Enum
 
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
@@ -132,7 +133,7 @@ class Client:
         return [event.dict() for event in sorted_file_events]
 
 
-def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: list[dict], keys_list_to_id: List[str]) -> List[dict]:
+def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Iterable[dict], keys_list_to_id: List[str]) -> List[dict]:
     """
     Dedup events, removes events which were already fetched.
 
@@ -163,7 +164,7 @@ def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[s
 
 
 def get_latest_file_event_ids_and_time(events: List[dict], pre_fetch_look_back: Optional[datetime] = None) -> \
-    tuple[List[str], str]:
+    tuple[dict[str, str], str]:
     """
     Get the latest event IDs and get latest time
 
@@ -253,7 +254,8 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     demisto.debug(f"last run before getting {EventType.FILE} logs: {last_run}")
     new_last_run = last_run.copy()
     new_last_run.pop("nextTrigger", None)
-    file_event_time = (
+    file_event_time = cast(
+        datetime,
         dateparser.parse(last_run[FileEventLastRun.TIME])
         if FileEventLastRun.TIME in last_run
         else (datetime.now() - timedelta(minutes=1))
