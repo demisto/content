@@ -5,7 +5,6 @@ import sys
 import urllib3
 from github import Github, enable_console_debug_logging
 from github.Repository import Repository
-from typing import List
 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -37,14 +36,14 @@ def arguments_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
+def get_branch_names_with_contrib(repo: Repository) -> list[str]:  # noqa: E999
     '''Return the list of branches that have the prefix of "contrib/" and that are base branches of open PRs
 
     Args:
         repo (Repository): The repository whose branches will be searched and listed
 
     Returns:
-        (List[str]): List of branch names that have the "contrib/" prefix and are base branches of open PRs
+        (list[str]): List of branch names that have the "contrib/" prefix and are base branches of open PRs
     '''
     branch_names = []
     open_prs_head_refs = {open_pr.head.ref for open_pr in repo.get_pulls(state='OPEN')}
