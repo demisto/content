@@ -1175,7 +1175,6 @@ def get_attachments_command(client: Client):
 
 """FETCH INCIDENTS"""
 
-
 def fetch_incidents(client: Client):
     user_key = "me"
     query = "" if params.get("query") is None else params.get("query")
@@ -1233,6 +1232,7 @@ def fetch_incidents(client: Client):
             ignore_list_used = True
             ignore_ids.append(msg_id)
         else:
+            #save new msg date for lookback
             emails_ids_and_dates.append((msg_id, occurred))
         # update last run only if we trust the occurred timestamp
         if is_valid_date and occurred > next_last_fetch:
@@ -1253,34 +1253,32 @@ def fetch_incidents(client: Client):
             f"keeping current last fetch: {last_fetch} as result has additional pages to fetch."
             f" token: {next_page_token}. Ignoring incremented last_fatch: {next_last_fetch}"
         )
-        msg_to_exclude_in_next_fetch = lookback_ids_and_dates + emails_ids_and_dates
     else:
         # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
         if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
             demisto.info(f"resetting ignore list of len: {len(ignore_ids)}")
             ignore_ids = []
-        if emails_ids_and_dates:
-            # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
-            latest_msg = max([parse_date(client, msg_date, "date")
-                             for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
-            next_last_fetch = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
-            msg_to_exclude_in_next_fetch = [
-                (msg_id, parse_date(client, msg_date))
-                for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
-                if msg_date >= next_last_fetch
-            ]
         demisto.debug(f"will use new last fetch date (no next page token): {next_last_fetch}")
         last_fetch = next_last_fetch
-
+    if emails_ids_and_dates:
+        # Editing the next fetch one minute back to look back. And adding the ids from the last minute to avoid duplicates
+        latest_msg = max([parse_date(client, msg_date, "date")
+                            for _, msg_date in emails_ids_and_dates + lookback_ids_and_dates])
+        lookback_date = latest_msg - timedelta(minutes=LOOK_BACK_IN_MINUTES)  # type: ignore
+        msg_to_exclude_in_next_fetch = [
+            (msg_id, parse_date(client, msg_date))
+            for msg_id, msg_date in emails_ids_and_dates + lookback_ids_and_dates
+            if parse_date(client, msg_date, "date") >= lookback_date  # type: ignore
+        ]
     new_last_run = {
         "gmt_time": client.get_date_isoformat_server(last_fetch),
         "next_gmt_time": client.get_date_isoformat_server(next_last_fetch),
         "page_token": next_page_token,
         "ignore_ids": ignore_ids,
         "ignore_list_used": ignore_list_used,
-        "lookback_msg": msg_to_exclude_in_next_fetch or lookback_ids_and_dates,
+        "lookback_msg": msg_to_exclude_in_next_fetch or lookback_ids_and_dates or [],
     }
-    demisto.debug(f"Gmail: save the following msg IDs to LastRun: {new_last_run.get('lookback_msg')}")
+    demisto.debug(f"Gmail: save the following details to LastRun: {new_last_run}")
     demisto.setLastRun(new_last_run)
     return incidents
 
