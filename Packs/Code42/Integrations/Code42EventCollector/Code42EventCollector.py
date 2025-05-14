@@ -22,6 +22,8 @@ MAX_AUDIT_LOGS_PAGE_SIZE = 10000
 MAX_FETCH_FILE_EVENTS = 50000
 MAX_FILE_EVENTS_PAGE_SIZE = 10000
 FILE_EVENTS_LOOK_BACK = timedelta(seconds=45)
+# The time filter in Code 42 is only accurate up to the first 23 characters (first 3 microsecond digits)
+# i.e., a query for incidents inserted after "2025-01-01 00:00:00.123456Z" is the same as "2025-01-01 00:00:00.123000Z"
 CODE42_DATETIME_ACCURACY = 23
 
 VENDOR = "code42"
@@ -253,7 +255,6 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     """
     demisto.debug(f"last run before getting {EventType.FILE} logs: {last_run}")
     new_last_run = last_run.copy()
-    new_last_run.pop("nextTrigger", None)
     file_event_time = cast(
         datetime,
         dateparser.parse(last_run[FileEventLastRun.TIME])
@@ -263,7 +264,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
 
     fetched_events = last_run.get(FileEventLastRun.FETCHED_IDS, {})
     pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
-    file_events = client.get_file_events(  # type: ignore[arg-type]
+    file_events = client.get_file_events(
         file_event_time,
         limit=max_fetch_file_events + len(fetched_events)
     )
