@@ -14,11 +14,6 @@
                         {
                             "SEARCH_FIELD": "alert_name",
                             "SEARCH_TYPE": "EQ",
-                            "SEARCH_VALUE": "Identity assigned an Azure AD Administrator Role"
-                        },
-                        {
-                            "SEARCH_FIELD": "alert_name",
-                            "SEARCH_TYPE": "EQ",
                             "SEARCH_VALUE": "Suspicious Azure AD Administrator Role assignment"
                         },
                         {
