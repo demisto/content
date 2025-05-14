@@ -158,12 +158,12 @@ tasks:
       version: -1
       name: Search for suspicious-related alerts by MITRE Technique
       description: |-
-        This task searches for Cortex XSIAM suspicious alerts related to the current alert by Mitre Technique, indicating that the alert is part of an attack pattern.
+        This task searches for Cortex XSIAM suspicious alerts related to the current incident by Mitre Technique, indicating that the alert is part of an attack pattern.
 
         Focus on identifying alerts associated with the following MITRE techniques:
-        - Any Agent Alerts within this alert.
+        - Any Agent Alerts within this incident.
         - T1059 - Command and Scripting Interpreter.
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
@@ -316,7 +316,7 @@ tasks:
       id: 4e58431b-09fc-4dfc-b6be-18ebfaa83b1e
       version: -1
       name: Are There Any Suspicious Findings?
-      description: Check if any suspicious arguments were found in the Actor Process Command Line.
+      description: Check if any suspicious arguments were found in the Causality Process or in the Actor Process Command Line.
       type: condition
       iscommand: false
       brand: ""
@@ -377,7 +377,7 @@ tasks:
       id: 97ff710f-62a7-43ff-88a9-5db0e249c5ba
       version: -1
       name: Are any related alerts found?
-      description: "Check if any alerts are found that match the condition:\n- Any Agent alert within the alert\n- T1509 - Command And Scripting "
+      description: "Check if any alerts are found that match the condition:\n- Any Agent alert within the incident\n- T1509 - Command And Scripting "
       type: condition
       iscommand: false
       brand: ""
