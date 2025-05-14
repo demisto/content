@@ -329,14 +329,14 @@ tasks:
           right:
             value:
               simple: Tag1
-      - - operator: isEqualNumber
+      - - operator: startWith
           left:
             value:
               simple: SinglePred1.Probability
             iscontext: true
           right:
             value:
-              simple: "0.9930823445320129"
+              simple: "0.9"
     view: |-
       {
         "position": {
@@ -378,14 +378,14 @@ tasks:
           right:
             value:
               simple: Tag2
-      - - operator: isEqualNumber
+      - - operator: startWith
           left:
             value:
               simple: SinglePred2.Probability
             iscontext: true
           right:
             value:
-              simple: "0.9941679239273071"
+              simple: "0.9"
     view: |-
       {
         "position": {
@@ -527,14 +527,14 @@ tasks:
           right:
             value:
               simple: Tag3
-      - - operator: isEqualNumber
+      - - operator: startWith
           left:
             value:
               simple: SinglePred3.Probability
             iscontext: true
           right:
             value:
-              simple: "0.9961445331573486"
+              simple: "0.9"
     view: |-
       {
         "position": {

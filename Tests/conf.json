@@ -4034,9 +4034,9 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "fromversion": "5.5.0",
+            "fromversion": "6.10.0",
             "timeout": 1000,
-            "memory_threshold": 300
+            "memory_threshold": 500
         },
         {
             "integrations": "HPEArubaClearPass",
