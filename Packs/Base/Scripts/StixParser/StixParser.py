@@ -1535,7 +1535,7 @@ def build_observables(file_name):
                     if ttp:
                         ttps.update(ttp)
                 except Exception as e:
-                    demisto.debug(f'Failed parsing response: {e}')
+                    demisto.debug(f"Failed parsing response: {e}")
 
             element.clear()
 
