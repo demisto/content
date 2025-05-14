@@ -1584,7 +1584,7 @@ script:
     name: get-remote-data
   - arguments:
       - description: The remote incident ID.
-        name: id
+        name: issue_id
         required: true
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data-preview
