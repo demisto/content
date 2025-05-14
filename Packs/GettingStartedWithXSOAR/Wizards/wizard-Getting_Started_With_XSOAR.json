@@ -5,6 +5,9 @@
   "fromVersion": "6.9.0",
   "name": "Getting Started With XSOAR",
   "description": "Welcome to the Getting Started with XSOAR Wizard! This will serve as your step-by-step walk through on Getting your XSOAR server up and running",
+  "marketplaces": [
+      "xsoar"
+  ],
   "dependency_packs": [{
       "name": "Sample Incident Generator",
       "min_required": 1,
