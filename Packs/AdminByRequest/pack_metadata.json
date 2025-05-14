@@ -20,7 +20,7 @@
         "platform",
         "marketplacev2"
     ],
-    "defaultDataSource": "AdminByRequestEventCollector",
+    "defaultDataSource": "AdminByRequest",
     "supportedModules": [
         "X1",
         "X3",

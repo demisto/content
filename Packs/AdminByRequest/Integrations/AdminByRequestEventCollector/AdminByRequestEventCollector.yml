@@ -76,7 +76,7 @@ configuration:
   advanced: true
 description: 'AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.'
 display: Admin By Request
-name: AdminByRequestEventCollector
+name: AdminByRequest
 supportlevelheader: xsoar
 script:
   commands:
