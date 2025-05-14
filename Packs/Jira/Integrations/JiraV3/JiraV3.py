@@ -82,7 +82,7 @@ class QuickActionPreview:
             severity (Optional[str]): Indicates the priority or severity level.
 
         TODO: We will need this class in common server python,
-        but due to known performance issues, we are keeping it here for now.
+        but due to temporary restrictions in extending it, we are keeping it here for now.
         """
     id: Optional[str] = None
     title: Optional[str] = None
