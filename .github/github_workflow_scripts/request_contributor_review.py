@@ -32,7 +32,7 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
     response = requests.get(user_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed in pulling user {github_user} data:\n{response.text}")
+        print(f"Failed in pulling user {github_user} data:\n{response.text}")   # noqa: T201
         sys.exit(1)
 
     github_user_info = response.json()
@@ -46,7 +46,7 @@ def get_pr_author(pr_number, github_token, verify_ssl):
     response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed in pulling PR {pr_number} data:\n{response.text}")
+        print(f"Failed in pulling PR {pr_number} data:\n{response.text}")   # noqa: T201
         sys.exit(1)
 
     pr_info = response.json()
@@ -62,7 +62,7 @@ def get_pr_modified_files_and_packs(pr_number, github_token, verify_ssl):
     response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed in pulling PR {pr_number} data:\n{response.text}")
+        print(f"Failed in pulling PR {pr_number} data:\n{response.text}")   # noqa: T201
         sys.exit(1)
 
     pr_changed_data = response.json()
@@ -90,7 +90,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, g
     response = requests.post(comments_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed posting comment on PR {pr_number}:\n{response.text}")
+        print(f"Failed posting comment on PR {pr_number}:\n{response.text}")    # noqa: T201
         sys.exit(1)
 
 
@@ -103,7 +103,7 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
     response = requests.get(comments_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code != 200:
-        print(f"Failed requesting PR {pr_number} comments:\n{response.text}")
+        print(f"Failed requesting PR {pr_number} comments:\n{response.text}")   # noqa: T201
         sys.exit(1)
 
     comments_info = response.json()
@@ -130,7 +130,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
         pack_metadata_path = os.path.join(PACKS_FULL_PATH, pack, PACK_METADATA)
 
         if not os.path.exists(pack_metadata_path):
-            print(f"Not found {pack} {PACK_METADATA} file.")
+            print(f"Not found {pack} {PACK_METADATA} file.")    # noqa: T201
             continue
 
         with open(pack_metadata_path, mode='r') as pack_metadata_file:  # noqa: UP015
@@ -162,7 +162,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
                     if user_exists and github_user != pr_author:
                         reviewers.add(github_user)
-                        print(f"Found {github_user} default reviewer of pack {pack}")
+                        print(f"Found {github_user} default reviewer of pack {pack}")   # noqa: T201
 
                 notified_by_github = check_reviewers(reviewers=reviewers, pr_author=pr_author,
                                                      version=pack_metadata.get('currentVersion'),
@@ -185,9 +185,9 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                     )
 
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
-            print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
+            print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")    # noqa: T201
         else:
-            print(f"{pack} pack has no default github reviewer")
+            print(f"{pack} pack has no default github reviewer")    # noqa: T201
 
 
 def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files: list, pack: str,
@@ -211,7 +211,7 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
     """
     untagged_reviewers = reviewers.difference(tagged_packs_reviewers)
     for tagged_reviewer in reviewers.difference(untagged_reviewers):
-        print(f'User {tagged_reviewer} was already tagged. Skipping re-tagging.')
+        print(f'User {tagged_reviewer} was already tagged. Skipping re-tagging.')   # noqa: T201
     # Meaning at least one of the reviewers was already tagged.
     notified_contributors = untagged_reviewers != reviewers
     if untagged_reviewers:
@@ -231,7 +231,7 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
             return notified_contributors
     else:
         if not notified_contributors:
-            print(f'{pack} pack no reviewers were found.')
+            print(f'{pack} pack no reviewers were found.')  # noqa: T201
         return notified_contributors
 
 
@@ -269,13 +269,13 @@ def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: s
     try:
         response = sg.client.mail.send.post(request_body=mail.get())
         if response.status_code in range(200, 209):
-            print(f'Email sent to {",".join(reviewers_emails)} contributors of pack {pack_name}')
+            print(f'Email sent to {",".join(reviewers_emails)} contributors of pack {pack_name}')   # noqa: T201
             return True
         else:
-            print('An error occurred during sending emails to contributors:\n{response}')
+            print('An error occurred during sending emails to contributors:\n{response}')   # noqa: T201
             return False
     except Exception as e:
-        print(f'An error occurred during sending emails to contributors:\n{str(e)}')
+        print(f'An error occurred during sending emails to contributors:\n{str(e)}')    # noqa: T201
         sys.exit(1)
 
 

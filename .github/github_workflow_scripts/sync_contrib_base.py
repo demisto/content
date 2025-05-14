@@ -57,7 +57,7 @@ def get_branch_names_with_contrib(repo: Repository) -> list[str]:  # noqa: E999
 
 def update_branch(content_repo, branch_name, master_sha):
     git_ref = content_repo.get_git_ref(f'heads/{branch_name}')
-    print(f'Updating branch "{branch_name}" to sha "{master_sha}"')
+    print(f'Updating branch "{branch_name}" to sha "{master_sha}"') # noqa: T201
     git_ref.edit(master_sha)
 
 
@@ -80,7 +80,7 @@ def main():
         # Case we are running scheduled job - detect all contrib/ base branches.
         contrib_base_branches = get_branch_names_with_contrib(content_repo)
 
-    print(f'Updating {contrib_base_branches=}')
+    print(f'Updating {contrib_base_branches=}') # noqa: T201
     for branch_name in contrib_base_branches:
         update_branch(content_repo, branch_name, master_sha)
 

@@ -183,7 +183,7 @@ def slack_post_message(client: WebClient, message_blocks: list):
 def main():
     t = Terminal()
     payload_str = get_env_var('EVENT_PAYLOAD')
-    print(f'{t.cyan}Starting the slack notifier{t.normal}')
+    print(f'{t.cyan}Starting the slack notifier{t.normal}') # noqa: T201
 
     payload = json.loads(payload_str)
     pr_number = payload.get('pull_request', {}).get('number')
@@ -198,7 +198,7 @@ def main():
 
     # We don't want to notify about community PRs made through the UI
     if pr.user.login == 'xsoar-bot':
-        print(f'{t.cyan}PR was created using the XSOAR-UI, support will be community. Not sending a slack message ')
+        print(f'{t.cyan}PR was created using the XSOAR-UI, support will be community. Not sending a slack message ')    # noqa: T201
 
     else:
         # Build all blocks of the message
@@ -206,13 +206,13 @@ def main():
         pull_request_segment = create_pull_request_segment(pr)
         packs_segment = create_packs_segment(metadata_files)
         blocks = header + pull_request_segment + packs_segment
-        print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')
+        print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')   # noqa: T201
 
         # Send message
         slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
         client = WebClient(token=slack_token)
         slack_post_message(client, blocks)
-        print(f'{t.cyan}Slack message sent successfully{t.normal}')
+        print(f'{t.cyan}Slack message sent successfully{t.normal}') # noqa: T201
 
 
 if __name__ == "__main__":

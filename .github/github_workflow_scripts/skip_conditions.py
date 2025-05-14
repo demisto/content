@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, UTC   # type: ignore[attr-defined]
 from enum import Enum
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_names_from_files
