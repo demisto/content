@@ -2156,57 +2156,18 @@ script:
     description: Get list of assets.
     name: topdesk-assets-list
     outputs:
-      - contextPath: TOPdesk.Asset.Summary
-        description: Asset Summary
-        type: string
-      - contextPath: TOPdesk.Asset.Assignments
-        description: Asset assignments
-        type: unknown
-      - contextPath: TOPdesk.Asset.Etag
-        description: Asset etag
-        type: string
-      - contextPath: TOPdesk.Asset.Status
-        description: Asset status
-        type: string
-      - contextPath: TOPdesk.Asset.StatusLocked
-        description: Asset statusLocked
-        type: string
       - contextPath: TOPdesk.Asset.Archived
-        description: Asset archived
-        type: boolean
-      - contextPath: TOPdesk.Asset.Discovery-host-name
-        description: Asset discovery-host-name
-        type: string
-      - contextPath: TOPdesk.Asset.Host-group
-        description: Asset host-group
-        type: string
-      - contextPath: TOPdesk.Asset.Host-name
-        description: Asset host-name
-        type: string
-      - contextPath: TOPdesk.Asset.Ip-address
-        description: Asset ip-address
-        type: string
-      - contextPath: TOPdesk.Asset.Mac-address
-        description: Asset mac-address
-        type: string
-      - contextPath: TOPdesk.Asset.Mem-device-name
-        description: Asset mem-device-name
-        type: string
-      - contextPath: TOPdesk.Asset.ModificationDate
-        description: Asset modificationDate
-        type: string
-      - contextPath: TOPdesk.Asset.Name
-        description: Asset name
-        type: string
-      - contextPath: TOPdesk.Asset.Technical-owner
-        description: Asset technical-owner
-        type: string
-      - contextPath: TOPdesk.Asset.Type_id
-        description: Asset type_id
-        type: string
-      - contextPath: TOPdesk.Asset.Unid
-        description: Asset Unique ID
-        type: string
+        description: Asset status, archived or not
+        type: Boolean
+      - contextPath: TOPdesk.Asset.Etag
+        description: Asset entry date
+        type: String
+      - contextPath: TOPdesk.Asset.Id
+        description: Unique ID of the Asset
+        type: String
+      - contextPath: TOPdesk.Asset.Text
+        description: Asset freetext field, often the name of the asset
+        type: String
   - arguments:
     - description: The Unique ID of the Asset
       name: asset_id
