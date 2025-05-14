@@ -342,8 +342,8 @@ class MsGraphClient:
 
     def list_vms(self, resource_group, full_url):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines" if not full_url else ""
-
-        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=self.default_params, full_url=full_url)
+        params = self.default_params if not full_url else {}
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params, full_url=full_url)
 
     def get_vm(self, resource_group, vm_name, expand="instanceView"):
         url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
