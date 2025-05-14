@@ -1,5 +1,5 @@
 id: 5e89413a-0689-4a62-888a-32b184144f74
-version: 34
+version: 3
 vcShouldKeepItemLegacyProdMachine: false
 name: Cortex Cloud - AWS S3 Bucket Publicly Accessible Remediation
 description: |-
@@ -11,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 42d3a474-0bad-4329-88aa-147caeb3dc36
+    taskid: 24e7cd94-4499-46f5-8b34-9d29384ece19
     type: start
     task:
-      id: 42d3a474-0bad-4329-88aa-147caeb3dc36
+      id: 24e7cd94-4499-46f5-8b34-9d29384ece19
       version: -1
       name: ""
       iscommand: false
@@ -41,10 +41,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 42fd54f9-728f-400d-a0fa-bc7d72c21d80
+    taskid: e5f1910f-79ca-4026-8b8a-cdf68d23df5d
     type: collection
     task:
-      id: 42fd54f9-728f-400d-a0fa-bc7d72c21d80
+      id: e5f1910f-79ca-4026-8b8a-cdf68d23df5d
       version: -1
       name: Execute remediation or Assign for review ?
       type: collection
@@ -102,7 +102,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      - id: 007f2a1d-56b9-4e64-be7e-174569a48c61
+      - id: "1"
         label: ""
         labelarg:
           simple: If review required ?
@@ -132,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1abbf0a5-1f88-470d-80d5-c60097bd5a55
+    taskid: 89ecb08b-a6a2-4e1c-89dc-bcb3929ca203
     type: regular
     task:
-      id: 1abbf0a5-1f88-470d-80d5-c60097bd5a55
+      id: 89ecb08b-a6a2-4e1c-89dc-bcb3929ca203
       version: -1
       name: Get Asset details
       description: Get asset information.
@@ -168,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 52b3a28b-78f0-405e-841f-7123a37a4204
+    taskid: 5970c814-63c7-436c-83eb-ca591a81d3c1
     type: title
     task:
-      id: 52b3a28b-78f0-405e-841f-7123a37a4204
+      id: 5970c814-63c7-436c-83eb-ca591a81d3c1
       version: -1
       name: Done
       type: title
@@ -196,10 +196,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: bb58aa5f-0c8b-459e-ab73-16ce548ba7e0
+    taskid: 62da5ad2-0e46-4c39-8e10-58f8bd57a7c7
     type: condition
     task:
-      id: bb58aa5f-0c8b-459e-ab73-16ce548ba7e0
+      id: 62da5ad2-0e46-4c39-8e10-58f8bd57a7c7
       version: -1
       name: Send review request email
       type: condition
@@ -260,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 0579a287-cf4d-4bfb-ab7c-9d425e7f4615
+    taskid: 2b5956e0-f26f-4504-846c-eb3bd4be3ae4
     type: condition
     task:
-      id: 0579a287-cf4d-4bfb-ab7c-9d425e7f4615
+      id: 2b5956e0-f26f-4504-846c-eb3bd4be3ae4
       version: -1
       name: Is remediation available ?
       type: condition
@@ -328,18 +328,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 931b7951-575c-4147-afc8-25eaefcda36f
+    taskid: c6cbdd07-4d09-4c40-b319-7b0bc4a0da30
     type: regular
     task:
-      id: 931b7951-575c-4147-afc8-25eaefcda36f
+      id: c6cbdd07-4d09-4c40-b319-7b0bc4a0da30
       version: -1
       name: Update AWS S3 Block public access settings
-      description: Creates or modifies the PublicAccessBlock configuration for an
-        Amazon S3 bucket.
-      script: AWS Cloud Automations|||aws-s3-public-access-block-update
+      description: Create or Modify the PublicAccessBlock configuration for an Amazon
+        S3 bucket.
+      script: AWS|||aws-s3-public-access-block-update
       type: regular
       iscommand: true
-      brand: AWS Cloud Automations
+      brand: AWS
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
@@ -377,10 +377,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 892ae578-5c51-44ad-a659-eddbf8780f41
+    taskid: 7f5d4b75-b3de-4965-8070-034a4d4a996d
     type: playbook
     task:
-      id: 892ae578-5c51-44ad-a659-eddbf8780f41
+      id: 7f5d4b75-b3de-4965-8070-034a4d4a996d
       version: -1
       name: Create Issue ticket
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -394,7 +394,7 @@ tasks:
         and notification actions. If none of these integrations are found in your
         account, then the playbook sends an email with the issue details to the selected
         issue owner. '
-      playbookName: Cortex Cloud - Manage Ticket and Notify
+      playbookName: Cortex Cloud - Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
@@ -430,10 +430,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 4e679bc7-1c39-46d7-bc3c-30fa2ccb074f
+    taskid: 30a7582b-dadc-4160-86bb-a3a985e90fea
     type: playbook
     task:
-      id: 4e679bc7-1c39-46d7-bc3c-30fa2ccb074f
+      id: 30a7582b-dadc-4160-86bb-a3a985e90fea
       version: -1
       name: Update Issue ticket and notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -447,7 +447,7 @@ tasks:
         and notification actions. If none of these integrations are found in your
         account, then the playbook sends an email with the issue details to the selected
         issue owner. '
-      playbookName: Cortex Cloud - Manage Ticket and Notify
+      playbookName: Cortex Cloud - Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
@@ -483,10 +483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 043a0493-5fa5-49b8-b562-42564e6b7227
+    taskid: 43d53f84-2dee-4172-894b-de186de6d7ef
     type: regular
     task:
-      id: 043a0493-5fa5-49b8-b562-42564e6b7227
+      id: 43d53f84-2dee-4172-894b-de186de6d7ef
       version: -1
       name: 'Update Issue details to War Room '
       description: Prints text to war room (Markdown supported)
@@ -522,10 +522,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: abed3209-b4f9-4702-84c0-6e3da534a206
+    taskid: b6c17214-45de-4b2e-88ec-aa718916d1c9
     type: playbook
     task:
-      id: abed3209-b4f9-4702-84c0-6e3da534a206
+      id: b6c17214-45de-4b2e-88ec-aa718916d1c9
       version: -1
       name: Update Issue ticket and notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -539,7 +539,7 @@ tasks:
         and notification actions. If none of these integrations are found in your
         account, then the playbook sends an email with the issue details to the selected
         issue owner. '
-      playbookName: Cortex Cloud - Manage Ticket and Notify
+      playbookName: Cortex Cloud - Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
@@ -575,10 +575,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 98f3720d-39c6-48da-bbee-fb50c00c3736
+    taskid: ed7749cc-bd04-41f9-8914-178d1ecaec64
     type: regular
     task:
-      id: 98f3720d-39c6-48da-bbee-fb50c00c3736
+      id: ed7749cc-bd04-41f9-8914-178d1ecaec64
       version: -1
       name: Update Issue Status to Resolved - Fixed
       description: commands.local.cmd.set.alert.status
@@ -611,10 +611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: a9754d57-9c42-4011-a842-2ff41228f81d
+    taskid: 98666225-12fc-40dc-8ecc-91f604342870
     type: condition
     task:
-      id: a9754d57-9c42-4011-a842-2ff41228f81d
+      id: 98666225-12fc-40dc-8ecc-91f604342870
       version: -1
       name: Check selected remediation action
       type: condition
@@ -682,10 +682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 618ebe5e-df7d-4aa4-9735-a63f0c672f41
+    taskid: 5878230a-ea61-4b68-a338-c094fcccc3e7
     type: condition
     task:
-      id: 618ebe5e-df7d-4aa4-9735-a63f0c672f41
+      id: 5878230a-ea61-4b68-a338-c094fcccc3e7
       version: -1
       name: Is integration available ?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -702,13 +702,13 @@ tasks:
       - "4"
     scriptarguments:
       brandname:
-        simple: AWS Cloud Automations
+        simple: AWS
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 275,
           "y": 540
         }
       }
@@ -727,8 +727,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1990,
-        "width": 920,
-        "x": 270,
+        "width": 915,
+        "x": 275,
         "y": -40
       }
     }

@@ -1,5 +1,5 @@
 id: 62374b53-6e1b-4c9c-8ba8-0ec3889d64a1
-version: 114
+version: 4
 vcShouldKeepItemLegacyProdMachine: false
 name: Cortex Cloud - AWS EC2 Instance Misconfigurations Remediation
 description: |-
@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f8d23417-8520-4a28-8929-ad0c7dd858ae
+    taskid: da1170a5-9af9-4823-8530-1bb4a0d31062
     type: start
     task:
-      id: f8d23417-8520-4a28-8929-ad0c7dd858ae
+      id: da1170a5-9af9-4823-8530-1bb4a0d31062
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 40067a07-7fa0-4601-8d37-7f89f1c624d1
+    taskid: bf0eb705-7a99-4edb-8294-4096eb5a5ec7
     type: collection
     task:
-      id: 40067a07-7fa0-4601-8d37-7f89f1c624d1
+      id: bf0eb705-7a99-4edb-8294-4096eb5a5ec7
       version: -1
       name: Execute remediation or Assign for review ?
       description: Check whether the values provided in arguments are equal. If either
@@ -144,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 61e76dad-bd1e-4c2c-ac01-34c7646ce23e
+    taskid: d4a14b26-b36a-45c4-8fa2-563a4fd149ac
     type: regular
     task:
-      id: 61e76dad-bd1e-4c2c-ac01-34c7646ce23e
+      id: d4a14b26-b36a-45c4-8fa2-563a4fd149ac
       version: -1
       name: Get Asset details
       description: Get asset information.
@@ -180,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: fdcd9b7d-c34e-461a-82e5-a71fce7566b8
+    taskid: 8292f514-c42f-4413-8cc5-6e0a10e2c198
     type: title
     task:
-      id: fdcd9b7d-c34e-461a-82e5-a71fce7566b8
+      id: 8292f514-c42f-4413-8cc5-6e0a10e2c198
       version: -1
       name: Done
       type: title
@@ -208,10 +208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cf63666d-b03c-459d-b764-7097646f81ea
+    taskid: 736fe716-a35d-44fe-806d-d875853cc25f
     type: condition
     task:
-      id: cf63666d-b03c-459d-b764-7097646f81ea
+      id: 736fe716-a35d-44fe-806d-d875853cc25f
       version: -1
       name: Send review request email
       description: Check whether the values provided in arguments are equal. If either
@@ -274,10 +274,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6bf6deb0-2cc5-4e0e-824b-3cb24aefb603
+    taskid: b54692be-ed60-4566-8078-948af427b0a2
     type: condition
     task:
-      id: 6bf6deb0-2cc5-4e0e-824b-3cb24aefb603
+      id: b54692be-ed60-4566-8078-948af427b0a2
       version: -1
       name: Is remediation available ?
       type: condition
@@ -326,10 +326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 508601bc-0b51-4224-b5e9-027fb215fe17
+    taskid: e467206b-26ad-4743-8803-9e5f8d6589f2
     type: regular
     task:
-      id: 508601bc-0b51-4224-b5e9-027fb215fe17
+      id: e467206b-26ad-4743-8803-9e5f8d6589f2
       version: -1
       name: Update Issue  details to War Room
       description: Prints text to war room (Markdown supported)
@@ -366,10 +366,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 5e132c51-374a-4c38-8f6c-7c860eb49659
+    taskid: 5a7d43aa-94c9-4fef-803c-359d62d1905c
     type: playbook
     task:
-      id: 5e132c51-374a-4c38-8f6c-7c860eb49659
+      id: 5a7d43aa-94c9-4fef-803c-359d62d1905c
       version: -1
       name: Create Issue ticket
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -383,7 +383,7 @@ tasks:
         and notification actions. If none of these integrations are found in your
         account, then the playbook sends an email with the issue details to the selected
         issue owner. '
-      playbookName: Cortex Cloud - Manage Ticket and Notify
+      playbookName: Cortex Cloud - Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
@@ -419,10 +419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: c3ae039a-86e3-443e-ad6a-c665944de881
+    taskid: 6c979398-2e0d-4a58-88a9-0cf66becc925
     type: playbook
     task:
-      id: c3ae039a-86e3-443e-ad6a-c665944de881
+      id: 6c979398-2e0d-4a58-88a9-0cf66becc925
       version: -1
       name: Update Issue ticket and notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -436,7 +436,7 @@ tasks:
         and notification actions. If none of these integrations are found in your
         account, then the playbook sends an email with the issue details to the selected
         issue owner. '
-      playbookName: Cortex Cloud - Manage Ticket and Notify
+      playbookName: Cortex Cloud - Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
@@ -472,10 +472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 2d821b96-791a-4275-8c9f-cc075c37e9ff
+    taskid: 12547e9f-86b8-44ba-81b1-723d268ec39c
     type: regular
     task:
-      id: 2d821b96-791a-4275-8c9f-cc075c37e9ff
+      id: 12547e9f-86b8-44ba-81b1-723d268ec39c
       version: -1
       name: Update Issue status to Resolved - Fixed
       description: commands.local.cmd.set.alert.status
@@ -508,10 +508,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 9a1ddffa-5096-4b40-b8c7-a9f0f6fb9584
+    taskid: 5c894b64-890f-44a4-8c40-00d11eb1249c
     type: playbook
     task:
-      id: 9a1ddffa-5096-4b40-b8c7-a9f0f6fb9584
+      id: 5c894b64-890f-44a4-8c40-00d11eb1249c
       version: -1
       name: Update Issue ticket and notify
       description: 'This playbook automates the dispatching of issues through ServiceNow
@@ -525,7 +525,7 @@ tasks:
         and notification actions. If none of these integrations are found in your
         account, then the playbook sends an email with the issue details to the selected
         issue owner. '
-      playbookName: Cortex Cloud - Manage Ticket and Notify
+      playbookName: Cortex Cloud - Create Ticket and Notify
       type: playbook
       iscommand: false
       brand: ""
@@ -561,10 +561,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: e0599146-b979-4a44-83eb-473203c31cfc
+    taskid: a75584fe-eec6-4090-8b82-8e1067d9f828
     type: condition
     task:
-      id: e0599146-b979-4a44-83eb-473203c31cfc
+      id: a75584fe-eec6-4090-8b82-8e1067d9f828
       version: -1
       name: Check selected remediation action
       type: condition
@@ -622,18 +622,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: fd8137d4-9e59-4ec6-bad5-7cd6209215c4
+    taskid: ab943443-4877-4d49-a92a-af74b103cd1f
     type: regular
     task:
-      id: fd8137d4-9e59-4ec6-bad5-7cd6209215c4
+      id: ab943443-4877-4d49-a92a-af74b103cd1f
       version: -1
       name: aws-ec2-instance-metadata-options-modify
       description: Modify the EC2 instance metadata parameters on a running or stopped
         instance.
-      script: AWS Cloud Automations|||aws-ec2-instance-metadata-options-modify
+      script: AWS|||aws-ec2-instance-metadata-options-modify
       type: regular
       iscommand: true
-      brand: AWS Cloud Automations
+      brand: AWS
       playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
@@ -667,10 +667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 0056e69d-c396-4bea-89aa-636ed9eb561f
+    taskid: 66b742d5-e20e-4120-bbd2-17c1b920eee7
     type: condition
     task:
-      id: 0056e69d-c396-4bea-89aa-636ed9eb561f
+      id: 66b742d5-e20e-4120-bbd2-17c1b920eee7
       version: -1
       name: Is integration available
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -687,7 +687,7 @@ tasks:
       - "4"
     scriptarguments:
       brandname:
-        simple: AWS Cloud Automations
+        simple: AWS
     separatecontext: false
     continueonerrortype: ""
     view: |-

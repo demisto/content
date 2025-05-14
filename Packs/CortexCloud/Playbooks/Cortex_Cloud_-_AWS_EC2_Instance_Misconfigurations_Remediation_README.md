@@ -13,7 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* AWS Cloud Automations
+* AWS
 
 ### Scripts
 
