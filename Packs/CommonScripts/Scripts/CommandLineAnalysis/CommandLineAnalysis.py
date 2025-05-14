@@ -242,7 +242,8 @@ def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
             return "", False, False
 
         for match in valid_matches:
-            decoded_segment, num_of_encodings = decode_base64_until_final_script(match)
+            decoded_segment, counter = decode_base64_until_final_script(match)
+            num_of_encodings += counter
             demisto.debug(f"Decoded segment: {decoded_segment}")
 
             if decoded_segment:
