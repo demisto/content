@@ -1,9 +1,9 @@
 {
-    "trigger_id": "0e8741d5fbc51b23a796898b77c3a21d",
-    "playbook_id": "silent-Identity assigned an Azure AD Administrator Role",
-    "suggestion_reason": "Recommended for 'Identity assigned an Azure AD Administrator Role' alert",
-    "description": "This trigger is responsible for handling the 'Identity assigned an Azure AD Administrator Role' alert",
-    "trigger_name": "silent-Identity assigned an Azure AD Administrator Role",
+    "trigger_id": "0f31572efcb461285610c1227756bfec",
+    "playbook_id": "silent-Azure AD Administrator Role Assignment",
+    "suggestion_reason": "Recommended for 'Azure AD Administrator Role Assignment' alert",
+    "description": "This trigger is responsible for handling the 'Azure AD Administrator Role Assignment' alert",
+    "trigger_name": "silent-Azure AD Administrator Role Assignment",
     "fromVersion": "8.9.0",
     "issilent": true,
     "alerts_filter": {
