@@ -234,7 +234,7 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", is_
     return attachment_name
 
 
-def prepare_args(args: dict[str, str]) -> dict[str, str]:
+def prepare_args(args: dict[str, str]) -> dict:
     """
     Prepare arguments to be used as the API expects it
     :param args: demisto args
@@ -1196,7 +1196,7 @@ def reply_mail(
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
-    handle_inline_image: bool = argToBoolean(handle_inline_image, True)
+    handle_inline_image: bool = argToBoolean(handle_inline_image)
     # collect all types of attachments
     attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
     attachments.extend(collect_manual_attachments(manualAttachObj))
@@ -1878,7 +1878,7 @@ def sub_main():  # pragma: no cover
                     destination_folder_path=args.get("destination_folder_path", ""),
                     dest_client=dest_client,
                     source_mailbox=args.get("source_mailbox", None),
-                    is_public=args.get("is_public", None),
+                    is_public=args.get("is_public", None),  # type: ignore[arg-type]
                 )
             )
 

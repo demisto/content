@@ -747,10 +747,11 @@ class EWSClient:
             f"cc={cc}, bcc={bcc}, from_mailbox={from_mailbox}, handle_inline_image={handle_inline_image}, "
             f"has_html_body={html_body is not None}, attachment_count={len(attachments)}"
         )
-        html_attachments: list = []
+
         if not account:
             demisto.debug("reply_email: No account provided, using default account")
             account = self.get_account()
+
         item_to_reply_to: Message | ErrorItemNotFound = account.inbox.get(id=in_reply_to)
         if isinstance(item_to_reply_to, ErrorItemNotFound):
             demisto.debug(f"reply_email: Failed to find original message with ID {in_reply_to}")
