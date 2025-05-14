@@ -328,7 +328,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isEqualString
           left:
             value:
               simple: CommandLineAnalysis.risk
@@ -345,6 +345,7 @@ tasks:
           right:
             value:
               simple: Medium
+          ignorecase: true
         - operator: isEqualString
           left:
             value:
@@ -353,6 +354,7 @@ tasks:
           right:
             value:
               simple: High
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
