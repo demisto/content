@@ -222,9 +222,10 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     context_set_items = get_integration_context().get("set_items", {})
-
+    demisto.debug(f"[test] {context_set_items=}")
     if context_set_items.keys() != set(set_names):
         result = client.get_set_list()
+        demisto.debug(f"[test] after calling get_set_list: {result=}")
         context_set_items = {
             set_item.get("Name"): set_item.get("Id") for set_item in result.get("Sets", []) if set_item.get("Name") in set_names
         }
@@ -329,17 +330,23 @@ def fetch_events(
     demisto.info(f"Start fetching last run: {last_run}")
 
     if enable_admin_audits:
-        for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
+        get_admin_audits_items = get_admin_audits(client, last_run, max_fetch).items()
+        demisto.debug(f"[test] {get_admin_audits_items=}")
+        for set_id, admin_audits in get_admin_audits_items:
             if admin_audits:
                 last_run[set_id]["admin_audits"]["from_date"] = prepare_datetime(admin_audits[-1].get("EventTime"), increase=True)
                 events.extend(admin_audits)
 
-    for set_id, policy_audits_last_run in get_events(client.get_policy_audits, "policy_audits", last_run, max_fetch).items():
+    set_id_and_policy_audits_last_run_items = get_events(client.get_policy_audits, "policy_audits", last_run, max_fetch).items()
+    demisto.debug(f"[test] {set_id_and_policy_audits_last_run_items=}")
+    for set_id, policy_audits_last_run in set_id_and_policy_audits_last_run_items:
         if policy_audits := policy_audits_last_run.get("events", []):
             prepare_next_run(set_id, "policy_audits", last_run, policy_audits_last_run)
             events.extend(policy_audits)
 
-    for set_id, detailed_events_last_run in get_events(client.get_events, "detailed_events", last_run, max_fetch).items():
+    set_id_and_detailed_events_last_run_items = get_events(client.get_events, "detailed_events", last_run, max_fetch).items()
+    demisto.debug(f"[test] {set_id_and_detailed_events_last_run_items=}")
+    for set_id, detailed_events_last_run in set_id_and_detailed_events_last_run_items:
         if detailed_events := detailed_events_last_run.get("events", []):
             prepare_next_run(set_id, "detailed_events", last_run, detailed_events_last_run)
             events.extend(detailed_events)
@@ -382,6 +389,7 @@ def main():  # pragma: no cover
     enable_admin_audits = argToBoolean(params.get("enable_admin_audits", False))
     policy_audits_event_type = argToList(params.get("policy_audits_event_type"))
     raw_events_event_type = argToList(params.get("raw_events_event_type"))
+    demisto.debug(f"[test] {set_names=}, {enable_admin_audits=}, {policy_audits_event_type=}, {raw_events_event_type=}")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     max_fetch = arg_to_number(args.get("limit") or params.get("max_fetch") or DEFAULT_LIMIT)
