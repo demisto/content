@@ -1238,3 +1238,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
+issilent: true
+marketplaces: ["marketplacev2", "platform"]
+
