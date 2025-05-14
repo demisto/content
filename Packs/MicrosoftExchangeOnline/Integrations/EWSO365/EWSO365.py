@@ -234,7 +234,7 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", is_
     return attachment_name
 
 
-def prepare_args(args):
+def prepare_args(args: dict[str, str]) -> dict[str, str]:
     """
     Prepare arguments to be used as the API expects it
     :param args: demisto args
@@ -1191,15 +1191,26 @@ def reply_mail(
     attachCIDs="",
     attachNames="",
     manualAttachObj=None,
+    handle_inline_image=True
 ):  # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
-
+    handle_inline_image: bool = argToBoolean(handle_inline_image, True)
     # collect all types of attachments
     attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
     attachments.extend(collect_manual_attachments(manualAttachObj))
-    client.reply_email(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
+    client.reply_email(
+        in_reply_to=inReplyTo,
+        to=to,
+        body=body,
+        subject=subject,
+        bcc=bcc,
+        cc=cc,
+        html_body=htmlBody,
+        attachments=attachments,
+        handle_inline_image=handle_inline_image
+    )
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
