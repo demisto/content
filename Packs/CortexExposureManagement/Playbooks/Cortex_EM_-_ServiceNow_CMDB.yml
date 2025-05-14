@@ -1,7 +1,7 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: 'Given provided indicators (IPs, Hostnames, FQDNs, etc.) this playbook enriches ServiceNow CMDB information relevant to vulnerability issues.'
-id: Cortex VM - ServiceNow CMDB
+description: 'Given provided indicators (IPs, Hostnames, FQDNs, etc.) this playbook enriches ServiceNow CMDB information relevant to exposure issues.'
+id: Cortex EM - ServiceNow CMDB
 inputSections:
 - description: Generic group for inputs
   inputs:

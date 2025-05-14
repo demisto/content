@@ -1,4 +1,4 @@
-Given provided indicators (IPs, Hostnames, FQDNs, etc.) this playbook enriches ServiceNow CMDB information relevant to vulnerability issues.
+Given provided indicators (IPs, Hostnames, FQDNs, etc.) this playbook enriches ServiceNow CMDB information relevant to exposure issues.
 
 ## Dependencies
 
@@ -37,10 +37,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| vmassetownerunrankedraw | Potential asset/remediation owners. | unknown |
+| vmassetownerunrankedraw | potential asset/remediation owners | unknown |
 
 ## Playbook Image
 
 ---
 
-![Cortex VM - ServiceNow CMDB](../doc_files/Cortex_VM_-_ServiceNow_CMDB.png)
+![Cortex VM - ServiceNow CMDB](../doc_files/Cortex_EM_-_ServiceNow_CMDB.png)
