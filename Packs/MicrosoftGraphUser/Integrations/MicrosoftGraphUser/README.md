@@ -61,9 +61,10 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### msgraph-user-account-disable
 ***
-Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-but does not terminate an existing session. Supported only in a self deployed app flow with the
-Permission: Directory.AccessAsUser.All(Delegated)
+Disables a user from all Azure applications, and prevents sign in.
+Note: This command disables user, but does not terminate an existing session. 
+For users assigned **admin/privileged roles**, this is only supported with the Permission:
+User.EnableDisableAccount.All (Application).
 
 
 #### Base Command
@@ -78,8 +79,9 @@ Permission: Directory.AccessAsUser.All(Delegated)
 
 ### msgraph-user-unblock
 ***
-Unblock a user.
-
+Unblocks/Enables a user.
+For users assigned **admin/privileged roles**, this is only supported with the Permission:
+User.EnableDisableAccount.All (Application).
 
 #### Base Command
 
