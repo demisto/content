@@ -1,4 +1,3 @@
-from typing import dict
 import hashlib
 import hmac
 import demistomock as demisto  # noqa: F401
@@ -16,30 +15,26 @@ class Client(BaseClient):
         Generate the signature and headers required for Duo API authentication.
         """
         # 1. Define the current timestamp
-        date_header = datetime.now(timezone.utc).strftime('%a, %d %b %Y %H:%M:%S %z')
+        date_header = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %z")
 
         # 2. Encode parameters into query string format
         params_encoded = urllib.parse.urlencode(sorted(params.items()))
 
         # 3. Construct the canonical string
-        canonical_string = f"{date_header}\n{method.upper()}\n{self._base_url.replace('https://', '').rstrip('/')}\n{path}\n" \
-                           f"{params_encoded}"
+        canonical_string = (
+            f"{date_header}\n{method.upper()}\n{self._base_url.replace('https://', '').rstrip('/')}\n{path}\n{params_encoded}"
+        )
 
         # 4. Generate the HMAC signature
         signature = hmac.new(
-            key=self.secret_key.encode('utf-8'),
-            msg=canonical_string.encode('utf-8'),
-            digestmod=hashlib.sha512
+            key=self.secret_key.encode("utf-8"), msg=canonical_string.encode("utf-8"), digestmod=hashlib.sha512
         ).hexdigest()
 
         # 5. Base64 encode the Authorization header
         auth_header = base64.b64encode(f"{self.integration_key}:{signature}".encode()).decode("utf-8")
 
         # 6. Return headers
-        return {
-            "Date": date_header,
-            "Authorization": f"Basic {auth_header}"
-        }
+        return {"Date": date_header, "Authorization": f"Basic {auth_header}"}
 
     def call_duo_api(self, method: str, path: str, params: dict[str, str]) -> dict:
         """
@@ -52,7 +47,7 @@ class Client(BaseClient):
             url_suffix=path,
             headers=headers,
             params=params,
-            resp_type='json',
+            resp_type="json",
         )
 
     def test_connectivity(self) -> str:
@@ -68,13 +63,7 @@ class Client(BaseClient):
         """
         Calls the '/auth' endpoint to send a push notification.
         """
-        params = {
-            "username": username,
-            "factor": factor,
-            "device": "auto",
-            "pushinfo": pushinfo,
-            "type": type
-        }
+        params = {"username": username, "factor": factor, "device": "auto", "pushinfo": pushinfo, "type": type}
         return self.call_duo_api("POST", "/auth/v2/auth", params)
 
 
@@ -91,7 +80,7 @@ def duo_push_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     username = args.get("username")
     factor = "push"  # Default to "push"
-    pushinfo = args.get("pushinfo", "From=XSOAR&Confirm=Write%20your%20message%20here...") # Default value if not provided
+    pushinfo = args.get("pushinfo", "From=XSOAR&Confirm=Write%20your%20message%20here...")  # Default value if not provided
     type = args.get("type", "Activities")  # Default value if not provided
 
     if not username:
@@ -111,10 +100,7 @@ def duo_push_command(client: Client, args: Dict[str, str]) -> CommandResults:
         "User": username,
     }
 
-    human_readable = f"### Duo Push Result\n" \
-                     f"**User**: {username}\n" \
-                     f"**Status**: {status}\n" \
-                     f"**Message**: {status_message}"
+    human_readable = f"### Duo Push Result\n**User**: {username}\n**Status**: {status}\n**Message**: {status_message}"
 
     return CommandResults(
         outputs_prefix="DuoAuth.PushNotification",
