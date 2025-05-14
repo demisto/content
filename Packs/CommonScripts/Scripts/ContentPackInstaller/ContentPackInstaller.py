@@ -168,9 +168,14 @@ class ContentPackInstaller:
             pack_id = pack["id"]
             pack_payload = json.dumps([{pack_id: pack["version"]}])
 
-            args = {"packs_to_install": str(pack_payload)}
+            if is_xsiam_or_xsoar_saas():  # install packs for XSOAR 8.X or XSIAM
+                data = {"packs": packs_to_install, "ignoreWarnings": True}
+                args = {"uri": "/contentpacks/marketplace/install", "body": data}
+                status, res = self._call_execute_command("core-api-post", args)
 
-            status, res = self._call_execute_command("core-api-install-packs", args)
+            else:  # install packs for XSOAR 6.X
+                args = {"packs_to_install": str(pack_payload)}
+                status, res = self._call_execute_command("core-api-install-packs", args)
 
             if not status:
                 demisto.error(f"{SCRIPT_NAME} - Failed to install the pack {pack_id} - {res!s}")
@@ -326,6 +331,9 @@ def main():
         installer = ContentPackInstaller(instance_name)
         packs_to_install = format_packs_data_for_installation(args)
         install_dependencies = argToBoolean(args.get("install_dependencies", "true"))
+        if is_xsiam_or_xsoar_saas():
+            # When downloading a pack through the tenant marketplace, we must install all dependencies
+            install_dependencies = True
 
         for pack in packs_to_install:
             installer.install_pack_and_its_dependencies(pack, install_dependencies)
