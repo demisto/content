@@ -747,7 +747,7 @@ def ms_ip_string_to_list(ips: str) -> list:
 
 
 def get_last_fetch_time(last_run: dict, params: dict):
-    last_fetch = last_run.get("latest_alert_found")
+    last_fetch = last_run.get("latest_detection_found")
     if not last_fetch:
         demisto.debug("[AzureADIdentityProtection] First run")
         # handle first time fetch
@@ -874,16 +874,16 @@ def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
 
     if params.get("alerts_to_fetch", "Risk Detections") == "Risky Users":
         riskyusers: list = client.list_risky_users(limit, None, filter_expression) # type: ignore
-        incidents, latest_alert_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch) # type: ignore
+        incidents, latest_detection_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch) # type: ignore
     else:
         detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
-        incidents, latest_alert_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
+        incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
 
     demisto.debug(f"Fetched {len(incidents)} incidents")
 
-    demisto.debug(f"next run latest_alert_found: {latest_alert_time}")
+    demisto.debug(f"next run latest_detection_found: {latest_detection_time}")
     last_run = {
-        "latest_alert_found": latest_alert_time,
+        "latest_detection_found": latest_detection_time,
     }
 
     return incidents, last_run
