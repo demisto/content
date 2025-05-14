@@ -1878,7 +1878,7 @@ def sub_main():  # pragma: no cover
                     destination_folder_path=args.get("destination_folder_path", ""),
                     dest_client=dest_client,
                     source_mailbox=args.get("source_mailbox", None),
-                    is_public=args.get("is_public", None),  # type: ignore[arg-type]
+                    is_public=args.get("is_public", None),  # type: ignore[assignment]
                 )
             )
 
