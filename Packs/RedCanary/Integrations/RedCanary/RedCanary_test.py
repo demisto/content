@@ -331,3 +331,41 @@ def test_def_get_full_timeline(mocker):
     assert result1["data"] == result2["data"]
     # make sure the loop ends
     assert activities
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def test_get_detection_command_includes_domain(mocker):
+    """
+    Given
+    - Raw response of get_full_timeline function
+    - Response from get_detection command.
+    When
+    - Running the get_detection command
+    Then
+    Make sure that the Domain info exists in the context data under the Domain key.
+    """
+    detection_data = util_load_json("TestData/detection.json")
+    timeline_data = util_load_json("TestData/detection_timeline.json")
+    mocker.patch("RedCanary.demisto.args", return_value={"id": "87"})
+
+    def http_get_side_effect(url, params=None):
+        if url == "/detections/87":
+            return {"data": [detection_data]}
+        elif url.startswith(f"/detections/{detection_data['id']}/timeline"):
+            return timeline_data
+        return {}
+
+    mocker.patch("RedCanary.http_get", side_effect=http_get_side_effect)
+
+    # Call the command
+    result = RedCanary.get_detection_command()
+
+    # Validate the Domain context was returned
+    entry_context = result.get("EntryContext", {})
+    assert "Domain(val.Username == obj.Username)" in entry_context
+    assert isinstance(entry_context["Domain(val.Username == obj.Username)"], list)
+    assert any("example.domain" in json.dumps(d) for d in entry_context["Domain(val.Username == obj.Username)"])

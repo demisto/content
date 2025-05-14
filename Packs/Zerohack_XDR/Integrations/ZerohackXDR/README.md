@@ -4,69 +4,45 @@ The companion integration for Zerohack XDR.
 Current versions allow the user to collect data from the XDR and later versions will support data exfiltration to XDR.
 This integration was integrated and tested with version 1.0 of Zerohack XDR
 
-
 ## Create API key on Zerohack XDR for Cortex XSOAR
 
 1. Navigate to **Side Panel** > **Administration** > **Integration** > **Key Management**.
 
-
     ![Setup Account](./../../doc_imgs/dashboard_sidepanel.png)
-
-
-
-
 
 2. Click on Create API key.  
 
-
     ![Setup Account](./../../doc_imgs/createAPI1.1.png)
-
 
 3. Click on Drop down of Select application.
 
-
     ![Setup Account](./../../doc_imgs/createAPI_2.1.png)
-
 
 4. Click on Palo Alto XSOAR.
 
-
-
     ![Setup Account](./../../doc_imgs/createAPI_3.1.png)
-
-
-
-
 
 5. Select API Type "Full Control".
 
-
    ![Setup Account](./../../doc_imgs/createAPI_4.1.png)
-
-
 
 6. Click on Create Api.
 
-
    ![Setup Account](./../../doc_imgs/createAPI_5.1.png)
 
-
-7. Copy your API key.   
-
+7. Copy your API key.
 
    ![Setup Account](./../../doc_imgs/createAPI_6.1.png)
- 
+
 ## Configure Zerohack XDR on Cortex XSOAR
 
 1. Navigate to **Settings** on bottom left corner of dashboard > **Integrations** > **Servers & Services**.
 
 ![Setup Account](./../../doc_imgs/xsoar_dash.png)
 
-
 2. Search for Zerohack XDR.
 
 ![Setup Account](./../../doc_imgs/settings_integrations.png)
-
 
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -85,49 +61,42 @@ This integration was integrated and tested with version 1.0 of Zerohack XDR
 
 4. Click on Gear Icon.
 
-
-
 ![Setup Account](./../../doc_imgs/settings_integrations2.png)
 
-
 5. Click **Test** to validate the URLs, token, and connection.
-
 
 ![Setup Account](./../../doc_imgs/test_results.png)
 
 6. Access the Fetch results.
 
-
 ![Setup Account](./../../doc_imgs/settings_integrations1.png)
 
+![Setup Account](./../../doc_imgs/latest_fetch_history.png)
 
-![Setup Account](./../../doc_imgs/latest_fetch_history.png)   
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### zerohack-get-latest-incident
+
 ***
 Fetch a single incident of your choice of severity level to study the incidents structure before you start continously fecthing incidents.
-
 
 #### Base Command
 
 `zerohack-get-latest-incident`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| severity_level | The severity level helps in extracting latest incident of a specific severity. | Required | 
-
-
-
+| severity_level | The severity level helps in extracting latest incident of a specific severity. | Required |
 
 ![Setup Account](./../../doc_imgs/CLI_command_execute.png)
 
-
 #### Context Output
 
-    
     "message_type": "success",
     "data_len": 1,
     "data": [
@@ -174,6 +143,5 @@ Fetch a single incident of your choice of severity level to study the incidents 
             "geoip_asn_name": null
         }
     ]
-
 
 ![Setup Account](./../../doc_imgs/command_result.png)

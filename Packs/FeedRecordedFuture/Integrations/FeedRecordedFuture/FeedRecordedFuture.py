@@ -604,7 +604,7 @@ def main():  # pragma: no cover
         params.get("risk_score_threshold"),
         argToList(params.get("feedTags")),
         params.get("tlp_color"),
-        argToBoolean(params.get("performance") or False),
+        argToBoolean(params.get("performance") or True),
     )
     demisto.debug("RF: Finished initializing client")
     command = demisto.command()
