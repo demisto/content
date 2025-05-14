@@ -4,7 +4,7 @@ The **Cortex Exposure Management** pack is supported by the Exposure Management 
 
 By leveraging the vulnerability detection capabilities present in many of the core and optional Cortex XSIAM add-ons, Cortex XSIAM is able to help organizations make sense of their vulnerability posture and take mitigating actions. 
 
-This pack aims to further augment these platform capabilities by providing powerful automation content to aid in the enrichment and response of vulnerability issues, by providing playbooks and scripts to stitch together relevant investigation details such as the remediation owner and offer appropriate mitigation options to defenders.
+This pack aims to further augment these platform capabilities by providing powerful automation content to aid in the enrichment and response of exposure issues, by providing playbooks and scripts to stitch together relevant investigation details such as the remediation owner and offer appropriate mitigation options to defenders.
 
 
 ## What does this pack do?
@@ -15,22 +15,24 @@ This pack contains all of the integrations, automations, and playbooks necessary
 
 ## What is included in this pack?
 
-The main Cortex Exposure Management playbook is the `Cortex VM - Vulnerability Issue` playbook. This playbook contains a set of sub-playbooks, which support many different remediation ownership paths that can be taken depending on the types of configured integrations and issue source.
+The main Cortex Exposure Management playbook is the `Cortex EM - Exposure Issue` playbook. This playbook contains a set of sub-playbooks, which support many different remediation ownership paths that can be taken depending on the types of configured integrations and issue source.
 
 - Playbooks
-  - [Cortex VM - ServiceNow CMDB](#cortex-vm---servicenow-cmdb)
-  - [Cortex VM - Vulnerability Issue](#cortex-vm---vulnerability-issue)
+  - [Cortex EM - Exposure Issue](#cortex-em---exposure-issue)
+  - [Cortex EM - ServiceNow CMDB](#cortex-em---servicenow-cmdb)
+
 
 ### Playbooks
 
-#### Cortex VM - ServiceNow CMDB
+#### Cortex EM - Exposure Issue
 
-A playbook that when given provided indicators (IPs, Hostnames, FQDNs, etc.), enriches ServiceNow CMDB information relevant to vulnerability issues.
+A playbook that handles exposure issues by enriching assets to find potential asset owners.
 
-![Cortex VM - ServiceNow CMDB](doc_files/Cortex_VM_-_ServiceNow_CMDB.png)
+![Cortex EM - Exposure Issue](doc_files/Cortex_EM_-_Exposure_Issue.png)
 
-#### Cortex VM - Vulnerability Issue
+#### Cortex EM - ServiceNow CMDB
 
-A playbook that handles vulnerability issues by enriching assets to find potential asset owners.
+A playbook that when given provided indicators (IPs, Hostnames, FQDNs, etc.), enriches ServiceNow CMDB information relevant to exposure issues.
 
-![Cortex VM - Vulnerability Issue](doc_files/Cortex_VM_-_Vulnerability_Issue.png)
+![Cortex EM - ServiceNow CMDB](doc_files/Cortex_EM_-_ServiceNow_CMDB.png)
+

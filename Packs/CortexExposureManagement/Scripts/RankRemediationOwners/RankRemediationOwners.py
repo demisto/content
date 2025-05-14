@@ -13,8 +13,8 @@ from itertools import groupby
 import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-#TODO
-demisto.debug("pack name = Cortex Attack Surface Management, pack version = 1.7.65")
+
+demisto.debug("pack name = Cortex Exposure Management, pack version = 1.0.0")
 
 
 """Script for identifying and recommending the most likely owners related to an exposure issue.
@@ -116,7 +116,7 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
         return owners
 
     try:
-        model = load_pickled_xpanse_object("service_owner_model.pkl")
+        model = load_pickled_xpanse_object("remediation_owner_model.pkl")
     except Exception as ex:
         demisto.info(f"Error loading the model: {ex}. Using fallback scores")
         return scoring_fallback(owners)
@@ -245,7 +245,7 @@ def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
                 # max over numerical types
                 owner[other] = max(owner.get(other, 0) for owner in duplicates)  # type: ignore
             else:
-                demisto.info(f"Cannot aggregate owner detail {other} -- removing from service owner")
+                demisto.info(f"Cannot aggregate owner detail {other} -- removing from remediation owner")
                 continue
         deduped.append(owner)
     return deduped
@@ -461,7 +461,7 @@ def get_name_similarity_index(
 
 
 class OwnerFeaturizationPipeline:
-    def __init__(self, sources: list | None = None):
+    def __init__(self, sources: Optional[list] = None):
         """
         Initialize a featurization pipeline.
         """
@@ -518,7 +518,7 @@ class OwnerFeaturizationPipeline:
             src_path_length = 1
             while src.startswith("Chain: "):
                 src_path_length += 1
-                src = src[len("Chain: ") :]
+                src = src[len("Chain: "):]
             if min_path_length is None or src_path_length < min_path_length:
                 min_path_length = src_path_length
         return min_path_length
@@ -612,7 +612,7 @@ def main():
         if isinstance(unranked, dict):
             unranked = [unranked]
         asm_system_ids = demisto.args().get("asmsystemids", [])
-        owner_related_field = demisto.args().get("ownerrelatedfield", "asmremediationowner")
+        owner_related_field = demisto.args().get("ownerrelatedfield", "xdmremediationowners")
         platform_tenant_usage = demisto.args().get("tenantcommand", "False")
         # deduplicate/normalize, score, and rank owners
         normalized = aggregate(canonicalize(unranked))

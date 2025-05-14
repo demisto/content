@@ -484,8 +484,8 @@ tasks:
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
       id: 0ef0668b-b744-49d1-995a-3f29960da6df
       iscommand: false
-      name: RankServiceOwners
-      script: RankServiceOwners
+      name: RankRemediationOwners
+      script: RankRemediationOwners
       type: regular
       version: -1
     taskid: 0ef0668b-b744-49d1-995a-3f29960da6df

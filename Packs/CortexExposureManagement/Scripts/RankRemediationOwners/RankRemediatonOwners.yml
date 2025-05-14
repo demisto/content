@@ -5,7 +5,7 @@ args:
 - description: System IDs or names associated with the compute instance.
   isArray: true
   name: asmsystemids
-- defaultValue: asmremediationowner
+- defaultValue: xdmremediationowners
   description: The field of the alert or issue in which the owners should be stored.
   name: ownerrelatedfield
 - defaultValue: "False"
@@ -28,13 +28,8 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 runonce: false
 engineinfo: {}
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS

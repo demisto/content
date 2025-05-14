@@ -7,7 +7,9 @@ import pytest
 import unittest
 from unittest.mock import Mock
 
-from Packs.CortexExposureManagement.Scripts.RankRemediationOwners.RankRemediationOwners import (
+# from RankRemediationOwners import *
+# from Packs.CortexExposureManagement.Scripts.RankRemediationOwners.RankRemediationOwners import (
+from RankRemediationOwners import (
     OwnerFeaturizationPipeline,
     _canonicalize,
     _get_k,
@@ -591,7 +593,7 @@ def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
         main()
 
     # Verify the output value was set
-    expected_calls_to_mock_object = [unittest.mock.call("setAlert", {"asmremediationowner": expected_out})]
+    expected_calls_to_mock_object = [unittest.mock.call("setAlert", {"xdmremediationowners": expected_out})]
     if demisto_execution_mock.call_args_list:
         assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
     else:
@@ -928,7 +930,7 @@ def test_write_output_to_context_key(mocker, platform_tenant):
         {"name": "aa", "email": "email1@gmail.com", "source": "source1", "timestamp": "1"},
         {"name": "a", "email": "email1@gmail.com", "source": "source1", "timestamp": "1"},
     ]
-    owner_related_field = "asmremediationowner"
+    owner_related_field = "xdmremediationowners"
 
     mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1}])
     args = {"final_owners": final_owners, "owner_related_field": owner_related_field, "platform_tenant": platform_tenant}
@@ -940,7 +942,7 @@ def test_write_output_to_context_key(mocker, platform_tenant):
     ]
     expected_platform = ["email1@gmail.com", "email1@gmail.com"]
     if platform_tenant == "True":
-        expected_calls_to_mock_object = [unittest.mock.call("setIssue", {"asmremediationowner": expected_platform})]
+        expected_calls_to_mock_object = [unittest.mock.call("setIssue", {"xdmremediationowners": expected_platform})]
     else:
-        expected_calls_to_mock_object = [unittest.mock.call("setAlert", {"asmremediationowner": expected_non_platform})]
+        expected_calls_to_mock_object = [unittest.mock.call("setAlert", {"xdmremediationowners": expected_non_platform})]
     assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
