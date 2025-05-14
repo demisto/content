@@ -426,7 +426,7 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         )
 
 
-def add_playbook_metadata(data: dict, command: str, brand: str):
+def add_playbook_metadata(data: dict, command: str, brand: str = ""):
     ctx_output: dict = demisto.callingContext or {}
     entry_task: dict = ctx_output.get("context", {}).get("ParentEntry", {}).get("entryTask", {})
     incidents: list = ctx_output.get("context", {}).get("Incidents", [])
@@ -470,7 +470,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
         }
     }
 
-    add_playbook_metadata(data, "start_xql_query", args.get("brand", "XQL Query Engine"))
+    add_playbook_metadata(data, "start_xql_query", args.get("brand", ""))
 
     time_frame = args.get("time_frame")
     if time_frame:
