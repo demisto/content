@@ -31,32 +31,72 @@ configuration:
   section: Connect
   advanced: true
 - display: Fetch events
-  name: is_fetch_events
-  type: 0
-  required: true
-  section: Collect
-- display: Event types to fetch
-  name: events_types_to_fetch
-  defaultvalue:
-  type: 0
-  required: true
+  name: isFetchEvents
+  type: 8
   section: Collect
   advanced: true
+  required: false
+  defaultvalue: 'true'
+  hidden:
+  - xsoar
+- display: Event Types To Fetch
+  name: event_types_to_fetch
+  section: Collect
+  type: 16
+  advanced: true
+  required: false
+  defaultvalue: 'Reports'
+  options:
+  - Reports
+  - Credential watchlist
+  - Domain watchlist
+  hidden:
+  - xsoar
+- display: The maximum number of report event per fetch
+  name: max_fetch_report
+  defaultvalue: "5000"
+  advanced: true
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+- display: The maximum number of Credential watchlist events per fetch
+  name: max_fetch_creds
+  defaultvalue: "50"
+  advanced: true
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+- display: The maximum number of Domain watchlist events  per fetch
+  name: max_fetch_domain
+  defaultvalue: "500"
+  advanced: true
+  type: 0
+  required: trfalseue
+  section: Collect
+  hidden:
+  - xsoar
 description: 'CybelAngel collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
 display: CybelAngel
 name: CybelAngel Event Collector
 script:
   commands:
   - arguments:
-    - description: 'Get reports from a specific start date formatted with ISO 8601.'
+    - description: 'Get events from the required type.'
+      name: event_type
+      required: false
+    - description: 'Get events from a specific start date formatted with ISO 8601.'
       name: start_date
-      required: true
-    - description: 'Get reports until a specific end date formatted with ISO 8601.'
+      required: false
+    - description: 'Get events until a specific end date formatted with ISO 8601.'
       name: end_date
-      required: true
-    - description: 'The maximum number of reports to return.'
+      required: false
+    - description: 'The maximum number of events to return.'
       name: limit
-      required: true
+      required: false
       defaultValue: 50
     description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
     name: cybelangel-get-events
