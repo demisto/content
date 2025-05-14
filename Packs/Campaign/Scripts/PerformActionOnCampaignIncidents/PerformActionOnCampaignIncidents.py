@@ -332,7 +332,11 @@ def _get_campaign_info() -> tuple[str, Any, list]:
     """
     campaign_id = demisto.incident()["id"]
     campaign_context = _get_context(campaign_id)
-    campaign_incidents_context = demisto.dt(campaign_context, "Contents.context.EmailCampaign.incidents") or []
+    email_campaign = demisto.dt(campaign_context, "Contents.context.EmailCampaign") or {}
+    if isinstance(email_campaign, list):
+        email_campaign = email_campaign[0]
+
+    campaign_incidents_context = email_campaign.get("incidents", [])
     return campaign_id, campaign_context, campaign_incidents_context
 
 

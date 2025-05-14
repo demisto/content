@@ -15,6 +15,8 @@ class SetPhishingCampaignDetails:
         # Getting the context of the current incident under the campaign key.
         # An example for context is available in 'context_example' file
         current_incident_campaign_data = self.incident_context.get(EMAIL_CAMPAIGN_KEY, {})
+        if current_incident_campaign_data and isinstance(current_incident_campaign_data, list):
+            current_incident_campaign_data = current_incident_campaign_data[0]
         return current_incident_campaign_data
 
     def get_campaign_context_from_incident(self, incident_id: str) -> dict:
@@ -23,6 +25,9 @@ class SetPhishingCampaignDetails:
 
         # If campaign context key is not found in the context, dt should return None.
         campaign_context = self.dt(incident_context, f"context.{EMAIL_CAMPAIGN_KEY}")
+        if campaign_context and isinstance(campaign_context, list):
+            campaign_context = campaign_context[0]
+        
         return campaign_context if campaign_context else {}
 
     def get_similarities_from_incident(self, incident_id: str) -> dict:

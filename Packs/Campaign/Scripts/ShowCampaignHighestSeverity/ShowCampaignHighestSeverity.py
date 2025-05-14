@@ -24,7 +24,10 @@ def get_incident_severity(incident_id):
 
 
 def incidents_id():
-    incidents = dict_safe_get(demisto.context(), ["EmailCampaign", "incidents"], [])
+    email_campaign = dict_safe_get(demisto.context(), ["EmailCampaign"], {})
+    if email_campaign and isinstance(email_campaign, list):
+        email_campaign = email_campaign[0]
+    incidents = email_campaign.get('incidents', [])
     for incident in incidents:
         yield incident["id"]
 
