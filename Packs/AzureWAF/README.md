@@ -85,7 +85,7 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 5. Select the log categories that you want to stream. Refer to the **Log Normalization** section for the supported log categories for normalization.
 6. Select the streaming and storing method.
 
-   6.1. For event hub: 
+   6.1. For Event Hub: 
    - Click the **Stream to an event hub** checkbox.
    - (Optional) Click **Archive to a storage account** to save the diagnostic logs.
    - Under **Subscription** choose the relevant Azure subscription.
