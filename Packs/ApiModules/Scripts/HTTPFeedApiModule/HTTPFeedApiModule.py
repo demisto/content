@@ -476,7 +476,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: str | None, clie
         attributes["tags"] = feed_tags
 
         if tlp_color:
-            attributes['trafficlightprotocol'] = tlp_color
+            attributes["trafficlightprotocol"] = tlp_color
     else:
         extracted_indicator = []
 
