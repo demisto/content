@@ -13,14 +13,14 @@ Proofpoint Threat Response is a security solution that helps organizations detec
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL  | (e.g., https://192.168.0.1) | True |
-| API Key  | for the authentication. | True |
+| API key for the authentication  |  | True |
 | Trust any certificate (not secure) | If set to false, trusts any certificate (not secure). | False |
 | Use system proxy settings |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The time range for the initial data fetch. If timeout errors occur, consider changing this value. | False |
 | Fetch limit - maximum number of incidents per fetch |  | False |
 | Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes. | The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value. | False |
 | Fetch incidents with specific event sources. Can be a list of comma-separated values. |  | False |
-| Fetch incidents with specific 'Abuse Disposition' values. Can be a list of comma-separated values. |  | False |
+| Fetch incidents with specific state 'Abuse Disposition' values. (Can be a list of comma-separated values.) |  | False |
 | Fetch incident with specific states. |  | False |
 | POST URL of the JSON alert source. | You can find this value by navigating to Sources -&amp;gt; JSON event source -&amp;gt; POST URL. | False |
 
