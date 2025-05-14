@@ -515,6 +515,8 @@ def fetch_alerts_with_pagination(
         final_alerts.extend(alerts)
         demisto.debug(f"Fetched {len(alerts)} alerts from offset {offset}.")
         offset += len(alerts)
+        if offset >= total_alerts:
+            break
 
     return final_alerts
 
