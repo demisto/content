@@ -492,7 +492,7 @@ def fetch_alerts_with_pagination(
 
     final_alerts = []
     offset = 0
-    total_alerts = None
+    total_alerts = 0
 
     # Fetch alerts in a loop until all alerts are retrieved
     # Using offset to paginate through the results
