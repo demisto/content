@@ -299,10 +299,10 @@ def generic_ansible(
             # if given creds param and a cred mapping - use the naming mapping to correct the arg names
             if arg_key == "creds" and creds_mapping:
                 if arg_value.get("identifier") and "identifier" in creds_mapping:
-                    module_args += f'{creds_mapping.get("identifier")}="{arg_value.get('identifier')}" '
+                    module_args += f"{creds_mapping.get('identifier')}=\"{arg_value.get('identifier')}\" "
 
                 if arg_value.get("password") and "password" in creds_mapping:
-                    module_args += f'{creds_mapping.get("password")}="{arg_value.get('password')}" '
+                    module_args += f"{creds_mapping.get('password')}=\"{arg_value.get('password')}\" "
 
             else:
                 module_args += f'{arg_key}="{arg_value}" '
