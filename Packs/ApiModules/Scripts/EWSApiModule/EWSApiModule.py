@@ -719,13 +719,13 @@ class EWSClient:
         attachments: list,
         from_mailbox: str | None = None,
         account: Account | None = None,
-        handle_inline_image: bool = True
+        handle_inline_image: bool = True,
     ) -> Message:
         """Send a reply email using the EWS account.
-    
-        Sends a reply email using the EWS account associated with this client or the provided 
+
+        Sends a reply email using the EWS account associated with this client or the provided
         account, based on the provided parameters.
-        
+
         Args:
             in_reply_to (str): ID of the email to reply to.
             to (list[str]): List of email addresses for the "To" field.
@@ -738,7 +738,7 @@ class EWSClient:
             from_mailbox (str | None, optional): Email address of the sender. Defaults to None.
             account (Account | None, optional): Account for the mailbox containing the email to reply to. Defaults to None.
             handle_inline_image (bool, optional): Whether to process inline images in the HTML body. Defaults to True.
-            
+
         Returns:
             Message: The sent message.
         """

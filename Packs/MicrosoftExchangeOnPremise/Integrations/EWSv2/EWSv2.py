@@ -1562,11 +1562,11 @@ def reply_email(client: EWSClient, args: dict):  # pragma: no cover
     bcc = argToList(args.get("bcc"))
     cc = argToList(args.get("cc"))
     to = argToList(args.get("to"))
-    handle_inline_image: bool = argToBoolean(args.get('handle_inline_image', True))
+    handle_inline_image: bool = argToBoolean(args.get("handle_inline_image", True))
     from_mailbox = args.get("from")
     subject = args.get("subject", "")
     subject = subject[:252] + "..." if subject and len(subject) > 255 else subject
-    
+
     attachments, attachments_names = process_attachments(
         args.get("attachCIDs", ""), args.get("attachIDs", ""), args.get("attachNames", ""), args.get("manualAttachObj") or []
     )
@@ -1582,7 +1582,7 @@ def reply_email(client: EWSClient, args: dict):  # pragma: no cover
         attachments=attachments,
         from_mailbox=from_mailbox,
         account=account,
-        handle_inline_image=handle_inline_image
+        handle_inline_image=handle_inline_image,
     )
     result_object = {
         "from": from_mailbox or account.primary_smtp_address,

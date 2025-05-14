@@ -1191,7 +1191,7 @@ def reply_mail(
     attachCIDs="",
     attachNames="",
     manualAttachObj=None,
-    handle_inline_image=True
+    handle_inline_image=True,
 ):  # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
@@ -1209,7 +1209,7 @@ def reply_mail(
         cc=cc,
         html_body=htmlBody,
         attachments=attachments,
-        handle_inline_image=handle_inline_image
+        handle_inline_image=handle_inline_image,
     )
 
 
