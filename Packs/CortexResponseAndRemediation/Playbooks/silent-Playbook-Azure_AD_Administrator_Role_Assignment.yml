@@ -1,7 +1,7 @@
-id: silent-Identity assigned an Azure AD Administrator Role
+id: silent-Azure AD Administrator Role Assignment
 version: -1
-name: silent-Identity assigned an Azure AD Administrator Role
-description: "### This playbook addresses the following alert:\n- Identity assigned an Azure AD Administrator Role\n- Suspicious Azure AD Administrator Role assignment\n- Identity assigned an Azure AD Administrator Role by an Application\n\n### Playbook Stages:\n\n#### Triage:\n- Gather additional information about the **assignor and assignee identities** involved in the admin role assignment, as well as **any anomalies** related to the alert.\n\n#### Investigation:\n- Assignor/Assignee Identities Analysis:\n  - Assess the **risk level** of the user in Cortex. \n  - Search for medium/high risk level **Azure Risk Detections and Defender Alerts** from the past day.\n  - Mark if the user is **new**.\n- Analyze the reputation of the assigning **IP address**.\n- Check for anomalies in **User Agent, ASN, and country**.\n\n#### Verdict:\n- If **either** the assignor and assignee identities are identical *OR* an application assigned the admin role for the first time from a rare IP, **AND** at least two evidence items were found.\n- If at least three evidence items include a mix of *global evidence with assignor-related evidence*, **OR** a mix of *global evidence with assignee-related evidence*.\n\n#### Remediation:\n- *Immediately* revoke the assignor's user sessions.\n- Remove the admin role assignment (*approval needed*).\n- Disable the assignor user and/or the assignee user (*approval needed*).\n\n### Requirements:\n- *For Investigation Steps:*\n  - `Azure Risky Users` or `MSGraph Identity and Access` for retrieving **Azure Risk Detections**.\n  - `Microsoft 365 Defender` for retrieving **Defender Alerts**.\n  - `Microsoft Graph User` for retrieving user properties.\n- *For Remediation Steps:*\n  - `MSGraph Identity and Access` for removing the admin role assignment.\n  - `Microsoft Graph User` with for disabling users."
+name: silent-Azure AD Administrator Role Assignment
+description: "### This playbook addresses the following alert:\n- Suspicious Azure AD Administrator Role assignment\n- Identity assigned an Azure AD Administrator Role by an Application\n\n### Playbook Stages:\n\n#### Triage:\n- Gather additional information about the **assignor and assignee identities** involved in the admin role assignment, as well as **any anomalies** related to the alert.\n\n#### Investigation:\n- Assignor/Assignee Identities Analysis:\n  - Assess the **risk level** of the user in Cortex. \n  - Search for medium/high risk level **Azure Risk Detections and Defender Alerts** from the past day.\n  - Mark if the user is **new**.\n- Analyze the reputation of the assigning **IP address**.\n- Check for anomalies in **User Agent, ASN, and country**.\n\n#### Verdict:\n- If **either** the assignor and assignee identities are identical *OR* an application assigned the admin role for the first time from a rare IP, **AND** at least two evidence items were found.\n- If at least three evidence items include a mix of *global evidence with assignor-related evidence*, **OR** a mix of *global evidence with assignee-related evidence*.\n\n#### Remediation:\n- *Immediately* revoke the assignor's user sessions.\n- Remove the admin role assignment (*approval needed*).\n- Disable the assignor user and/or the assignee user (*approval needed*).\n\n### Requirements:\n- *For Investigation Steps:*\n  - `Azure Risky Users` or `MSGraph Identity and Access` for retrieving **Azure Risk Detections**.\n  - `Microsoft 365 Defender` for retrieving **Defender Alerts**.\n  - `Microsoft Graph User` for retrieving user properties.\n- *For Remediation Steps:*\n  - `MSGraph Identity and Access` for removing the admin role assignment.\n  - `Microsoft Graph User` with for disabling users."
 tags:
 - T1098 - Account Manipulation
 - TA0003 - Persistence
@@ -1669,13 +1669,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 1467ad66-962e-4300-adb9-fe4c9b82f23b
+    taskid: fa949ab2-ff02-45d4-b173-03d065a3bab6
     type: regular
     task:
-      id: 1467ad66-962e-4300-adb9-fe4c9b82f23b
+      id: fa949ab2-ff02-45d4-b173-03d065a3bab6
       version: -1
       name: Close Alert as True Positive
-      description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1685,7 +1684,7 @@ tasks:
       - "45"
     scriptarguments:
       closeNotes:
-        simple: Handled by the playbook "Identity assigned an Azure AD Administrator Role"
+        simple: Handled by the playbook "Azure AD Administrator Role Assignment"
       closeReason:
         simple: Resolved - True Positive
     separatecontext: false
