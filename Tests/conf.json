@@ -4821,6 +4821,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -5235,7 +5236,7 @@
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
             "fromversion": "6.2.0",
-            "memory_threshold": 90,
+            "memory_threshold": 250,
             "timeout": 500
         },
         {
@@ -5799,7 +5800,8 @@
         },
         {
             "integrations": "Palo Alto Networks AIOps",
-            "playbookID": "PaloAltoNetworksAIOps-Test"
+            "playbookID": "PaloAltoNetworksAIOps-Test",
+            "memory_threshold": 100
         },
         {
             "integrations": "MattermostV2",
