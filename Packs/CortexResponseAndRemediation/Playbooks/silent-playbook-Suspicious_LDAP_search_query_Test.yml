@@ -329,7 +329,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: CommandLineAnalysis.risk
@@ -338,7 +338,7 @@ tasks:
             value:
               simple: Critical
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
               simple: CommandLineAnalysis.risk
@@ -347,7 +347,7 @@ tasks:
             value:
               simple: Medium
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
               simple: CommandLineAnalysis.risk
@@ -355,7 +355,6 @@ tasks:
           right:
             value:
               simple: High
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -743,7 +742,7 @@ tasks:
     task:
       id: b59ca94a-ff97-4617-be29-316684cc0f7d
       version: -1
-      name: Run Comman-Line Analysis
+      name: Run Command-Line Analysis
       description: |-
         This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
 
