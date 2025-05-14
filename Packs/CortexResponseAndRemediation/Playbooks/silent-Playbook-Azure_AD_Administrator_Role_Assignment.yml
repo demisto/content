@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 1012,
-          "y": 210
+          "y": 188
         }
       }
     note: false
@@ -97,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 1012,
-          "y": 369
+          "y": 314
         }
       }
     note: false
@@ -130,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 1012,
-          "y": 540
+          "y": 453
         }
       }
     note: false
@@ -160,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 700
+          "x": 52,
+          "y": 587
         }
       }
     note: false
@@ -200,8 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1713
+          "x": 52,
+          "y": 1391
         }
       }
     note: false
@@ -236,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1883
+          "x": 52,
+          "y": 1521
         }
       }
     note: false
@@ -293,8 +293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2053
+          "x": 52,
+          "y": 1655
         }
       }
     note: false
@@ -324,8 +324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 539,
-          "y": 1378
+          "x": 549,
+          "y": 1123
         }
       }
     note: false
@@ -355,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1493,
-          "y": 700
+          "x": 1495,
+          "y": 587
         }
       }
     note: false
@@ -400,8 +400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 539,
-          "y": 1543
+          "x": 549,
+          "y": 1391
         }
       }
     note: false
@@ -448,8 +448,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1493,
-          "y": 1030
+          "x": 1495,
+          "y": 846
         }
       }
     note: false
@@ -479,8 +479,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260.5,
-          "y": 1378
+          "x": 1272.5,
+          "y": 1123
         }
       }
     note: false
@@ -492,10 +492,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c784cafc-185c-4c85-a777-b4b7d97f846b
+    taskid: b8859ac0-f081-4912-ad4c-95cccc1ab3ad
     type: regular
     task:
-      id: c784cafc-185c-4c85-a777-b4b7d97f846b
+      id: b8859ac0-f081-4912-ad4c-95cccc1ab3ad
       version: -1
       name: Get Azure Risk Detections
       description: Returns a list of the **Risk Detection** objects and their properties from the **past day**
@@ -516,8 +516,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012,
-          "y": 1713
+          "x": 1023,
+          "y": 1391
         }
       }
     note: false
@@ -609,8 +609,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012,
-          "y": 1883
+          "x": 1023,
+          "y": 1521
         }
       }
     note: false
@@ -622,10 +622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8f316f65-f850-49c4-8269-11748dd4fbda
+    taskid: bfd4edbf-e846-4b34-9693-5823e0e5280c
     type: regular
     task:
-      id: 8f316f65-f850-49c4-8269-11748dd4fbda
+      id: bfd4edbf-e846-4b34-9693-5823e0e5280c
       version: -1
       name: Get Azure Risk Detections
       description: This filter dynamically targets **users involved in an investigation** (by their UPNs), and retrieves **Risk Detections** from the **past day** where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
@@ -644,14 +644,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1501,
-          "y": 1713
+          "x": 1512,
+          "y": 1391
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -700,8 +700,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1501,
-          "y": 1883
+          "x": 1512,
+          "y": 1521
         }
       }
     note: false
@@ -792,8 +792,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260.5,
-          "y": 1543
+          "x": 1272.5,
+          "y": 1245
         }
       }
     note: false
@@ -828,8 +828,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1982,
-          "y": 1713
+          "x": 1993,
+          "y": 1391
         }
       }
     note: false
@@ -884,8 +884,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1982,
-          "y": 1883
+          "x": 1993,
+          "y": 1521
         }
       }
     note: false
@@ -897,63 +897,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: ac941532-45a0-4c9f-b82e-0498ed33c9ad
+    taskid: 91951c29-e277-4e76-a1a1-797387e41c89
     type: title
     task:
-      id: ac941532-45a0-4c9f-b82e-0498ed33c9ad
+      id: 91951c29-e277-4e76-a1a1-797387e41c89
       version: -1
       name: Defender Alerts
+      description: Integration with *Microsoft 365 Defender* is **required**
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "32"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1982,
-          "y": 1378
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: b40c3ef7-402e-4d35-9a2e-cd0e03ba5752
-    type: condition
-    task:
-      id: b40c3ef7-402e-4d35-9a2e-cd0e03ba5752
-      version: -1
-      name: Is His Integration Available?
-      description: Integration with *Microsoft 365 Defender* is required to retrieve **Defender Alerts**
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "38"
-      "yes":
       - "29"
-    scriptarguments:
-      brandname:
-        simple: Microsoft 365 Defender
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1982,
-          "y": 1543
+          "x": 1992,
+          "y": 1123
         }
       }
     note: false
@@ -965,63 +928,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: d8d8e25a-1dcb-4697-a683-c014fd8a8f5b
+    taskid: 4303a8fb-dce3-4cea-b978-32b703fe3587
     type: title
     task:
-      id: d8d8e25a-1dcb-4697-a683-c014fd8a8f5b
+      id: 4303a8fb-dce3-4cea-b978-32b703fe3587
       version: -1
       name: User Creation Date
+      description: Integration with *Microsoft Graph User* is **required**
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "36"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2463,
-          "y": 1378
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 033a7e89-0472-400a-9e25-7d89cc6deb70
-    type: condition
-    task:
-      id: 033a7e89-0472-400a-9e25-7d89cc6deb70
-      version: -1
-      name: Is His Integration Available?
-      description: Integration with *Microsoft Graph User* is required to retrieve a **user's properties**
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "38"
-      "yes":
       - "60"
-    scriptarguments:
-      brandname:
-        simple: Microsoft Graph User
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2463,
-          "y": 1543
+          "x": 2473,
+          "y": 1123
         }
       }
     note: false
@@ -1033,13 +959,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 175dc5eb-1642-4c70-9f87-80d56a823569
+    taskid: 2b218acd-ab4d-42d2-a9a2-baeb9dfb1ce5
     type: regular
     task:
-      id: 175dc5eb-1642-4c70-9f87-80d56a823569
+      id: 2b218acd-ab4d-42d2-a9a2-baeb9dfb1ce5
       version: -1
       name: Save Assignee Creation Age if <= 7D
-      description: Set **Days Before Creation** as **Evidence** if the user was created within **the last week**
+      description: Saves the **number of days** since the assignee user's creation, if created within the **last 7 days**
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1081,8 +1007,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2463,
-          "y": 1883
+          "x": 2473,
+          "y": 1521
         }
       }
     note: false
@@ -1112,8 +1038,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 2244
+          "x": 1023,
+          "y": 1807
         }
       }
     note: false
@@ -1215,8 +1141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 2361
+          "x": 1023,
+          "y": 1932
         }
       }
     note: false
@@ -1249,8 +1175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -459,
-          "y": 700
+          "x": -457,
+          "y": 587
         }
       }
     note: false
@@ -1280,8 +1206,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 2530
+          "x": 1023,
+          "y": 2088
         }
       }
     note: false
@@ -1293,20 +1219,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: c9dd27c7-8311-4cab-acd9-35da22e5a3cd
+    taskid: 91481f03-3ce3-4bef-a17e-84c7f7d5b548
     type: regular
     task:
-      id: c9dd27c7-8311-4cab-acd9-35da22e5a3cd
+      id: 91481f03-3ce3-4bef-a17e-84c7f7d5b548
       version: -1
       name: Revoke Assignor User Sessions
-      description: Invalidates all the refresh tokens issued to applications for a user
+      description: |-
+        Invalidates all the refresh tokens issued to applications for a user
+        Integration with *Microsoft Graph User* is **required**
       script: '|||msgraph-user-session-revoke'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+      - "48"
     scriptarguments:
       user:
         simple: ${InvestigationUsers.Assignor.UPN}
@@ -1315,8 +1243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 813,
-          "y": 2787
+          "x": 814,
+          "y": 2497
         }
       }
     note: false
@@ -1343,8 +1271,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 589,
-          "y": 3786
+          "x": 590,
+          "y": 3353
         }
       }
     note: false
@@ -1404,8 +1332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 3059
+          "x": 1023,
+          "y": 2627
         }
       }
     note: false
@@ -1464,8 +1392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 813,
-          "y": 3338
+          "x": 814,
+          "y": 2905
         }
       }
     note: false
@@ -1524,8 +1452,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1233.5,
-          "y": 3338
+          "x": 1234.5,
+          "y": 2905
         }
       }
     note: false
@@ -1583,8 +1511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 3209
+          "x": 1023,
+          "y": 2776
         }
       }
     note: false
@@ -1617,8 +1545,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 813,
-          "y": 3497
+          "x": 814,
+          "y": 3064
         }
       }
     note: false
@@ -1656,8 +1584,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1233.5,
-          "y": 3497
+          "x": 1234.5,
+          "y": 3064
         }
       }
     note: false
@@ -1692,8 +1620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022,
-          "y": 3647
+          "x": 1023,
+          "y": 3214
         }
       }
     note: false
@@ -1737,8 +1665,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1493,
-          "y": 860
+          "x": 1495,
+          "y": 712
         }
       }
     note: false
@@ -1785,8 +1713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1825,
-          "y": 1190
+          "x": 1835,
+          "y": 982
         }
       }
     note: false
@@ -1843,8 +1771,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 539,
-          "y": 1883
+          "x": 549,
+          "y": 1655
         }
       }
     note: false
@@ -1901,8 +1829,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 539,
-          "y": 1713
+          "x": 549,
+          "y": 1521
         }
       }
     note: false
@@ -1947,8 +1875,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2463,
-          "y": 1713
+          "x": 2473,
+          "y": 1391
         }
       }
     note: false
@@ -1960,13 +1888,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 76d18a9e-8e9c-4542-9572-3adf04cdd02c
+    taskid: d89eab88-461a-4329-8830-aeb3bd44782c
     type: regular
     task:
-      id: 76d18a9e-8e9c-4542-9572-3adf04cdd02c
+      id: d89eab88-461a-4329-8830-aeb3bd44782c
       version: -1
       name: Save Assignor Creation Age if <= 7D
-      description: Set **Days Before Creation** as **Evidence** if the user was created within **the last week**
+      description: Saves the **number of days** since the assignor user's creation, if created within the **last 7 days**
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2008,8 +1936,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2463,
-          "y": 2053
+          "x": 2473,
+          "y": 1655
         }
       }
     note: false
@@ -2064,8 +1992,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1982,
-          "y": 2053
+          "x": 1993,
+          "y": 1655
         }
       }
     note: false
@@ -2120,8 +2048,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1501,
-          "y": 2053
+          "x": 1512,
+          "y": 1655
         }
       }
     note: false
@@ -2213,8 +2141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012,
-          "y": 2053
+          "x": 1023,
+          "y": 1655
         }
       }
     note: false
@@ -2271,8 +2199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -459,
-          "y": 2053
+          "x": -457,
+          "y": 1655
         }
       }
     note: false
@@ -2296,6 +2224,7 @@ tasks:
     nexttasks:
       '#none#':
       - "48"
+      - "44"
     scriptarguments:
       key:
         simple: Message
@@ -2304,8 +2233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 813,
-          "y": 2916
+          "x": 814,
+          "y": 2361
         }
       }
     note: false
@@ -2570,7 +2499,7 @@ tasks:
       '#default#':
       - "68"
       USER:
-      - "44"
+      - "66"
     separatecontext: false
     conditions:
     - label: USER
@@ -2588,8 +2517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 2651
+          "x": 1023,
+          "y": 2204
         }
       }
     note: false
@@ -2621,8 +2550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237,
-          "y": 2916
+          "x": 1234.5,
+          "y": 2361
         }
       }
     note: false
@@ -2839,17 +2768,21 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_15_#default#": 0.48,
-      "12_31_#default#": 0.29,
-      "12_33_#default#": 0.16,
-      "12_9_#default#": 0.16,
+      "12_15_#default#": 0.4,
+      "12_31_#default#": 0.22,
+      "12_33_#default#": 0.12,
+      "12_9_#default#": 0.12,
+      "28_38_#default#": 0.25,
+      "39_43_#1": 0.62,
+      "39_45_#default#": 0.19,
+      "5_38_#default#": 0.21,
       "5_6_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 3796,
-        "width": 3303,
-        "x": -459,
+        "height": 3363,
+        "width": 3311,
+        "x": -457,
         "y": 50
       }
     }
