@@ -200,7 +200,7 @@ def main():  # pragma: no cover
             return_results(reply_to_command(client, args))  # pylint: disable=E1123
         elif command == "msgraph-mail-get-email":
             return_results(get_message_command(client, args))
-        elif command == "msgraph-mail-delete-email":
+        elif command == "msgraph-mail-delete-email" or command == "msgraph-mail-delete-email-quick-action":
             return_results(delete_mail_command(client, args))
         elif command == "msgraph-mail-list-attachments":
             return_results(list_attachments_command(client, args))
@@ -226,7 +226,7 @@ def main():  # pragma: no cover
             return_results(update_email_status_command(client, args))
         elif command == "reply-mail":
             return_results(reply_email_command(client, args))
-        elif command == "send-mail":
+        elif command == "send-mail" or command == "send-mail-quick-action":
             return_results(send_email_command(client, args))
         elif command == "msgraph-mail-auth-reset":
             return_results(reset_auth())

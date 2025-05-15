@@ -3,3 +3,7 @@
 !ews-mailbox-permission-list identity=<UserName>
 !ews-recipient-list identity=<ExternalDirectoryObjectId>
 !ews-recipient-permission-get identity=<Guid>>
+!ews-release-quarantinemessage message_id=<CALOVw6uFpJ2pBoehvve4TwavOUe0BY-KRXnDkwbBh2hKEyQeYg@mail.gmail.com>
+!ews-get-quarantinemessage include_messages_from_blocked_sender_address="true" message_id=<CALOVw6uFpJ2pBoehvve4TwavOUe0BY-KRXnDkwbBh2hKEyQeYg@mail.gmail.com>
+!ews-new-tenant-allow-block-list-items entries=entries=example@example.com list_type="sender" list_subtype="Tenant" action="Block" no_expiration="false"
+!ews-remove-tenant-allow-block-list-items entries=example@example.com list_type=sender
