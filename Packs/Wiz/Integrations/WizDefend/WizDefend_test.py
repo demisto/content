@@ -22,14 +22,14 @@ from Packs.Wiz.Integrations.WizDefend.WizDefend import (
     validate_detection_type, validate_detection_platform, validate_detection_origin,
     validate_detection_subscription, validate_creation_minutes_back, validate_severity,
     validate_resource_id, validate_rule_match_id, validate_rule_match_name,
-    validate_project, validate_all_parameters, validate_incident_type, validate_first_fetch,
+    validate_project, validate_all_detection_parameters, validate_incident_type, validate_first_fetch,
     validate_fetch_interval, validate_first_fetch_timestamp,
     # Filter functions
     apply_creation_in_last_minutes_filter, apply_creation_after_time_filter,
     apply_detection_type_filter, apply_platform_filter, apply_origin_filter,
     apply_resource_id_filter, apply_subscription_filter, apply_severity_filter,
     apply_matched_rule_filter, apply_matched_rule_name_filter, apply_project_id_filter,
-    apply_detection_id_filter, apply_issue_id_filter, apply_all_filters,
+    apply_detection_id_filter, apply_issue_id_filter, apply_all_detection_filters,
     # Utility functions
     get_integration_user_agent, translate_severity, build_incidents, is_valid_uuid,
     is_valid_param_id, get_error_output, get_detection_url,
@@ -572,8 +572,8 @@ def test_validate_first_fetch_timestamp(mocker):
         assert date is None
 
 
-def test_validate_all_parameters():
-    """Test validate_all_parameters with various parameter combinations"""
+def test_validate_all_detection_parameters():
+    """Test validate_all_detection_parameters with various parameter combinations"""
     # Test with all valid parameters
     valid_params = {
         'detection_id': str(uuid.uuid4()),
@@ -590,7 +590,7 @@ def test_validate_all_parameters():
         'project_id': 'test-project'
     }
 
-    success, error_message, validated_values = validate_all_parameters(valid_params)
+    success, error_message, validated_values = validate_all_detection_parameters(valid_params)
     assert success is True
     assert error_message is None
     assert validated_values['type'] == 'GENERATED_THREAT'
@@ -601,7 +601,7 @@ def test_validate_all_parameters():
 
     # Test with no parameters (should fail)
     empty_params = {}
-    success, error_message, validated_values = validate_all_parameters(empty_params)
+    success, error_message, validated_values = validate_all_detection_parameters(empty_params)
     assert success is False
     assert "You should pass at least one of the following parameters" in error_message
 
@@ -610,7 +610,7 @@ def test_validate_all_parameters():
         'severity': 'CRITICAL',
         'after_time': '2022-01-01T00:00:00Z'
     }
-    success, error_message, validated_values = validate_all_parameters(after_time_params)
+    success, error_message, validated_values = validate_all_detection_parameters(after_time_params)
     assert success is True
     assert error_message is None
     assert validated_values['after_time'] == '2022-01-01T00:00:00Z'
@@ -621,7 +621,7 @@ def test_validate_all_parameters():
         'creation_minutes_back': '15',
         'after_time': '2022-01-01T00:00:00Z'
     }
-    success, error_message, validated_values = validate_all_parameters(conflicting_params)
+    success, error_message, validated_values = validate_all_detection_parameters(conflicting_params)
     assert success is False
     assert "Cannot provide both" in error_message
 
@@ -630,7 +630,7 @@ def test_validate_all_parameters():
         'detection_id': 'invalid-uuid',
         'severity': 'CRITICAL'
     }
-    success, error_message, validated_values = validate_all_parameters(invalid_id_params)
+    success, error_message, validated_values = validate_all_detection_parameters(invalid_id_params)
     assert success is False
     assert "should be in UUID format" in error_message
 
@@ -639,7 +639,7 @@ def test_validate_all_parameters():
         'type': 'INVALID_TYPE',
         'severity': 'CRITICAL'
     }
-    success, error_message, validated_values = validate_all_parameters(invalid_type_params)
+    success, error_message, validated_values = validate_all_detection_parameters(invalid_type_params)
     assert success is False
     assert "Invalid detection type" in error_message
 
@@ -648,7 +648,7 @@ def test_validate_all_parameters():
         'platform': 'INVALID_PLATFORM',
         'severity': 'CRITICAL'
     }
-    success, error_message, validated_values = validate_all_parameters(invalid_platform_params)
+    success, error_message, validated_values = validate_all_detection_parameters(invalid_platform_params)
     assert success is False
     assert "Invalid platform" in error_message
 
@@ -656,7 +656,7 @@ def test_validate_all_parameters():
     invalid_severity_params = {
         'severity': 'INVALID'
     }
-    success, error_message, validated_values = validate_all_parameters(invalid_severity_params)
+    success, error_message, validated_values = validate_all_detection_parameters(invalid_severity_params)
     assert success is False
     assert "You should only use these severity types" in error_message
 
@@ -665,7 +665,7 @@ def test_validate_all_parameters():
         'creation_minutes_back': '4',  # Below minimum
         'severity': 'CRITICAL'
     }
-    success, error_message, validated_values = validate_all_parameters(invalid_minutes_params)
+    success, error_message, validated_values = validate_all_detection_parameters(invalid_minutes_params)
     assert success is False
     assert "must be a valid integer between" in error_message
 
@@ -916,7 +916,7 @@ def test_apply_all_filters():
     }
 
     variables = {}
-    result = apply_all_filters(variables, validated_values)
+    result = apply_all_detection_filters(variables, validated_values)
 
     # Check that all filters were applied
     assert result["filterBy"]["id"]["equals"] == validated_values['detection_id']
@@ -938,7 +938,7 @@ def test_apply_all_filters():
     validated_values_with_after['after_time'] = "2022-01-01T00:00:00Z"
 
     variables = {}
-    result = apply_all_filters(variables, validated_values_with_after)
+    result = apply_all_detection_filters(variables, validated_values_with_after)
 
     # Check that after_time filter was applied
     assert "createdAt" in result["filterBy"]
@@ -951,7 +951,7 @@ def test_apply_all_filters():
     }
 
     variables = {}
-    result = apply_all_filters(variables, minimal_values)
+    result = apply_all_detection_filters(variables, minimal_values)
 
     # Check that only severity filter was applied
     assert "severity" in result["filterBy"]
@@ -1055,7 +1055,7 @@ def test_get_entries(mock_response_factory, mocker, mock_api_response):
     mocker.patch('requests.post', return_value=mock_response)
 
     # Call the function
-    entries, page_info = WizDefend.get_entries("test_query", {})
+    entries, page_info = WizDefend.get_entries("test_query", {}, WizApiResponse.DETECTIONS)
 
     # Verify entries and page_info
     assert entries == mock_api_response["data"]["detections"]["nodes"]
@@ -1078,7 +1078,7 @@ def test_get_entries_with_token_refresh(mock_response_factory, mocker, mock_api_
     mocker.patch('requests.post', return_value=mock_response)
 
     # Call the function
-    entries, page_info = get_entries("test_query", {})
+    entries, page_info = get_entries("test_query", {}, WizApiResponse.DETECTIONS)
 
     # Verify entries and page_info
     assert entries == mock_api_response["data"]["detections"]["nodes"]
@@ -1102,7 +1102,7 @@ def test_get_entries_error(mock_response_factory, mocker, mock_api_error_respons
 
     # Call the function and check exception
     with pytest.raises(Exception) as e:
-        WizDefend.get_entries("test_query", {})
+        WizDefend.get_entries("test_query", {}, WizApiResponse.DETECTIONS)
     assert 'Wiz API error details' in str(e.value)
     assert 'Resource not found' in str(e.value)
 
@@ -1124,8 +1124,8 @@ def test_get_entries_http_error(mock_response_factory, mocker):
 
     # Call the function and check exception
     with pytest.raises(Exception) as e:
-        WizDefend.get_entries("test_query", {})
-    assert 'Error authenticating to Wiz' in str(e.value)
+        WizDefend.get_entries("test_query", {}, WizApiResponse.DETECTIONS)
+    assert 'Got an error querying Wiz API [500] - Internal Server Error' in str(e.value)
 
 
 # Modify test_get_token_success function in WizDefend_test.py
@@ -1182,11 +1182,11 @@ def test_query_api(mocker, sample_detection):
 
     # Mock the get_entries function at module level
     orig_get_entries = WizDefend.get_entries
-    WizDefend.get_entries = lambda q, v: ([sample_detection], {"hasNextPage": False, "endCursor": ""})
+    WizDefend.get_entries = lambda q, v, w: ([sample_detection], {"hasNextPage": False, "endCursor": ""})
 
     try:
         # Call the function
-        result = WizDefend.query_api("test_query", {})
+        result = WizDefend.query_api("test_query", {}, WizApiResponse.DETECTIONS)
 
         # Verify result
         assert result == [sample_detection]
@@ -1210,7 +1210,7 @@ def test_query_api_pagination(mocker, mock_api_paginated_response):
     # Define a side effect function to simulate pagination
     call_count = [0]  # Use a list to maintain state between calls
 
-    def mock_get_entries_side_effect(query, variables):
+    def mock_get_entries_side_effect(query, variables, wiz_type=None):
         call_count[0] += 1
         if call_count[0] == 1:
             return (first_page["data"]["detections"]["nodes"],
@@ -1225,7 +1225,7 @@ def test_query_api_pagination(mocker, mock_api_paginated_response):
 
     try:
         # Call the function
-        result = WizDefend.query_api("test_query", {})
+        result = WizDefend.query_api("test_query", {}, WizApiResponse.DETECTIONS)
 
         # Verify result contains combined detections from both pages
         assert len(result) == 2
@@ -1247,11 +1247,10 @@ def test_query_api_empty_response(mocker, mock_api_empty_response):
 
     # Mock get_entries to return empty results
     orig_get_entries = WizDefend.get_entries
-    WizDefend.get_entries = lambda q, v: ([], {"hasNextPage": False, "endCursor": ""})
-
+    WizDefend.get_entries = lambda q, v, w=None: ([], {"hasNextPage": False, "endCursor": ""})
     try:
         # Call the function
-        result = WizDefend.query_api("test_query", {})
+        result = WizDefend.query_api("test_query", {}, WizApiResponse.DETECTIONS)
 
         # Verify result is empty dict
         assert result == {}
@@ -1273,7 +1272,7 @@ def test_query_api_with_pagination_disabled(mock_get_entries, mock_api_paginated
     )
 
     # Call the function with paginate=False
-    result = query_api("test_query", {}, paginate=False)
+    result = query_api("test_query", {}, WizApiResponse.DETECTIONS, paginate=False)
 
     # Verify result only contains first page
     assert len(result) == 1
@@ -1652,7 +1651,7 @@ def test_get_fetch_timestamp_invalid(mocker):
 
 
 # ===== MAIN FUNCTION TESTS =====
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_parameters', return_value=(True, None, {'severity': ['CRITICAL']}))
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters', return_value=(True, None, {'severity': ['CRITICAL']}))
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_api')
 def test_get_filtered_detections_success(mock_query_api, mock_validate, sample_detection):
     """Test get_filtered_detections with successful validation and API call"""
@@ -1672,7 +1671,7 @@ def test_get_filtered_detections_success(mock_query_api, mock_validate, sample_d
     assert mock_query_api.called
 
 
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_parameters', return_value=(False, "Validation error message", None))
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters', return_value=(False, "Validation error message", None))
 def test_get_filtered_detections_validation_error(mock_validate):
     """Test get_filtered_detections with validation error"""
     # Call the function
@@ -1682,7 +1681,7 @@ def test_get_filtered_detections_validation_error(mock_validate):
     assert result == "Validation error message"
 
 
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_parameters', return_value=(True, None, {'severity': ['CRITICAL']}))
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters', return_value=(True, None, {'severity': ['CRITICAL']}))
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_api')
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_detection_url', return_value="https://app.wiz.io/detection/123")
 def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, mock_validate, sample_detection):
@@ -1728,7 +1727,7 @@ def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, mock_
     assert result[0].get("url") == "https://app.wiz.io/detection/123"
 
 
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_parameters')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters')
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_api')
 def test_get_filtered_detections_with_no_url(mock_query_api, mock_validate, sample_detection):
     """Test get_filtered_detections with add_detection_url=False"""
@@ -1752,7 +1751,7 @@ def test_get_filtered_detections_with_no_url(mock_query_api, mock_validate, samp
     assert "url" not in result[0]
 
 
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_parameters')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters')
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_api')
 def test_get_filtered_detections_with_api_limit(mock_query_api, mock_validate, sample_detection):
     """Test get_filtered_detections with custom API limit"""

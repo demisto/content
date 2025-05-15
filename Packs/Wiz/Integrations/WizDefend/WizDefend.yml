@@ -149,21 +149,21 @@ script:
     description: Get Wiz Detections for a specific type.
     arguments:
     - name: creation_minutes_back
-      description: Number of minutes back to retrieve detections (10-600).
+      description: Number of minutes back to retrieve Detections (10-600).
       defaultValue: 10
       required: false
     - name: type
-      description: Type of detections.
+      description: Detections type.
       predefined:
       - GENERATED THREAT
       - DID NOT GENERATE THREAT
       defaultValue: GENERATED THREAT
       auto: PREDEFINED
     - name: issue_id
-      description: The internal Wiz Issue ID of the detection.
+      description: The internal Wiz Issue ID of the Detections.
       required: false
     - name: subscription
-      description: The cloud subscription of the detection.
+      description: The cloud subscription of the Detections.
       required: false
     - name: origin
       description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
@@ -210,7 +210,7 @@ script:
         - WIN_SALT_SECURITY
       auto: PREDEFINED
     - name: platform
-      description: Get detections for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
+      description: Get Detections for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
       predefined:
         - AWS
         - GCP
@@ -256,13 +256,13 @@ script:
       - INFORMATIONAL
       description: Get Detections of a specific severity and above.
     - name: rule_match_id
-      description: Filter detections by rule match ID (must be a valid UUID).
+      description: Filter Detections by rule match ID (must be a valid UUID).
       required: false
     - name: rule_match_name
-      description: Filter detections by rule match name.
+      description: Filter Detections by rule match name.
       required: false
     - name: project
-      description: Filter detections by project.
+      description: Filter Detections by project.
       required: false
     outputs:
     - contextPath: Wiz.Manager.Detections.entitySnapshot
@@ -309,6 +309,101 @@ script:
     - contextPath: Wiz.Manager.Detection.url
       description: URL to the Wiz Detection in the Wiz console.
       type: String
+  - name: wiz-get-threat
+    description: Get the details of a Wiz Threat.
+    arguments:
+      - description: Wiz internal issue ID to retrieve.
+        name: issue_id
+        isArray: true
+        required: false
+  - name: wiz-get-threats
+    description: Get Wiz Threats for a specific type.
+    arguments:
+      - name: creation_days_back
+        description: Number of days back to retrieve threats (1-30).
+        defaultValue: 5
+        required: false
+      - name: subscription
+        description: The cloud subscription of the Threats.
+        required: false
+      - name: platform
+        description: Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
+        predefined:
+          - AWS
+          - GCP
+          - Azure
+          - OCI
+          - Alibaba
+          - vSphere
+          - OpenStack
+          - AKS
+          - EKS
+          - GKE
+          - Kubernetes
+          - OpenShift
+          - OKE
+          - Linode
+          - AzureDevOps
+          - GitHub
+          - GitLab
+          - Bitbucket
+          - Terraform
+          - OpenAI
+          - Snowflake
+          - MongoDBAtlas
+          - Databricks
+          - Okta
+          - Cloudflare
+          - Microsoft365
+          - Wiz
+          - ACK
+          - SelfHosted
+          - LKE
+        auto: PREDEFINED
+        isArray: true
+      - name: resource_id
+        description: Get Threats for a specific resource.
+      - name: severity
+        auto: PREDEFINED
+        predefined:
+          - CRITICAL
+          - HIGH
+          - MEDIUM
+          - LOW
+          - INFORMATIONAL
+        description: Get Threats of a specific severity and above.
+      - name: status
+        auto: PREDEFINED
+        predefined:
+          - Open
+          - In Progress
+          - Resolved
+          - Ignored
+        isArray: true
+        defaultValue: Open, In Progress
+        description: Get Threats of a specific status.
+      - name: project
+        description: Filter Threats by project.
+        required: false
+    outputs:
+      - contextPath: Wiz.Manager.Detections.entitySnapshot
+        description: All resource details.
+        type: String
+      - contextPath: Wiz.Manager.Detections.createdAt
+        description: Detection created at.
+        type: String
+      - contextPath: Wiz.Manager.Detections.id
+        description: Wiz Detection ID.
+        type: String
+      - contextPath: Wiz.Manager.Detections.url
+        description: Wiz Detection URL.
+        type: String
+      - contextPath: Wiz.Manager.Detections.severity
+        description: Wiz Detection severity.
+        type: String
+      - contextPath: Wiz.Manager.Detections.status
+        description: Wiz Detection status.
+        type: String
   dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false

@@ -10,8 +10,8 @@ WIZ_VERSION = '1.0.0'
 WIZ_DEFEND = 'wiz_defend'
 WIZ_DEFEND_INCIDENT_TYPE = 'WizDefend Detection'
 USER_AGENT_NAME = 'xsoar_defend'
-WIZ_DOMAIN_URL = ''
 INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
+WIZ_DOMAIN_URL = ''
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 WIZ_API_LIMIT = 250
@@ -40,6 +40,7 @@ class WizInputParam:
 class WizApiResponse:
     DATA = 'data'
     DETECTIONS = 'detections'
+    ISSUES = 'issues'
     NODES = 'nodes'
     PAGE_INFO = 'pageInfo'
     HAS_NEXT_PAGE = 'hasNextPage'
@@ -83,6 +84,7 @@ class WizApiVariables:
     FIRST = 'first'
     AFTER = 'after'
     FILTER_BY = 'filterBy'
+    FILTER_SCOPE = 'filterScope'
     ORDER_BY = 'orderBy'
     STATUS = 'status'
     CREATED_AT = 'createdAt'
@@ -109,6 +111,11 @@ class WizApiVariables:
     ORIGIN = 'origin'
     CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID = 'cloudAccountOrCloudOrganizationId'
     URL = 'url'
+
+
+class WizThreatVariables:
+    ALL_ISSUE_DETECTIONS = 'ALL_ISSUE_DETECTIONS'
+    THREAT_DETECTION = 'THREAT_DETECTION'
 
 
 class WizOrderByFields:
@@ -141,6 +148,7 @@ class DemistoCommands:
     FETCH_INCIDENTS = 'fetch-incidents'
     WIZ_GET_DETECTIONS = 'wiz-get-detections'
     WIZ_GET_DETECTION = 'wiz-get-detection'
+    WIZ_GET_THREAT = 'wiz-get-threat'
 
 
 class AuthParams:
@@ -164,6 +172,7 @@ class ContentTypes:
 class OutputPrefix:
     DETECTIONS = 'Wiz.Manager.Detections'
     DETECTION = 'Wiz.Manager.Detection'
+    THREAT = 'Wiz.Manager.Threat'
 
 
 class ValidationType:
@@ -527,6 +536,120 @@ PULL_DETECTIONS_VARIABLES = {
                                WizApiVariables.DIRECTION: WizOrderDirection.ASC}
 }
 
+PULL_ISSUE_QUERY = """
+query IssuesTable(
+  $filterBy: IssueFilters
+  $first: Int
+  $after: String
+  $orderBy: IssueOrder
+) {
+  issues:issuesV2(filterBy: $filterBy
+    first: $first
+    after: $after
+    orderBy: $orderBy) {
+    nodes {
+      id
+      sourceRule{
+        __typename
+        ... on Control {
+          id
+          name
+          controlDescription: description
+          resolutionRecommendation
+          securitySubCategories {
+            title
+            category {
+              name
+              framework {
+                name
+              }
+            }
+          }
+        }
+        ... on CloudEventRule{
+          id
+          name
+          cloudEventRuleDescription: description
+          sourceType
+          type
+        }
+        ... on CloudConfigurationRule{
+          id
+          name
+          cloudConfigurationRuleDescription: description
+          remediationInstructions
+          serviceType
+        }
+      }
+      type
+      createdAt
+      updatedAt
+      dueAt
+      projects {
+        id
+        name
+        slug
+        businessUnit
+        riskProfile {
+          businessImpact
+        }
+      }
+      status
+      severity
+      entitySnapshot {
+        id
+        type
+        nativeType
+        name
+        status
+        cloudPlatform
+        cloudProviderURL
+        providerId
+        region
+        resourceGroupExternalId
+        subscriptionExternalId
+        subscriptionName
+        subscriptionTags
+        tags
+        externalId
+      }
+      serviceTickets {
+        externalId
+        name
+        url
+      }
+      notes {
+        id
+        createdAt
+        updatedAt
+        text
+        user {
+          name
+          email
+        }
+        serviceAccount {
+          name
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+"""
+
+PULL_THREAT_ISSUE_VARIABLES = {
+    WizApiVariables.FILTER_BY: {
+        WizApiVariables.TYPE: [WizThreatVariables.THREAT_DETECTION]
+    },
+    WizApiVariables.FILTER_SCOPE: WizThreatVariables.ALL_ISSUE_DETECTIONS,
+    WizApiVariables.ORDER_BY: {WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
+                               WizApiVariables.DIRECTION: WizOrderDirection.DESC}
+
+}
+
 
 def set_authentication_endpoint(auth_endpoint):
     global AUTH_E
@@ -573,7 +696,7 @@ def get_token():
     return TOKEN
 
 
-def get_entries(query, variables):
+def get_entries(query, variables, wiz_type):
     if not TOKEN:
         get_token()
 
@@ -601,8 +724,8 @@ def get_entries(query, variables):
             raise Exception(f"{error_message}\n"
                             f"Check 'server.log' instance file to get additional information")
 
-        return response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.NODES], \
-               response_json[WizApiResponse.DATA][WizApiResponse.DETECTIONS][WizApiResponse.PAGE_INFO]
+        return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], \
+               response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.PAGE_INFO]
 
     except Exception as e:
         error_message = f"Received an error while performing an API call.\nError info: {str(e)}"
@@ -610,8 +733,16 @@ def get_entries(query, variables):
         raise Exception(f"An unexpected error occurred.\nError info: {error_message}")
 
 
-def query_api(query, variables, paginate=True):
-    entries, page_info = get_entries(query, variables)
+def query_detections(query, variables, paginate=True):
+    return query_api(query, variables, WizApiResponse.DETECTIONS, paginate=paginate)
+
+
+def query_threats(query, variables, paginate=True):
+    return query_api(query, variables, WizApiResponse.ISSUES, paginate=paginate)
+
+
+def query_api(query, variables, wiz_type, paginate=True):
+    entries, page_info = get_entries(query, variables, wiz_type)
     if not entries:
         demisto.info("No detection(/s) available to fetch.")
         entries = {}
@@ -620,7 +751,7 @@ def query_api(query, variables, paginate=True):
         demisto.debug(f"Successfully pulled {len(entries)} detections")
 
         variables[WizApiVariables.AFTER] = page_info[WizApiResponse.END_CURSOR]
-        new_entries, page_info = get_entries(query, variables)
+        new_entries, page_info = get_entries(query, variables, wiz_type)
         if new_entries is not None:
             entries += new_entries
         if len(entries) >= API_MAX_FETCH:
@@ -871,6 +1002,14 @@ def get_detection_url(detection):
         update_wiz_domain_url()
 
     detection_url = f"https://{WIZ_DOMAIN_URL}.wiz.io/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}~streamCols~(~'event~'principal~'principalIp~'resource))"
+    return detection_url
+
+
+def get_threat_url(threat):
+    if not WIZ_DOMAIN_URL:
+        update_wiz_domain_url()
+
+    detection_url = f"https://{WIZ_DOMAIN_URL}.wiz.io/threats#~(filters~(createdAt~(inTheLast~(amount~90~unit~'days)))~issue~'{threat.get('id')})"
     return detection_url
 
 
@@ -1254,7 +1393,7 @@ def validate_project(project):
     return ValidationResponse.create_success(project)
 
 
-def validate_all_parameters(parameters_dict):
+def validate_all_detection_parameters(parameters_dict):
     """
     Validates all parameters in a centralized function
 
@@ -1383,6 +1522,34 @@ def validate_all_parameters(parameters_dict):
     return True, None, validated_values
 
 
+def validate_all_threat_parameters(parameters_dict):
+    """
+    Validates all parameters in a centralized function
+
+    Args:
+        parameters_dict (dict): Dictionary containing all parameters to validate
+
+    Returns:
+        tuple: (success, error_message, validated_values)
+            - success (bool): True if all validations pass
+            - error_message (str): Error message if validation fails
+            - validated_values (dict): Dictionary of validated values
+    """
+    validated_values = {}
+
+    # Extract parameters from dictionary
+    issue_id = parameters_dict.get(WizInputParam.ISSUE_ID)
+
+    # Validate issue_id
+    if issue_id:
+        is_valid_id, message = is_valid_param_id(issue_id, WizInputParam.ISSUE_ID)
+        if not is_valid_id:
+            return False, message, None
+        validated_values[WizInputParam.ISSUE_ID] = issue_id
+
+    return True, None, validated_values
+
+
 def apply_creation_in_last_minutes_filter(variables, minutes_back):
     """
     Adds the creation_minutes_back filter to the query variables
@@ -1454,7 +1621,7 @@ def apply_detection_id_filter(variables, detection_ids):
     return variables
 
 
-def apply_issue_id_filter(variables, issue_id):
+def apply_issue_id_filter(variables, issue_id, is_detection=True):
     """
     Adds the issue ID filter to the query variables
 
@@ -1471,7 +1638,10 @@ def apply_issue_id_filter(variables, issue_id):
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.ISSUE_ID] = issue_id
+    if is_detection:
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.ISSUE_ID] = issue_id
+    else:
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.ID] = issue_id
 
     return variables
 
@@ -1704,7 +1874,7 @@ def apply_project_id_filter(variables, project_id):
     return variables
 
 
-def apply_all_filters(variables, validated_values):
+def apply_all_detection_filters(variables, validated_values):
     """
     Applies all filters to the query variables in a centralized function
 
@@ -1733,6 +1903,22 @@ def apply_all_filters(variables, validated_values):
     variables = apply_matched_rule_filter(variables, validated_values.get(WizInputParam.MATCHED_RULE))
     variables = apply_matched_rule_name_filter(variables, validated_values.get(WizInputParam.MATCHED_RULE_NAME))
     variables = apply_project_id_filter(variables, validated_values.get(WizInputParam.PROJECT_ID))
+
+    return variables
+
+
+def apply_all_threat_filters(variables, validated_values):
+    """
+    Applies all filters to the query variables in a centralized function
+
+    Args:
+        variables (dict): Base query variables
+        validated_values (dict): Dictionary of validated values
+
+    Returns:
+        dict: Updated query variables with all filters applied
+    """
+    variables = apply_issue_id_filter(variables, validated_values.get(WizInputParam.ISSUE_ID), is_detection=False)
 
     return variables
 
@@ -1794,22 +1980,58 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         DemistoParams.AFTER_TIME: after_time
     }
 
-    validation_success, error_message, validated_values = validate_all_parameters(parameters_dict)
+    validation_success, error_message, validated_values = validate_all_detection_parameters(parameters_dict)
 
     if not validation_success or error_message:
         return error_message
 
     detection_variables = PULL_DETECTIONS_VARIABLES.copy()
     detection_variables[WizApiVariables.FIRST] = api_limit
-    detection_variables = apply_all_filters(detection_variables, validated_values)
+    detection_variables = apply_all_detection_filters(detection_variables, validated_values)
 
-    wiz_detections = query_api(PULL_DETECTIONS_QUERY, detection_variables, paginate)
+    wiz_detections = query_detections(query=PULL_DETECTIONS_QUERY, variables=detection_variables,
+                                      paginate=paginate)
 
     if add_detection_url:
         for detection in wiz_detections:
             detection[WizApiVariables.URL] = get_detection_url(detection)
 
     return wiz_detections
+
+
+def get_filtered_threats(issue_id=None, add_threat_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
+    """
+    Retrieves Filtered Threats
+
+    Args:
+        issue_id (str): Issue ID
+    Returns:
+        list/str: List of detections or error message
+    """
+    demisto.info(f"Issue ID is {issue_id}\n")
+
+    # Create parameters dictionary for validation
+    parameters_dict = {
+        WizInputParam.ISSUE_ID: issue_id
+    }
+
+    validation_success, error_message, validated_values = validate_all_threat_parameters(parameters_dict)
+
+    if not validation_success or error_message:
+        return error_message
+
+    threat_variables = PULL_THREAT_ISSUE_VARIABLES.copy()
+    threat_variables[WizApiVariables.FIRST] = api_limit
+    threat_variables = apply_all_threat_filters(threat_variables, validated_values)
+
+    wiz_threats = query_detections(query=PULL_ISSUE_QUERY, variables=threat_variables,
+                                   paginate=paginate)
+
+    if add_threat_url:
+        for threat in wiz_threats:
+            threat[WizApiVariables.URL] = get_threat_url(threat)
+
+    return wiz_threats
 
 
 def get_error_output(wiz_api_response):
@@ -1921,6 +2143,29 @@ def get_single_detection():
                               readable_output=detection, raw_response=detection)
 
 
+def get_single_threat():
+    """
+    Retrieves a single threat by Issue ID.
+
+    Returns:
+        CommandResults: Command results object containing the threat
+    """
+    demisto_args = demisto.args()
+    issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+    if not issue_id:
+        return_error(f"Missing required argument: {WizInputParam.ISSUE_ID}")
+
+    threat = get_filtered_threats(
+        issue_id=issue_id
+    )
+    if isinstance(threat, str):
+        # this means the Threat is an error
+        return_error(threat)
+    else:
+        return CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=threat,
+                              readable_output=threat, raw_response=threat)
+
+
 def main():
     params = demisto.params()
     set_authentication_endpoint(params.get(DemistoParams.AUTH_ENDPOINT))
@@ -1934,12 +2179,16 @@ def main():
         elif command == DemistoCommands.FETCH_INCIDENTS:
             fetch_incidents()
 
+        elif command == DemistoCommands.WIZ_GET_DETECTION:
+            command_result = get_single_detection()
+            return_results(command_result)
+
         elif command == DemistoCommands.WIZ_GET_DETECTIONS:
             command_result = get_detections()
             return_results(command_result)
 
-        elif command == DemistoCommands.WIZ_GET_DETECTION:
-            command_result = get_single_detection()
+        elif command == DemistoCommands.WIZ_GET_THREAT:
+            command_result = get_single_threat()
             return_results(command_result)
 
         else:
