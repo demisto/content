@@ -375,13 +375,57 @@ script:
       - name: status
         auto: PREDEFINED
         predefined:
-          - Open
-          - In Progress
-          - Resolved
-          - Ignored
+          - OPEN
+          - IN_PROGRESS
+          - RESOLVED
+          - REJECTED
         isArray: true
         defaultValue: Open, In Progress
         description: Get Threats of a specific status.
+      - name: origin
+        description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
+        predefined:
+          - WIZ_SENSOR
+          - WIZ_ADMISSION_CONTROLLER
+          - WIZ_FILE_INTEGRITY_MONITORING
+          - AWS_GUARD_DUTY
+          - AWS_CLOUDTRAIL
+          - AZURE_DEFENDER_FOR_CLOUD
+          - AZURE_ACTIVITY_LOGS
+          - GCP_SECURITY_COMMAND_CENTER
+          - GCP_AUDIT_LOGS
+          - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+          - AZURE_ACTIVE_DIRECTORY
+          - GOOGLE_WORKSPACE_AUDIT_LOGS
+          - WIN_SENTINEL_ONE
+          - WIZ_CODE_ANALYZER
+          - WIN_SALT
+          - WIN_NONAME
+          - WIN_CROWD_STRIKE
+          - WIN_TRACEABLE
+          - WIZ_CLI
+          - WIZ_IDE_EXTENSION
+          - WIZ_THREAT_DETECTION
+          - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+          - WIZ_CUSTOM_INTEGRATION
+          - WIN_AKAMAI_GUARDICORE
+          - OKTA_SYSTEM_LOGS
+          - WIN_SNOWFLAKE
+          - WIN_FALCO
+          - OCI_AUDIT_LOGS
+          - WIZ_VCS_FETCHER
+          - AWS_VPC_FLOW_LOGS
+          - GITHUB_AUDIT_LOGS
+          - WIN_FIRE_TAIL
+          - AZURE_STORAGE_ACCOUNT
+          - AZURE_KEY_VAULT
+          - AWS_RESOLVER_QUERY_LOGS
+          - AWS_S3_DATA_EVENTS
+          - GCP_STORAGE_DATA_ACCESS_LOGS
+          - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+          - WIZ_BROWSER_EXTENSION
+          - WIN_SALT_SECURITY
+        auto: PREDEFINED
       - name: project
         description: Filter Threats by project.
         required: false

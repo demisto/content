@@ -20,12 +20,12 @@ from Packs.Wiz.Integrations.WizDefend.WizDefend import (
     get_token, get_entries, query_api,
     # Validation functions
     validate_detection_type, validate_detection_platform, validate_detection_origin,
-    validate_detection_subscription, validate_creation_minutes_back, validate_severity,
+    validate_detection_subscription, validate_creation_time_back, validate_severity,
     validate_resource_id, validate_rule_match_id, validate_rule_match_name,
     validate_project, validate_all_detection_parameters, validate_incident_type, validate_first_fetch,
     validate_fetch_interval, validate_first_fetch_timestamp,
     # Filter functions
-    apply_creation_in_last_minutes_filter, apply_creation_after_time_filter,
+    apply_creation_in_last_filter, apply_creation_after_time_filter,
     apply_detection_type_filter, apply_platform_filter, apply_origin_filter,
     apply_resource_id_filter, apply_subscription_filter, apply_severity_filter,
     apply_matched_rule_filter, apply_matched_rule_name_filter, apply_project_id_filter,
@@ -407,7 +407,7 @@ def test_validate_detection_subscription(subscription, expected_valid, expected_
 ])
 def test_validate_creation_minutes_back(minutes_back, expected_valid, expected_value):
     """Test validate_creation_minutes_back with various inputs"""
-    result = validate_creation_minutes_back(minutes_back)
+    result = validate_creation_time_back(minutes_back)
     assert result.is_valid == expected_valid
     if expected_valid:
         assert result.minutes_value == expected_value
@@ -658,7 +658,7 @@ def test_validate_all_detection_parameters():
     }
     success, error_message, validated_values = validate_all_detection_parameters(invalid_severity_params)
     assert success is False
-    assert "You should only use these severity types" in error_message
+    assert "Invalid severity: INVALID. Valid severities are" in error_message
 
     # Test with invalid creation_minutes_back
     invalid_minutes_params = {
@@ -787,7 +787,7 @@ def test_apply_creation_in_last_minutes_filter():
     """Test apply_creation_in_last_minutes_filter function"""
     # Test with value
     variables = {}
-    result = apply_creation_in_last_minutes_filter(variables, 15)
+    result = apply_creation_in_last_filter(variables, 15)
     assert "filterBy" in result
     assert "createdAt" in result["filterBy"]
     assert result["filterBy"]["createdAt"]["inLast"]["amount"] == 15
@@ -795,7 +795,7 @@ def test_apply_creation_in_last_minutes_filter():
 
     # Test with None (should not add filter)
     variables = {}
-    result = apply_creation_in_last_minutes_filter(variables, None)
+    result = apply_creation_in_last_filter(variables, None)
     assert result == {}
 
 
@@ -2121,3 +2121,63 @@ def test_duration_unit_class():
     assert DurationUnit.DAYS == "DurationFilterValueUnitDays"
     assert DurationUnit.HOURS == "DurationFilterValueUnitHours"
     assert DurationUnit.MINUTES == "DurationFilterValueUnitMinutes"
+
+
+import os
+import yaml
+from Packs.Wiz.Integrations.WizDefend.WizDefend import DetectionOrigin
+
+
+def test_origin_values_consistency():
+    """Test that origin values defined in YAML match those in the DetectionOrigin class"""
+    # Get the YAML file path
+    yaml_file_path = os.path.join(os.path.dirname(__file__), 'WizDefend.yml')
+
+    # Read the YAML file
+    with open(yaml_file_path, 'r') as f:
+        yaml_content = yaml.safe_load(f)
+
+    # Extract origin values from both commands in YAML
+    yaml_origin_values_detections = []
+    yaml_origin_values_threats = []
+
+    for command in yaml_content.get('script', {}).get('commands', []):
+        if command.get('name') == 'wiz-get-detections':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'origin':
+                    yaml_origin_values_detections = arg.get('predefined', [])
+        elif command.get('name') == 'wiz-get-threats':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'origin':
+                    yaml_origin_values_threats = arg.get('predefined', [])
+
+    # Get origin values from code
+    code_origin_values = DetectionOrigin.values()
+
+    # Sort all lists for deterministic comparison
+    code_origin_values.sort()
+    yaml_origin_values_detections.sort()
+    yaml_origin_values_threats.sort()
+
+    # Test exact equality between code and YAML values
+    assert code_origin_values == yaml_origin_values_detections, (
+        f"Origin values in code do not exactly match wiz-get-detections:\n"
+        f"Code: {code_origin_values}\n"
+        f"YAML: {yaml_origin_values_detections}"
+    )
+
+    assert code_origin_values == yaml_origin_values_threats, (
+        f"Origin values in code do not exactly match wiz-get-threats:\n"
+        f"Code: {code_origin_values}\n"
+        f"YAML: {yaml_origin_values_threats}"
+    )
+
+    # Test exact equality between the two commands
+    assert yaml_origin_values_detections == yaml_origin_values_threats, (
+        f"Origin values differ between commands:\n"
+        f"wiz-get-detections: {yaml_origin_values_detections}\n"
+        f"wiz-get-threats: {yaml_origin_values_threats}"
+    )
+
+    # Print confirmation message if all tests pass
+    print(f"Successfully validated {len(code_origin_values)} origin values across code and YAML")
