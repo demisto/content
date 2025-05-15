@@ -9,6 +9,8 @@ requests.packages.urllib3.disable_warnings()  # type:ignore
 
 API_BASE_URL = "https://api.intelligence.mandiant.com"
 ADV_BASE_URL = "https://advantage.mandiant.com"
+DEFAULT_TIMEOUT = 60
+ENRICHMENT_TIMEOUT = 10
 
 
 class MandiantClient(BaseClient):
@@ -20,7 +22,10 @@ class MandiantClient(BaseClient):
         self.secret_key = conf.get("secret_key")
 
         self.headers = {"X-App-Name": "content.xsoar.cortex.mandiant.enrichment.v1.1", "Accept": "application/json"}
-        self.timeout = int(conf.get("timeout", 60))
+        self.timeout = int(conf.get("timeout", DEFAULT_TIMEOUT))
+        if is_time_sensitive():
+            # For reputation commands which run during an enrichment we limit the timeout
+            self.timeout = ENRICHMENT_TIMEOUT
         self.tlp_color = conf.get("tlp_color", "")
         self.tags = argToList(conf.get("tags", []))
         self.reliability = conf.get("reliability", "")

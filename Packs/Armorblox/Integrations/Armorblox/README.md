@@ -7,9 +7,9 @@ This integration was integrated and tested with version 4.3.0 of Armorblox
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Armorblox.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Select **Fetches incidents** to pull incidents from Armorblox to Cortex 
-5. Select Classifier as Armorblox-Classifier 
-6. Select Mapper as Armorblox-Mapper 
+4. Select **Fetches incidents** to pull incidents from Armorblox to Cortex
+5. Select Classifier as Armorblox-Classifier
+6. Select Mapper as Armorblox-Mapper
 
     | **Parameter** | **Required** |
     | --- | --- |
@@ -23,40 +23,41 @@ This integration was integrated and tested with version 4.3.0 of Armorblox
     | Use system proxy settings | False |
     | Fetch incidents | False |
 
-7. Click **Test** to validate the URLs, token, and connection. 
-8. Save and Exit to enable the instance. 
+7. Click **Test** to validate the URLs, token, and connection.
+8. Save and Exit to enable the instance.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-
 ### armorblox-check-remediation-action
-***
-Check the recommended remediation action for any incident 
 
+***
+Check the recommended remediation action for any incident
 
 #### Base Command
 
 `armorblox-check-remediation-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The incident id of the incident under inspection. | Required | 
-
+| incident_id | The incident id of the incident under inspection. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Armorblox.Threat.remediation_actions | string |  | 
-
+| Armorblox.Threat.remediation_actions | string |  |
 
 #### Command Example
-```!armorblox-check-remediation-action ```
 
+```!armorblox-check-remediation-action```
 
 #### Context Example
+
 ```
    {
         "Armorblox": 
@@ -72,19 +73,18 @@ Check the recommended remediation action for any incident
 
 #### Human Readable Output
 
-| **incident_id** | **5375** | 
-| --- | --- | 
+| **incident_id** | **5375** |
+| --- | --- |
 | **remediation_actions** | **NEEDS REVIEW** |
 
 ### fetch-incidents
+
 ***
 Gets a list of armorblox incidents
-
 
 #### Base Command
 
 `fetch-incidents`
-
 
 #### Context Output
 

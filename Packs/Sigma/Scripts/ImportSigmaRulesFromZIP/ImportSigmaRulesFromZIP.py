@@ -1,6 +1,5 @@
-import os
-import tempfile
-import zipfile
+# DEPRECATED: This script is deprecated and will be removed in future versions.
+# Please use the CreateSigmaRuleIndicator instead.
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401

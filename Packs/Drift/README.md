@@ -14,94 +14,98 @@ This integration was integrated and tested with version 1.7 of Drift
     | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### drift-get-contact
+
 ***
 Retrieve a contact using their email address (for multiple) or ID (for single).
-
 
 #### Base Command
 
 `drift-get-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of the contact (overrides the email input). | Optional | 
-| email | Email of the contact. | Optional | 
-
+| id | ID of the contact (overrides the email input). | Optional |
+| email | Email of the contact. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Drift.Contacts.id | number | ID of the contact | 
-| Drift.Contacts.createdAt | number | Created at timestamp \(Epoch Unix Timestamp\) | 
-| Drift.Contacts.Attributes | unknown | Attributes of the contact \(JSON dict\). | 
+| Drift.Contacts.id | number | ID of the contact |
+| Drift.Contacts.createdAt | number | Created at timestamp \(Epoch Unix Timestamp\) |
+| Drift.Contacts.Attributes | unknown | Attributes of the contact \(JSON dict\). |
 
 ### drift-update-contact
+
 ***
 Patch Contact Updates using contact ID
-
 
 #### Base Command
 
 `drift-update-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Contact ID. | Required | 
-| attributes | Attributes to be updates. | Required | 
-
+| id | Contact ID. | Required |
+| attributes | Attributes to be updates. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Drift.Contacts.id | number | ID of the created contact | 
-| Drift.Contacts.createdAt | number | Created at timestamp \(Epoch Unix Timestamp\) | 
-| Drift.Contacts.attributes | unknown | Attributes of the contact \(JSON dict\). | 
+| Drift.Contacts.id | number | ID of the created contact |
+| Drift.Contacts.createdAt | number | Created at timestamp \(Epoch Unix Timestamp\) |
+| Drift.Contacts.attributes | unknown | Attributes of the contact \(JSON dict\). |
 
 ### drift-delete-contact
+
 ***
 Delete Contact using contact ID
-
 
 #### Base Command
 
 `drift-delete-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Contact ID. | Required | 
-
+| id | Contact ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-### drift-post-contact
-***
-Post New Contact using a new contact Email 
 
+### drift-post-contact
+
+***
+Post New Contact using a new contact Email
 
 #### Base Command
 
 `drift-post-contact`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | New Contact Email. | Required | 
-
+| email | New Contact Email. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Drift.Contacts.id | number | ID of the created contact | 
-| Drift.Contacts.createdAt | number | Created at timestamp \(Epoch Unix Timestamp\) | 
-| Drift.Contacts.Attributes | unknown | Attributes of the contact \(JSON dict\). | 
+| Drift.Contacts.id | number | ID of the created contact |
+| Drift.Contacts.createdAt | number | Created at timestamp \(Epoch Unix Timestamp\) |
+| Drift.Contacts.Attributes | unknown | Attributes of the contact \(JSON dict\). |

@@ -2,7 +2,6 @@ Ingest articles with indicators, entities and relationships from Feedly into XSO
 
 ## Configure Feedly in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -19,7 +18,6 @@ Ingest articles with indicators, entities and relationships from Feedly into XSO
 | Stream ID | The stream id you want to fetch articles from. You can find it in Feedly by going to the stream, clicking on \`...\` &gt; \`Sharing\`, then \`Copy ID\` in the \`Feedly API Stream ID\` section. | True |
 | Days to fetch for first run | Number of days to fetch articles from when running the integration for the first time | True |
 | Incremental feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
-
 
 ## Commands
 
@@ -39,16 +37,20 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
+| limit | The maximum number of results to return. Default is 10. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!feedly-get-indicators limit=100```
+
 #### Human Readable Output
 
->### Indicators from Feedly Feed:
+>### Indicators from Feedly Feed
+>
 >|Value|
 >|---|
 >| A new sophisticated SkidMap variant targets unsecured Redis servers |

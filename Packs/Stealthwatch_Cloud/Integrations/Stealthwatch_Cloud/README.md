@@ -666,21 +666,21 @@
 <pre><code>!sw-list-observations alert=222</code></pre>
 <h5>Context Example</h5>
 <pre><code>{
-	"cidr_range": "5.5.5.179/32",
-	"connected_ip": null,
-	"connected_ip_country_code": "",
-	"creation_time": "2018-07-23T15:30:00Z",
-	"end_time": "2018-07-23T15:30:00Z",
-	"id": 12345,
-	"observation_name": "Port Scanner",
-	"port_count": 24,
-	"port_ranges": "0-1023",
-	"resource_name": "port_scanner_v1",
-	"scan_type": "internal",
-	"scanned_packets": 5,
-	"scanner_packets": 75,
-	"source": 48822,
-	"time": "2018-07-23T15:30:00Z"
+ "cidr_range": "5.5.5.179/32",
+ "connected_ip": null,
+ "connected_ip_country_code": "",
+ "creation_time": "2018-07-23T15:30:00Z",
+ "end_time": "2018-07-23T15:30:00Z",
+ "id": 12345,
+ "observation_name": "Port Scanner",
+ "port_count": 24,
+ "port_ranges": "0-1023",
+ "resource_name": "port_scanner_v1",
+ "scan_type": "internal",
+ "scanned_packets": 5,
+ "scanner_packets": 75,
+ "source": 48822,
+ "time": "2018-07-23T15:30:00Z"
 }
 </code></pre>
 <h3 id="h_878911594541544340092421">8. Get a list of sessions by session occurrence time</h3>

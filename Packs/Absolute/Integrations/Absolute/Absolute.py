@@ -1,19 +1,10 @@
 import copy
-import hashlib
-import hmac
 import urllib.parse
-from datetime import timedelta
-from typing import Any
-
 import demistomock as demisto  # noqa: F401
 import jwt
-import urllib3
 from CommonServerPython import *  # noqa: F401
-
 from CommonServerUserPython import *  # noqa
 
-# Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
@@ -21,23 +12,16 @@ ABSOLUTE_URL_TO_API_URL = {
     "https://cc.absolute.com": "https://api.absolute.com",
     "https://cc.us.absolute.com": "https://api.us.absolute.com",
     "https://cc.eu2.absolute.com": "https://api.eu2.absolute.com",
+    "https://cc.fr1.absolutegov.com": "https://api.fr1.absolutegov.com",
 }
-ABSOLUTE_URL_REGION = {
-    "https://api.absolute.com": "cadc",
-    "https://api.us.absolute.com": "usdc",
-    "https://api.eu2.absolute.com": "eudc",
-}
+
 ABSOLUTE_AGET_STATUS = {
     "Active": "A",
     "Disabled": "D",
     "Inactive": "I",
 }
+
 INTEGRATION = "Absolute"
-STRING_TO_SIGN_ALGORITHM = "ABS1-HMAC-SHA-256"
-STRING_TO_SIGN_SIGNATURE_VERSION = "abs1"
-DATE_FORMAT = "%Y%m%dT%H%M%SZ"
-DATE_FORMAT_CREDENTIAL_SCOPE = "%Y%m%d"
-DEFAULT_API_PAGE_SIZE = 100
 DEFAULT_LIMIT = 50
 
 DEVICE_LIST_RETURN_FIELDS = [
@@ -120,7 +104,7 @@ DEVICE_OUTPUT_TO_XSOAR_CONTEXT_PATH = {
 }
 
 SEIM_EVENTS_PAGE_SIZE = 1000
-CLIENT_V3_JWS_VALIDATION_URL = "https://api.absolute.com/jws/validate"
+CLIENT_V3_JWS_VALIDATION_URL_SUFFIX = "/jws/validate"
 VENDOR = "Absolute"
 PRODUCT = "Secure Endpoint"
 HEADERS_V3: dict = {"content-type": "text/plain"}
@@ -156,7 +140,7 @@ class ClientV3(BaseClient):
         if payload:
             request_payload_data = {"data": payload}
         else:
-            request_payload_data = {}
+            request_payload_data = {"data": {}}
 
         headers = {
             "alg": "HS256",
@@ -202,7 +186,7 @@ class ClientV3(BaseClient):
         return self._http_request(
             method="POST",
             data=signed,
-            full_url=CLIENT_V3_JWS_VALIDATION_URL,
+            full_url=f"{self._base_url}{CLIENT_V3_JWS_VALIDATION_URL_SUFFIX}",
             return_empty_response=True,
             ok_codes=ok_codes,
             resp_type=resp_type,
@@ -390,10 +374,6 @@ class ClientV3(BaseClient):
         return query
 
 
-def sign(key, msg):
-    return hmac.new(key, msg.encode("utf-8"), hashlib.sha256).digest()
-
-
 def validate_absolute_api_url(base_url: str) -> str:
     """Validate the base url, and return the respective api url
 
@@ -411,7 +391,8 @@ def validate_absolute_api_url(base_url: str) -> str:
 def test_module(client: ClientV3) -> str:  # pragma: no cover
     """Tests API connectivity to Absolute"""
     try:
-        client.api_request_absolute("GET", "/v3/reporting/devices", query_string="", page=0, page_size=1, specific_page=True)
+        client.api_request_absolute('GET', '/v3/reporting/devices', query_string='',
+                                    page=0, page_size=1, specific_page=True)
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
@@ -1214,16 +1195,16 @@ def process_events(
     )
     last_run_latest_events_id = last_run.get("latest_events_id", [])
     earliest_event_time = last_run.get("latest_events_time", "")
-    latest_event_time = events[-1].get("eventDateTimeUtc") if events else ""
+    latest_event_time = events[-1].get("createdDateTimeUtc") if events else ""
     latest_events_id = []
     filtered_events = []
     for event in events:
-        event_time = event.get("eventDateTimeUtc")
+        event_time = event.get("createdDateTimeUtc")
         # handle duplication
         if event_time == earliest_event_time and event.get("id") in last_run_latest_events_id:
             continue
         # adding time field
-        event["_time"] = event_time
+        event["_time"] = event.get("eventDateTimeUtc")
         # latest events batch
         if should_get_latest_events and event_time == latest_event_time:
             latest_events_id.append(event.get("id"))
@@ -1262,7 +1243,7 @@ def main() -> None:  # pragma: no cover
         proxy = params.get("proxy", False)
 
         demisto.debug(f"Command being called is {demisto.command()}")
-
+        demisto.debug(f"base_url: {base_url}")
         client_v3 = ClientV3(base_url=base_url, verify=verify_certificate, proxy=proxy, token_id=token_id, secret_key=secret_key)
 
         args = demisto.args()

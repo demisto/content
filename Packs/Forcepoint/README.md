@@ -1,10 +1,14 @@
 # Forcepoint NGFW
+
 This pack includes Cortex XSIAM content.
 <~XSIAM>
+
 ## Configuration on Server Side
+
 You need to configure Forcepoint NGFW to forward Syslog messages in CEF format.
 
 Open Forcepoint NGFW interface, and follow these instructions;
+
 1. Select **Home**.
 2. Browse to **Others** > **Log Server**
 3. Right-click the Log Server from which you want to forward log data, and select **Properties**.
@@ -25,14 +29,14 @@ Open Forcepoint NGFW interface, and follow these instructions;
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 
-
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
+1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
-   - vendor as vendor - forcepoint
-   - product as product - firewall
+   * vendor as vendor - forcepoint
+   * product as product - firewall
 </~XSIAM>

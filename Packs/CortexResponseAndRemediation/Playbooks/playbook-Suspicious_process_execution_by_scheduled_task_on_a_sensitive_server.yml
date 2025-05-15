@@ -652,6 +652,7 @@ tasks:
       file:
         simple: ${alert.targetprocesssha256}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {

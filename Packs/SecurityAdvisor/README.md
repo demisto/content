@@ -6,7 +6,8 @@ For example, a user whose system is often targeted for malware can be coached wi
 Our training is quick & relevant not more than 2 minutes and has shown to reduce incidents from targeted user by 90% due to better security awareness and hygiene.
 
 ##### What does this pack do?
-This pack enables you to add contextual coaching command in your playbooks to provide real time security awareness training to your end users. 
+
+This pack enables you to add contextual coaching command in your playbooks to provide real time security awareness training to your end users.
 The sample playbook included shows you how one can coach users when a targeted threat is detected and mitigated in your environment.
 
 For more information, visit our [SecurityAdvisor-Cortex integration blog](https://www.securityadvisor.io/cybersecurity-aware-culture/)

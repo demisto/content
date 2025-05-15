@@ -33,6 +33,7 @@ configuration:
   type: 4
   required: false
   hidden: true
+  section: Connect
 - name: credentials_refresh_token
   type: 9
   required: false
@@ -52,6 +53,7 @@ configuration:
   type: 4
   required: false
   hidden: true
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   name: credentials_certificate_thumbprint
   type: 9
@@ -88,6 +90,7 @@ configuration:
   type: 4
   required: false
   hidden: true
+  section: Connect
 - additionalinfo: Get the Authorization code from steps 3-5 in the self deployed authorization process.
   displaypassword: Authorization code
   name: credentials_auth_code
@@ -707,7 +710,7 @@ script:
       name: workspace_name
     description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
     name: azure-log-analytics-delete-search-job
-  dockerimage: demisto/crypto:1.0.0.117163
+  dockerimage: demisto/crypto:1.0.0.2787132
   runonce: false
   script: '-'
   subtype: python3

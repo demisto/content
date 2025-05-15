@@ -25,7 +25,7 @@ outputs:
 - contextPath: HTMLTables
   description: The extracted HTML tables.
 scripttarget: 0
-dockerimage: demisto/bs4-py3:1.0.0.117152
+dockerimage: demisto/bs4-py3:1.0.0.2129847
 fromversion: 5.0.0
 tests:
 - TestExtractHTMLTables

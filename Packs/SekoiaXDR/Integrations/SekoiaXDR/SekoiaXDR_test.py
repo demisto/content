@@ -126,6 +126,35 @@ def test_filter_dict_by_keys_with_empty_dict():
     assert SekoiaXDR.filter_dict_by_keys(dict, keys_to_keep) == expected_result
 
 
+def test_fetch_alerts_with_pagination(client, requests_mock):
+    first_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_first_offset_call.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=0",
+        json=first_mock_response,
+    )
+
+    second_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_second_offset_call.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=1",
+        json=second_mock_response,
+    )
+
+    args = {
+        "alert_status": None,
+        "alert_urgency": None,
+        "alert_type": None,
+        "max_results": 1,
+        "alerts_created_at": None,
+        "alerts_updated_at": None,
+        "sort_by": "created_at",
+    }
+    result = SekoiaXDR.fetch_alerts_with_pagination(client=client, **args)
+
+    assert len(result) == 2
+    assert result[0]["uuid"] == "80ee2ccc-11e3-4416"
+    assert result[1]["uuid"] == "07fe3fc0-ddb7-44f3"
+
+
 """ TEST COMMANDS FUNCTIONS """
 
 
@@ -613,4 +642,15 @@ def test_fetch_incidents(
     )
 
     assert results[0]["last_fetch"]
+    assert len(results[1]) == 2
+
+
+def test_fetch_incidents_with_same_time(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_same_time.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
+
+    last_run = {"last_fetch": 1714036855}
+    results = SekoiaXDR.fetch_incidents(client, 100, last_run, None, None, None, None, None, None, None, None)
+
+    assert results[0]["last_fetch"] == 1747057948
     assert len(results[1]) == 2

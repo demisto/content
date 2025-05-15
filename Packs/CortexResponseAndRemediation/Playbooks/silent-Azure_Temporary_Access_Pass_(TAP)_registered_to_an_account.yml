@@ -1,0 +1,1617 @@
+id: silent-Azure Temporary Access Pass (TAP) registered to an account
+version: -1
+name: silent-Azure Temporary Access Pass (TAP) registered to an account
+description: |-
+  This playbook addresses the following alerts:
+
+  - Abnormal Azure Temporary Access Pass (TAP) account registration
+
+  Playbook Stages:
+
+  Triage:
+
+  - Retrieve additional data about the TAP registration including start/end times, usage type, and user details
+
+  Investigation:
+
+  - Analyze the reputation of the caller IP address
+  - Examine alerts from Microsoft Defender 365 related to the TAP assigner
+  - Check Azure AD risky user status and risk detections
+  - Review Cortex Core risk level for the user
+  - Verify creation date of the user account in Azure AD to identify recently created accounts
+  - Correlate evidence across multiple sources to determine potential compromise
+
+  Containment:
+
+  - For alerts determined to be true positives, automatically revoke the user's session in Microsoft applications
+  - Upon analyst approval, disable the user account that granted the TAP
+
+  Requirements: For response actions, you need the following integrations:
+
+  - Microsoft Graph User.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 854d400f-305b-48ba-80fa-c88e55afd147
+    type: start
+    task:
+      id: 854d400f-305b-48ba-80fa-c88e55afd147
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 173
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 381fcb09-6904-4b69-8b08-a63adfd491c5
+    type: regular
+    task:
+      id: 381fcb09-6904-4b69-8b08-a63adfd491c5
+      version: -1
+      name: Get additional data about TAP registration
+      description: Returns additional information about the TAP, such as its start and end times, it's usage type (single sign-ins / multiple sign-ins), the user who received the TAP and more.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 416
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f72817c7-adae-4dc3-8f45-fa16246d3fce
+    type: title
+    task:
+      id: f72817c7-adae-4dc3-8f45-fa16246d3fce
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 303
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3cf6fed2-f82c-49c1-9d79-144474e85a05
+    type: regular
+    task:
+      id: 3cf6fed2-f82c-49c1-9d79-144474e85a05
+      version: -1
+      name: Enrich Caller IP
+      description: Enriches the external source IP of the attack to check if it's known as malicious. Skips on errors for cases where the IP address or the !ip command is empty.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ip:
+        complex:
+          root: alert
+          accessor: hostip
+          transformers:
+          - operator: LastArrayElement
+    reputationcalc: 2
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -84,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b24c9b75-3239-46f6-84bf-f4b02cd7ef3a
+    type: title
+    task:
+      id: b24c9b75-3239-46f6-84bf-f4b02cd7ef3a
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1f7b44ce-6f5c-4c80-85e5-4a2a27c35da2
+    type: regular
+    task:
+      id: 1f7b44ce-6f5c-4c80-85e5-4a2a27c35da2
+      version: -1
+      name: Get Azure risk detections
+      description: Returns a comma-separated list of the Risk Detection objects and their properties.
+      script: '|||azure-risky-users-risk-detections-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      detected_date_time_after:
+        simple: ${TimeNow}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1369.25,
+          "y": 1308
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 89dab4fb-8f8e-4cf8-8a95-899acf6bbcd2
+    type: regular
+    task:
+      id: 89dab4fb-8f8e-4cf8-8a95-899acf6bbcd2
+      version: -1
+      name: Generate timestamp for searching user detections
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "2"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1369.25,
+          "y": 1184
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a1f1717e-df16-4920-831b-e19829851c64
+    type: title
+    task:
+      id: a1f1717e-df16-4920-831b-e19829851c64
+      version: -1
+      name: Caller IP Reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -84,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6545a4bb-6ee0-4ca9-ad8b-454227ca1497
+    type: condition
+    task:
+      id: 6545a4bb-6ee0-4ca9-ad8b-454227ca1497
+      version: -1
+      name: Check IP reputation
+      description: Checks if the external Source IP is malicious (DBotScore above 2).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Malicious:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ip
+                - - operator: greaterThan
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.hostip.[0]
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -84,
+          "y": 904
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3b47ccae-3129-43ed-ac30-eeab0bb77557
+    type: regular
+    task:
+      id: 3b47ccae-3129-43ed-ac30-eeab0bb77557
+      version: -1
+      name: Save malicious IP result
+      description: Saves a key indicating that the IP is malicious.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.MaliciousIP
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -84,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 06c8ffbf-b587-45dc-88d6-2357c3b6ac52
+    type: title
+    task:
+      id: 06c8ffbf-b587-45dc-88d6-2357c3b6ac52
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 1696
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: aaebc8d3-c412-426e-85c2-017533f9eb44
+    type: title
+    task:
+      id: aaebc8d3-c412-426e-85c2-017533f9eb44
+      version: -1
+      name: User Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+      - "25"
+      - "26"
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 668
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5d9b1ad7-50d0-4aff-87b1-779670549092
+    type: condition
+    task:
+      id: 5d9b1ad7-50d0-4aff-87b1-779670549092
+      version: -1
+      name: Check related detections for TAP assigner
+      description: Checks if there are any unhandled risks for the user in Azure.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskDetection
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.cloud_best_identity_match
+                      iscontext: true
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.riskState
+                      iscontext: true
+                    right:
+                      value:
+                        simple: atRisk
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection
+                      iscontext: true
+                    right:
+                      value:
+                        simple: confirmedCompromised
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1369.25,
+          "y": 1432
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 0822f1f3-f6d1-4578-ae39-7e609542665b
+    type: regular
+    task:
+      id: 0822f1f3-f6d1-4578-ae39-7e609542665b
+      version: -1
+      name: Save Azure user risk detections result
+      description: Saves a key indicating risk detections were found for the user in Azure.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.AzureRiskDetections
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1369.25,
+          "y": 1557
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 68a74c93-f09e-47cc-bd77-43823893dc78
+    type: regular
+    task:
+      id: 68a74c93-f09e-47cc-bd77-43823893dc78
+      version: -1
+      name: Get Defender 365 alerts for TAP assigner
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      script: '|||microsoft-365-defender-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      query:
+        simple: let _start = now(-2d); AlertEvidence | where Timestamp >= _start | where AccountUpn == "${Core.OriginalAlert.event.cloud_best_identity_match}"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 349.5,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 4966fa4c-bb3a-4928-a86a-5636eebfdf3e
+    type: condition
+    task:
+      id: 4966fa4c-bb3a-4928-a86a-5636eebfdf3e
+      version: -1
+      name: Check if any unhandled detection matches TAP assigner
+      description: Returns a comma-separated list of the Risk Detection objects and their properties.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Microsoft365Defender.Hunt.results
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Microsoft365Defender.Hunt.results
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 349.5,
+          "y": 1049
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2fb08897-1dbb-4230-8f7c-4678cc5cc03d
+    type: regular
+    task:
+      id: 2fb08897-1dbb-4230-8f7c-4678cc5cc03d
+      version: -1
+      name: Get Azure risky users
+      description: Returns a list of all risky users and their properties.
+      script: '|||azure-risky-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      risk_level:
+        simple: high
+      updated_after:
+        simple: 1 day
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1369.25,
+          "y": 923
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 2b826c5b-4a0e-4cf7-b22e-3285561d4d2e
+    type: condition
+    task:
+      id: 2b826c5b-4a0e-4cf7-b22e-3285561d4d2e
+      version: -1
+      name: Check if the TAP assigner is risky
+      description: Checks if the TAP assigner user is risky in Azure.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskyUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser.userPrincipalName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.cloud_best_identity_match
+                      iscontext: true
+                    ignorecase: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1369.25,
+          "y": 1042
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 082ad94a-1bf7-49cc-9dce-dd824f951500
+    type: regular
+    task:
+      id: 082ad94a-1bf7-49cc-9dce-dd824f951500
+      version: -1
+      name: Save Defender 365 alerts result
+      description: Saves a key indicating alerts were found in Defender 365.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.Defender365Alerts
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 349.5,
+          "y": 1184
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f1f523b8-c1b2-454d-8f09-70832476b1b8
+    type: title
+    task:
+      id: f1f523b8-c1b2-454d-8f09-70832476b1b8
+      version: -1
+      name: User Risk - Core
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1836,
+          "y": 807
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 84cf01ea-cb7f-46f8-9344-9eb6903f8642
+    type: title
+    task:
+      id: 84cf01ea-cb7f-46f8-9344-9eb6903f8642
+      version: -1
+      name: User Risk - Azure AD
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1369.25,
+          "y": 807
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4e653669-baf7-408f-ba73-bec4abb19381
+    type: title
+    task:
+      id: 4e653669-baf7-408f-ba73-bec4abb19381
+      version: -1
+      name: Alerts - Defender 365
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 349.5,
+          "y": 811
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: b3e3c5f4-fc2d-4e4d-ae3f-beae5d074aef
+    type: regular
+    task:
+      id: b3e3c5f4-fc2d-4e4d-ae3f-beae5d074aef
+      version: -1
+      name: Get user risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      limit:
+        simple: "1"
+      user_id:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1836,
+          "y": 923
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 13d37a68-8193-406f-a033-723972018331
+    type: condition
+    task:
+      id: 13d37a68-8193-406f-a033-723972018331
+      version: -1
+      name: Check if the TAP assigner is risky
+      description: Checks if the TAP assigner user is risky.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.RiskyUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.RiskyUser.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.RiskyUser.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.username.[0]
+                      iscontext: true
+                    ignorecase: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1836,
+          "y": 1049
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8f7f55c7-2400-4605-a5c7-06ed6bd486a1
+    type: regular
+    task:
+      id: 8f7f55c7-2400-4605-a5c7-06ed6bd486a1
+      version: -1
+      name: Save Core risky user result
+      description: Saves a key indicating the TAP assigner is risky.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.CoreRiskyUser
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1836,
+          "y": 1184
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 022f3113-445f-40dc-88d7-cf6754639c93
+    type: condition
+    task:
+      id: 022f3113-445f-40dc-88d7-cf6754639c93
+      version: -1
+      name: Check evidence
+      description: Checks if 2 or more suspicious results were found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      True Positive:
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: DT
+                  args:
+                    dt:
+                      value:
+                        simple: '.=Array.isArray(val) ? val : Object.values(val)'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 1808
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 8881129d-1fd5-476a-b3b0-829551677a30
+    type: title
+    task:
+      id: 8881129d-1fd5-476a-b3b0-829551677a30
+      version: -1
+      name: Creation Date - MS Graph User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 1efb30c4-1a2e-4ac6-932b-d0aa1622ec43
+    type: regular
+    task:
+      id: 1efb30c4-1a2e-4ac6-932b-d0aa1622ec43
+      version: -1
+      name: Get user creation date
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      properties:
+        simple: createdDateTime
+      user:
+        simple: ${Core.OriginalAlert.event.cloud_best_identity_match}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 043fb79b-965a-4806-a76c-97b5f66e2d5d
+    type: condition
+    task:
+      id: 043fb79b-965a-4806-a76c-97b5f66e2d5d
+      version: -1
+      name: Check retrieved date
+      description: Checks if the creation date was retrieved for the user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Exists:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.CreatedDateTime
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 899,
+          "y": 1042
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a0072e04-fcde-4755-8294-3ced81514d8e
+    type: regular
+    task:
+      id: a0072e04-fcde-4755-8294-3ced81514d8e
+      version: -1
+      name: Convert user creation date to epoch
+      description: Converts the user creation date to epoch to find relative time of creation.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      key:
+        simple: UserCreationDateInEpoch
+      value:
+        complex:
+          root: MSGraphUser
+          accessor: CreatedDateTime
+          transformers:
+          - operator: toUnix
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1177
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 9c880423-50ed-4b7a-bdb1-94b1f5050bb1
+    type: condition
+    task:
+      id: 9c880423-50ed-4b7a-bdb1-94b1f5050bb1
+      version: -1
+      name: Check if user was created recently
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "Yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: subtraction
+                  args:
+                    by:
+                      value:
+                        simple: UserCreationDateInEpoch
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: "604800"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 899,
+          "y": 1432
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 3444e162-b1d3-49a9-89b8-a260cf6e4bae
+    type: regular
+    task:
+      id: 3444e162-b1d3-49a9-89b8-a260cf6e4bae
+      version: -1
+      name: Save result - user created recently
+      description: Saves a context key indicating the user was created recently.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Evidence.UserCreatedRecently
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 899,
+          "y": 1557
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 14165724-8b66-4b94-9622-df92a4b76c49
+    type: regular
+    task:
+      id: 14165724-8b66-4b94-9622-df92a4b76c49
+      version: -1
+      name: Get current date & time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 899,
+          "y": 1308
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3122ef6c-e09c-4660-b3fa-b5c92d6aee09
+    type: title
+    task:
+      id: 3122ef6c-e09c-4660-b3fa-b5c92d6aee09
+      version: -1
+      name: Renediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 953,
+          "y": 1932
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: cb3cb3bd-1c5e-4edf-b88a-abd866ea40c7
+    type: condition
+    task:
+      id: cb3cb3bd-1c5e-4edf-b88a-abd866ea40c7
+      version: -1
+      name: Manual - get remediation approval
+      description: "The investigation found several suspicious indicators related to the user who granted the TAP or the IP from which this TAP was granted. \n\nAs a response, the user's current session was revoked.\nReview the findings and decide on remediation actions.\n\n#### Temporary Access Pass (TAP) Information\nGranted by: `${Core.OriginalAlert.event.cloud_best_identity_match}`\n\nGranted to: `${Core.OriginalAlert.raw_abioc.event.referenced_resource_name}`\n\nTAP type: `${Core.OriginalAlert.event.tap_usage}`\n\nStart Time: `${Core.OriginalAlert.event.tap_start}`\n\nEnd Time: `${Core.OriginalAlert.event.tap_end}`\n\nTAP ID: `${Core.OriginalAlert.event.tap_id}`\n\n\n---\n\n\n#### TAP assigner Information\nInformation regarding the user who granted the TAP access.\n\nUser creation date analysis: `${.=val.Evidence && val.Evidence.UserCreatedRecently ? \"User created recently\" : \"User is not new\"}`\n\nRelated alerts in Defender 365: `${.=val.Evidence && val.Evidence.Defender365Alerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\nUser risk analysis (Core IR): `${.=val.Evidence && val.Evidence.CoreRiskyUser ? \"Risky\" : \"Not risky\"}`\n\nUser risk analysis (Azure AD): `${.=val.Evidence && val.Evidence.AzureRiskDetections ? \"Risky\" : \"Not risky\"}`\n\nNumber of TAPs granted (last 30 days): `${Core.OriginalAlert.event.provider_project_best_identity_operation_count_distinct_referenced_resource_name_azure_ad_audit_successful}`\n\n\n---\n\n\n### Caller IP Information\nIP reputation: `${.=val.Evidence && val.Evidence.MaliciousIP ? \"Malicious\" : \"Benign\"}`\n\nIP geolocation: `${Core.OriginalAlert.event.caller_ip_geolocation}`\n\n\n---\n\n\n### Suggested Analyst Response\nAfter reviewing the evidence, depending on the analyst verdict, we recommend the following response actions:\n- Manually delete the Temporary Access Pass (TAP) granted to the user in Microsoft Entra Admin Center\n- Disable the user in Azure AD"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Disable User:
+      - "45"
+      Skip Remediation:
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 953,
+          "y": 2158
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Disable User
+      - Skip Remediation
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: d755498c-440d-4fbb-91ef-9fe6bdbc74eb
+    type: regular
+    task:
+      id: d755498c-440d-4fbb-91ef-9fe6bdbc74eb
+      version: -1
+      name: Revoke user session
+      description: Revokes the current sessions of the user who granted the Temporary Access Pass in Microsoft apps.
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      user:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: cloud_best_identity_match
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 953,
+          "y": 2042
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 64741e8e-adce-4967-a44b-8bdf9cb64f19
+    type: regular
+    task:
+      id: 64741e8e-adce-4967-a44b-8bdf9cb64f19
+      version: -1
+      name: Disable user
+      description: Disables the TAP assigner user account.
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      user:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: cloud_best_identity_match
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 953,
+          "y": 2296
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: b98bbde5-d876-456c-8a6d-7686b081ab7a
+    type: regular
+    task:
+      id: b98bbde5-d876-456c-8a6d-7686b081ab7a
+      version: -1
+      name: Close alert
+      description: Closes the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        complex:
+          root: CloseReason
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 581,
+          "y": 2435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_11_#default#": 0.26,
+      "19_11_#default#": 0.1,
+      "21_11_#default#": 0.2,
+      "28_11_#default#": 0.11,
+      "30_40_True Positive": 0.36,
+      "30_46_#default#": 0.1,
+      "33_11_#default#": 0.29,
+      "37_11_#default#": 0.33,
+      "42_46_Skip Remediation": 0.36,
+      "9_11_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2332,
+        "width": 2301,
+        "x": -84,
+        "y": 173
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: true

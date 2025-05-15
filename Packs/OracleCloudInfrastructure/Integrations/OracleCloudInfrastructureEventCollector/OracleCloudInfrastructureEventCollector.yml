@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: OracleCloudInfrastructureEventCollector
   version: -1
@@ -59,10 +62,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Collects audit log events from Oracle Cloud Infrastructure resources.
 display: Oracle Cloud Infrastructure Event Collector
 name: OracleCloudInfrastructureEventCollector
@@ -79,7 +84,7 @@ script:
       required: true
     description: Manual command to fetch and display events.
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.117259
+  dockerimage: demisto/oci:1.0.0.3265913
   isfetchevents: true
   script: '-'
   subtype: python3

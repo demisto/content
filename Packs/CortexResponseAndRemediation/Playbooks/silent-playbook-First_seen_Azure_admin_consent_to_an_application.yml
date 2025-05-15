@@ -1,0 +1,2864 @@
+id: silent-First seen Azure admin consent to an application
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: silent-First seen Azure admin consent to an application
+description: "**This playbook addresses the following alert**:\n- First seen Azure admin consent to an application\n\n**Playbook Stages**:\n\n**Triage**:\n- Gather initial information about the the application and the admin who initiated the consent.\n- **IP Enrichment**:\n  - Analyze the reputation of the initiating user IP addresses.\n**User Investigation**:\n- **Azure Detection Analysis**:\n  - Investigate recent Azure security alerts for the admin user and app owner to detect additional suspicious activity.\n  - If any detections found, investigate the related user agent. \n- **User Risk Analysis**:\n  - Assess the risk level of the admin user and app owner based on XSIAM Core and Azure risk score.\n  - Investigate reasons behind any identified risks, including recent detections.\n- **Recent user creations**:\n  - checks if the app owner or the admin users was added recently \n**Application Investigation**:\n- **Logins from uncommon location**:\n  - Search for app sign ins from the last 24 hours that was not seen prior to it.\n- **Conditional Access Blocks**:\n  - Search for app sign ins that blocked by Conditional Access Policy\n- **App access **:\n  - checks if users with personal accounts allowed to access the app\n- **App Verified Publisher **:\n  - checks if the app publisher is verified by Microsoft\n**Verdict & Containment**:\n- If any suspicious evidence found during the user investigation phase and the integration \"Microsoft Graph User\" integration is enabled, the playbook will revoke the sessions of the admin user. If the integration is not enabled, the playbook will recommend to perform the same action but manually.\n- If any suspicious evidence found during the application investigation AND the app consented with high privileges AND the application publisher is not verified, the playbook will present a data collection task that contains all of the details and will suggest to either remove or disable the service principal who associated to the app.\n**Requirements**:\n- `Azure Risky Users` for retrieving user risk scores.\n- `Microsoft Graph User` for disabling accounts and revoking sessions.\n- `Microsoft Graph Applications` for disabling and removing service principals.\n- `Azure Log Analytics` for application investigation and part of user investigation."
+tags:
+- T1566 - Phishing
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b12d4c53-13c9-48a5-8c6c-9e9af30cebbd
+    type: start
+    task:
+      id: b12d4c53-13c9-48a5-8c6c-9e9af30cebbd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "93"
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 1166
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 85423516-4c16-41f2-af10-21f07d0259c4
+    type: regular
+    task:
+      id: 85423516-4c16-41f2-af10-21f07d0259c4
+      version: -1
+      name: Get application consent details
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 791f010a-8a4d-4bc1-87e6-393f9b37cf4f
+    type: title
+    task:
+      id: 791f010a-8a4d-4bc1-87e6-393f9b37cf4f
+      version: -1
+      name: User Risk Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "8"
+      - "110"
+      - "116"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 2234
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d3f6f991-6825-418f-8021-5336a5ec0e14
+    type: regular
+    task:
+      id: d3f6f991-6825-418f-8021-5336a5ec0e14
+      version: -1
+      name: Get core user risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "133"
+    scriptarguments:
+      user_id:
+        simple: ${Core.OriginalAlert.raw_abioc.event.identity_normalized.identity}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 2371
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f1c5b4fd-e760-4450-9e35-70aecebfd42e
+    type: regular
+    task:
+      id: f1c5b4fd-e760-4450-9e35-70aecebfd42e
+      version: -1
+      name: Get user Azure risk score
+      description: Returns a list of all risky users and their properties.
+      script: '|||azure-risky-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "133"
+    scriptarguments:
+      risk_level:
+        simple: high
+      updated_after:
+        simple: 5 hours
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1062,
+          "y": 2371
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1489d7a7-f3c1-43c9-a913-99eb0d47a17b
+    type: condition
+    task:
+      id: 1489d7a7-f3c1-43c9-a913-99eb0d47a17b
+      version: -1
+      name: Check if the admin is risky
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskyUser
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser.userPrincipalName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.identity_name
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser.riskState
+                      iscontext: true
+                    right:
+                      value:
+                        simple: atRisk
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser
+                      iscontext: true
+                    right:
+                      value:
+                        simple: confirmedCompromised
+                    ignorecase: true
+                accessor: userPrincipalName
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Core.RiskyUser.risk_leve
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 2501
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 46e9466f-75bf-43de-8544-d0f376e4ac22
+    type: title
+    task:
+      id: 46e9466f-75bf-43de-8544-d0f376e4ac22
+      version: -1
+      name: User Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+      - "6"
+      - "111"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 1699
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8843719b-240e-4b06-8286-60fd19519574
+    type: title
+    task:
+      id: 8843719b-240e-4b06-8286-60fd19519574
+      version: -1
+      name: Application Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "98"
+      - "94"
+      - "119"
+      - "121"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 422,
+          "y": 2775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: fefc80aa-99ee-4e99-8392-6966627fdcbe
+    type: regular
+    task:
+      id: fefc80aa-99ee-4e99-8392-6966627fdcbe
+      version: -1
+      name: Close alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      closeNotes:
+        simple: ' Handled by the playbook "First seen Azure admin application consent"'
+      closeReason:
+        simple: Resolved as TRUE_POSITIVE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 4850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 6608d7d2-761a-4f41-8292-5beb9d77ced9
+    type: title
+    task:
+      id: 6608d7d2-761a-4f41-8292-5beb9d77ced9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 06925304-6553-43c9-9d46-43fc84d1fa7d
+    type: regular
+    task:
+      id: 06925304-6553-43c9-9d46-43fc84d1fa7d
+      version: -1
+      name: Clear admin session
+      description: "Revoke a user session by invalidating all refresh tokens issued to applications for a user. \nThis command requires an administrator role.\nPermission required: Directory.AccessAsUser.All (Delegated)."
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+      - "125"
+    scriptarguments:
+      user:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 9f3a2374-591c-45a1-8fc3-0e13a81236c9
+    type: regular
+    task:
+      id: 9f3a2374-591c-45a1-8fc3-0e13a81236c9
+      version: -1
+      name: Set admin risky user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: AdminIsRisky
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 917,
+          "y": 2633
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 4133dada-d26e-4bf3-8438-ba24f999a6cd
+    type: regular
+    task:
+      id: 4133dada-d26e-4bf3-8438-ba24f999a6cd
+      version: -1
+      name: Get IP Address reputation
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      ip:
+        simple: ${alert.hostip}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 72,
+          "y": 1442
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: a5bdb8a0-62e2-4984-93bc-244caba2b885
+    type: collection
+    task:
+      id: a5bdb8a0-62e2-4984-93bc-244caba2b885
+      version: -1
+      name: Manual Task - Application Response Decision
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1046,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **App Owner is risky?**: `${.=valOwnerIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **The admin is risky?**: `${.=valAdminIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Actions Recommended:\n\nWe recommend to limit the application activity by performing one of the actions below.\n"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: No Action
+        - simple: Disable the consented application ServicePrincipal
+        - simple: Remove the consented application ServicePrincipal
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Action
+      description: Analyst review
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 35e581fa-81b8-4fc3-971a-926f4e878afd
+    type: regular
+    task:
+      id: 35e581fa-81b8-4fc3-971a-926f4e878afd
+      version: -1
+      name: Remove Associated Service Principal
+      description: Removes an application from the directory.
+      script: '|||msgraph-apps-service-principal-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      app_id:
+        simple: ${AppID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1443,
+          "y": 4468
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 27262e81-2942-4c63-b94f-a8f8f2fdcff5
+    type: condition
+    task:
+      id: 27262e81-2942-4c63-b94f-a8f8f2fdcff5
+      version: -1
+      name: Check if MSGraph Security integration is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "105"
+      "yes":
+      - "38"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 3671
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 2b928a00-f3ec-45ed-8815-cf2b455a9db5
+    type: title
+    task:
+      id: 2b928a00-f3ec-45ed-8815-cf2b455a9db5
+      version: -1
+      name: Verdict & Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+      - "135"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 3287
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: bc24e6f1-8755-4c21-b881-7ef5098f0ff8
+    type: regular
+    task:
+      id: bc24e6f1-8755-4c21-b881-7ef5098f0ff8
+      version: -1
+      name: Set malicious IP if exits
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: MaliciousIP
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 72,
+          "y": 1562
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: ecffd95d-2836-4f88-a543-e73bfa300348
+    type: condition
+    task:
+      id: ecffd95d-2836-4f88-a543-e73bfa300348
+      version: -1
+      name: Check whether the consenting admin is suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "126"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AdminIsRisky
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SuspiciousUserAgent
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: MaliciousIP
+            iscontext: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: UsersCreatedRecently
+            iscontext: true
+          right:
+            value:
+              simple: Core.OriginalAlert.event.identity_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 3405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: a7c8bf69-a132-403e-ac4b-2f4656a3cd13
+    type: regular
+    task:
+      id: a7c8bf69-a132-403e-ac4b-2f4656a3cd13
+      version: -1
+      name: Investigation Summary And Needed Response Actions
+      description: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **App Owner is risky?**: `${.=valOwnerIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **The admin is risky?**: `${.=valAdminIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Manual Actions Recommended:\nSince there is no MSGraph Application integration connected to XSIAM, we recommend to perform the following actions manually:\n\n- Limit the application activity by removing or disabling its associated Service Principal\n- If the user who initiated the consent is risky, consider disabling it until further investigation."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 588aed78-6987-417b-bf83-cfa138489953
+    type: condition
+    task:
+      id: 588aed78-6987-417b-bf83-cfa138489953
+      version: -1
+      name: Checks if IP address exists in the alert
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.hostip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 72,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 2cf4eaab-5a93-430f-903e-a5fdc9fe3bb8
+    type: regular
+    task:
+      id: 2cf4eaab-5a93-430f-903e-a5fdc9fe3bb8
+      version: -1
+      name: Search for app sign ins that blocked by Conditional Access Policy
+      description: Executes an Analytics query for data.
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      query:
+        simple: |-
+          SigninLogs
+          | where TimeGenerated > ago(24h)
+          | where AppId == "${AppID}"
+          | where ConditionalAccessStatus == "success"
+          | mv-expand Policy = ConditionalAccessPolicies
+          | summarize BlockCount = count() by ConditionalAccessStatus, PolicyName = tostring(Policy.displayName)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2899
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 5e198127-5f34-41c0-b7a3-69384e6696a0
+    type: regular
+    task:
+      id: 5e198127-5f34-41c0-b7a3-69384e6696a0
+      version: -1
+      name: Extract AppId
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      key:
+        simple: AppID
+      value:
+        complex:
+          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.raw_log.additionalDetails.key
+                iscontext: true
+              right:
+                value:
+                  simple: AppId
+              ignorecase: true
+          accessor: value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 1419
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 5dd82330-029a-42ba-9324-e97d18ae0c14
+    type: regular
+    task:
+      id: 5dd82330-029a-42ba-9324-e97d18ae0c14
+      version: -1
+      name: Search for app sign ins from uncommon locations
+      description: Executes an Analytics query for data.
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: |-
+          SigninLogs
+          | where TimeGenerated > ago(24h)
+          | where AppId == "${AppID}"
+          | summarize LogCount = count() by Location, Day = "Today"
+          | union (
+              SigninLogs
+              | where TimeGenerated between (ago(30d) .. ago(24h))
+              | where AppId == "${AppID}"
+              | summarize LogCount = count() by Location, Day = "Before Today"
+              )
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 643,
+          "y": 2899
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 9392c418-647d-4f37-9ceb-990bb6b48ce7
+    type: condition
+    task:
+      id: 9392c418-647d-4f37-9ceb-990bb6b48ce7
+      version: -1
+      name: Check the sign-in from an uncommon location
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureLogAnalytics.Query.Data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureLogAnalytics.Query.Data.Day
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Today
+                    ignorecase: true
+                accessor: Location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureLogAnalytics.Query.Data
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: AzureLogAnalytics.Query.Data.Day
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Today
+                    ignorecase: true
+                accessor: Location
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: AzureLogAnalytics.Query.Data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureLogAnalytics.Query.Data.Day
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Today
+                    ignorecase: true
+                accessor: Location
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: AzureLogAnalytics.Query.Data
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: AzureLogAnalytics.Query.Data.Day
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Today
+                    ignorecase: true
+                accessor: Location
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 643,
+          "y": 3031
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: a5b9076a-57be-44fa-9aa3-ddfb466b359d
+    type: regular
+    task:
+      id: a5b9076a-57be-44fa-9aa3-ddfb466b359d
+      version: -1
+      name: Set unusual location to context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      key:
+        simple: UnusualLocation
+      value:
+        simple: 'At the last 24 hours, a sign in from an uncommon geolocation detected. the locations '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 643,
+          "y": 3159
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 45e4f946-0655-43ee-a8ce-40a150a88598
+    type: regular
+    task:
+      id: 45e4f946-0655-43ee-a8ce-40a150a88598
+      version: -1
+      name: Set CA Policies who blocked the app sign ins
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      key:
+        simple: CAPolicies
+      value:
+        simple: An access to the application was blocked ${AzureLogAnalytics.Query.Data.[0].BlockCount} times by conditional access policy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3159
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: a7b60609-0bda-4bad-9ce1-efe4f7d852d6
+    type: condition
+    task:
+      id: a7b60609-0bda-4bad-9ce1-efe4f7d852d6
+      version: -1
+      name: Check whether the consented app is flagged as suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "125"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CAPolicies
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: UnusualLocation
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: PersonalAccounts
+            iscontext: true
+      - - operator: containsString
+          left:
+            value:
+              simple: alert.details
+            iscontext: true
+          right:
+            value:
+              simple: The consent consented high privileges
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NoVerifiedPublisher
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 421,
+          "y": 3949
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 5b2923d9-8700-49f5-8458-df097b9c157c
+    type: condition
+    task:
+      id: 5b2923d9-8700-49f5-8458-df097b9c157c
+      version: -1
+      name: Does any app access blocks by CA policy detected?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "101"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.Query.Data.[0].BlockCount
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3031
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 6dcd4223-a281-4e2c-8b01-d0f43d4c0142
+    type: condition
+    task:
+      id: 6dcd4223-a281-4e2c-8b01-d0f43d4c0142
+      version: -1
+      name: Review the analyst's decision on the app response
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      Disable App:
+      - "109"
+      Remove App:
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: Remove App
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Reomve the consented application ServicePrincipal
+          ignorecase: true
+    - label: Disable App
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable the consented application ServicePrincipal
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 4337
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 8aa9a534-0415-4cc1-9cce-8b97c5e94771
+    type: regular
+    task:
+      id: 8aa9a534-0415-4cc1-9cce-8b97c5e94771
+      version: -1
+      name: Disable the Associated Service Principal
+      description: Update the properties of servicePrincipal object.
+      script: '|||msgraph-apps-service-principal-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      account_enabled:
+        simple: "false"
+      app_id:
+        simple: ${AppID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052,
+          "y": 4468
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 27692a50-6c7c-4494-970f-bb1a89cbe171
+    type: regular
+    task:
+      id: 27692a50-6c7c-4494-970f-bb1a89cbe171
+      version: -1
+      name: Extract suspicious user agent
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: SuspiciousUserAgent
+      value:
+        complex:
+          root: alert.useragent
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: alert.useragent
+                iscontext: true
+              right:
+                value:
+                  simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium)\b
+          accessor: '[0]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 2371
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 931be5ef-5b23-443f-a559-da9317110612
+    type: regular
+    task:
+      id: 931be5ef-5b23-443f-a559-da9317110612
+      version: -1
+      name: Get timestamp for Azure detections
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1821
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: ddbab275-1563-4dfa-985e-36ab49bffe42
+    type: condition
+    task:
+      id: ddbab275-1563-4dfa-985e-36ab49bffe42
+      version: -1
+      name: Check if User Consent is the app owner
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "114"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AzureLogAnalytics.Query.Data.AppOwner
+            iscontext: true
+          right:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.identity_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.Query.Data.AppOwner
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 643,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 52d758ad-6c71-4521-8a3c-ca7b1ab71e4d
+    type: regular
+    task:
+      id: 52d758ad-6c71-4521-8a3c-ca7b1ab71e4d
+      version: -1
+      name: Search for the app registration
+      description: Executes an Analytics query for data.
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: "AuditLogs\n| where ActivityDisplayName == \"Add application\"\n| extend AppId = tostring(TargetResources[0].id)\n| where AppId == \"${AppID}\"\n| project TimeGenerated, \n          AppId, \n          ApplicationDisplayName = TargetResources[0].displayName,\n          AppOwner = tostring(InitiatedBy.user.userPrincipalName),\n          InitiatedByObjectId = tostring(InitiatedBy.user.id),\n          ActivityDate = TimeGenerated\n| order by TimeGenerated desc"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 643,
+          "y": 1821
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 7ef4fcd0-a8d3-480c-a561-20edaae9fdd0
+    type: regular
+    task:
+      id: 7ef4fcd0-a8d3-480c-a561-20edaae9fdd0
+      version: -1
+      name: Set App Owner
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: AppOwner
+      value:
+        simple: ${AzureLogAnalytics.Query.Data.AppOwner}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 832,
+          "y": 2069
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 6b7f79bf-32f3-4a82-abbb-9b857f9ceb29
+    type: regular
+    task:
+      id: 6b7f79bf-32f3-4a82-abbb-9b857f9ceb29
+      version: -1
+      name: Get service principal details
+      description: Retrieve the properties and relationships of a servicePrincipal object.
+      script: '|||msgraph-apps-service-principal-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      app_id:
+        simple: ${AppID}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 966c7795-15b6-417a-aad6-405aa6dbcc37
+    type: regular
+    task:
+      id: 966c7795-15b6-417a-aad6-405aa6dbcc37
+      version: -1
+      name: Check if the app owner or admin was recently added
+      description: Executes an Analytics query for data.
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      query:
+        simple: "AuditLogs\n| where ActivityDisplayName == \"Add user\"\n| where TimeGenerated >= ago(30d)\n| where TargetResources[0].userPrincipalName in (\"${Core.OriginalAlert.raw_abioc.event.identity_name}\", \"${AppOwner}\")\n| project TimeGenerated, \n          UserCreatedRecently = TargetResources[0].userPrincipalName, \n          ObjectId = TargetResources[0].id, \n          InitiatedBy = tostring(InitiatedBy.user.userPrincipalName)\n| order by TimeGenerated desc"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -231,
+          "y": 2371
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: f586c6d1-333f-413f-9882-62a0c8d5c339
+    type: condition
+    task:
+      id: f586c6d1-333f-413f-9882-62a0c8d5c339
+      version: -1
+      name: Check if users were created recently
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "118"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.Query.Data.UserCreatedRecently
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -231,
+          "y": 2501
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: a749c6b5-cde0-4bdf-95ec-fd453feb4239
+    type: regular
+    task:
+      id: a749c6b5-cde0-4bdf-95ec-fd453feb4239
+      version: -1
+      name: Set Created Users to Context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: UsersCreatedRecently
+      value:
+        simple: The users ${AzureLogAnalytics.Query.Data.UserCreatedRecently} was created recently
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -231,
+          "y": 2622
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 6a26ee38-4fb9-462f-a8ca-03e2ff150268
+    type: condition
+    task:
+      id: 6a26ee38-4fb9-462f-a8ca-03e2ff150268
+      version: -1
+      name: Does users with personal accounts allowed to access the app?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "120"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphApplication.signInAudience
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: MSGraphApplication.signInAudience
+            iscontext: true
+          right:
+            value:
+              simple: AzureADandPersonalMicrosoftAccount
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 195,
+          "y": 3031
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 2e751acc-3456-4836-9dbc-d445d8f63f56
+    type: regular
+    task:
+      id: 2e751acc-3456-4836-9dbc-d445d8f63f56
+      version: -1
+      name: Set access allowed from personal accounts to context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      key:
+        simple: PersonalAccounts
+      value:
+        simple: The access to the app is allowed for users in any Azure AD tenant and personal Microsoft accounts (MSA — like @outlook.com, @hotmail.com)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 195,
+          "y": 3159
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 4f21bb45-68c3-4003-8fd6-b1a5e37c54df
+    type: condition
+    task:
+      id: 4f21bb45-68c3-4003-8fd6-b1a5e37c54df
+      version: -1
+      name: Does the app has a verified publisher?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "122"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphApplication.verifiedPublisher.displayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -244,
+          "y": 3031
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 5fa645ad-884c-490e-9e5b-c436d4411e4d
+    type: regular
+    task:
+      id: 5fa645ad-884c-490e-9e5b-c436d4411e4d
+      version: -1
+      name: Set no verified publisher to context
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      key:
+        simple: NoVerifiedPublisher
+      value:
+        simple: The app publisher was not verified by Microsoft
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -244,
+          "y": 3159
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: aebe9e4a-7e0e-4d7d-9f93-e1f6882cea7a
+    type: regular
+    task:
+      id: aebe9e4a-7e0e-4d7d-9f93-e1f6882cea7a
+      version: -1
+      name: Get user risky detection list
+      description: Returns a comma-separated list of the Risk Detection objects and their properties.
+      script: '|||azure-risky-users-risk-detections-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      detected_date_time_after:
+        simple: ${TimeNow}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 179,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 2f1862f0-075a-4f07-bfce-1566b2dfb67b
+    type: regular
+    task:
+      id: 2f1862f0-075a-4f07-bfce-1566b2dfb67b
+      version: -1
+      name: |
+        Extract Azure user detections
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: UserRiskyAzureDetections
+      value:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                iscontext: true
+              right:
+                value:
+                  simple: Core.OriginalAlert.event.identity_orig.user.userPrincipalName
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: atRisk
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: AzureRiskyUsers.RiskDetection.riskState
+                iscontext: true
+              right:
+                value:
+                  simple: confirmedCompromised
+          accessor: riskEventType
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 2069
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: c31d25e5-4cef-4420-bac8-6b661176696c
+    type: condition
+    task:
+      id: c31d25e5-4cef-4420-bac8-6b661176696c
+      version: -1
+      name: Check if response via Microsoft Graph integration is possible
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "83"
+      Yes And User Suspicious:
+      - "127"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftGraphApplications
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    - label: Yes And User Suspicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftGraphApplications
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SuspiciousUser
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: SuspiciousOwner
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Graph User
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: actove
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 4083
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: c17dec74-95f1-4c95-bb88-878657fdbbd2
+    type: regular
+    task:
+      id: c17dec74-95f1-4c95-bb88-878657fdbbd2
+      version: -1
+      name: Set user is suspicious to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      key:
+        simple: SuspiciousUser
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 665,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 360a3349-6687-4355-8c10-583e4687ca35
+    type: collection
+    task:
+      id: 360a3349-6687-4355-8c10-583e4687ca35
+      version: -1
+      name: Manual Task - Application & Identity Response Decision
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "128"
+      - "129"
+    scriptarguments:
+      key:
+        simple: Message
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1443,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "### During the investigation, the playbook detected the following evidence in regards to the following applications consent:\n**Application Display Name**: `${.=val.Core.OriginalAlert.event.cloud_azure_ad_target_resource_display_name || \"N/A\"}`\n\n**Application\n**App Owner**:`${.=val.AppOwner || \"N/A\"}`\n\n**Permissions**:`${.=val.Core.OriginalAlert.event.app_permissions || \"N/A\"}`\n\n**The Admin Who Consented The App**:`${.=val.Core.OriginalAlert.event.identity_name || \"N/A\"}`\n\n**App oauth2 Permission Scope**:`${.=val.MSGraphApplication.oauth2PermissionScopes || \"N/A\"}`\n\n**Application Suspicious Activity**: \n`${.=val.CAPolicies || \"\"}`<br>\n`${.=val.UnusualLocation || \"\"}`<br>\n`${.=val.NoVerifiedPublisher || \"\"}`<br>\n`${.=val.PersonalAccounts || \"\"}`<br>\n---\n\n### User Agent Analysis:\n- **Suspicious user agent**: `${.=val.SuspiciousUserAgent || \"None\"}`\n---\n\n### User Risk Analysis:\n- **App Owner is risky?**: `${.=valOwnerIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **The admin is risky?**: `${.=valAdminIsRisky ? \"Yes, Reason: \" + val.UserRiskyCoreReason : \"N/A\"}`\n- **Involved Users Who Created Recently**: `${.=val.UsersCreatedRecently || \"None\"}`\n### User Azure Security Alerts:\n- **Alerts from last day**: `${.=val.UserRiskyAzureDetections || \"N/A\"}`\n---\n### Actions Recommended:\n\nWe recommend to limit the application activity by performing one of the actions below.\n"
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: No Action
+        - simple: Disable the consented application ServicePrincipal
+        - simple: Remove the consented application ServicePrincipal
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: db6efb07-a10e-4249-9bcc-1c2e02c9b66f
+        label: ""
+        labelarg:
+          simple: Would you like to disable the involved users?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: No Action
+        - simple: Disable the ADMIN who consented the application
+        - simple: Disable the Application Owner
+        - simple: Disable Both
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Analyst Action
+      description: Analyst review
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 060a5c0f-086c-4068-8b85-e40dd5d18871
+    type: condition
+    task:
+      id: 060a5c0f-086c-4068-8b85-e40dd5d18871
+      version: -1
+      name: Review the analyst's decision on the app response
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      Disable App:
+      - "109"
+      Remove App:
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: Remove App
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Reomve the consented application ServicePrincipal
+          ignorecase: true
+    - label: Disable App
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable the consented application ServicePrincipal
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1443,
+          "y": 4337
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 8e9f95a6-995b-4413-b342-bb2b266e9369
+    type: condition
+    task:
+      id: 8e9f95a6-995b-4413-b342-bb2b266e9369
+      version: -1
+      name: Check whether the analyst disabled the admin
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      Disable Admin:
+      - "131"
+      Disable App Owner:
+      - "130"
+      Disable Both:
+      - "132"
+    separatecontext: false
+    conditions:
+    - label: Disable Admin
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: Disable the ADMIN who consented the application
+          ignorecase: true
+    - label: Disable App Owner
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: Disable the Application Owner
+          ignorecase: true
+    - label: Disable Both
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Analyst Action.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: Disable Both
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1861,
+          "y": 4348
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: c8784f7d-c236-42e6-8889-4dfb133eeb44
+    type: regular
+    task:
+      id: c8784f7d-c236-42e6-8889-4dfb133eeb44
+      version: -1
+      name: Disable App Owner
+      description: |-
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        but does not terminate an existing session. Supported only in a self deployed app flow with the
+        Permission: Directory.AccessAsUser.All(Delegated).
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      user:
+        simple: ${AppOwner}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1861,
+          "y": 4468
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: 02dcea42-5522-429b-bcb5-877c24d3beb0
+    type: regular
+    task:
+      id: 02dcea42-5522-429b-bcb5-877c24d3beb0
+      version: -1
+      name: Disable Admin Who Consented The Application
+      description: |-
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        but does not terminate an existing session. Supported only in a self deployed app flow with the
+        Permission: Directory.AccessAsUser.All(Delegated).
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      user:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1861,
+          "y": 4598
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 44c81d02-642b-41d7-aa18-32aac0389888
+    type: regular
+    task:
+      id: 44c81d02-642b-41d7-aa18-32aac0389888
+      version: -1
+      name: Disable The App Owner And The Admin Who Consented The Application
+      description: |-
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        but does not terminate an existing session. Supported only in a self deployed app flow with the
+        Permission: Directory.AccessAsUser.All(Delegated).
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      user:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: AppOwner
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1861,
+          "y": 4719
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 35136fd5-c445-4748-a599-db369b482a28
+    type: condition
+    task:
+      id: 35136fd5-c445-4748-a599-db369b482a28
+      version: -1
+      name: Check if the user who registered the app is risky
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "134"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskyUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AppOwner
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser.riskState
+                      iscontext: true
+                    right:
+                      value:
+                        simple: atRisk
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskyUser
+                      iscontext: true
+                    right:
+                      value:
+                        simple: confirmedCompromised
+                    ignorecase: true
+                accessor: userPrincipalName
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AppOwner
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1062,
+          "y": 2501
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: c121b7c6-8e62-41da-b48d-2f2bc6d36011
+    type: regular
+    task:
+      id: c121b7c6-8e62-41da-b48d-2f2bc6d36011
+      version: -1
+      name: Set app owner as risky user
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: OwnerIsRisky
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1324,
+          "y": 2633
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: bc944789-6ee4-477a-a0a4-b7421880d970
+    type: condition
+    task:
+      id: bc944789-6ee4-477a-a0a4-b7421880d970
+      version: -1
+      name: Check if the app owner is suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: OwnerIsRisky
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: UsersCreatedRecently
+            iscontext: true
+          right:
+            value:
+              simple: AppOwner
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 847,
+          "y": 3405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: a58f4a61-3c7c-4a90-b4ac-e95ff24287fe
+    type: regular
+    task:
+      id: a58f4a61-3c7c-4a90-b4ac-e95ff24287fe
+      version: -1
+      name: Set app owner is suspicious to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "137"
+    scriptarguments:
+      key:
+        simple: SuspiciousOwner
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: e1ef03d6-6168-4258-8a3f-a2965bcf9b28
+    type: condition
+    task:
+      id: e1ef03d6-6168-4258-8a3f-a2965bcf9b28
+      version: -1
+      name: Check if MSGraph Security integration is enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "105"
+      "yes":
+      - "138"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3671
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: d7ab6da9-ed8d-4bda-8f5b-3913fa512c85
+    type: regular
+    task:
+      id: d7ab6da9-ed8d-4bda-8f5b-3913fa512c85
+      version: -1
+      name: Clear app owner session
+      description: "Revoke a user session by invalidating all refresh tokens issued to applications for a user. \nThis command requires an administrator role.\nPermission required: Directory.AccessAsUser.All (Delegated)."
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+      - "125"
+    scriptarguments:
+      user:
+        simple: ${AppOwner}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1228,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "105_37_#default#": 0.24,
+      "106_66_#default#": 0.29,
+      "108_33_#default#": 0.28,
+      "108_59_Remove App": 0.67,
+      "112_6_yes": 0.33,
+      "117_29_#default#": 0.3,
+      "119_66_#default#": 0.33,
+      "121_66_yes": 0.19,
+      "128_109_Disable App": 0.68,
+      "128_33_#default#": 0.18,
+      "129_33_#default#": 0.12,
+      "135_105_#default#": 0.11,
+      "19_29_#default#": 0.29,
+      "19_39_yes": 0.4,
+      "62_105_no": 0.31,
+      "82_105_#default#": 0.22,
+      "99_100_yes": 0.42,
+      "99_66_#default#": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3874,
+        "width": 2486,
+        "x": -244,
+        "y": 1166
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: true

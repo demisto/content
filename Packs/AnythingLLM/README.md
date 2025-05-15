@@ -75,7 +75,7 @@ Example command to update workspace settings:
 !anyllm-workspace-settings workspace="Unit42 Reports" settings="{\"openAiTemp\": \"0.10\", \"similarityThreshold\": \"0.50\", \"openAiHistory\": \"35\", \"topN\": \"8\", \"chatMode\": \"query\"}"
 ```
 
-# Use Case Development
+## Use Case Development
 
 The Anything LLM content pack provides an interactive environment for data and prompt engineering for developing the steps needed in an automated use case. To use it, create a new incident of type **AI Playground**.  The layout provides two tabs: **Workspace and Document Management** and **AI Playground** for uploading and embedding documents into a workspace for a use case and developing the needed prompts and workspace settings (Mode, Temperature, Similarity, and TopN). Some use cases may require just *Retrieval Augmented Generation* (RAG) where a few, similar pieces of text are retrieved from embedded documents while other use cases may require additional text to be added to the context of an LLM conversation.
 

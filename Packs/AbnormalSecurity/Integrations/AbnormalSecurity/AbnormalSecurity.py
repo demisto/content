@@ -954,7 +954,7 @@ def fetch_incidents(
         threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
 
         if fetch_threats and current_pending_incidents_to_fetch > 0:
-            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lte {end_timestamp}"
+            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lt {end_timestamp}"
             threats_response = client.get_paginated_threats_list(
                 filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             threat_incidents = generate_threat_incidents(
@@ -963,14 +963,14 @@ def fetch_incidents(
         current_pending_incidents_to_fetch -= len(threat_incidents)
 
         if fetch_abuse_campaigns and current_pending_incidents_to_fetch > 0:
-            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp}"
+            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp} and lastReportedTime lt {end_timestamp}"
             abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
                 filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
         current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
 
         if fetch_account_takeover_cases and current_pending_incidents_to_fetch > 0:
-            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp}"
+            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp} and lastModifiedTime lt {end_timestamp}"
             account_takeover_cases_response = client.get_paginated_cases_list(
                 filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             account_takeover_cases_incidents = generate_account_takeover_cases_incidents(
@@ -1059,7 +1059,7 @@ def main():  # pragma: nocover
             max_incidents_to_fetch = arg_to_number(params.get("max_fetch", FETCH_LIMIT))
             fetch_threats = params.get("fetch_threats", False)
             # Get the polling lag time parameter
-            polling_lag_minutes = int(params.get('polling_lag', 5))
+            polling_lag_minutes = int(params.get('polling_lag', 2))
             max_page_number = int(params.get('max_page_number', 8))
             polling_lag_delta = timedelta(minutes=polling_lag_minutes)
             fetch_abuse_campaigns = params.get("fetch_abuse_campaigns", False)

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0.8 of Imperva Skyfenc
 
 ## Configure Imperva Skyfence in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g., 123.168.01.222) | True |
@@ -12,7 +11,6 @@ This integration was integrated and tested with version 1.0.8 of Imperva Skyfenc
 | Client Secret | False |
 | Client Secret | False |
 | Trust any certificate (not secure) | False |
-
 
 ## Commands
 
@@ -36,6 +34,7 @@ Returns a list of, and basic details for, all managed and un-managed endpoints.
 #### Context Output
 
 There is no context output for this command.
+
 ### imp-sf-set-endpoint-status
 
 ***
@@ -49,8 +48,8 @@ Updates the status (enroll or revoke) of an endpoint. You can run this command o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpointId | The ID of the endpoint. Run the "imp-sf-list-endpoints" command to return a list. | Required | 
-| action | Enroll/Revoke endpoint status. Can be "enroll" or "revoke". | Required | 
+| endpointId | The ID of the endpoint. Run the "imp-sf-list-endpoints" command to return a list. | Required |
+| action | Enroll/Revoke endpoint status. Can be "enroll" or "revoke". | Required |
 
 #### Context Output
 
