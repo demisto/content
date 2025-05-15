@@ -217,6 +217,19 @@ script:
       type: String
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
+  - arguments:
+      - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+        name: lastUpdate
+        required: true
+    name: get-modified-remote-data
+  - arguments:
+      - description: The remote incident ID.
+        name: id
+        required: true
+      - defaultValue: '0'
+        description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+        name: lastUpdate
+    name: get-remote-data
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
