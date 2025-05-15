@@ -125,9 +125,8 @@ def build_argus_priority_from_min_severity(min_severity: str) -> list[str]:
 
 
 def parse_first_fetch(first_fetch: Any) -> Any:
-    if isinstance(first_fetch, str):
-        if first_fetch[0] != "-":
-            first_fetch = f"-{first_fetch}"
+    if isinstance(first_fetch, str) and first_fetch[0] != "-":
+        first_fetch = f"-{first_fetch}"
     return first_fetch
 
 
@@ -170,7 +169,9 @@ def pretty_print_date(date_time: datetime | str = None) -> str:
 def pretty_print_case_metadata(result: dict, title: str = None) -> str:
     data = result["data"]
     string = title if title else f"# #{data['id']}: {data['subject']}\n"
-    string += f"_Priority: {data['priority']}, status: {data['status']}, last updated: {pretty_print_date(data['lastUpdatedTime'])}_\n"
+    string += (
+        f"_Priority: {data['priority']}, status: {data['status']}, last updated: {pretty_print_date(data['lastUpdatedTime'])}_\n"
+    )
     string += f"Reported by {data['publishedByUser']['name']} at {pretty_print_date(data['publishedTime'])}\n\n"
     string += data["description"]
     return string
@@ -178,7 +179,10 @@ def pretty_print_case_metadata(result: dict, title: str = None) -> str:
 
 def pretty_print_case_metadata_html(case: dict, title: str = None) -> str:
     string = title if title else f"<h2>#{case['id']}: {case['subject']}</h2>"
-    string += f"<em>Priority: {case['priority']}, status: {case['status']}, last updated: {pretty_print_date(case['lastUpdatedTime'])}</em><br>"
+    string += (
+        f"<em>Priority: {case['priority']}, status: {case['status']}, "
+        f"last updated: {pretty_print_date(case['lastUpdatedTime'])}</em><br>"
+    )
     string += f"Reported by {case['publishedByUser']['name']} at {pretty_print_date(case['publishedTime'])}<br><br>"
     string += case["description"]
     return string
@@ -200,11 +204,7 @@ def pretty_print_comment_html(comment: dict, title: str = None) -> str:
     string += "<small>"
     string += f"<em>Added by {comment['addedByUser']['userName']} at "
     string += f"{pretty_print_date(comment['addedTime'])}</em><br>"
-    string += (
-        f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>"
-        if comment["lastUpdatedTime"]
-        else ""
-    )
+    string += f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>" if comment["lastUpdatedTime"] else ""
     if comment["associatedAttachments"]:
         string += "<em>Associated attachment(s): "
         for attachment in comment["associatedAttachments"]:
@@ -545,7 +545,7 @@ def update_remote_system_command(args: dict) -> CommandResults:
         for key, value in parsed_args.delta.items():
             # Allow changing status of case from XSOAR layout
             if key == "arguscasestatus":
-                if value in ARGUS_STATUS_MAPPING.keys():
+                if value in ARGUS_STATUS_MAPPING:  # noqa SIM102
                     to_update["status"] = value
             # Allow changing argus priority based upon XSOAR severity
             elif key == "severity":
@@ -554,8 +554,8 @@ def update_remote_system_command(args: dict) -> CommandResults:
                         to_update["priority"] = priority
                         break
             # Argus Priority in layout
-            elif key == "arguscasepriority":
-                if value in ARGUS_PRIORITY_MAPPING.keys():
+            elif key == "arguscasepriority":  # noqa SIM102
+                if value in ARGUS_PRIORITY_MAPPING:
                     to_update["priority"] = value
 
         if to_update:
@@ -620,7 +620,7 @@ def add_attachment_command(args: dict) -> CommandResults:
         raise ValueError("file_id not specified")
 
     result = add_attachment_helper(case_id, file_id)
-    if "error" in result.keys():
+    if "error" in result:
         raise Exception(result["error"])
 
     readable_output = pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n")
@@ -955,9 +955,7 @@ def get_attachment_command(args: dict) -> CommandResults:
             outputs=result,
             raw_response=result,
         )
-    return CommandResults(
-        readable_output=pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n")
-    )
+    return CommandResults(readable_output=pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n"))
 
 
 def get_case_metadata_by_id_command(args: dict) -> CommandResults:
@@ -1442,7 +1440,7 @@ def search_records_command(args: dict) -> CommandResults:
         rrClass=argToList(args.get("rr_class")),
         rrType=argToList(args.get("rr_type")),
         customerID=argToList(args.get("customer_id")),
-        tlp=argToList((args.get("tlp"))),
+        tlp=argToList(args.get("tlp")),
         limit=args.get("limit", 25),
         offset=args.get("offset"),
     )
@@ -1744,7 +1742,7 @@ def add_sample_command(args: dict) -> CommandResults:
         raise FileNotFoundError(f"Could not find path for file_id={file_id}")
 
     result = upload_sample(data=path)
-    human_readable = f"## Sample uploaded\n"
+    human_readable = "## Sample uploaded\n"
     human_readable += f"ID: {result['data']['sample']['id']}\n"
     human_readable += f"Size: {result['data']['sample']['size']}\n"
     human_readable += f"Exists: {result['data']['exists']}"
@@ -1877,7 +1875,7 @@ def main() -> None:
                 "argus-upload-sample": add_sample_command,
                 "argus-download-sample": download_sample_command,
             }
-            if demisto.command() not in cmd_map.keys():
+            if demisto.command() not in cmd_map:
                 raise Exception("Unknown command")
 
             cmd = cmd_map[demisto.command()]
