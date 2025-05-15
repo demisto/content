@@ -742,3 +742,14 @@ def test_fetch_incidents(
 
     assert results[0]["last_fetch"]
     assert len(results[1]) == 2
+
+
+def test_fetch_incidents_with_same_time(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_same_time.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_response)
+
+    last_run = {"last_fetch": 1714036855}
+    results = SekoiaXDR.fetch_incidents(client, 100, last_run, None, None, None, None, None, None, None, None)
+
+    assert results[0]["last_fetch"] == 1747057948
+    assert len(results[1]) == 2
