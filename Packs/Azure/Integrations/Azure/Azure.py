@@ -2,7 +2,6 @@
 
 import demistomock as demisto
 import urllib3
-import subprocess
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
@@ -360,56 +359,19 @@ and resource group "{resource_group_name}" was not found.')
     def get_monitor_log_profile(self, subscription_id, log_profile_name):
         full_url=(
             f"{PREFIX_URL}{subscription_id}"
-            f"/providers/Microsoft.Insights/logprofiles"
+            f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         )
         params = {"api-version": MONITOR_API_VERSION}
         return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
         
     
-    def monitor_log_profile_update(self, subscription_id, log_profile_name, location, retention_policy_days, retention_policy_enabled):
+    def monitor_log_profile_update(self, subscription_id, log_profile_name, current_log_profile):
         full_url=(
             f"{PREFIX_URL}{subscription_id}"
             f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         )
         params = {"api-version": MONITOR_API_VERSION}
-        data = {
-            "location": "",
-            "properties":
-            {
-                "retentionPolicy": {
-                    "days": retention_policy_days,
-                    "enabled": retention_policy_enabled
-                },
-                "locations": [
-                    "global"
-                ],
-                "categories": [
-                    "Write",
-                    "Delete",
-                    "Action"
-                ]
-            }
-        }
-        # data = {
-        #     "location": "",
-        #     "tags": {},
-        #     "properties": {
-        #         "locations": [
-        #             "global"
-        #         ],
-        #         "categories": [
-        #             "Write",
-        #             "Delete",
-        #             "Action"
-        #         ],
-        #         "retentionPolicy": {
-        #             "enabled": True,
-        #             "days": 3
-        #         },
-        #         "storageAccountId": "/subscriptions/df602c9c-7aa0-407d-a6fb-eb20c8bd1192/resourceGroups/JohnKemTest/providers/Microsoft.Storage/storageAccounts/johnkemtest8162",
-        #         "serviceBusRuleId": ""
-        #     }
-        # }
+        data = current_log_profile
         data = remove_empty_elements(data)
         return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
@@ -596,7 +558,7 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
 
     hr = tableToMarkdown(f"Rules {security_rule_name}", rule_json, removeNull=True)
 
-    return CommandResults(outputs_prefix="Azure.NSG.Rule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
+    return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
 
 
     
@@ -612,7 +574,7 @@ def start_auth(client: AzureClient) -> CommandResults:
 def complete_auth(client: AzureClient):
     client.ms_client.get_access_token()
     return "✅ Authorization completed successfully."
-@logger
+
 def update_security_rule_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Update an existing rule.
@@ -907,6 +869,16 @@ def set_webapp_config_command(client: AzureClient, params: dict, args: dict):
     )
 
 def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
+    """
+        Sets WebApp authentication.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     name = args.get("name")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
@@ -935,33 +907,32 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         raw_response=outputs,
     )
 
-def resource_update_command(client: AzureClient, params: dict, args: dict):
-    resource_id = args.get("resource_id")
-    allow_blob_public_access = args.get("allow_blob_public_access")
-    location = args.get("location")
-    account_type = args.get("account_type")
-    response = client.resource_update(resource_id, allow_blob_public_access, location, account_type)
-    print(response)
-    outputs = [
-        {
-            "Name": response.get("name"),
-            "Properties": response.get("properties", {}),
-            "ID": response.get("id")
-        }
-    ]
-    md = tableToMarkdown(
-        f"Resource {resource_id} updated successfully.",
-        outputs,
-        ["Name", "Properties", "ID"],
-        removeNull=True,
-    )
-    return CommandResults(
-        outputs_prefix="Azure.Resource",
-        outputs_key_field="id",
-        outputs=response,
-        readable_output=md,
-        raw_response=outputs,
-    )
+# def resource_update_command(client: AzureClient, params: dict, args: dict):
+#     resource_id = args.get("resource_id")
+#     allow_blob_public_access = args.get("allow_blob_public_access")
+#     location = args.get("location")
+#     account_type = args.get("account_type")
+#     response = client.resource_update(resource_id, allow_blob_public_access, location, account_type)
+#     outputs = [
+#         {
+#             "Name": response.get("name"),
+#             "Properties": response.get("properties", {}),
+#             "ID": response.get("id")
+#         }
+#     ]
+#     md = tableToMarkdown(
+#         f"Resource {resource_id} updated successfully.",
+#         outputs,
+#         ["Name", "Properties", "ID"],
+#         removeNull=True,
+#     )
+#     return CommandResults(
+#         outputs_prefix="Azure.Resource",
+#         outputs_key_field="id",
+#         outputs=response,
+#         readable_output=md,
+#         raw_response=outputs,
+#     )
     
     
 def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, args: dict):
@@ -988,18 +959,60 @@ def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, a
     
     
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
+    """
+        Updates a configuration of MySQL server.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     log_profile_name = args.get("log_profile_name")
     location = args.get("location")
-    scope = args.get("scope")
+    subscription_id = args.get("subscription_id")
     retention_policy_days = arg_to_number(args.get("retention_policy_days"))
     retention_policy_enabled = args.get("retention_policy_enabled", "")
-    current_log_profile = client.get_monitor_log_profile(scope, log_profile_name)
-    # print(current_log_profile)
-    # response = client.monitor_log_profile_update(subscription_id, resource_group_name, log_profile_name, location, retention_policy_days, retention_policy_enabled)
-    # print(response)
+    current_log_profile = client.get_monitor_log_profile(subscription_id, log_profile_name)
+    current_log_profile["properties"]["retentionPolicy"]["enabled"] = retention_policy_enabled if retention_policy_enabled else current_log_profile.get("properties", {}).get("retentionPolicy", {}).get("enabled")
+    current_log_profile["properties"]["retentionPolicy"]["days"] = retention_policy_days if retention_policy_days else current_log_profile.get("properties", {}).get("retentionPolicy", {}).get("days")
+    current_log_profile["location"] = location if location else current_log_profile.get("location")
+    response = client.monitor_log_profile_update(subscription_id, log_profile_name, current_log_profile)
+    outputs = [
+        {
+            "Name": response.get("name"),
+            "ID": response.get("id"),
+            "Location": response.get("location", "") if location else None,
+            "Retention Policy": response.get("properties", {}).get("retentionPolicy") if (retention_policy_enabled or retention_policy_days) else None,
+        }
+    ]
+    md = tableToMarkdown(
+        f"Log profile {log_profile_name} updated successfully.",
+        outputs,
+        ["Name", "ID", "Location", "Retention Policy"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.LogProfile",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=md,
+        raw_response=outputs,
+    )
     
     
 def disk_update_command(client: AzureClient, params: dict, args: dict):
+    """
+        Updates a disk.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments.
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     disk_name = args.get("disk_name")
@@ -1096,7 +1109,7 @@ def acr_update_command(client: AzureClient, params: dict, args: dict):
     public_network_access = args.get("public_network_access")
     anonymous_pull_enabled = args.get("anonymous_pull_enabled")
     authentication_as_arm_policy = args.get("authentication_as_arm_policy")
-    response = client.acr_update(subscription_id, resource_group_name, registry_name, allow_exports, public_network_access, 
+    response = client.acr_update(subscription_id, resource_group_name, registry_name, allow_exports, public_network_access,
                                  anonymous_pull_enabled, authentication_as_arm_policy)
     outputs = [
         {
@@ -1195,6 +1208,8 @@ def sql_db_threat_policy_update_command(
         email_account_admins=email_account_admins,
         resource_group_name=resource_group_name
     )
+    if isinstance(current_db, str):  # if there is 404, an error message will return
+        return CommandResults(readable_output=current_db)
     current_db["properties"]["emailAccountAdmins"] = email_account_admins or current_db.get("properties", {}).get("emailAccountAdmins")
 
     response = client.sql_db_threat_policy_update(
@@ -1232,7 +1247,7 @@ def sql_db_threat_policy_update_command(
     )
     
 def sql_db_tde_set_command(
-    client: AzureClient, args: Dict[str, Any], params: dict[str, Any]
+    client: AzureClient, params: dict[str, Any], args: Dict[str, Any]
 ) -> CommandResults:
     server_name = args.get("server_name")
     db_name = args.get("db_name")

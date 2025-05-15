@@ -160,49 +160,49 @@ script:
     description: Update a security rule. If one does not exist, it will be created.
     name: azure-nsg-security-rule-update
     outputs:
-    - contextPath: Azure.NSG.Rule.name
+    - contextPath: Azure.NSGRule.name
       description: The rule's name.
       type: String
-    - contextPath: Azure.NSG.Rule.id
+    - contextPath: Azure.NSGRule.id
       description: The rule's ID.
       type: String
-    - contextPath: Azure.NSG.Rule.etag
+    - contextPath: Azure.NSGRule.etag
       description: The rule's ETag.
       type: String
-    - contextPath: Azure.NSG.Rule.type
+    - contextPath: Azure.NSGRule.type
       description: The rule's type.
       type: String
-    - contextPath: Azure.NSG.Rule.provisioningState
+    - contextPath: Azure.NSGRule.provisioningState
       description: The rule's provisioning state.
       type: String
-    - contextPath: Azure.NSG.Rule.protocol
+    - contextPath: Azure.NSGRule.protocol
       description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
       type: String
-    - contextPath: Azure.NSG.Rule.sourcePortRange
+    - contextPath: Azure.NSGRule.sourcePortRange
       description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
       type: String
-    - contextPath: Azure.NSG.Rule.sourcePortRanges
+    - contextPath: Azure.NSGRule.sourcePortRanges
       description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
       type: String
-    - contextPath: Azure.NSG.Rule.destinationPortRange
+    - contextPath: Azure.NSGRule.destinationPortRange
       description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
       type: String
-    - contextPath: Azure.NSG.Rule.destinationPortRanges
+    - contextPath: Azure.NSGRule.destinationPortRanges
       description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
       type: String
-    - contextPath: Azure.NSG.Rule.sourceAddressPrefix
+    - contextPath: Azure.NSGRule.sourceAddressPrefix
       description: The source address.
       type: String
-    - contextPath: Azure.NSG.Rule.destinationAddressPrefix
+    - contextPath: Azure.NSGRule.destinationAddressPrefix
       description: The destination address.
       type: String
-    - contextPath: Azure.NSG.Rule.access
+    - contextPath: Azure.NSGRule.access
       description: The rule's access. Can be "Allow" or "Deny".
       type: String
-    - contextPath: Azure.NSG.Rule.priority
+    - contextPath: Azure.NSGRule.priority
       description: The rule's priority. Can be from 100 to 4096.
       type: Number
-    - contextPath: Azure.NSG.Rule.direction
+    - contextPath: Azure.NSGRule.direction
       description: The rule's direction. Can be "Inbound" or "Outbound".
       type: String
   - arguments:
@@ -606,7 +606,6 @@ script:
       type: string
     - contextPath: Azure.PolicyAssignment.Identity
       description: The managed identity associated with the policy assignment.
-      type: object
     - contextPath: Azure.PolicyAssignment.Properties.DisplayName
       description: The display name of the policy assignment.
       type: string
@@ -621,13 +620,10 @@ script:
       type: string
     - contextPath: Azure.PolicyAssignment.Properties.NotScopes
       description: The list of scopes that are excluded from the policy assignment.
-      type: array
     - contextPath: Azure.PolicyAssignment.Properties.Parameters
       description: The parameter values for the assigned policy rule.
-      type: object
     - contextPath: Azure.PolicyAssignment.Properties.Metadata
       description: The metadata associated with the policy assignment.
-      type: object
     - contextPath: Azure.PolicyAssignment.Properties.EnforcementMode
       description: The policy assignment enforcement mode (e.g., 'Default' or 'DoNotEnforce').
       type: string
@@ -636,19 +632,15 @@ script:
       type: string
     - contextPath: Azure.PolicyAssignment.Properties.NonComplianceMessages
       description: The messages that describe why a resource is non-compliant with the policy.
-      type: array
     - contextPath: Azure.PolicyAssignment.Properties.DefinitionVersion
       description: The version of the policy definition to use.
       type: string
     - contextPath: Azure.PolicyAssignment.Properties.Overrides
       description: The policy property value overrides.
-      type: array
     - contextPath: Azure.PolicyAssignment.Properties.ResourceSelectors
       description: The resource selectors to filter policies by resource properties.
-      type: array
     - contextPath: Azure.PolicyAssignment.SystemData
       description: The system metadata relating to this resource.
-      type: array
   - arguments:
     - name: resource_group_name
       type: string
@@ -977,12 +969,11 @@ script:
       description: The name of the log profile to update.
       required: true
       type: String
-    - name: scope
+    - name: subscription_id
       type: string
-      description: The scope of the resource.
+      description: subscription ID.
     - name: location
       description: Resource location.
-      required: true
     - name: retention_policy_days
       description: Number of days to retain logs.
       type: Number
@@ -994,8 +985,41 @@ script:
       - 'true'
       - 'false'
     name: azure-monitor-log-profile-update
-    description: Create or update a log profile in Azure Monitoring REST API.
-    outputs: []
+    description: Updates a log profile in Azure Monitoring REST API.
+    outputs: 
+    - path: Azure.LogProfile.id
+      type: String
+      description: The fully qualified Azure resource ID for the log profile.
+    - path: Azure.LogProfile.name
+      type: String
+      description: The name of the log profile.
+    - path: Azure.LogProfile.type
+      type: String
+      description: The type of the resource (Microsoft.Insights/logProfiles).
+    - path: Azure.LogProfile.location
+      type: String
+      description: The location of the log profile.
+    - path: Azure.LogProfile.tags
+      type: Object
+      description: Resource tags.
+    - path: Azure.LogProfile.properties.storageAccountId
+      type: String
+      description: The resource ID of the storage account to which diagnostic logs are delivered.
+    - path: Azure.LogProfile.properties.serviceBusRuleId
+      type: String
+      description: The service bus rule ID to which diagnostic logs are sent.
+    - path: Azure.LogProfile.properties.locations
+      type: Array
+      description: A list of regions for which events are collected.
+    - path: Azure.LogProfile.properties.categories
+      type: Array
+      description: A list of categories of logs that are collected.
+    - path: Azure.LogProfile.properties.retentionPolicy.enabled
+      type: Boolean
+      description: Specifies whether the retention policy is enabled.
+    - path: Azure.LogProfile.properties.retentionPolicy.days
+      type: Number
+      description: The number of days for the retention policy.
   - arguments:
     - name: resource_group_name
       type: string
