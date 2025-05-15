@@ -835,7 +835,7 @@ def get_last_run(now: datetime) -> dict:
     last_time = now - timedelta(minutes=1)
     if not last_run:
         last_run = {}
-        last_time = now - timedelta(days=30)
+        last_time = now - timedelta(days=30)  # TODO
         demisto.debug("First run")
     for type in [REPORT, DOMAIN, CREDENTIALS]:
         if type not in last_run:

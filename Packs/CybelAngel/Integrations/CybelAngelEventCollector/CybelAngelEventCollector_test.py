@@ -128,7 +128,7 @@ def test_get_last_run_no_previous(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     now = datetime(2025, 5, 15, 12, 0, 0)
     result = get_last_run(now)
-    expected_time = (now - timedelta(days=30)).strftime(DATE_FORMAT)
+    expected_time = (now - timedelta(days=30)).strftime(DATE_FORMAT)  # TODO
 
     for etype in (REPORT, DOMAIN, CREDENTIALS):
         assert etype in result
