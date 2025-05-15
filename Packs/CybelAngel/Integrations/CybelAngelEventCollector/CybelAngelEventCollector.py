@@ -832,7 +832,7 @@ def main() -> None:
     proxy = params.get("proxy", False)
     is_fetch_events = params.get("is_fetch_events", False)
     events_type_to_fetch = argToList(params.get("events_type_to_fetch", [CREDENTIALS, DOMAIN, REPORT]))
-    max_fetch_reports = params.get("max_fetch_reports", DEFAULT_LIMITS[REPORT])
+    max_fetch_reports = params.get("max_fetch", DEFAULT_LIMITS[REPORT])
     max_fetch_creds = params.get("max_fetch_creds", DEFAULT_LIMITS[CREDENTIALS])
     max_fetch_domain = params.get("max_fetch_domain", DEFAULT_LIMITS[DOMAIN])
     max_fetch = {REPORT: max_fetch_reports, CREDENTIALS: max_fetch_creds, DOMAIN: max_fetch_domain}

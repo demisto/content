@@ -12,12 +12,6 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Client ID
-  displaypassword: Client Secret
-  name: credentials
-  type: 9
-  required: true
-  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -53,11 +47,11 @@ configuration:
   hidden:
   - xsoar
 - display: The maximum number of report event per fetch
-  name: max_fetch_report
+  name: max_fetch
   defaultvalue: "5000"
   advanced: true
   type: 0
-  required: false
+  required: true
   section: Collect
   hidden:
   - xsoar
@@ -79,6 +73,13 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+- defaultvalue: 30 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+  hidden: true
 description: 'CybelAngel collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
 display: CybelAngel
 name: CybelAngel Event Collector
