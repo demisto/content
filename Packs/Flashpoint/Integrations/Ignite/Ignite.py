@@ -41,8 +41,13 @@ OK_CODES = (
     403,
     404,
     521,
-    *(status_code for status_code in requests.status_codes._codes if status_code    # type: ignore[attr-defined]
-      >= 200 and status_code < 300),  # type: ignore[attr-defined]
+    *(
+        status_code
+        for status_code in requests.status_codes._codes  # type: ignore
+        if status_code  # type: ignore[attr-defined]
+        >= 200
+        and status_code < 300
+    ),  # type: ignore[attr-defined]
 )  # type: ignore
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DEFAULT_END_TIME = "now"
@@ -86,13 +91,7 @@ DEFAULT_REPUTATION_VALUE = "unknown"
 CUSTOM_INDICATOR_DBOTSCORE = DBotScoreType.CUSTOM
 CUSTOM_OUTPUT_PREFIX = "Ignite.{}"
 
-REPUTATION_SCORE_MAPPING = {
-    "unknown": 0,
-    "no_score": 0,
-    "informational": 1,
-    "suspicious": 2,
-    "malicious": 3
-}
+REPUTATION_SCORE_MAPPING = {"unknown": 0, "no_score": 0, "informational": 1, "suspicious": 2, "malicious": 3}
 
 IOC_TYPE_MAPPING = {
     "ip": FeedIndicatorType.IP,
@@ -108,7 +107,7 @@ DBOTSCORE_IOC_TYPE_MAPPING = {
     "ipv6": DBotScoreType.IP,
     "domain": DBotScoreType.DOMAIN,
     "url": DBotScoreType.URL,
-    "file": DBotScoreType.FILE
+    "file": DBotScoreType.FILE,
 }
 
 URL_SUFFIX = {
@@ -325,11 +324,7 @@ class Client(BaseClient):
 
         :return: The indicator response.
         """
-        params = {
-            "ioc_types": indicator_type,
-            "ioc_value": indicator_value,
-            "embed": "all"
-        }
+        params = {"ioc_types": indicator_type, "ioc_value": indicator_value, "embed": "all"}
 
         return self.http_request("GET", URL_SUFFIX["LIST_INDICATORS"], params=params)
 
@@ -515,14 +510,20 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_FETCH))
 
     if fetch_type == DEFAULT_FETCH_TYPE:
-        fetch_params = prepare_args_for_fetch_compromised_credentials(max_fetch, start_time, is_fresh,  # type: ignore
-                                                                      password_has_lowercase, password_has_uppercase,
-                                                                      password_has_number, password_has_symbol,
-                                                                      password_min_length, last_run)  # type: ignore
+        fetch_params = prepare_args_for_fetch_compromised_credentials(
+            max_fetch,  # type: ignore
+            start_time,
+            is_fresh,  # type: ignore
+            password_has_lowercase,
+            password_has_uppercase,
+            password_has_number,
+            password_has_symbol,
+            password_min_length,
+            last_run,
+        )  # type: ignore
 
     elif fetch_type == "Alerts":
-        fetch_params = prepare_args_for_fetch_alerts(
-            max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
+        fetch_params = prepare_args_for_fetch_alerts(max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
         start_time = fetch_params["created_after"]
 
     remove_nulls_from_dictionary(fetch_params)
@@ -530,9 +531,17 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
     return {"fetch_type": fetch_type, "start_time": start_time, "fetch_params": fetch_params}
 
 
-def prepare_args_for_fetch_compromised_credentials(max_fetch: int, start_time: str, is_fresh: bool, password_has_lowercase: bool,
-                                                   password_has_uppercase: bool, password_has_number: bool,
-                                                   password_has_symbol: bool, password_min_length: int, last_run: dict) -> dict:
+def prepare_args_for_fetch_compromised_credentials(
+    max_fetch: int,
+    start_time: str,
+    is_fresh: bool,
+    password_has_lowercase: bool,
+    password_has_uppercase: bool,
+    password_has_number: bool,
+    password_has_symbol: bool,
+    password_min_length: int,
+    last_run: dict,
+) -> dict:
     """
     Prepare arguments for fetching compromised credentials.
 
@@ -958,8 +967,10 @@ def validate_date_parameters_for_compromised_credentials(args: dict, params: dic
         if not (start_date or end_date):
             raise ValueError(MESSAGES["MISSING_DATE_ERROR"])
         # type: ignore
-        date_query = (f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"   # type: ignore[union-attr]
-                      f" {end_date.strftime(DATE_FORMAT)}]")    # type: ignore[union-attr]
+        date_query = (
+            f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"  # type: ignore[union-attr]
+            f" {end_date.strftime(DATE_FORMAT)}]"  # type: ignore
+        )  # type: ignore[union-attr]
         params["query"] += date_query
     elif start_date or end_date:
         raise ValueError(MESSAGES["MISSING_FILTER_DATE_ERROR"])
@@ -1289,8 +1300,14 @@ def create_indicator_object(item: dict, relationships: dict):
     elif indicator_type == "ipv4" or indicator_type == "ipv6":
         return Common.IP(ip=indicator_value, dbot_score=dbot_score, relationships=relationships)
     else:
-        return Common.CustomIndicator(value=indicator_value, indicator_type=indicator_type, data=remove_empty_elements(item),
-                                      context_prefix=indicator_type, dbot_score=dbot_score, relationships=relationships)
+        return Common.CustomIndicator(
+            value=indicator_value,
+            indicator_type=indicator_type,
+            data=remove_empty_elements(item),
+            context_prefix=indicator_type,
+            dbot_score=dbot_score,
+            relationships=relationships,
+        )
 
 
 def get_resource_url(source: str, resource_id: str, platform_url: str):
@@ -1726,19 +1743,44 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
             "Related IOCs": related_iocs,
             "Mitre Attack IDs": item.get("mitre_attack_ids", []),
             "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("created_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
             "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("modified_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
             "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("last_seen_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
         }
-        headers = ["ID", "IP", "Type", "Malware Description", "Tags", "Related IOCs", "Mitre Attack IDs", "Created At",
-                   "Modified At", "Last Seen At"]
+        headers = [
+            "ID",
+            "IP",
+            "Type",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable = tableToMarkdown(title, ip_hr_data, headers=headers,
-                                         json_transform_mapping={"Related IOCs": JsonTransformer(is_nested=True),
-                                                                 "Mitre Attack IDs": JsonTransformer(is_nested=True)},
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            title,
+            ip_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
         platform_link = item.get("platform_urls", {}).get("ignite", "")
         human_readable += PLATFORM_LINK.format(platform_link, platform_link)
@@ -1797,11 +1839,20 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                     "Author": indicator.get("author", EMPTY_DATA),
                     # type: ignore[union-attr]
                     "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(  # type: ignore
-                        READABLE_DATE_FORMAT) if indicator.get("date") else "",
+                        READABLE_DATE_FORMAT
+                    )
+                    if indicator.get("date")
+                    else "",
                     "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(  # type: ignore
-                        READABLE_DATE_FORMAT) if indicator.get("first_observed_at") else "",
+                        READABLE_DATE_FORMAT
+                    )
+                    if indicator.get("first_observed_at")
+                    else "",
                     "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(  # type: ignore
-                        READABLE_DATE_FORMAT) if indicator.get("last_observed_at") else "",
+                        READABLE_DATE_FORMAT
+                    )
+                    if indicator.get("last_observed_at")
+                    else "",
                     "Title": indicator.get("title", EMPTY_DATA),
                     "Site": indicator.get("site", EMPTY_DATA),
                     "Enrichments": filter_enrichments,
@@ -1864,10 +1915,7 @@ def common_lookup_command(client: Client, indicator_value: str) -> CommandResult
         else:
             response = client.get_indicator(indicator_value, "ipv4")
     except ValueError:
-        params = {
-            "ioc_value": indicator_value,
-            "embed": "all"
-        }
+        params = {"ioc_value": indicator_value, "embed": "all"}
         response = client.http_request("GET", URL_SUFFIX["LIST_INDICATORS"], params=params)
 
     items = response.get("items", [])
@@ -1877,7 +1925,7 @@ def common_lookup_command(client: Client, indicator_value: str) -> CommandResult
         indicator_type = item.get("type", "")
         reputation = item.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
         reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
-        title = f'{HR_TITLE.format(indicator_type.capitalize())} {indicator_value}\nReputation: {reputation.capitalize()}\n\n'
+        title = f"{HR_TITLE.format(indicator_type.capitalize())} {indicator_value}\nReputation: {reputation.capitalize()}\n\n"
         title = title[4:]
 
         related_iocs, tags = get_related_iocs_and_tags(item)
@@ -1896,20 +1944,45 @@ def common_lookup_command(client: Client, indicator_value: str) -> CommandResult
             "Related IOCs": related_iocs,
             "Mitre Attack IDs": item.get("mitre_attack_ids", []),
             "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("created_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
             "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("modified_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
             "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("last_seen_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
         }
-        headers = ["ID", "Type", "Hashes", "Malware Description", "Tags", "Related IOCs", "Mitre Attack IDs", "Created At",
-                   "Modified At", "Last Seen At"]
+        headers = [
+            "ID",
+            "Type",
+            "Hashes",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable = tableToMarkdown(title, indicator_hr_data, headers=headers,
-                                         json_transform_mapping={"Hashes": JsonTransformer(is_nested=True),
-                                                                 "Related IOCs": JsonTransformer(is_nested=True),
-                                                                 "Mitre Attack IDs": JsonTransformer(is_nested=True)},
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            title,
+            indicator_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Hashes": JsonTransformer(is_nested=True),
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
         platform_link = item.get("platform_urls", {}).get("ignite", "")
         human_readable += PLATFORM_LINK.format(platform_link, platform_link)
@@ -1957,7 +2030,7 @@ def indicator_get_command(client: Client, args: dict) -> CommandResults:
         indicator_type = indicator.get("type", "")
         reputation = indicator.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
         reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
-        title = f'{HR_TITLE.format(indicator_type.capitalize())} {indicator_value}\nReputation: {reputation.capitalize()}\n\n'
+        title = f"{HR_TITLE.format(indicator_type.capitalize())} {indicator_value}\nReputation: {reputation.capitalize()}\n\n"
         title = title[4:]
 
         related_iocs, tags = get_related_iocs_and_tags(indicator)
@@ -1977,21 +2050,47 @@ def indicator_get_command(client: Client, args: dict) -> CommandResults:
             "Mitre Attack IDs": indicator.get("mitre_attack_ids", []),
             "Reports": indicator.get("reports", []),
             "Created At": arg_to_datetime(indicator.get("created_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if indicator.get("created_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if indicator.get("created_at")
+            else "",
             "Modified At": arg_to_datetime(indicator.get("modified_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if indicator.get("modified_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if indicator.get("modified_at")
+            else "",
             "Last Seen At": arg_to_datetime(indicator.get("last_seen_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if indicator.get("last_seen_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if indicator.get("last_seen_at")
+            else "",
         }
-        headers = ["ID", "Type", "Hashes", "Malware Description", "Tags", "Related IOCs", "Mitre Attack IDs", "Reports",
-                   "Created At", "Modified At", "Last Seen At"]
+        headers = [
+            "ID",
+            "Type",
+            "Hashes",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Reports",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable = tableToMarkdown(title, indicator_hr_data, headers=headers,
-                                         json_transform_mapping={"Hashes": JsonTransformer(is_nested=True),
-                                                                 "Related IOCs": JsonTransformer(is_nested=True),
-                                                                 "Mitre Attack IDs": JsonTransformer(is_nested=True),
-                                                                 "Reports": JsonTransformer(is_nested=True)},
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            title,
+            indicator_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Hashes": JsonTransformer(is_nested=True),
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+                "Reports": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
         platform_link = indicator.get("platform_urls", {}).get("ignite", "")
         human_readable += PLATFORM_LINK.format(platform_link, platform_link)
@@ -2052,19 +2151,43 @@ def url_lookup_command(client: Client, url: str) -> CommandResults:
             "Related IOCs": related_iocs,
             "Mitre Attack IDs": item.get("mitre_attack_ids", []),
             "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("created_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
             "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("modified_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
             "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("last_seen_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
         }
-        headers = ["ID", "URL", "Malware Description", "Tags", "Related IOCs", "Mitre Attack IDs", "Created At",
-                   "Modified At", "Last Seen At"]
+        headers = [
+            "ID",
+            "URL",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable = tableToMarkdown(title, ip_hr_data, headers=headers,
-                                         json_transform_mapping={"Related IOCs": JsonTransformer(is_nested=True),
-                                                                 "Mitre Attack IDs": JsonTransformer(is_nested=True)},
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            title,
+            ip_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
         platform_link = item.get("platform_urls", {}).get("ignite", "")
         human_readable += PLATFORM_LINK.format(platform_link, platform_link)
@@ -2148,19 +2271,43 @@ def domain_lookup_command(client: Client, domain: str) -> CommandResults:
             "Related IOCs": related_iocs,
             "Mitre Attack IDs": item.get("mitre_attack_ids", []),
             "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("created_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
             "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("modified_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
             "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("last_seen_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
         }
-        headers = ["ID", "Domain", "Malware Description", "Tags", "Related IOCs", "Mitre Attack IDs", "Created At",
-                   "Modified At", "Last Seen At"]
+        headers = [
+            "ID",
+            "Domain",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable = tableToMarkdown(title, domain_hr_data, headers=headers,
-                                         json_transform_mapping={"Related IOCs": JsonTransformer(is_nested=True),
-                                                                 "Mitre Attack IDs": JsonTransformer(is_nested=True)},
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            title,
+            domain_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
         platform_link = item.get("platform_urls", {}).get("ignite", "")
         human_readable += PLATFORM_LINK.format(platform_link, platform_link)
@@ -2240,20 +2387,45 @@ def file_lookup_command(client: Client, file: str) -> CommandResults:
             "Related IOCs": related_iocs,
             "Mitre Attack IDs": item.get("mitre_attack_ids", []),
             "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("created_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
             "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("modified_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
             "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
-                READABLE_DATE_FORMAT) if item.get("last_seen_at") else "",
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
         }
-        headers = ["ID", "Hash Type", "Hashes", "Malware Description", "Tags", "Related IOCs", "Mitre Attack IDs",
-                   "Created At", "Modified At", "Last Seen At"]
+        headers = [
+            "ID",
+            "Hash Type",
+            "Hashes",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable = tableToMarkdown(title, file_hr_data, headers=headers,
-                                         json_transform_mapping={"Hashes": JsonTransformer(is_nested=True),
-                                                                 "Related IOCs": JsonTransformer(is_nested=True),
-                                                                 "Mitre Attack IDs": JsonTransformer(is_nested=True)},
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            title,
+            file_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Hashes": JsonTransformer(is_nested=True),
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
         platform_link = item.get("platform_urls", {}).get("ignite", "")
         human_readable += PLATFORM_LINK.format(platform_link, platform_link)

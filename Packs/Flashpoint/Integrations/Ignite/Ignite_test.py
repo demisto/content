@@ -228,7 +228,7 @@ def test_fetch_incidents_when_valid_incidents_return(mocker, mock_client, reques
         "is_fresh_compromised_credentials": "true",
         "password_has_lowercase": "true",
         "password_has_number": "true",
-        "max_fetch": 1
+        "max_fetch": 1,
     }
     demisto_params = {**BASIC_PARAMS, "severity": "Medium"}
     mocker.patch.object(demisto, "params", return_value=demisto_params)
@@ -2317,7 +2317,7 @@ def test_fetch_incidents_when_empty_password_complexity_filter_params_passed(moc
         "password_has_uppercase": "",
         "password_has_lowercase": "",
         "password_has_number": "",
-        "max_fetch": 1
+        "max_fetch": 1,
     }
     demisto_params = {**BASIC_PARAMS, "severity": "Medium"}
     mocker.patch.object(demisto, "params", return_value=demisto_params)
@@ -2359,7 +2359,7 @@ def test_fetch_incidents_when_invalid_password_complexity_filter_params_passed(m
         "first_fetch": "2025-05-10T10:22:38Z",
         "is_fresh_compromised_credentials": "true",
         "password_min_length": "-1",
-        "max_fetch": 1
+        "max_fetch": 1,
     }
     demisto_params = {**BASIC_PARAMS, "severity": "Medium"}
     mocker.patch.object(demisto, "params", return_value=demisto_params)
