@@ -17,17 +17,12 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Argus Case"
-    ],
+    "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
     "fromVersion": "5.0.0",
-    "marketplaces": [
-		"xsoar"
-	]
+    "marketplaces": ["xsoar"]
 }

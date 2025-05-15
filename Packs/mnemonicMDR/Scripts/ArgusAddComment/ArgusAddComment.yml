@@ -1,0 +1,28 @@
+commonfields:
+  id: ArgusAddComment
+  version: -1
+name: ArgusAddComment
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: Add a comment in an Argus Case by creating a tagged Note in XSOAR incident. Uses the dbotMirrorTags context field.
+enabled: true
+args:
+- name: tags
+  description: Tags to add to Note
+  isArray: true
+- name: field
+  required: true
+  default: true
+  description: Which field to grab comment from in incident
+  defaultValue: commentcontent
+  type: unknown
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.9.44472
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
