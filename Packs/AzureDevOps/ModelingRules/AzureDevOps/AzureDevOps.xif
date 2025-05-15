@@ -41,7 +41,7 @@ filter Area = "Licensing" OR _raw_log ->[0].data.Area = "Licensing"
 | alter
     xdm.target.user.identifier = coalesce(Data -> UserIdentifier, get_data_Data -> UserIdentifier),
     xdm.target.user.username = if(Data -> UserIdentifier != null OR get_data_Data -> UserIdentifier != null, DetailsUsernameOrGroupName),
-    xdm.target.user.groups = if(Data -> GroupIdentifier != null OR get_data_Data -> UserIdentifier != null, arraycreate(DetailsUsernameOrGroupName)),
+    xdm.target.user.groups = if(Data -> GroupIdentifier != null OR get_data_Data -> GroupIdentifier != null, arraycreate(DetailsUsernameOrGroupName)),
     xdm.event.outcome_reason = coalesce(Data -> Reason, get_data_Data -> Reason),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
@@ -141,7 +141,7 @@ filter Area = "Project" OR _raw_log ->[0].data.Area = "Project"
     xdm.target.process.name = coalesce(Data -> ProcessName, get_data_Data -> processName),
     xdm.target.resource.name = coalesce(Data -> Path, get_data_Data -> Path),
     xdm.target.resource.type = ResourceType,
-    xdm.event.outcome = if(OperationName IN ("*Failed"),XDM_CONST.OUTCOME_FAILED, get_data -> OperationName IN ("*Failed"), XDM_CONST.OUTCOME_FAILED, OperationName IN("*Queued"), XDM_CONST.OUTCOME_PARTIAL, get_data -> OperationName IN("*Queued"), XDM_CONST.OUTCOME_PARTIAL,XDM_CONST.OUTCOME_SUCCESS);
+    xdm.event.outcome = if(OperationName IN ("*Failed"),XDM_CONST.OUTCOME_FAILED, get_data -> OperationName IN ("*Failed"), XDM_CONST.OUTCOME_FAILED, OperationName IN("*Queued"), XDM_CONST.OUTCOME_PARTIAL, get_data -> OperationName IN("*Queued"), XDM_CONST.OUTCOME_PARTIAL, OperationName IN ("*Completed","Project.AreaPath.Create", "Project.AreaPath.Delete", "Project.AreaPath.Update", "Project.IterationPath.Create", "Project.IterationPath.Update", "Project.IterationPath.Delete", "Project.Process.Modify", "Project.Process.ModifyWithoutOldProcess") ,XDM_CONST.OUTCOME_SUCCESS, get_data -> OperationName IN ("*Completed","Project.AreaPath.Create", "Project.AreaPath.Delete", "Project.AreaPath.Update", "Project.IterationPath.Create", "Project.IterationPath.Update", "Project.IterationPath.Delete", "Project.Process.Modify", "Project.Process.ModifyWithoutOldProcess") ,XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_UNKNOWN);
 
 //Release events
 filter Area = "Release" OR _raw_log ->[0].data.Area = "Release"
