@@ -23,7 +23,6 @@ from argus_api.lib.assets.v2.asset import (
 )
 from argus_api.lib.assets.v2.vulnerability import (
     list_vulnerabilities,
-    list_vulnerability_definitions,
     get_vulnerability_definition,
     get_vulnerability_by_id,
     search_vulnerabilities,
