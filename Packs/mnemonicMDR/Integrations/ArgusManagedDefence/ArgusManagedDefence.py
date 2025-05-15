@@ -8,7 +8,7 @@ import mimetypes
 import traceback
 from pathlib import Path
 
-import dateparser
+import dateparser  # type: ignore
 import urllib3
 from argus_api.authentication import APIKeyAuth
 from argus_api.exceptions.http import AccessDeniedException, ArgusException
@@ -96,7 +96,7 @@ ARGUS_PRIORITY_MAPPING = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 """ HELPER FUNCTIONS """
 
 
-def set_argus_settings(api_key: str, base_url: str = None, proxies: dict = None, insecure: bool = None):
+def set_argus_settings(api_key: str, base_url: str = None, proxies: dict = None, insecure: bool = None):  # type: ignore
     argus_auth = APIKeyAuth(api_key=api_key)
     global_session = get_session()
     global_session.auth = argus_auth
@@ -150,7 +150,7 @@ def str_to_dict(string: str) -> dict | None:
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
 
-def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:
+def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:  # type: ignore
     if isinstance(date_time, datetime):
         return int(date_time.timestamp() * 1000)
     if isinstance(date_time, str):
@@ -158,7 +158,7 @@ def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:
     return int(datetime.now().timestamp() * 1000)
 
 
-def pretty_print_date(date_time: datetime | str = None) -> str:
+def pretty_print_date(date_time: datetime | str = None) -> str:  # type: ignore
     if isinstance(date_time, datetime):
         return date_time.strftime(PRETTY_DATE_FORMAT)
     if isinstance(date_time, str):
@@ -166,7 +166,7 @@ def pretty_print_date(date_time: datetime | str = None) -> str:
     return datetime.now().strftime(PRETTY_DATE_FORMAT)
 
 
-def pretty_print_case_metadata(result: dict, title: str = None) -> str:
+def pretty_print_case_metadata(result: dict, title: str = None) -> str:  # type: ignore
     data = result["data"]
     string = title if title else f"# #{data['id']}: {data['subject']}\n"
     string += (
@@ -177,7 +177,7 @@ def pretty_print_case_metadata(result: dict, title: str = None) -> str:
     return string
 
 
-def pretty_print_case_metadata_html(case: dict, title: str = None) -> str:
+def pretty_print_case_metadata_html(case: dict, title: str = None) -> str:  # type: ignore
     string = title if title else f"<h2>#{case['id']}: {case['subject']}</h2>"
     string += (
         f"<em>Priority: {case['priority']}, status: {case['status']}, "
@@ -188,7 +188,7 @@ def pretty_print_case_metadata_html(case: dict, title: str = None) -> str:
     return string
 
 
-def pretty_print_comment(comment: dict, title: str = None) -> str:
+def pretty_print_comment(comment: dict, title: str = None) -> str:  # type: ignore
     string = title if title else ""
     string += f"#### *{comment['addedByUser']['userName']} - {pretty_print_date(comment['addedTime'])}*\n"
     string += f"_Last updated {pretty_print_date(comment['lastUpdatedTime'])}_\n" if comment["lastUpdatedTime"] else ""
@@ -199,7 +199,7 @@ def pretty_print_comment(comment: dict, title: str = None) -> str:
     return string
 
 
-def pretty_print_comment_html(comment: dict, title: str = None) -> str:
+def pretty_print_comment_html(comment: dict, title: str = None) -> str:  # type: ignore
     string = f"<h2>{title}</h2>" if title else ""
     string += "<small>"
     string += f"<em>Added by {comment['addedByUser']['userName']} at "
@@ -215,14 +215,14 @@ def pretty_print_comment_html(comment: dict, title: str = None) -> str:
     return string
 
 
-def pretty_print_comments(comments: list, title: str = None) -> str:
+def pretty_print_comments(comments: list, title: str = None) -> str:  # type: ignore
     string = title if title else ""
     for comment in comments:
         string += pretty_print_comment(comment)
     return string
 
 
-def pretty_print_comments_html(comments: list, title: str = None) -> str:
+def pretty_print_comments_html(comments: list, title: str = None) -> str:  # type: ignore
     string = title if title else ""
     for comment in comments:
         string += pretty_print_comment_html(comment)
@@ -290,7 +290,7 @@ def pretty_print_sample(samples: list[dict]) -> str:
     return string
 
 
-def pretty_print_events(result: dict, title: str = None) -> str:
+def pretty_print_events(result: dict, title: str = None) -> str:  # type: ignore
     string = title if title else ""
     string += "_Count: {}, showing {} events, from {} to {}_\n".format(
         result["count"], result["size"], result["offset"], result["limit"]
@@ -299,7 +299,7 @@ def pretty_print_events(result: dict, title: str = None) -> str:
     return string
 
 
-def pretty_print_attachment_metadata(result: dict, title: str = None) -> str:
+def pretty_print_attachment_metadata(result: dict, title: str = None) -> str:  # type: ignore
     string = title if title else ""
     string += f"#### *{result['data']['addedByUser']['userName']} - {result['data']['addedTime']}*\n"
     string += f"{result['data']['name']} ({result['data']['mimeType']}, {result['data']['size']} bytes)\n\n"
@@ -452,7 +452,7 @@ def get_remote_data_command(
                     "Type": EntryType.NOTE,
                     "ContentsFormat": EntryFormat.HTML,  # type: ignore
                     "Contents": pretty_print_comment_html(comment),  # type: ignore
-                    "Tags": ["argus_comment"],
+                    "Tags": ["argus_comment"],  # type: ignore
                 }
             )
         # Existing comment has been updated
@@ -463,7 +463,7 @@ def get_remote_data_command(
                     "Type": EntryType.NOTE,
                     "ContentsFormat": EntryFormat.HTML,  # type: ignore
                     "Contents": (pretty_print_comment_html(comment, "Comment updated")),  # type: ignore
-                    "Tags": ["argus_comment"],
+                    "Tags": ["argus_comment"],  # type: ignore
                 }
             )
 
@@ -497,7 +497,7 @@ def get_remote_data_command(
                     {
                         "Type": EntryType.NOTE,
                         "ContentsFormat": EntryFormat.JSON,  # type: ignore
-                        "Contents": {"dbotIncidentReopen": True},
+                        "Contents": {"dbotIncidentReopen": True},  # type: ignore
                         "Note": False,
                     }
                 )
@@ -506,7 +506,7 @@ def get_remote_data_command(
                     {
                         "Type": EntryType.NOTE,
                         "ContentsFormat": EntryFormat.HTML,  # type: ignore
-                        "Contents": "Argus Case description edited.",
+                        "Contents": "Argus Case description edited.",  # type: ignore
                         "Note": False,
                     }
                 )
@@ -602,7 +602,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: dict) -> None:
     demisto.debug(f"Appending entry to case {case_id}: {str(entry)}")
     if entry.get("type") == 1:  # type note / chat
         comment = "<h4>Note mirrored from XSOAR</h4>"
-        comment += f"<i>Added by {entry.get('user')} at {pretty_print_date(entry.get('created'))}</i><br><br>"
+        comment += f"<i>Added by {entry.get('user')} at {pretty_print_date(entry.get('created'))}</i><br><br>"  # type: ignore
         comment += str(entry.get("contents"))
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file
@@ -1539,7 +1539,7 @@ def add_asset_command(args: dict) -> CommandResults:
         name=args.get("name"),
         description=args.get("description"),
         owner=args.get("owner"),
-        criticality=str_to_dict(args.get("criticality")),
+        criticality=str_to_dict(args.get("criticality")),  # type: ignore
         assetDefinition=args.get("asset_definition"),
         components=argToList(args.get("components")),
         ttl=args.get("ttl"),
@@ -1585,7 +1585,7 @@ def update_asset_command(args: dict) -> CommandResults:
         name=args.get("name"),
         description=args.get("description"),
         owner=args.get("owner"),
-        criticality=str_to_dict(args.get("criticality")),
+        criticality=str_to_dict(args.get("criticality")),  # type: ignore
         addComponents=argToList(args.get("add_components")),
         deleteComponents=argToList(args.get("delete_components")),
         ttl=args.get("ttl"),
@@ -1757,7 +1757,7 @@ def add_sample_command(args: dict) -> CommandResults:
     return CommandResults(readable_output=human_readable)
 
 
-def download_sample_command(args: dict) -> fileResult:
+def download_sample_command(args: dict) -> fileResult:  # type: ignore
     sha256 = args.get("sha256")
     safe = args.get("safe", "true")
     if not sha256:
