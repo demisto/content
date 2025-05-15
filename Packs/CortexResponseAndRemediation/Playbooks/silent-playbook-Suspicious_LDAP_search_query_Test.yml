@@ -2,7 +2,7 @@ id: silent-Suspicious LDAP search query Test
 version: -1
 name: silent-Suspicious LDAP search query Test
 issilent: true
-description: "This playbook is designed to handle the following alerts:  \n- Possible LDAP enumeration by unsigned process.\n- Suspicious LDAP search query executed.\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the Actor Process Command line contains suspicious arguments.\n- Checks for prevalence of the Actor Process Name and Actor Process CMD.\n- Host risk score is \"Medium\" or \"High\".\n- User risk score is \"High\".\n\nRemediation:\n- Handles malicious alerts by terminating the causality process.\n- Handles non-malicious alerts identified during the investigation."
+description: "This playbook is designed to handle the following alerts:  \n- Possible LDAP enumeration by unsigned process.\n- Suspicious LDAP search query executed.\n\nThe playbook executes the following stages:\n\nInvestigation:\nCheck the following parameters to determine if remediation actions are needed:\n- Cortex XSIAM alerts related to the hostname by MITRE tactics indicating malicious activity.\n- Whether the Actor Process Command line contains suspicious arguments.\n- Checks for the prevalence of the Actor Process Name.\n- Host risk score is \"Medium\" or \"High\".\n- User risk score is \"High\".\n\nRemediation:\n- Handles malicious alerts by terminating the causality process.\n- Handles non-malicious alerts identified during the investigation."
 tags:
 - T1087 - Account Discovery
 starttaskid: "0"
@@ -20,14 +20,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": -360
+          "x": 529,
+          "y": -94
         }
       }
     note: false
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f33eda55-1ee4-47ba-8c97-78e184242ed2
+    taskid: 13885714-f4eb-4ced-a3e4-5aae77446615
     type: regular
     task:
-      id: f33eda55-1ee4-47ba-8c97-78e184242ed2
+      id: 13885714-f4eb-4ced-a3e4-5aae77446615
       version: -1
       name: Close Alert
       description: Close the current alert as True Positive.
@@ -87,9 +87,9 @@ tasks:
       - "11"
     scriptarguments:
       closeNotes:
-        simple: Suspicious activity detected
+        simple: Malicious activity detected. Resolved - Handled by the playbook "Suspicious LDAP search query"
       closeReason:
-        simple: Resolved - Handled by the playbook "Suspicious LDAP search query"
+        simple: Resolved - True Positive
       id:
         complex:
           root: alert
@@ -99,7 +99,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
+          "x": 529,
           "y": 2200
         }
       }
@@ -125,7 +125,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "28"
     scriptarguments:
       process_name:
         complex:
@@ -138,8 +138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 240
+          "x": 949,
+          "y": 472
         }
       }
     note: false
@@ -197,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 1290
+          "x": 949,
+          "y": 1292
         }
       }
     note: false
@@ -210,12 +210,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b9bbfbad-b31e-4141-820d-447ae8cbb61a
+    taskid: 9430b6c0-244a-4052-86cc-acf6704a6f14
     type: condition
     task:
-      id: b9bbfbad-b31e-4141-820d-447ae8cbb61a
+      id: 9430b6c0-244a-4052-86cc-acf6704a6f14
       version: -1
-      name: Any risky asset involved with at least one non-prevalent action?
+      name: Any risky asset involved with a non-prevalent process?
       description: "#### Determines if the LDAP operation was suspicious by the following conditions:\n\nActor Process name is not Prevalent *OR*\nActor Process Command Line is not Prevalent \n\n*AND*\n\nThe Host Risk Score is Medium or High or the User Risk Score is High."
       type: condition
       iscommand: false
@@ -230,15 +230,6 @@ tasks:
     - label: "Yes"
       condition:
       - - operator: isEqualString
-          left:
-            value:
-              simple: Core.AnalyticsPrevalence.Process.value
-            iscontext: true
-          right:
-            value:
-              simple: "False"
-          ignorecase: true
-        - operator: isEqualString
           left:
             value:
               simple: Core.AnalyticsPrevalence.Process.value
@@ -278,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 940
+          "x": 949,
+          "y": 925
         }
       }
     note: false
@@ -317,68 +308,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 6d3d3bc7-066c-4bdb-8b1b-0c5af1400d33
-    type: playbook
-    task:
-      id: 6d3d3bc7-066c-4bdb-8b1b-0c5af1400d33
-      version: -1
-      name: Command-Line Analysis
-      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
-      playbookName: Command-Line Analysis
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      Commandline:
-        complex:
-          root: alert
-          accessor: cgocmd
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: alert.osparentcmd
-                iscontext: true
-          - operator: uniq
-      StringSimilarityThreshold:
-        simple: "0.5"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-      forEach: true
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": -230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 42bfe23f-9f3c-46b1-804b-0950f8197bbe
+    taskid: 4e58431b-09fc-4dfc-b6be-18ebfaa83b1e
     type: condition
     task:
-      id: 42bfe23f-9f3c-46b1-804b-0950f8197bbe
+      id: 4e58431b-09fc-4dfc-b6be-18ebfaa83b1e
       version: -1
       name: Are There Any Suspicious Findings?
-      description: Check if any suspicious arguments were found in the Actor Process Command Line.
+      description: Check if any suspicious arguments were found in the Causality Process or in the Actor Process Command Line.
       type: condition
       iscommand: false
       brand: ""
@@ -391,19 +329,38 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: containsGeneral
           left:
             value:
-              simple: CommandlineVerdict
+              simple: CommandLineAnalysis.risk
             iscontext: true
           right:
-            value: {}
+            value:
+              simple: Critical
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: CommandLineAnalysis.risk
+            iscontext: true
+          right:
+            value:
+              simple: Medium
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: CommandLineAnalysis.risk
+            iscontext: true
+          right:
+            value:
+              simple: High
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": -70
+          "x": 529,
+          "y": 167
         }
       }
     note: false
@@ -445,47 +402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
+          "x": 949,
           "y": 1450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 6c690921-6102-49f0-8b02-dfaeaa146641
-    type: regular
-    task:
-      id: 6c690921-6102-49f0-8b02-dfaeaa146641
-      version: -1
-      name: Run Prevalence Check On the Actor Process Command line
-      description: Get the prevalence of a process_command_line, identified by process_command_line.
-      script: '|||core-get-cmd-analytics-prevalence'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      process_command_line:
-        complex:
-          root: alert
-          accessor: osparentcmd
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1150,
-          "y": 240
         }
       }
     note: false
@@ -573,10 +491,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c6396ab6-fae7-449f-8183-371e76961aa3
+    taskid: 24395769-c63e-4628-ad90-7dfe5baceec1
     type: regular
     task:
-      id: c6396ab6-fae7-449f-8183-371e76961aa3
+      id: 24395769-c63e-4628-ad90-7dfe5baceec1
       version: -1
       name: Close Alert - No results returned
       description: Close the current alert as False Positive.
@@ -589,9 +507,9 @@ tasks:
       - "11"
     scriptarguments:
       closeNotes:
-        simple: No Results Found
+        simple: No Malicious activity detected. Resolved - Handled by the playbook "Suspicious LDAP search query".
       closeReason:
-        simple: Resolved - Handled by the playbook "Suspicious LDAP search query"
+        simple: Resolved - False Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -599,7 +517,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
+          "x": 949,
           "y": 2200
         }
       }
@@ -630,7 +548,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
+          "x": 949,
           "y": 1670
         }
       }
@@ -737,69 +655,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
       - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 0de49009-967f-4bc9-898e-f3f6f7c914de
-    type: condition
-    task:
-      id: 0de49009-967f-4bc9-898e-f3f6f7c914de
-      version: -1
-      name: Is this a non-prevalent Process Name and Process CMD?
-      description: Check if the Actor Process Name and the Actor Process CMD are non-prevalent.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "28"
-      "Yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Core.AnalyticsPrevalence.Process.value
-            iscontext: true
-          right:
-            value:
-              simple: "False"
-          ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Core.AnalyticsPrevalence.Cmd.value
-            iscontext: true
-          right:
-            value:
-              simple: "False"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 410
+          "x": 949,
+          "y": 337
         }
       }
     note: false
@@ -830,7 +693,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 949,
           "y": 630
         }
       }
@@ -861,8 +724,62 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 1150
+          "x": 949,
+          "y": 1151
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: b59ca94a-ff97-4617-be29-316684cc0f7d
+    type: regular
+    task:
+      id: b59ca94a-ff97-4617-be29-316684cc0f7d
+      version: -1
+      name: Run Command-Line Analysis
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      command_line:
+        complex:
+          root: alert
+          accessor: cgocmd
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: alert.osparentcmd
+                iscontext: true
+              raw: {}
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 529,
+          "y": 37
         }
       }
     note: false
@@ -879,14 +796,15 @@ view: |-
       "14_26_#default#": 0.39,
       "15_1_yes": 0.22,
       "15_23_#default#": 0.61,
-      "24_21_#error#": 0.5
+      "24_21_#error#": 0.5,
+      "5_29_#default#": 0.69
     },
     "paper": {
       "dimensions": {
-        "height": 2795,
-        "width": 1230,
+        "height": 2524,
+        "width": 1231,
         "x": 300,
-        "y": -360
+        "y": -94
       }
     }
   }
