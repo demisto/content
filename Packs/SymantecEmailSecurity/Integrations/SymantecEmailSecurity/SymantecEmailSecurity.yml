@@ -1149,7 +1149,7 @@ script:
       default: true
   type: python
   subtype: python3
-  dockerimage: demisto/python3-deb:3.12.8.3317061
+  dockerimage: demisto/python3:3.11.11.1940698
   isfetch: true
   script: ''
 fromversion: 5.0.0
