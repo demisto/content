@@ -4,7 +4,7 @@ args:
   name: owners
 - description: System IDs or names associated with the compute instance.
   isArray: true
-  name: asmsystemids
+  name: system_ids
 - defaultValue: xdmremediationowners
   description: The field of the alert or issue in which the owners should be stored.
   name: ownerrelatedfield
@@ -15,7 +15,7 @@ args:
   predefined:
   - "True"
   - "False"
-comment: Recommend most likely remediation owners from those surfaced by Cortex ASM Enrichment.
+comment: Recommend most likely remediation owners from those surfaced by other enrichments.
 commonfields:
   id: RankRemediationOwners
   version: -1

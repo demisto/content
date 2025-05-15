@@ -252,7 +252,7 @@ def test_score_model_load_fail(mocker):
     """
     mocker.patch("RankRemediationOwners.load_pickled_xpanse_object", side_effect=Exception())
     with does_not_raise():
-        score(asm_system_ids=[], owners=[])
+        score(system_ids=[], owners=[])
 
 
 def test_score_model_inference_fail(mocker):
@@ -264,11 +264,11 @@ def test_score_model_inference_fail(mocker):
     # patch load function to return a model mock which raises an error during prediction
     mocker.patch("RankRemediationOwners.load_pickled_xpanse_object", return_value=model_mock)
     with does_not_raise():
-        score(asm_system_ids=[], owners=[])
+        score(system_ids=[], owners=[])
 
 
 @pytest.mark.parametrize(
-    "owners, asm_system_ids, expected_out",
+    "owners, system_ids, expected_out",
     [
         # ideal input
         (
@@ -552,7 +552,7 @@ def test_score_model_inference_fail(mocker):
                 },
             ],
         ),
-        # single service owner entry (xsoar converts to dictionary with filters)
+        # single owner entry (xsoar converts to dictionary with filters)
         (
             {"name": "aa", "email": "email1@gmail.com", "source": "source1", "timestamp": 1},
             [""],
@@ -569,7 +569,7 @@ def test_score_model_inference_fail(mocker):
         ),
     ],
 )
-def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
+def test_main(mocker, owners, system_ids, expected_out, capfd):
     """
     Test the main function with a variety of `owners` inputs
 
@@ -579,7 +579,7 @@ def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
     # Construct payload
     arg_payload = {}
     arg_payload["owners"] = owners
-    arg_payload["asmsystemids"] = asm_system_ids
+    arg_payload["system_ids"] = system_ids
     mocker.patch.object(demisto, "args", return_value=arg_payload)
 
     model_mock = Mock()
@@ -821,7 +821,7 @@ def test_base_case():
     """
     Verifies the working case.
     """
-    asm_system_ids = ["afr-rdp-1", "j291mv-is"]
+    system_ids = ["afr-rdp-1", "j291mv-is"]
 
     owners = [
         {
@@ -851,7 +851,7 @@ def test_base_case():
         {"name": "Automation First Remediation", "email": "afr@example.com", "source": "GCP | Splunk", "timestamp": "5"},
     ]
 
-    observed_output = featurize(asm_system_ids, owners)
+    observed_output = featurize(system_ids, owners)
     expected_output = np.array(
         [
             # Columns are:
@@ -890,16 +890,16 @@ def test_featurize_owner_error(mocker):
     owners = [
         {"name": "Amira", "email": "amira@example.com", "source": "GCP ", "timestamp": "1"},
     ]
-    asm_system_ids = []
+    system_ids = []
 
     idx_get_num_reasons = 1
-    output = featurize(asm_system_ids, owners)
+    output = featurize(system_ids, owners)
     assert output[0][idx_get_num_reasons] == 0
 
 
 def test_featurize_similarity_error(mocker):
     """
-    Verify that if an error is thrown while computing a feature that depends on asmsystemids,
+    Verify that if an error is thrown while computing a feature that depends on system_ids,
     the feature value is set to 0
     """
     mocker.patch("RankRemediationOwners.OwnerFeaturizationPipeline.get_name_similarity_person_asset", side_effect=Exception())
@@ -908,10 +908,10 @@ def test_featurize_similarity_error(mocker):
         {"name": "Amira", "email": "amira@example.com", "source": "GCP ", "timestamp": "1"},
     ]
     # normally would expect greater-than-zero-similarity
-    asm_system_ids = ["amira-test"]
+    system_ids = ["amira-test"]
 
     idx_name_similarity_person_asset = 0
-    output = featurize(asm_system_ids, owners)
+    output = featurize(system_ids, owners)
     assert output[0][idx_name_similarity_person_asset] == 0
 
 

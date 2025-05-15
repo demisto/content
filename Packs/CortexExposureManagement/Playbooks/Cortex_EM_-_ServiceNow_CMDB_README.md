@@ -43,4 +43,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![Cortex VM - ServiceNow CMDB](../doc_files/Cortex_EM_-_ServiceNow_CMDB.png)
+![Cortex EM - ServiceNow CMDB](../doc_files/Cortex_EM_-_ServiceNow_CMDB.png)

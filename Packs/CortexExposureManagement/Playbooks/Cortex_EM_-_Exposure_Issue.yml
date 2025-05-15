@@ -469,7 +469,7 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      asmsystemids:
+      system_ids:
         simple: ${Core.CoreAsset.xdm__asset__name}
       ownerrelatedfield:
         simple: xdmremediationowners
@@ -481,7 +481,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+      description: Recommend most likely remediation owners from those surfaced by other enrichments.
       id: 0ef0668b-b744-49d1-995a-3f29960da6df
       iscommand: false
       name: RankRemediationOwners

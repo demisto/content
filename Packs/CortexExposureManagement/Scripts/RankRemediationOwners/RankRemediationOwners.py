@@ -68,12 +68,12 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
         return pickle.load(f)
 
 
-def featurize(asm_system_ids: list[str], owners: list[dict[str, Any]]) -> np.ndarray:
+def featurize(system_ids: list[str], owners: list[dict[str, Any]]) -> np.ndarray:
     """
     Convert owners information into numerical array for model inference
     """
     pipeline = OwnerFeaturizationPipeline()
-    feats = pipeline.featurize(asm_system_ids, owners)
+    feats = pipeline.featurize(system_ids, owners)
     return feats
 
 
@@ -103,7 +103,7 @@ def normalize_scores(
     ]
 
 
-def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[str, Any]]:
+def score(owners: list[dict[str, Any]], system_ids: list[str]) -> list[dict[str, Any]]:
     """
     Load the model, featurize inputs, score owners, normalize scores, and update the owners dicts
 
@@ -122,7 +122,7 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
         return scoring_fallback(owners)
 
     try:
-        featurized = featurize(asm_system_ids=asm_system_ids, owners=owners)
+        featurized = featurize(system_ids=system_ids, owners=owners)
         scores = model.predict(featurized)
     except Exception as ex:
         demisto.info(f"Error scoring the owners: {ex}. Using fallback scores")
@@ -470,7 +470,7 @@ class OwnerFeaturizationPipeline:
         else:
             self.SOURCES = sources.copy()
 
-        # features which only require contents of asmremediationowner as input
+        # features which only require contents of remediationowner as input
         self.OWNER_FEATURES: list[tuple[str, Callable]] = [
             ("num_reasons", self.get_num_reasons),
             ("num_distinct_sources", self.get_num_distinct_sources),
@@ -479,7 +479,7 @@ class OwnerFeaturizationPipeline:
             ("is_attested_in_recent_logs", self.get_in_logs),
         ]
 
-        # features that require asmsystemid as an additional input
+        # features that require systemid as an additional input
         self.SYSTEM_ID_FEATURES: list[tuple[str, Callable]] = [
             ("name_similarity_person_asset", self.get_name_similarity_person_asset),
         ]
@@ -518,7 +518,7 @@ class OwnerFeaturizationPipeline:
             src_path_length = 1
             while src.startswith("Chain: "):
                 src_path_length += 1
-                src = src[len("Chain: "):]
+                src = src[len("Chain: ") :]
             if min_path_length is None or src_path_length < min_path_length:
                 min_path_length = src_path_length
         return min_path_length
@@ -611,12 +611,12 @@ def main():
         unranked = demisto.args().get("owners", [])
         if isinstance(unranked, dict):
             unranked = [unranked]
-        asm_system_ids = demisto.args().get("asmsystemids", [])
+        system_ids = demisto.args().get("system_ids", [])
         owner_related_field = demisto.args().get("ownerrelatedfield", "xdmremediationowners")
         platform_tenant_usage = demisto.args().get("tenantcommand", "False")
         # deduplicate/normalize, score, and rank owners
         normalized = aggregate(canonicalize(unranked))
-        final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
+        final_owners = justify(rank(score(owners=normalized, system_ids=system_ids)))
 
         write_output_to_context_key(
             final_owners=final_owners, owner_related_field=owner_related_field, platform_tenant=platform_tenant_usage
