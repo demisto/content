@@ -1,0 +1,20 @@
+[
+    {
+        "ipv4addr": "1.2.3.4",
+        "_ref": "record:a/KLJjuioasdjfklsdfiuighkj:test.contoso.org/external",
+        "name": "test.contoso.org",
+        "view": "external"
+    },
+    {
+        "_ref": "record:aaaa/gjkhdfjklghldfjkkljKJN:test2.contoso.org/external",
+        "name": "test2.contoso.org",
+        "view": "external",
+        "ipv6addr": "2a02:111:2222:33:444:555:666:7777"
+    },
+    {
+        "_ref": "record:cname/KJHkjIUhjkukhikjn:test3.contoso.org/external",
+        "name": "test3.contoso.org",
+        "view": "external",
+        "canonical": "test4.contoso.org"
+    }
+]
