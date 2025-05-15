@@ -6,6 +6,7 @@ from CommonServerPython import *  # noqa: F401
 import re
 import time
 from datetime import datetime
+import json
 
 # 3-rd party imports
 import requests
@@ -4806,8 +4807,6 @@ def patch_papi_property_rule_siteshield_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    import json
-
     body = [{"op": operation, "path": path, "value": json.loads(ssmap)}]
 
     raw_response: dict = client.patch_papi_property_rule(
@@ -4984,9 +4983,6 @@ def patch_papi_property_rule_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-
-    import json
-
     body = [{"op": operation, "path": path, "value": json.loads(value) if value_to_json.lower() == "yes" else value}]
 
     raw_response: dict = client.patch_papi_property_rule(
@@ -5431,8 +5427,6 @@ def update_cps_enrollment_command(
     renewal_date_check_override: str = "true",
     allow_missing_certificate_addition: str = "false",
 ) -> tuple[str, dict, Union[list, dict]]:
-    import json
-
     """
         Updates an enrollment with changes. Response type will vary depending on the type and impact of change.
         For example, changing SANs list may return HTTP 202 Accepted since the operation require a new certificate

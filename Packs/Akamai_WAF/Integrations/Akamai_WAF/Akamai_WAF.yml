@@ -49,6 +49,61 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this verdict
+  display: Indicator Verdict
+  name: feedReputation
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ''
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
 description: |-
   Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 
@@ -1347,7 +1402,6 @@ script:
   - arguments:
     - description: Filter the results by cnameFrom. Supports wildcard matches with *.
       name: hostname
-      required: true
     - auto: PREDEFINED
       description: Network of activated hostnames, either STAGING or PRODUCTION. Or leave it BLANK.
       name: network
@@ -1490,7 +1544,7 @@ script:
       description: Akamai enrollments change status.
       type: Dictionary
   - arguments:
-    - description: Specify the contract on which to operate or view.
+    - description: Unique Identifier of a contract on which to operate or view.
       name: contract_id
       required: true
     description: 'Lists enrollments with active certificates. Note that the rate limit for this operation is 10 requests per minute per account.'
@@ -1498,7 +1552,7 @@ script:
     outputs:
     - contextPath: Akamai.Cps.Active.Certificates.Enrollments
       description: A collection of Active Akami CPS enrollments.
-      type: Dictionary    
+      type: Dictionary
   - arguments:
     - description: The change for this enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
       name: change_id
@@ -1544,7 +1598,256 @@ script:
     - contextPath: Akamai.EdgeDns.ZoneRecordSets
       description: A collection of Edge DNS zone's record sets.
       type: Dictionary
-  dockerimage: demisto/auth-utils:1.0.0.1839651
+  - arguments:
+    - description: The name of the stream.
+      name: stream_name
+      required: true
+    - description: The unique identifier of the group that has access to the product and this stream configuration.
+      name: group_id
+      required: true
+    - description: The unique identifier of the contract that has access to the product.
+      name: contract_id
+    - description: The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager.
+      isArray: true
+      name: properties
+    - description: The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. See Data set parameters for the complete list of the fields you can choose.
+      isArray: true
+      name: dataset_fields
+    - auto: PREDEFINED
+      description: The interval in seconds (30 or 60) after which the system bundles log lines into a file and sends it to a destination.
+      name: interval_in_seconds
+      predefined:
+      - '30'
+      - '60'
+    - description: The format in which you want to receive log files. STRUCTURED or JSON are the currently available formats. When the delimiter is present in the request, STRUCTURED format needs to be defined.
+      name: log_format
+    - description: A delimiter that separates data set fields in the log lines, either SPACE or TAB. Set this only for the STRUCTURED log file format.
+      name: field_delimiter
+    - description: The prefix of the log file to be used when sending to a object-based destination. It's a string of at most 200 characters. If unspecified, it defaults to ak. This member supports Dynamic time variables, but doesn't support the '.' character. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions.
+      name: upload_file_prefix
+    - description: The suffix of the log file that you want to send to a object-based destination. It's a static string of at most 10 characters. If unspecified, it defaults to ds. This member doesn't support Dynamic time variables, and the ., /, %, ? characters. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions.
+      name: upload_file_suffix
+    - description: The certification authority (CA) certificate used to verify the origin server's certificate. If the certificate is not signed by a well-known certification authority, enter the CA certificate in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it in the response as true.
+      name: ca_cert
+    - description: The PEM-formatted digital certificate you want to authenticate requests to your destination with. If you want to use mutual authentication, you need to provide both the client certificate and the client key. If you pass this member, the mTlsEnabled member replaces it in the response as true.
+      name: client_cert
+    - description: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. If you want to use mutual authentication, you need to provide both the client certificate and the client key.
+      name: client_key
+    - description: The type of the resource passed in the request's custom header. For details, see the additional options discussed in Stream logs to a HTTPS endpoint.
+      name: content_type
+    - description: A human-readable name for the request's custom header, containing only alphanumeric, dash, and underscore characters. For details, see the additional options discussed in Stream logs to a HTTPS endpoint.
+      name: custom_header_name
+    - description: The custom header's contents passed with the request that contains information about the client connection. For details, see the additional options discussed in Stream logs to a HTTPS endpoint.
+      name: custom_header_value
+    - auto: PREDEFINED
+      description: Enables gzip compression for a log file sent to a destination. True by default.
+      name: compress_logs
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: SPLUNK
+      description: 'The destination configuration in the stream to send logs. See Destinations for details and features available for each destination. Note: "SPLUNK" and "HTTPS" are the only two types tested.'
+      name: destination_type
+      predefined:
+      - HTTPS
+      - SPLUNK
+    - description: The name of the destination.
+      name: display_name
+    - description: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used as endpoint URLs. See Stream logs to Splunk.
+      name: endpoint
+    - description: The Event Collector token for your Splunk account. See View usage of Event Collector token in the Splunk documentation.
+      name: event_collector_token
+    - description: The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint URL.
+      name: tls_hostname
+    - description: A list of e-mail addresses where you want to send notifications about activations and deactivations of the stream. You can omit this member and activate or deactivate the stream without notifications.
+      name: notification_emails
+    - auto: PREDEFINED
+      description: Indicates if you've opted to capture midgress traffic within the Akamai platform, such as between two edge servers.
+      name: collect_midgress
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: Activates the stream at the time of the request, false by default. When Edit a stream or Patch a stream that is active, set this value to true.
+      name: activate
+      predefined:
+      - 'True'
+      - 'False'
+    description: 'Creates a stream configuration. Within a stream configuration, you can select properties to monitor in the stream, data set fields to collect in logs, and a destination to send these log files to. Get the streamId value from the response to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL. Apart from the log and delivery frequency configurations, you can decide whether to activate the stream on making the request or later using the activate parameter. Note that only active streams collect and send logs to their destinations. NOTE: "SPLUNK" and "HTTPS" are the only two types tested.'
+    name: akamai-new-datastream
+    outputs:
+    - contextPath: Akamai.DataStream
+      description: Akamai DataStream.
+  - arguments: []
+    description: Lists the properties and includes for the current account.
+    name: akamai-list-idam-properties
+    outputs:
+    - contextPath: Akamai.Idam.Properties
+      description: Akamai Properties of the current account via Identity Access Management.
+  - arguments:
+    - description: The unique identifier of the group that has access to the product and this stream configuration.
+      name: group_id
+    description: Returns the latest versions of the stream configurations for all groups within the account.
+    name: akamai-list-datastreams
+    outputs:
+    - contextPath: Akamai.DataStreams
+      description: Akamai DataStreams.
+  - arguments:
+    - description: Uniquely identifies the stream.
+      name: stream_id
+      required: true
+    - description: Identifies the version of the stream. If omitted, the operation returns the latest version of the stream.
+      name: version
+    description: Returns information about any version of a stream, including details about the monitored properties, logged data set fields, and log delivery destination. If you omit the version query parameter, this operation returns the last version of the stream.
+    name: akamai-get-datastream
+    outputs:
+    - contextPath: Akamai.DataStreamDetails
+      description: Akamai DataStream Details.
+  - arguments:
+    - description: Uniquely identifies the contract that belongs to a group.
+      name: contract_id
+    description: Returns access groups with contracts on your account. You can later use the groupId and contractId values to create and view streams or list properties by group. Set the contractId query parameter to get groups for a specific contract.
+    name: akamai-list-datastream-groups
+    outputs:
+    - contextPath: Akamai.DataStreamGroups
+      description: Akamai Groups within the contract.
+  - arguments:
+    - description: The unique identifier of the group that has access to the product and this stream configuration.
+      name: group_id
+      required: true
+    description: Get properties that are active on the production and staging network and available within a specific group. Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+    name: akamai-list-datastream-properties-bygroup
+    outputs:
+    - contextPath: Akamai.DataStream.Group
+      description: List of the Active Properties within the Group.
+  - arguments:
+    - description: Unique identifer of a stream.
+      name: stream_id
+      required: true
+    description: Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and that you stop receiving logs for the properties that this stream monitors. Before deleting any stream, you need to deactivate it first. See Deactivate a stream.
+    name: akamai-delete-datastream
+    outputs:
+    - contextPath: Akamai.DataStream
+      description: Akamai DataStream.
+  - arguments:
+    - description: The unique identifier of the stream.
+      name: stream_id
+      required: true
+    - auto: PREDEFINED
+      description: Activates the stream at the time of the request, false by default. When you Edit a stream or Patch a stream that is active, you need to set this member to true.
+      name: activate
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A JSON Pointer that identifies the values you want to replace in the stream configuration. This member's value is / followed by any of the configuration object's top-level member name. See Edit a stream for available members.
+      name: path
+      required: true
+    - description: Specifies the data to replace at the path location, any type of data including objects and arrays. Pass complete objects to avoid overwriting current details with default values for omitted members.
+      name: value
+      required: true
+    - auto: PREDEFINED
+      description: Whether convert the value above into Json or not.
+      name: value_to_json
+      predefined:
+      - yes
+      - no
+    description: Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE operation. When updating configuration objects such as destination or deliveryConfiguration, pass a complete object to avoid overwriting current details with default values for omitted members such as tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to their destinations. You need to set the activate parameter to true while patching active streams, and optionally for inactive streams if you want to activate them upon request. See Patching streams for details.
+    name: akamai-patch-datastream
+    outputs:
+    - contextPath: Akamai.DataStream
+      description: Akamai DataStream.
+  - arguments:
+    - description: Uniquely identifies the stream.
+      name: stream_id
+    - auto: PREDEFINED
+      description: 'activate" or "deactivate.'
+      name: option
+      predefined:
+      - activate
+      - deactivate
+    description: Activate/Deactivate the latest version of a DataStream.
+    name: akamai-activate-datastream
+    outputs:
+    - contextPath: Akamai.DataStream.Activation
+      description: Akamai DataStream Activation.
+  - arguments: []
+    description: Get accessible client lists.
+    name: akamai-get-client_lists
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: Akamai ClientList.
+  - arguments:
+    - description: Unique identifier of a contract.
+      name: contract_id
+      required: true
+    - description: Unique identifier of a group.
+      name: group_id
+    description: Lists all edge hostnames available under a contract.
+    name: akamai-list-edgehostname
+    outputs:
+    - contextPath: Akamai.Edgehostname
+      description: Akamai Edgehostnames.
+  - arguments:
+    - auto: PREDEFINED
+      description: "Type 'str'. The HTTP method, for example: GET, POST, and so on."
+      name: method
+      predefined:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+    - description: Type 'str'. The API endpoint.
+      name: url_suffix
+    - description: Type 'dict'. Headers to send in the request. If None, will use self._headers.
+      name: headers
+    - description: Type 'dict'. URL parameters to specify the query.
+      name: params
+    - description: Type 'dict'. The data to send in a 'POST' request.
+      name: data
+    - description: Type 'dict'. The dictionary to send in a 'POST' request.
+      name: json_data
+    - description: Type 'dict'. The file data to send in a 'POST' request.
+      name: files
+    - description: "Type 'float' or comma separated two floats. The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. can be only float (Connection Timeout) or  or Comma separated two floats for Connection Timeout and Read Timeout. (Samput Input: 60, 60)."
+      name: timeout
+    - auto: PREDEFINED
+      description: Type 'str'. Determines which data format to return from the HTTP request. The default is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response' to return the full response object.
+      name: resp_type
+      predefined:
+      - json
+      - text
+      - content
+      - xml
+      - response
+    - description: "Type 'tuple'. The request codes to accept as OK, for example: 200, 201, 204. If you specify \"None\", will use self._ok_codes. Default is None."
+      name: ok_codes
+    - description: Type 'int'. How many retries should be made in case of a failure. when set to '0'- will fail on the first time.
+      name: retries
+    - description: Type 'iterable'. A set of integer HTTP status codes that we should force a retry on. A retry is initiated if the request method is in ['GET', 'POST', 'PUT'] and the response status code is in 'status_list_to_retry'.
+      name: status_list_to_retry
+    - description: "Type 'float'. A backoff factor to apply between attempts after the second try (most errors are resolved immediately by a second try without a delay). urllib3 will sleep for: {backoff factor} * (2 ** ({number of total retries} - 1)) seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer than :attr:`Retry.BACKOFF_MAX`. By default, backoff_factor set to 5."
+      name: backoff_factor
+    - auto: PREDEFINED
+      description: Type 'bool'. Whether, if the number of redirects is exhausted, to raise a MaxRetryError, or to return a response with a response code in the 3xx range.
+      name: raise_on_redirect
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: "Type 'bool'. Similar meaning to 'raise_on_redirect': whether we should raise an exception, or return a response, if status falls in 'status_forcelist' range and retries have been exhausted."
+      name: raise_on_status
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Type 'list'.A list of all valid status codes of empty responses (usually only 204, but can vary).
+      name: empty_valid_codes
+    - description: Type 'bool'. Whether or not to calculate execution metrics from the response.
+      name: with_metrics
+    description: Akamai Generic API Call.
+    name: akamai-generic-api-call-command
+  dockerimage: demisto/auth-utils:1.0.0.3310614
   script: ''
   subtype: python3
   type: python
