@@ -11,7 +11,7 @@ from googleapiclient._auth import authorized_http
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import service_account
-
+from pathlib import Path
 from CommonServerUserPython import *
 
 #  @@@@@@@@ GLOBALS @@@@@@@@
@@ -1255,9 +1255,12 @@ def get_export_command(export_id, matter_id):
         zip_object_name = (
             get_object_mame_by_type(response.get("cloudStorageSink").get("files"), ".zip") if export_status == "COMPLETED" else ""
         )
+        files_results: List[Path] = [
+            Path(file.get("objectName", "")) for file in response.get("cloudStorageSink", {}).get("files", [])
+        ]
         xml_object_name = remove_empty_elements([
-            file.get("objectName") if file.get("objectName",'').endswith(".xml") and export_status == "COMPLETED" else None
-            for file in response.get("cloudStorageSink", {}).get("files", [])
+            file_path if file_path.match('*-metadata.xml') and export_status == "COMPLETED" else None
+            for file_path in files_results
         ])
         title = "You Export details:\n"
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
@@ -1435,13 +1438,14 @@ def get_mail_and_groups_results_command(inquiryType):
                 "BCC": document.get("BCC"),
                 "Subject": document.get("Subject"),
                 "DateSent": document.get("DateSent"),
+                "Account": document.get("Account"),
                 "DateReceived": document.get("DateReceived"),
             }
             for document in output
         ]
 
         title = f"Your {inquiryType} inquiry details\n"
-        headers = ["Subject", "From", "To", "CC", "BCC", "DateSent"]
+        headers = ["Subject", "From", "To", "CC", "BCC", "DateSent", "Account"]
         markdown = tableToMarkdown(title, markedown_output, headers)
 
         exportID = str(view_ID).split("/")[1]

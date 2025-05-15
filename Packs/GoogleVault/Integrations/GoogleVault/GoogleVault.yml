@@ -505,6 +505,9 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the email was sent to
       type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Account
+      description: The account.
+      type: string
   - arguments:
     - description: Name of the bucket that holds the export
       name: bucketName
