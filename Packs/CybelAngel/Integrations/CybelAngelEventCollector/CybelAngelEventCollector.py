@@ -463,7 +463,7 @@ def fetch_events(client: Client, max_fetch: dict, events_type_to_fetch: list[str
 
     """
     now = datetime.now()
-    last_run = get_last_run(now)
+    last_run = get_last_run(now, events_type_to_fetch)
     all_events = []
     event_fetch_function = {
         DOMAIN: client.get_domain_watchlist,
@@ -830,16 +830,16 @@ def cybelangel_report_remediation_request_create_command(client: Client, args: d
     )
 
 
-def get_last_run(now: datetime) -> dict:
+def get_last_run(now: datetime, events_type_to_fetch: list[str]) -> dict:
     last_run = demisto.getLastRun()
     last_time = now - timedelta(minutes=1)
     if not last_run:
         last_run = {}
         last_time = now - timedelta(days=30)  # TODO
         demisto.debug("First run")
-    for type in [REPORT, DOMAIN, CREDENTIALS]:
-        if type not in last_run:
-            last_run[type] = {LATEST_TIME: last_time.strftime(DATE_FORMAT), LATEST_FETCHED_IDS: []}
+    for event_type in [REPORT, DOMAIN, CREDENTIALS]:
+        if event_type not in last_run or (event_type in last_run and event_type not in events_type_to_fetch):
+            last_run[event_type] = {LATEST_TIME: last_time.strftime(DATE_FORMAT), LATEST_FETCHED_IDS: []}
 
     return last_run
 
@@ -885,9 +885,8 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "fetch-events":
             events, last_run = fetch_events(client, max_fetch, events_type_to_fetch)
-            if events:
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
         elif command == "cybelangel-get-events":
             return_results(get_events_command(client, demisto.args()))

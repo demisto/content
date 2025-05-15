@@ -127,7 +127,7 @@ def test_get_last_run_no_previous(mocker):
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
     now = datetime(2025, 5, 15, 12, 0, 0)
-    result = get_last_run(now)
+    result = get_last_run(now, [REPORT, DOMAIN, CREDENTIALS])
     expected_time = (now - timedelta(days=30)).strftime(DATE_FORMAT)  # TODO
 
     for etype in (REPORT, DOMAIN, CREDENTIALS):
@@ -152,7 +152,7 @@ def test_get_last_run_partial_existing(mocker):
         return_value={REPORT: {LATEST_TIME: existing_time, LATEST_FETCHED_IDS: existing_ids}},
     )
 
-    result = get_last_run(now)
+    result = get_last_run(now, [REPORT, DOMAIN, CREDENTIALS])
     # REPORT must be unchanged
     assert result[REPORT][LATEST_TIME] == existing_time
     assert result[REPORT][LATEST_FETCHED_IDS] == existing_ids
@@ -179,7 +179,7 @@ def test_get_last_run_all_present(mocker):
     }
     mocker.patch.object(demisto, "getLastRun", return_value=initial.copy())
 
-    result = get_last_run(now)
+    result = get_last_run(now, [REPORT, DOMAIN, CREDENTIALS])
     # Should be exactly the same dict we passed in
     assert result == initial
 
