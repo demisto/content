@@ -24,7 +24,9 @@ def check_logging(caplog):
         caplog.clear()
     """
     yield
-    messages = [f"{x.levelname}: {x.message}" for x in caplog.get_records("call") if x.levelno >= logging.WARNING]
+    messages = [    # fmt: skip
+        f"{x.levelname}: {x.message}" for x in caplog.get_records('call') if x.levelno >= logging.WARNING   # fmt: skip
+    ]  # fmt: skip
     if messages:
         pytest.fail(f"warning messages encountered during testing: {messages}")
 

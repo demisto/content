@@ -275,10 +275,10 @@ def get_content_roles_from_blob() -> dict[str, Any] | None:
     try:
         response = requests.get(CONTENT_ROLES_BLOB_MASTER_URL)
         response.raise_for_status()  # Raise an error for bad status codes
-        print(f"Successfully retrieved {CONTENT_ROLES_FILENAME} from blob")
+        print(f"Successfully retrieved {CONTENT_ROLES_FILENAME} from blob") # noqa: T201
         roles = response.json()
     except (requests.RequestException, requests.HTTPError, json.JSONDecodeError, TypeError) as e:
-        print(f"{e.__class__.__name__} getting {CONTENT_ROLES_FILENAME} from blob: {e}.")
+        print(f"{e.__class__.__name__} getting {CONTENT_ROLES_FILENAME} from blob: {e}.")   # noqa: T201
     finally:
         return roles
 
@@ -297,11 +297,11 @@ def get_content_roles(path: Path | None = None) -> dict[str, Any] | None:
     - `dict[str, Any]` representing the content roles.
     """
 
-    print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
+    print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")    # noqa: T201
     roles = get_content_roles_from_blob()
 
     if not roles:
-        print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")
+        print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")    # noqa: T201
         repo_root_path = get_repo_path(str(path))
         content_roles_path = repo_root_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
         roles = load_json(content_roles_path)
@@ -330,7 +330,7 @@ def get_repo_path(path: str = ".") -> Path:
         else:
             raise ValueError
     except (git.exc.InvalidGitRepositoryError, ValueError):
-        print("Unable to get repo root path. Terminating...")
+        print("Unable to get repo root path. Terminating...")   # noqa: T201
         sys.exit(1)
 
 

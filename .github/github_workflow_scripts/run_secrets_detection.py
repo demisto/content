@@ -50,7 +50,7 @@ def trigger_generic_webhook(options):
         res_json_response_data = res.json()[0]
         if res_json_response_data:
             investigation_id = res_json_response_data.get("id")
-            print(investigation_id)
+            print(investigation_id) # noqa: T201
             return
 
     raise Exception("Secrets detection playbook has failed")
