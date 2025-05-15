@@ -387,12 +387,16 @@ def get_fetch_start_times(params, service, last_run_earliest_time, occurence_tim
     return occured_start_time, now
 
 
-def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset):
-    occurred_start_time_fieldname = params.get("earliest_occurrence_time_fieldname", "earliest_time")
-    occurred_end_time_fieldname = params.get("latest_occurrence_time_fieldname", "latest_time")
-
+def build_fetch_kwargs(
+        occured_start_time,
+        latest_time, search_offset,
+        occurred_start_time_fieldname,
+        occurred_end_time_fieldname
+    ):
     extensive_log(f"[SplunkPy] occurred_start_time_fieldname: {occurred_start_time_fieldname}")
     extensive_log(f"[SplunkPy] occured_start_time: {occured_start_time}")
+    extensive_log(f"[SplunkPy] occurred_end_time_fieldname: {occurred_end_time_fieldname}")
+    extensive_log(f"[SplunkPy] occured_start_time: {latest_time}")
 
     return {
         occurred_start_time_fieldname: occured_start_time,
@@ -433,20 +437,33 @@ def fetch_notables(
 
     search_offset = last_run_data.get("offset", 0)
 
-    occurred_look_behind = int(params.get("occurrence_look_behind", 15) or 15)
+    occurred_look_behind = arg_to_number(params.get("occurrence_look_behind"))
+    if occurred_look_behind is None:
+        occurred_look_behind = 15
     extensive_log(f"[SplunkPy] occurrence look behind is: {occurred_look_behind}")
 
     occured_start_time, now = get_fetch_start_times(params, service, last_run_earliest_time, occurred_look_behind)
 
     # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
     latest_time = last_run_latest_time or now
-    kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
+    notable_time_filter_type: str = params.get("notable_time_source") or "creation time"
+    if notable_time_filter_type.startswith("index time"):
+        # BETA: For index time based time calculations
+        occurred_start_time_fieldname = "index_earliest"
+        occurred_end_time_fieldname = "index_latest"
+    else:
+        # Notable filter time type defaults to "creation time"
+        occurred_start_time_fieldname = "earliest_time"
+        occurred_end_time_fieldname = "latest_time"
+    kwargs_oneshot = build_fetch_kwargs(
+        occured_start_time, latest_time, search_offset, occurred_start_time_fieldname, occurred_end_time_fieldname
+    )
     fetch_query = build_fetch_query(params)
     last_run_fetched_ids: dict[str, Any] = last_run_data.get("found_incidents_ids", {})
     if late_indexed_pagination := last_run_data.get("late_indexed_pagination"):
         # This is for handling the case when events get indexed late, and inserted in pages
         # that we have already went through
-        window = f'{kwargs_oneshot.get("earliest_time")}-{kwargs_oneshot.get("latest_time")}'
+        window = f'{kwargs_oneshot.get(occurred_start_time_fieldname)}-{kwargs_oneshot.get(occurred_end_time_fieldname)}'
         demisto.debug(f"[SplunkPy] additional fetch for the window {window} to check for late indexed incidents")
         if last_run_fetched_ids:
             ids_to_exclude = [f'"{fetched_id}"' for fetched_id in last_run_fetched_ids]
