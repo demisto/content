@@ -1,0 +1,28 @@
+{
+    "messages": [],
+    "status": "OK",
+    "data": {
+        "brands": [
+            {
+                "id": "exampleexampleexample",
+                "name": "Example Brand 1"
+            },
+            {
+                "id": "exampleexampleexample",
+                "name": "Example Brand 2"
+            },
+            {
+                "id": "exampleexampleexample",
+                "name": "Example Brand 3"
+            },
+            {
+                "id": "exampleexampleexample",
+                "name": "Example Brand 4"
+            },
+            {
+                "id": "exampleexampleexample",
+                "name": "Example Brand 5"
+            }
+        ]
+    }
+}
