@@ -1771,6 +1771,10 @@ script:
     - description: A CSV list of labels.
       isArray: true
       name: labels
+    - description: Indicates if the ticket should be mirrored.
+      name: mirroring
+      type: mirroring
+      required: true
     - name: priority
       description: Priority of the ticket.
       predefined:
