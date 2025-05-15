@@ -15,11 +15,7 @@ urllib3.disable_warnings()
 GLOBAL VARIABLES
 """
 
-SERVER = (
-    demisto.params()["url"][:-1]
-    if demisto.params()["url"].endswith("/")
-    else demisto.params()["url"]
-)
+SERVER = demisto.params()["url"][:-1] if demisto.params()["url"].endswith("/") else demisto.params()["url"]
 BASE_URL = SERVER + "/rest/api"
 VERIFY_CERTIFICATE = not demisto.params().get("unsecure", False)
 
@@ -43,7 +39,12 @@ Helper Functions
 
 
 def http_request(
-    method, full_url, data=None, params=None, is_test=False, resp_type: str = "json",
+    method,
+    full_url,
+    data=None,
+    params=None,
+    is_test=False,
+    resp_type: str = "json",
 ):  # pragma: no cover
     try:
         res = requests.request(
@@ -82,9 +83,7 @@ def http_request(
             return res
 
     except ValueError as err:
-        return_error(
-            f"Failed to parse response from service, received the following error:\n{err!s}"
-        )
+        return_error(f"Failed to parse response from service, received the following error:\n{err!s}")
 
 
 """
@@ -92,9 +91,7 @@ Confluence Commands
 """
 
 
-def update_content(
-    page_id, content_title, space_key, content_body, content_type, content_version
-):
+def update_content(page_id, content_title, space_key, content_body, content_type, content_version):
     content_data = {}
     # Populate the content_data dictionary
     content_data["type"] = content_type
@@ -103,9 +100,7 @@ def update_content(
     if content_title is not None:
         content_data["title"] = content_title
 
-    content_data["body"] = {
-        "storage": {"value": content_body, "representation": "storage"}
-    }
+    content_data["body"] = {"storage": {"value": content_body, "representation": "storage"}}
     content_data["version"] = {"number": content_version}
 
     full_url = BASE_URL + "/content/" + page_id
@@ -127,9 +122,7 @@ def update_content_command():
     content_type = demisto.args().get("type")
     content_version = int(demisto.args().get("currentversion")) + 1
 
-    raw_content = update_content(
-        page_id, content_title, space_key, content_body, content_type, content_version
-    )
+    raw_content = update_content(page_id, content_title, space_key, content_body, content_type, content_version)
     content = {
         "ID": page_id,
         "Title": content_title,
@@ -205,9 +198,7 @@ def create_content_command():
 def create_space(space_description, space_key, space_name):
     space_data = {
         "type": "global",
-        "description": {
-            "plain": {"value": space_description, "representation": "plain"}
-        },
+        "description": {"plain": {"value": space_description, "representation": "plain"}},
         "name": space_name,
         "key": space_key,
     }
@@ -287,9 +278,7 @@ def get_content_command():
     # create markdown table string from context
     # the outputs must be array in order the tableToMarkdown to work
     # headers must be array of strings (which column should appear in the table)
-    md = tableToMarkdown(
-        "Content", content_list, ["ID", "Title", "Type", "Version", "Body"]
-    )
+    md = tableToMarkdown("Content", content_list, ["ID", "Title", "Type", "Version", "Body"])
 
     demisto.results(
         {
