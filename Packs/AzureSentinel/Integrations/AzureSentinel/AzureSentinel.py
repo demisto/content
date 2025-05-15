@@ -1467,7 +1467,7 @@ def fetch_incidents(
 
     """
     # Get the last fetch details, if exist
-    limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT,FETCH_MAX_LIMIT)
+    limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT, FETCH_MAX_LIMIT)
     last_fetch_time = last_run.get("last_fetch_time")
     last_fetch_ids = last_run.get("last_fetch_ids", [])
     last_incident_number = last_run.get("last_incident_number")
@@ -1505,9 +1505,7 @@ def fetch_incidents(
         }
         demisto.debug(f"Filter query used:{command_args['filter']}")
 
-    raw_incidents = list_incidents_command(
-        client, command_args, is_fetch_incidents=True
-    ).outputs
+    raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
     if isinstance(raw_incidents, dict):
         raw_incidents = [raw_incidents]
     demisto.debug(f"raw incidents id before dedup: {[incident['ID'] for incident in raw_incidents]}")
