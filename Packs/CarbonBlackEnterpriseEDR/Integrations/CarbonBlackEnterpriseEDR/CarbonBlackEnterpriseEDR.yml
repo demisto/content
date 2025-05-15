@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Carbon Black Enterprise EDR
   version: -1

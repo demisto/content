@@ -643,6 +643,37 @@ check_getLastRun_data = [
     ),
 ]
 
+def test_fetch_incidents_duplicates_len_is_limit(mocker):
+    """
+    Given:
+        - A limit of l and a last_fetched_alerts list of len n.
+
+    When:
+        - Running 'fetch-incidents' command.
+
+    Then:
+        - The search_alerts_request function is called with limit=str(l+n+1).
+    """
+    from CarbonBlackEnterpriseEDR import fetch_incidents
+
+    mocked_func = mocker.patch.object(CLIENT, "search_alerts_request", return_value={})
+    last_run={"last_fetched_alert_create_time": "2000-07-16T05:26:05.491Z", "last_fetched_alerts_ids": ["123", "456"]}
+    limit = "50"
+    _, res = fetch_incidents(
+        CLIENT,
+        fetch_time="3 days",
+        fetch_limit=limit,
+        last_run=last_run,
+    )
+
+    expected_limit = int(limit) + len(last_run["last_fetched_alerts_ids"]) + 1
+    mocked_func.assert_called_with(
+        sort_field=mocker.ANY,
+        sort_order=mocker.ANY,
+        create_time=mocker.ANY,
+        limit=str(expected_limit),
+    )
+
 
 @pytest.mark.parametrize("last_run, expected_last_run", check_getLastRun_data)
 def test_check_getLastRun(last_run, expected_last_run):
