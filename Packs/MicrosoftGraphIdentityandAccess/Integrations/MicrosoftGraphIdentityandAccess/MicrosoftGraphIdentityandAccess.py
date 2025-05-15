@@ -386,7 +386,7 @@ class Client:  # pragma: no cover
         
     
         
-    def delete_conditional_access_policy(self, policy_id) -> CommandResults:
+    def delete_conditional_access_policy(self, policy_id: str) -> CommandResults:
         """
         Delete specific Conditional Access policy by ID.
 
@@ -419,7 +419,7 @@ class Client:  # pragma: no cover
             raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.:\n {str(e)}")
 
             
-    def create_conditional_access_policy(self, policy) -> CommandResults:
+    def create_conditional_access_policy(self, policy: Dict[str, Any]) -> CommandResults:
         """
         Sends a request to create a new Conditional Access policy in Microsoft Graph API.
 
@@ -457,7 +457,7 @@ class Client:  # pragma: no cover
                 f"{str(e)}")
 
 
-    def update_conditional_access_policy(self, policy_id, policy: Union[dict, str]) -> CommandResults:
+    def update_conditional_access_policy(self, policy_id: str, policy: Union[dict, str]) -> CommandResults:
         """
         Updates a Conditional Access policy using its ID and the provided policy data.
 
@@ -1217,12 +1217,12 @@ def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any
     Returns:
         CommandResults: Results to return to Cortex XSOAR.
     """
-    policy_id = args.get('policy_id')
+    policy_id = args.get('policy_id', '')
     
     return client.delete_conditional_access_policy(policy_id)
     
 
-def build_policy(args):
+def build_policy(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Builds a Conditional Access policy object from the provided arguments.
     
@@ -1296,10 +1296,6 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
     """
     Creates a Conditional Access policy.
 
-    Required Permissions:
-        Policy.Read.All (Delegated or Application)
-        Policy.ReadWrite.ConditionalAccess (Delegated or Application)
-
     Args:
         client (Client): Microsoft Graph client.
         args (dict): Command arguments containing policy details.
@@ -1327,7 +1323,7 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
         
         policy = build_policy(args)
         
-    policy = remove_empty_elements(policy)
+    policy = cast(Dict[str, Any],remove_empty_elements(policy))
     return client.create_conditional_access_policy(policy)
 
 
@@ -1372,7 +1368,6 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
         existing_policy = client.list_conditional_access_policies(policy_id)
         
         merge_policy_section(existing_policy[0], new_policy, messages)
-        return_results(f"new_policy: {new_policy}")
         new_policy = cast(Dict[str, Any], remove_empty_elements(new_policy))
 
     result = client.update_conditional_access_policy(policy_id, new_policy)
