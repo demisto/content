@@ -4,7 +4,6 @@ from CommonServerPython import *
 """ IMPORTS """
 
 import json
-import logging
 import mimetypes
 import traceback
 from pathlib import Path
