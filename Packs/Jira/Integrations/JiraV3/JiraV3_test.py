@@ -1,10 +1,10 @@
 import json
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
-from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient
+from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient, get_remote_data_preview_command, QuickActionPreview
 from pytest_mock import MockerFixture
 
 
@@ -3436,3 +3436,36 @@ class TestJiraCreateMetadataField:
         else:
             with pytest.raises(ValueError):
                 get_create_metadata_field_command(client=client, args=args)
+
+
+def test_get_remote_data_preview_command():
+    # Given: Prepare the mock objects and inputs
+    mock_client = Mock()
+    args = {"issue_id": "JIRA-123"}
+
+    # Mock Jira issue object returned by client
+    mock_issue = util_load_json("test_data/get_remote_data_preview/raw_response.json")
+
+    mock_client.get_issue.return_value = mock_issue
+
+    # When: Execute the command under test
+    result = get_remote_data_preview_command(mock_client, args)
+
+    # Then: Validate the outputs
+    assert result.outputs_prefix == "QuickActionPreview"
+    assert result.outputs_key_field == "id"
+
+    expected_preview = QuickActionPreview(
+        id="21487",
+        title="XSOAR description test",
+        description="Testing summary XSOAR mirroring",
+        status="Backlog",
+        assignee="Example User(admin@test.com)",
+        creation_date="2023-03-01T11:34:49.730+0200",
+        severity="Low"
+    ).to_context()
+
+    assert result.outputs == expected_preview
+
+    # Validate interactions
+    mock_client.get_issue.assert_called_once_with(issue_id_or_key="JIRA-123")

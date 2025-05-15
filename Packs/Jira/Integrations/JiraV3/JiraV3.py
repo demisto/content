@@ -66,6 +66,48 @@ V2_ARGS_TO_V3: Dict[str, str] = {
 
 
 @dataclass
+class QuickActionPreview:
+    """
+        A container class for storing quick action data previews.
+        This class is intended to be populated by commands like `!get-remote-data-preview`
+        and placed directly into the root context under `QuickActionPreview`.
+
+        Fields:
+            id (Optional[str]): The ID of the ticket.
+            title (Optional[str]): The title or summary of the ticket or action.
+            description (Optional[str]): A brief description or details about the action.
+            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+            assignee (Optional[str]): The user or entity assigned to the action.
+            creation_date (Optional[str]): The date and time when the item was created.
+            severity (Optional[str]): Indicates the priority or severity level.
+
+        TODO: We will need this class in common server python,
+        but due to temporary restrictions in extending it, we are keeping it here for now.
+        """
+    id: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    assignee: Optional[str] = None
+    creation_date: Optional[str] = None
+    severity: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+        Returns:
+            dict: Dictionary representation of the QuickActionPreview.
+        """
+        return asdict(self)
+
+
+@dataclass
 class MirrorObject:
     """
     A container class for storing ticket metadata used in mirroring integrations.
@@ -1275,6 +1317,12 @@ class JiraIssueFieldsParser:
     """
 
     @staticmethod
+    def get_value_from_context(context_method, issue_data: Dict[str, Any]) -> Any:
+        """Extracts the value from the result of a context method."""
+        context_dict = context_method(issue_data)
+        return next(iter(context_dict.values()))
+
+    @staticmethod
     def get_id_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {"Id": issue_data.get("id", "") or ""}
 
@@ -2138,6 +2186,44 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Comm
             )
         )
     return command_results
+
+
+def get_remote_data_preview_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the data of a specific issue and formatting it specifically for an issue preview
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", ""))
+    issue = client.get_issue(issue_id_or_key=issue_id_or_key)
+    context_methods = {
+        "id": JiraIssueFieldsParser.get_id_context,
+        "title": JiraIssueFieldsParser.get_description_context,
+        "description": JiraIssueFieldsParser.get_summary_context,
+        "status": JiraIssueFieldsParser.get_status_context,
+        "assignee": JiraIssueFieldsParser.get_assignee_context,
+        "creation_date": JiraIssueFieldsParser.get_created_date_context,
+        "severity": JiraIssueFieldsParser.get_priority_context,
+    }
+
+    qa_preview_data = {
+        attr: JiraIssueFieldsParser.get_value_from_context(method, issue)
+        for attr, method in context_methods.items()
+    }
+
+    qa_preview = QuickActionPreview(**qa_preview_data)
+    return CommandResults(
+        outputs_prefix="QuickActionPreview",
+        outputs=qa_preview.to_context(),
+        outputs_key_field="id"
+    )
 
 
 def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
@@ -4707,6 +4793,7 @@ def main():  # pragma: no cover
         "jira-get-user-info": get_user_info_command,
         "jira-create-metadata-field-list": get_create_metadata_field_command,
         "jira-create-metadata-issue-types-list": get_create_metadata_issue_types_command,
+        "get-remote-data-preview": get_remote_data_preview_command,
     }
     try:
         client: JiraBaseClient
