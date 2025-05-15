@@ -1094,3 +1094,9 @@ Delete specific Conditional Access policy by ID.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+```!msgraph-identity-ca-policy-delete policy_id="fc271abb-e52c-4c40-aff9-5fd1e534a58d"```
+
+#### Human Readable Output
+>Conditional Access policy fc271abb-e52c-4c40-aff9-5fd1e534a58d was successfully deleted.
