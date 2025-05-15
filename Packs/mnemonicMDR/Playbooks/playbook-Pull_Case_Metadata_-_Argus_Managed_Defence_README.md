@@ -1,4 +1,4 @@
-Placeholder description.
+Pulls metadata, attachments, comments, tags and events related to the Argus case for later use.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 [//]: # (---)
 
-[//]: # (![Argus - Anomaly]&#40;../doc_files/Argus_-_Anomaly.png&#41;)
+[//]: # (![Argus - Generic Case Handling]&#40;../doc_files/Argus_-_Generic_Case_Handling.png&#41;)

@@ -1,4 +1,4 @@
-description: "Placeholder description."
+description: "Generic Playbook for Argus Case handling."
 id: Argus - Generic Case Handling
 inputs: []
 name: Argus - Generic Case Handling

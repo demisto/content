@@ -1,4 +1,7 @@
-Placeholder description.
+Generic Playbook for Argus Case handling.
+
+Use this playbook as base for your playbooks associated with Argus Case Incident Types.
+Duplicate this playbook, associate and re-name according to the Incident Type you are handling and adapt playbook to your needs.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
