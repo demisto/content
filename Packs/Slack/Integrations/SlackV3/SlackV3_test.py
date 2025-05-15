@@ -4925,7 +4925,7 @@ def test_slack_get_integration_context(mocker):
         "|Conversations Count|Conversations Size In Bytes|Mirror Size In "
         "Bytes|Mirrors Count|Users Count|Users Size In Bytes|\n"
         "|---|---|---|---|---|---|\n"
-        "| 2 | 1706 | 1397 | 5 | 2 | 1843 |\n"
+        "| 2 | 1698 | 1389 | 5 | 2 | 1835 |\n"
     )
     slack_get_integration_context()
 
@@ -4966,11 +4966,11 @@ def test_slack_get_integration_context_statistics(mocker):
 
     expected_results = {
         "Mirrors Count": 5,
-        "Mirror Size In Bytes": 1397,
+        "Mirror Size In Bytes": 1389,
         "Conversations Count": 2,
-        "Conversations Size In Bytes": 1706,
+        "Conversations Size In Bytes": 1698,
         "Users Count": 2,
-        "Users Size In Bytes": 1843,
+        "Users Size In Bytes": 1835,
     }
 
     integration_statistics, _ = slack_get_integration_context_statistics()
