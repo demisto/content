@@ -15,3 +15,6 @@ Zoom allows users to create and join virtual meeting rooms where they can commun
 #### Pack Contents
 `Zoom_IAM` integration - Manage the Zoom_IAM instance within Cortex XSOAR.
 `Zoom` integration - Manage the Zoom instance within Cortex XSOAR.
+
+
+TEST-FIX
