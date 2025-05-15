@@ -1,7 +1,7 @@
 commonfields:
-  id: SearchIndicatorInEvents
+  id: test
   version: -1
-name: SearchIndicatorInEvents
+name: test
 script: ''
 type: python
 tags:
