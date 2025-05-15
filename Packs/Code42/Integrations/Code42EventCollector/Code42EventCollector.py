@@ -135,28 +135,21 @@ class Client:
         return [event.dict() for event in sorted_file_events]
 
 
-def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Iterable[dict], keys_list_to_id: List[str]) -> List[dict]:
+def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Iterable[str], keys_list_to_id: List[str]) -> List[dict]:
     """
     Dedup events, removes events which were already fetched.
 
     Args:
-        events: the events to deduplicate
-        last_run_fetched_event_ids: a list of already fetched IDs from previous run
+        events (list[dict]): the events to deduplicate
+        last_run_fetched_event_ids (Iterable[dict]): a list of already fetched IDs from previous run
         keys_list_to_id (list): a list of keys to retrieve the ID from the event
     """
     new_events = []
-    duplicate_events = []
 
     for event in events:
         event_id = dict_safe_get(event, keys=keys_list_to_id)
         if event_id not in last_run_fetched_event_ids:
             new_events.append(event)
-        else:
-            duplicate_events.append(event_id)
-
-    new_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in new_events}
-    demisto.debug(f'new_event_ids={new_event_ids}')
-    demisto.debug(f'duplicate_events={duplicate_events}')
 
     return new_events
 
