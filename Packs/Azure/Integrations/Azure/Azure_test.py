@@ -63,7 +63,8 @@ def test_update_security_rule_command(mocker, client, mock_params):
     # Prepare mock responses
     rule_response = {
         "name": "test-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/securityRules/test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/\
+            securityRules/test-rule",
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
@@ -162,7 +163,8 @@ def test_storage_blob_service_properties_set_command(mocker, client, mock_params
     # Prepare mock response
     properties_response = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/\
+            default",
         "properties": {
             "deleteRetentionPolicy": {
                 "enabled": True,
@@ -183,7 +185,7 @@ def test_storage_blob_service_properties_set_command(mocker, client, mock_params
     result = storage_blob_service_properties_set_command(client, mock_params, args)
     
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccount.BlobServiceProperties"
+    assert result.outputs_prefix == "Azure.StorageAccountBlobServiceProperties"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
     assert result.outputs["properties"]["deleteRetentionPolicy"]["enabled"] is True
@@ -622,7 +624,8 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     # Prepare mock responses
     current_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
+            securityAlertPolicies/default",
         "properties": {
             "emailAccountAdmins": False
         }
@@ -630,7 +633,8 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     
     updated_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
+            securityAlertPolicies/default",
         "properties": {
             "emailAccountAdmins": True
         }
@@ -859,7 +863,8 @@ def test_update_security_rule_command_rule_not_found(mocker, client, mock_params
     """
     
     # Mock a 404 error response by raising a ValueError with 404 in it
-    error_message = 'Rule test-rule under subscription ID "test_subscription_id" and resource group "test_resource_group" was not found.'
+    error_message = 'Rule test-rule under subscription ID "test_subscription_id" and resource group "test_resource_group" was\
+        not found.'
     mocker.patch.object(client, "get_rule", side_effect=ValueError(error_message))
     
     # Call the function and expect it to raise the ValueError
@@ -1037,7 +1042,8 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     # Prepare mock response
     properties_response = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/\
+            default",
         "properties": {}
     }
     
@@ -1051,7 +1057,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     result = storage_blob_service_properties_set_command(client, mock_params, args)
     
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccount.BlobServiceProperties"
+    assert result.outputs_prefix == "Azure.StorageAccountBlobServiceProperties"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
     
