@@ -223,10 +223,11 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
     def to_entry(self):
         """Convert data to entries.
 
-        :return: List of notables data as entries + entries (from comments and close data).
+        :return: List of notables data as entries + entries (from comments and close data),
+                 or [{}] if there are only entries and no modified notables.
         :rtype: ``list``
         """
-        return [
+        notables_entries = [
             {
                 "EntryContext": {"mirrorRemoteId": data[RULE_ID]},
                 "Contents": data,
@@ -234,7 +235,12 @@ class SplunkGetModifiedRemoteDataResponse(GetModifiedRemoteDataResponse):
                 "ContentsFormat": EntryFormat.JSON,
             }
             for data in self.modified_notables_data
-        ] + self.entries
+        ]
+
+        if not notables_entries and self.entries:
+            return [{}] + self.entries
+
+        return notables_entries + self.entries
 
 
 # =========== Regular Fetch Mechanism ===========
@@ -1790,6 +1796,24 @@ def handle_closed_notable(notable, notable_id, close_extra_labels, close_end_sta
             f'"status_label" key could not be found on the returned data, skipping closure mirror for notable {notable_id}.'
         )
 
+def deduplicate_by_unique_key(results: list[dict]) -> list[dict]:
+    seen_keys = set()
+    deduped_results = []
+
+    for result in results:
+        unique_key = (
+            str(result.get('_cd'))
+            if result.get('_cd') is not None
+            else f"{result.get('_time')}-{result.get('event_id')}"
+        )
+
+        if unique_key not in seen_keys:
+            seen_keys.add(unique_key)
+            deduped_results.append(result)
+
+    return deduped_results
+
+
 
 def get_modified_remote_data_command(
     service: client.Service,
@@ -1800,7 +1824,7 @@ def get_modified_remote_data_command(
     mapper: UserMappingObject,
     comment_tag_from_splunk: str,
 ):
-    """Gets the list of the notables data that have change since a given time
+    """Gets the list of the notables data that have changed since a given time
 
     Args:
         service (splunklib.client.Service): Splunk service object
@@ -1816,28 +1840,41 @@ def get_modified_remote_data_command(
         SplunkGetModifiedRemoteDataResponse: The response containing the list of notables changed
     """
     modified_notables_map = {}
+    already_processed_ids = set()
     entries: list[dict] = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
+    demisto.debug(f"Original last_update before 1 minute reduction: {get_last_update_in_splunk_time(remote_args.last_update)}")
+    # Subtract 1 minute (60 seconds) to allow indexing
+    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - 60
     incident_review_search = (
         "|`incident_review` "
         "| eval last_modified_timestamp=_time "
-        f"| where last_modified_timestamp>{last_update_splunk_timestamp} "
+        f"| where last_modified_timestamp>={last_update_splunk_timestamp} "
+        "| eval unique_key=coalesce(tostring(_cd), tostring(_time) . \"-\" . event_id) "
+        "| sort 0 last_modified_timestamp desc "
+        "| dedup unique_key sortby -last_modified_timestamp "
         "| fields - _time,time "
         "| expandtoken"
     )
     demisto.debug(f"mirror-in: performing `incident_review` search with query: {incident_review_search}.")
-    for item in results.JSONResultsReader(
+    raw_results = list(results.JSONResultsReader(
         service.jobs.oneshot(query=incident_review_search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON)
-    ):
+    ))
+    deduped_results = deduplicate_by_unique_key(raw_results)
+
+    for item in deduped_results:
         if handle_message(item):
             continue
+
         updated_notable = parse_notable(item, to_dict=True)
         notable_id = updated_notable["rule_id"]  # in the `incident_review` macro - the ID are in the rule_id key
-        modified_notables_map[notable_id] = updated_notable
+        if notable_id in already_processed_ids:
+            demisto.debug(f"Skipping already processed notable_id: {notable_id}")
+            continue
 
-        if close_incident:
-            handle_closed_notable(updated_notable, notable_id, close_extra_labels, close_end_statuses, entries)
+        already_processed_ids.add(notable_id)
+
+        modified_notables_map[notable_id] = updated_notable
 
         if (comment := updated_notable.get("comment")) and COMMENT_MIRRORED_FROM_XSOAR not in comment:
             # comment, here in the `incident_review` macro results, hold only the updated comment
@@ -1853,6 +1890,9 @@ def get_modified_remote_data_command(
                 }
             )
 
+        if close_incident:
+            handle_closed_notable(updated_notable, notable_id, close_extra_labels, close_end_statuses, entries)
+
     if modified_notables_map:
         notable_ids_with_quotes = [f'"{notable_id}"' for notable_id in modified_notables_map]
         notable_search = f'search `notable` | where {EVENT_ID} in ({",".join(notable_ids_with_quotes)}) | expandtoken'
@@ -1863,9 +1903,14 @@ def get_modified_remote_data_command(
                 continue
             updated_notable = parse_notable(item, to_dict=True)
             notable_id = updated_notable[EVENT_ID]  # in the `notable` macro - the ID are in the event_id key
+            if notable_id not in modified_notables_map:
+                demisto.debug(f"Skipping notable_id from notable macro not in incident_review results: {notable_id}")
+                continue
+
+            already_processed_ids.add(notable_id)
             if modified_notables_map.get(notable_id):
                 modified_notables_map[notable_id] |= updated_notable
-                # comment in the `notable` macro, hold all the comments for an notable
+                # comment in the `notable` macro, hold all the comments for a notable
                 if comment := updated_notable.get("comment"):
                     comments = comment if isinstance(comment, list) else [comment]
                     modified_notables_map[notable_id]["SplunkComments"] = [{"Comment": comment} for comment in comments]
@@ -1882,7 +1927,7 @@ def get_modified_remote_data_command(
         demisto.debug(f"mirror-in: no notables was changed since {last_update_splunk_timestamp}")
     if len(modified_notables_map) >= MIRROR_LIMIT:
         demisto.info(f"mirror-in: the number of mirrored notables reach the limit of: {MIRROR_LIMIT}")
-    res = SplunkGetModifiedRemoteDataResponse(modified_notables_data=modified_notables_map.values(), entries=entries)
+    res = SplunkGetModifiedRemoteDataResponse(modified_notables_data=list(modified_notables_map.values()), entries=entries)
     return_results(res)
 
 
