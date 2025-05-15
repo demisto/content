@@ -6,7 +6,7 @@ from typing import Any
 import csv
 import io
 import requests
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as ThreadTimeoutError
+import signal
 
 from urllib3 import disable_warnings
 
@@ -34,7 +34,7 @@ ASSETS_FETCH_FROM = "90 days"
 HOST_LIMIT = 1000
 ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
-HOST_LIST_DETECTIONS_THREAD_TIME_OUT = 150
+HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT = 150
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
 
@@ -1736,10 +1736,7 @@ class Client(BaseClient):
             set_new_limit = True
             response = ""
 
-        demisto.debug(
-            f"Got host list detections response length of {len(response)} characters "
-            f"and {len(response.encode(errors='replace'))} bytes."
-        )
+        demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
         return response, set_new_limit
 
     def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> requests.Response:
@@ -2802,9 +2799,6 @@ def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional
     host_count = len(response_requested_value) if response_requested_value else 0
     demisto.debug(f"Extracted a list of {host_count} hosts, and next URL - {response_next_url}")
 
-
-
-
     return response_requested_value, str(response_next_url)
 
 
@@ -3024,7 +3018,7 @@ def get_client_host_list_detection_with_timeout(
     since_datetime: str,
     next_page: str | None,
     limit: int,
-    thread_timeout: int = HOST_LIST_DETECTIONS_THREAD_TIME_OUT,
+    execution_timeout: int = HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT,
 ) -> tuple[str, bool]:
     """Starts a timed thread that runs `Client.get_host_list_detection`.
     If the thread execution time is exceeded, it returns an empty API response and `set_new_limit` = True.
@@ -3034,25 +3028,40 @@ def get_client_host_list_detection_with_timeout(
         since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
         next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
         limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
-        thread_timeout (int): Maximum number of seconds to wait for the `Client.get_host_list_detection` to finish execution.
+        execution_timeout (int): Maximum number of seconds to wait for the `Client.get_host_list_detection` to finish execution.
 
     Returns:
         tuple[str, bool]: A tuple of raw API response body string and set_new_limit boolean (to make next API call smaller).
     """
-    demisto.debug("Starting thread pool executor to get host list dectections.")
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(client.get_host_list_detection, since_datetime, next_page, limit)
+    demisto.debug("Starting to get host list dectections via timed alarm signal.")
 
-        try:
-            # Specify request max execution time for the whole request
-            demisto.debug(f"Running host list dectections thread with timeout: {thread_timeout}.")
-            raw_response, set_new_limit = future.result(timeout=thread_timeout)
-            demisto.debug("Finished host list dectections thread.")
+    class SignalTimeoutError(BaseException):
+        pass
 
-        except ThreadTimeoutError:
-            demisto.debug(f"Exceeded host list dectections thread timeout: {thread_timeout}. Setting new limit.")
-            raw_response, set_new_limit = "", True  # empty response and set_new_limit = True due to timeout
+    def timeout_handler(signum, frame):
+        raise SignalTimeoutError
 
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(execution_timeout)
+
+    try:
+        # Specify request max execution time for the whole request
+        demisto.debug(f"Running host list dectections with timeout: {execution_timeout}.")
+        raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
+        demisto.debug("Finished host list dectections.")
+
+    except SignalTimeoutError:
+        demisto.debug(f"Exceeded host list dectections timeout: {execution_timeout}. Setting new limit.")
+        raw_response, set_new_limit = "", True  # empty response and set_new_limit = True due to timeout
+
+    finally:
+        demisto.debug("Resetting timed alarm signal.")
+        signal.alarm(0)
+
+    demisto.debug(
+        "Finished getting host list dectections via timed alarm signal. "
+        f"Raw response length: {len(raw_response)}. Set new limit: {set_new_limit}."
+    )
     return raw_response, set_new_limit
 
 
@@ -3070,19 +3079,24 @@ def get_host_list_detections_events(client, since_datetime, next_page="", limit=
     demisto.debug("Pulling host list detections")
     assets: list = []
 
-    demisto.debug(f"Starting to get client host list dections with thread timeout: {HOST_LIST_DETECTIONS_THREAD_TIME_OUT}.")
+    demisto.debug(f"Starting to get client host list dections with thread timeout: {HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT}.")
     host_list_detections, set_new_limit = get_client_host_list_detection_with_timeout(client, since_datetime, next_page, limit)
+    demisto.debug(f"Finished getting client host list dections with thread timeout: {HOST_LIST_DETECTIONS_EXECUTION_TIME_OUT}.")
 
     if not set_new_limit:
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
 
+        demisto.debug("Starting to parse asset detections from hosts.")
         assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (host_list_assets and not is_test) else ([], False)
-        demisto.debug(f"Parsed detections from hosts, created {len(assets)=} assets.")
+        demisto.debug(f"Finished parsing asset detections from hosts, created {len(assets)} assets.")
 
         if not set_new_limit:
+            demisto.debug(f"Adding fields to {len(assets)} parsed asset detections.")
             add_fields_to_events(assets, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+            demisto.debug(f"Extracting next page from URL: {next_url}.")
             next_page = get_next_page_from_url(next_url, "id_min")
 
+    demisto.debug(f"Created {len(assets)} assets. Next page: {next_page}. Set new limit: {set_new_limit}.")
     return assets, next_page, set_new_limit
 
 
@@ -3147,7 +3161,7 @@ def fetch_assets(client: Client, assets_last_run):
         "total_assets": total_assets,
         "since_datetime": since_datetime,
         "snapshot_id": snapshot_id,
-        "nextTrigger": "0",
+        "nextTrigger": "10",
         "type": FETCH_COMMAND.get("assets"),
     }
 
@@ -3174,8 +3188,8 @@ def check_fetch_assets_duration_time_exceeded(start_time: float) -> bool:
 
 
 def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
-    """Updates last assets run by setting `limit` to half, `nextTrigger` to 0, and `type` to 1 (assets).
-    This instructs the server to immediately trigger the next assets fetch iteration.
+    """Updates last assets run by setting `limit` to half, `nextTrigger` to 10, and `type` to 1 (assets).
+    This instructs the server to trigger the next assets fetch iteration with a delay of 10 seconds.
 
     Args:
         last_run (dict): Last assets run dictionary.
@@ -3185,10 +3199,11 @@ def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
         dict: Updated next assets run.
     """
     new_limit = int(limit / 2) if limit > 1 else 1
-    demisto.debug(f"Setting host limit to: {new_limit}")
+    demisto.debug(f"Starting setting host limit to: {new_limit}.")
     last_run["limit"] = new_limit
-    last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
+    last_run["nextTrigger"] = "10"  # Trigger next fetch after 10 seconds to reduce the chance of server-side race conditions
     last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
+    demisto.debug(f"Finished setting host limit to: {new_limit}.")
     return last_run
 
 
@@ -3209,8 +3224,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
         vulnerabilities = get_vulnerabilities(client, detection_qids=detection_qids)
     else:
         since_datetime = (
-            last_run.get("since_datetime")
-            or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
         )
         demisto.debug(f"Getting vulnerabilities modified after {since_datetime}")
         vulnerabilities = get_vulnerabilities(client, since_datetime=since_datetime)
@@ -3293,7 +3307,7 @@ def get_activity_logs_events_command(client: Client, args, first_fetch_time):
         since_datetime=since_datetime,
         max_fetch=0,
     )
-    limited_activity_logs_events = activity_logs_events[offset: limit + offset]  # type: ignore[index,operator]
+    limited_activity_logs_events = activity_logs_events[offset : limit + offset]  # type: ignore[index,operator]
     activity_logs_hr = tableToMarkdown(name="Activity Logs", t=limited_activity_logs_events)
     results = CommandResults(
         readable_output=activity_logs_hr,
@@ -3414,6 +3428,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     if fetch_stage == "assets":
         demisto.debug(f"Starting fetch for assets, {EXECUTION_START_TIME=}")
         assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
+        demisto.debug("Finished fetch for assets.")
 
         # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
         if set_new_limit or check_fetch_assets_duration_time_exceeded(EXECUTION_START_TIME):
@@ -3757,6 +3772,7 @@ def main():  # pragma: no cover
         },
     }
 
+    demisto.debug("Running custom version 2 of QualysV2 with additional logs.")
     demisto.debug(f"Command being called is {command}")
     try:
         headers: dict = {"X-Requested-With": "Cortex"}

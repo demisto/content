@@ -1138,7 +1138,7 @@ class TestClientClass:
         self.client.get_host_list_detection(since_datetime=since_datetime, limit=HOST_LIMIT)
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
         assert http_request_kwargs["params"] == {
@@ -1175,7 +1175,7 @@ class TestClientClass:
 
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
@@ -1690,14 +1690,14 @@ def test_set_assets_last_run_with_new_limit():
         - Calling set_assets_last_run_with_new_limit.
 
     Assert:
-        - Ensure last_run is correctly updated with half 'limit', 'nextTrigger' 0, and 'type' 1.
+        - Ensure last_run is correctly updated with half 'limit', 'nextTrigger' 10, and 'type' 1.
     """
     last_run = {"stage": "assets", "total_assets": 10, "snapshot_id": SNAPSHOT_ID}
     updated_last_run = set_assets_last_run_with_new_limit(last_run, limit=HOST_LIMIT)
 
     assert updated_last_run == {
         **last_run,
-        "nextTrigger": "0",
+        "nextTrigger": "10",
         "type": 1,  # assets
         "limit": HOST_LIMIT // 2,
     }
@@ -1786,7 +1786,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
 
     Assert:
         - Ensure no data is sent to XSIAM and module health is not updated.
-        - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 0.
+        - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 10.
     """
     last_total_assets = 10
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
@@ -1810,7 +1810,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
         "total_assets": last_total_assets,
         "snapshot_id": SNAPSHOT_ID,
         "limit": HOST_LIMIT // 2,
-        "nextTrigger": "0",
+        "nextTrigger": "10",
         "type": 1,  # assets
     }
 
@@ -1860,7 +1860,7 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
         "total_assets": last_total_assets + len(expected_assets),
         "since_datetime": "2024-10-03",  # freezed datetime - 90 days
         "snapshot_id": SNAPSHOT_ID,
-        "nextTrigger": "0",
+        "nextTrigger": "10",
         "type": 1,
         "total_vulnerabilities": last_total_vulns + len(expected_vulnerabilities),
     }
@@ -1925,6 +1925,7 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
 @pytest.mark.parametrize(
     "sleep_time, expected_response, expected_set_new_limit",
     [
@@ -1952,7 +1953,7 @@ def test_get_client_host_list_detection_with_timeout(
     """
     from Qualysv2 import get_client_host_list_detection_with_timeout
 
-    thread_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
 
     mocker.patch.object(
         client,
@@ -1965,7 +1966,7 @@ def test_get_client_host_list_detection_with_timeout(
         since_datetime="2025-01-25",
         next_page="",
         limit=HOST_LIMIT,
-        thread_timeout=thread_timeout,
+        execution_timeout=execution_timeout,
     )
 
     assert raw_response == expected_response
