@@ -577,7 +577,7 @@ def format_results(list_to_format: list, remove_empty_fields: bool = True) -> li
     """
 
     def format_dict(item_to_format: Any) -> Any:
-        if not isinstance(item_to_format, (dict, list)):  # recursion stopping condition, formatting field
+        if not isinstance(item_to_format, dict | list):  # recursion stopping condition, formatting field
             return format_item(item_to_format)
 
         elif isinstance(item_to_format, list):
