@@ -1,9 +1,9 @@
-### Ignite Domain reputation for dummy.com
+### Ignite Domain reputation for dummy_domain.com
 Reputation: Malicious
 
-### Events in which this IOC observed
-|Date Observed (UTC)|Name|Tags|
-|---|---|---|
-| Jul 29, 2021  02:54 | Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34] | actor:APT, actor:Lazarus, event:observation, source:osint |
 
-All events and details (ignite): [https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=domain&query=%22dummy.com%22](https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=domain&query=%22dummy.com%22)
+|ID|Domain|Malware Description|Tags|Related IOCs|Created At|Modified At|Last Seen At|
+|---|---|---|---|---|---|---|---|
+| dummy_id | dummy_domain.com | This is dummy description. | extracted_config:true,<br>malware:xworm,<br>source:flashpoint_extraction | **-**	***type***: file<br>	***value***: dummy_value | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
+
+Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
