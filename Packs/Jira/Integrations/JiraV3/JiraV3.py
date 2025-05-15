@@ -2295,6 +2295,7 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[C
         CommandResults: CommandResults to return to XSOAR.
     """
 
+    results = []
     # Validate that no more args are sent when the issue_json arg is used
     if "issue_json" in args and len(args) > 1:
         raise DemistoException(
@@ -2327,14 +2328,17 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[C
         readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict),
         raw_response=res
     )
+    results.append(ticket_results)
 
-    mirror_results = CommandResults(
-        outputs_prefix="MirrorObject",
-        outputs=mirror_obj.to_context(),
-        outputs_key_field="ticket_id"
-    )
+    if demisto.command() == "jira-create-ticket-quick-action":
+        mirror_results = CommandResults(
+            outputs_prefix="MirrorObject",
+            outputs=mirror_obj.to_context(),
+            outputs_key_field="ticket_id"
+        )
+        results.append(mirror_results)
 
-    return [ticket_results, mirror_results]
+    return results
 
 
 def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
