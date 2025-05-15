@@ -23,7 +23,7 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.5.0",
     "selectValues": ["pendingCustomer", "pendingSoc", "pendingVendor", "pendingClose", "workingSoc", "workingCustomer", "closed"],
-    "openEnded": false,
+    "openEnded": false
 }
