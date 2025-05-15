@@ -1,5 +1,5 @@
 Atlassian Confluence Server API.
-This integration was integrated and tested with version xx of Atlassian Confluence Server.
+This integration was integrated and tested with version 6.1 of Atlassian Confluence Server.
 
 ## Configure Atlassian Confluence Server in Cortex
 

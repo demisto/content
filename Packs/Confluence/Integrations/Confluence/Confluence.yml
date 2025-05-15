@@ -4,6 +4,8 @@ commonfields:
 name: Atlassian Confluence Server
 display: Atlassian Confluence Server
 category: Utilities
+sectionOrder:
+- Connect
 description: Atlassian Confluence Server API.
 configuration:
 - display: Server URL (e.g. http://1.2.3.4:8090)
@@ -11,27 +13,34 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: Username
   name: credentials
   defaultvalue: ""
   type: 9
   required: false
+  section: Connect
 - display: ""
   name: personal_access_token
   type: 9
   required: false
   displaypassword: Personal Access Token
   hiddenusername: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 script:
   script: ''
   type: python
