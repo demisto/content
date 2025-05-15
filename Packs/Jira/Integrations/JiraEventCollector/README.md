@@ -4,7 +4,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Jira Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -14,7 +13,6 @@ This is the default integration for this content pack when configured by the Dat
 | The maximum number of incidents per fetch. | Default is 1000. |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -33,8 +31,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description**                                                                                          | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------------|--------------|
-| max_fetch         | The maximum number of events per fetch. Default is 1000.                                 | Optional     | 
-| first_fetch       | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 3 days. | Optional     | 
+| max_fetch         | The maximum number of events per fetch. Default is 1000.                                 | Optional     |
+| first_fetch       | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 3 days. | Optional     |
 
 #### Command example
 
@@ -98,6 +96,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 >### Jira records
+>
 >|Associated Items|Category|Created| Id   | Object Item                                                                                                                    |Summary|
 >|---|---|------|--------------------------------------------------------------------------------------------------------------------------------|---|---|
 >| {'id': 'ug:123456-123456-123456', 'name': 'ug:123456-123456-123456', 'typeName': 'USER', 'parentId': '111', 'parentName': 'com.atlassian.crowd.directory.example'} | group management | 2022-04-24T16:28:53.146+0000 | 1111 | name: jira-servicemanagement-users<br/>typeName: GROUP<br/>parentId: 111<br/>parentName: com.atlassian.crowd.directory.example | User added to group |
