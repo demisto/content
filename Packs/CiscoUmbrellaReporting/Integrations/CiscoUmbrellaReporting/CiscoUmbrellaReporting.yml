@@ -1,6 +1,4 @@
 category: Network Security
-sectionOrder:
-- Connect
 commonfields:
   id: Cisco Umbrella Reporting
   version: -1
