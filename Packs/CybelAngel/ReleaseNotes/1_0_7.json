@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": null
+    "breakingChangesNotes": "Removed First fetch timestamp parameter."
 }
