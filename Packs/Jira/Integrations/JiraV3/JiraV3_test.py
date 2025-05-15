@@ -882,8 +882,7 @@ class TestJiraCreateIssueCommand:
         expected_mo_outputs = {'ticket_id': 'dummy_key-1234', 'ticket_url': "dummy_link"}
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        mocker.patch.object(demisto, "command", return_value="jira-create-ticket-quick-action")
-        command_results = create_issue_command(client=client, args={"summary": "test"})
+        command_results = create_issue_command(client=client, args={"summary": "test"}, is_quick_action=True)
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
         assert command_results[1].to_context().get("EntryContext") == {
             'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
@@ -907,9 +906,8 @@ class TestJiraCreateIssueCommand:
         expected_mo_outputs = {'ticket_id': 'dummy_key-1234', 'ticket_url': "dummy_link"}
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        mocker.patch.object(demisto, "command", return_value="jira-create-ticket-quick-action")
 
-        command_results = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
+        command_results = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'}, is_quick_action=True)
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
         assert command_results[1].to_context().get("EntryContext") == {
             'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}

@@ -2370,12 +2370,13 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     return responses
 
 
-def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[CommandResults]:
+def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False) -> list[CommandResults]:
     """This command is in charge of creating a new issue.
 
     Args:
         client (JiraBaseClient): The Jira client.
         args (Dict[str, str]): The arguments supplied by the user.
+        is_quick_action (bool): Whether the command is a Quick Action command or not. Defaults to False
 
     Returns:
         CommandResults: CommandResults to return to XSOAR.
@@ -2416,7 +2417,7 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[C
     )
     results.append(ticket_results)
 
-    if demisto.command() == "jira-create-ticket-quick-action":
+    if is_quick_action:
         mirror_results = CommandResults(
             outputs_prefix="MirrorObject",
             outputs=mirror_obj.to_context(),
@@ -4865,6 +4866,8 @@ def main():  # pragma: no cover
             return_results(get_modified_remote_data_command(client=client, args=args))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command(client=client))
+        elif command == "jira-create-issue-quick-action":
+            return_results(create_issue_command(client=client, args=args, is_quick_action=True))
         elif command == "update-remote-system":
             return_results(
                 update_remote_system_command(
