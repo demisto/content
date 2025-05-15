@@ -35,7 +35,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  required: false
+  required: true
   defaultvalue: 'false'
   hidden:
   - xsoar
@@ -44,7 +44,7 @@ configuration:
   section: Collect
   type: 16
   advanced: true
-  required: false
+  required: true
   defaultvalue: 'Reports'
   options:
   - Reports
@@ -57,7 +57,7 @@ configuration:
   defaultvalue: "5000"
   advanced: true
   type: 0
-  required: true
+  required: false
   section: Collect
   hidden:
   - xsoar
