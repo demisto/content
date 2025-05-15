@@ -27,7 +27,6 @@ This pack contains an integration, whose main purpose is to manage Git repositor
 **Pay Attention:**
 
 - This pack should only be installed after installing the Azure Logs pack.
-- This pack is currently supported only for logs being sent through log-analytics.
 
 ### Supported log categories
 
