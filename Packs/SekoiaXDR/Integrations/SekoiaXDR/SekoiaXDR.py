@@ -497,6 +497,7 @@ def handle_alert_events_query(
 
     return alert
 
+
 def fetch_alerts_with_pagination(
     client: Client,
     alert_status: str | None,
@@ -550,68 +551,6 @@ def fetch_alerts_with_pagination(
             break
 
     return final_alerts
-
-
-def handle_alert_events_query(
-    client: Client, alert: dict, earliest_time: str, latest_time: str, events_term: str
-) -> dict[str, Any]:
-    # Create a query to get events
-    search = client.query_events(
-        events_earliest_time=earliest_time,
-        events_latest_time=latest_time,
-        events_term=events_term,
-        max_last_events=None,
-    )
-
-    # Get the search job uuid
-    search_job_uuid = search["uuid"]
-
-    # Check the state of the job
-    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
-    finished_status = query_status["status"] == 2
-
-    # If it's not finished, add the job uuid to the alert
-    if not finished_status:
-        alert["job_uuid"] = search_job_uuid
-
-    else:
-        # If it's finished, get the events
-        # This case is rare but can happen if the fetch is too fast
-        events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
-        alert["events"] = events
-
-    return alert
-
-
-def handle_alert_events_query(
-    client: Client, alert: dict, earliest_time: str, latest_time: str, events_term: str
-) -> dict[str, Any]:
-    # Create a query to get events
-    search = client.query_events(
-        events_earliest_time=earliest_time,
-        events_latest_time=latest_time,
-        events_term=events_term,
-        max_last_events=None,
-    )
-
-    # Get the search job uuid
-    search_job_uuid = search["uuid"]
-
-    # Check the state of the job
-    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
-    finished_status = query_status["status"] == 2
-
-    # If it's not finished, add the job uuid to the alert
-    if not finished_status:
-        alert["job_uuid"] = search_job_uuid
-
-    else:
-        # If it's finished, get the events
-        # This case is rare but can happen if the fetch is too fast
-        events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
-        alert["events"] = events
-
-    return alert
 
 
 """ COMMAND FUNCTIONS """
