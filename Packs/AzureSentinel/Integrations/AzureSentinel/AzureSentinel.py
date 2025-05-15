@@ -975,13 +975,18 @@ def list_incidents_command(
         client: An AzureSentinelClient client.
         args: Demisto args.
         limit: The limit of the incidents to retrieve
+        is_fetch_incidents: Is it part of a fetch incidents command.
     Returns:
         A CommandResult object with the array of incidents as output.
     """
     filter_expression = args.get("filter")
     next_link = args.get("next_link", "")
-    if not limit:
-        limit = min(arg_to_number(args.get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT)
+    limit = (
+        arg_to_number(args.get("limit"))
+        if is_fetch_incidents
+        else min(arg_to_number(args.get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT)
+    )
+
     if next_link:
         next_link = next_link.replace("%20", " ")  # Next link syntax can't handle '%' character
         result = client.http_request("GET", full_url=next_link)
