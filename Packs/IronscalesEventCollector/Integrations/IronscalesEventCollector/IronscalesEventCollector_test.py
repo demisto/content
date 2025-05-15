@@ -146,8 +146,6 @@ def test_test_module(mocker, params, is_valid, result_msg):
 ###### get all incidents tests #######
 from datetime import datetime, timedelta, UTC
 
-UTC = UTC
-
 
 def test_no_incidents(mocker):
     """
