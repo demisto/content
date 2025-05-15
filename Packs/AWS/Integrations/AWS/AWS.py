@@ -137,8 +137,8 @@ def get_client(params, command_args):
     # Role assumption parameters
 
     # Credentials
-    aws_access_key_id = params.get('access_key_id')
-    aws_secret_access_key = params.get('secret_access_key')
+    aws_access_key_id = params.get("access_key_id")
+    aws_secret_access_key = params.get("secret_access_key")
     # Session configuration
     aws_role_session_name = params.get("role_session_name") or DEFAULT_SESSION_NAME
     aws_role_session_duration = params.get("session_duration")
@@ -148,11 +148,11 @@ def get_client(params, command_args):
     # Handle role-based authentication if credentials not provided directly
     aws_role_arn = None
     if not (aws_access_key_id and aws_secret_access_key):
-        if aws_role_name := params.get('role_name'):
-            if account_id := command_args.get('account_id'):
-                aws_role_arn = f'arn:aws:iam::{account_id}:role/{aws_role_name}'
-                aws_role_session_name = params.get('role_session_name') or 'cortex-session'
-                aws_role_session_duration = params.get('session_duration')
+        if aws_role_name := params.get("role_name"):
+            if account_id := command_args.get("account_id"):
+                aws_role_arn = f"arn:aws:iam::{account_id}:role/{aws_role_name}"
+                aws_role_session_name = params.get("role_session_name") or "cortex-session"
+                aws_role_session_duration = params.get("session_duration")
                 # Reset access keys when using role
                 aws_access_key_id = aws_secret_access_key = None
             else:
@@ -163,7 +163,7 @@ def get_client(params, command_args):
     else:
         demisto.debug("Using direct AWS credentials for authentication")
 
-    aws_default_region = command_args.get('region') or params.get('region')
+    aws_default_region = command_args.get("region") or params.get("region")
 
     # Connection parameters
     verify_certificate = not argToBoolean(params.get("insecure", "True"))
@@ -174,8 +174,7 @@ def get_client(params, command_args):
     sts_endpoint_url = params.get("sts_endpoint_url")
     endpoint_url = params.get("endpoint_url")
 
-    demisto.debug(f"Creating AWS client with region: {aws_default_region}, "
-                 f"endpoint: {endpoint_url}, retries: {retries}")
+    demisto.debug(f"Creating AWS client with region: {aws_default_region}, endpoint: {endpoint_url}, retries: {retries}")
 
     client = AWSClient(
         aws_default_region,
@@ -283,10 +282,7 @@ class S3:
             elif args.get("target-bucket"):
                 # Build configuration from individual parameters
                 bucket_logging_status = {
-                    "LoggingEnabled": {
-                        "TargetBucket": args.get("target-bucket"),
-                        "TargetPrefix": args.get("target_prefix", "")
-                    }
+                    "LoggingEnabled": {"TargetBucket": args.get("target-bucket"), "TargetPrefix": args.get("target_prefix", "")}
                 }
             else:
                 # If neither full config nor target bucket provided, disable logging
@@ -306,13 +302,13 @@ class S3:
 
             return CommandResults(
                 entry_type=EntryType.WARNING,
-                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}",
             )
 
         except Exception as e:
             return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}")
+                entry_type=EntryType.ERROR, readable_output=f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}"
+            )
 
     def put_bucket_versioning_command(self, args: Dict[str, Any]) -> CommandResults:
         """
@@ -327,9 +323,9 @@ class S3:
         Returns:
             CommandResults: Results of the command execution
         """
-        bucket: str = args.get("bucket", '')
-        status: str = args.get("status", '')
-        mfa_delete: str = args.get("mfa_delete", '')
+        bucket: str = args.get("bucket", "")
+        status: str = args.get("status", "")
+        mfa_delete: str = args.get("mfa_delete", "")
 
         versioning_configuration = {"Status": status, "MFADelete": mfa_delete}
         remove_nulls_from_dictionary(versioning_configuration)
@@ -337,15 +333,17 @@ class S3:
             response = self.client_session.put_bucket_versioning(Bucket=bucket, VersioningConfiguration=versioning_configuration)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`")
+                return CommandResults(
+                    readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`"
+                )
             return CommandResults(
                 entry_type=EntryType.WARNING,
-                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}",
             )
         except Exception as e:
             return CommandResults(
                 entry_type=EntryType.ERROR,
-                readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}"
+                readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}",
             )
 
     def put_bucket_policy_command(self, args: Dict[str, Any]) -> CommandResults:
@@ -353,10 +351,19 @@ class S3:
         if args.get("confirmRemoveSelfBucketAccess") is not None:
             kwargs.update({"ConfirmRemoveSelfBucketAccess": args.get("confirmRemoveSelfBucketAccess") == "True"})
 
-        response = self.client_session.put_bucket_policy(**kwargs)
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
-        return CommandResults(readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket")
+        try:
+            response = self.client_session.put_bucket_policy(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Status code: {response['ResponseMetadata']['HTTPStatusCode']}, Response: {json.dumps(response)}",
+            )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}",
+            )
 
 
 class IAM:
@@ -519,6 +526,17 @@ class EC2:
         return CommandResults(readable_output="The Instance attribute was successfully modified")
 
     def modify_image_attribute_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Raises:
+            DemistoException: _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         kwargs = {}
 
         if args.get("Attribute") is not None:
@@ -854,8 +872,8 @@ def test_module(params, command_args) -> str:
     # if client_session:
     #     return "ok"
     # else:
-        # return "fail"
-    
+    # return "fail"
+
 
 COMMANDS: dict[str, Callable] = {
     # S3
