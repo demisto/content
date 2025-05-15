@@ -34,20 +34,14 @@ URL = {
 
 ID_KEYS = {
     REPORT: "id",
-    CREDENTIALS: "alerts_id",
-    DOMAIN: "stream_id",
+    CREDENTIALS: "stream_id",
+    DOMAIN: "stream",
 }
 
 TIME_FIELDS = {
     REPORT: "updated_at",
     CREDENTIALS: "last_detection_date",
-    DOMAIN: "creation_date",
-}
-
-INDEX_OF_MAX = {
-    REPORT: -1,
-    CREDENTIALS: -1,
-    DOMAIN: 0,
+    DOMAIN: "detection_date",  # TODO might be creation_date check with Meital
 }
 
 VENDOR = "cybelangel"
@@ -132,8 +126,10 @@ class Client(BaseClient):
             The order of the events returned is random, hence need to sort them out to return the oldest events first.
         """
         params = {"start-date": start_date, "end-date": end_date}
-
+        demisto.debug("Calling get reports list")
         reports = self.get_reports_list(params)
+
+        demisto.debug(f"Get reports list returned {len(reports)} reports.")
         for report in reports:
             if updated_at := report.get("updated_at"):
                 _time_field = updated_at
@@ -180,7 +176,7 @@ class Client(BaseClient):
             credential["_time"] = credential.get(TIME_FIELDS[CREDENTIALS])
             credential["SOURCE_LOG_TYPE"] = CREDENTIALS
 
-        return credential_watchlist
+        return credential_watchlist[:limit]
 
     def get_domain_watchlist(self, start_date: str, end_date: str, limit: int = DEFAULT_LIMITS[DOMAIN]) -> List[dict[str, Any]]:
         """
@@ -206,12 +202,29 @@ class Client(BaseClient):
             demisto.debug("Type error domain request")
             return []
 
-        domain_watchlist = domain_watchlist.get("results", [])
-        for domain_result in domain_watchlist:
+        domain_watchlist_events = domain_watchlist.get("results", [])
+        total_events_returned = len(domain_watchlist_events)
+
+        total_events_in_time_interval = domain_watchlist.get("total", 0)
+        demisto.debug(f"Total domain events returned: {total_events_returned}, Total exists: {total_events_in_time_interval}")
+        if total_events_in_time_interval > total_events_returned:
+            demisto.debug(f"Request another domain, skip: {total_events_returned} events")
+            params.update({"limit": total_events_in_time_interval - total_events_returned, "skip": total_events_returned})
+            domain_watchlist = self.http_request(method="GET", url_suffix=URL[DOMAIN], params=params) or {}
+
+            if not isinstance(domain_watchlist, dict):
+                demisto.debug("Type error domain request")
+                return []
+            domain_watchlist_events = domain_watchlist.get("results", [])
+            demisto.debug(f"Total domain events returned second call: {len(domain_watchlist_events)}")
+
+        domain_watchlist_events.reverse()
+
+        for domain_result in domain_watchlist_events:
             domain_result["_time"] = domain_result.get(TIME_FIELDS[DOMAIN])
             domain_result["SOURCE_LOG_TYPE"] = DOMAIN
 
-        return domain_watchlist
+        return domain_watchlist_events[:limit]
 
     def get_access_token(self, create_new_token: bool = False) -> str:
         """
@@ -393,7 +406,6 @@ def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str
         else:
             demisto.debug(f"event with ID {event_id} for has been fetched")
 
-    demisto.debug(f"{un_fetched_events=}")
     return un_fetched_events
 
 
@@ -413,7 +425,7 @@ def get_latest_event_time_and_ids(events: List[Dict[str, Any]], event_type: str)
     """
     id_key = ID_KEYS[event_type]
 
-    latest_time = events[INDEX_OF_MAX[event_type]]["_time"]
+    latest_time = events[-1]["_time"]
     return latest_time, [event[id_key] for event in events if event["_time"] == latest_time]
 
 
@@ -459,14 +471,18 @@ def fetch_events(client: Client, max_fetch: dict, events_type_to_fetch: list[str
         REPORT: client.get_reports,
     }
     for event_type in events_type_to_fetch:
+        demisto.debug(f"Fetching {event_type}")
         last_time = last_run.get(event_type, {}).get(LATEST_TIME)
         last_ids = last_run.get(event_type, {}).get(LATEST_FETCHED_IDS, [])
+        demisto.debug(f"Last time fetched {last_time} with {len(last_ids)} items.")
         fetch_func = event_fetch_function.get(event_type)
         if fetch_func:
             events = fetch_func(start_date=last_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch[event_type])
         else:
             demisto.debug("Type not exists")
             continue
+        if events:
+            events = events[: max_fetch[event_type]]
         demisto.debug(f"fetched {len(events)} events from {event_type} type")
         events = dedup_fetched_events(events=events, last_run_fetched_event_ids=set(last_ids), event_type=event_type)
         demisto.debug(f"{len(events)} events left after dedup from {event_type} type")
@@ -489,10 +505,13 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Get events from Cybel Angel, used mainly for debugging purposes
     """
     event_type = args.get("event_type", REPORT)
-    limit = args.get("limit", 100)
+    limit = int(args.get("limit", 50))
+    demisto.debug(f"Int:{isinstance(limit,int)}, str:{isinstance(limit,str)}")
     now = datetime.now()
-    start_date = args.get("start_date") or now.strftime(DATE_FORMAT)
-    end_date = args.get("end_date") or (now - timedelta(minutes=1)).strftime(DATE_FORMAT)
+    end_date = args.get("end_date") or now.strftime(DATE_FORMAT)
+    end_dt = dateparser.parse(end_date) or now
+
+    start_date = args.get("start_date") or (end_dt - timedelta(minutes=1)).strftime(DATE_FORMAT)
 
     event_fetch_function = {
         DOMAIN: client.get_domain_watchlist,
@@ -504,6 +523,10 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if fetch_func:
         events = fetch_func(start_date=start_date, end_date=end_date, limit=limit)
 
+    demisto.debug("Prepapring command result")
+    if argToBoolean(args.get("is_fetch_events") or False):
+        send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
+        demisto.debug(f"Successfully send {len(events)} to XSIAM.")
     return CommandResults(
         outputs_prefix="CybleAngel.Events",
         outputs_key_field="id",
@@ -812,6 +835,8 @@ def get_last_run(now: datetime) -> dict:
     last_time = now - timedelta(minutes=1)
     if not last_run:
         last_run = {}
+        last_time = now - timedelta(days=30)
+        demisto.debug("First run")
     for type in [REPORT, DOMAIN, CREDENTIALS]:
         if type not in last_run:
             last_run[type] = {LATEST_TIME: last_time.strftime(DATE_FORMAT), LATEST_FETCHED_IDS: []}
@@ -830,12 +855,13 @@ def main() -> None:
     base_url: str = params.get("url", "").rstrip("/")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    is_fetch_events = params.get("is_fetch_events", False)
     events_type_to_fetch = argToList(params.get("events_type_to_fetch", [CREDENTIALS, DOMAIN, REPORT]))
-    max_fetch_reports = params.get("max_fetch", DEFAULT_LIMITS[REPORT])
-    max_fetch_creds = params.get("max_fetch_creds", DEFAULT_LIMITS[CREDENTIALS])
-    max_fetch_domain = params.get("max_fetch_domain", DEFAULT_LIMITS[DOMAIN])
+    demisto.debug(f"Event types to fetch: {events_type_to_fetch}")
+    max_fetch_reports = int(params.get("max_fetch", DEFAULT_LIMITS[REPORT]))
+    max_fetch_creds = int(params.get("max_fetch_creds", DEFAULT_LIMITS[CREDENTIALS]))
+    max_fetch_domain = int(params.get("max_fetch_domain", DEFAULT_LIMITS[DOMAIN]))
     max_fetch = {REPORT: max_fetch_reports, CREDENTIALS: max_fetch_creds, DOMAIN: max_fetch_domain}
+    demisto.debug(f"Max fetch: {max_fetch}")
 
     commands = {
         "cybelangel-report-list": cybelangel_report_list_command,
@@ -859,7 +885,7 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "fetch-events":
             events, last_run = fetch_events(client, max_fetch, events_type_to_fetch)
-            if is_fetch_events:
+            if events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)

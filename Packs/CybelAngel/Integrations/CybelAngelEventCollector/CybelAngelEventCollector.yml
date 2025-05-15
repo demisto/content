@@ -36,7 +36,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  defaultvalue: 'true'
+  defaultvalue: 'false'
   hidden:
   - xsoar
 - display: Event Types To Fetch
@@ -85,9 +85,21 @@ name: CybelAngel Event Collector
 script:
   commands:
   - arguments:
-    - description: 'Get events from the required type.'
+    - auto: PREDEFINED
+      description: 'Get events from the required type.'
       name: event_type
       required: false
+      predefined:
+      - Reports
+      - Credential watchlist
+      - Domain watchlist
+    - auto: PREDEFINED
+      description: 'Fetch Events to XSIAM.'
+      name: is_fetch_events
+      required: false
+      predefined:
+      - true
+      - false
     - description: 'Get events from a specific start date formatted with ISO 8601.'
       name: start_date
       required: false
@@ -105,11 +117,9 @@ script:
     description: 'Retrieve reports from CybelAngel.'
     arguments:
     - name: start_date
-      description: 'Get reports from a specific start date formatted with ISO 8601.'
-      defaultValue: '3 Days ago'
+      description: 'Get reports from a specific start date formatted with ISO 8601, Example: "2025-01-14T10:22:45".'
       required: false
-    - description: 'Get reports until a specific end date formatted with ISO 8601.'
-      defaultValue: 'Now'
+    - description: 'Get reports until a specific end date formatted with ISO 8601, Example: "2025-01-14T10:22:45'
       name: end_date
       required: false
     outputs:

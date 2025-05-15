@@ -11,7 +11,6 @@ from CybelAngelEventCollector import (
     CREDENTIALS,
     LATEST_TIME,
     LATEST_FETCHED_IDS,
-    INDEX_OF_MAX,
 )
 from CommonServerPython import *
 import pytest
@@ -77,7 +76,7 @@ def create_report_events(start_id: int, amount_of_events: int, start_date: str) 
     """Return {"reports": [...]} with shuffled `_time` and `id` fields."""
     events = [
         {
-            "id": i,
+            ID_KEYS[REPORT]: i,
             "updated_at": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
@@ -86,25 +85,25 @@ def create_report_events(start_id: int, amount_of_events: int, start_date: str) 
     return {"reports": events}
 
 
-def create_domain_events(start_id: int, amount_of_events: int, start_date: str) -> dict[str, list[dict]]:
+def create_domain_events(start_id: int, amount_of_events: int, start_date: str, total: int = 0) -> dict[str, Any]:
     """Return {"results": [...]} with reversed chronological order."""
     events = [
         {
-            "stream_id": i,
-            "creation_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
+            ID_KEYS[DOMAIN]: i,
+            "detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
     ]
     # reverse so that newest appears first if your client expects descending
     events.reverse()
-    return {"results": events}
+    return {"results": events, "total": len(events) if total == 0 else total}
 
 
 def create_creds_events(start_id: int, amount_of_events: int, start_date: str) -> list[dict]:
     """Return a plain list of credential-watchlist events in ascending order."""
     return [
         {
-            "alerts_id": i,
+            ID_KEYS[CREDENTIALS]: i,
             "last_detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
@@ -129,7 +128,7 @@ def test_get_last_run_no_previous(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     now = datetime(2025, 5, 15, 12, 0, 0)
     result = get_last_run(now)
-    expected_time = (now - timedelta(minutes=1)).strftime(DATE_FORMAT)
+    expected_time = (now - timedelta(days=30)).strftime(DATE_FORMAT)
 
     for etype in (REPORT, DOMAIN, CREDENTIALS):
         assert etype in result
@@ -300,10 +299,9 @@ def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
-    index_of_max = INDEX_OF_MAX[event_type]
-    assert last_run[event_type][LATEST_TIME] == fetched_events[index_of_max]["_time"]
+    assert last_run[event_type][LATEST_TIME] == fetched_events[-1]["_time"]
     id_key = ID_KEYS[event_type]
-    assert last_run[event_type][LATEST_FETCHED_IDS][0] == fetched_events[index_of_max][id_key]
+    assert last_run[event_type][LATEST_FETCHED_IDS][0] == fetched_events[-1][id_key]
 
 
 def test_fetch_events_token_expired(mocker):
@@ -428,10 +426,9 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
-    max_event = INDEX_OF_MAX[event_type]
-    assert last_run[event_type][LATEST_TIME] == fetched_events[max_event]["_time"]
+    assert last_run[event_type][LATEST_TIME] == fetched_events[-1]["_time"]
     id_key = ID_KEYS[event_type]
-    assert last_run[event_type][LATEST_FETCHED_IDS][0] == fetched_events[max_event][id_key]
+    assert last_run[event_type][LATEST_FETCHED_IDS][0] == fetched_events[-1][id_key]
 
 
 def test_fetch_events_with_last_run_no_events(mocker):
@@ -667,9 +664,7 @@ def test_get_events_command_command(mocker):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={
-            "start_date": "2024-02-29T13:48:32",
-        },
+        return_value={"start_date": "2024-02-29T13:48:32", "limit": 90},
     )
     mocker.patch.object(demisto, "command", return_value="cybelangel-get-events")
 
@@ -679,7 +674,7 @@ def test_get_events_command_command(mocker):
 
     CybelAngelEventCollector.main()
     fetched_events = return_results_mocker.call_args[0][0]
-    assert len(fetched_events.outputs) == 100
+    assert len(fetched_events.outputs) == 90
 
 
 def mock_client():
@@ -1011,3 +1006,55 @@ def test_cybelangel_report_attachment_get_command(mocker):
     result = cybelangel_report_attachment_get_command(client, args)
     assert isinstance(result, dict)
     assert response.text.startswith("sep=")
+
+
+def test_fetch_events_domain_two_call_paging(mocker):
+    """
+    Given:
+      - no last run
+      - 100 total domain events in the 1-minute window
+      - max_fetch_domain = 50
+
+    When:
+      - running fetch-events
+
+    Then:
+      - send_events_to_xsiam is called with exactly 50 events
+      - those 50 are the oldest ones (IDs 1..50) in ascending time
+      - lastRun is set to the time & ID of event 50
+    """
+    import CybelAngelEventCollector
+    from CybelAngelEventCollector import Client, DOMAIN, ID_KEYS, LATEST_TIME, LATEST_FETCHED_IDS
+
+    send_events = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": TEST_URL,
+            "credentials": {"identifier": "1234", "password": "1234"},
+            "max_fetch_domain": 50,
+            "events_type_to_fetch": DOMAIN,
+            "is_fetch_events": True,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+
+    http_mocker = HttpRequestsMocker(100)
+    mocker.patch.object(Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
+
+    CybelAngelEventCollector.main()
+
+    assert send_events.called, "events should have been sent"
+    fetched = send_events.call_args[0][0]
+
+    assert len(fetched) == 50
+
+    returend_ids = [event[ID_KEYS[DOMAIN]] for event in fetched]
+    assert returend_ids == list(range(1, 51))
+
+    lr = set_last_run.call_args[0][0]
+    assert lr[DOMAIN][LATEST_TIME] == fetched[-1]["_time"]
+    assert lr[DOMAIN][LATEST_FETCHED_IDS][0] == fetched[-1][ID_KEYS[DOMAIN]]
