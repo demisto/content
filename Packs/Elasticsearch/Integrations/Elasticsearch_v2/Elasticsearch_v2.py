@@ -27,14 +27,14 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import NotFoundError, RequestsHttpConnection
     from opensearchpy import OpenSearch as Elasticsearch
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment, misc]
+    from elastic_transport import RequestsHttpNode
+    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
-    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment, misc]
+    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
-from elastic_transport import RequestsHttpNode
 
 
 ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
@@ -160,7 +160,7 @@ def get_api_key_header_val(api_key):
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
-    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection, RequestsHttpNode]] = {
+    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection]] = {
         "hosts": [SERVER],
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
