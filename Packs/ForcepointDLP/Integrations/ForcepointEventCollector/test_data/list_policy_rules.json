@@ -1,0 +1,45 @@
+{
+    "dlp_version": "10.2.0",
+    "policy_name": "hard4",
+    "enabled": "true",
+    "predefined_policy": "false",
+    "description": "",
+    "policy_level": {
+        "level": 2,
+        "data_type": "NETWORKING"
+    },
+    "rules": [
+        {
+            "rule_name": "rule1",
+            "enabled": "true",
+            "parts_count_type": "CROSS_COUNT",
+            "condition_relation_type": "AND",
+            "classifiers": [
+                {
+                    "classifier_name": "test",
+                    "predefined": "false",
+                    "position": 1,
+                    "threshold_type": "CHECK_GREATER_THAN",
+                    "threshold_value_from": 1,
+                    "threshold_calculate_type": "UNIQUE"
+                }
+            ]
+        },
+        {
+            "rule_name": "rule2",
+            "enabled": "true",
+            "parts_count_type": "CROSS_COUNT",
+            "condition_relation_type": "AND",
+            "classifiers": [
+                {
+                    "classifier_name": "test",
+                    "predefined": "false",
+                    "position": 1,
+                    "threshold_type": "CHECK_GREATER_THAN",
+                    "threshold_value_from": 1,
+                    "threshold_calculate_type": "UNIQUE"
+                }
+            ]
+        }
+    ]
+}
