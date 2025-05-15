@@ -967,25 +967,19 @@ def test_module(client: AzureSentinelClient, _: Dict[str, Any]):
 def list_incidents_command(
     client: AzureSentinelClient,
     args,
-    limit=None,
     is_fetch_incidents=False,
 ):
     """Retrieves incidents from Sentinel.
     Args:
         client: An AzureSentinelClient client.
         args: Demisto args.
-        limit: The limit of the incidents to retrieve
         is_fetch_incidents: Is it part of a fetch incidents command.
     Returns:
         A CommandResult object with the array of incidents as output.
     """
     filter_expression = args.get("filter")
     next_link = args.get("next_link", "")
-    limit = (
-        arg_to_number(args.get("limit"))
-        if is_fetch_incidents
-        else min(arg_to_number(args.get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT)
-    )
+    limit = min(arg_to_number(args.get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT)
 
     if next_link:
         next_link = next_link.replace("%20", " ")  # Next link syntax can't handle '%' character
@@ -1473,7 +1467,7 @@ def fetch_incidents(
 
     """
     # Get the last fetch details, if exist
-    limit = demisto.params().get("limit", FETCH_MAX_LIMIT)
+    limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT,FETCH_MAX_LIMIT)
     last_fetch_time = last_run.get("last_fetch_time")
     last_fetch_ids = last_run.get("last_fetch_ids", [])
     last_incident_number = last_run.get("last_incident_number")
@@ -1512,7 +1506,7 @@ def fetch_incidents(
         demisto.debug(f"Filter query used:{command_args['filter']}")
 
     raw_incidents = list_incidents_command(
-        client, command_args, min(int(limit), FETCH_MAX_LIMIT), is_fetch_incidents=True
+        client, command_args, is_fetch_incidents=True
     ).outputs
     if isinstance(raw_incidents, dict):
         raw_incidents = [raw_incidents]
