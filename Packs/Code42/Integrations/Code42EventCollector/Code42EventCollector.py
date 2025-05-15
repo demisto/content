@@ -14,7 +14,7 @@ from enum import Enum
 DEFAULT_FILE_EVENTS_MAX_FETCH = 50000
 DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 
-DATE_FORMAT = '%Y-%m-%d %H:%M:%S.%fZ'
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%fZ"
 
 MAX_FETCH_AUDIT_LOGS = 100000
 MAX_AUDIT_LOGS_PAGE_SIZE = 10000
@@ -104,7 +104,7 @@ class Client:
             limit: maximum events to retrieve
             page_size: the page size per single request
         """
-        demisto.debug(f'File Events: {start_time=}, {end_time=}, {limit=}')
+        demisto.debug(f"File Events: {start_time=}, {end_time=}, {limit=}")
         query = incydr.EventQuery(
             start_date=start_time,
             end_date=end_time,
@@ -115,9 +115,7 @@ class Client:
         for filter in query.groups[0].filters:
             filter.term = EventSearchTerm.EVENT_INSERTED
 
-        response = self.code42_client.file_events.v2.search(
-            query
-        )
+        response = self.code42_client.file_events.v2.search(query)
         if response.total_count == 0:
             return []
         file_events = response.file_events
@@ -158,8 +156,9 @@ def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[s
     return [dict_safe_get(event, keys=keys_to_id) for event in events]
 
 
-def get_latest_file_event_ids_and_time(events: List[dict], pre_fetch_look_back: Optional[datetime] = None) -> \
-        tuple[dict[str, str], str]:
+def get_latest_file_event_ids_and_time(
+    events: List[dict], pre_fetch_look_back: Optional[datetime] = None
+) -> tuple[dict[str, str], str]:
     """
     Get the latest event IDs and get latest time
 
@@ -170,10 +169,10 @@ def get_latest_file_event_ids_and_time(events: List[dict], pre_fetch_look_back: 
     latest_time_event = max(event["_time"] for event in events)
 
     next_fetch_from = datetime.fromisoformat(
-        min(
-            latest_time_event,
-            pre_fetch_look_back or latest_time_event
-        ).strftime('%Y-%m-%dT%H:%M:%S.%f')[:CODE42_DATETIME_ACCURACY] + '000+00:00'
+        min(latest_time_event, pre_fetch_look_back or latest_time_event).strftime("%Y-%m-%dT%H:%M:%S.%f")[
+            :CODE42_DATETIME_ACCURACY
+        ]
+        + "000+00:00"
     )
 
     latest_event_ids = {
@@ -182,7 +181,7 @@ def get_latest_file_event_ids_and_time(events: List[dict], pre_fetch_look_back: 
         if event["_time"] >= next_fetch_from
     }
 
-    demisto.debug(f'Next file events fetch from {next_fetch_from}')
+    demisto.debug(f"Next file events fetch from {next_fetch_from}")
     return latest_event_ids, next_fetch_from.strftime(DATE_FORMAT)
 
 
@@ -195,7 +194,7 @@ def get_latest_audit_logs_ids_and_time(events: List[dict]) -> tuple[List[str], s
         keys_to_id: a list of nested keys to get into the event ID
     """
     latest_time_event = datetime.fromisoformat(
-        max([event["_time"] for event in events]).strftime('%Y-%m-%dT%H:%M:%S.%f')[:CODE42_DATETIME_ACCURACY] + '000+00:00'
+        max([event["_time"] for event in events]).strftime("%Y-%m-%dT%H:%M:%S.%f")[:CODE42_DATETIME_ACCURACY] + "000+00:00"
     )
 
     latest_event_ids: List = [dict_safe_get(event, keys=["id"]) for event in events if event["_time"] == latest_time_event]
@@ -252,22 +251,18 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         datetime,
         dateparser.parse(last_run[FileEventLastRun.TIME])
         if FileEventLastRun.TIME in last_run
-        else (datetime.now() - timedelta(minutes=1))
+        else (datetime.now() - timedelta(minutes=1)),
     )
 
     fetched_events = last_run.get(FileEventLastRun.FETCHED_IDS, {})
     pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
-    file_events = client.get_file_events(
-        file_event_time,
-        limit=max_fetch_file_events + len(fetched_events)
-    )
+    file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events + len(fetched_events))
     dedup_file_events = dedup_fetched_events(
         file_events, last_run_fetched_event_ids=fetched_events, keys_list_to_id=["event", "id"]
     )
     if file_events:
         latest_file_event_ids, latest_file_event_time = get_latest_file_event_ids_and_time(
-            file_events + format_last_run_dupes(fetched_events),
-            pre_fetch_look_back=pre_fetch_look_back
+            file_events + format_last_run_dupes(fetched_events), pre_fetch_look_back=pre_fetch_look_back
         )
         datetime_to_date_string(dedup_file_events)
         new_last_run.update(
@@ -316,31 +311,29 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
 
 
 def format_last_run_dupes(dupes: dict) -> list[dict]:
-    return [
-        {
-            "event": {"id": dupe_id},
-            "_time": datetime.fromisoformat(dupe_time)
-        } for dupe_id, dupe_time in dupes.items()
-    ]
+    return [{"event": {"id": dupe_id}, "_time": datetime.fromisoformat(dupe_time)} for dupe_id, dupe_time in dupes.items()]
 
 
-def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max_fetch_audit_events: int,
-                 event_types_to_fetch: List[str]):
+def fetch_events(
+    client: Client, last_run: dict, max_fetch_file_events: int, max_fetch_audit_events: int, event_types_to_fetch: List[str]
+):
     """
     Fetch audit-logs & file-events
     """
     if "File" in event_types_to_fetch:
-        file_events, file_events_last_run = fetch_file_events(client, last_run=last_run,
-                                                              max_fetch_file_events=max_fetch_file_events)
+        file_events, file_events_last_run = fetch_file_events(
+            client, last_run=last_run, max_fetch_file_events=max_fetch_file_events
+        )
 
         last_run.update(file_events_last_run)
         futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
-        demisto.updateModuleHealth({f'{EventType.FILE} events sent': len(file_events)})
+        demisto.updateModuleHealth({f"{EventType.FILE} events sent": len(file_events)})
     if "Audit" in event_types_to_fetch:
-        audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run,
-                                                           max_fetch_audit_events=max_fetch_audit_events)
+        audit_logs, audit_logs_last_run = fetch_audit_logs(
+            client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events
+        )
         for log in audit_logs:
             log.pop("id", None)
 
@@ -348,7 +341,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         futures = send_events_to_xsiam(audit_logs, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
-        demisto.updateModuleHealth({f'{EventType.AUDIT} events sent': len(audit_logs)})
+        demisto.updateModuleHealth({f"{EventType.AUDIT} events sent": len(audit_logs)})
     demisto.setLastRun(last_run)
 
 

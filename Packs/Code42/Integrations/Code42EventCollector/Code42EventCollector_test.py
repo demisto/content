@@ -20,12 +20,8 @@ def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) 
 
 def create_file_events(start_id: int, start_date: str, num_of_file_events: int) -> List[Dict[str, Any]]:
     return [
-        {
-            "event": {
-                "id": f'{i}',
-                "inserted": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
-            }
-        } for i in range(start_id, start_id + num_of_file_events)
+        {"event": {"id": f"{i}", "inserted": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)}}
+        for i in range(start_id, start_id + num_of_file_events)
     ]
 
 
@@ -42,10 +38,11 @@ def get_mock_http_request_from_datetimes(datetimes: list[str]):
             return create_mocked_response(response={"access_token": "1234", "token_type": "bearer", "expires_in": 10000000})
         return create_mocked_response(
             response={
-                "fileEvents": [{"event": {"id": f'{i}', "inserted": dt}} for i, dt in enumerate(datetimes)],
-                "totalCount": len(datetimes)
+                "fileEvents": [{"event": {"id": f"{i}", "inserted": dt}} for i, dt in enumerate(datetimes)],
+                "totalCount": len(datetimes),
             }
         )
+
     return mock_request
 
 
@@ -159,7 +156,7 @@ def test_fetch_events_no_last_run(mocker):
                 "identifier": "1234",
                 "password": "1234",
             },
-            'event_types_to_fetch': 'File,Audit'
+            "event_types_to_fetch": "File,Audit",
         },
     )
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
@@ -218,7 +215,7 @@ def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
             },
             "max_file_events_per_fetch": 500,
             "max_audit_events_per_fetch": 500,
-            'event_types_to_fetch': 'File,Audit'
+            "event_types_to_fetch": "File,Audit",
         },
     )
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
@@ -281,7 +278,7 @@ def test_fetch_events_no_last_run_no_audit_logs_yes_file_events(mocker):
             },
             "max_file_events_per_fetch": 500,
             "max_audit_events_per_fetch": 500,
-            'event_types_to_fetch': 'File,Audit'
+            "event_types_to_fetch": "File,Audit",
         },
     )
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
@@ -339,7 +336,7 @@ def test_fetch_events_no_last_run_yes_audit_logs_no_file_events(mocker):
             },
             "max_file_events_per_fetch": 500,
             "max_audit_events_per_fetch": 500,
-            'event_types_to_fetch': 'File,Audit'
+            "event_types_to_fetch": "File,Audit",
         },
     )
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
@@ -392,7 +389,7 @@ def test_fetch_events_no_last_run_no_events(mocker):
                 "identifier": "1234",
                 "password": "1234",
             },
-            'event_types_to_fetch': 'File,Audit'
+            "event_types_to_fetch": "File,Audit",
         },
     )
     mocker.patch.object(demisto, "setLastRun")
@@ -442,7 +439,7 @@ def test_fetch_events_within_look_back(mocker: MockerFixture):
             },
             "max_file_events_per_fetch": 500,
             "max_audit_events_per_fetch": 500,
-            'event_types_to_fetch': 'File'
+            "event_types_to_fetch": "File",
         },
     )
     mocker.patch.object(
@@ -455,14 +452,14 @@ def test_fetch_events_within_look_back(mocker: MockerFixture):
                 (LOOK_BACK_TIME + timedelta(microseconds=500_100)).strftime(DATE_FORMAT),
                 (LOOK_BACK_TIME + timedelta(microseconds=500_300)).strftime(DATE_FORMAT),
             ]
-        )
+        ),
     )
     set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     main()
 
-    assert set(set_last_run_mock.call_args_list[0][0][0][FileEventLastRun.FETCHED_IDS]) == {'1', '2', '3'}
+    assert set(set_last_run_mock.call_args_list[0][0][0][FileEventLastRun.FETCHED_IDS]) == {"1", "2", "3"}
     assert set_last_run_mock.call_args_list[0][0][0][FileEventLastRun.TIME] == "2024-01-01 00:59:30.000000Z"
 
 
@@ -495,7 +492,7 @@ def test_fetch_events_before_look_back(mocker: MockerFixture):
             },
             "max_file_events_per_fetch": 500,
             "max_audit_events_per_fetch": 500,
-            'event_types_to_fetch': 'File'
+            "event_types_to_fetch": "File",
         },
     )
     mocker.patch.object(
@@ -508,14 +505,14 @@ def test_fetch_events_before_look_back(mocker: MockerFixture):
                 (LOOK_BACK_TIME + timedelta(minutes=-1, microseconds=500_100)).strftime(DATE_FORMAT),
                 (LOOK_BACK_TIME + timedelta(minutes=-1, microseconds=500_300)).strftime(DATE_FORMAT),
             ]
-        )
+        ),
     )
     set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     main()
 
-    assert set(set_last_run_mock.call_args_list[0][0][0][FileEventLastRun.FETCHED_IDS]) == {'1', '2', '3'}
+    assert set(set_last_run_mock.call_args_list[0][0][0][FileEventLastRun.FETCHED_IDS]) == {"1", "2", "3"}
     assert set_last_run_mock.call_args_list[0][0][0][FileEventLastRun.TIME] == "2024-01-01 00:58:30.500000Z"
 
 
@@ -545,13 +542,11 @@ def test_fetch_events_empty_run(mocker: MockerFixture):
             },
             "max_file_events_per_fetch": 500,
             "max_audit_events_per_fetch": 500,
-            'event_types_to_fetch': 'File'
+            "event_types_to_fetch": "File",
         },
     )
     mocker.patch.object(
-        requests_toolbelt.sessions.BaseUrlSession,
-        "request",
-        side_effect=HttpRequestsMocker().valid_http_request_side_effect
+        requests_toolbelt.sessions.BaseUrlSession, "request", side_effect=HttpRequestsMocker().valid_http_request_side_effect
     )
     mocker.patch.object(demisto, "getLastRun", return_value={"LastRun": "previous_last_run"})
     set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
