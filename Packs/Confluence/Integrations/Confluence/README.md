@@ -11,7 +11,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g.<span> </span>http://1.2.3.4:8090)</strong></li>
-<li><strong>Username</strong></li>
+<li><strong>Username & Password or Personal Access Token</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 </ul>
@@ -562,3 +562,95 @@
 <h5>
 <a id="Human_Readable_Output_250"></a>Human Readable Output</h5>
 <p><img src="https://user-images.githubusercontent.com/37589583/61212390-cf3e7800-a70a-11e9-90db-3f1a72c77d06.png" alt="image"></p>
+<a id="8_Download_a_page_as_pdf_220"></a>8. Download a Page as PDF</h3>
+<hr>
+<p>Downloads a Page as PDF by Page ID</a>.</p>
+<h5>
+<a id="Base_Command_223"></a>Base Command</h5>
+<p><code>confluence-get-page-as-pdf</code></p>
+<h5>
+<a id="Input_226"></a>Input</h5>
+<table class="table table-striped table-bordered" style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 139px;"><strong>Argument Name</strong></th>
+<th style="width: 530px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 139px;">pageid</td>
+<td style="width: 530px;">The ID of the page you want to export as a PDF.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>
+<a id="Context_Output_237"></a>Context Output</h5>
+<table class="table table-striped table-bordered" style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 407px;"><strong>Path</strong></th>
+<th style="width: 87px;"><strong>Type</strong></th>
+<th style="width: 246px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File.Size</td>
+<td>number</td>
+<td>File size.</td>
+</tr>
+<tr>
+<td>File.SHA1</td>
+<td>string</td>
+<td>SHA1 hash of the file.</td>
+</tr>
+<tr>
+<td>File.SHA256</td>
+<td>string</td>
+<td>SHA256 hash of the file.</td>
+</tr>
+<tr>
+<td>File.Name</td>
+<td>string</td>
+<td>The sample name.</td>
+</tr>
+<tr>
+<td>File.SSDeep</td>
+<td>string</td>
+<td>SSDeep hash of the file.</td>
+</tr>
+<tr>
+<td>File.EntryID</td>
+<td>string</td>
+<td>War Room entry ID of the file.</td>
+</tr>
+<tr>
+<td>File.Info</td>
+<td>string</td>
+<td>Basic information of the file.</td>
+</tr>
+<tr>
+<td>File.Type</td>
+<td>string</td>
+<td>File type, e.g., "PE".</td>
+</tr>
+<tr>
+<td>File.MD5</td>
+<td>string</td>
+<td>MD5 hash of the file.</td>
+</tr>
+<tr>
+<td>File.Extension</td>
+<td>string</td>
+<td>File extension.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>
+<a id="Command_Example_247"></a>Command Example</h5>
+<pre>!confluence-get-page-as-pdf pageid="123456"</pre>
