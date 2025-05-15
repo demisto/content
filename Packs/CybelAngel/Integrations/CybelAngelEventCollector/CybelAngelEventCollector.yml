@@ -94,12 +94,13 @@ script:
       - Credential watchlist
       - Domain watchlist
     - auto: PREDEFINED
-      description: 'Fetch Events to XSIAM.'
-      name: is_fetch_events
-      required: false
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
       predefined:
-      - true
-      - false
+      - 'True'
+      - 'False'
+      required: true
     - description: 'Get events from a specific start date formatted with ISO 8601.'
       name: start_date
       required: false
