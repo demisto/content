@@ -667,9 +667,10 @@ script:
       required: false
       isArray: true
     - name: grant_control_operator
-      description: "The operator for grant control.\n"
+      description: "The operator for grant control.\nDefault value is 'AND'"
       required: false
       isArray: false
+      defaultValue: AND
       auto: PREDEFINED
       predefined:
       - AND
@@ -678,6 +679,7 @@ script:
       description: "List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.\nDefault value is 'mfa'\nSpecial considerations when using `passwordChange`: \n- `passwordChange` must be accompanied by `mfa` using an `AND` operator.\n- `passwordChange` must be used with `userRiskLevels`.\n- The policy should target all applications and not exclude any.\n"
       required: false
       isArray: true
+      defaultValue: mfa
     outputs:
     - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id
       description: The unique ID of the Conditional Access policy.
