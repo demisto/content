@@ -197,8 +197,8 @@ def get_latest_audit_logs_ids_and_time(events: List[dict]) -> tuple[List[str], s
         max([event["_time"] for event in events]).strftime("%Y-%m-%dT%H:%M:%S.%f")[:CODE42_DATETIME_ACCURACY] + "000+00:00"
     )
 
-    latest_event_ids: List = [dict_safe_get(event, keys=["id"]) for event in events if event["_time"] == latest_time_event]
-    demisto.debug(f"Latest Audit Log event IDs {latest_event_ids} occurred in {latest_time_event}")
+    latest_event_ids: List = [dict_safe_get(event, keys=["id"]) for event in events if event["_time"] >= latest_time_event]
+    demisto.debug(f"Latest Audit Log event IDs occurred after {latest_time_event}")
     return latest_event_ids, latest_time_event.strftime(DATE_FORMAT)
 
 
