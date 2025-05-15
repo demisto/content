@@ -159,7 +159,7 @@ def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[s
 
 
 def get_latest_file_event_ids_and_time(events: List[dict], pre_fetch_look_back: Optional[datetime] = None) -> \
-    tuple[dict[str, str], str]:
+        tuple[dict[str, str], str]:
     """
     Get the latest event IDs and get latest time
 
