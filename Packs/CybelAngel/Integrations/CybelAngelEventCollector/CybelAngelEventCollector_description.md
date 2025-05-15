@@ -18,3 +18,8 @@ This limitation should not affect fetching, as the integration uses an average o
 
 ## CybelAngel Required Scopes
 To fetch reports the api role required should be `reports.read`
+To fetch Credential watchlist the api role required should be credentials.read
+
+## Get your API credentials
+To request a token, the system will request your API credentials (client_id and client_secret).
+Your API credentials are accessible in the Platform > Settings > API.
