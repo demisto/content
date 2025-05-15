@@ -2476,7 +2476,7 @@ script:
       type: string
     description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
   - name: ews-remove-tenant-allow-block-list-items-quick-action
-    prettyname: Unblock Sender – Office 365
+    prettyname: Unblock Sender - Office 365
     quickaction: true
     hidden: true
     arguments:
