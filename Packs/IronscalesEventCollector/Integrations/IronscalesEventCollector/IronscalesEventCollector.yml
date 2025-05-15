@@ -80,7 +80,7 @@ script:
       required: true
     description: Gets events from Ironscales.
     name: ironscales-get-events
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
 
   isfetchevents: true
   script: ''

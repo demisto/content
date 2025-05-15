@@ -69,9 +69,9 @@ class Client(BaseClient):  # pragma: no cover
         )
 
     def get_incident_ids(self, start_time: datetime, max_fetch: int, last_id: Optional[int]) -> List[int]:
-        '''
+        """
         Navigate to the correct endpoint
-        '''
+        """
         if self.all_incident:
             return self.get_all_incident_ids(start_time, max_fetch, last_id)
         return self.get_open_incident_ids()
@@ -86,38 +86,31 @@ class Client(BaseClient):  # pragma: no cover
         )
 
     def convert_time(self, time):
-        '''
+        """
         The API receive timestamps only in iso format, percent encoded
-        '''
+        """
         time = time.isoformat()  # convert to iso format
-        time_encoded = quote(time, safe='')  # Percent-encode (e.g., encode '+' to '%2B')
+        time_encoded = quote(time, safe="")  # Percent-encode (e.g., encode '+' to '%2B')
         return time_encoded
 
-    def get_all_incident_ids(self, start_time: datetime, max_fetch: int, last_id: Optional[int]) -> List[int]:
+    def get_all_incident_ids(self, start_time: datetime, max_fetch: int, last_id=None) -> List[int]:
         curr_time = datetime.now(timezone.utc)  # Get the current datetime with UTC timezone
         curr_time = self.convert_time(curr_time)
         start = self.convert_time(start_time)
 
         page = 1
-        params = {
-            "reportType": "all",
-            "state": "all",
-            "created_start_time": start,
-            "created_end_time": curr_time,
-            "order": "asc"
-        }
+        params = {"reportType": "all", "state": "all", "created_start_time": start, "created_end_time": curr_time, "order": "asc"}
         incidents: List[int] = []
         # handle paging
         while len(incidents) < max_fetch:
             params["page"] = page
-            response = self._http_request(
-                method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params)
+            response = self._http_request(method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params)
             total_pages = response.get("total_pages")
             new_incidents = [incident.get("incidentID") for incident in response.get("incidents")] or []
             if not new_incidents or page > total_pages:
                 break
             page += 1
-            if last_id and new_incidents[-1] <= last_id: # Make that there is at least 1 new incident in the fetch
+            if last_id and new_incidents[-1] <= last_id:  # Make that there is at least 1 new incident in the fetch
                 continue
             incidents.extend(new_incidents)
         return incidents
@@ -185,6 +178,7 @@ def get_incident_ids_to_fetch(
     max_fetch,
 ) -> List[int]:
     incident_ids: List[int] = client.get_incident_ids(first_fetch, max_fetch, last_id)
+
     if not incident_ids:
         return []
     if isinstance(last_id, int):
@@ -250,14 +244,13 @@ def fetch_events_command(
     """
     events: List[dict[str, Any]] = []
     incident_ids: List[int] = get_incident_ids_to_fetch(
-        client=client,
-        first_fetch=first_fetch,
-        last_id=last_id,
-        max_fetch=max_fetch
+        client=client, first_fetch=first_fetch, last_id=last_id, max_fetch=max_fetch
     )
+
     last_id = last_id or -1
     for i in incident_ids:
         incident = client.get_incident(i)
+
         events.extend(incident_to_events(incident))
         last_id = max(i, last_id)
         if len(events) >= max_fetch:

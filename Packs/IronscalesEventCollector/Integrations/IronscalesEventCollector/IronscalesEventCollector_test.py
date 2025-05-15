@@ -141,3 +141,192 @@ def test_test_module(mocker, params, is_valid, result_msg):
     main()
     result = (demisto_result if is_valid else return_error).call_args[0][0]
     assert result_msg in result
+
+
+###### get all incidents tests #######
+from datetime import datetime, timedelta, UTC
+
+UTC = UTC
+
+
+def test_no_incidents(mocker):
+    """
+    Given: No incidents to pull
+    When: pulling incidents
+    Then: return empty list
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+
+    mocker.patch.object(client, "_http_request", return_value={"total_pages": 0, "incidents": []})
+
+    start_time = datetime.now(UTC) - timedelta(days=1)
+    result = client.get_all_incident_ids(start_time, 1000)
+    assert result == []
+
+
+def test_single_page_with_incidents(mocker):
+    """
+    Given: Single page to pull incidents from
+    When: running get_all_incidents
+    Then: return the incidents on this page
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+    mocker.patch.object(
+        client, "_http_request", return_value={"total_pages": 1, "incidents": [{"incidentID": 1}, {"incidentID": 2}]}
+    )
+
+    start_time = datetime.now(UTC) - timedelta(days=1)
+    result = client.get_all_incident_ids(start_time, max_fetch=1000)
+    assert result == [1, 2]
+
+
+def test_multiple_pages(mocker):
+    """
+    Given: Multiple page to pull incidents from
+    When: running get_all_incidents
+    Then: return the incidents from all of the pages
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+    responses = [
+        {"total_pages": 2, "incidents": [{"incidentID": 1}]},
+        {"total_pages": 2, "incidents": [{"incidentID": 2}]},
+        {"total_pages": 2, "incidents": []},
+    ]
+
+    mocker.patch.object(client, "_http_request", side_effect=responses)
+
+    start_time = datetime.now(UTC) - timedelta(days=1)
+    result = client.get_all_incident_ids(start_time, 100)
+    assert result == [1, 2]
+
+
+def test_respects_max_fetch(mocker):
+    """
+    Given: More incidents then max_fetch
+    When: pulling all incidents
+    Then: stop at max_fetch
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+
+    responses = [
+        {"total_pages": 5, "incidents": [{"incidentID": 1}, {"incidentID": 2}]},
+        {"total_pages": 5, "incidents": [{"incidentID": 3}, {"incidentID": 4}]},
+    ]
+
+    mocker.patch.object(client, "_http_request", side_effect=responses)
+
+    start_time = datetime.now(UTC) - timedelta(days=1)
+    result = client.get_all_incident_ids(start_time, max_fetch=2)
+    assert result == [1, 2]  # stops at max_fetch
+
+
+def test_all_incidents_last_id(mocker):
+    """
+    Given: A page where we already seen some of the incidents in it
+    When: running fetch_events_command with all_incidents = True and we already pulled some incidents
+    Then: pull only new incidents
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+
+    responses = [
+        {"total_pages": 2, "incidents": [{"incidentID": 1}, {"incidentID": 2}]},
+        {"total_pages": 2, "incidents": [{"incidentID": 3}, {"incidentID": 4}]},
+        {"total_pages": 2, "incidents": []},
+    ]
+
+    mocker.patch.object(client, "_http_request", side_effect=responses)
+    mocker.patch.object(client, "get_incident", side_effect=lambda x: x)
+    mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
+
+    res, last_run = fetch_events_command(
+        client,
+        first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
+        max_fetch=10,
+        last_id=1,
+    )
+    assert len(res) == 3
+    assert res[0] == 2
+    assert last_run == 4
+
+
+def test_all_incidents_last_id_complex(mocker):
+    """
+    Given: A page where we already seen the last incident in it
+    When: running fetch_events_command with all_incidents = True and we already pulled some incidents
+    Then: ignore this page and pull only new incidents
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
+    client = Client(
+        company_id="1",
+        base_url="test_url",
+        verify_certificate=True,
+        proxy=False,
+        api_key="test",
+        scopes=[""],
+        all_incident=True,
+    )
+
+    def ids_generator():
+        i = 1
+        while True:
+            yield {"total_pages": 100, "incidents": [{"incidentID": i}, {"incidentID": i + 1}]}
+            i += 2
+
+    mocker.patch.object(client, "_http_request", side_effect=ids_generator())
+    mocker.patch.object(client, "get_incident", side_effect=lambda x: x)
+    mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
+
+    res, last_run = fetch_events_command(
+        client,
+        first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
+        max_fetch=10,
+        last_id=2,
+    )
+    assert len(res) == 10
+    assert res[0] == 3
+    assert last_run == 12
