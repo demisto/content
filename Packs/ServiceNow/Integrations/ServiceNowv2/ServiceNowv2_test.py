@@ -1,6 +1,7 @@
 import json
 import re
 from datetime import datetime, timedelta
+from typing import Any
 from unittest.mock import MagicMock
 from urllib.parse import urlencode
 
@@ -67,6 +68,7 @@ from ServiceNowv2 import (
     update_remote_system_command,
     update_ticket_command,
     upload_file_command,
+    QuickActionPreview,
 )
 from ServiceNowv2 import test_module as module
 from test_data.created_ticket_context import (
@@ -2372,19 +2374,15 @@ TICKET_FIELDS = {
 
 
 def ticket_fields(*args, **kwargs):
-    state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
-    assert args[0] == {'state': state }
+    state = "7" if kwargs.get("ticket_type") == "incident" else "3"
+    assert args[0] == {"state": state}
 
-    return {
-        "state": "3"
-        }
+    return {"state": "3"}
 
 
 def update_ticket(*args):
     state = "7" if "incident" in args else "3"
-    return {
-        "state": state
-        }
+    return {"state": state}
 
 
 @pytest.mark.parametrize("ticket_type", ["sc_task", "sc_req_item", "incident"])
@@ -2937,8 +2935,8 @@ def test_converts_close_code_or_state_to_close_reason(
 
 
 def ticket_fields_mocker(*args, **kwargs):
-    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
-    fields = {'state': state }
+    state = "88" if kwargs.get("ticket_type") == "incident" else "90"
+    fields = {"state": state}
     assert fields == args[0]
     return fields
 
@@ -3350,3 +3348,84 @@ def test_incident_id_not_in_last_fetched(mocker):
 
     # Assert that set_integration_context was never called because no incident ID was removed
     res.assert_not_called()
+
+
+class TestQuickActionPreview:
+    """
+    Unit tests for the QuickActionPreview dataclass.
+
+    Tests:
+        - Initialization with full data
+        - Initialization with partial data and logging missing fields
+        - Conversion of instance to context dictionary
+    """
+
+    @pytest.fixture
+    def full_data(self) -> dict[str, Any]:
+        """
+        Given a complete dataset,
+        When used to initialize QuickActionPreview,
+        Then it provides all necessary fields.
+        """
+        return {
+            "id": "123",
+            "title": "Test Ticket",
+            "description": "This is a test description.",
+            "status": "Open",
+            "assignee": "John Doe",
+            "creation_date": "2024-05-14T12:00:00Z",
+            "severity": "High",
+        }
+
+    @pytest.fixture
+    def partial_data(self) -> dict[str, Any]:
+        """
+        Given a dataset with some missing fields,
+        When used to initialize QuickActionPreview,
+        Then it simulates a scenario with incomplete data.
+        """
+        return {
+            "id": "456",
+            "title": None,
+            "description": "Another test description.",
+            "status": None,
+            "assignee": "Jane Doe",
+            "creation_date": None,
+            "severity": "Low",
+        }
+
+    def test_full_init(self, full_data: dict[str, Any]) -> None:
+        """
+        Given a full dataset,
+        When initializing QuickActionPreview,
+        Then all fields should be set correctly.
+        """
+        preview = QuickActionPreview(**full_data)
+        assert preview.id == full_data["id"]
+        assert preview.title == full_data["title"]
+        assert preview.status == full_data["status"]
+        assert preview.assignee == full_data["assignee"]
+
+    def test_partial_init_logs_missing_fields(self, mocker, partial_data: dict[str, Any]) -> None:
+        """
+        Given a partial dataset with missing fields,
+        When initializing QuickActionPreview,
+        Then demisto.debug should log the missing fields.
+        """
+        mock_debug = mocker.patch("demistomock.debug")
+        QuickActionPreview(**partial_data)
+        mock_debug.assert_called_once()
+        args, _ = mock_debug.call_args
+        assert "title" in args[0]
+        assert "status" in args[0]
+        assert "creation_date" in args[0]
+
+    def test_to_context(self, full_data: dict[str, Any]) -> None:
+        """
+        Given a fully initialized QuickActionPreview,
+        When calling to_context,
+        Then it should return the correct dictionary representation.
+        """
+        preview = QuickActionPreview(**full_data)
+        context = preview.to_context()
+        assert context == full_data
