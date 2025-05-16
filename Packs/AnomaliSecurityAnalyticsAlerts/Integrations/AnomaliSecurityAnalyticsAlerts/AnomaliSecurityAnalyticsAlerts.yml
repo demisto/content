@@ -113,7 +113,7 @@ script:
         description: Data types of the search record attributes.
         type: Array
   - name: anomali-security-analytics-alert-update
-    description: Update alert's comment or status.
+    description: Update various fields of an alert including status, comment, assignee, severity, and owner.
     arguments:
     - name: uuid
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
@@ -123,6 +123,15 @@ script:
       required: false
     - name: status
       description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos. Please provide either 'status' or 'comment' parameter.
+      required: false
+    - name: assignee
+      description: Assignee of the alert.
+      required: false
+    - name: owner
+      description: Owner of the alert.
+      required: false
+    - name: severity
+      description: Severity of the alert.
       required: false
     execution: false
     outputs:

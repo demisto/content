@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-VENDOR_NAME = 'Anomali Security Analytics Alerts'
+VENDOR_NAME = "Anomali Security Analytics Alerts"
 
 """ CLIENT CLASS """
 
@@ -26,10 +26,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, server_url: str, username: str, api_key: str, verify: bool, proxy: bool):
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'apikey {username}:{api_key}'
-        }
+        headers = {"Content-Type": "application/json", "Authorization": f"apikey {username}:{api_key}"}
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
         self._username = username
         self._api_key = api_key
@@ -49,14 +46,8 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        data = {
-            'query': query,
-            'source': source,
-            'time_range': time_range
-        }
-        return self._http_request(method='POST',
-                                  url_suffix='/api/v1/xdr/search/jobs/',
-                                  json_data=data)
+        data = {"query": query, "source": source, "time_range": time_range}
+        return self._http_request(method="POST", url_suffix="/api/v1/xdr/search/jobs/", json_data=data)
 
     def get_search_job_status(self, job_id: str) -> dict:
         """
@@ -68,8 +59,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET',
-                                  url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/')
+        return self._http_request(method="GET", url_suffix=f"/api/v1/xdr/search/jobs/{job_id}/")
 
     def get_search_job_results(self, job_id: str, offset: int = 0, fetch_size: int = 25) -> dict:
         """
@@ -83,10 +73,8 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        params = {'offset': offset, 'fetch_size': fetch_size}
-        return self._http_request(method='GET',
-                                  url_suffix=f'/api/v1/xdr/search/jobs/{job_id}/results/',
-                                  params=params)
+        params = {"offset": offset, "fetch_size": fetch_size}
+        return self._http_request(method="GET", url_suffix=f"/api/v1/xdr/search/jobs/{job_id}/results/", params=params)
 
     def update_alert(self, data: dict) -> dict:
         """
@@ -101,16 +89,13 @@ class Client(BaseClient):
               the corresponding values for the primary key columns.
 
         """
-        return self._http_request(method='PATCH',
-                                  url_suffix='/api/v1/xdr/event/lookup/iceberg/update/',
-                                  json_data=data)
+        return self._http_request(method="PATCH", url_suffix="/api/v1/xdr/event/lookup/iceberg/update/", json_data=data)
 
     def check_connection(self) -> dict:
         """
         Test connection by retrieving version info from the API.
         """
-        return self._http_request(method='GET',
-                                  url_suffix='/api/v1/xdr/get_version/')
+        return self._http_request(method="GET", url_suffix="/api/v1/xdr/get_version/")
 
 
 """ COMMAND FUNCTIONS """
@@ -126,25 +111,19 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    query = str(args.get('query'))
-    source = str(args.get('source', 'third_party'))
-    tz_str = str(args.get('timezone', 'UTC'))
-    from_datetime = arg_to_datetime(args.get('from', '1 day'),
-                                    arg_name='from',
-                                    is_utc=True,
-                                    required=False)
-    if query == 'None':
+    query = str(args.get("query"))
+    source = str(args.get("source", "third_party"))
+    tz_str = str(args.get("timezone", "UTC"))
+    from_datetime = arg_to_datetime(args.get("from", "1 day"), arg_name="from", is_utc=True, required=False)
+    if query == "None":
         raise DemistoException("Please provide 'query' parameter, e.g. alerts")
     if from_datetime is None:
         raise ValueError("Failed to parse 'from' argument. Please provide correct value")
     if tz_str not in pytz.all_timezones:
         raise DemistoException(f"Invalid timezone specified: {tz_str}")
 
-    if args.get('to'):
-        to_datetime = arg_to_datetime(args.get('to'),
-                                      arg_name='to',
-                                      is_utc=True,
-                                      required=False)
+    if args.get("to"):
+        to_datetime = arg_to_datetime(args.get("to"), arg_name="to", is_utc=True, required=False)
         if to_datetime is None:
             raise ValueError("Failed to parse 'to' argument. Please provide correct value")
     else:
@@ -153,23 +132,17 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     time_from_ms = int(from_datetime.timestamp() * 1000)
     time_to_ms = int(to_datetime.timestamp() * 1000)
 
-    time_range = {
-        "from": time_from_ms,
-        "to": time_to_ms,
-        "timezone": tz_str
-    }
+    time_range = {"from": time_from_ms, "to": time_to_ms, "timezone": tz_str}
 
     response = client.create_search_job(query, source, time_range)
-    outputs = {
-        'job_id': response.get('job_id', '')
-    }
+    outputs = {"job_id": response.get("job_id", "")}
 
     return CommandResults(
-        outputs_prefix='AnomaliSecurityAnalytics.SearchJob',
-        outputs_key_field='job_id',
+        outputs_prefix="AnomaliSecurityAnalytics.SearchJob",
+        outputs_key_field="job_id",
         outputs=outputs,
         readable_output=tableToMarkdown(name="Search Job Created", t=outputs, removeNull=True),
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -185,69 +158,65 @@ def command_get_search_job_results(client: Client, args: dict) -> list[CommandRe
     Returns:
         list[CommandResults]: A list of command results for each job id.
     """
-    job_ids = argToList(str(args.get('job_id')))
-    offset = arg_to_number(args.get('offset', 0)) or 0
-    fetch_size = arg_to_number(args.get('fetch_size', 25)) or 25
+    job_ids = argToList(str(args.get("job_id")))
+    offset = arg_to_number(args.get("offset", 0)) or 0
+    fetch_size = arg_to_number(args.get("fetch_size", 25)) or 25
     command_results: list[CommandResults] = []
 
     for job_id in job_ids:
         status_response = client.get_search_job_status(job_id)
-        if 'error' in status_response:
+        if "error" in status_response:
             human_readable = (
                 f"No results found for Job ID: {job_id}. "
                 f"Error message: {status_response.get('error')}. "
                 f"Please verify the Job ID and try again."
             )
             command_result = CommandResults(
-                outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
+                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
                 outputs_key_field="job_id",
                 readable_output=human_readable,
-                raw_response=status_response
+                raw_response=status_response,
             )
             command_results.append(command_result)
             continue
 
-        status_value = status_response.get('status')
-        if status_value and status_value.upper() != 'DONE':
+        status_value = status_response.get("status")
+        if status_value and status_value.upper() != "DONE":
             human_readable = f"Job ID: {job_id} is still running. Current status: {status_value}."
             command_result = CommandResults(
-                outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
+                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
                 outputs_key_field="job_id",
                 outputs={"job_id": job_id, "status": status_value},
                 readable_output=human_readable,
-                raw_response=status_response
+                raw_response=status_response,
             )
             command_results.append(command_result)
         else:
             results_response = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_size)
-            if 'fields' in results_response and 'records' in results_response:
-                headers = results_response['fields']
-                records = results_response['records']
+            if "fields" in results_response and "records" in results_response:
+                headers = results_response["fields"]
+                records = results_response["records"]
                 combined_records = [dict(zip(headers, record)) for record in records]
-                results_response.pop('fields')
-                results_response['records'] = combined_records
-                human_readable = tableToMarkdown(name="Search Job Results",
-                                                 t=combined_records,
-                                                 headers=headers,
-                                                 removeNull=True)
+                results_response.pop("fields")
+                results_response["records"] = combined_records
+                human_readable = tableToMarkdown(name="Search Job Results", t=combined_records, headers=headers, removeNull=True)
             else:
-                human_readable = tableToMarkdown(name="Search Job Results",
-                                                 t=results_response,
-                                                 removeNull=True)
-            results_response['job_id'] = job_id
+                human_readable = tableToMarkdown(name="Search Job Results", t=results_response, removeNull=True)
+            results_response["job_id"] = job_id
             command_result = CommandResults(
-                outputs_prefix='AnomaliSecurityAnalytics.SearchJobResults',
-                outputs_key_field='job_id',
+                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
+                outputs_key_field="job_id",
                 outputs=results_response,
                 readable_output=human_readable,
-                raw_response=results_response
+                raw_response=results_response,
             )
             command_results.append(command_result)
     return command_results
 
 
 def command_update_alert(client: Client, args: dict) -> CommandResults:
-    """Update the status or comment of an alert.
+    """
+    Update various fields of an alert including status, comment, assignee, severity, etc.
 
     Args:
         client (Client): Client object with request
@@ -256,29 +225,28 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    status = str(args.get('status'))
-    comment = str(args.get('comment'))
-    uuid_val = str(args.get('uuid'))
-    if uuid_val == 'None':
+    uuid_val = str(args.get("uuid"))
+    if not uuid_val or uuid_val.lower() == "none":
         raise DemistoException("Please provide 'uuid' parameter.")
-    if status == 'None' and comment == 'None':
-        raise DemistoException("Please provide either 'status' or 'comment' parameter.")
-    columns = {}
-    if status != 'None':
-        columns['status'] = status
-    if comment != 'None':
-        columns['comment'] = comment
-    data = {
-        "table_name": "alert",
-        "columns": columns,
-        "primary_key_columns": ["uuid_"],
-        "primary_key_values": [[uuid_val]]
-    }
+
+    supported_fields = ["status", "comment", "assignee", "owner", "severity"]
+    columns = {field: args[field] for field in supported_fields if args.get(field) and str(args.get(field)).lower() != "none"}
+
+    if not columns:
+        raise DemistoException(f"No valid fields provided to update. Supported fields are: {', '.join(supported_fields)}")
+
+    data = {"table_name": "alert", "columns": columns, "primary_key_columns": ["uuid_"], "primary_key_values": [[uuid_val]]}
+
     response = client.update_alert(data)
+
+    readable = tableToMarkdown(name="Alert Updated Successfully", t=columns, removeNull=True)
+
     return CommandResults(
-        outputs_prefix='AnomaliSecurityAnalytics.UpdateAlert',
-        readable_output=tableToMarkdown(name="Update Alert", t=response, removeNull=True),
-        raw_response=response
+        outputs_prefix="AnomaliSecurityAnalytics.UpdateAlert",
+        outputs_key_field="uuid",
+        outputs={"uuid": uuid_val, "updated_fields": columns},
+        readable_output=readable,
+        raw_response=response,
     )
 
 
@@ -301,7 +269,7 @@ def test_module(client: Client) -> str:
         raise DemistoException(f"Error in API call - check the username and the API Key. Error: {e}.")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -317,20 +285,14 @@ def main():
     try:
         username = params.get("credentials", {}).get("identifier")
         api_key = params.get("credentials", {}).get("password")
-        client = Client(
-            server_url=base_url,
-            username=username,
-            api_key=api_key,
-            verify=verify_certificate,
-            proxy=proxy
-        )
+        client = Client(server_url=base_url, username=username, api_key=api_key, verify=verify_certificate, proxy=proxy)
         args = demisto.args()
         commands = {
-            'anomali-security-analytics-search-job-create': command_create_search_job,
-            'anomali-security-analytics-search-job-results': command_get_search_job_results,
-            'anomali-security-analytics-alert-update': command_update_alert,
+            "anomali-security-analytics-search-job-create": command_create_search_job,
+            "anomali-security-analytics-search-job-results": command_get_search_job_results,
+            "anomali-security-analytics-alert-update": command_update_alert,
         }
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
@@ -338,10 +300,10 @@ def main():
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as err:
-        return_error(f'Failed to execute {command} command. Error: {str(err)} \n ')
+        return_error(f"Failed to execute {command} command. Error: {str(err)} \n ")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
