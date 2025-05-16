@@ -2,7 +2,7 @@ id: Extract Indicators From File - Generic v2
 version: -1
 name: Extract Indicators From File - Generic v2
 description: |-
-  This playbook extracts indicators from a file.
+  This playbook extracts indicators from a file. test
   Supported file types:
   - CSV
   - PDF
