@@ -87,30 +87,45 @@
                     {
                         "id": "dummy_id",
                         "type": "file",
+                        "value": "00000000000000000000000000000002",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                    }
+                ]
+            },
+            {
+                "source": "flashpoint_detection",
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "tags": [
+                    "malware:pony",
+                    "os:windows",
+                    "source:flashpoint_detection",
+                    "type:stealer"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_id",
+                        "type": "file",
                         "value": "00000000000000000000000000000001",
                         "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
                     }
                 ]
             }
         ],
-        "latest_sighting": {
-            "source": "flashpoint_detection",
-            "sighted_at": "2025-01-02T01:00:00.000000",
-            "tags": [
-                "malware:pony",
-                "os:windows",
-                "source:flashpoint_detection",
-                "type:stealer"
-            ],
-            "related_iocs": [
-                {
-                    "id": "dummy_id",
-                    "type": "file",
-                    "value": "00000000000000000000000000000002",
-                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
-                }
-            ]
-        },
-        "total_sightings": 1
+        "historical_tags": [
+            "malware:pony",
+            "os:windows",
+            "source:flashpoint_detection",
+            "type:stealer"
+        ],
+        "reports": [
+            {
+                "html": "https://mock_dummy.com/cti/intelligence/report/report_1",
+                "json": "https://mock_dummy.com/finished-intelligence/v1/reports/report_1"
+            },
+            {
+                "html": "https://mock_dummy.com/cti/intelligence/report/report_2",
+                "json": "https://mock_dummy.com/finished-intelligence/v1/reports/report_2"
+            }
+        ]
     }
 }

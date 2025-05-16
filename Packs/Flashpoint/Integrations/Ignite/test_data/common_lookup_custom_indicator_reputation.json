@@ -2,8 +2,8 @@
     "items": [
         {
             "id": "dummy_id",
-            "type": "file",
-            "value": "00000000000000000000000000000001",
+            "type": "extracted_config",
+            "value": "dummy_value",
             "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
             "entity_type": "indicator",
             "score": {
@@ -19,58 +19,63 @@
             },
             "apt_description": "N/A",
             "external_references": [],
-            "hashes": {
-                "md5": "00000000000000000000000000000001",
-                "sha1": "0000000000000000000000000000000000000001",
-                "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
-            },
             "malware_description": "dummy description.",
             "mitre_attack_ids": [
                 {
-                    "id": "dummy_mitre_id",
-                    "name": "dummy name",
-                    "tactic": "Defense Evasion"
+                    "id": "dummy_mitre_attack_id",
+                    "name": "dummy_mitre_name",
+                    "tactic": "Discovery"
                 }
             ],
             "sightings": [
                 {
-                    "source": "flashpoint_detection",
-                    "sighted_at": "2025-01-02T01:00:00.000000",
+                    "source": "flashpoint_extraction",
+                    "sighted_at": "2025-01-02T01:00:00.000001",
                     "tags": [
-                        "malware:pony",
-                        "os:windows",
-                        "source:flashpoint_detection",
-                        "type:stealer"
+                        "dummy_tag_1",
+                        "dummy_tag_2",
+                        "dummy_tag_3"
                     ],
                     "related_iocs": [
                         {
+                            "id": "dummy_domain_id",
+                            "type": "domain",
+                            "value": "dummy_domain.com",
+                            "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_domain_id"
+                        },
+                        {
                             "id": "dummy_id",
-                            "type": "file",
-                            "value": "00000000000000000000000000000001",
+                            "type": "extracted_config",
+                            "value": "dummy_value",
                             "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
                         }
                     ]
                 }
             ],
             "latest_sighting": {
-                "source": "flashpoint_detection",
-                "sighted_at": "2025-01-02T01:00:00.000000",
+                "source": "flashpoint_extraction",
+                "sighted_at": "2025-01-02T01:00:00.000001",
                 "tags": [
-                    "malware:pony",
-                    "os:windows",
-                    "source:flashpoint_detection",
-                    "type:stealer"
+                    "dummy_tag_1",
+                    "dummy_tag_2",
+                    "dummy_tag_3"
                 ],
                 "related_iocs": [
                     {
+                        "id": "dummy_url_id",
+                        "type": "url",
+                        "value": "https://dummy_url.com",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_url_id"
+                    },
+                    {
                         "id": "dummy_id",
-                        "type": "file",
-                        "value": "00000000000000000000000000000002",
+                        "type": "extracted_config",
+                        "value": "dummy_value",
                         "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
                     }
                 ]
             },
-            "total_sightings": 1
+            "total_sightings": 4
         }
     ],
     "total": null,
