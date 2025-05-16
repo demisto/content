@@ -1,5 +1,5 @@
 id: c8a87555-15fd-45d2-800c-feb2dc507210
-version: 2
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Cortex Cloud - Create Ticket and Notify
 description: 'This playbook automates the dispatching of issues through ServiceNow

@@ -1,5 +1,5 @@
 id: 5e89413a-0689-4a62-888a-32b184144f74
-version: 3
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Cortex Cloud - AWS S3 Bucket Publicly Accessible Remediation
 description: |-

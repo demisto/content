@@ -1,5 +1,5 @@
 id: 62374b53-6e1b-4c9c-8ba8-0ec3889d64a1
-version: 4
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Cortex Cloud - AWS EC2 Instance Misconfigurations Remediation
 description: |-
@@ -622,12 +622,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ab943443-4877-4d49-a92a-af74b103cd1f
+    taskid: c5a9a185-7479-44f4-b32b-e7415ce06e8e
     type: regular
     task:
-      id: ab943443-4877-4d49-a92a-af74b103cd1f
+      id: c5a9a185-7479-44f4-b32b-e7415ce06e8e
       version: -1
-      name: aws-ec2-instance-metadata-options-modify
+      name: 'Update AWS EC2 Instance Metadata Service '
       description: Modify the EC2 instance metadata parameters on a running or stopped
         instance.
       script: AWS|||aws-ec2-instance-metadata-options-modify
