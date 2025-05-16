@@ -1357,6 +1357,10 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format="%Y-%m-%dT%H:%M:%S.000Z")
         demisto.debug(f"No last_fetched_alert_create_time, setting it to {last_fetched_alert_create_time}")
 
+    # Since the limit is passed down to the API and then a dedup takes place, increasing the limit
+    # by the number of potential duplicate events prevents the case where all the events returned from the API
+    # is filtered out in the dedup process
+    int_fetch_limit += len(last_fetched_alerts_ids)
     incidents = []
 
     response = client.search_alerts_request(

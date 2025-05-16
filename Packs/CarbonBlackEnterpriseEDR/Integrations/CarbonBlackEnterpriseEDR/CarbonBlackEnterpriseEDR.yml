@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Carbon Black Enterprise EDR
   version: -1
@@ -1477,7 +1480,7 @@ script:
       description: Threat ID.
     - contextPath: CarbonBlackEEDR.Threat.Tags
       description: Threat tags.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: ''
