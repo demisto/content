@@ -1,4 +1,6 @@
+from pytest_mock import MockerFixture
 import demistomock as demisto
+from CommonServerPython import entryTypes
 
 
 def test_create_space_command(mocker):
@@ -210,3 +212,61 @@ def test_search_content_command(mocker):
     Confluence.search_content_command()
 
     assert "Content Search" in demisto.results.call_args_list[0][0][0].get("HumanReadable")
+
+
+def test_get_page_as_pdf_command_success(mocker: MockerFixture):
+    """
+    Given: A page ID is provided to download the page as PDF.
+    When: The get_page_as_pdf_command function is called.
+    Then: The function should return the PDF file as a file result with the correct filename.
+    """
+    # Mock arguments
+    mocker.patch.object(
+        demisto, "params", return_value={"url": "url", "credentials": {"identifier": "identifier", "password": "password"}}
+    )
+    mocker.patch.object(demisto, "args", return_value={"pageid": "12345"})
+
+    # Mock the get_pdf function to return sample PDF data
+    mock_pdf_data = b"sample pdf data"
+    mocker.patch("Confluence.get_pdf", return_value=mock_pdf_data)
+
+    # Mock the demisto.results function
+    results_mock = mocker.patch.object(demisto, "results")
+
+    import Confluence
+
+    # Call the function
+    Confluence.get_page_as_pdf_command()
+
+    # Assert the expected file result was returned
+    results_mock.assert_called_once()
+    file_result = results_mock.call_args[0][0]
+    assert file_result["Type"] == entryTypes["file"]
+    assert file_result["File"] == "Confluence_page_12345.pdf"
+    assert file_result["FileID"] is not None
+
+
+def test_get_pdf_success(mocker):
+    """
+    Given: A valid page_id is provided to the get_pdf function.
+    When: The function calls http_request to fetch the PDF content.
+    Then: The function should return the response content.
+    """
+    # Mock the http_request function
+    mocker.patch.object(
+        demisto, "params", return_value={"url": "url", "credentials": {"identifier": "identifier", "password": "password"}}
+    )
+    mock_response = b"mock pdf content"
+    mock_http_request = mocker.patch("Confluence.http_request", return_value=mock_response)
+
+    import Confluence
+
+    # Call the function
+    page_id = "12345"
+    result = Confluence.get_pdf(page_id)
+
+    # Assert the result and that http_request was called with the correct parameters
+    assert result == mock_response
+    mock_http_request.assert_called_once_with(
+        "GET", Confluence.SERVER + "/spaces/flyingpdf/pdfpageexport.action", None, params={"pageId": page_id}, resp_type="content"
+    )
