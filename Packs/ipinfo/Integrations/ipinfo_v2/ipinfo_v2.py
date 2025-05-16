@@ -3,7 +3,7 @@ from CommonServerUserPython import *  # noqa
 
 import traceback
 from typing import Any
-
+test=1
 BRAND_NAME = "IPinfo"  # matches context output path for faster caching
 
 

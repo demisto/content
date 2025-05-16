@@ -17,7 +17,7 @@ configuration:
   name: token
   type: 4
   required: false
-- display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)f
   name: insecure
   type: 8
   required: false
