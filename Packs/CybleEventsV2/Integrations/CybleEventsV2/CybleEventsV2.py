@@ -5,11 +5,13 @@ import requests
 from datetime import datetime, timedelta
 import pytz
 import urllib3
+import dateparser
 import json
 from dateutil.parser import isoparse
 from dateutil.parser import parse as parse_date
-import dateparser
+
 import traceback
+
 from collections.abc import Sequence
 import concurrent.futures
 
@@ -80,16 +82,6 @@ HEADERS = lambda alerts_api_key: {
 }
 ENCODED_HEADER = lambda headers: {k: v.encode('utf-8') for k, v in headers.items()}
 
-def time_diff_in_mins(gte: datetime, lte: datetime):
-    """
-    Calculates the difference in minutes between two datetime objects.
-
-    :param gte: The start date time
-    :param lte: The end date time
-    :return: The difference in minutes
-    """
-    diff = (lte - gte).total_seconds() / 60
-    return diff
 
 def get_event_format(event):
     """
@@ -106,22 +98,18 @@ def get_event_format(event):
         'created': event.get('created_at')
     }
 
-def ensure_aware(dt: datetime) -> datetime:
-    """Ensure datetime is timezone-aware in UTC."""
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=pytz.UTC)
-    return dt.astimezone(pytz.UTC)
 
 def get_alert_payload(service, input_params: dict[str, any], is_update=False):
     """
     Generate the payload for a call to the Cyble alerts API.
-    
+
     :param service: The service to fetch alerts for
     :param input_params: A dictionary of parameters for the API call
     :param is_update: If True, use `updated_at` instead of `created_at`
     :return: A dictionary containing the payload for the API call
     """
     try:
+        # Determine the timestamp field based on `is_update`
         timestamp_field = "updated_at" if is_update else "created_at"
 
         return {
@@ -131,88 +119,21 @@ def get_alert_payload(service, input_params: dict[str, any], is_update=False):
                     "gte": ensure_aware(datetime.fromisoformat(input_params["gte"])).strftime(
                         "%Y-%m-%dT%H:%M:%S+00:00"),
                     "lte": ensure_aware(datetime.fromisoformat(input_params["lte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+
                 },
-                "status": DEFAULT_STATUSES,
-                "severity": input_params["severity"],
-                "orderBy": [{timestamp_field: input_params["order_by"]}],
-                "skip": input_params["skip"],
-                "take": input_params["take"],
-                "countOnly": False,
-                "taggedAlert": False,
-                "withDataMessage": True,
-            }
+                "status": ["VIEWED", "UNREVIEWED", "CONFIRMED_INCIDENT", "UNDER_REVIEW", "INFORMATIONAL"],
+                "severity": input_params["severity"]
+            },
+            "orderBy": [{timestamp_field: input_params["order_by"]}],
+            "skip": input_params["skip"],
+            "take": input_params["take"],
+            "countOnly": False,
+            "taggedAlert": False,
+            "withDataMessage": True,
         }
-
     except Exception as e:
-        demisto.error(f"Error in formatting payload: {e}")
+        demisto.error(f"Error in formatting: {e}")
 
-def build_get_alert_payload(alert_id):
-    """
-    Builds the payload for fetching an alert by ID.
-    """
-    return {
-        "filters": {
-            "id": [alert_id]
-        },
-        "excludes": {
-            "status": ["FALSE_POSITIVE"]
-        },
-        "orderBy": [
-            {
-                "created_at": "desc"
-            }
-        ],
-        "skip": 0,
-        "take": 1,
-        "taggedAlert": False,
-        "withDataMessage": True,
-        "countOnly": False
-    }
-
-def build_auth_headers(token):
-    """
-    Builds the authorization headers for the API request.
-    """
-    return {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-
-def get_alert_by_id(client, alert_id, token, url):
-    """
-    Fetches a specific alert by its ID.
-    """
-    demisto.debug(f"[get_alert_by_id] Fetching alert with ID: {alert_id}")
-
-    payload = build_get_alert_payload(alert_id)
-    headers = build_auth_headers(token)
-
-    demisto.debug("[get_alert_by_id] Final payload being sent:")
-    demisto.debug(json.dumps(payload, indent=2))
-
-    try:
-        response = client._http_request(
-            method='POST',
-            url_suffix='/y/tpi/cortex/alerts',
-            headers=headers,
-            json_data=payload,
-            timeout=30
-        )
-
-        demisto.debug("[get_alert_by_id] Raw response:")
-        demisto.debug(json.dumps(response, indent=2))
-
-        data = response.get("data", [])
-        if data:
-            demisto.debug(f"[get_alert_by_id] Alert found: ID {alert_id}")
-            return data[0]
-
-        demisto.debug(f"[get_alert_by_id] No alert found for ID: {alert_id}")
-        return None
-
-    except Exception as e:
-        demisto.error(f"[get_alert_by_id] Error during HTTP request: {e}")
-        return None
 
 def get_alert_payload_by_id(
         client,
@@ -247,6 +168,19 @@ def get_alert_payload_by_id(
     except Exception as e:
         demisto.error(f"[get_alert_payload_by_id] Exception occurred: {e}")
         return {}
+
+
+def time_diff_in_mins(gte: datetime, lte: datetime):
+    """
+    Calculates the difference in minutes between two datetime objects.
+
+    :param gte: The start date time
+    :param lte: The end date time
+    :return: The difference in minutes
+    """
+    diff = (lte - gte).total_seconds() / 60
+    return diff
+
 
 def format_incidents(alerts, hide_cvv_expiry):
     """
@@ -290,12 +224,11 @@ def format_incidents(alerts, hide_cvv_expiry):
                         "url": content.get('URL'),
                         "username": content.get('Username')
                     })
-                alert_details.update({"filename": alert['data']['filename'] })
+                alert_details.update({"filename": alert['data']['filename']})
             events.append(alert_details)
         except Exception as e:
             demisto.debug(f'Unable to format incidents, error: {e}')
     return events
-
 
 
 class Client(BaseClient):
@@ -326,8 +259,8 @@ class Client(BaseClient):
             except Exception:
                 pass
         return None
-    
-    def make_request(self, url, api_key, method = 'GET', payload_json = None, params = None):
+
+    def make_request(self, url, api_key, method='GET', payload_json=None, params=None):
         """
         Makes an HTTP request to the specified host and path with the specified API key,
         method, and payload_json. Returns the response object.
@@ -342,8 +275,9 @@ class Client(BaseClient):
         """
         headers = HEADERS(api_key)
         encoded_headers = ENCODED_HEADER(headers)
-        return requests.request(method, url, data=payload_json, headers=encoded_headers, params=params, timeout=DEFAULT_REQUEST_TIMEOUT)
-    
+        return requests.request(method, url, data=payload_json, headers=encoded_headers, params=params,
+                                timeout=DEFAULT_REQUEST_TIMEOUT)
+
     def get_data(self, service, input_params, is_update=False):
         """
         Sends an HTTP POST request to the given host with the provided payload and API key,
@@ -356,18 +290,31 @@ class Client(BaseClient):
         :param is_update: Whether this is an update fetch (based on updated_at instead of created_at)
         :return: The JSON response from the request as a dictionary, or an empty dictionary if the request fails
         """
+
         try:
+
             payload = get_alert_payload(service, input_params, is_update)
+
             payload_json = json.dumps(payload)
+
+            # Extract the URL and API key
             url, alerts_api_key = input_params["url"], input_params["api_key"]
+
+            # Send the HTTP POST request
             response = self.make_request(url, alerts_api_key, 'POST', payload_json)
+
+            # Check if the response status code is 200
             if response.status_code != 200:
                 raise Exception(f"Wrong status code: {response.status_code}")
-            return response.json()
+
+            # Return the JSON response
+            response_json = response.json()
+            return response_json
+
         except Exception as e:
-            demisto.debug("Failed to get Alert data: %s" % str(e))
-        return {}
-    
+            demisto.debug(f"Failed to get Alert data: {str(e)}")
+            return {}
+
     def get_all_services(self, api_key, url):
         """
         Requests the list of all services from the Cyble API with the given API key and logs errors if the request fails.
@@ -382,16 +329,22 @@ class Client(BaseClient):
             if response.status_code != 200:
                 raise Exception("Wrong status code: %s" % response.status_code)
             response = response.json()
+
             if 'data' in response and isinstance(response['data'], Sequence):
-                return response['data']
+                return ['compromised_files']
+                # services = []
+                # for each_service in response['data']:
+                #     if each_service["name"] not in EXCLUDED_SERVICES:
+                #         services.append(each_service["name"])
+                # return services
             else:
                 raise Exception("Wrong Format for services response")
         except Exception as e:
             demisto.debug("Failed to get services: %s" % str(e))
 
         return []
-    
-    def insert_data_in_cortex(self, service, input_params, is_update=False):
+
+    def insert_data_in_cortex(self, service, input_params, is_update):
         """
         Fetches and inserts data into Cortex XSOAR from the given service based on the given parameters.
 
@@ -399,7 +352,6 @@ class Client(BaseClient):
         :param input_params: A dictionary containing parameters for the API call, including the API key, base URL, skip, take, and time range
         :return: The latest created time of the data inserted
         """
-
         latest_created_time = datetime.utcnow()
         input_params.update({
             "skip": 0,
@@ -407,14 +359,18 @@ class Client(BaseClient):
         })
 
         all_incidents = []
+
         try:
             while True:
                 response = self.get_data(service, input_params, is_update)
                 input_params["skip"] += input_params["take"]
+
                 if 'data' in response and isinstance(response['data'], Sequence):
                     if len(response["data"]) == 0:
                         break
+
                     latest_created_time = parse_date(response['data'][-1].get('created_at')) + timedelta(microseconds=1)
+
                     events, incidentsArr = format_incidents(response['data'], input_params["hce"]), []
                     for event in events:
                         incident = get_event_format(event)
@@ -422,14 +378,17 @@ class Client(BaseClient):
 
                     all_incidents.extend(incidentsArr)
                     demisto.incidents(incidentsArr)
+
                 else:
-                    raise Exception(f"Unable to fetch data for gte: {input_params['gte']} to lte: {input_params['lte']} and skip: {input_params['skip']} and take: {input_params['take']}")
+                    raise Exception(
+                        f"Unable to fetch data for gte: {input_params['gte']} to lte: {input_params['lte']} and skip: {input_params['skip']} and take: {input_params['take']}")
+
         except Exception as e:
-            demisto.debug("Failed to process insert_data_in_cortex with %s" % str(e))
+            demisto.debug(f"Failed to process insert_data_in_cortex: {str(e)}")
+
         return all_incidents, latest_created_time
 
-    
-    def get_data_with_retry(self, service, input_params: dict[str, any], is_update=False):
+    def get_data_with_retry(self, service, input_params, is_update=False):
         """
         Recursively splits time ranges and fetches data, inserting it into Cortex.
         Returns a tuple of (alerts, latest_created_time).
@@ -450,6 +409,7 @@ class Client(BaseClient):
             current_params['lte'] = current_lte.isoformat()
 
             response = self.get_data(service, current_params, is_update=is_update)
+
             if 'data' in response:
                 curr_alerts, curr_time = self.insert_data_in_cortex(service, current_params, is_update)
                 all_alerts.extend(curr_alerts)
@@ -464,22 +424,21 @@ class Client(BaseClient):
             else:
                 demisto.debug(f"Unable to fetch data for gte: {current_gte} to lte: {current_lte}")
 
-            return all_alerts, latest_created_time + timedelta(microseconds=1)
+        return all_alerts, latest_created_time + timedelta(microseconds=1)
 
     def get_ids_with_retry(self, service, input_params, is_update=False):
         """
         Recursively splits time ranges and fetches data, inserting it into Cortex.
         Returns a tuple of (alerts, latest_created_time).
         """
-
         gte = parse_date(input_params["gte"])
         lte = parse_date(input_params["lte"])
+
         que, latest_created_time = [[gte, lte]], datetime.utcnow()
         ids = []
 
         while que:
             current_gte, current_lte = que.pop(0)
-
 
             # Serialize datetime objects to strings BEFORE placing in input_params
             input_params['gte'] = current_gte.isoformat()
@@ -496,14 +455,14 @@ class Client(BaseClient):
                     [mid_datetime + timedelta(microseconds=1), current_lte]
                 ])
             else:
-                demisto.debug(f"Unable To Fetch data For gte: {current_gte} to lte: {current_lte}")
-            return ids
+                demisto.debug(f"Unable to fetch data for gte: {current_gte} to lte: {current_lte}")
 
-    
+        return ids
+
     def update_alert(self, payload, url, api_key):
         """
         Updates the alert with the given payload and API key.
-        
+
         :param payload: A dictionary of key-value pairs containing the alert data to be updated.
         :param url: The URL of the Cyble API endpoint to be used for the request.
         :param api_key: The API key to be used for the request.
@@ -519,49 +478,6 @@ class Client(BaseClient):
             demisto.debug("Failed to process update_alert with %s" % str(e))
 
 
-def get_alert_data(client, token, url, args):
-    """
-    Fetch alert details from the Cyble server for updating in XSOAR.
-    Args:
-        client: Instance of client to communicate with server.
-        token: API access token.
-        url: Endpoint URL for fetching alerts.
-        args: Arguments passed from XSOAR (like alert ID).
-    Returns:
-        dict: Fetched alert details.
-    """
-    alert_id = args.get('id')
-    if not alert_id:
-        raise ValueError("Alert ID is required to fetch data.")
-    input_params = {
-        "where": {
-            "id": {
-                "in": [alert_id]
-            }
-        },
-        "select": {
-            "id": True,
-            "created_at": True,
-            "updated_at": True,
-            "description": True,
-            "severity": True,
-            "status": True,
-            "service": True
-        },
-        "skip": 0,
-        "take": 1
-    }
-    #  Fetch data using the client
-    response = client.get_data(url, token, input_params)
-    if 'data' in response and response['data']:
-        alert = response['data'][0]
-        #  Directly map Cyble Vision status using status_map
-        alert['status'] = status_map.get(alert['status'], 'New')
-        return alert
-    else:
-        raise ValueError(f"No alert found with ID {alert_id}")
-
-
 def validate_iocs_input(args):
     """
     Validates the input arguments for the fetch-iocs command.
@@ -575,7 +491,8 @@ def validate_iocs_input(args):
             raise ValueError(f"The parameter from has a negative value, from: {arg_to_number(args.get('from'))}'")
         limit, date_format = int(args.get('limit', 1)), "%Y-%m-%d"
         if args.get('start_date') and args.get('end_date'):
-            _start_date, _end_date = datetime.strptime(args.get('start_date'), date_format), datetime.strptime(args.get('end_date'), date_format)
+            _start_date, _end_date = datetime.strptime(args.get('start_date'), date_format), datetime.strptime(
+                args.get('end_date'), date_format)
         else:
             _start_date, _end_date = datetime(1, 1, 1, 0, 0), datetime(1, 1, 1, 0, 0)
         if limit <= 0 or limit > 100:
@@ -584,6 +501,7 @@ def validate_iocs_input(args):
             raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
     except Exception as e:
         demisto.error("Failed to process validate_iocs_input with %s" % str(e))
+
 
 def validate_alerts_input(args):
     """
@@ -599,7 +517,8 @@ def validate_alerts_input(args):
         limit, date_format = int(args.get('limit', 1)), "%Y-%m-%dT%H:%M:%S%z"
         if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
             raise ValueError(f"The limit argument number should, up to 1000, limit: {limit}")
-        _start_date, _end_date = datetime.strptime(args.get('start_date'), date_format), datetime.strptime(args.get('end_date'), date_format)
+        _start_date, _end_date = datetime.strptime(args.get('start_date'), date_format), datetime.strptime(
+            args.get('end_date'), date_format)
         if _start_date > _end_date:
             raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
     except Exception as e:
@@ -673,6 +592,7 @@ def set_request(client, method, token, input_params, url):
     response = client.get_response(url, headers, input_params, method)
     return response
 
+
 def fetch_service_details(client, base_url, token):
     """
     Fetches the names of all subscribed services from the Cyble API.
@@ -693,6 +613,56 @@ def fetch_service_details(client, base_url, token):
     return lst
 
 
+def ensure_aware(dt: datetime) -> datetime:
+    """Ensure datetime is timezone-aware in UTC."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=pytz.UTC)
+    return dt.astimezone(pytz.UTC)
+
+
+def get_alert_data(client, token, url, args):
+    """
+    Fetch alert details from the Cyble server for updating in XSOAR.
+    Args:
+        client: Instance of client to communicate with server.
+        token: API access token.
+        url: Endpoint URL for fetching alerts.
+        args: Arguments passed from XSOAR (like alert ID).
+    Returns:
+        dict: Fetched alert details.
+    """
+    alert_id = args.get('id')
+    if not alert_id:
+        raise ValueError("Alert ID is required to fetch data.")
+    input_params = {
+        "where": {
+            "id": {
+                "in": [alert_id]
+            }
+        },
+        "select": {
+            "id": True,
+            "created_at": True,
+            "updated_at": True,
+            "description": True,
+            "severity": True,
+            "status": True,
+            "service": True
+        },
+        "skip": 0,
+        "take": 1
+    }
+    #  Fetch data using the client
+    response = client.get_data(url, token, input_params)
+    if 'data' in response and response['data']:
+        alert = response['data'][0]
+        #  Directly map Cyble Vision status using status_map
+        alert['status'] = status_map.get(alert['status'], 'New')
+        return alert
+    else:
+        raise ValueError(f"No alert found with ID {alert_id}")
+
+
 def fetch_subscribed_services(client, method, base_url, token):
     """
     Fetch cyble subscribed services
@@ -704,13 +674,11 @@ def fetch_subscribed_services(client, method, base_url, token):
 
     Returns: subscribed service list
     """
-    try:
-        fetch = client.get_all_services(token, base_url)
-        if fetch:
-            return 'ok'
-    except Exception as e:
-        demisto.error(f"Failed to connect: {e}")
-        raise Exception(f"failed to connect: {e}")
+    subscribed_services, service_name_list = client.get_all_services(token), []
+    if subscribed_services:
+        for subscribed_service in subscribed_services:
+            service_name_list.append({"name": subscribed_service['name']})
+    return service_name_list
 
 
 def test_response(client, method, base_url, token):
@@ -724,36 +692,39 @@ def test_response(client, method, base_url, token):
 
     Returns: test response
     """
-    fetch = client.get_all_services(token)
-    if fetch:
-        return 'ok'
-    else:
-        demisto.error("Failed to connect")
-        raise Exception("failed to connect")
-    
+    try:
+        fetch = client.get_all_services(token, base_url)
+        if fetch:
+            return 'ok'
+    except Exception as e:
+        demisto.error(f"Failed to connect: {e}")
+        raise Exception(f"failed to connect: {e}")
+
 
 def migrate_data(client: Client, input_params: dict[str, any], is_update=False):
     """
-    Migrates data from cyble to demisto cortex
+    Migrates data from cyble to demisto cortex.
+
     Args:
         client: instance of client to communicate with server
         input_params: dict containing the parameters for the migration, including services and their associated parameters
         is_update: Boolean flag indicating whether this is an update (used for get-modified-remote-data)
 
-    Returns: max of the last fetched timestamp
+    Returns: the max of the last fetched timestamp
     """
     chunkedServices = [input_params["services"][i:i + MAX_THREADS] for i in
                        range(0, len(input_params["services"]), MAX_THREADS)]
     last_fetched = datetime.utcnow()
+    all_alerts = []
 
     try:
         for chunk in chunkedServices:
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(client.get_data_with_retry, service, input_params, is_update) for service in chunk]
+                futures = [
+                    executor.submit(client.get_data_with_retry, service, input_params, is_update)
+                    for service in chunk
+                ]
             for future in concurrent.futures.as_completed(futures):
-                last_fetched = max(last_fetched, future.result())
-                all_alerts = []
-
                 try:
                     alerts, fetched_time = future.result()
                     all_alerts.extend(alerts)
@@ -761,25 +732,16 @@ def migrate_data(client: Client, input_params: dict[str, any], is_update=False):
                         last_fetched = max(last_fetched, fetched_time)
                 except Exception as inner_e:
                     demisto.debug(f"Error while processing future in migrate_data: {str(inner_e)}")
-                return all_alerts, last_fetched
 
     except Exception as e:
-        demisto.debug("Issue in migrate_data, Error: %s" % str(e))
+        demisto.debug(f"Issue in migrate_data, Error: {str(e)}")
 
-    return last_fetched
+    return all_alerts, last_fetched
 
 
 def fetch_few_alerts(client, input_params, services, url, token, is_update=False):
-    """
-    Fetches a sample of alerts from the specified services.
+    demisto.debug("[fetch_few_alerts] Starting fetch")
 
-    Args:
-        client: An instance of the client to communicate with the server.
-        input_params: A dictionary containing parameters for fetching alerts, including services to fetch from.
-
-    Returns:
-        A list of formatted events based on the fetched alerts.
-    """
     result = []
     input_params["take"] = SAMPLE_ALERTS  # override limit for sample
     demisto.debug(f"[fetch_few_alerts] Updated 'take' to SAMPLE_ALERTS ({SAMPLE_ALERTS})")
@@ -804,15 +766,86 @@ def fetch_few_alerts(client, input_params, services, url, token, is_update=False
                     result.append(formatted_event)
             else:
                 demisto.debug("[fetch_few_alerts] No valid data in response")
-
         except Exception as e:
             demisto.error(f"[fetch_few_alerts] Error fetching data: {e}")
             continue
 
         if result:
             break
+
     demisto.debug(f"[fetch_few_alerts] Total alerts returned: {len(result)}")
     return result
+
+
+def build_get_alert_payload(alert_id):
+    """
+    Builds the payload for fetching an alert by ID.
+    """
+    return {
+        "filters": {
+            "id": [alert_id]
+        },
+        "excludes": {
+            "status": ["FALSE_POSITIVE"]
+        },
+        "orderBy": [
+            {
+                "created_at": "desc"
+            }
+        ],
+        "skip": 0,
+        "take": 1,
+        "taggedAlert": False,
+        "withDataMessage": True,
+        "countOnly": False
+    }
+
+
+def build_auth_headers(token):
+    """
+    Builds the authorization headers for the API request.
+    """
+    return {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+
+def get_alert_by_id(client, alert_id, token, url):
+    """
+    Fetches a specific alert by its ID.
+    """
+    demisto.debug(f"[get_alert_by_id] Fetching alert with ID: {alert_id}")
+
+    payload = build_get_alert_payload(alert_id)
+    headers = build_auth_headers(token)
+
+    demisto.debug("[get_alert_by_id] Final payload being sent:")
+    demisto.debug(json.dumps(payload, indent=2))
+
+    try:
+        response = client._http_request(
+            method='POST',
+            url_suffix='/y/tpi/cortex/alerts',
+            headers=headers,
+            json_data=payload,
+            timeout=30
+        )
+
+        demisto.debug("[get_alert_by_id] Raw response:")
+        demisto.debug(json.dumps(response, indent=2))
+
+        data = response.get("data", [])
+        if data:
+            demisto.debug(f"[get_alert_by_id] Alert found: ID {alert_id}")
+            return data[0]
+
+        demisto.debug(f"[get_alert_by_id] No alert found for ID: {alert_id}")
+        return None
+
+    except Exception as e:
+        demisto.error(f"[get_alert_by_id] Error during HTTP request: {e}")
+        return None
 
 
 def get_fetch_service_list(client, incident_collections, service_url, token):
@@ -825,8 +858,8 @@ def get_fetch_service_list(client, incident_collections, service_url, token):
         service_url: The base URL for the server.
         token: The API access token.
 
-    If specific incident collections are provided (excluding "All collections"), 
-    it appends corresponding service names to `fetch_services`. Otherwise, it fetches 
+    If specific incident collections are provided (excluding "All collections"),
+    it appends corresponding service names to `fetch_services`. Otherwise, it fetches
     all services using the client.
     """
     fetch_services = []
@@ -843,6 +876,7 @@ def get_fetch_service_list(client, incident_collections, service_url, token):
         fetch_services = client.get_all_services(token, service_url)
     return fetch_services
 
+
 def get_fetch_severities(incident_severity):
     """
     Determines the list of severities to fetch based on provided incident severities.
@@ -852,33 +886,23 @@ def get_fetch_severities(incident_severity):
 
     Returns:
         A list of severities to fetch. If specific severities are provided (excluding "All severities"),
-        it returns the corresponding severities from the SEVERITIES mapping. Otherwise, it defaults to 
+        it returns the corresponding severities from the SEVERITIES mapping. Otherwise, it defaults to
         ["LOW", "MEDIUM", "HIGH"].
     """
     fetch_severities = []
     if len(incident_severity) > 0 and "All severities" not in incident_severity:
         for severity in incident_severity:
             fetch_severities.append(SEVERITIES.get(severity))
-    else: fetch_severities = ["LOW", "MEDIUM", "HIGH"]
+    else:
+        fetch_severities = ["LOW", "MEDIUM", "HIGH"]
     return fetch_severities
 
-def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, skip=True):
+
+def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity,
+                 skip=True):
     """
-    Fetch alert details from server for creating incidents in XSOAR
-    Args:
-        client: instance of client to communicate with server
-        method: Requests method to be used
-        token: API access token
-        url: end point URL
-        args: input args
-        last_run: get last run details
-        hide_cvv_expiry: hide expiry / cvv number from cards
-        incident_collections: list of collections to be fetched
-        incident_severity: list of severities to be fetched
-        skip: skip the validation for fetch incidnet
-
-    Returns: events from the server
-
+    Entry point for fetching alerts from Cyble Vision.
+    Calls the appropriate fetch function based on manual or scheduled execution.
     """
     demisto.debug("[cyble_events] Function called")
 
@@ -899,14 +923,15 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         input_params['gte'] = last_run['event_pull_start_date']
 
     input_params['lte'] = datetime.utcnow().astimezone().isoformat()
+
     fetch_services = get_fetch_service_list(client, incident_collections, url, token)
     fetch_severities = get_fetch_severities(incident_severity)
 
     input_params.update({
         "severity": fetch_severities,
         "take": input_params["limit"],
-        "url": url,
         "services": fetch_services or [],
+        "url": url,
         "hce": hide_cvv_expiry,
         "api_key": token,
         "lte": input_params['lte'],
@@ -915,10 +940,11 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     all_alerts, latest_created_time = migrate_data(client, input_params, False)
     last_run = {'event_pull_start_date': latest_created_time.astimezone().isoformat()}
-
     return all_alerts, last_run
 
-def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, incident_collections, incident_severity):
+
+def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, incident_collections,
+                                     incident_severity):
     demisto.debug("[get-modified-remote-data] Starting command...")
 
     try:
@@ -962,6 +988,7 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
         demisto.error("[get-modified-remote-data] Invalid response format")
         return GetModifiedRemoteDataResponse([])
 
+
 def get_remote_data_command(client, url, token, args, incident_collections, incident_severity, hide_cvv_expiry):
     demisto.debug("[get-remote-data] Starting command")
 
@@ -999,6 +1026,7 @@ def get_remote_data_command(client, url, token, args, incident_collections, inci
         entries=[]
     )
 
+
 def manual_fetch(client, args, token, url, incident_collections, incident_severity):
     demisto.debug("[manual_fetch] Manual run detected")
 
@@ -1028,7 +1056,9 @@ def manual_fetch(client, args, token, url, incident_collections, incident_severi
 
     return alerts
 
-def scheduled_fetch(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity):
+
+def scheduled_fetch(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections,
+                    incident_severity):
     demisto.debug("[scheduled_fetch] Started with migrate_data")
     order_by = args.get('order_by', "asc")
     max_fetch = arg_to_number(demisto.params().get('max_fetch', 1))
@@ -1049,7 +1079,7 @@ def scheduled_fetch(client, method, token, url, args, last_run, hide_cvv_expiry,
         'lte': lte,
         'order_by': order_by,
         'limit': MAX_ALERTS,
-        'status':DEFAULT_STATUSES,
+        'status': DEFAULT_STATUSES,
         'services': []
     }
 
@@ -1079,6 +1109,7 @@ def scheduled_fetch(client, method, token, url, args, last_run, hide_cvv_expiry,
     new_last_run = {'event_pull_start_date': last_fetched.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}
     demisto.debug(f"[scheduled_fetch] Completed migrate_data. New last_run: {new_last_run}")
 
+
 def update_remote_system(client, method, token, args, url):
     """
     Updates any changes in any mappable incident to remote server
@@ -1102,7 +1133,8 @@ def update_remote_system(client, method, token, args, url):
             "4": "CRITICAL"
         }
         data = parsed_args.data
-        incident_id, status, service, assignee_id, updated_severity = data.get('id'), data.get('status'), data.get('service'), data.get('assignee_id'), str(data.get('severity'))
+        incident_id, status, service, assignee_id, updated_severity = data.get('id'), data.get('status'), data.get(
+            'service'), data.get('assignee_id'), str(data.get('severity'))
         updated_event = {
             "id": incident_id,
             "service": service
@@ -1113,11 +1145,11 @@ def update_remote_system(client, method, token, args, url):
             updated_event["assignee_id"] = assignee_id
         if updated_severity:
             updated_event["user_severity"] = severities.get(updated_severity)
-            
-        client.update_alert({ "alerts": [updated_event] }, url, token)
+
+        client.update_alert({"alerts": [updated_event]}, url, token)
 
 
-def get_mapping_fields(client, token, url): # need to be refactored - @TODO
+def get_mapping_fields(client, token, url):  # need to be refactored - @TODO
     """
     Fetches all the fields associated with incidents for creating outgoing mapper
     Args:
@@ -1289,11 +1321,11 @@ def main():
     """
     Main function to execute Cyble Events commands in Cortex XSOAR.
 
-    This function initializes the client using parameters provided in the 
-    integration settings, and executes commands based on the input from 
-    the Cortex XSOAR platform. Commands supported include testing the 
-    integration, fetching incidents, updating remote systems, fetching 
-    mapping fields, and various Cyble Vision specific commands such as 
+    This function initializes the client using parameters provided in the
+    integration settings, and executes commands based on the input from
+    the Cortex XSOAR platform. Commands supported include testing the
+    integration, fetching incidents, updating remote systems, fetching
+    mapping fields, and various Cyble Vision specific commands such as
     fetching subscribed services, alert groups, IOCs, and alerts.
 
     Raises:
@@ -1318,52 +1350,65 @@ def main():
         client = Client(
             base_url=params.get('base_url'),
             verify=verify_certificate,
-            proxy=proxy)
-
+            proxy=proxy
+        )
         args = demisto.args()
+
         if demisto.command() == "test-module":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             return_results(test_response(client, "GET", url, token))
 
         elif demisto.command() == 'fetch-incidents':
-            data, last_run = demisto.getLastRun()
+            last_run = demisto.getLastRun()
+
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            next_run = cyble_events(client, 'POST', token, url, args, last_run,
+            data, next_run = cyble_events(client, 'POST', token, url, args, last_run,
                                           hide_cvv_expiry, incident_collections, incident_severity, False)
+
             demisto.setLastRun(next_run)
             demisto.incidents(data)
+
         elif demisto.command() == 'update-remote-system':
             if mirror:
                 url = base_url + str(ROUTES[COMMAND[demisto.command()]])
                 return_results(update_remote_system(client, 'PUT', token, args, url))
             return
+
         elif demisto.command() == 'get-mapping-fields':
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             return_results(get_mapping_fields(client, token, url))
+
         elif demisto.command() == "cyble-vision-subscribed-services":
             return_results(fetch_subscribed_services_alert(client, "GET", base_url, token))
+
         elif demisto.command() == 'cyble-vision-fetch-iocs':
             validate_iocs_input(args)
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             command_results = cyble_fetch_iocs(client, 'GET', token, args, url)
             return_results(command_results)
+
+
+
         elif demisto.command() == 'cyble-vision-fetch-alerts':
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            lst_alerts, next_run = cyble_events(client, 'POST', token, url, args, {},
-                                                hide_cvv_expiry, incident_collections, incident_severity, False)
-            markdown = tableToMarkdown('Alerts Details:', lst_alerts)
+            lst_alerts = cyble_events(client, 'POST', token, url, args, {},
+                                      hide_cvv_expiry, incident_collections, incident_severity, False)
             return_results(CommandResults(
-                readable_output=markdown,
+                readable_output="Fetched alerts successfully.",
                 outputs_prefix='CybleEvents.Alerts',
                 raw_response=lst_alerts,
                 outputs=lst_alerts
             ))
+
+
         elif demisto.command() == 'get-modified-remote-data':
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             return_results(
                 get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, incident_collections,
                                                  incident_severity)
             )
+
+
         elif demisto.command() == 'get-remote-data':
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             return_results(
@@ -1371,8 +1416,10 @@ def main():
                     client, url, token, args, incident_collections, incident_severity, hide_cvv_expiry
                 )
             )
+
         else:
             raise NotImplementedError(f'{demisto.command()} command is not implemented.')
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
