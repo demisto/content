@@ -2234,3 +2234,100 @@ def test_update_incident_with_client_changed_etag(mocker):
 def test_extract_classification_reason(delta, data, expected):
     result = extract_classification_reason(delta, data)
     assert result == expected
+
+
+def test_max_limit_argument_in_fetch_and_list_incident_commands(mocker):
+    """
+    Given:
+        - A max limit argument to the azure-sentinel-list-incidents command.
+
+    When:
+        - Execute the fetch-incident and the azure-sentinel-list-incidents commands.
+
+    Then:
+        - Ensure the the limit argument and the limit parameter were set correctly.
+    """
+    # prepare
+    args = {"limit": "201"}
+    mocker.patch("AzureSentinel.demisto.params", return_value={"limit": "201"})
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+
+    # execute
+    list_incidents_command(client, args=args)
+    fetch_incidents(client, last_run, "3 days", "Informational")
+
+    assert client.http_request.call_args_list[0][1] == {"params": {"$top": 200, "$orderby": "properties/createdTimeUtc asc"}}
+    assert client.http_request.call_args_list[1][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_default_limit_argument_in_fetch_and_list_incident_commands(mocker):
+    """
+    Given:
+        - A default limit argument to the azure-sentinel-list-incidents command.
+
+    When:
+        - Execute the fetch-incident and the azure-sentinel-list-incidents commands.
+
+    Then:
+        - Ensure the the limit argument and the limit parameter were set correctly.
+    """
+    # prepare
+    args = {"limit": "50"}
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+
+    # execute
+    list_incidents_command(client, args=args)
+    fetch_incidents(client, last_run, "3 days", "Informational")
+
+    assert client.http_request.call_args_list[0][1] == {"params": {"$top": 50, "$orderby": "properties/createdTimeUtc asc"}}
+    assert client.http_request.call_args_list[1][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_lower_then_default_limit_argument_in_fetch_and_list_incident_commands(mocker):
+    """
+    Given:
+        - A lower then default limit argument to the azure-sentinel-list-incidents command.
+
+    When:
+        - Execute the fetch-incident and the azure-sentinel-list-incidents commands.
+
+    Then:
+        - Ensure the the limit argument and the limit parameter were set correctly.
+    """
+    # prepare
+    args = {"limit": "20"}
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+
+    # execute
+    list_incidents_command(client, args=args)
+    fetch_incidents(client, last_run, "3 days", "Informational")
+
+    assert client.http_request.call_args_list[0][1] == {"params": {"$top": 20, "$orderby": "properties/createdTimeUtc asc"}}
+    assert client.http_request.call_args_list[1][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
