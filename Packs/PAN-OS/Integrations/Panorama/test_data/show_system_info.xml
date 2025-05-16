@@ -40,6 +40,8 @@
             <panlogs-partition-in-gb>31</panlogs-partition-in-gb>
             <licensed-device-capacity>25</licensed-device-capacity>
             <device-certificate-status>None</device-certificate-status>
+            <multi-vsys>off</multi-vsys>
+            <advanced-routing>on</advanced-routing>
         </system>
     </result>
 </response>
