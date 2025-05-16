@@ -1,0 +1,30 @@
+{
+	"id": "incident_sysdigcustomerid",
+	"version": 1,
+	"modified": "2025-02-26T15:27:26.26216777Z",
+	"name": "Sysdig Customer ID",
+	"ownerOnly": false,
+	"description": "The Sysdig Customer ID",
+	"cliName": "sysdigcustomerid",
+	"type": "shortText",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"useAsKpi": false,
+	"locked": false,
+	"packName": "",
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Sysdig Runtime Event"
+	],
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"fromVersion": "6.0.0"
+}
